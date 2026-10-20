@@ -1,0 +1,1387 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.explorer.tabdrawer.b93adf4b48a8",
+      "source": "把「{label}」移入工作区",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 823,
+          "context": "{i18n(\"components.explorer.tabdrawer.b93adf4b48a8\", { label: String(label) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.ba2af719b503",
+      "source": "{value}小时前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(d / 3_600_000))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 612,
+          "context": "return i18n(\"components.explorer.tabdrawer.ba2af719b503\", { value: String(Math.floor(d / 3_600_000)) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.c0b3fbff51cc",
+      "source": "完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 971,
+          "context": "{i18n(\"components.explorer.tabdrawer.c0b3fbff51cc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.c6a451fd4a5b",
+      "source": "聚焦此标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 883,
+          "context": "label: i18n(\"components.explorer.tabdrawer.c6a451fd4a5b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.c6d80849d9f5",
+      "source": "编辑工作区…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 902,
+          "context": "label: i18n(\"components.explorer.tabdrawer.c6d80849d9f5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.c771248e511f",
+      "source": "打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 776,
+          "context": "{i18n(\"components.explorer.tabdrawer.c771248e511f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.d12be229eea4",
+      "source": "暂无成员标签",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 772,
+          "context": "count > 0 ? i18n(\"components.explorer.tabdrawer.96163ffaeeac\", { count: String(count), preview: String(preview), value: String(count > 4 ? \"…\" : \"\") }) : i18n(\"components.explorer.tabdrawer.d12be229eea4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.d37482ed02e3",
+      "source": "搜索已打开的标签页…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 984,
+          "context": "{i18n(\"components.explorer.tabdrawer.d37482ed02e3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.d4b82994b06a",
+      "source": "彻底删除：连同其中的标签页一起关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 781,
+          "context": "{i18n(\"components.explorer.tabdrawer.d4b82994b06a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.d6ecf973bad0",
+      "source": "移入工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 823,
+          "context": "{i18n(\"components.explorer.tabdrawer.d6ecf973bad0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.dc04bd26995b",
+      "source": "解散：只退组，标签页保留",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 779,
+          "context": "{i18n(\"components.explorer.tabdrawer.dc04bd26995b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.de6785d99e02",
+      "source": "刚刚",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 610,
+          "context": "return i18n(\"components.explorer.tabdrawer.de6785d99e02\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.e5d7d964c0e2",
+      "source": "关闭本标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 885,
+          "context": "label: i18n(\"components.explorer.tabdrawer.e5d7d964c0e2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.e75e8b4e5c97",
+      "source": "下移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 825,
+          "context": "{i18n(\"components.explorer.tabdrawer.e75e8b4e5c97\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.e86ea3f280d9",
+      "source": "未分组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 1003,
+          "context": "{i18n(\"components.explorer.tabdrawer.e86ea3f280d9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.e9a95effb2f5",
+      "source": "彻底删除（连同标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 905,
+          "context": "label: i18n(\"components.explorer.tabdrawer.e9a95effb2f5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f22548ae0eb0",
+      "source": "标签页的归属组合；恢复时按实例去重",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 738,
+          "context": "{i18n(\"components.explorer.tabdrawer.f22548ae0eb0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f3683b41fe52",
+      "source": "竖版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 978,
+          "context": "{i18n(\"components.explorer.tabdrawer.f3683b41fe52\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f807a7b72a2c",
+      "source": "横版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 977,
+          "context": "{i18n(\"components.explorer.tabdrawer.f807a7b72a2c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f853a70b1204",
+      "source": "上移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 824,
+          "context": "{i18n(\"components.explorer.tabdrawer.f853a70b1204\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.f991f79fa551",
+      "source": "当前标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 991,
+          "context": "{i18n(\"components.explorer.tabdrawer.f991f79fa551\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 993,
+          "context": "{i18n(\"components.explorer.tabdrawer.f991f79fa551\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabhost.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 267,
+          "context": "title: i18n(\"components.explorer.tabhost.203c08e0d44a\")"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.5a45a31ad546",
+      "source": "换壁纸 · 从库选…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 143,
+          "context": "label: i18n(\"components.explorer.tabhost.5a45a31ad546\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.6af504b380f2",
+      "source": "清除全屏壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 148,
+          "context": "label: i18n(\"components.explorer.tabhost.6af504b380f2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.83deaec053e9",
+      "source": "关闭标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 149,
+          "context": "label: i18n(\"components.explorer.tabhost.83deaec053e9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.9a857306bfc3",
+      "source": "在新标签页打开此页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 142,
+          "context": "label: i18n(\"components.explorer.tabhost.9a857306bfc3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabhost.e5f5d7df200a",
+      "source": "全屏壁纸 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabHost.tsx",
+          "line": 145,
+          "context": "i18n(\"components.explorer.tabhost.e5f5d7df200a\") + b.label"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.07bb25e3e6ea",
+      "source": "关闭工作区（同时关闭其中的标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 221,
+          "context": "{i18n(\"components.explorer.tabstrip.07bb25e3e6ea\")}"
+        }
+      ],
+      "translation": "Close workspace (and all its tabs)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.0bd930dcb332",
+      "source": "复制本标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 986,
+          "context": "label: i18n(\"components.explorer.tabstrip.0bd930dcb332\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.126e112774d5",
+      "source": "底板颜色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 606,
+          "context": "{i18n(\"components.explorer.tabstrip.126e112774d5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.1831b25872ac",
+      "source": "确定删除 OnePage「{name}」（{full}）？\n这块白板和其中的内容都会永久消失！",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(existing.name)"
+        },
+        {
+          "name": "full",
+          "expression": "String(name.full)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 978,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.1831b25872ac\", { name: String(existing.name), full: String(name.full) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.1cff7673a712",
+      "source": "首页 · 不可关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 85,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.1cff7673a712\") : full"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 84,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.203c08e0d44a\") : resolveTabTitle(tab.page, tab.params).full"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1081,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.203c08e0d44a\") : resolveTabTitle(t.page, t.params).label"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1082,
+          "context": "isHome ? i18n(\"components.explorer.tabstrip.203c08e0d44a\") : resolveTabTitle(t.page, t.params).full"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.2389ded014dd",
+      "source": "关闭工作区「{name}」及其中的 {count} 个标签页？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(ws.name)"
+        },
+        {
+          "name": "count",
+          "expression": "String(count)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 223,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.2389ded014dd\", { name: String(ws.name), count: String(count) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 638,
+          "context": "{i18n(\"components.explorer.tabstrip.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.37979829426b",
+      "source": "工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 585,
+          "context": "useState(i18n(\"components.explorer.tabstrip.37979829426b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.40561d059752",
+      "source": "解散工作区（保留标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 192,
+          "context": "label: i18n(\"components.explorer.tabstrip.40561d059752\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 889,
+          "context": "label: i18n(\"components.explorer.tabstrip.40561d059752\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 993,
+          "context": "label: i18n(\"components.explorer.tabstrip.40561d059752\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.4068d620bc34",
+      "source": "彻底删除工作区（连同标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 194,
+          "context": "label: i18n(\"components.explorer.tabstrip.4068d620bc34\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.49b14b7e938c",
+      "source": "关闭 · {full}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "full",
+          "expression": "String(full)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1101,
+          "context": "{i18n(\"components.explorer.tabstrip.49b14b7e938c\", { full: String(full) })}"
+        }
+      ],
+      "translation": "Close · {full}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.4b8b25735e9b",
+      "source": "颜色 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 612,
+          "context": "i18n(\"components.explorer.tabstrip.4b8b25735e9b\") + c"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.52fc5d80cf25",
+      "source": "折叠工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 210,
+          "context": "ws.collapsed ? i18n(\"components.explorer.tabstrip.5d3f97b3fe45\") : i18n(\"components.explorer.tabstrip.52fc5d80cf25\")"
+        }
+      ],
+      "translation": "Collapse workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.5d3f97b3fe45",
+      "source": "展开工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 210,
+          "context": "ws.collapsed ? i18n(\"components.explorer.tabstrip.5d3f97b3fe45\") : i18n(\"components.explorer.tabstrip.52fc5d80cf25\")"
+        }
+      ],
+      "translation": "Expand workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.6e00cb5b1b1c",
+      "source": "移出 OnePage（取消一星）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 988,
+          "context": "isStarred(t) ? i18n(\"components.explorer.tabstrip.6e00cb5b1b1c\") : i18n(\"components.explorer.tabstrip.7788d86c6f5d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.7788d86c6f5d",
+      "source": "加入 OnePage（一星）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 988,
+          "context": "isStarred(t) ? i18n(\"components.explorer.tabstrip.6e00cb5b1b1c\") : i18n(\"components.explorer.tabstrip.7788d86c6f5d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.8bcb372db593",
+      "source": "移出工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 991,
+          "context": "label: i18n(\"components.explorer.tabstrip.8bcb372db593\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.946897d10708",
+      "source": "新建工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 601,
+          "context": "{i18n(\"components.explorer.tabstrip.946897d10708\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 604,
+          "context": "{i18n(\"components.explorer.tabstrip.946897d10708\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.9c5d341609cd",
+      "source": "新标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1124,
+          "context": "{i18n(\"components.explorer.tabstrip.9c5d341609cd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.9da364f29a6e",
+      "source": "关闭 {label}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1100,
+          "context": "{i18n(\"components.explorer.tabstrip.9da364f29a6e\", { label: String(label) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.9e76a0089e2c",
+      "source": "彻底删除工作区「{name}」及其中的 {count} 个标签页？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(ws.name)"
+        },
+        {
+          "name": "count",
+          "expression": "String(count)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 198,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 893,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabstrip.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1069,
+          "context": "{i18n(\"components.explorer.tabstrip.a626aad412b7\")}"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.b2a947fe366c",
+      "source": "工作区名字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 605,
+          "context": "{i18n(\"components.explorer.tabstrip.b2a947fe366c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.bfdc8bd31343",
+      "source": "复制当前页面 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 85,
+          "context": "i18n(\"components.explorer.tabstrip.bfdc8bd31343\") + resolveTabTitle(activeTab().page, activeTab().params).full"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.c3b5c8e51c87",
+      "source": "新标签页（回首页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 1123,
+          "context": "{i18n(\"components.explorer.tabstrip.c3b5c8e51c87\")}"
+        }
+      ],
+      "translation": "New tab (home)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.c6a451fd4a5b",
+      "source": "聚焦此标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 985,
+          "context": "label: i18n(\"components.explorer.tabstrip.c6a451fd4a5b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.c6d80849d9f5",
+      "source": "编辑工作区…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 191,
+          "context": "label: i18n(\"components.explorer.tabstrip.c6d80849d9f5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 888,
+          "context": "label: i18n(\"components.explorer.tabstrip.c6d80849d9f5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.cde2cd071d25",
+      "source": "创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 639,
+          "context": "{i18n(\"components.explorer.tabstrip.cde2cd071d25\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.df3d58c7d84b",
+      "source": "设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 85,
+          "context": "tip.kind === \"gear\" ? i18n(\"components.explorer.tabstrip.df3d58c7d84b\") : (isHome ? i18n(\"components.explorer.tabstrip.1cff7673a712\") : full)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.e5d7d964c0e2",
+      "source": "关闭本标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 987,
+          "context": "label: i18n(\"components.explorer.tabstrip.e5d7d964c0e2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabstrip.e9913cd546bf",
+      "source": "关闭工作区 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 220,
+          "context": "i18n(\"components.explorer.tabstrip.e9913cd546bf\") + ws.name"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabstrip.e9a95effb2f5",
+      "source": "彻底删除（连同标签页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabStrip.tsx",
+          "line": 891,
+          "context": "label: i18n(\"components.explorer.tabstrip.e9a95effb2f5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.03f0454aea68",
+      "source": "处理失败，请换一个文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 101,
+          "context": "r.error ?? i18n(\"components.explorer.wallpaperlibrary.03f0454aea68\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.0cfe12ee47a2",
+      "source": "；已应用不入库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 110,
+          "context": "variant === \"picker\" ? i18n(\"components.explorer.wallpaperlibrary.9c5daef675e0\") : i18n(\"components.explorer.wallpaperlibrary.0cfe12ee47a2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.1609bca7aff5",
+      "source": "上传入库…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 143,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.1609bca7aff5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.2f22a69b07de",
+      "source": "我的壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 60,
+          "context": "entry.builtin ? i18n(\"components.explorer.wallpaperlibrary.9b66c437f94a\") : i18n(\"components.explorer.wallpaperlibrary.2f22a69b07de\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.3b9fd74eda41",
+      "source": "从云盘恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 145,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.3b9fd74eda41\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 139,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.3fd47edce45b\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 139,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.44f11be688f1",
+      "source": "当前全屏壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 77,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.44f11be688f1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.45793e136b90",
+      "source": "同步含库内图片与视频，恢复会覆盖本机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 159,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.45793e136b90\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.5e15e538d386",
+      "source": "上传图片或视频…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 163,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.5e15e538d386\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.66252e2d86ba",
+      "source": "从库里删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 72,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.66252e2d86ba\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.9b66c437f94a",
+      "source": "内置壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 60,
+          "context": "entry.builtin ? i18n(\"components.explorer.wallpaperlibrary.9b66c437f94a\") : i18n(\"components.explorer.wallpaperlibrary.2f22a69b07de\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.9c5daef675e0",
+      "source": "；已直接应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 110,
+          "context": "variant === \"picker\" ? i18n(\"components.explorer.wallpaperlibrary.9c5daef675e0\") : i18n(\"components.explorer.wallpaperlibrary.0cfe12ee47a2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.a9bbc10e1c98",
+      "source": "删除：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 71,
+          "context": "i18n(\"components.explorer.wallpaperlibrary.a9bbc10e1c98\") + entry.name"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.af60a612a19e",
+      "source": "同步到云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 144,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.af60a612a19e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.db7bc424df4c",
+      "source": "清除全屏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 147,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.db7bc424df4c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.edc3b613293f",
+      "source": "已收 {length}/{LIBRARY_MAX} 张；自收录的壁纸右上角有 ✕ 可删，内置渐变不可删",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "doc.library.length"
+        },
+        {
+          "name": "LIBRARY_MAX",
+          "expression": "LIBRARY_MAX"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 158,
+          "context": "{i18nRich(\"components.explorer.wallpaperlibrary.edc3b613293f\", { length: doc.library.length, LIBRARY_MAX: LIBRARY_MAX })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.wallpaperlibrary.f0da12c6892c",
+      "source": "更换壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
+          "line": 138,
+          "context": "{i18n(\"components.explorer.wallpaperlibrary.f0da12c6892c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.workspaceeditor.126e112774d5",
+      "source": "底板颜色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WorkspaceEditor.tsx",
+          "line": 87,
+          "context": "{i18n(\"components.explorer.workspaceeditor.126e112774d5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.workspaceeditor.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WorkspaceEditor.tsx",
+          "line": 152,
+          "context": "{i18n(\"components.explorer.workspaceeditor.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.workspaceeditor.451755e3831f",
+      "source": "加入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/WorkspaceEditor.tsx",
+          "line": 145,
+          "context": "{i18n(\"components.explorer.workspaceeditor.451755e3831f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

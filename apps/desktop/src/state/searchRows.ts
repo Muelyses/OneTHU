@@ -14,11 +14,11 @@
  *      = "插件" → goEntry("plugins")（OH 表现成插件页的 OH 分节，但由独立 entry 态驱动）。
  *   ② 二级（切档 / 切视图）：行自带 `go` 负责——OH 行切 OH 基础/高级档；
  *      插件行切 我的插件/市场/主题筛选 + 展开安装面板分流。
- *   ③ 三级（行定位）：默认 requestSettingsSection(title)（滚到 + .row-focus）；
+ *   ③ 三级（行定位）：默认 requestSettingsSection(row.id)（滚到 + .row-focus）；
  *      **条件隐藏行**（`visible` 为 false）不是错：落**分节根** + `fallbackNote` 一句解释，
  *      由调用方（面板/门面/selfcheck）转述给用户——不许静默把分节头当命中。
  */
-import { requestSettingsSection, requestSettingsTab } from "./settingsMode.js";
+import { requestSettingsSection, requestSettingsTab, settingsLabel } from "./settingsMode.js";
 import { goEntry } from "../components/Layout.js";
 import { navGo } from "../plugins/bridges.js";
 import { requestPluginsFocus } from "./pluginsFocus.js";
@@ -43,7 +43,7 @@ export interface SearchRow {
   desc?: string;
   /** 别名（口语/简称；如「语音」→ 语音合成那行） */
   aliases?: string[];
-  /** 直达动作：默认走 requestSettingsTab + requestSettingsSection(title) */
+  /** 直达动作：默认走 requestSettingsTab + requestSettingsSection(row.id) */
   go?: () => void;
   /** 条件隐藏行：点击时有函数则先判可见性；false → 落**分节根**（不冒充命中该行），
    *  配 `fallbackNote` 说明 为什么看不到它。桌面/手机的落点行为完全一致。 */
@@ -109,13 +109,13 @@ export function breadcrumbOf(row: SearchRow): string[] {
 export function displayBreadcrumb(row: SearchRow): string[] {
   const bc = breadcrumbOf(row);
   const root = row.displayRoot ?? (familyOf(row) === "plugins" ? "插件" : "设置");
-  return [root, ...bc.slice(1)];
+  return [settingsLabel(root), ...bc.slice(1, -1).map(settingsLabel), row.title];
 }
 
 /** 断言分组：显示根与导航家族不一致的行（如 OH：显示"设置"、实际落"插件"）——单独统计，不混入两族 */
 export function familyGroup(row: SearchRow): "settings" | "plugins" | "mixed" {
   const fam = familyOf(row);
-  const shown = displayBreadcrumb(row)[0];
+  const shown = row.displayRoot ?? (fam === "plugins" ? "插件" : "设置");
   return (fam === "plugins" && shown === "设置") ? "mixed" : fam;
 }
 
@@ -210,6 +210,7 @@ export function goSearchRow(row: SearchRow): { family: "settings" | "plugins"; b
     row.go(); // 二级/三级：OH 切档、插件切视图/分类、分节/行滚动高亮都在这里
     return { family, breadcrumb, landedOn: "row" };
   }
-  requestSettingsSection(row.title);
+  if (family === "plugins") requestPluginsFocus({ target: row.id });
+  else requestSettingsSection(row.id);
   return { family, breadcrumb, landedOn: "row" };
 }

@@ -16,7 +16,7 @@ import { installFakeCloud, freshClientState } from './lib/fake-cloud.mjs';
 import { closeTestBrowser } from './lib/onboarding-browser-steps.mjs';
 
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
-const out = 'docs/onegui/short-share-codes';
+const out = process.env.ONETHU_TEST_OUT ?? 'docs/onegui/short-share-codes';
 mkdirSync(out, { recursive: true });
 let checks = 0;
 const errors = [];

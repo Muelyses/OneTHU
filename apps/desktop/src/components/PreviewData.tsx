@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 预览数据层（霖 2026-10-12）。
  *
@@ -17,6 +18,8 @@ import { seedPreviewData } from "../state/data.js";
 import { setPreviewMode } from "../state/cache.js";
 
 export function PreviewDataProvider({ children }: { children: ReactNode }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [ready, setReady] = useState(false);
   useLayoutEffect(() => {
     setPreviewMode(true);

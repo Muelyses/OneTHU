@@ -134,9 +134,9 @@ html:root .workbench-settings-nav button.is-active { background: var(--og-select
 .workbench-settings-title { margin-bottom: var(--og-space-6); }
 .workbench-settings-title h2 { margin: 0 0 var(--og-space-2); font-size: var(--og-text-title); letter-spacing: var(--og-tracking-title); font-weight: var(--og-weight-semibold); }
 .workbench-settings-title p { margin: 0; color: var(--og-content-3); font-size: var(--og-text-body); }
-html:root .workbench-settings-content > :is(.og-card, .og-settings) { margin-bottom: var(--og-space-5); border-radius: var(--og-radius-lg); box-shadow: none; }
+html:root :is(.workbench-settings-content, .workbench-settings-content > [data-settings-section]) > :is(.og-card, .og-settings) { margin-bottom: var(--og-space-5); border-radius: var(--og-radius-lg); box-shadow: none; }
 html:root .workbench-settings-content .og-settings-row { padding-block: var(--og-space-4); }
-html:root .workbench-settings-content > .og-section { margin: var(--og-space-5) 0 var(--og-space-3); }
+html:root :is(.workbench-settings-content, .workbench-settings-content > [data-settings-section]) > .og-section { margin: var(--og-space-5) 0 var(--og-space-3); }
 
 /* Search is a command palette: quiet list, generous input and clear grouping. */
 html:root .dock-panel { border-radius: var(--og-radius-card); border-color: var(--og-line-2); box-shadow: var(--og-elev-3); }

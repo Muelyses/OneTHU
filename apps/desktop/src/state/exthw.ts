@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 外部作业源状态层（雨课堂 / TUOJ 系 / Tyche / DSA OJ）。
  *
@@ -122,7 +123,7 @@ function getOrCreateSalt(): Uint8Array {
 }
 
 async function deriveKey(salt: Uint8Array): Promise<CryptoKey> {
-  if (!subtle) throw new Error("当前环境不支持 WebCrypto");
+  if (!subtle) throw new Error(i18n("state.exthw.15b8b711a27d"));
   const base = await subtle.importKey("raw", new TextEncoder().encode(KDF_PASS), "PBKDF2", false, [
     "deriveKey",
   ]);
@@ -931,7 +932,7 @@ export async function fetchYktExerciseDetail(leafTypeId: string, classroomId: st
   const creds = getExtHwCreds();
   const cred = creds.yuketang;
   if (!cred || !cred.cookie.trim()) {
-    throw new Error("雨课堂未登录：请先在 设置 → 外部作业源 登录雨课堂");
+    throw new Error(i18n("state.exthw.0ba343b633e5"));
   }
   const src = createYuketangSource(cred, universalFetch, creds.days ?? 30);
   return src.getExerciseDetail(leafTypeId, classroomId);
@@ -942,7 +943,7 @@ function requireYktSource(): YuketangSource {
   const creds = getExtHwCreds();
   const cred = creds.yuketang;
   if (!cred || !cred.cookie.trim()) {
-    throw new Error("雨课堂未登录：请先在 设置 → 外部作业源 登录雨课堂");
+    throw new Error(i18n("state.exthw.0ba343b633e5"));
   }
   return createYuketangSource(cred, universalFetch, creds.days ?? 30);
 }

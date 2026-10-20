@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 竖屏取景框（dev 专用）：在**同一个应用**里给出一块真正的 390×844 级手机视口。
  *
@@ -30,21 +31,23 @@ const DEVICES: Device[] = [
 
 /** 取景框里可选的场景：真实应用（不带参数，走登录态）或免登录预览场景 */
 const SCENES: Array<{ id: string; name: string; q: string }> = [
-  { id: "real", name: "真实应用（登录态）", q: "" },
-  { id: "home", name: "首页（免登录预览）", q: "explorer-preview=home" },
-  { id: "drawer", name: "标签页抽屉", q: "explorer-preview=drawer" },
-  { id: "otherinfo", name: "其他 Info", q: "explorer-preview=otherinfo" },
-  { id: "settings", name: "设置浮层", q: "explorer-preview=settings-tab" },
-  { id: "page-schedule", name: "课表", q: "explorer-preview=page&page=schedule" },
-  { id: "page-cloud", name: "云盘", q: "explorer-preview=page&page=cloud" },
-  { id: "page-tasks", name: "待办/任务", q: "explorer-preview=page&page=tasks" },
-  { id: "page-vault", name: "暂存箱", q: "explorer-preview=page&page=vault" },
-  { id: "namecard", name: "我的名片/组织", q: "explorer-preview=settings-tab" },
-  { id: "search", name: "搜索面板", q: "explorer-preview=search" },
+  { id: "real", get name() { return i18n("components.phoneframe.818a8c9529ec"); }, q: "" },
+  { id: "home", get name() { return i18n("components.phoneframe.fb225936a3a2"); }, q: "explorer-preview=home" },
+  { id: "drawer", get name() { return i18n("components.phoneframe.1ef4be486cc7"); }, q: "explorer-preview=drawer" },
+  { id: "otherinfo", get name() { return i18n("components.phoneframe.ffb3c5a08a78"); }, q: "explorer-preview=otherinfo" },
+  { id: "settings", get name() { return i18n("components.phoneframe.c478cf8304cc"); }, q: "explorer-preview=settings-tab" },
+  { id: "page-schedule", get name() { return i18n("components.phoneframe.2e3250329028"); }, q: "explorer-preview=page&page=schedule" },
+  { id: "page-cloud", get name() { return i18n("components.phoneframe.f75562426e77"); }, q: "explorer-preview=page&page=cloud" },
+  { id: "page-tasks", get name() { return i18n("components.phoneframe.b10ac0bff053"); }, q: "explorer-preview=page&page=tasks" },
+  { id: "page-vault", get name() { return i18n("components.phoneframe.804002a9c49a"); }, q: "explorer-preview=page&page=vault" },
+  { id: "namecard", get name() { return i18n("components.phoneframe.d41d58293127"); }, q: "explorer-preview=settings-tab" },
+  { id: "search", get name() { return i18n("components.phoneframe.b3618c79eba7"); }, q: "explorer-preview=search" },
   { id: "onego", name: "OneGO!", q: "explorer-preview=onego" },
 ];
 
 export default function PhoneFrame() {
+  const uiLocale = useUiLocale();
+
   /* 初值可从 URL 预置：`?phone-frame=1&device=15pm&scene=page-cloud&land=1&fit=0`
      —— 便于把"某个场景的手机形态"直接做成一个链接/截图。 */
   const q0 = new URLSearchParams(window.location.search);
@@ -74,7 +77,7 @@ export default function PhoneFrame() {
     if (!fit) return 1;
     const k = Math.min((box.w - 120) / vw, (box.h - 150) / vh, 1);
     return Math.max(0.25, Number(k.toFixed(3)));
-  }, [fit, box.w, box.h, vw, vh]);
+  }, [uiLocale, fit, box.w, box.h, vw, vh]);
 
   const sceneQ = SCENES.find((s) => s.id === scene)?.q ?? "";
   const inner = `/?${sceneQ ? sceneQ + "&" : ""}__phone_frame=1${nonce ? `&_r=${nonce}` : ""}`;
@@ -82,33 +85,30 @@ export default function PhoneFrame() {
   return (
     <div className="og-device-studio">
       <div className="og-device-toolbar">
-        <Text weight="semibold">竖屏取景框</Text>
-        <span className="og-device-hint">{vw}×{vh}{land ? "（横屏）" : "（竖屏）"} · 缩放 {Math.round(scale * 100)}%</span>
-        <Select value={devId} onChange={setDevId} aria-label="设备">
+        <Text weight="semibold">{i18n("components.phoneframe.ba0230926769")}</Text>
+        <span className="og-device-hint">{i18nRich("components.phoneframe.106cfc0dd145", { vw: vw, vh: vh, value: land ? i18n("components.phoneframe.fe69334dbac9") : i18n("components.phoneframe.559a3fa4fb30"), value2: Math.round(scale * 100) })}</span>
+        <Select value={devId} onChange={setDevId} aria-label={i18n("components.phoneframe.e1506406a5bd")}>
           {DEVICES.map((d) => <option key={d.id} value={d.id}>{d.name} · {d.w}×{d.h}</option>)}
         </Select>
-        <Btn variant="outline" size="sm" onClick={() => setLand((v) => !v)}>{land ? "切竖屏" : "切横屏"}</Btn>
-        <Select value={scene} onChange={setScene} aria-label="场景">
+        <Btn variant="outline" size="sm" onClick={() => setLand((v) => !v)}>{land ? i18n("components.phoneframe.e349115d9737") : i18n("components.phoneframe.a2ff75ffc978")}</Btn>
+        <Select value={scene} onChange={setScene} aria-label={i18n("components.phoneframe.7f72f06a8877")}>
           {SCENES.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </Select>
-        <Btn variant="outline" size="sm" onClick={() => setFit((v) => !v)}>{fit ? "实际大小" : "适应窗口"}</Btn>
-        <Btn variant="outline" size="sm" onClick={() => setNonce((n) => n + 1)}>重载</Btn>
+        <Btn variant="outline" size="sm" onClick={() => setFit((v) => !v)}>{fit ? i18n("components.phoneframe.cfb2531ec552") : i18n("components.phoneframe.f8d01c881e34")}</Btn>
+        <Btn variant="outline" size="sm" onClick={() => setNonce((n) => n + 1)}>{i18n("components.phoneframe.2a6118a5b253")}</Btn>
         <span style={{ flex: 1 }} />
-        <Text slot="label" tone={bridge === "ok" ? "success" : bridge === "miss" ? "error" : "quiet"}>
-          Tauri 桥：
-          {bridge === "ok" ? "已认领（登录状态与原生网络可用）"
-            : bridge === "miss" ? "认领失败——会退化成浏览器预览（没有登录态）"
-              : bridge === "none" ? "无（在浏览器里跑，本来就没有）"
-                : "检测中…"}
-        </Text>
-        <span className="og-device-hint">同源 iframe：壁纸/主题/登录态与应用一致；DPR 与安全区不模拟</span>
-        <Btn variant="outline" size="sm" onClick={() => { window.location.href = window.location.pathname; }}>返回应用</Btn>
+        <Text slot="label" tone={bridge === "ok" ? "success" : bridge === "miss" ? "error" : "quiet"}>{i18nRich("components.phoneframe.59046bca9020", { value: bridge === "ok" ? i18n("components.phoneframe.dfc9c7033a12")
+            : bridge === "miss" ? i18n("components.phoneframe.f34ad45ff6b7")
+              : bridge === "none" ? i18n("components.phoneframe.2c8ddf664779")
+                : i18n("components.phoneframe.3a1abf3422d2") })}</Text>
+        <span className="og-device-hint">{i18n("components.phoneframe.05bc94b92f44")}</span>
+        <Btn variant="outline" size="sm" onClick={() => { window.location.href = window.location.pathname; }}>{i18n("components.phoneframe.a3bba31ccfb9")}</Btn>
       </div>
       <div ref={wrapRef} className="og-device-stage">
         <div className="og-device-frame" style={{ "--og-device-w": `${vw}px`, "--og-device-h": `${vh}px`, "--og-device-scale": scale } as CSSProperties}>
           <iframe
             key={`${dev.id}-${land}-${scene}-${nonce}`}
-            title="手机视口"
+            title={i18n("components.phoneframe.54c286e31d4e")}
             src={inner}
             onLoad={(e) => {
               const win = e.currentTarget.contentWindow;

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 壁纸云盘同步（清华云盘「OneTHU/壁纸」，2026-10-13）。
  *
@@ -55,7 +56,7 @@ async function ensureRepo(tk: string): Promise<string> {
     const repos2 = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
     repo = repos2.find((r) => r.name === REPO_NAME);
   }
-  if (!repo) throw new Error("OneTHU 资料库没有建出来");
+  if (!repo) throw new Error(i18n("state.wallpsync.e00e3a63ff07"));
   try {
     localStorage.setItem(REPO_KEY, repo.id);
   } catch {
@@ -85,7 +86,7 @@ function b64ToText(b64: string): string {
 /** 上传整份壁纸文档到云盘「OneTHU/壁纸/onethu-wallpaper.json」（replace 覆写） */
 export async function syncWallpaperToCloud(): Promise<WallpSyncResult> {
   const tk = await cloudToken();
-  if (!tk) return { ok: false, msg: "云盘还没连接：先到「云盘」页连接后再同步" };
+  if (!tk) return { ok: false, msg: i18n("state.wallpsync.connectBeforeUpload") };
   try {
     const repoId = await ensureRepo(tk);
     const json = JSON.stringify(wallpaperSnapshot());
@@ -101,16 +102,16 @@ export async function syncWallpaperToCloud(): Promise<WallpSyncResult> {
       localPath,
       replace: true,
     });
-    return { ok: true, msg: "壁纸已同步到云盘" };
+    return { ok: true, msg: i18n("state.wallpsync.uploaded") };
   } catch (e) {
-    return { ok: false, msg: `同步没成功（${shortErr(e)}），请检查云盘后再试` };
+    return { ok: false, msg: i18n("state.wallpsync.uploadFailed", {error:shortErr(e)}) };
   }
 }
 
 /** 从云盘下载档案并整档应用（覆盖本地的壁纸与库） */
 export async function restoreWallpaperFromCloud(): Promise<WallpSyncResult> {
   const tk = await cloudToken();
-  if (!tk) return { ok: false, msg: "云盘还没连接：先到「云盘」页连接后再恢复" };
+  if (!tk) return { ok: false, msg: i18n("state.wallpsync.connectBeforeRestore") };
   try {
     const repoId = await ensureRepo(tk);
     const b64 = await invoke<string>("seafile_read_bytes", {
@@ -121,19 +122,19 @@ export async function restoreWallpaperFromCloud(): Promise<WallpSyncResult> {
     });
     const parsed: unknown = JSON.parse(b64ToText(b64));
     if (!replaceWallpaperDoc(parsed)) {
-      return { ok: false, msg: "云盘上的壁纸档案读不出来，请先重新同步一次" };
+      return { ok: false, msg: i18n("state.wallpsync.invalidArchive") };
     }
-    return { ok: true, msg: "已恢复云盘壁纸" };
+    return { ok: true, msg: i18n("state.wallpsync.restored") };
   } catch (e) {
     const raw = shortErr(e);
     if (/404|不存在|not found/i.test(raw)) {
-      return { ok: false, msg: "云盘上还没有壁纸档案，请先在别的设备同步一次" };
+      return { ok: false, msg: i18n("state.wallpsync.noArchive") };
     }
-    return { ok: false, msg: `恢复没成功（${raw}），请检查云盘后再试` };
+    return { ok: false, msg: i18n("state.wallpsync.restoreFailed", {error:raw}) };
   }
 }
 
 function shortErr(e: unknown): string {
   const s = e instanceof Error ? e.message : String(e);
-  return s.replace(/\s+/g, " ").slice(0, 60) || "原因不明";
+  return s.replace(/\s+/g, " ").slice(0, 60) || i18n("state.wallpsync.unknownCause");
 }

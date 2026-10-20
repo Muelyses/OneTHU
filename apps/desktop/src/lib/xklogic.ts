@@ -1,3 +1,5 @@
+import { localizedList as i18nList } from "../i18n/index.js";
+import { t as i18n } from "../i18n/index.js";
 /**
  * nextthuxk v1.4.9 纯函数层移植（docs/nextthuxk-v149-display-state-spec.md §3/§4/§6）。
  * 全部为纯函数，供 useMemo 使用；语义与插件逐条对齐。
@@ -9,8 +11,8 @@ export type XkFlag = "bx" | "xx" | "rx" | "ty";
 
 /* ── §3.1 时间解析 ─────────────────────────────────────────── */
 export interface TimeSlot { day: number; slot: number }
-const DAY_NAMES = ["", "周一", "周二", "周三", "周四", "周五", "周六", "周日"];
-export const SLOT_NAMES = ["1-2节", "3-4节", "5-6节", "7-8节", "9-10节", "11-12节"];
+const DAY_NAMES = i18nList(["","lib.xklogic.c430f4c12eaa","lib.xklogic.d1378a68e620","lib.xklogic.2961168962be","lib.xklogic.e9d3b01a5a00","lib.xklogic.572388f3b096","lib.xklogic.f9aa11dbb15c","lib.xklogic.ee239f394329"]);
+export const SLOT_NAMES = i18nList(["lib.xklogic.dfdf3e83c0bd","lib.xklogic.4df6a2625554","lib.xklogic.5e35c673a5a7","lib.xklogic.749cef85dc5e","lib.xklogic.1eb8d1843c31","lib.xklogic.e7e4b83f7714"]);
 const slotsCache = new Map<string, TimeSlot[]>();
 export function parseTimeSlots(time: string): TimeSlot[] {
   if (!time) return [];
@@ -58,7 +60,7 @@ export function allowedFlags(flag: XkFlag): XkFlag[] {
   if (flag === "xx") return ["xx", "rx"];
   return ["rx"];
 }
-export const FLAG_LABELS: Record<XkFlag, string> = { bx: "必修", xx: "限选", rx: "任选", ty: "体育" };
+export const FLAG_LABELS: Record<XkFlag, string> = { get bx() { return i18n("lib.xklogic.5def9905e85f"); }, get xx() { return i18n("lib.xklogic.4aa68593661e"); }, get rx() { return i18n("lib.xklogic.a0e7e080aa5e"); }, get ty() { return i18n("lib.xklogic.ef7be5be3c13"); } };
 
 /* ── §6 概率模型 ────────────────────────────────────────────── */
 export interface VolStrings { volRequired: string; volElective: string; volOptional: string; volSports: string }
@@ -81,11 +83,11 @@ function probResult(rem: number, applicants: number): ProbResult {
 export function calcProb(
   cap: number, vol: VolStrings | undefined, flag: XkFlag, zy: number,
 ): ProbResult {
-  if (!vol) return { prob: -1, label: "无数据", percentLabel: "", ratioLabel: "", color: P_GRAY, bg: probBg(P_GRAY) };
+  if (!vol) return { prob: -1, label: i18n("lib.xklogic.ab9ba6d10394"), percentLabel: "", ratioLabel: "", color: P_GRAY, bg: probBg(P_GRAY) };
   // vol 行存在但容量 0：墓碑行已在解析层过滤，走到这里=超载真信号，照算不放无数据
   if (flag === "ty") {
     const arr = parseVolStr(vol.volSports || "");
-    if (!arr || arr.counts.length < 3) return { prob: -1, label: "无数据", percentLabel: "", ratioLabel: "", color: P_GRAY, bg: probBg(P_GRAY) };
+    if (!arr || arr.counts.length < 3) return { prob: -1, label: i18n("lib.xklogic.ab9ba6d10394"), percentLabel: "", ratioLabel: "", color: P_GRAY, bg: probBg(P_GRAY) };
     let rem = cap;
     for (let i = 0; i < zy - 1; i++) rem -= arr.counts[i] ?? 0;
     return probResult(rem, arr.counts[zy - 1] ?? 0);
@@ -509,15 +511,15 @@ export function checkPlanCoverage(
       if (tier) {
         const hit = sportsByTier(tier);
         if (hit) { covered = true; coveredBy = `(${hit})`; }
-        else if (hasSports) { covered = true; coveredBy = "(已有体育课)"; }
-      } else if (hasSports) { covered = true; coveredBy = "(已有体育课)"; }
+        else if (hasSports) { covered = true; coveredBy = i18n("lib.xklogic.8a480b042260"); }
+      } else if (hasSports) { covered = true; coveredBy = i18n("lib.xklogic.8a480b042260"); }
     }
     if (!covered && /英语\(3\)/.test(p.name)) {
-      if (hasAdvEnglish) { covered = true; coveredBy = "(英语进阶读写)"; }
-      else if (hasSecondLang) { covered = true; coveredBy = "(第二外国语替代)"; }
+      if (hasAdvEnglish) { covered = true; coveredBy = i18n("lib.xklogic.d78be007f184"); }
+      else if (hasSecondLang) { covered = true; coveredBy = i18n("lib.xklogic.2b7a88e2d1e1"); }
     }
     if (!covered && /英语\([12]\)/.test(p.name)) {
-      if (hasBasicEnglish) { covered = true; coveredBy = "(英语阅读写作/听说交流)"; }
+      if (hasBasicEnglish) { covered = true; coveredBy = i18n("lib.xklogic.bf81401ed39e"); }
     }
     return { ...p, covered, coveredBy, sportsTier: tier };
   });

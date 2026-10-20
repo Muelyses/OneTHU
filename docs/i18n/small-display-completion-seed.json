@@ -1,0 +1,338 @@
+{
+  "messages": {
+    "state.notifystatus.8657a95fc74c": {
+      "key": "state.notifystatus.8657a95fc74c",
+      "source": "通知渠道设置",
+      "zh": "通知渠道设置",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 58,
+          "context": "s.backend === \"android\" ? \"通知渠道设置\" : \"系统通知设置\""
+        }
+      ]
+    },
+    "state.notifystatus.13632693e676": {
+      "key": "state.notifystatus.13632693e676",
+      "source": "系统通知设置",
+      "zh": "系统通知设置",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 58,
+          "context": "s.backend === \"android\" ? \"通知渠道设置\" : \"系统通知设置\""
+        }
+      ]
+    },
+    "state.widgetinstances.17a0e39c6089": {
+      "key": "state.widgetinstances.17a0e39c6089",
+      "source": "日程与 DDL",
+      "zh": "日程与 DDL",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetInstances.ts",
+          "line": 149,
+          "context": "return \"日程与 DDL\";"
+        }
+      ]
+    },
+    "state.widgetinstances.6e06ed2abb7d": {
+      "key": "state.widgetinstances.6e06ed2abb7d",
+      "source": "收藏夹「{name}」图标组",
+      "zh": "收藏夹「{name}」图标组",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "names.folder ?? b.folderId"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetInstances.ts",
+          "line": 150,
+          "context": "return `收藏夹「${names.folder ?? b.folderId}」图标组`;"
+        }
+      ]
+    },
+    "state.widgetinstances.662000cbb20d": {
+      "key": "state.widgetinstances.662000cbb20d",
+      "source": "收藏项详情：{name}",
+      "zh": "收藏项详情：{name}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "names.atom ?? b.atom.key"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetInstances.ts",
+          "line": 151,
+          "context": "return `收藏项详情：${names.atom ?? b.atom.key}`;"
+        }
+      ]
+    },
+    "state.widgetinstances.993c7b4581f3": {
+      "key": "state.widgetinstances.993c7b4581f3",
+      "source": "快捷方式：{name}",
+      "zh": "快捷方式：{name}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "names.atom ?? b.atom.key"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetInstances.ts",
+          "line": 152,
+          "context": "return `快捷方式：${names.atom ?? b.atom.key}`;"
+        }
+      ]
+    },
+    "state.widgetruntime.10243e85ea3c": {
+      "key": "state.widgetruntime.10243e85ea3c",
+      "source": "插件小组件",
+      "zh": "插件小组件",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetRuntime.ts",
+          "line": 161,
+          "context": "s.title ?? \"插件小组件\""
+        }
+      ]
+    },
+    "state.widgetruntime.4eafa9e925b3": {
+      "key": "state.widgetruntime.4eafa9e925b3",
+      "source": "自定义",
+      "zh": "自定义",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetRuntime.ts",
+          "line": 174,
+          "context": "pw.title || \"自定义\""
+        },
+        {
+          "file": "apps/desktop/src/state/widgetRuntime.ts",
+          "line": 176,
+          "context": "footer: \"自定义\""
+        }
+      ]
+    },
+    "state.userext.13a46616e16f": {
+      "key": "state.userext.13a46616e16f",
+      "source": "未知错误",
+      "zh": "未知错误",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 290,
+          "context": "error ?? \"未知错误\""
+        }
+      ]
+    },
+    "state.userext.4614c2ea297e": {
+      "key": "state.userext.4614c2ea297e",
+      "source": "第 {step} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）",
+      "zh": "第 {step} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "step",
+          "expression": "i + 1"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 333,
+          "context": "error: `第 ${i + 1} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）`"
+        }
+      ]
+    },
+    "state.userext.1129baf5b637": {
+      "key": "state.userext.1129baf5b637",
+      "source": "第 {step} 步失败：{error}",
+      "zh": "第 {step} 步失败：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "step",
+          "expression": "i + 1"
+        },
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 338,
+          "context": "error: `第 ${i + 1} 步失败：${e instanceof Error ? e.message : String(e)}`"
+        }
+      ]
+    },
+    "state.userext.1a687dba3c19": {
+      "key": "state.userext.1a687dba3c19",
+      "source": "没有这个工具",
+      "zh": "没有这个工具",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 346,
+          "context": "error: \"没有这个工具\""
+        }
+      ]
+    },
+    "state.userext.30c5627d3abc": {
+      "key": "state.userext.30c5627d3abc",
+      "source": "没有这个 OneFlow",
+      "zh": "没有这个 OneFlow",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 353,
+          "context": "error: \"没有这个 OneFlow\""
+        }
+      ]
+    },
+    "state.userext.ec5c92fecc0a": {
+      "key": "state.userext.ec5c92fecc0a",
+      "source": "执行器还没就绪（等插件加载完成再试）",
+      "zh": "执行器还没就绪（等插件加载完成再试）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 367,
+          "context": "error: \"执行器还没就绪（等插件加载完成再试）\""
+        }
+      ]
+    },
+    "state.friendchannel.596d6dbf6630": {
+      "key": "state.friendchannel.596d6dbf6630",
+      "source": "留言不能为空",
+      "zh": "留言不能为空",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/friendChannel.ts",
+          "line": 110,
+          "context": "reason: \"留言不能为空\""
+        }
+      ]
+    },
+    "lib.overlayandroid.2e072265be7f": {
+      "key": "lib.overlayandroid.2e072265be7f",
+      "source": "（没有回复）",
+      "zh": "（没有回复）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 344,
+          "context": "String(r?.answer ?? r?.error ?? \"\").trim() || \"（没有回复）\""
+        }
+      ]
+    },
+    "lib.overlayandroid.c7225dbf105e": {
+      "key": "lib.overlayandroid.c7225dbf105e",
+      "source": "附件",
+      "zh": "附件",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 370,
+          "context": "ATTACH_LABEL[kind] ?? \"附件\""
+        }
+      ]
+    },
+    "lib.overlayandroid.89a7d926bd0e": {
+      "key": "lib.overlayandroid.89a7d926bd0e",
+      "source": "（未命名）",
+      "zh": "（未命名）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 394,
+          "context": "name ?? \"（未命名）\""
+        }
+      ]
+    },
+    "lib.overlayandroid.f11889f79829": {
+      "key": "lib.overlayandroid.f11889f79829",
+      "source": "（附件已交给 OH）",
+      "zh": "（附件已交给 OH）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 406,
+          "context": "reply || \"（附件已交给 OH）\""
+        }
+      ]
+    },
+    "lib.attach.d82cecc3a306": {
+      "key": "lib.attach.d82cecc3a306",
+      "source": "读不到内容",
+      "zh": "读不到内容",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 364,
+          "context": "e instanceof Error ? e.message : \"读不到内容\""
+        }
+      ]
+    }
+  }
+}

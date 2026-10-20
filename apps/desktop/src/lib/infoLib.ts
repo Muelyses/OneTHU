@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
 /**
  * thu-info-lib 平台接线层（dev2 管线移植 2026-09-16）。
  *
@@ -207,9 +208,9 @@ export async function restoreGitlabSession(): Promise<void> {
 /* ═══════════════ 2FA futures：lib 同步 hooks ⇄ OneTHU 两段式 UI ═══════════════ */
 
 const METHOD_NAMES: { [k in "wechat" | "mobile" | "totp"]: string } = {
-  wechat: "企业微信",
-  mobile: "手机短信",
-  totp: "TOTP 验证器",
+  get wechat() { return i18n("lib.infolib.f3943a7b3681"); },
+  get mobile() { return i18n("lib.infolib.f87602bd9134"); },
+  get totp() { return i18n("lib.infolib.22a686a1c34c"); },
 };
 
 let methodsNotify: ((methods: TwoFactorMethod[]) => void) | null = null;
@@ -252,7 +253,7 @@ helper.twoFactorAuthLimitHook = async () => {
   // 却不知原因（群反馈 + MCCF 实例：清掉 6~7 条旧信任记录后立刻能进）。
   void log("2FA 受信设备数达上限（登录继续，本次未信任）");
   const { showToast } = await import("../state/toast.js");
-  showToast("受信设备数已达上限：本次登录不会记住本设备。可到 id.tsinghua.edu.cn 删除旧的「信任浏览器」后重试。");
+  showToast(i18nMsg("lib.infolib.fd1c426ab1aa"));
 };
 
 /* ═══════════════ 登录链 ═══════════════ */
@@ -399,7 +400,7 @@ export async function libVerify2FA(type: string, code: string, trust: boolean): 
       resolveMethod?.(type as "wechat" | "mobile" | "totp");
     });
   }
-  if (!inflight) throw new Error("登录会话不存在");
+  if (!inflight) throw new Error(i18n("lib.infolib.2d49d13d15b6"));
   resolveMethod?.(type as "wechat" | "mobile" | "totp");
   pendingTrust = trust;
   resolveCode?.(code);

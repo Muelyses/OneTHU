@@ -1,3 +1,5 @@
+import { labelForId } from "../i18n/staticLabels.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { compactPageAllowed, useIsSimpleLike } from "../state/experienceMode.js";
 /** 常驻对话面板（宿主胶水，R2/R4/R5 的 dock 面）：
  *  发现 activate 返回 dock:true 命令的已启用 rust 插件 → 显示常驻气泡；
@@ -457,10 +459,10 @@ export function useDockUi(): DockUiState {
 
 /** 语音提示文案（纯函数：渲染与 dockUi 同步共用一份，永不打架） */
 function voiceHintOf(voice: DockVoice, cancelling: boolean, mode: OhMode): string {
-  if (cancelling && voice !== "off") return "松开取消";
-  if (voice === "arming") return "首次需弹窗允许";
-  if (voice === "sending") return "正在发送…";
-  return mode === "search" ? "松手搜索" : mode === "xiaoda" ? "松手直发清小搭" : "松手直发 OH";
+  if (cancelling && voice !== "off") return i18n("plugins.chatdock.a5e282527a63");
+  if (voice === "arming") return i18n("plugins.chatdock.60c4e7086f28");
+  if (voice === "sending") return i18n("plugins.chatdock.22eb0f8779ab");
+  return mode === "search" ? i18n("plugins.chatdock.aee820d2a216") : mode === "xiaoda" ? i18n("plugins.chatdock.634b2bf11df6") : i18n("plugins.chatdock.19e77f892e70");
 }
 
 /* 草稿通道：胶囊输入框是唯一编辑入口（面板内不再有第二个文本框），发送按钮读同一份 */
@@ -527,6 +529,8 @@ const SUB_LINGER_MS = 240;
  *  点的高度/透明度由 ChatDock 的电平循环直接写 DOM 样式（不进 React 状态，60fps 不重渲染）。
  *  dev-explorer 二轮：导出给 OhCapsule——收音中的胶囊本体就是这条波纹。 */
 export function VoiceBar({ hint }: { hint: string }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <span className="dock-voicebar">
       <span className="dock-wave" aria-hidden="true">
@@ -543,6 +547,8 @@ export function VoiceBar({ hint }: { hint: string }): ReactNode {
  *  上面显示着目前识别出来的字」）。比条更宽、更淡，雾与字两端渐隐（mask / 动画都在 CSS）。
  *  key=text：识别结果一变就重新淡入一次（140ms，只动透明度不动位置——不抖）。 */
 function VoiceSubtitle({ text, out }: { text: string; out: boolean }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <div className={"dock-voice-sub" + (out ? " is-out" : "")} role="status" aria-live="polite">
       <span className="dock-voice-sub-text" key={text}>{text}</span>
@@ -608,6 +614,8 @@ async function dataUrlForPick(f: AttachFile): Promise<string | null> {
 /** markdown 里的图片：data: / blob: / http(s) 直接渲染；本机路径先读成 data URL。
  *  正文图片的 src 常常是应用侧写下的本地路径，webview 直接加载会裂图。 */
 function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
+  const uiLocale = useUiLocale();
+
   const direct = typeof src === "string" && /^(data:|blob:|https?:)/i.test(src);
   const [url, setUrl] = useState<string | null>(direct ? (src as string) : null);
   useEffect(() => {
@@ -627,7 +635,7 @@ function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
       alive = false;
     };
   }, [src, direct]);
-  if (!url) return <span className="dock-img-miss" style={MAT_IMG_MISS}>{alt || "图片（没能读出来）"}</span>;
+  if (!url) return <span className="dock-img-miss" style={MAT_IMG_MISS}>{alt || i18n("plugins.chatdock.6549c7947471")}</span>;
   return (
     <img
       {...rest}
@@ -673,6 +681,8 @@ function mergeHydrated(view: ViewMsg[], cur: ViewMsg[]): ViewMsg[] {
  *  OneGUI 收编：直接走 OG AccordionItem（og-accordion-head/body 五件套出外观与 a11y），
  *  旧 .dock-think 手写抽屉与 plg-caret 箭头退役。 */
 function ChainBlock({ label, lines, defaultOpen = false }: { label: string; lines: string[]; defaultOpen?: boolean }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState(defaultOpen);
   if (lines.length === 0) return null;
   const total = lines.reduce((n, l) => n + l.length, 0);
@@ -680,7 +690,7 @@ function ChainBlock({ label, lines, defaultOpen = false }: { label: string; line
     <AccordionItem
       id={label}
       title={label}
-      sub={open ? "点击收起" : `${lines.length} 条 · ${total} 字`}
+      sub={open ? i18n("plugins.chatdock.3afccd0197f6") : i18n("plugins.chatdock.f31c4b71e495", { length: String(lines.length), total: String(total) })}
       open={open}
       onToggle={() => setOpen((o) => !o)}
     >
@@ -757,9 +767,11 @@ const SUGGESTIONS = ["明天图书馆哪有空座？", "这周考试安排", "�
 /** 开场逐字下落的三行大字（旧 dock-hero-drop 平移：两帧 transition + transitionDelay 分档；
  *  模糊帧没有令牌档省略——移动+回弹节奏保留）。 */
 function DockHero(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const settled = useMountPhase();
   return (
-    <div className="dock-hero" style={MAT_HERO} aria-label="你好！我是小OH，有什么能帮你的吗？">
+    <div className="dock-hero" style={MAT_HERO} aria-label={i18n("plugins.chatdock.427a4c3a62ca")}>
       {HERO_CHARS.map((line, i) => (
         <div className="dock-hero-line" style={MAT_HERO_LINE} key={i}>
           {line.map((c, j) => (
@@ -777,6 +789,8 @@ function DockHero(): ReactNode {
 
 /** 建议指令条（旧 dock-chips-in：大字落定后浮现；芯片本体直接走 OG Chip——hover/按压状态层由出） */
 function DockSuggestedChips({ onPick }: { onPick: (t: string) => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const settled = useMountPhase();
   return (
     <div className="dock-empty-chips" style={matEmptyChips(settled)}>
@@ -799,6 +813,8 @@ function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRetry
   busy: boolean;
   onOpenOwnApi: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const settled = useMountPhase();
   const [responseOpen, setResponseOpen] = useState(false);
   const phone = isPhoneNow();
@@ -806,14 +822,14 @@ function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRetry
   if (m.role === "assistant" && m.notice === "rate-limit") {
     return (
       <div className={"dock-msg-assistant dock-notice" + (isNew ? " is-new" : "")} style={mat} role="status">
-        <div className="dock-notice-title">请求暂时受限</div>
-        <div className="dock-notice-sub">服务暂时限制了请求，请稍后重试。</div>
-        <AccordionItem id="rate-limit-response" title="查看服务响应" open={responseOpen} onToggle={() => setResponseOpen((value) => !value)}>
+        <div className="dock-notice-title">{i18n("plugins.chatdock.4aa34ed30482")}</div>
+        <div className="dock-notice-sub">{i18n("plugins.chatdock.84bca22bedb3")}</div>
+        <AccordionItem id="rate-limit-response" title={i18n("plugins.chatdock.c9c75c6484e1")} open={responseOpen} onToggle={() => setResponseOpen((value) => !value)}>
           <div>{m.text}</div>
         </AccordionItem>
         <div className="dock-notice-actions">
-          {m.retryInput ? <Btn variant="solid" tone="brand" disabled={busy} onClick={() => onRetry(m.retryInput!)}>重试这条消息</Btn> : null}
-          <Btn variant="outline" onClick={onOpenOwnApi}>设置自己的 API</Btn>
+          {m.retryInput ? <Btn variant="solid" tone="brand" disabled={busy} onClick={() => onRetry(m.retryInput!)}>{i18n("plugins.chatdock.723588bf300c")}</Btn> : null}
+          <Btn variant="outline" onClick={onOpenOwnApi}>{i18n("plugins.chatdock.35ceb8b5b08c")}</Btn>
         </div>
       </div>
     );
@@ -824,8 +840,8 @@ function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRetry
         className={"dock-msg-assistant" + (isNew ? " is-new" : "")}
         style={{ ...mat, ...(isNew && !settled ? MSG_FROM : null) }}
       >
-        {m.meta?.think ? <ChainBlock label="思考过程" lines={[m.meta.think]} /> : null}
-        {m.meta?.trace?.length ? <ChainBlock label="工具调用" lines={m.meta.trace} /> : null}
+        {m.meta?.think ? <ChainBlock label={i18n("plugins.chatdock.a62acb184f47")} lines={[m.meta.think]} /> : null}
+        {m.meta?.trace?.length ? <ChainBlock label={i18n("plugins.chatdock.a8ca3c13eb75")} lines={m.meta.trace} /> : null}
         {/* 正文容器：内层 .dock-msg（padding/字阶/形态常量）+ .dock-md（排印豁免保留段，GlobalOrb 同用） */}
         <div className="dock-msg dock-md" style={matBubbleOhBody(phone)}>
           <Markdown remarkPlugins={[remarkGfm]} components={{ img: MdImage }}>{m.text}</Markdown>
@@ -836,10 +852,10 @@ function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRetry
           <div className="dock-msg-ops" style={MAT_MSG_OPS}>
             <IconBtn
               round
-              label={speakingText === m.text ? "停止朗读" : "朗读这一条"}
+              label={speakingText === m.text ? i18n("plugins.chatdock.6113d2b22a57") : i18n("plugins.chatdock.1ee104560d87")}
               titleAttr={speakingText === m.text
-                ? "停止朗读"
-                : autoSpeak ? "朗读这一条（已开自动朗读）" : "朗读这一条（当前静音，点它就念）"}
+                ? i18n("plugins.chatdock.6113d2b22a57")
+                : autoSpeak ? i18n("plugins.chatdock.cd3d72fa5906") : i18n("plugins.chatdock.5c393fa3cd3a")}
               variant="ghost"
               size="sm"
               tone={speakingText === m.text ? "brand" : "default"}
@@ -865,8 +881,8 @@ function DockBubble({ m, isNew, ttsOk, autoSpeak, speakingText, onSpeak, onRetry
               key={j}
               className="dock-img og-interactive"
               style={MAT_IMG_TILE}
-              title={`${im.name}（点开看大图）`}
-              aria-label={`查看图片 ${im.name}`}
+              title={i18n("plugins.chatdock.3ad85f7e8c59", { name: String(im.name) })}
+              aria-label={i18n("plugins.chatdock.109c66fc6f1f", { name: String(im.name) })}
               onClick={() => {
                 openImageViewer(im.src, im.name);
               }}
@@ -910,13 +926,13 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
           />
         );
       })}
-      {p.trace.length > 0 ? <ChainBlock label="工具调用" lines={p.trace} defaultOpen /> : null}
+      {p.trace.length > 0 ? <ChainBlock label={i18n("plugins.chatdock.a8ca3c13eb75")} lines={p.trace} defaultOpen /> : null}
       {p.think ? (
         /* 流式思考链（旧 .dock-think 手写抽屉收编 → OG AccordionItem） */
         <AccordionItem
           id="think"
-          title="思考过程"
-          sub={p.thinkOpen ? "点击收起" : `${p.think.length} 字 · 已折叠`}
+          title={i18n("plugins.chatdock.a62acb184f47")}
+          sub={p.thinkOpen ? i18n("plugins.chatdock.3afccd0197f6") : i18n("plugins.chatdock.489208184337", { length: String(p.think.length) })}
           open={p.thinkOpen}
           onToggle={p.onToggleThink}
         >
@@ -936,7 +952,7 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
           ) : (
             <span style={MAT_INLINE_ROW}>
               <Spinner size="sm" />
-              <Text tone="quiet">{p.status ?? "思考中…"}</Text>
+              <Text tone="quiet">{p.status ?? i18n("plugins.chatdock.64088d8cd78a")}</Text>
             </span>
           )}
         </div>
@@ -947,8 +963,8 @@ const DockMsgList = memo(function DockMsgList(p: MsgListProps): ReactNode {
           tone="warning"
           action={
             <span style={MAT_MSG_OPS}>
-              <Btn variant="solid" tone="brand" size="sm" disabled={p.busy} onClick={() => p.onSend("确认")}>确认执行</Btn>
-              <Btn variant="outline" size="sm" disabled={p.busy} onClick={() => p.onSend("取消")}>取消</Btn>
+              <Btn variant="solid" tone="brand" size="sm" disabled={p.busy} onClick={() => p.onSend("确认")}>{i18n("plugins.chatdock.68a35e224268")}</Btn>
+              <Btn variant="outline" size="sm" disabled={p.busy} onClick={() => p.onSend("取消")}>{i18n("plugins.chatdock.2cd0f3be8738")}</Btn>
             </span>
           }
         >
@@ -968,6 +984,8 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
   onAskOh: (q: string) => void;
   onNotice: (n: string | null) => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { result, total } = useOhSearch(query);
   const history = useSearchHistory();
   const compact = useIsSimpleLike();
@@ -984,10 +1002,10 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
     <div className="ohx-searchpane">
       {!q ? (
         <div className="ohx-history">
-          <div className="ohx-history-head">最近搜索</div>
+          <div className="ohx-history-head">{i18n("plugins.chatdock.3b5ac9baaaae")}</div>
           <div className="ohx-history-chips">
             {hist.length === 0 ? (
-              <span className="ohx-history-empty">还没有搜索记录；搜一次功能或实体就会留在这里</span>
+              <span className="ohx-history-empty">{i18n("plugins.chatdock.1c5fc047a7ba")}</span>
             ) : hist.map((h: SearchJump, i: number) => (
               <button
                 key={`${h.at}-${i}`}
@@ -1001,13 +1019,11 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
           </div>
         </div>
       ) : !result ? (
-        <div className="ohx-search-status">搜索中…</div>
+        <div className="ohx-search-status">{i18n("plugins.chatdock.cc50237edca2")}</div>
       ) : total === 0 ? (
         <>
-          <div className="ohx-search-status">没找到「{q}」。换个说法试试，或直接问小 (OH)：</div>
-          <button className="ohx-askoh" onClick={() => onAskOh(q)}>
-            没搜到？直接问小 (OH)：「{q.length > 18 ? q.slice(0, 18) + "…" : q}」
-          </button>
+          <div className="ohx-search-status">{i18nRich("plugins.chatdock.488d7b3cb249", { q: q })}</div>
+          <button className="ohx-askoh" onClick={() => onAskOh(q)}>{i18nRich("plugins.chatdock.38c07c95baa1", { value: q.length > 18 ? q.slice(0, 18) + "…" : q })}</button>
         </>
       ) : (
         <div className="ohx-results">
@@ -1015,7 +1031,7 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
             <button
               key={"row:" + x.row.id}
               className="ohx-hit"
-              data-vault-catch={vaultCatchAttr({ type: "payload", title: x.row.title, sub: "设置项", payload: { routeId: x.row.id }, source: "OH 搜索" })}
+              data-vault-catch={vaultCatchAttr({ type: "payload", title: x.row.title, sub: i18n("plugins.chatdock.44bc7ccc3677"), payload: { routeId: x.row.id }, source: "OH 搜索" })}
               onClick={() => {
                 jumpSearchRow(x.row, q);
                 onClose(); // 设置浮层接棒，小窗收掉
@@ -1023,28 +1039,28 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
             >
               <span className="ohx-hit-name">{x.row.title}</span>
               <span className="ohx-hit-sub">{displayBreadcrumb(x.row).join(" → ")}</span>
-              <span className="ohx-hit-tag">设置</span>
+              <span className="ohx-hit-tag">{i18n("plugins.chatdock.df3d58c7d84b")}</span>
             </button>
           ))}
           {result.entries.map((en) => (
             <button key={"n:" + en.id} className="ohx-hit" data-vault-catch={vaultCatchAttr({ type: "atom", title: en.name, sub: en.note ?? en.category, atom: { kind: "page", key: en.id }, source: "OH 搜索" })} onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, q); onClose(); }}>
               <span className="ohx-hit-name">{en.name}</span>
-              <span className="ohx-hit-sub">{en.note ?? en.category}</span>
-              <span className="ohx-hit-tag">功能</span>
+              <span className="ohx-hit-sub">{en.note ?? labelForId(en.category)}</span>
+              <span className="ohx-hit-tag">{i18n("plugins.chatdock.25f5ce57a190")}</span>
             </button>
           ))}
           {result.atoms.map((a) => (
             <button key={"a:" + a.kind + "|" + a.key} className="ohx-hit" data-vault-catch={vaultCatchAttr({ type: "atom", title: a.title, sub: a.sub, atom: { kind: a.kind, key: a.key }, source: "OH 搜索" })} onClick={() => { jumpAtom(a.kind, a.key, a.title, q); onClose(); }}>
               <span className="ohx-hit-name">{a.title}</span>
-              <span className="ohx-hit-sub">{(a.group ? a.group + " · " : "") + (a.sub ?? "相关内容")}</span>
-              <span className="ohx-hit-tag">页面</span>
+              <span className="ohx-hit-sub">{(a.group ? a.group + " · " : "") + (a.sub ?? i18n("plugins.chatdock.3c1917e1c662"))}</span>
+              <span className="ohx-hit-tag">{i18n("plugins.chatdock.452c7b10d57a")}</span>
             </button>
           ))}
           {result.tabs.map((t) => (
             <button key={"t:" + t} className="ohx-hit" onClick={() => { jumpSettingsTab(t); onClose(); }}>
-              <span className="ohx-hit-name">设置 · {t}</span>
-              <span className="ohx-hit-sub">跳到设置的这一栏</span>
-              <span className="ohx-hit-tag">设置</span>
+              <span className="ohx-hit-name">{i18nRich("plugins.chatdock.7855f5a8df25", { t: t })}</span>
+              <span className="ohx-hit-sub">{i18n("plugins.chatdock.e205315fe020")}</span>
+              <span className="ohx-hit-tag">{i18n("plugins.chatdock.df3d58c7d84b")}</span>
             </button>
           ))}
         </div>
@@ -1054,6 +1070,8 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
 }
 
 export function ChatDock(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const simple = useIsSimpleLike(); /* 极简与实用都保留 OH 胶囊 */
   const cmds = useSyncExternalStore(subscribeCommands, commandsSnapshot);
   const dockCmd = cmds.find((c) => c.dock && c.id === "chat");
@@ -1371,7 +1389,7 @@ export function ChatDock(): ReactNode {
     if (fresh.length === 0) return;
     for (const e of fresh) {
       if (e.method === "exit") {
-        hardStop("插件已停止");
+        hardStop(i18n("plugins.chatdock.9ac692674bef"));
         return;
       }
       const kind = (e as any).kind;
@@ -1429,8 +1447,8 @@ export function ChatDock(): ReactNode {
     deltaBuf.current = "";
     /* 文案规范：不用 emoji/符号当图标（用户 2026-10-11 质量红线）→ 纯文字前缀 */
     const answer = r?.error != null
-      ? `${partialAnswer ? partialAnswer + "\n\n" : ""}回答出错：${r.error}`
-      : typeof r?.answer === "string" ? r.answer : "(空响应)";
+      ? i18n("plugins.chatdock.feb95ed0fa91", { value: String(partialAnswer ? partialAnswer + "\n\n" : ""), error: String(r.error) })
+      : typeof r?.answer === "string" ? r.answer : i18n("plugins.chatdock.8282ce4afe46");
     const rawError = r?.error == null ? "" : String(r.error);
     const limited = isLlmRateLimit(rawError);
     setMsgs((v) => [...v, limited
@@ -1463,7 +1481,7 @@ export function ChatDock(): ReactNode {
   /** 429 动作卡：直接去 OH 高级配置里调模型源/Key */
   const openOwnApi = useCallback((): void => {
     openSettings("oh");
-    goOhRow("模型 / MCP / 日志", "advanced");
+    goOhRow("模型MCP日志", "advanced");
   }, []);
 
   /** 插件进程已退出时才强制收尾。 */
@@ -1506,7 +1524,7 @@ export function ChatDock(): ReactNode {
     thinkRef.current = "";
     traceRef.current = [];
     setConfirmCard(null);
-    setStatus("思考中…");
+    setStatus(i18n("plugins.chatdock.64088d8cd78a"));
     try {
       const res: any = await callRust(pid, "run", { command: "chat", input: text, runId }, 600_000, controller.signal);
       if (seq !== runSeq.current) return; // 已被打断/强停：迟到回包作废
@@ -1676,7 +1694,7 @@ export function ChatDock(): ReactNode {
         return;
       }
       if (!pid) {
-        setNotice("小OH 还没就绪（Harness 插件未加载）——对话需要完整桌面环境");
+        setNotice(i18n("plugins.chatdock.b6148dfbe0ee"));
         return;
       }
       if (busyRef.current || sessionChanging.current) return;
@@ -1696,7 +1714,7 @@ export function ChatDock(): ReactNode {
     if (!pid) return null;
     const changesSession = ["new_session", "switch_session", "delete_session", "import_session", "restore_main"].includes(command);
     if (changesSession && (busyRef.current || sessionChanging.current)) {
-      const error = "请先停止当前回答，结束后再操作会话";
+      const error = i18n("plugins.chatdock.c4e133be6a12");
       setNotice(error);
       return { ok: false, error };
     }
@@ -1731,7 +1749,7 @@ export function ChatDock(): ReactNode {
     setSpeakingText(null);
     const r = await runCmd("new_session");
     if (!r?.ok) {
-      setNotice(r?.error ?? "新建会话失败");
+      setNotice(r?.error ?? i18n("plugins.chatdock.7742ad93c98a"));
       return;
     }
     hydratedFor.current = pid;
@@ -1739,7 +1757,7 @@ export function ChatDock(): ReactNode {
     setConfirmCard(null);
     keepTotals();
     void refreshTotals();
-    setNotice("已新建会话");
+    setNotice(i18n("plugins.chatdock.f31c618bf73f"));
   };
 
   const openHistory = async (): Promise<void> => {
@@ -1752,7 +1770,7 @@ export function ChatDock(): ReactNode {
     setSpeakingText(null);
     const r = await runCmd("switch_session", id);
     if (!r?.ok) {
-      setNotice(r?.error ?? "切换会话失败");
+      setNotice(r?.error ?? i18n("plugins.chatdock.381dce90b336"));
       return;
     }
     hydratedFor.current = pid;
@@ -1790,17 +1808,17 @@ export function ChatDock(): ReactNode {
       setStream(null);
       setConfirmCard(null);
       setStatus(null);
-      setNotice("已删除");
+      setNotice(i18n("plugins.chatdock.077a6d37719a"));
       hydratedFor.current = null;
     } else {
-      setNotice(r?.error ?? "删除失败");
+      setNotice(r?.error ?? i18n("plugins.chatdock.c228558cf257"));
     }
   };
 
   const exportSession = async (): Promise<void> => {
     const r = await runCmd("export_session", "");
     if (!r?.ok || !r.json) {
-      setNotice(r?.error ?? "导出失败");
+      setNotice(r?.error ?? i18n("plugins.chatdock.6e4445df6957"));
       return;
     }
     // R10：WKWebView 无下载管理器，a[download] 点击静默无效——宿主代写 ~/Downloads
@@ -1810,9 +1828,9 @@ export function ChatDock(): ReactNode {
         filename: `onethu-harness-${(r.sessionId ?? "session").slice(0, 18)}.json`,
         contents: r.json,
       });
-      setNotice(path ? `已导出：${path}` : "已取消导出");
+      setNotice(path ? i18n("plugins.chatdock.fe0342f05ca5", { path: String(path) }) : i18n("plugins.chatdock.7b376795bbca"));
     } catch (e) {
-      setNotice(`导出失败：${e instanceof Error ? e.message : String(e)}`);
+      setNotice(i18n("plugins.chatdock.177a41a28139", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   };
 
@@ -1822,10 +1840,10 @@ export function ChatDock(): ReactNode {
     if (r?.ok) {
       hydratedFor.current = pid;
       setMsgs([]);
-      setNotice(`已导入：${r.title ?? "会话"}`);
+      setNotice(i18n("plugins.chatdock.2bc2f4c3a349", { value: String(r.title ?? i18n("plugins.chatdock.a63280253f17")) }));
       void switchSession(r.sessionId);
     } else {
-      setNotice(r?.error ?? "导入失败");
+      setNotice(r?.error ?? i18n("plugins.chatdock.01aaebc96af1"));
     }
   };
 
@@ -1833,7 +1851,7 @@ export function ChatDock(): ReactNode {
     if (!pid || !busyRef.current) return;
     if (runController.current) runController.current.abort();
     else void notifyRust(pid, "interrupt").catch(() => undefined);
-    setStatus("正在停止请求…");
+    setStatus(i18n("plugins.chatdock.d06cbeecdd5c"));
   };
 
   /** 消息区链接一律外跳系统浏览器（webview 内导航会带走整个应用） */
@@ -2042,7 +2060,7 @@ export function ChatDock(): ReactNode {
       setVoice("listening");
     } catch (e) {
       voicePhaseRef.current = "idle";
-      showVoiceFail(`语音启动失败：${e instanceof Error ? e.message : String(e)}`);
+      showVoiceFail(i18n("plugins.chatdock.de18b251b0c9", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   };
 
@@ -2068,7 +2086,7 @@ export function ChatDock(): ReactNode {
       speechStop();
       setVoice("off");
       setVoiceText("");
-      showVoiceFail("已取消");
+      showVoiceFail(i18n("plugins.chatdock.a37778f17c5f"));
       return;
     }
     setVoice("sending");
@@ -2083,7 +2101,7 @@ export function ChatDock(): ReactNode {
     // 这里**不清** voiceText：字幕要多留一拍做渐出（清空由下次 enterVoice 负责）
     if (busyRef.current) {
       // ohAsk 的 send 被 busy 守卫挡住会静默吞掉这一句——明说，别让用户以为识别失败了
-      showVoiceFail("小OH 正在回答，稍后再长按说");
+      showVoiceFail(i18n("plugins.chatdock.8a25b8a6fdfa"));
       return;
     }
     /* dev-explorer（用户定案）：胶囊/语音只负责产生文字，送给谁由上方切换按钮（mode）决定——
@@ -2102,13 +2120,13 @@ export function ChatDock(): ReactNode {
   const toggleAutoSpeak = (): void => {
     const next = !readVoicePrefs().autoSpeak;
     setVoicePrefs({ autoSpeak: next });
-    setNotice(next ? "已开启自动朗读：OH 的回复会念出来" : "已静音：OH 的回复不再自动朗读");
+    setNotice(next ? i18n("plugins.chatdock.cd541524f944") : i18n("plugins.chatdock.f070aa52d3bb"));
   };
   const openVoiceSettings = (): void => {
     /* 2026-10-11 用户要求「彻底切割」：对话面板与 OneTHU Harness **没有任何跳转关系**，
        这里只提示路径，不做导航（顺手收起面板以免挡视线）。 */
     if (open) toggle();
-    setNotice("语音设置：插件 → OneTHU Harness → 基础设置");
+    setNotice(i18n("plugins.chatdock.a59732772a1e"));
   };
 
   /** 附件（需求 6+7）：AttachTray 取到文件 → ① 面板里记一条**用户气泡**；
@@ -2125,7 +2143,7 @@ export function ChatDock(): ReactNode {
       const src = await dataUrlForPick(f);
       if (src) images.push({ name: f.name, src });
     }
-    setMsgs((v) => [...v, { role: "user", text: `［附件］${summary}`, ...(images.length > 0 ? { images } : {}) }]);
+    setMsgs((v) => [...v, { role: "user", text: i18n("plugins.chatdock.878d364bd67d", { summary: String(summary) }), ...(images.length > 0 ? { images } : {}) }]);
     sheetRef.current = files;
     setSheetFiles(files);
   }, []);
@@ -2134,7 +2152,7 @@ export function ChatDock(): ReactNode {
    *  **不关面板**：needUi 时面板里还有「打开官方作答页」按钮，关掉就没得点了。 */
   const attachDone = useCallback((d: AttachActionDone): void => {
     const r = d.result;
-    setNotice(r.ok ? `附件已处理${r.path ? `：${r.path}` : ""}` : `附件动作未完成${r.error ? `：${r.error}` : ""}`);
+    setNotice(r.ok ? i18n("plugins.chatdock.6c2911b77d68", { value: String(r.path ? `：${r.path}` : "") }) : i18n("plugins.chatdock.044d85b3d264", { value: String(r.error ? `：${r.error}` : "") }));
     if (r.ui?.route) navGo(r.ui.route, r.ui.params as Record<string, unknown> | undefined);
   }, []);
 
@@ -2341,8 +2359,8 @@ export function ChatDock(): ReactNode {
   const voiceHint = voiceHintOf(voice, cancelling, mode);
   const liveShown = voiceText.length > LIVE_TAIL_CHARS ? `…${voiceText.slice(-LIVE_TAIL_CHARS)}` : voiceText;
   const subText = cancelling && voice !== "off"
-    ? "松开取消"
-    : voice === "off" ? liveShown : voice === "arming" ? "正在启动语音…" : liveShown || "请说话…";
+    ? i18n("plugins.chatdock.a5e282527a63")
+    : voice === "off" ? liveShown : voice === "arming" ? i18n("plugins.chatdock.16b38246ad63") : liveShown || i18n("plugins.chatdock.584965ac8398");
 
   return (
     <>
@@ -2367,7 +2385,7 @@ export function ChatDock(): ReactNode {
           data-og-scope="oh.dock"
           className={"dock-panel" + (capsuleRect ? " ohx-panel-grow" : "") + (capsuleRect?.topdock ? " is-topdock" : "") + (closing ? " is-closing" : "") + (slidIn ? " is-slide" : "")}
           role="dialog"
-          aria-label="OneTHU Harness 对话"
+          aria-label={i18n("plugins.chatdock.baebe8674f72")}
           style={{
             /* 从胶囊顶边长出来：left/width 量可见胶囊的 rect；bottom 走 explorer-ui 契约变量（行为几何原样）。
                材质/圆角/过场相位合进 panelMat（oh.dock scope 调度，OneGUI 令牌，见文件头常量块）。
@@ -2395,7 +2413,7 @@ export function ChatDock(): ReactNode {
           <div
             className={"dock-handle" + (dragging ? " is-drag" : "")}
             role="separator"
-            aria-label="拖动调整面板高度"
+            aria-label={i18n("plugins.chatdock.2a3281c6dc74")}
             onPointerDown={onHandleDown}
             onPointerMove={onHandleMove}
             onPointerUp={onHandleUp}
@@ -2405,13 +2423,13 @@ export function ChatDock(): ReactNode {
           {/* 头部行（OneGUI 收编）：动作钮走 Btn/IconBtn（ghost/outline 语义出外观与 a11y），
               创造模式以 tone=brand + is-on 类点亮（旧 .dock-btn.dock-creative 手写样退役）。 */}
           <div className="dock-head" style={MAT_HEAD}>
-            <span className="dock-title" style={MAT_TITLE} title="小OH"><HarnessMark size={15} /></span>
+            <span className="dock-title" style={MAT_TITLE} title={i18n("plugins.chatdock.af0d814e76d3")}><HarnessMark size={15} /></span>
             {/* dev-explorer：搜索 | OH 二合一开关（同一扇窗两种形态；小窗可拖、气泡不动的口径不变）。
                 OOSE 红线：`?explorer-preview=search-oh` 以 `.dock-panel [role='tab']` 命中第二个 tab
                 收到 OH —— 这组_raw-tablist 结构（explorer-oh.css 契约样式）保持原样。
                  */}
-            <div className="ohx-modeswitch" role="tablist" aria-label="搜索或对话">
-              <Btn size="sm" role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>搜索</Btn>
+            <div className="ohx-modeswitch" role="tablist" aria-label={i18n("plugins.chatdock.6f57749ffaa9")}>
+              <Btn size="sm" role="tab" aria-selected={mode === "search"} className={mode === "search" ? "is-active" : ""} onClick={() => setMode("search")}>{i18n("plugins.chatdock.44ce7ae909bb")}</Btn>
               <Btn size="sm" role="tab" aria-selected={mode === "oh"} className={mode === "oh" ? "is-active" : ""} onClick={() => { setMode("oh"); requestAnimationFrame(() => stickBottom()); }}>OH</Btn>
               {/* 第三态：清小搭（2026-10-15 用户口径「搜索 / OH / 清小搭 三选一」）。务必追加在 OH 之后：
                   OOSE 预览契约以 `.dock-panel [role='tab']` 的**第二个** tab 命中 OH，顺序不能动。 */}
@@ -2424,9 +2442,7 @@ export function ChatDock(): ReactNode {
                 aria-selected={mode === "xiaoda"}
                 className={mode === "xiaoda" ? "is-active" : ""}
                 onClick={() => setMode("xiaoda")}
-              >
-                清小搭
-              </Btn>}
+              >{i18n("plugins.chatdock.b1abb3dc2271")}</Btn>}
             </div>
             <div className="dock-ops" style={matOps}>
               {mode === "oh" ? <>
@@ -2435,19 +2451,17 @@ export function ChatDock(): ReactNode {
               {!simple && <Btn
                 variant="ghost" size="sm"
                 tone={creative ? "brand" : "default"}
-                titleAttr="创造模式：开启后小OH更主动动手创建插件、主题、OnePage 与脚本工具"
-                aria-label="创造模式"
+                titleAttr={i18n("plugins.chatdock.5fb46a520c25")}
+                aria-label={i18n("plugins.chatdock.584741806d83")}
                 aria-pressed={creative}
                 className={creative ? "is-on" : undefined}
                 icon={<IconSpark />}
                 onClick={() => setCreative(!creative)}
-              >
-                创造模式
-              </Btn>}
-              <IconBtn label="新会话" variant="outline" size="sm" titleAttr="新会话" icon={<IconPlus />} onClick={() => void newSession()} />
-              <IconBtn label="历史会话" variant="outline" size="sm" titleAttr="历史会话" icon={<IconClock />} onClick={() => void openHistory()} />
-              <IconBtn label="导出会话" variant="outline" size="sm" titleAttr="导出当前会话 JSON" icon={<IconDownload />} onClick={() => void exportSession()} />
-              <IconBtn label="导入会话" variant="outline" size="sm" titleAttr="导入会话 JSON" icon={<IconUpload />} onClick={() => fileRef.current?.click()} />
+              >{i18n("plugins.chatdock.584741806d83")}</Btn>}
+              <IconBtn label={i18n("plugins.chatdock.c57c30bc05f7")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.c57c30bc05f7")} icon={<IconPlus />} onClick={() => void newSession()} />
+              <IconBtn label={i18n("plugins.chatdock.0eccd0db7b81")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.0eccd0db7b81")} icon={<IconClock />} onClick={() => void openHistory()} />
+              <IconBtn label={i18n("plugins.chatdock.2fd39ace06ea")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.15a3eb5151c9")} icon={<IconDownload />} onClick={() => void exportSession()} />
+              <IconBtn label={i18n("plugins.chatdock.6b5cbaa40b65")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.68ea82b28806")} icon={<IconUpload />} onClick={() => fileRef.current?.click()} />
               <input
                 ref={fileRef}
                 type="file" accept=".json,application/json"
@@ -2460,8 +2474,8 @@ export function ChatDock(): ReactNode {
               />
               {ttsOk ? (
                 <IconBtn
-                  label={prefs.autoSpeak ? "关闭自动朗读" : "开启自动朗读"}
-                  titleAttr={prefs.autoSpeak ? "自动朗读已开启（点击改静音；长按进语音合成设置）" : "当前静音（点击开自动朗读；长按进语音合成设置）"}
+                  label={prefs.autoSpeak ? i18n("plugins.chatdock.c82453139601") : i18n("plugins.chatdock.bbd0a21c64ac")}
+                  titleAttr={prefs.autoSpeak ? i18n("plugins.chatdock.76773f6ea0ce") : i18n("plugins.chatdock.1dfa6c369f2c")}
                   variant="ghost" size="sm"
                   tone={prefs.autoSpeak ? "brand" : "default"}
                   className={prefs.autoSpeak ? "is-on" : undefined}
@@ -2472,7 +2486,7 @@ export function ChatDock(): ReactNode {
                 />
               ) : null}
               </> : null}
-              <IconBtn label="收起" variant="outline" size="sm" titleAttr="收起" icon={<IconX />} onClick={toggle} />
+              <IconBtn label={i18n("plugins.chatdock.afd4b783536b")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.afd4b783536b")} icon={<IconX />} onClick={toggle} />
             </div>
           </div>
           {notice ? (
@@ -2486,9 +2500,9 @@ export function ChatDock(): ReactNode {
               欢迎页会伪装成「对话被吃」，直接给明确说明卡，搜索模式照常可用 */}
           {mode === "oh" && !pid ? (
             <div className="dock-oh-missing">
-              <b>主对话需要完整桌面环境</b>
-              <p>当前窗口没有 Harness 进程（浏览器预览或插件未加载），对话历史在这里不可用，发送也不会生效。</p>
-              <p>搜索模式不受影响，可正常使用。到桌面端（tauri 桌面版）打开同一入口即可看到主对话。</p>
+              <b>{i18n("plugins.chatdock.1bdfd51dbccf")}</b>
+              <p>{i18n("plugins.chatdock.5f0649ad2ef8")}</p>
+              <p>{i18n("plugins.chatdock.225204c58214")}</p>
             </div>
           ) : mode === "xiaoda" ? (
             <XiaodaPane onNotice={setNotice} />
@@ -2543,30 +2557,30 @@ export function ChatDock(): ReactNode {
                行本体直接用 OG Row（标题/元信息/尾钮槽），删除钮 stopPropagation 保序（不再误切会话）。 */
             <div className="dock-history" role="menu" style={matHistorySheet(histSettled)}>
               <div className="dock-history-head" style={MAT_HIST_HEAD}>
-                <b>历史会话</b>
-                <Btn variant="outline" size="sm" onClick={() => setHistory(null)}>关闭</Btn>
+                <b>{i18n("plugins.chatdock.0eccd0db7b81")}</b>
+                <Btn variant="outline" size="sm" onClick={() => setHistory(null)}>{i18n("plugins.chatdock.3fd47edce45b")}</Btn>
               </div>
               {history.length === 0 ? (
-                <div className="dock-empty" style={matEmpty}>（无会话）</div>
+                <div className="dock-empty" style={matEmpty}>{i18n("plugins.chatdock.2da5b19c4f4f")}</div>
               ) : history.map((s, idx) => (
                 idx === 0 ? (
                   /* 1 号主对话永久保留（用户定案）：不提供删除入口 */
                   <Row
                     key={s.id}
-                    title={`① ${s.title || "未命名"}`}
-                    sub={`主对话 · ${s.messages} 轮 · ${fmtUsd(s.costUsd)}`}
-                    titleAttr="主对话不可删除"
+                    title={`① ${s.title || i18n("plugins.chatdock.67bee6acfc3c")}`}
+                    sub={i18n("plugins.chatdock.a9893c5944d2", { messages: String(s.messages), value: String(fmtUsd(s.costUsd)) })}
+                    titleAttr={i18n("plugins.chatdock.3c0e1d1ef000")}
                     trailing={<Text slot="micro" tone="faint">—</Text>}
                   />
                 ) : (
                   <Row
                     key={s.id}
-                    title={s.title || "未命名"}
-                    sub={`${s.messages} 轮 · ${fmtUsd(s.costUsd)}`}
+                    title={s.title || i18n("plugins.chatdock.67bee6acfc3c")}
+                    sub={i18n("plugins.chatdock.e3377323b554", { messages: String(s.messages), value: String(fmtUsd(s.costUsd)) })}
                     onClick={() => void switchSession(s.id)}
                     trailing={
                       <IconBtn
-                        label="删除"
+                        label={i18n("plugins.chatdock.2f9daa828907")}
                         variant="outline"
                         size="sm"
                         icon={<IconX />}

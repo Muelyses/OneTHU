@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 附件动作执行层（需求 7）：把一份附件一键「转存云盘 / 交作业（网络学堂 + 雨课堂）/ 发讨论区」。
  *
@@ -100,7 +101,7 @@ export function safeAttachName(raw: string, mime = ""): string {
     .replace(/[\u0000-\u001f]/g, "_")
     .trim()
     .replace(/^\.+/, "");
-  return cleaned || `附件-${Date.now()}.${extForMime(mime)}`;
+  return cleaned || i18n("lib.attachactions.0ef92e23f85c", { value: String(Date.now()), value2: String(extForMime(mime)) });
 }
 
 /**
@@ -111,7 +112,7 @@ export function safeAttachName(raw: string, mime = ""): string {
  */
 export async function localPathForAttach(f: AttachFile, name?: string): Promise<string> {
   if (f.path) return f.path;
-  if (!isTauri) throw new Error("当前环境读不到文件内容：请在 OneTHU App 内操作。");
+  if (!isTauri) throw new Error(i18n("lib.attachactions.cccad01504c8"));
   const bytes = await fileToBytes(f); // 内部：File.arrayBuffer() 或主 crate read_file_base64(path)
   return invoke<string>("write_temp_file", { name: name ?? safeAttachName(f.name, f.mime), dataBase64: bytesToBase64(bytes) });
 }
@@ -182,24 +183,24 @@ async function resolveCloudTarget(opts: CloudSaveOptions): Promise<CloudTarget |
   await ensureSeafileLoaded();
   const token = getSeafileToken();
   if (!token) {
-    return needUi("云盘还没连接：先到「云盘」页连上清华云盘，再回来转存。", {
+    return needUi(i18n("lib.attachactions.50c4b135b1d8"), {
       route: "cloud",
-      message: "去云盘页连接清华云盘",
+      message: i18n("lib.attachactions.4a9fdb24f293"),
     });
   }
   const repoId = (opts.repoId ?? "").trim();
   if (!repoId) {
-    return needUi("还没选云盘资料库——请在面板里选一个（不替你猜库，历史上猜错过）。", {
+    return needUi(i18n("lib.attachactions.e355f0213283"), {
       route: "cloud",
-      message: "去云盘页选一个资料库",
+      message: i18n("lib.attachactions.e09351dc86df"),
     });
   }
   const repos = await invoke<SeafileRepo[]>("seafile_repos", { token });
   const repo = repos.find((r) => r.id === repoId);
   if (!repo) {
-    return needUi("这个资料库不在当前账号里（可能已被删除或改名）——请重新选一个。", {
+    return needUi(i18n("lib.attachactions.dbbf7e0385ab"), {
       route: "cloud",
-      message: "去云盘页重新选资料库",
+      message: i18n("lib.attachactions.0cf370f0a1db"),
     });
   }
   return { token, repo, dir: normalizeCloudDir(opts.dir) };
@@ -236,7 +237,7 @@ async function uploadOneToCloud(
   // 云盘页/面板即时看到新文件（best-effort：刷新失败不影响上传已成功的事实）
   void refreshDir(t.repo.id, t.dir).catch(() => undefined);
   const remote = `${t.dir === "/" ? "" : t.dir}/${name}`;
-  void logLine(`[附件] 转存云盘：库《${t.repo.name}》${remote}（${typeof size === "number" ? size : 0} 字节）`).catch(
+  void logLine(i18n("lib.attachactions.c774d4ed2772", { name: String(t.repo.name), remote: String(remote), value: String(typeof size === "number" ? size : 0) })).catch(
     () => undefined,
   );
   return { path: remote, size: typeof size === "number" ? size : 0 };
@@ -250,10 +251,9 @@ export async function saveToCloud(f: AttachFile, opts: CloudSaveOptions = {}): P
     if ("ok" in target) return target;
     if (opts.confirm) {
       const go = await opts.confirm(
-        `【转存云盘】\n资料库：${target.repo.name}\n目录：${target.dir}\n文件：${name}（${formatSize(f.size)}）\n\n`
-          + "点「确定」= 上传到你的清华云盘；同名文件会被覆盖。",
+        i18n("lib.attachactions.d567c7a50ecb", { name: String(target.repo.name), dir: String(target.dir), name2: String(name), value: String(formatSize(f.size)) }),
       );
-      if (!go) return fail("已取消（没有上传）");
+      if (!go) return fail(i18n("lib.attachactions.fa93a9bc462a"));
     }
     const up = await uploadOneToCloud(target, f, name, opts.replace !== false);
     rememberCloudTarget(target.repo.id, target.dir); // 记住这次落点，下次面板预选（用户看得见）
@@ -278,7 +278,7 @@ export async function saveAllToCloud(
 ): Promise<CloudSaveAllResult> {
   const uploaded: string[] = [];
   const failed: Array<{ name: string; error: string }> = [];
-  if (files.length === 0) return { ok: false, error: "没有附件可上传", uploaded, failed };
+  if (files.length === 0) return { ok: false, error: i18n("lib.attachactions.6f5260f46713"), uploaded, failed };
   let target: CloudTarget;
   try {
     const t = await resolveCloudTarget(opts);
@@ -290,12 +290,11 @@ export async function saveAllToCloud(
   const names = files.map((f) => safeAttachName(f.name, f.mime));
   if (opts.confirm) {
     const head = names.slice(0, 5).map((n, i) => `　${i + 1}. ${n}`).join("\n");
-    const more = names.length > 5 ? `\n　…等共 ${names.length} 个` : "";
+    const more = names.length > 5 ? i18n("lib.attachactions.970f711d8073", { length: String(names.length) }) : "";
     const go = await opts.confirm(
-      `【转存云盘】\n资料库：${target.repo.name}\n目录：${target.dir}\n文件：\n${head}${more}\n\n`
-        + "点「确定」= 逐个上传到你的清华云盘；同名文件会被覆盖。",
+      i18n("lib.attachactions.3943aae1d441", { name: String(target.repo.name), dir: String(target.dir), head: String(head), more: String(more) }),
     );
-    if (!go) return { ok: false, error: "已取消（没有上传）", uploaded, failed };
+    if (!go) return { ok: false, error: i18n("lib.attachactions.fa93a9bc462a"), uploaded, failed };
   }
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
@@ -314,7 +313,7 @@ export async function saveAllToCloud(
   }
   return {
     ok: uploaded.length > 0,
-    error: `有 ${failed.length} 个文件没传上去：${failed.map((x) => `${x.name}（${x.error}）`).join("；")}`,
+    error: i18n("lib.attachactions.d8064c81155a", { length: String(failed.length), value: String(failed.map((x) => `${x.name}（${x.error}）`).join("；")) }),
     uploaded,
     failed,
     repoId: target.repo.id,
@@ -356,22 +355,22 @@ async function submitToLearn(f: AttachFile, ctx: HomeworkSubmitContext): Promise
   const courseId = (ctx.courseId ?? "").trim();
   const assignmentId = (ctx.assignmentId ?? "").trim();
   if (!courseId || !assignmentId) {
-    return needUi("还没选课程和作业——交作业要明确交到哪一份，请先在面板里选。", {
+    return needUi(i18n("lib.attachactions.3c82cc86c9c7"), {
       route: "learn-assignments",
-      message: "去「全部作业」里选一份作业",
+      message: i18n("lib.attachactions.54bfd0b14639"),
     });
   }
   const detailRoute: AttachActionUi = {
     route: "learn-assignment-detail",
     params: { courseId, itemId: assignmentId },
-    message: "去这份作业的详情页看一眼",
+    message: i18n("lib.attachactions.a9248626d3ed"),
   };
   // 服务端事实优先：详情页没有提交表单就不发请求（OJ-only / 已过期的作业都被这一枪拦下，
   // 判定细则见 packages/core/src/learn/client.ts:1016-1024）
   const page = await learn.getHomeworkPageDetail(courseId, assignmentId);
   if (!page.hasSubmitForm) {
     return fail(
-      "这份作业的详情页里没有提交表单（可能只需在 OJ 提交、已过提交期，或老师没开在线提交）——请到作业页确认。",
+      i18n("lib.attachactions.53af5bd6b851"),
       { ui: detailRoute },
     );
   }
@@ -380,13 +379,11 @@ async function submitToLearn(f: AttachFile, ctx: HomeworkSubmitContext): Promise
   const content = ctx.content ?? "";
   // 提交是整体覆盖：此前有正文、本次留空 → 明确警告（别让用户以为「只加了个附件」）
   const prevText = (page.submittedContent ?? "").replace(/<[^>]*>/g, "").replace(/&nbsp;|&#160;/g, " ").trim();
-  const wipeWarn = prevText && !content.trim() ? `\n⚠️ 这份作业此前提交里有正文，本次留空会把它清空。` : "";
+  const wipeWarn = prevText && !content.trim() ? i18n("lib.attachactions.4bc030ed5628") : "";
   const go = await (ctx.confirm ?? confirmOk)(
-    `【交作业 · 网络学堂】\n课程：${ctx.courseName?.trim() || courseId}\n作业：${title}\n`
-      + `提交附件：${name}（${formatSize(f.size)}）\n正文：${clip(content, 60) || "（空）"}${wipeWarn}\n\n`
-      + "点「确定」= 立刻提交，会覆盖这份作业此前的提交（正文与附件以本次为准）。",
+    i18n("lib.attachactions.360ada853a5e", { value: String(ctx.courseName?.trim() || courseId), title: String(title), name: String(name), value2: String(formatSize(f.size)), value22: String(clip(content, 60) || i18n("lib.attachactions.fa8bc5e925f9")), wipeWarn: String(wipeWarn) }),
   );
-  if (!go) return fail("已取消（没有提交任何内容）");
+  if (!go) return fail(i18n("lib.attachactions.00b064455e5c"));
 
   const file = await fileFromAttach(f);
   const r = await learn.submitHomework(assignmentId, { content, file, remove: false });
@@ -394,13 +391,13 @@ async function submitToLearn(f: AttachFile, ctx: HomeworkSubmitContext): Promise
     const why = r.msg ?? "";
     // 服务端权威判定「必须带附件」：记下来（本页面包已带附件还能被拒，说明是别的限制）
     if (/请上传附件/.test(why)) markNeedFile(assignmentId);
-    return fail(why || "提交未成功，请稍后重试", { ui: detailRoute });
+    return fail(why || i18n("lib.attachactions.272f3e83a699"), { ui: detailRoute });
   }
   clearNeedFile(assignmentId);
   // 提交后让作业列表/详情看到真实状态（清缓存 + 静默重拉；失败不影响「已提交」这个事实）
   invalidateLearnCache();
   void refreshLearnDataSilently().catch(() => undefined);
-  void logLine(`[附件] 网络学堂提交成功：课程 ${courseId} 作业 ${assignmentId} 附件 ${name}`).catch(() => undefined);
+  void logLine(i18n("lib.attachactions.ac84cf8affb0", { courseId: String(courseId), assignmentId: String(assignmentId), name: String(name) })).catch(() => undefined);
   return { ok: true };
 }
 
@@ -433,19 +430,18 @@ function yktSubmitNeedsUi(f: AttachFile, ctx: HomeworkSubmitContext): AttachActi
     kind: "homework",
   };
   const why =
-    "雨课堂没有可用的附件提交通道（官方接口只收已上传的附件条目，本仓库未接附件上传）——"
-    + `「${safeAttachName(f.name, f.mime)}」需要在雨课堂官方作答页里随作答一起提交。`;
+    i18n("lib.attachactions.96b904d0165e", { value: String(safeAttachName(f.name, f.mime)) });
   if (!classroomId || !leafTypeId) {
-    return needUi(`${why}\n另外：这份作业的雨课堂参数不全，请从作业列表重新进入。`, {
+    return needUi(i18n("lib.attachactions.777b5a07612e", { why: String(why) }), {
       route: "learn-assignments",
-      message: "去「全部作业」里选这份雨课堂作业",
+      message: i18n("lib.attachactions.b4537e7f0e93"),
     });
   }
   return needUi(why, {
     route: "learn-ykt-detail",
     params: { ykt: yktParams },
     ...(url ? { officialUrl: url, officialChannel: "ykt-submit-webview" as const } : {}),
-    message: "打开雨课堂官方作答页，把附件随作答一起提交",
+    message: i18n("lib.attachactions.1c0d77ac8a1b"),
   });
 }
 
@@ -457,7 +453,7 @@ function yktSubmitNeedsUi(f: AttachFile, ctx: HomeworkSubmitContext): AttachActi
  */
 export async function submitHomework(f: AttachFile, ctx: HomeworkSubmitContext): Promise<AttachActionResult> {
   try {
-    if (!f) return fail("没有附件可提交");
+    if (!f) return fail(i18n("lib.attachactions.164926abb768"));
     if (ctx.platform === "ykt") return yktSubmitNeedsUi(f, ctx);
     return await submitToLearn(f, ctx);
   } catch (e) {
@@ -524,46 +520,45 @@ export async function postDiscussion(f: AttachFile | null, ctx: DiscussionContex
   try {
     const courseId = (ctx.courseId ?? "").trim();
     if (!courseId) {
-      return needUi("还没选课程——讨论区挂在课程下，请先选课程。", {
+      return needUi(i18n("lib.attachactions.243d52940d1d"), {
         route: "learn",
-        message: "去网络学堂选一门课",
+        message: i18n("lib.attachactions.487842092c28"),
       });
     }
     const threadId = parseBbsThreadId(ctx.threadId ?? "");
     const rawThread = (ctx.threadId ?? "").trim();
     if (rawThread && !threadId) {
-      return fail("话题 id 没认出来：请填话题页地址里的 tltid（纯数字），或直接粘贴话题链接。");
+      return fail(i18n("lib.attachactions.d371724d4517"));
     }
     const boardId = (ctx.boardId ?? "").trim();
     const title = (ctx.title ?? "").trim();
     const html = (ctx.bodyHtml ?? "").trim() || textToBbsHtml(ctx.body);
     const plain = html.replace(/<[^>]*>/g, "").replace(/&nbsp;|&#160;/g, " ").trim();
-    if (!plain && !f) return fail("正文是空的，也没有附件——没什么可发的");
+    if (!plain && !f) return fail(i18n("lib.attachactions.e6316a1550fd"));
     if (!threadId && !boardId) {
-      return needUi("发新话题要先选板块（每个板块的可见范围不同，不能替你猜）。", {
+      return needUi(i18n("lib.attachactions.939a8cb7a566"), {
         route: "learn-forum-thread",
         params: { courseId },
-        message: "去课程的讨论区选一个板块",
+        message: i18n("lib.attachactions.5323853f8fb7"),
       });
     }
-    if (!threadId && !title) return fail("发新话题要写标题");
+    if (!threadId && !title) return fail(i18n("lib.attachactions.21d6cd21cd13"));
     const file = f ? await fileFromAttach(f) : null;
-    const attachNote = f ? `${safeAttachName(f.name, f.mime)}（${formatSize(f.size)}）` : "无";
+    const attachNote = f ? `${safeAttachName(f.name, f.mime)}（${formatSize(f.size)}）` : i18n("lib.attachactions.484d55613910");
     const head = threadId
-      ? `【回复讨论区 · 网络学堂】\n课程：${ctx.courseName?.trim() || courseId}\n话题 id：${threadId}`
-      : `【发新话题 · 网络学堂】\n课程：${ctx.courseName?.trim() || courseId}\n`
-        + `板块：${ctx.boardName?.trim() || boardId}\n标题：${title}`;
+      ? i18n("lib.attachactions.942ac1d181f7", { value: String(ctx.courseName?.trim() || courseId), threadId: String(threadId) })
+      : i18n("lib.attachactions.010bbf334fe2", { value: String(ctx.courseName?.trim() || courseId), value2: String(ctx.boardName?.trim() || boardId), title: String(title) });
     const go = await (ctx.confirm ?? confirmOk)(
-      `${head}\n正文：${clip(plain, 80) || "（无文字）"}\n附件：${attachNote}\n\n点「确定」= 立刻发布（全班可见，撤不回来）。`,
+      i18n("lib.attachactions.08afcfb429f3", { head: String(head), value: String(clip(plain, 80) || i18n("lib.attachactions.ed90d3f61ee5")), attachNote: String(attachNote) }),
     );
-    if (!go) return fail("已取消（没有发布）");
+    if (!go) return fail(i18n("lib.attachactions.a6519d36b6f6"));
 
     if (threadId) {
       await learn.postBbsReply(courseId, threadId, html, ctx.replyToId?.trim() || undefined, file);
     } else {
       await learn.postBbsThread(courseId, { bqid: boardId, title, html, file });
     }
-    void logLine(`[附件] 讨论区${threadId ? "回复" : "新话题"}已提交：课程 ${courseId} 附件 ${attachNote}`).catch(
+    void logLine(i18n("lib.attachactions.ea383a9552de", { value: String(threadId ? i18n("lib.attachactions.cf945e21ddef") : i18n("lib.attachactions.b4353b67ac30")), courseId: String(courseId), attachNote: String(attachNote) })).catch(
       () => undefined,
     );
     return { ok: true };

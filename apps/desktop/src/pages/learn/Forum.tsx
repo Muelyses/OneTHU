@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /** 讨论区（learnX bbs_tltb）：课程详情「讨论区」tab 列表 + 话题阅读/回复页。
@@ -39,6 +40,8 @@ export function BbsPanel({
   courseName?: string;
   sem?: string;
 }) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const [boards, setBoards] = useState<LearnBbsBoard[]>([]);
   // boards 镜像 ref：load 回调读最新板块而不依赖 boards state——
@@ -116,7 +119,7 @@ export function BbsPanel({
 
   return (
     <>
-      <PageHead title="讨论区" meta="课程讨论与答疑（实名制）" />
+      <PageHead title={i18n("pages.learn.forum.9c92c9d08b05")} meta={i18n("pages.learn.forum.981c2bb0ffce")} />
       <div className="tabstrip">
         {boards.map((b) => (
           <span key={b.bqid} style={{ display: "inline-flex", alignItems: "center", gap: 2 }}>
@@ -132,21 +135,16 @@ export function BbsPanel({
             />
           </span>
         ))}
-        <button className={tab === "__jh__" ? "is-active" : ""} onClick={() => reset(() => setTab("__jh__"))}>
-          精华
-        </button>
-        <button className={tab === "__cy__" ? "is-active" : ""} onClick={() => reset(() => setTab("__cy__"))}>
-          我参与的
-        </button>
+        <button className={tab === "__jh__" ? "is-active" : ""} onClick={() => reset(() => setTab("__jh__"))}>{i18n("pages.learn.forum.5306c251d9af")}</button>
+        <button className={tab === "__cy__" ? "is-active" : ""} onClick={() => reset(() => setTab("__cy__"))}>{i18n("pages.learn.forum.151d712244a2")}</button>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <span className="row-sub" style={{ fontVariantNumeric: "tabular-nums" }}>
-          {total > 0 ? `${total} 条` : ""}
+          {total > 0 ? i18n("pages.learn.forum.371116ce35a7", { total: String(total) }) : ""}
         </span>
         <span style={{ flex: "1 1 auto" }} />
-        <Btn variant="outline" onClick={() => reset(() => undefined)} aria-label="刷新讨论列表"><IconRefresh /></Btn>
-        <Btn variant="outline" onClick={() => setShowNew(true)}>发新话题
-        </Btn>
+        <Btn variant="outline" onClick={() => reset(() => undefined)} aria-label={i18n("pages.learn.forum.339bbf9d24f4")}><IconRefresh /></Btn>
+        <Btn variant="outline" onClick={() => setShowNew(true)}>{i18n("pages.learn.forum.1a3431e8551a")}</Btn>
       </div>
       {state === "loading" && threads === null ? (
         <Card>
@@ -158,7 +156,7 @@ export function BbsPanel({
         </Card>
       ) : (threads?.length ?? 0) === 0 ? (
         <Card>
-          <Empty text="本板块暂无讨论" />
+          <Empty text={i18n("pages.learn.forum.a3288e489f22")} />
         </Card>
       ) : (
         <Card>
@@ -173,13 +171,13 @@ export function BbsPanel({
             >
               <div style={{ minWidth: 0, flex: "1 1 auto" }}>
                 <div className="tl-title" style={{ whiteSpace: "normal" }}>
-                  {t.pinned ? <Badge text="置顶" tone="red" /> : null}
-                  {t.essence ? <Badge text="精华" tone="gold" /> : null}
+                  {t.pinned ? <Badge text={i18n("pages.learn.forum.173f88d28ebf")} tone="red" /> : null}
+                  {t.essence ? <Badge text={i18n("pages.learn.forum.5306c251d9af")} tone="gold" /> : null}
                   {t.title}
                 </div>
                 <div className="tl-sub" style={{ whiteSpace: "normal" }}>
                   {[t.author, fmtDateTime(t.time)].filter(Boolean).join(" · ")}
-                  {t.replies > 0 ? ` · ${t.replies} 回复` : ""}
+                  {t.replies > 0 ? i18n("pages.learn.forum.e02e467a8775", { replies: String(t.replies) }) : ""}
                 </div>
               </div>
               <CollectStar
@@ -190,7 +188,7 @@ export function BbsPanel({
             </div>
           ))}
           {threads && threads.length < total ? (
-            <Btn variant="outline" disabled={state === "loading"} onClick={() => load(true, threads!.length)}>{state === "loading" ? "加载中…" : `加载更多（已显示 ${threads!.length}/${total}）`}</Btn>
+            <Btn variant="outline" disabled={state === "loading"} onClick={() => load(true, threads!.length)}>{state === "loading" ? i18n("pages.learn.forum.4927a53bcc88") : i18n("pages.learn.forum.bf0b8800ba24", { length: String(threads!.length), total: String(total) })}</Btn>
           ) : null}
         </Card>
       )}
@@ -211,6 +209,8 @@ export function BbsPanel({
 }
 
 function Badge({ text, tone }: { text: string; tone: "red" | "gold" }) {
+  const uiLocale = useUiLocale();
+
   const color = tone === "red" ? "var(--og-error)" : "var(--og-warning)";
   return (
     <span
@@ -233,6 +233,8 @@ function Badge({ text, tone }: { text: string; tone: "red" | "gold" }) {
 /* ══════════ 话题阅读 + 回复 ══════════ */
 
 export function ForumThreadPage() {
+  const uiLocale = useUiLocale();
+
   useLearnNavSemester();
   const { navParams } = useApp();
   const { data: learnData } = useLearnData();
@@ -310,7 +312,7 @@ export function ForumThreadPage() {
         setDraft("");
         setReplyFile(null);
         setReplyTo(null);
-        setSendMsg("已发表");
+        setSendMsg(i18n("pages.learn.forum.49e9dbee1fa2"));
         setNonce((n) => n + 1); // 重拉话题与首屏回复
       })
       .catch((e: unknown) => setSendMsg(explainNetworkError(e)))
@@ -318,15 +320,15 @@ export function ForumThreadPage() {
   };
 
   const downloadAtt = (wjid: string, wjmc: string) => {
-    setDlHint({ text: `下载 ${wjmc}…` });
+    setDlHint({ text: i18n("pages.learn.forum.7436a45e9336", { wjmc: String(wjmc) }) });
     downloadLearnUrl(learnUrls.LEARN_BBS_ATTACHMENT(courseId, wjid), wjmc)
-      .then((p) => setDlHint({ text: `已下载到：${p}`, path: p }))
+      .then((p) => setDlHint({ text: i18n("pages.learn.forum.d6002bd9acb8", { p: String(p) }), path: p }))
       .catch((e: unknown) => setDlHint({ text: explainNetworkError(e) }));
   };
 
   return (
     <>
-      <BackButton to="learn-course" courseId={courseId} courseTab="forum" label="返回课程" />
+      <BackButton to="learn-course" courseId={courseId} courseTab="forum" label={i18n("pages.learn.forum.17d4b8e54563")} />
       {dlHint ? (
         <div className="error-note dl-done-note" style={{ background: "var(--accent-soft)", color: "var(--accent)" }}>
           <span>{dlHint.text}</span>
@@ -359,16 +361,14 @@ export function ForumThreadPage() {
           <Card>
             <RichContent html={head.html} />
           </Card>
-          <div className="nav-label" style={{ margin: "14px 0 8px" }}>
-            回复 · {head.replyCount}
-          </div>
+          <div className="nav-label" style={{ margin: "14px 0 8px" }}>{i18nRich("pages.learn.forum.27711bd6c7f5", { replyCount: head.replyCount })}</div>
           {state === "loading" ? (
             <Card>
               <SkeletonRows rows={3} />
             </Card>
           ) : posts.length === 0 ? (
             <Card>
-              <Empty text="还没有回复，抢个沙发" />
+              <Empty text={i18n("pages.learn.forum.d39961a678a1")} />
             </Card>
           ) : (
             posts.map((p) => (
@@ -377,8 +377,7 @@ export function ForumThreadPage() {
           )}
           {hasMore ? (
             <Card>
-              <Btn variant="outline" onClick={loadMore}>加载更多回复
-              </Btn>
+              <Btn variant="outline" onClick={loadMore}>{i18n("pages.learn.forum.8273d8d3de88")}</Btn>
             </Card>
           ) : null}
           {error && head ? (
@@ -390,15 +389,14 @@ export function ForumThreadPage() {
           <Card>
             {replyTo ? (
               <div className="setting-row" style={{ marginBottom: 8 }}>
-                <div className="row-sub">回复 @{replyTo.author || replyTo.hhid}</div>
-                <Btn variant="outline" onClick={() => setReplyTo(null)}>取消
-                </Btn>
+                <div className="row-sub">{i18nRich("pages.learn.forum.cadf27381b43", { value: replyTo.author || replyTo.hhid })}</div>
+                <Btn variant="outline" onClick={() => setReplyTo(null)}>{i18n("pages.learn.forum.2cd0f3be8738")}</Btn>
               </div>
             ) : null}
-            <RichEditor value={draft} onChange={setDraft} placeholder="文明发言（实名制，站点留有日志）…" />
+            <RichEditor value={draft} onChange={setDraft} placeholder={i18n("pages.learn.forum.b5406d6c9f6a")} />
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, flexWrap: "wrap" }}>
               <label className="btn" style={{ cursor: "pointer" }}>
-                {replyFile ? `📎 ${replyFile.name.slice(0, 18)}` : "📎 附件"}
+                {replyFile ? `📎 ${replyFile.name.slice(0, 18)}` : i18n("pages.learn.forum.17798201a745")}
                 <input
                   type="file"
                   style={{ display: "none" }}
@@ -406,10 +404,9 @@ export function ForumThreadPage() {
                 />
               </label>
               {replyFile ? (
-                <Btn variant="outline" onClick={() => setReplyFile(null)}>移除附件
-                </Btn>
+                <Btn variant="outline" onClick={() => setReplyFile(null)}>{i18n("pages.learn.forum.7ee8b2d0ae7a")}</Btn>
               ) : null}
-              <Btn variant="outline" disabled={sending || (!draft.trim() && !replyFile)} onClick={send}>{sending ? "发表中…" : "发表回复"}</Btn>
+              <Btn variant="outline" disabled={sending || (!draft.trim() && !replyFile)} onClick={send}>{sending ? i18n("pages.learn.forum.9e8bf77c5b46") : i18n("pages.learn.forum.97baec2f421b")}</Btn>
               {sendMsg ? <span className="row-sub">{sendMsg}</span> : null}
             </div>
           </Card>
@@ -428,12 +425,14 @@ function PostBlock({
   onReply: (t: { hhid: string; author: string }) => void;
   onDownload: (wjid: string, wjmc: string) => void;
 }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card>
       <div className="setting-row" style={{ alignItems: "flex-start" }}>
         <div style={{ minWidth: 0, flex: "1 1 auto" }}>
           <div className="setting-title" style={{ display: "flex", gap: 8, alignItems: "baseline", flexWrap: "wrap" }}>
-            {post.author || "匿名"}
+            {post.author || i18n("pages.learn.forum.34a917cd44b0")}
             <span className="row-sub" style={{ fontWeight: 400 }}>
               {fmtDateTime(post.time)}
             </span>
@@ -464,8 +463,7 @@ function PostBlock({
             </div>
           ) : null}
         </div>
-        <Btn variant="outline" onClick={() => onReply({ hhid: post.hhid, author: post.author })}>回复
-        </Btn>
+        <Btn variant="outline" onClick={() => onReply({ hhid: post.hhid, author: post.author })}>{i18n("pages.learn.forum.cf945e21ddef")}</Btn>
       </div>
     </Card>
   );
@@ -486,6 +484,8 @@ function NewThreadDialog({
   onClose: () => void;
   onPosted: () => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const [title, setTitle] = useState("");
   const [html, setHtml] = useState("");
   const [bqid, setBqid] = useState(defaultBqid);
@@ -530,13 +530,11 @@ function NewThreadDialog({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-          <strong style={{ fontSize: 16 }}>发新话题</strong>
+          <strong style={{ fontSize: 16 }}>{i18n("pages.learn.forum.1a3431e8551a")}</strong>
           <span style={{ flex: "1 1 auto" }} />
-          <Btn variant="outline" onClick={onClose}>
-            关闭
-          </Btn>
+          <Btn variant="outline" onClick={onClose}>{i18n("pages.learn.forum.3fd47edce45b")}</Btn>
         </div>
-        <div style={{ width: "100%", marginBottom: 10 }}>{<Input placeholder="标题（必填）" value={title} maxLength={100} onChange={(value) => setTitle(value)} />}</div>
+        <div style={{ width: "100%", marginBottom: 10 }}>{<Input placeholder={i18n("pages.learn.forum.9cf8e8632949")} value={title} maxLength={100} onChange={(value) => setTitle(value)} />}</div>
         {boards.length > 1 ? (
           <div className="tabstrip" style={{ marginBottom: 10 }}>
             {boards.map((b) => (
@@ -550,17 +548,16 @@ function NewThreadDialog({
             ))}
           </div>
         ) : null}
-        <RichEditor value={html} onChange={setHtml} placeholder="正文，支持格式与图片…" maxHeight={300} />
+        <RichEditor value={html} onChange={setHtml} placeholder={i18n("pages.learn.forum.86c1ce76c971")} maxHeight={300} />
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
           <label className="btn" style={{ cursor: "pointer" }}>
-            {file ? `📎 ${file.name.slice(0, 18)}` : "📎 附件"}
+            {file ? `📎 ${file.name.slice(0, 18)}` : i18n("pages.learn.forum.17798201a745")}
             <input type="file" style={{ display: "none" }} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </label>
           {file ? (
-            <Btn variant="outline" onClick={() => setFile(null)}>移除附件
-            </Btn>
+            <Btn variant="outline" onClick={() => setFile(null)}>{i18n("pages.learn.forum.7ee8b2d0ae7a")}</Btn>
           ) : null}
-          <Btn variant="outline" disabled={sending || !title.trim() || !html.trim() || html === "<p><br></p>"} onClick={submit}>{sending ? "发表中…" : "发表"}</Btn>
+          <Btn variant="outline" disabled={sending || !title.trim() || !html.trim() || html === "<p><br></p>"} onClick={submit}>{sending ? i18n("pages.learn.forum.9e8bf77c5b46") : i18n("pages.learn.forum.7e56509428cb")}</Btn>
           {msg ? <span className="row-sub" style={{ wordBreak: "break-all" }}>{msg}</span> : null}
         </div>
       </div>

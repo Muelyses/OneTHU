@@ -1,3 +1,5 @@
+import { t } from "../i18n/index.js";
+
 /**
  * 设置页签清单（唯一来源：设置页、命令面板、护栏、全局搜索都取这一份）。
  *
@@ -20,6 +22,55 @@ export const SETTINGS_TAB_ORDER = [
   "帮助",
   "关于",
 ];
+
+const SETTINGS_LABEL_KEYS: Readonly<Record<string, string>> = {
+  "语音": "settings.label.route.89fcbbfdca16",
+  "模型与多模态": "settings.label.route.444fd1f85256",
+  "模型 / MCP / 日志": "settings.label.route.3f0404bdc67a",
+  "我的组织": "settings.label.route.51cc2efa3e8d",
+  "我的名片": "settings.label.route.487e926379fe",
+  "悬浮球": "settings.label.route.72704d8e1e47",
+  "入口": "settings.label.route.1a7930272017",
+  "免费额度": "settings.label.route.4f0d5e092ff1",
+  "保活": "settings.label.route.3c02623c9a2b",
+  "IM 通道（进阶）": "settings.label.route.359213279505",
+  "IM 基础（扫码绑定 / 解绑）": "settings.label.route.6d47abc2d3c7",
+  "账号": "settings.label.account",
+  "通知与提醒": "settings.label.notifications",
+  "桌面小组件": "settings.label.widgets",
+  "外观与布局": "settings.label.appearance",
+  "数据与同步": "settings.label.sync",
+  "下载与存储": "settings.label.downloads",
+  "帮助": "settings.label.help",
+  "关于": "settings.label.about",
+  "设置": "settings.label.settings",
+  "插件": "settings.label.plugins",
+  "主题": "settings.label.theme",
+  "外观": "settings.label.visual",
+  "工作空间": "settings.label.workspace",
+  "极客模式": "settings.label.geek",
+  "首页布局": "settings.label.home",
+  "收藏夹": "settings.label.favorites",
+  "云同步": "settings.label.cloud",
+  "外部作业源": "settings.label.homework",
+  "下载": "settings.label.download",
+  "通知": "settings.label.notification",
+  "账号与绑定": "settings.label.bindings",
+  "安全": "settings.label.security",
+  "账户": "settings.label.user",
+  "OneShot 快捷入口": "settings.label.oneshot",
+  "OneTHU Harness": "settings.label.harness",
+  "高级配置": "settings.label.advanced",
+  "基础设置": "settings.label.basic",
+  "我的插件": "settings.label.myPlugins",
+  "插件市场": "settings.label.market",
+};
+
+/** Persisted route IDs remain stable; only their user-facing labels are translated. */
+export function settingsLabel(id: string): string {
+  const key = SETTINGS_LABEL_KEYS[id];
+  return key ? t(key) : id;
+}
 
 /** 请求切到某个设置页签（页面外的入口用：插件页、助手坞、帮助页的「去设置」）。
  *  与外部作业源那条消费请求同形：写下 → 设置页挂载时取走；

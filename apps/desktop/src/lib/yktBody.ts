@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * R20-B3：雨课堂题干 / 我的作答 HTML 的**本地内联渲染管线**（纯逻辑，零依赖）。
  *
@@ -279,7 +280,7 @@ export function imgSrcsOf(html: string): string[] {
 /** 图片占位框里的文件名：URL 最后段解码，截 48 字符；取不到 → 「图片」 */
 export function imgFileName(src: string): string {
   const s = (src ?? "").trim();
-  if (!s) return "图片";
+  if (!s) return i18n("lib.yktbody.d24c10d37db0");
   let name = "";
   try {
     const u = new URL(s, YKT_DOC_BASE);
@@ -293,7 +294,7 @@ export function imgFileName(src: string): string {
     /* 解码失败保留原样（非法百分号序列） */
   }
   name = (name.split("?")[0] ?? "").trim();
-  if (!name) return "图片";
+  if (!name) return i18n("lib.yktbody.d24c10d37db0");
   return name.length > 48 ? `${name.slice(0, 45)}…` : name;
 }
 
@@ -570,11 +571,11 @@ export const YKT_DOC_CSS = yktDocCss(DEFAULT_YKT_DOC_THEME);
  */
 export const YKT_DOC_SCRIPT_TEMPLATE = [
   "(function(){'use strict';",
-  'var FAMILY="__YKT_FONT__";var lastH=0;',
+  'var FAMILY="__YKT_FONT__";var UI=__YKT_UI__;var lastH=0;',
   'function post(m){try{parent.postMessage(m,"*")}catch(e){}}',
   'function h(){var d=document.documentElement,b=document.body;var v=Math.max(d?d.scrollHeight:0,b?b.scrollHeight:0);if(v&&v!==lastH){lastH=v;post({type:"ykt:height",h:v})}}',
-  'function fname(src){try{var u=new URL(src||"",location.href);var p=u.pathname.split("/").pop()||"";try{p=decodeURIComponent(p)}catch(e){}return (p||"图片").slice(0,48)}catch(e){return "图片"}}',
-  'function failImg(img){var d=document.createElement("div");d.className="ykt-img-fallback";d.textContent="\\u{1F5BC} "+fname(img.getAttribute("src"))+"（图片加载失败）";if(img.parentNode){img.parentNode.replaceChild(d,img)}else{img.style.display="none"}h()}',
+  'function fname(src){try{var u=new URL(src||"",location.href);var p=u.pathname.split("/").pop()||"";try{p=decodeURIComponent(p)}catch(e){}return (p||UI.image).slice(0,48)}catch(e){return UI.image}}',
+  'function failImg(img){var d=document.createElement("div");d.className="ykt-img-fallback";d.textContent="🖼 "+UI.failedImage.replace("__YKT_IMAGE_NAME__",function(){return fname(img.getAttribute("src"))});if(img.parentNode){img.parentNode.replaceChild(d,img)}else{img.style.display="none"}h()}',
   'var pending={};',
   'function bySrc(src){return pending[src]||[]}',
   'function onErr(img){if(img.dataset.yktDead){return}img.dataset.yktDead="1";var src=img.getAttribute("src")||"";',
@@ -656,7 +657,14 @@ export function buildYktProblemDoc(opts: YktDocBuildOptions): string {
       : "";
   // 配色：传了 theme 用主题色（组件层已净化），没传 = 历史浅色定稿
   const css = opts.theme ? yktDocCss(opts.theme) : YKT_DOC_CSS;
-  const script = YKT_DOC_SCRIPT_TEMPLATE.split("__YKT_FONT__").join(YKT_FONT_FAMILY);
+  // JSON strings may contain translated quotes, closing-script text or Unicode separators.
+  // Escape them before inserting data into the script; the iframe only assigns textContent.
+  const ui = JSON.stringify({
+    image: imgFileName(""),
+    failedImage: i18n("lib.yktbody.e4eb68f7fdd0", { name: "__YKT_IMAGE_NAME__" }),
+  }).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+  const script = YKT_DOC_SCRIPT_TEMPLATE.split("__YKT_FONT__").join(YKT_FONT_FAMILY)
+    .split("__YKT_UI__").join(ui);
   return (
     '<!DOCTYPE html><html><head><meta charset="utf-8">' +
     '<meta name="referrer" content="no-referrer">' +

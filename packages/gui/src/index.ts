@@ -19,6 +19,8 @@ export type {
   ThemeRole, OGAxes, OGTheme, OGSkin, OGScheme, OGSchemePref, OGDensity, OGMotion, OGPlatform, OGScopeSpec, ScopeToken, StorageLike,
 } from "./pipeline/director.js";
 export { OneGUIProvider, Scope, useAxes, useOneGUI, useScheme, useScopeSpec } from "./pipeline/react.js";
+export { OneGUILocaleProvider, useOneGUILocale, ONE_GUI_ZH_CN, ONE_GUI_EN_US, ONE_GUI_MESSAGE_KEYS } from "./locale.js";
+export type { OneGUILocaleProviderProps, OneGUIMessageKey, OneGUIMessages } from "./locale.js";
 
 /* ── 组件基类 ── */
 export { OneStyle, one, cx, scopeProps } from "./components/kit.js";

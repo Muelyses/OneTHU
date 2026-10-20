@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
@@ -22,6 +23,8 @@ function currentAcademicYear(): number {
 }
 
 export function CalendarTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [year, setYear] = useState<number>(currentAcademicYear);
   const [sem, setSem] = useState<Sem>(currentAcademicYear() === new Date().getFullYear() ? "autumn" : "spring");
@@ -59,22 +62,19 @@ export function CalendarTab() {
 
   return (
     <>
-      <SectionHead title="校历" aside="我的清华 · 教学日历图片版" />
+      <SectionHead title={i18n("pages.info.calendartab.4792ab1440aa")} aside={i18n("pages.info.calendartab.c8c898785e39")} />
       {state === "error" ? (
         <TabError unavailable={unavailable} text={error} onRetry={() => void load()} />
       ) : null}
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 10 }}>
-        <Select value={year} onChange={(value) => setYear(Number(value))} aria-label="学年">{years.map((y) => (
-            <option key={y} value={y}>
-              {y}-{y + 1} 学年
-            </option>
+        <Select value={year} onChange={(value) => setYear(Number(value))} aria-label={i18n("pages.info.calendartab.61fd2cb63d18")}>{years.map((y) => (
+            <option key={y} value={y}>{i18nRich("pages.info.calendartab.a5e2d45b705a", { y: y, value: y + 1 })}</option>
           ))}</Select>
-        <Select value={sem} onChange={(value) => setSem(value as Sem)} aria-label="学期"><option value="autumn">秋季学期</option><option value="spring">春季学期</option></Select>
-        <Select value={lang} onChange={(value) => setLang(value as Lang)} aria-label="语言"><option value="zh">中文</option><option value="en">English</option></Select>
+        <Select value={sem} onChange={(value) => setSem(value as Sem)} aria-label={i18n("pages.info.calendartab.79a4ef019e9c")}><option value="autumn">{i18n("pages.info.calendartab.c81b126c4f9f")}</option><option value="spring">{i18n("pages.info.calendartab.32618426e9ce")}</option></Select>
+        <Select value={lang} onChange={(value) => setLang(value as Lang)} aria-label={i18n("pages.info.calendartab.9f6fee1aba17")}><option value="zh">{i18n("pages.info.calendartab.72726d8818f6")}</option><option value="en">English</option></Select>
         {src ? (
-          <Btn variant="ghost" onClick={() => void openExternal(src)}>在浏览器打开原图
-          </Btn>
+          <Btn variant="ghost" onClick={() => void openExternal(src)}>{i18n("pages.info.calendartab.af02486a8a9f")}</Btn>
         ) : null}
       </div>
 
@@ -86,20 +86,19 @@ export function CalendarTab() {
             <span style={{ fontSize: 13, color: "var(--text-2)" }}>{Math.round(zoom * 100)}%</span>
             <Btn variant="ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>+
             </Btn>
-            <Btn variant="ghost" onClick={() => setZoom(1)}>重置
-            </Btn>
+            <Btn variant="ghost" onClick={() => setZoom(1)}>{i18n("pages.info.calendartab.cb5d682bac3d")}</Btn>
           </div>
           <Card style={{ overflow: "auto", padding: 12 }}>
             <img
               src={src}
-              alt={`${year}-${year + 1} ${sem === "autumn" ? "秋" : "春"}季学期校历`}
+              alt={i18n("pages.info.calendartab.36a24c379edf", { year: String(year), value: String(year + 1), value2: String(sem === "autumn" ? i18n("pages.info.calendartab.5a2e5e4b12a4") : i18n("pages.info.calendartab.b3c33b7abaf0")) })}
               onError={() => setImgError(true)}
               style={{ width: `${Math.round(zoom * 100)}%`, maxWidth: zoom === 1 ? "100%" : "none", display: "block", borderRadius: 8 }}
             />
           </Card>
         </>
       ) : state === "ready" ? (
-        <TabEmpty text="校历图片暂时无法加载（可能尚未发布该学期校历），可稍后重试。" />
+        <TabEmpty text={i18n("pages.info.calendartab.46005af48348")} />
       ) : null}
     </>
   );

@@ -1,3 +1,5 @@
+import { msg as i18nMsg } from "../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import type { CourseInfo, Homework } from "@onethu/core";
 import {
   Banner, Btn, Inline, Input, Row, Segment, Select, Sheet, Stack, Surface, Text, TextArea,
@@ -56,20 +58,20 @@ export interface AttachActionsSheetProps {
 }
 
 const ACTIONS: Array<{ id: AttachActionId; label: string }> = [
-  { id: "cloud", label: "转存云盘" },
-  { id: "homework", label: "交作业" },
-  { id: "discussion", label: "发讨论区" },
-  { id: "oh", label: "问 OH" },
+  { id: "cloud", get label() { return i18n("components.attachactionssheet.9168e24a0a2e"); } },
+  { id: "homework", get label() { return i18n("components.attachactionssheet.e6d471687c59"); } },
+  { id: "discussion", get label() { return i18n("components.attachactionssheet.dfb8c1342e07"); } },
+  { id: "oh", get label() { return i18n("components.attachactionssheet.6a116aa5ada0"); } },
 ];
 
 /** 路由 → 人话（`needUi` 提示用；不引导航，导航归宿主） */
 const ROUTE_LABEL: Record<string, string> = {
-  cloud: "云盘页",
-  learn: "网络学堂",
-  "learn-assignments": "全部作业",
-  "learn-assignment-detail": "作业详情页",
-  "learn-ykt-detail": "雨课堂作业页",
-  "learn-forum-thread": "课程讨论区",
+  get cloud() { return i18n("components.attachactionssheet.6bd13e275bf0"); },
+  get learn() { return i18n("components.attachactionssheet.aa39cac2b409"); },
+  get "learn-assignments"() { return i18n("components.attachactionssheet.a1cabc0664cf"); },
+  get "learn-assignment-detail"() { return i18n("components.attachactionssheet.ea9d483cc8f5"); },
+  get "learn-ykt-detail"() { return i18n("components.attachactionssheet.499c0ca82646"); },
+  get "learn-forum-thread"() { return i18n("components.attachactionssheet.5372b0fb14a4"); },
 };
 
 /** 结果文案里叠着多行 `\n`：pre-wrap 是排版几何（不是 R2 外观，onegui-guard 不数它） */
@@ -78,7 +80,7 @@ const PREWRAP_STYLE: CSSProperties = { whiteSpace: "pre-wrap", wordBreak: "break
 function uiHint(ui: AttachActionUi | undefined): string {
   if (!ui) return "";
   const where = ui.route ? ROUTE_LABEL[ui.route] ?? ui.route : "";
-  return where ? `${ui.message}（位置：${where}）` : ui.message;
+  return where ? i18n("components.attachactionssheet.0fdc1d53ffcf", { message: String(ui.message), where: String(where) }) : ui.message;
 }
 
 /** 截止时间升序里第一份「未交」的作业 —— 只用于**带出默认值**（面板会标注可改） */
@@ -91,6 +93,8 @@ function mostUrgent<T>(list: T[], deadline: (x: T) => string, done: (x: T) => bo
 export function AttachActionsSheet({
   files, onClose, onDone, initialAction = "cloud",
 }: AttachActionsSheetProps): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [action, setAction] = useState<AttachActionId>(initialAction);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ action: AttachActionId; r: AttachActionResult } | null>(null);
@@ -161,15 +165,15 @@ export function AttachActionsSheet({
 
   const browseDir = useCallback(async (): Promise<void> => {
     if (!repoId) return;
-    setDirMsg("正在读目录…");
+    setDirMsg(i18n("components.attachactionssheet.645c5da80cec"));
     setDirEntries(null);
     try {
       const entries = await openDir(repoId, dir);
       setDirEntries(entries.filter((e) => e.kind === "dir"));
-      setDirMsg(entries.length === 0 ? "这个目录还是空的" : "");
+      setDirMsg(entries.length === 0 ? i18n("components.attachactionssheet.d56452bb724e") : "");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      setDirMsg(`读目录失败：${msg}（目录还不存在的话，上传时会自动创建）`);
+      setDirMsg(i18n("components.attachactionssheet.692f8be1250e", { msg: String(msg) }));
     }
   }, [dir, repoId]);
 
@@ -185,9 +189,9 @@ export function AttachActionsSheet({
   const courses: CourseInfo[] = learnBundle?.courses ?? [];
   const homeworks: Homework[] = useMemo(
     () => (learnBundle?.homework ?? []).filter((h) => !h.source),
-    [learnBundle],
+    [uiLocale, learnBundle],
   );
-  const courseHw = useMemo(() => homeworks.filter((h) => h.courseId === courseId), [courseId, homeworks]);
+  const courseHw = useMemo(() => homeworks.filter((h) => h.courseId === courseId), [uiLocale, courseId, homeworks]);
 
   const loadLearn = useCallback(async (): Promise<void> => {
     setLearnLoading(true);
@@ -208,7 +212,7 @@ export function AttachActionsSheet({
     setCourseId(urgent.courseId);
     setHwId(urgent.id);
     const cn = courses.find((c) => c.id === urgent.courseId)?.name ?? urgent.courseId;
-    setAutoPicked(`已带出最近截止的作业：${cn} · ${urgent.title}（可改）`);
+    setAutoPicked(i18n("components.attachactionssheet.9c05da58a541", { cn: String(cn), title: String(urgent.title) }));
   }, [action, courseId, courses, homeworks, hwId, platform]);
 
   const yktItems = useSyncExternalStore(subscribeExtHw, getExtHwSnapshot).items.filter((i) => i.source === "yuketang");
@@ -217,9 +221,9 @@ export function AttachActionsSheet({
   const [extLoading, setExtLoading] = useState(false);
   const yktCourses = useMemo(
     () => Array.from(new Set(yktItems.map((i) => i.courseName))).sort(),
-    [yktItems],
+    [uiLocale, yktItems],
   );
-  const yktRows = useMemo(() => yktItems.filter((i) => i.courseName === yktCourse), [yktCourse, yktItems]);
+  const yktRows = useMemo(() => yktItems.filter((i) => i.courseName === yktCourse), [uiLocale, yktCourse, yktItems]);
 
   useEffect(() => {
     if (platform !== "ykt" || yktCourse || yktItems.length === 0) return;
@@ -227,7 +231,7 @@ export function AttachActionsSheet({
     if (!urgent) return;
     setYktCourse(urgent.courseName);
     setYktLeaf(urgent.id);
-    setAutoPicked(`已带出最近截止的雨课堂作业：${urgent.courseName} · ${urgent.title}（可改）`);
+    setAutoPicked(i18n("components.attachactionssheet.291f747ed5e6", { courseName: String(urgent.courseName), title: String(urgent.title) }));
   }, [platform, yktCourse, yktItems]);
 
   const selectedYkt = yktRows.find((i) => i.id === yktLeaf) ?? undefined;
@@ -238,19 +242,19 @@ export function AttachActionsSheet({
   const [boardId, setBoardId] = useState("");
   const [boards, setBoards] = useState<Array<{ bqid: string; name: string }>>([]);
   const [boardsMsg, setBoardsMsg] = useState("");
-  const [title, setTitle] = useState(first ? `附件：${first.name}` : "");
+  const [title, setTitle] = useState(first ? i18n("components.attachactionssheet.0e7ecc965121", { name: String(first.name) }) : "");
   const [body, setBody] = useState("");
   const [threadId, setThreadId] = useState("");
 
   useEffect(() => {
     if (action !== "discussion" || !courseId) return;
     let alive = true;
-    setBoardsMsg("正在拉板块…");
+    setBoardsMsg(i18n("components.attachactionssheet.181f6d1a0555"));
     learn.getBbsBoards(courseId)
       .then((b) => {
         if (!alive) return;
         setBoards(b);
-        setBoardsMsg(b.length === 0 ? "这门课没有拿到板块列表（可能未开放讨论区）" : "");
+        setBoardsMsg(b.length === 0 ? i18n("components.attachactionssheet.2909ce10f62d") : "");
       })
       .catch((e: unknown) => {
         if (alive) setBoardsMsg(e instanceof Error ? e.message : String(e));
@@ -263,7 +267,7 @@ export function AttachActionsSheet({
   /* ══════════ 动作执行 ══════════ */
   const runCloud = useCallback(async (): Promise<void> => {
     if (!repoId) {
-      finish("cloud", { ok: false, needUi: true, error: "先选一个云盘资料库", ui: { route: "cloud", message: "去云盘页选一个资料库" } });
+      finish("cloud", { ok: false, needUi: true, error: i18n("components.attachactionssheet.a0402ed2b632"), ui: { route: "cloud", message: i18n("components.attachactionssheet.e09351dc86df") } });
       return;
     }
     setBusy(true);
@@ -283,7 +287,7 @@ export function AttachActionsSheet({
     try {
       if (platform === "ykt") {
         if (!selectedYkt) {
-          finish("homework", { ok: false, needUi: true, error: "先选一份雨课堂作业", ui: { route: "learn-assignments", message: "去「全部作业」里选" } });
+          finish("homework", { ok: false, needUi: true, error: i18n("components.attachactionssheet.030e4abf599f"), ui: { route: "learn-assignments", message: i18n("components.attachactionssheet.f05f4f3ff349") } });
           return;
         }
         const r = await submitHomework(first, {
@@ -299,7 +303,7 @@ export function AttachActionsSheet({
         return;
       }
       if (!courseId || !hwId || !selectedLearnHw) {
-        finish("homework", { ok: false, needUi: true, error: "先选课程和作业（作业要属于所选课程）", ui: { route: "learn-assignments", message: "去「全部作业」里选一份" } });
+        finish("homework", { ok: false, needUi: true, error: i18n("components.attachactionssheet.85962b0d5e57"), ui: { route: "learn-assignments", message: i18n("components.attachactionssheet.8f648bd5bc71") } });
         return;
       }
       const cn = courses.find((c) => c.id === courseId)?.name ?? "";
@@ -361,13 +365,12 @@ export function AttachActionsSheet({
   const openOfficial = useCallback(async (url: string): Promise<void> => {
     if (officialBusy) return;
     const ok = await confirmOk(
-      "将打开雨课堂官方作答页完成提交。\n\n附件要在官方页里再选一次；页面内是雨课堂官方提交逻辑（含其自身的截止/次数校验与二次确认），"
-        + "请在其中确认后提交。关闭或返回后回到本面板。",
+      i18nMsg("components.attachactionssheet.71ee5b30ab23"),
     );
     if (!ok) return;
     const cookie = getYktCookie();
     if (!cookie) {
-      setResult((cur) => (cur ? { ...cur, r: { ...cur.r, error: "雨课堂未登录：请先在 设置 → 外部作业源 登录雨课堂" } } : cur));
+      setResult((cur) => (cur ? { ...cur, r: { ...cur.r, error: i18n("components.attachactionssheet.0ba343b633e5") } } : cur));
       return;
     }
     setOfficialBusy(true);
@@ -375,7 +378,7 @@ export function AttachActionsSheet({
       await openYktSubmitWebview(url, cookie);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      void logLine(`[附件] 打开雨课堂官方作答页失败：${msg}`).catch(() => undefined);
+      void logLine(i18n("components.attachactionssheet.dc6676c23efb", { msg: String(msg) })).catch(() => undefined);
       setResult((cur) => (cur ? { ...cur, r: { ...cur.r, error: msg } } : cur));
     } finally {
       setOfficialBusy(false);
@@ -388,7 +391,7 @@ export function AttachActionsSheet({
   const r = result?.r;
 
   return (
-    <Sheet open onClose={close} title="附件动作" scope={ATTACH_SHEET_SCOPE}>
+    <Sheet open onClose={close} title={i18n("components.attachactionssheet.1ac7f24b587b")} scope={ATTACH_SHEET_SCOPE}>
       <Stack gap={3}>
         {/* ── 文件清单（Row：leading=缩略图 / title=文件名 / meta=大小） ── */}
         <Stack gap={1}>
@@ -419,24 +422,24 @@ export function AttachActionsSheet({
         {/* ── ① 转存云盘 ── */}
         {action === "cloud" ? (
           <Stack gap={3}>
-            {!sfReady ? <Text slot="label" as="div" tone="faint">正在读云盘配置…</Text> : null}
+            {!sfReady ? <Text slot="label" as="div" tone="faint">{i18n("components.attachactionssheet.ca8686d49153")}</Text> : null}
             {sfReady && !sf.configured ? (
-              <Banner tone="warning" title="云盘还没连接，请先到「云盘」页连接清华云盘再转存。" />
+              <Banner tone="warning" title={i18n("components.attachactionssheet.836f3e0848ed")} />
             ) : null}
             <Stack gap={1}>
-              <Text slot="label" tone="faint">资料库（不替你猜库）</Text>
+              <Text slot="label" tone="faint">{i18n("components.attachactionssheet.e9b24be2fd7b")}</Text>
               <Select value={repoId} onChange={(value) => setRepoId(value)}>
-                <option value="">— 请选择 —</option>
+                <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                 {sf.repos.map((rp) => (
                   <option key={rp.id} value={rp.id}>{rp.name}</option>
                 ))}
               </Select>
             </Stack>
             <Stack gap={1}>
-              <Text slot="label" tone="faint">目标目录（不存在会自动创建）</Text>
+              <Text slot="label" tone="faint">{i18n("components.attachactionssheet.2770f83a7689")}</Text>
               <Inline gap={2}>
                 <Input value={dir} onChange={(value) => { setDir(value); setDirEntries(null); }} />
-                <Btn variant="outline" disabled={!repoId} onClick={() => void browseDir()}>看子目录</Btn>
+                <Btn variant="outline" disabled={!repoId} onClick={() => void browseDir()}>{i18n("components.attachactionssheet.ac2f6f9462d2")}</Btn>
               </Inline>
               {dirMsg ? <Text slot="label" as="div" tone="faint">{dirMsg}</Text> : null}
               {dirEntries && dirEntries.length > 0 ? (
@@ -458,12 +461,10 @@ export function AttachActionsSheet({
                 </Surface>
               ) : null}
             </Stack>
-            <Text slot="label" as="div" tone="faint">
-              远端名 = 文件名；同名会被覆盖。{many ? `共 ${files.length} 个文件，按顺序逐个上传。` : ""}
-            </Text>
+            <Text slot="label" as="div" tone="faint">{i18nRich("components.attachactionssheet.d1df0f4415d2", { value: many ? i18n("components.attachactionssheet.143dcff5aa23", { length: String(files.length) }) : "" })}</Text>
             <Inline gap={2} justify="end">
-              <Btn variant="outline" onClick={close}>取消</Btn>
-              <Btn variant="solid" tone="brand" disabled={busy || !repoId || !sf.configured} onClick={() => void runCloud()}>{busy ? "上传中…" : "上传到云盘"}</Btn>
+              <Btn variant="outline" onClick={close}>{i18n("components.attachactionssheet.2cd0f3be8738")}</Btn>
+              <Btn variant="solid" tone="brand" disabled={busy || !repoId || !sf.configured} onClick={() => void runCloud()}>{busy ? i18n("components.attachactionssheet.ce1c9d61565f") : i18n("components.attachactionssheet.49f1bf7728d9")}</Btn>
             </Inline>
           </Stack>
         ) : null}
@@ -474,8 +475,8 @@ export function AttachActionsSheet({
             <Segment
               size="sm"
               options={[
-                { value: "learn", label: "网络学堂" },
-                { value: "ykt", label: "雨课堂" },
+                { value: "learn", label: i18n("components.attachactionssheet.aa39cac2b409") },
+                { value: "ykt", label: i18n("components.attachactionssheet.38b9eabcae1b") },
               ]}
               value={platform}
               onChange={(value) => {
@@ -485,12 +486,10 @@ export function AttachActionsSheet({
               }}
             />
 
-            {many ? <Banner tone="warning" title={`交作业一次只交一份，这里用第 1 个：${first.name}`} /> : null}
+            {many ? <Banner tone="warning" title={i18n("components.attachactionssheet.95852b1c2651", { name: String(first.name) })} /> : null}
 
             {homeworks.length === 0 ? (
-              <Text slot="label" as="div" tone="faint">
-                本机还没有课程/作业缓存。
-                <Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? "加载中…" : "加载课程与作业"}</Btn>
+              <Text slot="label" as="div" tone="faint">{i18n("components.attachactionssheet.9a47fa08dcca")}<Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? i18n("components.attachactionssheet.4927a53bcc88") : i18n("components.attachactionssheet.2a531d570c0b")}</Btn>
               </Text>
             ) : null}
             {autoPicked ? <Text slot="label" as="div" tone="faint">{autoPicked}</Text> : null}
@@ -498,64 +497,60 @@ export function AttachActionsSheet({
             {platform === "learn" ? (
               <Stack gap={3}>
                 <Stack gap={1}>
-                  <Text slot="label" tone="faint">课程</Text>
+                  <Text slot="label" tone="faint">{i18n("components.attachactionssheet.60db1afb4022")}</Text>
                   <Select value={courseId} onChange={(value) => { setCourseId(value); setHwId(""); }}>
-                    <option value="">— 请选择 —</option>
+                    <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                     {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </Select>
                 </Stack>
                 <Stack gap={1}>
-                  <Text slot="label" tone="faint">作业（网络学堂在线提交的）</Text>
+                  <Text slot="label" tone="faint">{i18n("components.attachactionssheet.e6da48ce861d")}</Text>
                   <Select value={hwId} onChange={(value) => setHwId(value)} disabled={!courseId}>
-                    <option value="">— 请选择 —</option>
+                    <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                     {courseHw.map((h) => (
-                      <option key={h.id} value={h.id}>{h.title}{h.submitted ? "（已交）" : ""}</option>
+                      <option key={h.id} value={h.id}>{h.title}{h.submitted ? i18n("components.attachactionssheet.0ef934448482") : ""}</option>
                     ))}
                   </Select>
                 </Stack>
                 <Stack gap={1}>
-                  <Text slot="label" tone="faint">正文（可选；留空会清空该作业此前的正文）</Text>
-                  <TextArea value={content} onChange={(value) => setContent(value)} placeholder="一般不填；附件就是全部内容" />
+                  <Text slot="label" tone="faint">{i18n("components.attachactionssheet.5f19d58db365")}</Text>
+                  <TextArea value={content} onChange={(value) => setContent(value)} placeholder={i18n("components.attachactionssheet.525820e8531d")} />
                 </Stack>
-                <Text slot="label" as="div" tone="faint">
-                  提交前会再确认一次；提交是**整体覆盖**（正文与附件以本次为准）。
-                </Text>
+                <Text slot="label" as="div" tone="faint">{i18n("components.attachactionssheet.dc2ce9466206")}</Text>
                 <Inline gap={2} justify="end">
-                  <Btn variant="outline" onClick={close}>取消</Btn>
-                  <Btn variant="solid" tone="brand" disabled={busy || !selectedLearnHw} onClick={() => void runHomework()}>{busy ? "提交中…" : "提交作业"}</Btn>
+                  <Btn variant="outline" onClick={close}>{i18n("components.attachactionssheet.2cd0f3be8738")}</Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy || !selectedLearnHw} onClick={() => void runHomework()}>{busy ? i18n("components.attachactionssheet.18931020ad52") : i18n("components.attachactionssheet.dfb054a0aec6")}</Btn>
                 </Inline>
               </Stack>
             ) : (
               <Stack gap={3}>
                 <Banner
                   tone="warning"
-                  title="雨课堂没有附件提交通道：本面板不会替你提交，只会打开官方作答页。的截止/次数校验）。"
+                  title={i18n("components.attachactionssheet.f25f21290de1")}
                 />
                 {yktItems.length === 0 ? (
-                  <Text slot="label" as="div" tone="faint">
-                    本机还没有雨课堂作业缓存。
-                    <Btn variant="outline" disabled={extLoading} onClick={() => { setExtLoading(true); void refreshExtHw().finally(() => setExtLoading(false)); }}>{extLoading ? "刷新中…" : "刷新雨课堂作业"}</Btn>
+                  <Text slot="label" as="div" tone="faint">{i18n("components.attachactionssheet.266fcc6854bf")}<Btn variant="outline" disabled={extLoading} onClick={() => { setExtLoading(true); void refreshExtHw().finally(() => setExtLoading(false)); }}>{extLoading ? i18n("components.attachactionssheet.7f3c8312816f") : i18n("components.attachactionssheet.a763e75155eb")}</Btn>
                   </Text>
                 ) : null}
                 <Stack gap={1}>
-                  <Text slot="label" tone="faint">雨课堂课程</Text>
+                  <Text slot="label" tone="faint">{i18n("components.attachactionssheet.261255a76c11")}</Text>
                   <Select value={yktCourse} onChange={(value) => { setYktCourse(value); setYktLeaf(""); }}>
-                    <option value="">— 请选择 —</option>
+                    <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                     {yktCourses.map((c) => <option key={c} value={c}>{c}</option>)}
                   </Select>
                 </Stack>
                 <Stack gap={1}>
-                  <Text slot="label" tone="faint">雨课堂作业</Text>
+                  <Text slot="label" tone="faint">{i18n("components.attachactionssheet.f0cd4338679e")}</Text>
                   <Select value={yktLeaf} onChange={(value) => setYktLeaf(value)} disabled={!yktCourse}>
-                    <option value="">— 请选择 —</option>
+                    <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                     {yktRows.map((i) => (
-                      <option key={i.id} value={i.id}>{i.title}{i.submitted ? "（已交）" : ""}</option>
+                      <option key={i.id} value={i.id}>{i.title}{i.submitted ? i18n("components.attachactionssheet.0ef934448482") : ""}</option>
                     ))}
                   </Select>
                 </Stack>
                 <Inline gap={2} justify="end">
-                  <Btn variant="outline" onClick={close}>取消</Btn>
-                  <Btn variant="solid" tone="brand" disabled={busy || !selectedYkt} onClick={() => void runHomework()}>{busy ? "处理中…" : "去官方页提交"}</Btn>
+                  <Btn variant="outline" onClick={close}>{i18n("components.attachactionssheet.2cd0f3be8738")}</Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy || !selectedYkt} onClick={() => void runHomework()}>{busy ? i18n("components.attachactionssheet.d3d21191f32e") : i18n("components.attachactionssheet.fdef3f8a92ec")}</Btn>
                 </Inline>
               </Stack>
             )}
@@ -568,8 +563,8 @@ export function AttachActionsSheet({
             <Segment
               size="sm"
               options={[
-                { value: "new", label: "发新话题" },
-                { value: "reply", label: "回复话题" },
+                { value: "new", label: i18n("components.attachactionssheet.1a3431e8551a") },
+                { value: "reply", label: i18n("components.attachactionssheet.7552984af66c") },
               ]}
               value={mode}
               onChange={(value) => {
@@ -578,43 +573,39 @@ export function AttachActionsSheet({
               }}
             />
             <Stack gap={1}>
-              <Text slot="label" tone="faint">课程</Text>
+              <Text slot="label" tone="faint">{i18n("components.attachactionssheet.60db1afb4022")}</Text>
               <Select value={courseId} onChange={(value) => { setCourseId(value); setBoardId(""); setHwId(""); }}>
-                <option value="">— 请选择 —</option>
+                <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                 {courses.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </Select>
               {courses.length === 0 ? (
-                <Text slot="label" as="div" tone="faint">
-                  本机还没有课程缓存。
-                  <Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? "加载中…" : "加载课程列表"}</Btn>
+                <Text slot="label" as="div" tone="faint">{i18n("components.attachactionssheet.1e043b00ec78")}<Btn variant="outline" disabled={learnLoading} onClick={() => void loadLearn()}>{learnLoading ? i18n("components.attachactionssheet.4927a53bcc88") : i18n("components.attachactionssheet.ba699fc473f3")}</Btn>
                 </Text>
               ) : null}
             </Stack>
             {mode === "new" ? (
               <Stack gap={1}>
-                <Text slot="label" tone="faint">板块</Text>
+                <Text slot="label" tone="faint">{i18n("components.attachactionssheet.37e7edd15ff6")}</Text>
                 <Select value={boardId} onChange={(value) => setBoardId(value)} disabled={!courseId}>
-                  <option value="">— 请选择 —</option>
+                  <option value="">{i18n("components.attachactionssheet.5b337368ccad")}</option>
                   {boards.map((b) => <option key={b.bqid} value={b.bqid}>{b.name}</option>)}
                 </Select>
                 {boardsMsg ? <Text slot="label" as="div" tone="faint">{boardsMsg}</Text> : null}
               </Stack>
             ) : (
               <Stack gap={1}>
-                <Text slot="label" tone="faint">话题 id（tltid）</Text>
-                <Input value={threadId} onChange={(value) => setThreadId(value)} placeholder="从讨论区页面复制；也可以直接粘贴话题链接" />
+                <Text slot="label" tone="faint">{i18n("components.attachactionssheet.e90e91bacf59")}</Text>
+                <Input value={threadId} onChange={(value) => setThreadId(value)} placeholder={i18n("components.attachactionssheet.e52143ca5a0c")} />
               </Stack>
             )}
             <Stack gap={1}>
-              <Text slot="label" tone="faint">正文（纯文本，发出去会自动排版）</Text>
-              <TextArea value={body} onChange={(value) => setBody(value)} placeholder="可以只发附件，正文留空" />
+              <Text slot="label" tone="faint">{i18n("components.attachactionssheet.9984120d609b")}</Text>
+              <TextArea value={body} onChange={(value) => setBody(value)} placeholder={i18n("components.attachactionssheet.007ce8838800")} />
             </Stack>
-            <Text slot="label" as="div" tone="faint">
-              附件：{first.name}（{formatSize(first.size)}）· 发布前会再确认一次，发出去全班可见。
-            </Text>
+            <Text slot="label" as="div" tone="faint">{i18nRich("components.attachactionssheet.ed4280dd94a7", { name: first.name, value: formatSize(first.size) })}</Text>
             <Inline gap={2} justify="end">
-              <Btn variant="outline" onClick={close}>取消</Btn>
-              <Btn variant="solid" tone="brand" disabled={busy || !courseId} onClick={() => void runDiscussion()}>{busy ? "发布中…" : "发布"}</Btn>
+              <Btn variant="outline" onClick={close}>{i18n("components.attachactionssheet.2cd0f3be8738")}</Btn>
+              <Btn variant="solid" tone="brand" disabled={busy || !courseId} onClick={() => void runDiscussion()}>{busy ? i18n("components.attachactionssheet.c7f77b9c7cdd") : i18n("components.attachactionssheet.b61f333b91b2")}</Btn>
             </Inline>
           </Stack>
         ) : null}
@@ -622,20 +613,13 @@ export function AttachActionsSheet({
         {/* ── ④ 问 OH（把附件作为一条消息发给 OH） ── */}
         {action === "oh" ? (
           <Stack gap={3}>
-            <Text slot="label" as="div" tone="faint">
-              把附件作为**一条完整消息**发给 OH（不弹输入框，直接发）。
-              {files.some((f) => f.mime.startsWith("image/"))
-                ? "图片会随消息带上：开了「多模态」开关时按图像模态直接喂给模型（图片文字都能读）；没开时只发送文字说明与预览。"
-                : "非图片附件只带名称/类型/大小与文本预览。"}
-              开关位置：设置 → 插件 → OneTHU Harness → 多模态。
-            </Text>
-            <Text slot="label" as="div" tone="faint">
-              {many ? `${files.length} 个附件会一起发；` : ""}
-              图片单条最多 4 张、单张 ≤6MB，超出的会在正文里写明原因（不会静默丢件）。
-            </Text>
+            <Text slot="label" as="div" tone="faint">{i18nRich("components.attachactionssheet.80bb812e5174", { value: files.some((f) => f.mime.startsWith("image/"))
+                ? i18n("components.attachactionssheet.fe8d3d70ab66")
+                : i18n("components.attachactionssheet.10bc60b1fba1") })}</Text>
+            <Text slot="label" as="div" tone="faint">{i18nRich("components.attachactionssheet.dfa45cea4ca8", { value: many ? i18n("components.attachactionssheet.c3a336d05243", { length: String(files.length) }) : "" })}</Text>
             <Inline gap={2} justify="end">
-              <Btn variant="outline" onClick={close}>取消</Btn>
-              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void runOh()}>{busy ? "发送中…" : "发给 OH"}</Btn>
+              <Btn variant="outline" onClick={close}>{i18n("components.attachactionssheet.2cd0f3be8738")}</Btn>
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void runOh()}>{busy ? i18n("components.attachactionssheet.364970d8168c") : i18n("components.attachactionssheet.9f0518f1a3c6")}</Btn>
             </Inline>
           </Stack>
         ) : null}
@@ -644,19 +628,19 @@ export function AttachActionsSheet({
         {showResult && r ? (
           <Banner tone={r.ok ? "success" : r.needUi ? "warning" : "error"}>
             <div style={PREWRAP_STYLE}>
-              {r.ok ? (r.path ? `已上传：${r.path}` : "已完成") : `${r.needUi ? "需要你继续一步" : "没做成"}\n${r.error ?? ""}`}
+              {r.ok ? (r.path ? i18n("components.attachactionssheet.22c0ce22d91d", { path: String(r.path) }) : i18n("components.attachactionssheet.f28461bb49c8")) : `${r.needUi ? i18n("components.attachactionssheet.7289cd6b6032") : i18n("components.attachactionssheet.0b66cb2a0fa0")}\n${r.error ?? ""}`}
               {r.needUi ? `\n${uiHint(r.ui)}` : ""}
               {r.ok && r.answer ? `\n\nOH：${r.answer}` : ""}
-              {r.ok && typeof r.images === "number" ? `\n（本次随消息附带 ${r.images} 张图片）` : ""}
+              {r.ok && typeof r.images === "number" ? i18n("components.attachactionssheet.270c674e2e4a", { images: String(r.images) }) : ""}
             </div>
             {r.needUi && r.ui?.officialUrl && r.ui.officialChannel === "ykt-submit-webview" && isTauri ? (
               <div style={{ marginTop: 8 }}>
-                <Btn variant="solid" tone="brand" disabled={officialBusy} onClick={() => void openOfficial(r.ui!.officialUrl!)}>{officialBusy ? "打开中…" : "打开雨课堂官方作答页"}</Btn>
+                <Btn variant="solid" tone="brand" disabled={officialBusy} onClick={() => void openOfficial(r.ui!.officialUrl!)}>{officialBusy ? i18n("components.attachactionssheet.67d676d9a46e") : i18n("components.attachactionssheet.4f7beaab05f4")}</Btn>
               </div>
             ) : null}
             {r.ok ? (
               <div style={{ marginTop: 8 }}>
-                <Btn variant="outline" onClick={close}>完成</Btn>
+                <Btn variant="outline" onClick={close}>{i18n("components.attachactionssheet.c0b3fbff51cc")}</Btn>
               </div>
             ) : null}
           </Banner>
@@ -670,8 +654,8 @@ export function AttachActionsSheet({
                 <Text as="div">{confirmMsg}</Text>
               </div>
               <Inline gap={2} justify="end">
-                <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
-                <Btn variant="solid" tone="error" onClick={() => answerConfirm(true)}>确认执行</Btn>
+                <Btn variant="outline" onClick={() => answerConfirm(false)}>{i18n("components.attachactionssheet.2cd0f3be8738")}</Btn>
+                <Btn variant="solid" tone="error" onClick={() => answerConfirm(true)}>{i18n("components.attachactionssheet.68a35e224268")}</Btn>
               </Inline>
             </Stack>
           </Surface>

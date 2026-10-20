@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -40,7 +41,7 @@ const PHASE_TEXT: Record<string, string> = {
   online: "在线",
   reconnecting: "重连中…",
   suspended: "平台暂停",
-  error: "连接失败",
+  get error() { return i18n("components.imsettingssection.89c4766afc85"); },
 };
 
 /** 分档（2026-10-11 用户拍板）：OH 设置页的「基础设置 / 高级配置」两档共用这一份实现——
@@ -52,15 +53,17 @@ export type ImTier = "basic" | "advanced" | "all";
 
 /* task-19：IM 设置行注册（基础档 + 高级档） */
 defineSearchRows([
-  { id: "im-qr", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "扫码创建应用（推荐，免手工配置）", aliases: ["扫码", "IM", "飞书"], desc: "扫码创建飞书应用并自动绑定" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "扫码创建应用（推荐，免手工配置）"], displayRoot: "设置", go: () => goOhRow("扫码创建应用（推荐，免手工配置）", "basic") },
-  { id: "im-owner", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "绑定主人", aliases: ["绑定码", "解绑"], desc: "生成绑定码 / 解除绑定" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "绑定主人"], displayRoot: "设置", go: () => goOhRow("绑定主人", "basic") },
-  { id: "im-wechat", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "微信（iLink 官方 Bot · 扫码即用）", aliases: ["微信", "iLink"], desc: "微信扫码绑定 / 重新扫码 / 解除绑定" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "微信（iLink 官方 Bot · 扫码即用）"], displayRoot: "设置", go: () => goOhRow("微信（iLink 官方 Bot · 扫码即用）", "basic") },
-  { id: "im-status", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", title: "连接状态", aliases: ["IM 状态"], desc: "通道连接状态" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "连接状态"], displayRoot: "设置", go: () => goOhRow("连接状态", "basic") },
-  { id: "im-feishu", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "飞书 bot（P0 通道）", aliases: ["飞书通道"], desc: "长连接事件订阅" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "IM 通道（进阶）", "飞书 bot（P0 通道）"], displayRoot: "设置", go: () => goOhRow("飞书 bot（P0 通道）", "advanced") },
-  { id: "im-creds", tab: "OneTHU Harness", section: "IM 通道（进阶）", title: "应用凭据（手工）", aliases: ["App ID", "App Secret"], desc: "手工填飞书应用凭据" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "IM 通道（进阶）", "应用凭据（手工）"], displayRoot: "设置", go: () => goOhRow("应用凭据（手工）", "advanced") },
+  { id: "im-qr", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", get title() { return i18n("components.imsettingssection.ecf1cf831460"); }, aliases: ["扫码", "IM", "飞书"], get desc() { return i18n("components.imsettingssection.d5679a030605"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "扫码创建应用（推荐，免手工配置）"], displayRoot: "设置", go: () => goOhRow("im-qr", "basic") },
+  { id: "im-owner", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", get title() { return i18n("components.imsettingssection.f48f46f71775"); }, aliases: ["绑定码", "解绑"], get desc() { return i18n("components.imsettingssection.5f2af850764a"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "绑定主人"], displayRoot: "设置", go: () => goOhRow("im-owner", "basic") },
+  { id: "im-wechat", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", get title() { return i18n("components.imsettingssection.8c9a5097d028"); }, aliases: ["微信", "iLink"], get desc() { return i18n("components.imsettingssection.86b11345bf97"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "微信（iLink 官方 Bot · 扫码即用）"], displayRoot: "设置", go: () => goOhRow("im-wechat", "basic") },
+  { id: "im-status", tab: "OneTHU Harness", section: "IM 基础（扫码绑定 / 解绑）", get title() { return i18n("components.imsettingssection.b8f945ea49ff"); }, aliases: ["IM 状态"], get desc() { return i18n("components.imsettingssection.394ee5935d8c"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "IM 基础（扫码绑定 / 解绑）", "连接状态"], displayRoot: "设置", go: () => goOhRow("im-status", "basic") },
+  { id: "im-feishu", tab: "OneTHU Harness", section: "IM 通道（进阶）", get title() { return i18n("components.imsettingssection.c432e0322b39"); }, aliases: ["飞书通道"], get desc() { return i18n("components.imsettingssection.3becaa3847a1"); } , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "IM 通道（进阶）", "飞书 bot（P0 通道）"], displayRoot: "设置", go: () => goOhRow("im-feishu", "advanced") },
+  { id: "im-creds", tab: "OneTHU Harness", section: "IM 通道（进阶）", get title() { return i18n("components.imsettingssection.8615725de235"); }, aliases: ["App ID", "App Secret"], get desc() { return i18n("components.imsettingssection.7c546888c169"); } , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "IM 通道（进阶）", "应用凭据（手工）"], displayRoot: "设置", go: () => goOhRow("im-creds", "advanced") },
 ]);
 
 export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): ReactNode {
+  const uiLocale = useUiLocale();
+
   const showBasic = tier !== "advanced";
   const showAdvanced = tier !== "basic";
   const [cfg, setCfg] = useState<ImConfig | null>(null);
@@ -95,7 +98,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
     });
     setCfg(await loadImConfig());
     await syncChannels();
-    flash("飞书凭据已保存（密文落盘）");
+    flash(i18n("components.imsettingssection.54821806e300"));
   };
 
   /** 解绑：清掉主人绑定（单主人模型）——之后的消息不再进入 OH，通道本身仍可在线 */
@@ -105,7 +108,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
     });
     setCfg(await loadImConfig());
     await syncChannels();
-    flash("已解除绑定：之后的消息不再进入 OH");
+    flash(i18n("components.imsettingssection.a445a63759f6"));
   };
 
   const toggleEnabled = async (v: boolean): Promise<void> => {
@@ -114,7 +117,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
     });
     setCfg(await loadImConfig());
     await syncChannels();
-    flash(v ? "已启用，正在连接…" : "已停用");
+    flash(v ? i18n("components.imsettingssection.550c7a151569") : i18n("components.imsettingssection.a8c3698b5b8c"));
   };
 
   // 飞书扫码创建应用轮询（device-code 流：按服务端 interval 节奏；成功后自动填凭据）
@@ -137,7 +140,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
               setCfg(await loadImConfig());
               await syncChannels();
               setFsReg(null);
-              flash("飞书应用已创建并连接（扫码建应用成功）");
+              flash(i18n("components.imsettingssection.e869014f4368"));
             } else if (r.status === "access_denied" || r.status === "expired" || r.status === "error") {
               setFsReg(null);
             }
@@ -155,9 +158,9 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
     try {
       const sess = await beginFeishuRegistration();
       setFsReg(sess);
-      setFsNote("请用手机飞书扫码，并在打开页确认创建智能体应用");
+      setFsNote(i18n("components.imsettingssection.fea96ff7ab72"));
     } catch (e) {
-      flash(`发起飞书扫码失败：${e instanceof Error ? e.message : String(e)}`);
+      flash(i18n("components.imsettingssection.020a11d70b94", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   };
 
@@ -175,7 +178,7 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
             // wechat 无 adapter（syncChannels 跳过启动管理）——轮询由 wechat.ts
             // 自有循环承担，这里把真实状态补进状态机（此前恒显「未启用」）
             reportChannelStatus("wechat", "online");
-            flash("微信通道已启用（扫码登录成功）");
+            flash(i18n("components.imsettingssection.d49461b1f610"));
           } else if (r.status === "expired" || r.status === "verify_code_blocked") {
             setWxQr(null);
             reportChannelStatus("wechat", "off");
@@ -191,15 +194,15 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
     try {
       const r = await wechatLoginStart();
       setWxQr(r.imgContent || r.qrcode);
-      setWxNote("等待扫码…");
+      setWxNote(i18n("components.imsettingssection.516b7af343ed"));
     } catch (e) {
-      flash(`发起扫码失败：${e instanceof Error ? e.message : String(e)}`);
+      flash(i18n("components.imsettingssection.3cbb7d58f5e4", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   };
 
   const genBind = (): void => {
     setCode(newBindCode());
-    flash("绑定码 10 分钟内有效");
+    flash(i18n("components.imsettingssection.57afe4560634"));
   };
 
   const bound = cfg?.bindings.feishu;
@@ -209,15 +212,12 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
       {/* ── 基础档（OH 设置 → 基础设置）：扫码绑定 / 解绑——**飞书与微信两个通道都在这里** ── */}
       {showBasic ? (
         <>
-          <div className="setting-row">
+          <div data-set-id="row-im-qr" className="setting-row">
             <div>
-              <div className="setting-title">扫码创建应用（推荐，免手工配置）</div>
-              <div className="setting-desc">
-                手机飞书扫码 → 打开页确认创建 → 自动拿回 App ID/Secret 并连接（应用所有者自动绑为主人）。
-                不想扫码时用「高级配置」里的手工填入。
-              </div>
+              <div className="setting-title">{i18n("components.imsettingssection.ecf1cf831460")}</div>
+              <div className="setting-desc">{i18n("components.imsettingssection.390c8b791bcd")}</div>
             </div>
-            <Btn variant="solid" tone="brand" onClick={() => void startFsReg()}>扫码创建</Btn>
+            <Btn variant="solid" tone="brand" onClick={() => void startFsReg()}>{i18n("components.imsettingssection.1c925e27fa1d")}</Btn>
           </div>
 
           {fsReg ? (
@@ -226,27 +226,26 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                 <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
                   <QRCodeSVG value={fsReg.qrUrl} size={148} />
                 </div>
-                <div className="setting-desc" style={{ marginTop: 6 }}>{fsNote || "等待扫码…"}</div>
-                <Btn variant="outline" onClick={() => void openExternal(fsReg.qrUrl).catch(() => undefined)}>在本机？直接打开确认页（免扫码）
-                </Btn>
+                <div className="setting-desc" style={{ marginTop: 6 }}>{fsNote || i18n("components.imsettingssection.516b7af343ed")}</div>
+                <Btn variant="outline" onClick={() => void openExternal(fsReg.qrUrl).catch(() => undefined)}>{i18n("components.imsettingssection.021f76bfa953")}</Btn>
               </div>
-              <Btn variant="outline" onClick={() => setFsReg(null)}>取消</Btn>
+              <Btn variant="outline" onClick={() => setFsReg(null)}>{i18n("components.imsettingssection.2cd0f3be8738")}</Btn>
             </div>
           ) : null}
 
-          <div className="setting-row">
+          <div data-set-id="row-im-owner" className="setting-row">
             <div>
-              <div className="setting-title">绑定主人</div>
+              <div className="setting-title">{i18n("components.imsettingssection.f48f46f71775")}</div>
               <div className="setting-desc">
                 {bound
-                  ? `已绑定：${bound.slice(0, 12)}…（单主人模型：仅此人消息进入 OH）`
-                  : "未绑定。生成绑定码后在飞书里给 bot 发送「/bind 绑定码」。"}
+                  ? i18n("components.imsettingssection.2217f7c35158", { value: String(bound.slice(0, 12)) })
+                  : i18n("components.imsettingssection.0f8c1b732b2c")}
               </div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <Btn variant="outline" onClick={genBind}>生成绑定码</Btn>
+              <Btn variant="outline" onClick={genBind}>{i18n("components.imsettingssection.f69e6a2f5669")}</Btn>
               {bound ? (
-                <Btn variant="outline" onClick={() => void unbind()}>解除绑定</Btn>
+                <Btn variant="outline" onClick={() => void unbind()}>{i18n("components.imsettingssection.fb3f6cc3047d")}</Btn>
               ) : null}
             </div>
           </div>
@@ -254,30 +253,24 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
             <div className="setting-row">
               <div>
                 <div className="setting-title" style={{ fontSize: 22, letterSpacing: 4 }}>{code}</div>
-                <div className="setting-desc">在飞书私聊里发送：/bind {code}</div>
+                <div className="setting-desc">{i18nRich("components.imsettingssection.6ec82af7b630", { code: code })}</div>
               </div>
             </div>
           ) : null}
 
           {/* 微信（iLink 官方 Bot）：扫码绑定/解绑也放基础档——用户要求两个通道都能直接扫码 */}
-          <div className="setting-row">
+          <div data-set-id="row-im-wechat" className="setting-row">
             <div>
-              <div className="setting-title">微信（iLink 官方 Bot · 扫码即用）</div>
-              <div className="setting-desc">
-                微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机，
-                OH 回复原路发回。当前状态：{PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase}
-                {wechatStatus.note ? `：${wechatStatus.note}` : ""}
-                {cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : ""}
-              </div>
+              <div className="setting-title">{i18n("components.imsettingssection.8c9a5097d028")}</div>
+              <div className="setting-desc">{i18nRich("components.imsettingssection.14087a9867d2", { value: PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase, value2: wechatStatus.note ? `：${wechatStatus.note}` : "", value3: cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : "" })}</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <Btn variant="solid" tone="brand" onClick={() => void startWxLogin()}>{cfg?.channels.wechat?.botToken ? "重新扫码" : "扫码登录"}</Btn>
+              <Btn variant="solid" tone="brand" onClick={() => void startWxLogin()}>{cfg?.channels.wechat?.botToken ? i18n("components.imsettingssection.a379593b5b75") : i18n("components.imsettingssection.378eaca774bb")}</Btn>
               {cfg?.channels.wechat?.botToken ? (
                 <Btn variant="outline" onClick={() => {
                     wechatLoginCancel();
                     setWxQr(null);
-                  }}>解除绑定
-                </Btn>
+                  }}>{i18n("components.imsettingssection.fb3f6cc3047d")}</Btn>
               ) : null}
             </div>
           </div>
@@ -288,57 +281,49 @@ export function ImSettingsSection({ tier = "all" }: { tier?: ImTier } = {}): Rea
                 <div style={{ background: "#fff", padding: 10, borderRadius: 10, display: "inline-block" }}>
                   <QRCodeSVG value={wxQr} size={148} />
                 </div>
-                <div className="setting-desc" style={{ marginTop: 6 }}>
-                  {wxNote || "等待扫码…"}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）
-                </div>
+                <div className="setting-desc" style={{ marginTop: 6 }}>{i18nRich("components.imsettingssection.ee91e7a6f98f", { value: wxNote || i18n("components.imsettingssection.516b7af343ed") })}</div>
               </div>
-              <Btn variant="outline" onClick={() => setWxQr(null)}>取消</Btn>
+              <Btn variant="outline" onClick={() => setWxQr(null)}>{i18n("components.imsettingssection.2cd0f3be8738")}</Btn>
             </div>
           ) : null}
         </>
       ) : null}
 
       {/* 连接状态：两档都看得到（一条只读状态行，不做两套实现） */}
-      <div className="setting-row">
+      <div data-set-id="row-im-status" className="setting-row">
         <div>
-          <div className="setting-title">连接状态</div>
-          <div className="setting-desc">
-            {PHASE_TEXT[fs.phase] ?? fs.phase}
-            {fs.note ? `：${fs.note}` : ""}（最近入站 {fmtAt(fs.lastInboundAt)}）
-          </div>
+          <div className="setting-title">{i18n("components.imsettingssection.b8f945ea49ff")}</div>
+          <div className="setting-desc">{i18nRich("components.imsettingssection.f779d8072854", { value: PHASE_TEXT[fs.phase] ?? fs.phase, value2: fs.note ? `：${fs.note}` : "", value3: fmtAt(fs.lastInboundAt) })}</div>
         </div>
       </div>
 
       {/* ── 高级档（OH 设置 → 高级配置）：通道开关 + 手工凭据 ── */}
       {showAdvanced ? (
         <>
-          <div className="setting-row">
+          <div data-set-id="row-im-feishu" className="setting-row">
             <div>
-              <div className="setting-title">飞书 bot（P0 通道）</div>
-              <div className="setting-desc">
-                桌面 App 常驻时 bot 在线：飞书开放平台自建应用（长连接事件订阅，免公网入口）。
-                收到的消息直达 OH，回复原路发回；附件后续经云盘归档。
-              </div>
+              <div className="setting-title">{i18n("components.imsettingssection.c432e0322b39")}</div>
+              <div className="setting-desc">{i18n("components.imsettingssection.4a151de9633d")}</div>
             </div>
-            <Switch on={Boolean(cfg?.enabled.feishu)} onChange={(v) => void toggleEnabled(v)} label="飞书通道开关" />
+            <Switch on={Boolean(cfg?.enabled.feishu)} onChange={(v) => void toggleEnabled(v)} label={i18n("components.imsettingssection.a84a8e151194")} />
           </div>
 
-          <div className="setting-row">
+          <div data-set-id="row-im-creds" className="setting-row">
             <div>
-              <div className="setting-title">应用凭据（手工）</div>
-              <div className="setting-desc">飞书开放平台 → 自建应用 → 凭证与基础信息。仅存本机（密文）。</div>
+              <div className="setting-title">{i18n("components.imsettingssection.8615725de235")}</div>
+              <div className="setting-desc">{i18n("components.imsettingssection.28690afd1ecd")}</div>
             </div>
           </div>
           <div className="setting-row">
             <div style={{ flex: 1 }}>
-              <Input placeholder="App ID（cli_ 开头）" value={appId} onChange={(value) => setAppId(value)} />
+              <Input placeholder={i18n("components.imsettingssection.b35839220413")} value={appId} onChange={(value) => setAppId(value)} />
             </div>
           </div>
           <div className="setting-row">
             <div style={{ flex: 1 }}>
               <Input placeholder="App Secret" type="password" value={appSecret} onChange={(value) => setAppSecret(value)} />
             </div>
-            <Btn variant="solid" tone="brand" onClick={() => void saveCreds()}>保存并连接</Btn>
+            <Btn variant="solid" tone="brand" onClick={() => void saveCreds()}>{i18n("components.imsettingssection.107fecedccba")}</Btn>
           </div>
         </>
       ) : null}

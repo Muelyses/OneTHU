@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 预约页 —— 页内分栏（segmented）：「图书馆座位」（LibraryTab 原样复用，
  * 自带分区标题与三态重试）/「研讨间」（LibRoomTab，cab.lib ic-web）/
@@ -27,13 +28,13 @@ import { useTabDirection } from "../../lib/motion.js";
 export type ReserveTab = "library" | "libroom" | "classroom" | "sports" | "kongjian" | "visit" | "more";
 
 const TABS: Array<{ id: ReserveTab; label: string }> = [
-  { id: "library", label: "图书馆座位" },
-  { id: "libroom", label: "研讨间" },
-  { id: "classroom", label: "空教室" },
-  { id: "sports", label: "体育" },
-  { id: "kongjian", label: "公共空间" },
-  { id: "visit", label: "来访报备" },
-  { id: "more", label: "更多场馆" },
+  { id: "library", get label() { return i18n("pages.info.reservepage.31c17158ebdb"); } },
+  { id: "libroom", get label() { return i18n("pages.info.reservepage.e4d40b4d6759"); } },
+  { id: "classroom", get label() { return i18n("pages.info.reservepage.ecc11c8afea8"); } },
+  { id: "sports", get label() { return i18n("pages.info.reservepage.ef7be5be3c13"); } },
+  { id: "kongjian", get label() { return i18n("pages.info.reservepage.e81059e1a712"); } },
+  { id: "visit", get label() { return i18n("pages.info.reservepage.3fbaca96ff24"); } },
+  { id: "more", get label() { return i18n("pages.info.reservepage.5c82e963dbfd"); } },
 ];
 
 const TAB_IDS = TABS.map((t) => t.id);
@@ -49,6 +50,8 @@ const PARAM_TO_TAB: Record<NonNullable<LearnNav["reserveTab"]>, ReserveTab> = {
 };
 
 export function ReservePage() {
+  const uiLocale = useUiLocale();
+
   const { navParams, navigate } = useApp();
   const direct = navParams?.reserveTab ? PARAM_TO_TAB[navParams.reserveTab] : undefined;
   const [tab, setTab] = useState<ReserveTab>(() => direct ?? "library");
@@ -80,10 +83,10 @@ export function ReservePage() {
   return (
     <>
      <PageHead
-       title="预约"
-       actions={<RootPageStar page="reserve" title="预约" />}
+       title={i18n("pages.info.reservepage.352cdc807892")}
+       actions={<RootPageStar page="reserve" title={i18n("pages.info.reservepage.352cdc807892")} />}
      />
-      <SegmentedOverflow ariaLabel="预约功能" style={{ marginBottom: 14 }}>
+      <SegmentedOverflow ariaLabel={i18n("pages.info.reservepage.2cde685b0f38")} style={{ marginBottom: 14 }}>
         {TABS.map(({ id, label }) => (
           <button
             key={id}
@@ -107,7 +110,7 @@ export function ReservePage() {
       <div hidden={tab !== "more"} className={tab === "more" ? "tab-anim" : undefined} data-dir={tabDir}>
         {visited.has("more") ? (
           <Card>
-            <Empty text="游泳馆、健身房等陆续接入" />
+            <Empty text={i18n("pages.info.reservepage.ab070d2bfaf1")} />
           </Card>
         ) : null}
       </div>

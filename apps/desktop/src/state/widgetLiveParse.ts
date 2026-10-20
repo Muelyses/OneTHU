@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 教室占用 / 洗衣机状态的**解读**（纯函数，可直测）。
  *
@@ -72,10 +73,10 @@ export function roomIsFree(day: number[], now: number): boolean {
 export function roomStatusLine(day: number[], now: number): string {
   const free = (i: number): boolean => day[i] === AVAILABLE;
   const cur = currentSlot(now);
-  if (cur >= 0 && cur < day.length) return `本节${free(cur) ? "空闲" : "占用"}`;
+  if (cur >= 0 && cur < day.length) return i18n("state.widgetliveparse.57d10cc1ae5f", { value: String(free(cur) ? i18n("state.widgetliveparse.dae661d17c2d") : i18n("state.widgetliveparse.c0aa76aebce6")) });
   const next = nextSlot(now);
-  if (next < 0 || next >= day.length) return "今日课程已结束";
-  return `下一节（第 ${next + 1} 节）${free(next) ? "空闲" : "占用"}`;
+  if (next < 0 || next >= day.length) return i18n("state.widgetliveparse.d1adf68fb7c1");
+  return i18n("state.widgetliveparse.265d21e55409", { value: String(next + 1), value2: String(free(next) ? i18n("state.widgetliveparse.dae661d17c2d") : i18n("state.widgetliveparse.c0aa76aebce6")) });
 }
 
 /* ══════════ 三类下沉原子的详情 ══════════ */
@@ -94,10 +95,10 @@ export function washerMachineDetail(device: WasherInfo, all: WasherInfo[], build
   const idleState = device.status === "idle";
   const working = device.status === "working";
   const state = idleState
-    ? "空闲"
+    ? i18n("state.widgetliveparse.dae661d17c2d")
     : working
-      ? (device.eta && device.eta > 0 ? `使用中 · 剩 ${device.eta} 分钟` : "使用中")
-      : "状态未知";
+      ? (device.eta && device.eta > 0 ? i18n("state.widgetliveparse.8a60db5caa68", { eta: String(device.eta) }) : i18n("state.widgetliveparse.fa48e8938940"))
+      : i18n("state.widgetliveparse.93e474c68ed5");
   const idle = all.filter((x) => x.status === "idle").length;
   return {
     rows: [
@@ -108,9 +109,9 @@ export function washerMachineDetail(device: WasherInfo, all: WasherInfo[], build
         strong: true,
         size: "lg",
       },
-      { text: `${buildingName} 共 ${all.length} 台，空闲 ${idle} 台`, size: "sm" },
+      { text: i18n("state.widgetliveparse.07515e34255e", { buildingName: String(buildingName), length: String(all.length), idle: String(idle) }), size: "sm" },
     ],
-    footer: working && device.eta && device.eta > 0 ? `约 ${device.eta} 分钟后可用` : "点开可换一台",
+    footer: working && device.eta && device.eta > 0 ? i18n("state.widgetliveparse.54600c24d258", { eta: String(device.eta) }) : i18n("state.widgetliveparse.64cc1b332e59"),
   };
 }
 
@@ -121,14 +122,14 @@ export function washerBuildingDetail(all: WasherInfo[], buildingName: string): {
   for (const w of idleList) byFloor.set(w.floor ?? "—", (byFloor.get(w.floor ?? "—") ?? 0) + 1);
   const rows: LiveRow[] = [
     {
-      text: `空闲 ${idleList.length} / ${all.length} 台`,
+      text: i18n("state.widgetliveparse.4bb42d78f0c7", { length: String(idleList.length), length2: String(all.length) }),
       color: idleList.length > 0 ? STATE_COLOR.ok : STATE_COLOR.muted,
       strong: true,
       size: "lg",
     },
   ];
   for (const [floor, n] of [...byFloor.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2)) {
-    rows.push({ text: `${floor} 空闲 ${n} 台`, size: "sm" });
+    rows.push({ text: i18n("state.widgetliveparse.c28bedfada8f", { floor: String(floor), n: String(n) }), size: "sm" });
   }
   return { rows, footer: buildingName };
 }
@@ -146,13 +147,13 @@ export function roomDetail(day: number[], roomName: string, now: number): { rows
     },
   ];
   const freeSlots = day.map((s, i) => (s === AVAILABLE ? i + 1 : 0)).filter((n) => n > 0);
-  rows.push({ text: freeSlots.length ? `今日空闲：第 ${freeSlots.join("、")} 节` : "今日已排满", size: "sm" });
+  rows.push({ text: freeSlots.length ? i18n("state.widgetliveparse.752d4d896d52", { value: String(freeSlots.join("、")) }) : i18n("state.widgetliveparse.1de2a5caa8a2"), size: "sm" });
   const cur = currentSlot(now);
   if (cur >= 0 && cur < day.length) {
     const [from, to] = SLOT_TIMES[cur]!;
-    rows.push({ text: `现在第 ${cur + 1} 节 ${fmtClock(from)}–${fmtClock(to)}`, sub: "点开看整周占用", size: "sm" });
+    rows.push({ text: i18n("state.widgetliveparse.746a6f8de6fe", { value: String(cur + 1), value2: String(fmtClock(from)), value3: String(fmtClock(to)) }), sub: i18n("state.widgetliveparse.b26d62348141"), size: "sm" });
   }
-  return { rows, footer: `${roomName ? roomName + " · " : ""}今日占用总览` };
+  return { rows, footer: i18n("state.widgetliveparse.237de31a1f9c", { value: String(roomName ? roomName + " · " : "") }) };
 }
 
 /** 教学楼：本节（或下一节）空闲间数 + 全天空闲分布 */
@@ -165,13 +166,13 @@ export function buildingDetail(rooms: Array<{ name: string; day: number[] }>, bu
   if (at >= 0) {
     const n = counts[at] ?? 0;
     rows.push({
-      text: `${cur >= 0 ? "本节" : "下一节"}空闲 ${n} / ${rooms.length} 间`,
+      text: i18n("state.widgetliveparse.8f1e1ec64048", { value: String(cur >= 0 ? i18n("state.widgetliveparse.eacbe16713ec") : i18n("state.widgetliveparse.426f5597e4bf")), n: String(n), length: String(rooms.length) }),
       sub: buildingName,
       color: n > 0 ? STATE_COLOR.ok : STATE_COLOR.bad,
       strong: true,
       size: "lg",
     });
   }
-  rows.push({ text: `全天空闲：${counts.map((c, i) => `第${i + 1}节 ${c}`).join(" · ")}`, size: "sm" });
-  return { rows, footer: `${buildingName}楼 · 实时占用` };
+  rows.push({ text: i18n("state.widgetliveparse.7345391451d0", { value: String(counts.map((c, i) => i18n("state.widgetliveparse.23d925aa7711", { value: String(i + 1), c: String(c) })).join(" · ")) }), size: "sm" });
+  return { rows, footer: i18n("state.widgetliveparse.d3214224f7e7", { buildingName: String(buildingName) }) };
 }

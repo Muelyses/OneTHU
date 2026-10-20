@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 个人信息页 —— getUserInfo（yyfw 漫游 F315577F… 后正则取名/邮箱；
@@ -11,28 +12,29 @@ import { useApp } from "../../state/context.js";
 import { displayStudentId } from "../../lib/privacy.js";
 
 export function ProfileTab() {
+  const uiLocale = useUiLocale();
+
   const { user } = useApp();
   const { data, state, error, reload } = useProfile();
 
   const rows: Array<[string, string | undefined]> = [
-    ["姓名", data?.name],
-    ["学号", data?.studentId || displayStudentId(user?.username)],
-    ["性别", data?.gender],
-    ["院系", data?.department],
-    ["专业", data?.major],
-    ["登录账号", displayStudentId(user?.username)],
+    [i18n("pages.info.profiletab.50b5b1d2abef"), data?.name],
+    [i18n("pages.info.profiletab.c4d678ef6e37"), data?.studentId || displayStudentId(user?.username)],
+    [i18n("pages.info.profiletab.a752a7d8c127"), data?.gender],
+    [i18n("pages.info.profiletab.ac439859ca01"), data?.department],
+    [i18n("pages.info.profiletab.349b21c03d6a"), data?.major],
+    [i18n("pages.info.profiletab.d9a999a7c8e8"), displayStudentId(user?.username)],
   ];
 
   return (
     <>
       <SectionHead
-        title="个人信息"
-        aside="由信息门户提供"
+        title={i18n("pages.info.profiletab.640803d89773")}
+        aside={i18n("pages.info.profiletab.09048b67c1e6")}
         /* actions 参数不存在，刷新按钮放下方标题行右缘 */
       />
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-        <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
-        </Btn>
+        <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.info.profiletab.aee887434131")}</Btn>
       </div>
 
       {state === "error" ? <ErrorNote text={error ?? ""} onRetry={() => void reload()} /> : null}
@@ -41,7 +43,7 @@ export function ProfileTab() {
         <SkeletonRows rows={5} />
       ) : !data ? (
         <Card>
-          <Empty text="暂无个人信息。" />
+          <Empty text={i18n("pages.info.profiletab.5328f4fc33df")} />
         </Card>
       ) : (
         <Card style={{ padding: 0, overflow: "hidden" }}>

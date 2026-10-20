@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 云盘目录/分享小工具（组织空间、好友共享云盘共用）。
  * 只做「确保资料库/目录 → 上传一个说明文件 → 分享」；失败如实抛错，调用方决定降级。
@@ -11,14 +12,14 @@ export interface CloudShare { repoId: string; path: string; shareUrl: string; sh
 export async function ensureOneThuRepo(): Promise<string> {
   await ensureSeafileLoaded();
   const token = getSeafileToken();
-  if (!token) throw new Error("清华云盘未连接：先到云盘页粘贴 token");
+  if (!token) throw new Error(i18n("lib.cloudfolder.0507dadfda6a"));
   const repos = await invoke<Repo[]>("seafile_repos", { token });
   const hit = repos.find((r) => r.name === "OneTHU");
   if (hit) return hit.id;
   await invoke("seafile_create_repo", { token, name: "OneTHU" });
   const again = await invoke<Repo[]>("seafile_repos", { token });
   const made = again.find((r) => r.name === "OneTHU");
-  if (!made) throw new Error("创建 OneTHU 资料库失败");
+  if (!made) throw new Error(i18n("lib.cloudfolder.eb7894f3378f"));
   return made.id;
 }
 
@@ -32,7 +33,7 @@ async function writeTemp(name: string, text: string): Promise<string> {
 export async function prepareAndShareFolder(path: string, title: string, expireDays = 7): Promise<CloudShare> {
   await ensureSeafileLoaded();
   const token = getSeafileToken();
-  if (!token) throw new Error("清华云盘未连接：先到云盘页粘贴 token");
+  if (!token) throw new Error(i18n("lib.cloudfolder.0507dadfda6a"));
   const repoId = await ensureOneThuRepo();
   const dir = path.startsWith("/") ? path : `/${path}`;
   await invoke("seafile_mkdir", { token, repoId, path: dir });

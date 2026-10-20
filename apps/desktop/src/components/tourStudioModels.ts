@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { selectStudioScreen, type StudioScreenAssets, type StudioScreenKey } from "./tourStudioScreens.js";
@@ -27,7 +28,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
       for (const source of [selection.primary, selection.secondary]) {
         if (!source) continue;
         const image = screens?.[source.key];
-        if (!image?.complete || !image.naturalWidth || !image.naturalHeight) throw new Error(`真实界面截图尚未就绪：${source.key}`);
+        if (!image?.complete || !image.naturalWidth || !image.naturalHeight) throw new Error(i18n("components.tourstudiomodels.fca0380c4f7e", { key: String(source.key) }));
       }
     }
   }
@@ -111,7 +112,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
   const screenMaterials = new Map<StudioScreenKey, THREE.MeshBasicMaterial>();
   function screenshotFace(key: StudioScreenKey, maxWidth = 1.16, maxHeight = 2.51, radius = .075): THREE.Mesh {
     const image = screens?.[key];
-    if (!image?.complete || !image.naturalWidth || !image.naturalHeight) throw new Error(`真实界面截图尚未就绪：${key}`);
+    if (!image?.complete || !image.naturalWidth || !image.naturalHeight) throw new Error(i18n("components.tourstudiomodels.fca0380c4f7e", { key: String(key) }));
     let surface = screenMaterials.get(key);
     if (!surface) {
       const texture = new THREE.Texture(image); texture.colorSpace = THREE.SRGBColorSpace; texture.anisotropy = 4; texture.needsUpdate = true; textures.add(texture);
@@ -143,7 +144,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     const before = selectStudioScreen(lesson, mode, false), after = selectStudioScreen(lesson, mode, true);
     const beforeKey = (receiver ? before.secondary : before.primary)?.key;
     const afterKey = (receiver ? after.secondary : after.primary)?.key;
-    if (!beforeKey || !afterKey) throw new Error("手机演示缺少真实界面截图");
+    if (!beforeKey || !afterKey) throw new Error(i18n("components.tourstudiomodels.cf4324a5411f"));
     const screen = screenshotFace(beforeKey); screen.name = `${name}-screen`; screen.position.set(0, 0, .109); result.add(screen);
     if (afterKey !== beforeKey) {
       const afterFace = screenshotFace(afterKey); afterFace.name = `${name}-screen-after`; afterFace.position.copy(screen.position); result.add(afterFace);
@@ -185,10 +186,10 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
       tablet.rotation.set(mix(.12, -.025, p), mix(-.25, .035, p), mix(-.04, 0, p));
     };
   } else if (lesson === "organization") {
-    const identity = card(3.25, 1.23, { eyebrow: "名片与组织绑定", title: "同学工作室", subtitle: "成员 · 文件 · 项目 · 公告" }, "studio-org-identity", .11);
+    const identity = card(3.25, 1.23, { eyebrow: i18n("components.tourstudiomodels.6fef00bb252c"), title: i18n("components.tourstudiomodels.1c23243a9085"), subtitle: i18n("components.tourstudiomodels.06f8b75c9666") }, "studio-org-identity", .11);
     group.add(identity);
-    const members = ["负责人", "协作者", "查看者"].map((title, index) => {
-      const member = card(1.3, .98, { eyebrow: ["林同学", "周同学", "陈同学"][index], title, subtitle: ["组织管理", "共同编辑", "阅读资料"][index] }, `studio-org-member-${index}`, .075); group.add(member); return member;
+    const members = [i18n("components.tourstudiomodels.a525346277ed"), i18n("components.tourstudiomodels.5c05d463d109"), i18n("components.tourstudiomodels.392a69fb2ef7")].map((title, index) => {
+      const member = card(1.3, .98, { eyebrow: [i18n("components.tourstudiomodels.eddeec1a4275"), i18n("components.tourstudiomodels.0a27a98a90c3"), i18n("components.tourstudiomodels.6885fcbe795c")][index], title, subtitle: [i18n("components.tourstudiomodels.dde28d3ac66c"), i18n("components.tourstudiomodels.80b6a54ddb31"), i18n("components.tourstudiomodels.7edb884bee96")][index] }, `studio-org-member-${index}`, .075); group.add(member); return member;
     });
     applyPose = progress => {
       const p = clamp(progress); identity.position.set(0, mix(.36, .66, p), mix(.12, -.04, p)); identity.rotation.set(mix(-.07, .015, p), mix(-.18, -.04, p), mix(-.04, 0, p));
@@ -198,9 +199,9 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
       });
     };
   } else if (lesson === "code") {
-    const source = card(1.35, 1.85, { eyebrow: "我的内容", title: "一组内容", rows: ["课程资料", "项目文件"], badge: "3 项" }, "studio-code-source"); source.position.set(-1.55, 0, -.05); source.rotation.y = .2;
-    const key = card(1.28, .67, { eyebrow: "演示短口令", title: "ON · 7K2P", compact: true }, "studio-code-key", .09); key.position.set(0, .02, .12);
-    const recipient = card(1.45, 1.95, { eyebrow: "接收方", title: "已接收", rows: ["课程资料", "项目文件"], badge: "3 项内容" }, "studio-code-recipient", .12); group.add(source, key, recipient);
+    const source = card(1.35, 1.85, { eyebrow: i18n("components.tourstudiomodels.90c7cebe15c6"), title: i18n("components.tourstudiomodels.d38b22e68fc1"), rows: [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.07e577ff8c0d")], badge: i18n("components.tourstudiomodels.49ef840efe6f") }, "studio-code-source"); source.position.set(-1.55, 0, -.05); source.rotation.y = .2;
+    const key = card(1.28, .67, { eyebrow: i18n("components.tourstudiomodels.b0c8602734bb"), title: "ON · 7K2P", compact: true }, "studio-code-key", .09); key.position.set(0, .02, .12);
+    const recipient = card(1.45, 1.95, { eyebrow: i18n("components.tourstudiomodels.d513aac3caac"), title: i18n("components.tourstudiomodels.92f20b9fa474"), rows: [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.07e577ff8c0d")], badge: i18n("components.tourstudiomodels.21c80015e886") }, "studio-code-recipient", .12); group.add(source, key, recipient);
     applyPose = progress => { const p = clamp(progress); recipient.position.set(mix(1.56, 1.54, p), mix(.12, 0, p), mix(-.13, .18, p)); recipient.rotation.set(mix(.08, -.035, p), mix(-Math.PI * .92, -.16, p), mix(.07, 0, p)); key.rotation.set(0, mix(-.12, .025, p), 0); };
   } else if (lesson === "vault") {
     const box = new THREE.Group(); box.name = "studio-vault-body"; box.position.set(1.13, -.25, -.12); box.rotation.set(.09, -.27, 0); group.add(box);
@@ -208,14 +209,14 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     const base = solid(1.7, .09, 1.2, .04, boxSurface); base.position.y = -.65; box.add(base);
     for (const side of [-1, 1]) { const wall = solid(.085, 1.3, 1.2, .038, boxSurface); wall.position.x = side * .81; box.add(wall); }
     for (const side of [-1, 1]) { const wall = solid(1.7, 1.3, .085, .038, boxSurface); wall.position.z = side * .56; box.add(wall); }
-    const label = canvasFace(1.28, .5, { title: "暂存箱", subtitle: "内容留存 · 按需分享", compact: true, background: palette.body }); label.position.set(0, .08, .605); box.add(label);
+    const label = canvasFace(1.28, .5, { title: i18n("components.tourstudiomodels.804002a9c49a"), subtitle: i18n("components.tourstudiomodels.ca0df86f3c7e"), compact: true, background: palette.body }); label.position.set(0, .08, .605); box.add(label);
     const handle = solid(.48, .06, .07, .025, aluminium); handle.position.set(0, -.26, .64); box.add(handle);
     const lidPivot = new THREE.Group(); lidPivot.name = "studio-vault-lid"; lidPivot.position.set(0, .67, -.59);
     const lid = solid(1.76, .09, 1.25, .042, boxSurface); lid.position.z = .59; lidPivot.add(lid); box.add(lidPivot);
-    const originals = ["课程资料", "一段文字", "项目文件"].map((title, index) => {
+    const originals = [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.70b7371a692c"), i18n("components.tourstudiomodels.07e577ff8c0d")].map((title, index) => {
       const item = card(1.66, .51, { eyebrow: `0${index + 1}`, title, compact: true }, `studio-vault-original-${index}`); item.position.set(-1.34, .46 - index * .53, .05 + index * .035); item.rotation.set(.02, .12, index === 1 ? .045 : -.045); group.add(item); return item;
     });
-    const parcels = originals.map((_, index) => { const item = card(.65, .4, { title: "资料", compact: true }, `studio-vault-parcel-${index}`, .035); group.add(item); return item; });
+    const parcels = originals.map((_, index) => { const item = card(.65, .4, { title: i18n("components.tourstudiomodels.cba1ec75f4ca"), compact: true }, `studio-vault-parcel-${index}`, .035); group.add(item); return item; });
     applyPose = progress => {
       const p = clamp(progress); lidPivot.rotation.x = mix(0, -1.68, clamp(p * 2.1));
       parcels.forEach((parcel, index) => { const t = clamp((p - index * .11) / .76); parcel.visible = p > index * .11 && t < 1; parcel.position.set(mix(-1.34, 1.13, t), mix(.46 - index * .53, -.36, t) + Math.sin(t * Math.PI) * 1.75, mix(.25, -.03, t)); parcel.rotation.set(-t * .8, -.3 + t * .5, -.1 + Math.sin(t * Math.PI) * .25); });

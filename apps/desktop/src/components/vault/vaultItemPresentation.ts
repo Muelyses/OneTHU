@@ -1,3 +1,4 @@
+import { t as i18n } from "../../i18n/index.js";
 import type { VaultCatch } from "../../state/vault.js";
 
 export { CONTENT_ICON_PATHS as VAULT_ICON_PATHS } from "../contentIconPaths.js";
@@ -13,23 +14,23 @@ export interface VaultItemPresentation {
 
 type Kind = readonly [label: string, icon: string];
 const ATOM_KINDS: Record<string, Kind> = {
-  course: ["课程", "book"], "courseX-c": ["课程", "book"], assignment: ["作业", "check"],
-  file: ["课程文件", "file"], notice: ["课程通知", "bell"], mail: ["邮件", "mail"],
-  news: ["新闻", "text"], "news-src": ["新闻订阅", "text"], folder: ["收藏夹", "folder"],
-  widget: ["组件", "board"], action: ["操作", "check"], forum: ["论坛", "text"], "bbs-board": ["版面", "text"],
-  "gitlab-proj": ["GitLab 项目", "gitlab"], "gitlab-issue": ["GitLab 议题", "gitlab"], "gitlab-mr": ["合并请求", "gitlab"],
-  library: ["图书馆", "book"], "library-a": ["图书馆区域", "book"], "library-f": ["图书馆楼层", "book"],
-  "classroom-b": ["教学楼", "location"], "classroom-r": ["教室", "location"], "libroom-k": ["研讨间", "location"],
-  "kj-space": ["公共空间", "location"], "kj-room": ["房间", "location"], "sports-v": ["体育场馆", "location"],
-  "washer-b": ["洗衣楼栋", "location"], "washer-m": ["洗衣机", "inbox"],
-  "thos-service": ["校内服务", "link"], infoapp: ["Info 应用", "link"],
+  get course(): Kind { return [i18n("components.vault.vaultitempresentation.60db1afb4022"), "book"]; }, get "courseX-c"(): Kind { return [i18n("components.vault.vaultitempresentation.60db1afb4022"), "book"]; }, get assignment(): Kind { return [i18n("components.vault.vaultitempresentation.b0dff016ff17"), "check"]; },
+  get file(): Kind { return [i18n("components.vault.vaultitempresentation.2bb745fb2e6f"), "file"]; }, get notice(): Kind { return [i18n("components.vault.vaultitempresentation.f37a13fc55b3"), "bell"]; }, get mail(): Kind { return [i18n("components.vault.vaultitempresentation.3d708e8e8b1f"), "mail"]; },
+  get news(): Kind { return [i18n("components.vault.vaultitempresentation.d39567b2b9f1"), "text"]; }, get "news-src"(): Kind { return [i18n("components.vault.vaultitempresentation.e26e5de89c0a"), "text"]; }, get folder(): Kind { return [i18n("components.vault.vaultitempresentation.796d20e91588"), "folder"]; },
+  get widget(): Kind { return [i18n("components.vault.vaultitempresentation.783d638053ea"), "board"]; }, get action(): Kind { return [i18n("components.vault.vaultitempresentation.ed31fbb483ee"), "check"]; }, get forum(): Kind { return [i18n("components.vault.vaultitempresentation.909f281e0537"), "text"]; }, get "bbs-board"(): Kind { return [i18n("components.vault.vaultitempresentation.2dd2abd8ce5c"), "text"]; },
+  get "gitlab-proj"(): Kind { return [i18n("components.vault.vaultitempresentation.6aa71ddd8364"), "gitlab"]; }, get "gitlab-issue"(): Kind { return [i18n("components.vault.vaultitempresentation.6955d2975471"), "gitlab"]; }, get "gitlab-mr"(): Kind { return [i18n("components.vault.vaultitempresentation.dd42589239f7"), "gitlab"]; },
+  get library(): Kind { return [i18n("components.vault.vaultitempresentation.266e6cb77079"), "book"]; }, get "library-a"(): Kind { return [i18n("components.vault.vaultitempresentation.360ffb101c98"), "book"]; }, get "library-f"(): Kind { return [i18n("components.vault.vaultitempresentation.80dc57894c8c"), "book"]; },
+  get "classroom-b"(): Kind { return [i18n("components.vault.vaultitempresentation.5c8d010fd9a3"), "location"]; }, get "classroom-r"(): Kind { return [i18n("components.vault.vaultitempresentation.df7a65bb1371"), "location"]; }, get "libroom-k"(): Kind { return [i18n("components.vault.vaultitempresentation.e4d40b4d6759"), "location"]; },
+  get "kj-space"(): Kind { return [i18n("components.vault.vaultitempresentation.e81059e1a712"), "location"]; }, get "kj-room"(): Kind { return [i18n("components.vault.vaultitempresentation.96b2d406041b"), "location"]; }, get "sports-v"(): Kind { return [i18n("components.vault.vaultitempresentation.e00b99270be7"), "location"]; },
+  get "washer-b"(): Kind { return [i18n("components.vault.vaultitempresentation.218e2d1b3853"), "location"]; }, get "washer-m"(): Kind { return [i18n("components.vault.vaultitempresentation.6acfa1db6a62"), "inbox"]; },
+  get "thos-service"(): Kind { return [i18n("components.vault.vaultitempresentation.510e6ec15a9e"), "link"]; }, get infoapp(): Kind { return [i18n("components.vault.vaultitempresentation.d4f7864690bb"), "link"]; },
 };
 const PAYLOAD_KINDS: Record<string, Kind> = {
-  "cloud-folder": ["云盘文件夹", "folder"], "cloud-file": ["云盘文件", "cloud"],
-  schedule: ["日程", "calendar"], namecard: ["个人名片", "card"], workspace: ["工作区", "workspace"],
-  "gitlab-project": ["GitLab 项目", "gitlab"], theme: ["主题", "theme"], wallpaper: ["壁纸", "image"],
-  plugin: ["插件", "plugin"], "learn-notice": ["课程通知", "bell"],
-  "learn-attachment": ["课程附件", "file"], "news-file": ["新闻附件", "file"],
+  get "cloud-folder"(): Kind { return [i18n("components.vault.vaultitempresentation.fc01d82d7556"), "folder"]; }, get "cloud-file"(): Kind { return [i18n("components.vault.vaultitempresentation.b5f224115dae"), "cloud"]; },
+  get schedule(): Kind { return [i18n("components.vault.vaultitempresentation.a14f23af7016"), "calendar"]; }, get namecard(): Kind { return [i18n("components.vault.vaultitempresentation.fd5394f29856"), "card"]; }, get workspace(): Kind { return [i18n("components.vault.vaultitempresentation.37979829426b"), "workspace"]; },
+  get "gitlab-project"(): Kind { return [i18n("components.vault.vaultitempresentation.6aa71ddd8364"), "gitlab"]; }, get theme(): Kind { return [i18n("components.vault.vaultitempresentation.788db1cfec2a"), "theme"]; }, get wallpaper(): Kind { return [i18n("components.vault.vaultitempresentation.bbaa9f06378b"), "image"]; },
+  get plugin(): Kind { return [i18n("components.vault.vaultitempresentation.e806fbbe8ec6"), "plugin"]; }, get "learn-notice"(): Kind { return [i18n("components.vault.vaultitempresentation.f37a13fc55b3"), "bell"]; },
+  get "learn-attachment"(): Kind { return [i18n("components.vault.vaultitempresentation.12bf9e7490d3"), "file"]; }, get "news-file"(): Kind { return [i18n("components.vault.vaultitempresentation.9eb3f2fa22ec"), "file"]; },
 };
 
 function record(value: unknown): Record<string, unknown> {
@@ -57,16 +58,16 @@ function pageIcon(page: string): string {
 }
 function fileKind(name: string, mime: string): Kind {
   const extension = name.split(".").pop()?.toLowerCase() ?? "";
-  if (mime === "application/pdf" || extension === "pdf") return ["PDF 文件", "file"];
-  if (mime.startsWith("image/") || /^(png|jpe?g|gif|webp|svg|heic|heif|bmp|avif|tiff?)$/.test(extension)) return ["图片", "image"];
-  if (mime.startsWith("video/") || /^(mp4|mov|mkv|webm|avi|m4v)$/.test(extension)) return ["视频", "video"];
-  if (mime.startsWith("audio/") || /^(mp3|m4a|wav|ogg|flac|aac)$/.test(extension)) return ["音频", "audio"];
-  if (/spreadsheet|excel/.test(mime) || /^(xlsx?|csv|ods)$/.test(extension)) return ["表格", "table"];
-  if (/presentation|powerpoint/.test(mime) || /^(pptx?|odp|key)$/.test(extension)) return ["演示文稿", "slides"];
-  if (/zip|compressed|archive/.test(mime) || /^(zip|rar|7z|tar|gz|bz2|xz)$/.test(extension)) return ["压缩文件", "archive"];
-  if (/^(js|jsx|ts|tsx|py|java|c|cpp|h|html|css|json|xml|sh|rs|go|swift)$/.test(extension)) return ["代码文件", "code"];
-  if (mime.startsWith("text/") || /^(txt|md|rtf|docx?|odt|pages)$/.test(extension)) return ["文档", "file"];
-  return ["文件", "file"];
+  if (mime === "application/pdf" || extension === "pdf") return [i18n("components.vault.vaultitempresentation.cdda5d2fdd8a"), "file"];
+  if (mime.startsWith("image/") || /^(png|jpe?g|gif|webp|svg|heic|heif|bmp|avif|tiff?)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.d24c10d37db0"), "image"];
+  if (mime.startsWith("video/") || /^(mp4|mov|mkv|webm|avi|m4v)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.c20f7618d330"), "video"];
+  if (mime.startsWith("audio/") || /^(mp3|m4a|wav|ogg|flac|aac)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.296c632ec857"), "audio"];
+  if (/spreadsheet|excel/.test(mime) || /^(xlsx?|csv|ods)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.22d9e7c54b88"), "table"];
+  if (/presentation|powerpoint/.test(mime) || /^(pptx?|odp|key)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.54f982631040"), "slides"];
+  if (/zip|compressed|archive/.test(mime) || /^(zip|rar|7z|tar|gz|bz2|xz)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.8b512613643a"), "archive"];
+  if (/^(js|jsx|ts|tsx|py|java|c|cpp|h|html|css|json|xml|sh|rs|go|swift)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.a8f2a0de5fdf"), "code"];
+  if (mime.startsWith("text/") || /^(txt|md|rtf|docx?|odt|pages)$/.test(extension)) return [i18n("components.vault.vaultitempresentation.2687ccdbb1d2"), "file"];
+  return [i18n("components.vault.vaultitempresentation.39932f24fe11"), "file"];
 }
 function fileSize(size: unknown): string {
   if (typeof size !== "number" || !Number.isFinite(size) || size < 0) return "";
@@ -78,7 +79,7 @@ function fileSize(size: unknown): string {
 
 /** Synchronous metadata only: no registry initialization, file reads, or network requests. */
 export function vaultItemPresentation(item: VaultCatch): VaultItemPresentation {
-  let kind: Kind = ["已存内容", "inbox"];
+  let kind: Kind = [i18n("components.vault.vaultitempresentation.51aca5c2a97e"), "inbox"];
   let detail = text(item.sub) || text(item.source);
   if (item.type === "file") {
     const name = item.file?.name || item.title;
@@ -90,28 +91,28 @@ export function vaultItemPresentation(item: VaultCatch): VaultItemPresentation {
     return { label: kind[0], detail: detail.slice(0, 120), icon: kind[1], ...(extension ? { badge: extension } : {}) };
   }
   if (item.type === "text") {
-    kind = ["文字", "text"];
+    kind = [i18n("components.vault.vaultitempresentation.14b69bd6eeb0"), "text"];
     detail = text(item.text) || detail;
   } else if (item.type === "board-item") {
-    kind = ["白板组件", "board"];
+    kind = [i18n("components.vault.vaultitempresentation.206359b4b54d"), "board"];
   } else if (item.atom) {
     const { kind: atomKind, key } = item.atom;
     if (atomKind === "page" || atomKind === "tab") {
       // Tab keys start with a page id followed by '~' and encoded parameters.
-      kind = [atomKind === "tab" ? "标签页" : "快捷入口", pageIcon(key.split("~")[0] ?? key)];
-    } else kind = lookup(ATOM_KINDS, atomKind) ?? (atomKind.startsWith("plugin:") ? ["插件内容", "plugin"] : ["应用对象", "link"]);
+      kind = [atomKind === "tab" ? i18n("components.vault.vaultitempresentation.a626aad412b7") : i18n("components.vault.vaultitempresentation.5f2cfbfecf9f"), pageIcon(key.split("~")[0] ?? key)];
+    } else kind = lookup(ATOM_KINDS, atomKind) ?? (atomKind.startsWith("plugin:") ? [i18n("components.vault.vaultitempresentation.0cffe0f50c72"), "plugin"] : [i18n("components.vault.vaultitempresentation.1fd167c6ae13"), "link"]);
   } else if (item.type === "payload") {
     const payload = record(item.payload), payloadKind = text(payload.kind);
-    kind = lookup(PAYLOAD_KINDS, payloadKind) ?? (payload.routeId || payload.settingTitle ? ["设置项", "theme"] : kind);
+    kind = lookup(PAYLOAD_KINDS, payloadKind) ?? (payload.routeId || payload.settingTitle ? [i18n("components.vault.vaultitempresentation.44bc7ccc3677"), "theme"] : kind);
     if (payloadKind === "namecard") {
-      kind = payload.org ? ["组织名片", "organization"] : ["个人名片", "card"];
+      kind = payload.org ? [i18n("components.vault.vaultitempresentation.b1bd19b13336"), "organization"] : [i18n("components.vault.vaultitempresentation.fd5394f29856"), "card"];
       const card = record(payload.card);
       detail = text(item.sub) || text(card.bio) || text(card.brief) || text(card.name) || detail;
     } else if (payloadKind === "quick-entry") {
       const entry = record(payload.entry);
-      kind = entry.kind === "workspace" ? ["工作区", "workspace"] : entry.kind === "board" ? ["OnePage", "board"] : ["快捷入口", pageIcon(text(entry.page))];
+      kind = entry.kind === "workspace" ? [i18n("components.vault.vaultitempresentation.37979829426b"), "workspace"] : entry.kind === "board" ? ["OnePage", "board"] : [i18n("components.vault.vaultitempresentation.5f2cfbfecf9f"), pageIcon(text(entry.page))];
     } else if (payloadKind === "tab") {
-      kind = ["标签页", pageIcon(text(payload.page))];
+      kind = [i18n("components.vault.vaultitempresentation.a626aad412b7"), pageIcon(text(payload.page))];
     } else if (payloadKind === "schedule") {
       detail = text(item.sub) || [text(payload.date), text(payload.location), text(payload.note)].filter(Boolean).join(" · ") || detail;
     } else if (payloadKind === "cloud-folder" || payloadKind === "cloud-file") {

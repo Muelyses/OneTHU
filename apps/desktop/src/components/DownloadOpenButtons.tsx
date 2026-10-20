@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 下载完成提示右侧的「打开文件 / 打开目录」小图标按钮（R23，霖需求）。
@@ -19,6 +20,8 @@ import { openLocalPath, revealLocalPath } from "../lib/localFile.js";
 import { showToast } from "../state/toast.js";
 
 export function DownloadOpenButtons({ path }: { path: string }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [busy, setBusy] = useState<"" | "file" | "dir">("");
   if (isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined)) return null;
   if (!path) return null;
@@ -29,19 +32,19 @@ export function DownloadOpenButtons({ path }: { path: string }): ReactNode {
       if (kind === "file") await openLocalPath(path);
       else await revealLocalPath(path);
     } catch (e) {
-      showToast(`${kind === "file" ? "打开文件" : "打开目录"}失败：${e instanceof Error ? e.message : String(e)}`);
+      showToast(i18nMsg("components.downloadopenbuttons.ba0f72777540", { value: String(kind === "file" ? i18n("components.downloadopenbuttons.4c8a4e3da39e") : i18n("components.downloadopenbuttons.7d0d5850515d")), value2: String(e instanceof Error ? e.message : String(e)) }));
     } finally {
       setBusy("");
     }
   };
 
   return (
-    <span className="dl-open-btns" role="group" aria-label="打开下载的文件">
-      <Btn variant="ghost" titleAttr="打开文件（系统默认应用）" aria-label="打开文件" disabled={busy !== ""} onClick={(e) => {
+    <span className="dl-open-btns" role="group" aria-label={i18n("components.downloadopenbuttons.8e41f8c5d046")}>
+      <Btn variant="ghost" titleAttr={i18n("components.downloadopenbuttons.ab6abf6a2149")} aria-label={i18n("components.downloadopenbuttons.4c8a4e3da39e")} disabled={busy !== ""} onClick={(e) => {
           e.stopPropagation();
           void run("file");
         }}><IconFile width={14} height={14} /></Btn>
-      <Btn variant="ghost" titleAttr="打开目录（定位到文件）" aria-label="打开目录" disabled={busy !== ""} onClick={(e) => {
+      <Btn variant="ghost" titleAttr={i18n("components.downloadopenbuttons.74e3f19da118")} aria-label={i18n("components.downloadopenbuttons.7d0d5850515d")} disabled={busy !== ""} onClick={(e) => {
           e.stopPropagation();
           void run("dir");
         }}><IconFolder width={14} height={14} /></Btn>

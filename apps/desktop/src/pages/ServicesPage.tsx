@@ -1,3 +1,5 @@
+import { labelForId } from "../i18n/staticLabels.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 服务分组目录页（UI/UX 改造方案 §2.2/§2.3-5，M1 beta）。
  * - 唯一数据源 state/navigation.ts（NAV_REGISTRY）：分组目录、搜索、推荐、绑定引导
@@ -21,6 +23,8 @@ import { ohAsk } from "../plugins/ChatDock.js";
 
 /** 搜索结果里的原子行（页面/实体/门户应用/在线服务），点击走原子 open（自动记使用统计） */
 function AtomResultRow({ hit }: { hit: AtomHit }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const view = resolveAtom({ kind: hit.kind, key: hit.key });
   if (!view) return null;
@@ -38,6 +42,8 @@ function AtomResultRow({ hit }: { hit: AtomHit }): ReactNode {
 
 /** 目录行：优先复用同名页面原子的图标/副标题/使用统计链路 */
 function ServiceRow({ entry }: { entry: NavEntry }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const view = (() => {
     const ref = pageAtomRef(entry.id);
@@ -61,6 +67,8 @@ function ServiceRow({ entry }: { entry: NavEntry }): ReactNode {
 }
 
 export function ServicesPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const [q, setQ] = useState("");
   // 插件功能页：抽屉退役后的移动端插件入口（与侧栏同一数据源）
@@ -69,8 +77,8 @@ export function ServicesPage(): ReactNode {
   const query = q.trim();
   // 搜索走 state/searchAll.ts：与 PC 命令面板同一份组合（注册表 + 原子 + 设置页签），
   // 避免两处各写一套导致「面板搜得到、服务页搜不到」。
-  const hits = useMemo(() => searchAll(query).entries, [query]);
-  const atomHits = useMemo(() => searchAll(query).atoms, [query]);
+  const hits = useMemo(() => searchAll(query).entries, [uiLocale, query]);
+  const atomHits = useMemo(() => searchAll(query).atoms, [uiLocale, query]);
 
   const groups = NAV_CATEGORIES.map((cat) => ({
     cat,
@@ -79,14 +87,14 @@ export function ServicesPage(): ReactNode {
 
   return (
     <>
-      <PageHead title="服务" meta="按事情找功能 · 搜索全量兜底" />
+      <PageHead title={i18n("pages.servicespage.ec309ab207ef")} meta={i18n("pages.servicespage.f940b3c11b8d")} />
       <div className="svc-search">
         <IconSearch width={15} height={15} />
         <input
-          placeholder="搜功能，如：电费 / 洗衣机 / 成绩 / 雨课堂"
+          placeholder={i18n("pages.servicespage.4d89ec6a9c46")}
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          aria-label="搜索功能"
+          aria-label={i18n("pages.servicespage.505ea9c9f199")}
         />
       </div>
       {query ? (
@@ -96,8 +104,8 @@ export function ServicesPage(): ReactNode {
             <Card className="svc-card">
               <button className="svc-row svc-row-oh" onClick={() => ohAsk(query)}>
                 <span className="svc-row-main">
-                  <span className="svc-row-name">问小 OH：「{query}」</span>
-                  <span className="svc-row-sub">智能助手直接回答，或帮你打开对应功能</span>
+                  <span className="svc-row-name">{i18nRich("pages.servicespage.f253c0bf99cc", { query: query })}</span>
+                  <span className="svc-row-sub">{i18n("pages.servicespage.6b43f83e734d")}</span>
                 </span>
               </button>
             </Card>
@@ -110,7 +118,7 @@ export function ServicesPage(): ReactNode {
             ) : null}
             {atomHits.length ? (
               <section>
-                <div className="svc-label">相关内容</div>
+                <div className="svc-label">{i18n("pages.servicespage.3c1917e1c662")}</div>
                 <Card className="svc-card">
                   {atomHits.map((h) => (
                     <AtomResultRow key={h.kind + "|" + h.key} hit={h} />
@@ -121,14 +129,14 @@ export function ServicesPage(): ReactNode {
           </>
         ) : (
           <Card>
-            <Empty text="没找到相关功能。可以换个说法，或到「全部」里翻一翻。" />
+            <Empty text={i18n("pages.servicespage.109f4b7d4b4c")} />
           </Card>
         )
       ) : (
         <>
           {groups.map((g) => (
             <section key={g.cat}>
-              <div className="svc-label">{g.cat}</div>
+              <div className="svc-label">{labelForId(g.cat)}</div>
               <Card className="svc-card">
                 {g.entries.map((e) => (
                   <ServiceRow key={e.id} entry={e} />
@@ -138,13 +146,13 @@ export function ServicesPage(): ReactNode {
           ))}
           {pluginTabs.length ? (
             <section>
-              <div className="svc-label">插件功能页</div>
+              <div className="svc-label">{i18n("pages.servicespage.90b4e4c67fc9")}</div>
               <Card className="svc-card">
                 {pluginTabs.map((t) => (
                   <button key={t.pageKey} className="svc-row" onClick={() => navigate(t.pageKey as never)}>
                     <span className="svc-row-main">
                       <span className="svc-row-name">{t.title}</span>
-                      <span className="svc-row-sub">来自插件</span>
+                      <span className="svc-row-sub">{i18n("pages.servicespage.a2e9a718c331")}</span>
                     </span>
                   </button>
                 ))}
@@ -152,7 +160,7 @@ export function ServicesPage(): ReactNode {
             </section>
           ) : null}
           <button className="svc-all-toggle" onClick={() => setShowAll((v) => !v)}>
-            {showAll ? "收起低频功能" : "显示全部功能（含低频）"}
+            {showAll ? i18n("pages.servicespage.50501baa27a7") : i18n("pages.servicespage.adc9212988a8")}
           </button>
         </>
       )}

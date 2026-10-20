@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node ../../tools/i18n-test.mjs",
     "build": "vite build",
     "build:dev": "node scripts/build-dev.mjs",
     "preview": "vite preview",
@@ -30,6 +31,7 @@
     "@tauri-apps/plugin-geolocation": "^2.3.3",
     "@tauri-apps/plugin-opener": "^2.5.4",
     "buffer": "6.0.3",
+    "dompurify": "3.4.17",
     "hls.js": "^1.7.3",
     "leaflet": "^1.9.4",
     "mammoth": "^1.12.2",
@@ -41,7 +43,7 @@
     "react-quill-new": "^3.8.3",
     "remark-gfm": "^4.0.1",
     "three": "^0.186.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.5.0",

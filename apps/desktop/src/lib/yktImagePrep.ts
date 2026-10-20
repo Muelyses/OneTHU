@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * R20-C2 P3：作答图片上传前预处理（桌面/移动一致）。
  *
@@ -53,7 +54,7 @@ export async function prepImageForUpload(file: Blob, baseName: string): Promise<
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("canvas 不可用");
+    if (!ctx) throw new Error(i18n("lib.yktimageprep.9acbcc843b8f"));
     // PNG 截图保透明无意义（作业图），白底更稳；JPEG 必须白底（透明会变黑）
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, w, h);
@@ -61,7 +62,7 @@ export async function prepImageForUpload(file: Blob, baseName: string): Promise<
     const outMime = isPng ? "image/png" : "image/jpeg";
     const blob: Blob = await new Promise((resolve, reject) => {
       canvas.toBlob(
-        (b) => (b ? resolve(b) : reject(new Error("图片编码失败"))),
+        (b) => (b ? resolve(b) : reject(new Error(i18n("lib.yktimageprep.982e69733466")))),
         outMime,
         outMime === "image/jpeg" ? JPEG_QUALITY : undefined,
       );

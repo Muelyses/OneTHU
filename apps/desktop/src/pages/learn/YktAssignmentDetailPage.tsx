@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * R20-B2：雨课堂作业原生只读详情页（learn-ykt-detail，docs 28.7 B2）。
@@ -69,13 +70,15 @@ type LoadState = "loading" | "ok" | "error";
 
 /** 重交上限文案（归一化保守口径：缺失/0 → 不可重交；docs 28.4 实测 max_retry=0/1/3 均有出现） */
 function fmtMaxRetry(n: number | undefined): string {
-  return n !== undefined && n > 0 ? `${n} 次` : "不可重交";
+  return n !== undefined && n > 0 ? i18n("pages.learn.yktassignmentdetailpage.baf3903dacce", { n: String(n) }) : i18n("pages.learn.yktassignmentdetailpage.639756756c8c");
 }
 
 /** 老师评语（remark / comments）按纯文本渲染：实测快照均为纯文本（非 HTML），
  *  纯文本 + pre-wrap 不会吃掉换行，也避免把评语当 HTML 注入。
  *  R20-B3 fix：两字段同文时只渲染一处（dedupeYktRemarks，保留具名批注口径）。 */
 function YktPlainText({ text }: { text: string }) {
+  const uiLocale = useUiLocale();
+
   return <div className="ykt-plain">{text}</div>;
 }
 
@@ -91,6 +94,8 @@ function CollapsibleSection({
   label: string;
   children: ReactNode;
 }) {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState(true); // 默认展开，不记忆
   return (
     <>
@@ -98,14 +103,14 @@ function CollapsibleSection({
         type="button"
         className={`ykt-sec-toggle${open ? "" : " is-closed"}`}
         aria-expanded={open}
-        title={open ? "点击收起" : "点击展开"}
+        title={open ? i18n("pages.learn.yktassignmentdetailpage.3afccd0197f6") : i18n("pages.learn.yktassignmentdetailpage.59c9e9c47dd3")}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="ykt-sec-caret" aria-hidden="true">
           {open ? "▾" : "▸"}
         </span>
         <span className="ykt-sec-label">{label}</span>
-        <span className="ykt-sec-hint">{open ? "收起" : "展开"}</span>
+        <span className="ykt-sec-hint">{open ? i18n("pages.learn.yktassignmentdetailpage.afd4b783536b") : i18n("pages.learn.yktassignmentdetailpage.00bd3960fea8")}</span>
       </button>
       {open ? children : null}
     </>
@@ -118,6 +123,8 @@ function CollapsibleSection({
  *  （展示剩余次数）→ core submitYktProblemSubjective → 成功后重拉真实状态（禁止乐观更新）。
  *  ⛔ 红线：无任何 AI 生成入口；提交只能由用户点击本按钮触发。 */
 function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classroomId: string; onSubmitted: () => void }) {
+  const uiLocale = useUiLocale();
+
   const draftKey = `onethu-ykt-draft-${classroomId}-${p.problemId}`;
   const [html, setHtml] = useState(() => {
     try {
@@ -153,11 +160,11 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
     if (busy || uploading > 0) return;
     const content = toSubmitHtml(html);
     if (!hasContent) {
-      setErr("作答内容为空：请输入文字或插入解题图片。");
+      setErr(i18n("pages.learn.yktassignmentdetailpage.0c1e9b120bb1"));
       return;
     }
     const ok = await confirmOk(
-      `确认提交第 ${p.index} 题作答？\n\n剩余提交次数：${unlimited ? "不限次" : `${remaining} 次`}\n提交将覆盖此前的作答（雨课堂官方截止/次数校验同步生效）。`,
+      i18nMsg("pages.learn.yktassignmentdetailpage.742500df9468", { index: String(p.index), value: String(unlimited ? i18n("pages.learn.yktassignmentdetailpage.8e6465957c62") : i18n("pages.learn.yktassignmentdetailpage.30254637bb0b", { remaining: String(remaining) })) }),
     );
     if (!ok) return;
     setBusy(true);
@@ -174,7 +181,7 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
       const msg = e instanceof Error ? e.message : String(e);
       setErr(msg);
       void invoke("log_debug", {
-        line: `R20-C2 主观题提交失败（problem=${p.problemId}）: ${msg.slice(0, 300)}`,
+        line: i18n("pages.learn.yktassignmentdetailpage.367cd2d511c0", { problemId: String(p.problemId), value: String(msg.slice(0, 300)) }),
       }).catch(() => undefined);
     } finally {
       setBusy(false);
@@ -184,7 +191,7 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
   if (exhausted) {
     return (
       <div className="ykt-ans ykt-answer-panel">
-        <div className="ykt-ans-empty">本题作答次数已用尽</div>
+        <div className="ykt-ans-empty">{i18n("pages.learn.yktassignmentdetailpage.703e377b14a8")}</div>
       </div>
     );
   }
@@ -200,7 +207,7 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
       />
       {err ? <div className="ykt-answer-err">{err}</div> : null}
       <div className="ykt-answer-actions">
-        <Btn variant="solid" tone="brand" disabled={busy || uploading > 0 || !hasContent} onClick={() => void doSubmit()} titleAttr="提交后可在剩余次数内重做（覆盖旧答案）">{busy ? "提交中…" : uploading > 0 ? "图片上传中…" : unlimited ? "提交作答" : `提交（剩余 ${remaining} 次）`}</Btn>
+        <Btn variant="solid" tone="brand" disabled={busy || uploading > 0 || !hasContent} onClick={() => void doSubmit()} titleAttr={i18n("pages.learn.yktassignmentdetailpage.7992d2434ab2")}>{busy ? i18n("pages.learn.yktassignmentdetailpage.18931020ad52") : uploading > 0 ? i18n("pages.learn.yktassignmentdetailpage.700c885fd7e5") : unlimited ? i18n("pages.learn.yktassignmentdetailpage.d069d4f0d22a") : i18n("pages.learn.yktassignmentdetailpage.13c3562806dd", { remaining: String(remaining) })}</Btn>
       </div>
     </div>
   );
@@ -211,6 +218,8 @@ function YktAnswerPanel({ p, classroomId, onSubmitted }: { p: YkProblem; classro
  *  题干 / 作答正文（R20-B3）：ProblemBody 内联沙箱渲染（加密字体 + LaTeX + 图片代理）。
  *  R20-C2：answer 槽位渲染逐题原生作答编辑器（主观题 + 资格通过时）。 */
 function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: string; cookies: string; answer?: ReactNode }) {
+  const uiLocale = useUiLocale();
+
   const chip = yktStatusChip(p);
   const ext9 = yktIsExternalLinkProblem(p);
   const attText = yktAttachmentsText(p.myAnswerAttachments);
@@ -222,9 +231,9 @@ function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: 
   return (
     <Card className="ykt-problem">
       <div className="ykt-problem-head">
-        <b className="ykt-problem-no">第 {p.index} 题</b>
+        <b className="ykt-problem-no">{i18nRich("pages.learn.yktassignmentdetailpage.5e13feb09ffe", { index: p.index })}</b>
         <span className="ykt-problem-type">{yktTypeText(p)}</span>
-        {p.score > 0 ? <span className="ykt-problem-score">{yktScoreText(p.score)} 分</span> : null}
+        {p.score > 0 ? <span className="ykt-problem-score">{i18nRich("pages.learn.yktassignmentdetailpage.2919c6495cc1", { value: yktScoreText(p.score) })}</span> : null}
         <span className={`chip ${chip.cls} ykt-problem-chip`}>
           <span className="dot" />
           {chip.text}
@@ -232,12 +241,11 @@ function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: 
       </div>
       {ext9 ? (
         <div className="ykt-problem-body">
-          {p.bodyHtml ? <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题题干`} /> : null}
+          {p.bodyHtml ? <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={i18n("pages.learn.yktassignmentdetailpage.335c01e526c4", { index: String(p.index) })} /> : null}
           {p.externalUrl ? (
-            <Btn variant="outline" onClick={() => void openExternal(p.externalUrl!)}>打开外链题目 ↗
-            </Btn>
+            <Btn variant="outline" onClick={() => void openExternal(p.externalUrl!)}>{i18n("pages.learn.yktassignmentdetailpage.6d2001d0356a")}</Btn>
           ) : (
-            <div className="ykt-ans-empty">外链题目：未取到外链地址，请从雨课堂网页版打开。</div>
+            <div className="ykt-ans-empty">{i18n("pages.learn.yktassignmentdetailpage.c430a009a3e5")}</div>
           )}
           {/* 红线：题型 9 只显示外链跳转，不渲染作答输入/评语区 */}
         </div>
@@ -245,27 +253,27 @@ function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: 
         <>
           {p.bodyHtml ? (
             <div className="ykt-problem-body">
-              <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题题干`} />
+              <ProblemBody html={p.bodyHtml} fontUrl={fontUrl} cookies={cookies} title={i18n("pages.learn.yktassignmentdetailpage.335c01e526c4", { index: String(p.index) })} />
             </div>
           ) : null}
           {answer}
           {hasAnswer ? (
             <div className="ykt-ans">
-              <CollapsibleSection label="我的作答">
-                {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={`第 ${p.index} 题我的作答`} /> : null}
-                {attText ? <div className="ykt-ans-att">附件：{attText}</div> : null}
+              <CollapsibleSection label={i18n("pages.learn.yktassignmentdetailpage.3672c846381f")}>
+                {p.myAnswerHtml ? <ProblemBody html={p.myAnswerHtml} fontUrl={fontUrl} cookies={cookies} title={i18n("pages.learn.yktassignmentdetailpage.f53b3eda058b", { index: String(p.index) })} /> : null}
+                {attText ? <div className="ykt-ans-att">{i18nRich("pages.learn.yktassignmentdetailpage.4d28edaaa584", { attText: attText })}</div> : null}
               </CollapsibleSection>
             </div>
           ) : p.myStatus === "unanswered" ? (
-            <div className="ykt-ans-empty">未作答</div>
+            <div className="ykt-ans-empty">{i18n("pages.learn.yktassignmentdetailpage.b5f241af1539")}</div>
           ) : (
             /* R24 fix：已交 / 已批但服务端未回传作答正文（实测存在此响应形态）→
                明示「已提交」而非静默空白（此前整块不渲染，用户误以为没交） */
-            <div className="ykt-ans-empty">已提交（服务端未返回作答正文{p.submitTime ? ` · ${p.submitTime}` : ""}）</div>
+            <div className="ykt-ans-empty">{i18nRich("pages.learn.yktassignmentdetailpage.4e9a10d2d992", { value: p.submitTime ? ` · ${p.submitTime}` : "" })}</div>
           )}
           {hasRemark ? (
             <div className="ykt-remark">
-              <CollapsibleSection label="老师评语">
+              <CollapsibleSection label={i18n("pages.learn.yktassignmentdetailpage.972ea573d9c1")}>
                 {remarkView.remark ? <YktPlainText text={remarkView.remark} /> : null}
                 {(remarkView.comments ?? []).map((c, i) => (
                   <div className="ykt-remark-item" key={i}>
@@ -283,6 +291,8 @@ function ProblemCard({ p, fontUrl, cookies, answer }: { p: YkProblem; fontUrl?: 
 }
 
 export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?: NonNullable<LearnNav["ykt"]>; from?: Page } = {}) {
+  const uiLocale = useUiLocale();
+
   const { navParams } = useApp();
   // 宽屏分栏内嵌（§2.8.2）时由 props 直给，路由页仍走 navParams
   const ykt = yktProp ?? navParams?.ykt ?? null;
@@ -321,7 +331,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
         setState("error");
         void invoke(
           "log_debug",
-          { line: `R20-B2 雨课堂作业详情拉取失败（leaf=${leafTypeId} classroom=${classroomId}）: ${msg.slice(0, 300)}` },
+          { line: i18n("pages.learn.yktassignmentdetailpage.3c8437cd1d02", { leafTypeId: String(leafTypeId), classroomId: String(classroomId), value: String(msg.slice(0, 300)) }) },
         ).catch(() => undefined);
       });
     return () => {
@@ -333,15 +343,15 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
   if (!ykt || !leafTypeId || !classroomId) {
     return (
       <>
-        <PageHead title="雨课堂作业" actions={<BackButton to={from} />} />
+        <PageHead title={i18n("pages.learn.yktassignmentdetailpage.f0cd4338679e")} actions={<BackButton to={from} />} />
         <Card>
-          <Empty text="这个入口不完整，请从作业列表重新进入。" />
+          <Empty text={i18n("pages.learn.yktassignmentdetailpage.180875b9014d")} />
         </Card>
       </>
     );
   }
 
-  const meta = `${ykt.courseName || "雨课堂"}${ykt.deadline ? ` · ${ykt.deadline} 截止` : ""}`;
+  const meta = `${ykt.courseName || i18n("pages.learn.yktassignmentdetailpage.38b9eabcae1b")}${ykt.deadline ? i18n("pages.learn.yktassignmentdetailpage.c7660cd558a7", { deadline: String(ykt.deadline) }) : ""}`;
   const summary = yktExerciseSummary(detail?.problems ?? []);
   const left = timeLeft(ykt.deadline ?? "");
   // R20-C1：作答/提交入口资格（纯函数；试卷 / 全外链题 / 过截止 / 超次数 → 不出口）
@@ -364,7 +374,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
     const url = ykt.externalUrl;
     if (!url || submitBusy) return;
     const ok = await confirmOk(
-      "将打开雨课堂官方作答页完成提交。\n\n页面内是雨课堂官方提交逻辑（含其自身的截止/次数校验与二次确认），请在其中确认后提交；关闭或返回后本页会自动刷新真实状态。",
+      i18nMsg("pages.learn.yktassignmentdetailpage.9556fef3b306"),
     );
     if (!ok) return;
     setSubmitBusy(true);
@@ -375,7 +385,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       setSubmitErr(msg);
-      void invoke("log_debug", { line: `R20-C1 打开官方作答页失败: ${msg.slice(0, 300)}` }).catch(() => undefined);
+      void invoke("log_debug", { line: i18n("pages.learn.yktassignmentdetailpage.d809649e3802", { value: String(msg.slice(0, 300)) }) }).catch(() => undefined);
     } finally {
       setSubmitBusy(false);
       // 关闭/返回后立即重新拉取真实状态（禁止乐观更新）
@@ -391,9 +401,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
       <>
         <Card>
           <ErrorNote text={errMsg} onRetry={() => setTick((t) => t + 1)} />
-          <div className="detail-meta" style={{ padding: "0 16px 10px" }}>
-            详情拉取失败不影响列表状态；可用右上角「浏览器打开」走官方页面（R20-A 通道）。
-          </div>
+          <div className="detail-meta" style={{ padding: "0 16px 10px" }}>{i18n("pages.learn.yktassignmentdetailpage.a811a7884353")}</div>
         </Card>
       </>
     );
@@ -412,53 +420,51 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
             ) : null}
             <span className={`chip ${summary.chip.cls}`}>{summary.chip.text}</span>
             {ykt.kind === "exam" ? (
-              <span className="tag-exam" title="试卷（永不提供提交入口）">考试</span>
+              <span className="tag-exam" title={i18n("pages.learn.yktassignmentdetailpage.5395bb5ccaaa")}>{i18n("pages.learn.yktassignmentdetailpage.d26ef0190d6c")}</span>
             ) : null}
           </div>
           {eligibility.eligible ? (
-            <div className="detail-meta">提交将通过应用内官方作答页完成（雨课堂官方确认 / 拦截原样保留）。</div>
+            <div className="detail-meta">{i18n("pages.learn.yktassignmentdetailpage.90ed59a33fe8")}</div>
           ) : null}
         </Card>
 
         <Card className="detail-sec">
-          <div className="detail-sec-head">作业信息</div>
+          <div className="detail-sec-head">{i18n("pages.learn.yktassignmentdetailpage.8e8d2fcb3cc5")}</div>
           <div className="kv">
-            <span>截止时间</span>
-            <b>{ykt.deadline || "未知"}</b>
+            <span>{i18n("pages.learn.yktassignmentdetailpage.15f26621cdce")}</span>
+            <b>{ykt.deadline || i18n("pages.learn.yktassignmentdetailpage.4d8c1c5b4283")}</b>
           </div>
           {d.lateDeadline ? (
             <div className="kv">
-              <span>补交截止</span>
+              <span>{i18n("pages.learn.yktassignmentdetailpage.12f71b5c2681")}</span>
               <b>{d.lateDeadline}</b>
             </div>
           ) : null}
           <div className="kv">
-            <span>重交上限</span>
+            <span>{i18n("pages.learn.yktassignmentdetailpage.520b9d933a92")}</span>
             <b>{fmtMaxRetry(d.maxRetry)}</b>
           </div>
           <div className="kv">
-            <span>是否允许迟交</span>
-            <b>{d.lateAllowed ? "允许补交" : "不允许补交"}</b>
+            <span>{i18n("pages.learn.yktassignmentdetailpage.417dd3d4e17d")}</span>
+            <b>{d.lateAllowed ? i18n("pages.learn.yktassignmentdetailpage.3b88527a375d") : i18n("pages.learn.yktassignmentdetailpage.ca26fadbd353")}</b>
           </div>
           <div className="kv">
-            <span>作答进度</span>
-            <b>
-              {summary.answered}/{summary.total} 题
-            </b>
+            <span>{i18n("pages.learn.yktassignmentdetailpage.70cf7d0a5c47")}</span>
+            <b>{i18nRich("pages.learn.yktassignmentdetailpage.c906ec514546", { answered: summary.answered, total: summary.total })}</b>
           </div>
           {summary.scoreSum !== undefined ? (
             <div className="kv">
-              <span>我的得分</span>
-              <b>{yktScoreText(summary.scoreSum)}（已批题目合计）</b>
+              <span>{i18n("pages.learn.yktassignmentdetailpage.ff55b37a770a")}</span>
+              <b>{i18nRich("pages.learn.yktassignmentdetailpage.91f510a57f5d", { value: yktScoreText(summary.scoreSum) })}</b>
             </div>
           ) : null}
         </Card>
 
         {d.description ? (
           <Card className="detail-sec">
-            <div className="detail-sec-head">作业说明</div>
+            <div className="detail-sec-head">{i18n("pages.learn.yktassignmentdetailpage.f3be30c77097")}</div>
             <div className="ykt-problem-body">
-              <ProblemBody html={d.description} fontUrl={d.fontUrl} cookies={yktCookie} title="作业说明" />
+              <ProblemBody html={d.description} fontUrl={d.fontUrl} cookies={yktCookie} title={i18n("pages.learn.yktassignmentdetailpage.f3be30c77097")} />
             </div>
           </Card>
         ) : null}
@@ -467,7 +473,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
             客观题/试卷/超次数仍只读——官方页兜底入口保留） */}
         {d.problems.length === 0 ? (
           <Card>
-            <Empty text="本作业暂无题目明细（老师端未提供）。" />
+            <Empty text={i18n("pages.learn.yktassignmentdetailpage.624ab77cb450")} />
           </Card>
         ) : (
           d.problems.map((p) => (
@@ -491,7 +497,7 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
   return (
     <>
       <PageHead
-        title={state === "ok" && detail?.name ? detail.name : ykt.title || "雨课堂作业"}
+        title={state === "ok" && detail?.name ? detail.name : ykt.title || i18n("pages.learn.yktassignmentdetailpage.f0cd4338679e")}
         meta={meta}
         actions={
           <>
@@ -500,19 +506,17 @@ export function YktAssignmentDetailPage({ ykt: yktProp, from: fromProp }: { ykt?
               {...(backToCourseId && from === "learn-course" ? { courseId: backToCourseId } : {})}
             />
             {eligibility.eligible && ykt.externalUrl ? (
-              <Btn variant="solid" tone="brand" disabled={submitBusy} onClick={() => void openSubmit()} titleAttr="应用内打开雨课堂官方作答页（官方提交逻辑原样保留）">{submitBusy ? "作答页已打开…" : "作答 / 提交"}</Btn>
+              <Btn variant="solid" tone="brand" disabled={submitBusy} onClick={() => void openSubmit()} titleAttr={i18n("pages.learn.yktassignmentdetailpage.913d336a5145")}>{submitBusy ? i18n("pages.learn.yktassignmentdetailpage.16d60e1c096a") : i18n("pages.learn.yktassignmentdetailpage.a37e4b89ed66")}</Btn>
             ) : null}
             {ykt.externalUrl ? (
-              <Btn variant="outline" onClick={openInWeb} titleAttr="在系统浏览器或应用内打开官方页">
-                浏览器打开
-              </Btn>
+              <Btn variant="outline" onClick={openInWeb} titleAttr={i18n("pages.learn.yktassignmentdetailpage.37ea75e532e6")}>{i18n("pages.learn.yktassignmentdetailpage.b231587899f3")}</Btn>
             ) : null}
           </>
         }
       />
       {submitErr ? (
         <Card>
-          <ErrorNote text={`打开官方作答页失败：${submitErr}`} onRetry={() => void openSubmit()} />
+          <ErrorNote text={i18n("pages.learn.yktassignmentdetailpage.6aad89c7a239", { submitErr: String(submitErr) })} onRetry={() => void openSubmit()} />
         </Card>
       ) : null}
       {body}

@@ -1281,9 +1281,15 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                     WidgetStore.saveInstance(ctx, id, instances.getJSONObject(key).toString())
                 }
             }
-            root.optJSONObject("slots")?.let { WidgetStore.saveSlots(ctx, it.toString()) }
+            root.optJSONObject("slots")?.let {
+                // Keep only the small widget dictionary globally for unbound placeholders.
+                val slotSnapshot = JSONObject().put("slots", it)
+                root.optString("locale").takeIf { value -> value.isNotEmpty() }?.let { value -> slotSnapshot.put("locale", value) }
+                root.optJSONObject("widgetText")?.let { value -> slotSnapshot.put("widgetText", value) }
+                WidgetStore.saveSlots(ctx, slotSnapshot.toString())
+            }
             // 已被移除的小组件：顺手清掉它的内容（否则 appWidgetId 复用时会串内容）
-            WidgetStore.pruneInstances(ctx, live)
+            if (instances != null && root.optBoolean("prune", false)) WidgetStore.pruneInstances(ctx, live)
             activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {

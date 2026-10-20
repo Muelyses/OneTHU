@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 壁纸库网格（设置→外观 与 页面右键选择器共用，2026-10-13；2026-10-14 单档化）。
@@ -33,6 +34,8 @@ import { showToast } from "../../state/toast.js";
 
 /** 单格缩略图（图片直接预览；视频出首帧；内置渐变画色块） */
 function WallThumb({ entry }: { entry: LibraryEntry }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const css = entry.builtin ? builtinCss(entry.ref) : null;
   if (css) return <span className="wall-thumb-fill" style={{ background: css }} />;
   if (isVideoRef(entry.ref)) return <video src={displayRef(entry.ref)} muted preload="metadata" />;
@@ -40,6 +43,8 @@ function WallThumb({ entry }: { entry: LibraryEntry }): ReactNode {
 }
 
 function WallCell({ entry, variant }: { entry: LibraryEntry; variant: "panel" | "picker" }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const doc = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
   /* 图片入库/应用后确保亮度采样在跑（纱与栏体文字分支依赖它） */
   useEffect(() => {
@@ -52,7 +57,7 @@ function WallCell({ entry, variant }: { entry: LibraryEntry; variant: "panel" | 
       <button
         type="button"
         className={"wall-thumb" + (fullActive ? " is-page-active" : "")}
-        data-vault-catch={JSON.stringify({ type: "payload", title: entry.name, sub: entry.builtin ? "内置壁纸" : "我的壁纸", payload: { kind: "wallpaper", ref: entry.ref }, source: "壁纸" })}
+        data-vault-catch={JSON.stringify({ type: "payload", title: entry.name, sub: entry.builtin ? i18n("components.explorer.wallpaperlibrary.9b66c437f94a") : i18n("components.explorer.wallpaperlibrary.2f22a69b07de"), payload: { kind: "wallpaper", ref: entry.ref }, source: "壁纸" })}
         onClick={apply}
         title={entry.name}
       >
@@ -63,13 +68,13 @@ function WallCell({ entry, variant }: { entry: LibraryEntry; variant: "panel" | 
           type="button"
           className="wall-chip wall-chip-del"
           onClick={() => removeFromLibrary(entry.id)}
-          aria-label={"删除：" + entry.name}
-          title="从库里删除"
+          aria-label={i18n("components.explorer.wallpaperlibrary.a9bbc10e1c98") + entry.name}
+          title={i18n("components.explorer.wallpaperlibrary.66252e2d86ba")}
         >
           ✕
         </button>
       ) : null}
-      {fullActive ? <span className="wall-dot" title="当前全屏壁纸" /> : null}
+      {fullActive ? <span className="wall-dot" title={i18n("components.explorer.wallpaperlibrary.44f11be688f1")} /> : null}
       <div className="wall-name">{entry.name}</div>
     </div>
   );
@@ -82,6 +87,8 @@ export function WallpaperLibrary({
   variant: "panel" | "picker";
   onClose?: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const doc = useSyncExternalStore(subscribeWallpaper, wallpaperSnapshot, wallpaperSnapshot);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [busy, setBusy] = useState(false);
@@ -91,7 +98,7 @@ export function WallpaperLibrary({
   const onFile = async (f: File): Promise<void> => {
     const r = await importWallpaperFile(f);
     if (!r.ref) {
-      showToast(r.error ?? "处理失败，请换一个文件");
+      showToast(r.error ?? i18n("components.explorer.wallpaperlibrary.03f0454aea68"));
       return;
     }
     const name = f.name.replace(/\.[a-z0-9]+$/i, "");
@@ -100,7 +107,7 @@ export function WallpaperLibrary({
       setGlobalWallpaper(r.ref);
       onClose?.();
     }
-    if (full) showToast(full + (variant === "picker" ? "；已直接应用" : "；已应用不入库"));
+    if (full) showToast(full + (variant === "picker" ? i18n("components.explorer.wallpaperlibrary.9c5daef675e0") : i18n("components.explorer.wallpaperlibrary.0cfe12ee47a2")));
   };
 
   const runSync = async (fn: () => Promise<WallpSyncResult>): Promise<void> => {
@@ -128,23 +135,16 @@ export function WallpaperLibrary({
       />
       {variant === "picker" ? (
         <div className="wall-picker-head">
-          <b>更换壁纸</b>
-          <Btn variant="ghost" onClick={onClose} aria-label="关闭">
-            关闭
-          </Btn>
+          <b>{i18n("components.explorer.wallpaperlibrary.f0da12c6892c")}</b>
+          <Btn variant="ghost" onClick={onClose} aria-label={i18n("components.explorer.wallpaperlibrary.3fd47edce45b")}>{i18n("components.explorer.wallpaperlibrary.3fd47edce45b")}</Btn>
         </div>
       ) : (
         <div className="wall-lib-ops">
-          <Btn variant="outline" onClick={pickUpload}>
-            上传入库…
-          </Btn>
-          <Btn variant="outline" disabled={busy} onClick={() => void runSync(syncWallpaperToCloud)}>同步到云盘
-          </Btn>
-          <Btn variant="outline" disabled={busy} onClick={() => void runSync(restoreWallpaperFromCloud)}>从云盘恢复
-          </Btn>
+          <Btn variant="outline" onClick={pickUpload}>{i18n("components.explorer.wallpaperlibrary.1609bca7aff5")}</Btn>
+          <Btn variant="outline" disabled={busy} onClick={() => void runSync(syncWallpaperToCloud)}>{i18n("components.explorer.wallpaperlibrary.af60a612a19e")}</Btn>
+          <Btn variant="outline" disabled={busy} onClick={() => void runSync(restoreWallpaperFromCloud)}>{i18n("components.explorer.wallpaperlibrary.3b9fd74eda41")}</Btn>
           {doc.global ? (
-            <Btn variant="ghost" onClick={() => setGlobalWallpaper(null)}>清除全屏
-            </Btn>
+            <Btn variant="ghost" onClick={() => setGlobalWallpaper(null)}>{i18n("components.explorer.wallpaperlibrary.db7bc424df4c")}</Btn>
           ) : null}
         </div>
       )}
@@ -155,16 +155,12 @@ export function WallpaperLibrary({
       </div>
       {variant === "panel" ? (
         <>
-          <div className="wall-lib-hint">
-            已收 {doc.library.length}/{LIBRARY_MAX} 张；自收录的壁纸右上角有 ✕ 可删，内置渐变不可删
-          </div>
-          <div className="wall-lib-hint">同步含库内图片与视频，恢复会覆盖本机</div>
+          <div className="wall-lib-hint">{i18nRich("components.explorer.wallpaperlibrary.edc3b613293f", { length: doc.library.length, LIBRARY_MAX: LIBRARY_MAX })}</div>
+          <div className="wall-lib-hint">{i18n("components.explorer.wallpaperlibrary.45793e136b90")}</div>
         </>
       ) : null}
       {variant === "picker" ? (
-        <Btn variant="outline" onClick={pickUpload}>
-          上传图片或视频…
-        </Btn>
+        <Btn variant="outline" onClick={pickUpload}>{i18n("components.explorer.wallpaperlibrary.5e15e538d386")}</Btn>
       ) : null}
     </div>
   );

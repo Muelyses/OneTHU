@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 系统日历原生同步状态层（learnX 模型）。
  *
@@ -116,7 +117,7 @@ async function ensureLoaded(): Promise<void> {
     const raw = await fileRead(CFG_FILE, { strict: true });
     if (raw) {
       const j = JSON.parse(raw) as Partial<SysCalCfg> & { version?: number };
-      if (typeof j.enabled !== "boolean") throw new Error("系统日历设置文件无效，请恢复备份后重试");
+      if (typeof j.enabled !== "boolean") throw new Error(i18n("state.systemcal.1af23354d905"));
       const legacy = j.version !== CFG_VERSION;
       cfg = {
         enabled: j.enabled,
@@ -222,10 +223,10 @@ async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEnt
   } catch (err) {
     const hit = cacheGet<{ firstDay: string; weekCount: number; entries: ScheduleEntry[] }>(key);
     if (hit?.data.firstDay === sem.firstDay && hit.data.weekCount === sem.weekCount && Array.isArray(hit.data.entries)) {
-      logPageError("SYSCAL-SWR", new Error(`整学期拉取失败，保留完整缓存 ${hit.data.entries.length} 条`));
+      logPageError("SYSCAL-SWR", new Error(i18n("state.systemcal.89e7b1c563d7", { length: String(hit.data.entries.length) })));
       return hit.data.entries;
     }
-    logPageError("SYSCAL-SWR", new Error("整学期数据不完整，保留系统日历已有内容"));
+    logPageError("SYSCAL-SWR", new Error(i18n("state.systemcal.8b3f14077824")));
     throw err;
   }
 }
@@ -236,15 +237,15 @@ async function buildPayload(): Promise<SyncPayloadArg> {
   const sem = currentSemester();
   const learnSnap = getLearnSnapshot();
   const ext = getExtHwSnapshot();
-  if (!sem) throw new Error("校历尚未就绪，请打开日程加载学期后重试；已有系统日历保持不变");
+  if (!sem) throw new Error(i18n("state.systemcal.ae887c4815af"));
   if (!Number.isFinite(parseYmd(sem.firstDay).getTime()) || !Number.isInteger(sem.weekCount) || sem.weekCount < 1 || sem.weekCount > 60) {
-    throw new Error("校历学期范围无效，已中止同步");
+    throw new Error(i18n("state.systemcal.30fb8d6869b0"));
   }
   if (!learnSnap || learnSnap.semester.id !== sem.semesterId) {
-    throw new Error("当前学期作业尚未就绪，请在网络学堂选择当前学期后重试；已有系统日历保持不变");
+    throw new Error(i18n("state.systemcal.3d8856ab74b0"));
   }
   if (ext.configured && (ext.state !== "ready" || Object.keys(ext.errors).length > 0)) {
-    throw new Error("外部作业源尚未完整加载，请刷新网络学堂后重试；已有系统日历保持不变");
+    throw new Error(i18n("state.systemcal.ab1abc96899c"));
   }
   const now = Date.now();
   // 已导出的课程/考试/作业由下方实时源构建，不能从云镜像再导入一份。
@@ -281,7 +282,7 @@ async function buildPayload(): Promise<SyncPayloadArg> {
   if (sem) {
     const semRows = await fetchSemesterSchedule(sem);
     const { events: courseEvents, skipped } = await buildSemesterEvents(sem, async () => semRows);
-    if (skipped > 0) throw new Error(`课表有 ${skipped} 条无法解析的时段，已中止同步`);
+    if (skipped > 0) throw new Error(i18n("state.systemcal.ff52516e4a39", { skipped: String(skipped) }));
     for (const ev of courseEvents) {
       events.push({
         title: ev.summary,
@@ -314,7 +315,7 @@ async function buildPayload(): Promise<SyncPayloadArg> {
 
   for (const event of events) {
     if (!Number.isFinite(event.startMs) || !Number.isFinite(event.endMs) || event.endMs <= event.startMs) {
-      throw new Error("日程包含无效起止时间，已中止同步");
+      throw new Error(i18n("state.systemcal.746a9d1e0b2c"));
     }
     // A long homework lead can begin before the rolling DDL window. Include its
     // actual block, so native validation and later deletion use the same bounds.
@@ -322,7 +323,7 @@ async function buildPayload(): Promise<SyncPayloadArg> {
     windowEnd = Math.max(windowEnd, event.endMs);
   }
   events.sort((a, b) => a.startMs - b.startMs);
-  if (events.length > MAX_EVENTS) throw new Error(`事件数 ${events.length} 超出上限 ${MAX_EVENTS}，已中止系统日历同步`);
+  if (events.length > MAX_EVENTS) throw new Error(i18n("state.systemcal.ce42fc5eaca8", { length: String(events.length), MAX_EVENTS: String(MAX_EVENTS) }));
   return { calendarTitle: CALENDAR_TITLE, windowStartMs: windowStart, windowEndMs: windowEnd, events };
 }
 
@@ -406,16 +407,16 @@ export async function exportSystemCalendarIcs(): Promise<string> {
 }
 
 function runSync(opts?: { silent?: boolean; enable?: boolean }): Promise<SystemCalSyncOutcome> {
-  if (syncing || removePending) return Promise.reject(new Error("系统日历正在同步或移除中"));
+  if (syncing || removePending) return Promise.reject(new Error(i18n("state.systemcal.b170ef2db7ca")));
   syncing = true;
   const revision = policyRevision;
   emit();
   const run = (async (): Promise<SystemCalSyncOutcome> => {
     try {
       await ensureLoaded();
-      if (!(await systemCalSupported())) throw new Error("当前平台不支持系统日历原生同步，可导出日历文件");
+      if (!(await systemCalSupported())) throw new Error(i18n("state.systemcal.854aca2c0e1f"));
       const payload = await buildPayload();
-      if (revision !== policyRevision || removePending) throw new Error("同步已停止，已有系统日历保持不变");
+      if (revision !== policyRevision || removePending) throw new Error(i18n("state.systemcal.fe90aa1936ae"));
       const fingerprint = fingerprintOf(payload);
       if (opts?.silent && cfg.fingerprint === fingerprint) {
         cfg = { ...cfg, lastError: null };
@@ -423,8 +424,8 @@ function runSync(opts?: { silent?: boolean; enable?: boolean }): Promise<SystemC
         return { added: 0, removed: 0, skipped: true };
       }
       const granted = await invokePlugin<boolean>("request_permission");
-      if (!granted) throw new Error("未获得系统日历权限，请在系统设置中允许 OneTHU 访问日历");
-      if (revision !== policyRevision || removePending) throw new Error("同步已停止，已有系统日历保持不变");
+      if (!granted) throw new Error(i18n("state.systemcal.d2d00f793981"));
+      if (revision !== policyRevision || removePending) throw new Error(i18n("state.systemcal.fe90aa1936ae"));
       const r = await invokePlugin<{ added: number; removed: number; warning?: string }>("sync", { payload });
       cfg = {
         ...cfg,
@@ -475,7 +476,7 @@ export async function disableSystemCalendar(): Promise<void> {
 
 /** 等待正在执行的原生事务结束，再只删除本机绑定日历，避免删后被在途同步重建。 */
 export async function removeSystemCalendar(): Promise<void> {
-  if (removePending) throw new Error("正在移除系统日历");
+  if (removePending) throw new Error(i18n("state.systemcal.fb7404386af9"));
   removePending = true;
   policyRevision++;
   try {
@@ -485,7 +486,7 @@ export async function removeSystemCalendar(): Promise<void> {
     if (activeSync) await activeSync.catch(() => undefined);
     syncing = true;
     emit();
-    if (!(await systemCalSupported())) throw new Error("当前平台不支持系统日历原生同步");
+    if (!(await systemCalSupported())) throw new Error(i18n("state.systemcal.5a93b270a6f9"));
     await invokePlugin<unknown>("remove_calendar");
     cfg = { ...cfg, enabled: false, stopped: true, lastSyncAt: 0, lastCount: 0, lastError: null, fingerprint: null };
     await persistCfg();

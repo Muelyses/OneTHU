@@ -7,7 +7,7 @@
  *   二级菜单：上「已安装」（色卡预览 + 应用/卸载）、下「主题市场」（复用市场搜索、只筛主题）。
  * 定案：主题相关的全部操作（切换/安装/卸载）都收在这一个二级菜单里，插件页不再有主题区。
  */
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 
 const SETTINGS = readFileSync("apps/desktop/src/pages/Settings.tsx", "utf8");
 const PLUGINS = readFileSync("apps/desktop/src/pages/Plugins.tsx", "utf8");

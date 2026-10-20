@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 名片卡面图：存到清华云盘（OneTHU 资料库 /Cards/<name>.jpg）。
  *
@@ -21,10 +22,10 @@ export interface CardCoverCloud {
 /** 把卡面 dataURL 上传到云盘，返回云盘位置（分享链接尽力而为）。 */
 export async function uploadCardCover(dataUrl: string): Promise<CardCoverCloud> {
   const b64 = String(dataUrl ?? "").split(",")[1] ?? "";
-  if (!b64) throw new Error("卡面图内容为空");
+  if (!b64) throw new Error(i18n("lib.cardcover.63b5c0cc3a81"));
   await ensureSeafileLoaded();
   const token = getSeafileToken();
-  if (!token) throw new Error("清华云盘未连接：先到云盘页登录");
+  if (!token) throw new Error(i18n("lib.cardcover.15e1ef41e215"));
   const repoId = await ensureOneThuRepo();
   await invoke("seafile_mkdir", { token, repoId, path: CARDS_DIR });
   const name = "cover-" + Date.now().toString(36) + ".jpg";

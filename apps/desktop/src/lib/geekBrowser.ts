@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 极客模式（浏览器探索）TS 半边：CDP over WebSocket 直连本机 EXPLORER 浏览器。
  *
@@ -34,10 +35,10 @@ export async function probeGeek(): Promise<GeekProbe> {
 /** 页面 target 的 ws 地址（e797 /json 列表，取第一个 type=page 非 devtools 项） */
 async function pageWs(port: number): Promise<string> {
   const res = await fetch(`http://127.0.0.1:${port}/json`);
-  if (!res.ok) throw new Error(`调试口 ${port} 没应答（浏览器可能还在启动，稍等再试）`);
+  if (!res.ok) throw new Error(i18n("lib.geekbrowser.53f7d68f6849", { port: String(port) }));
   const list = (await res.json()) as Array<{ type: string; webSocketDebuggerUrl: string; url: string }>;
   const page = list.find((t) => t.type === "page" && t.webSocketDebuggerUrl && !t.url.startsWith("devtools://"));
-  if (!page || !page.webSocketDebuggerUrl) throw new Error("没有可用的页面（去探索浏览器里开一个标签页）");
+  if (!page || !page.webSocketDebuggerUrl) throw new Error(i18n("lib.geekbrowser.3abf469b9446"));
   return page.webSocketDebuggerUrl;
 }
 
@@ -74,12 +75,12 @@ async function connect(port: number): Promise<void> {
   cdpWs.onmessage = onMessage;
   await new Promise<void>((resolve, reject) => {
     cdpWs?.addEventListener("open", () => resolve(), { once: true });
-    cdpWs?.addEventListener("error", () => reject(new Error("连不上探索浏览器（调试口在但页面没就绪）")), { once: true });
+    cdpWs?.addEventListener("error", () => reject(new Error(i18n("lib.geekbrowser.659c34a56926"))), { once: true });
   });
 }
 
 async function cdp(method: string, params?: Record<string, unknown>): Promise<unknown> {
-  if (!cdpWs || cdpWs.readyState !== WebSocket.OPEN) throw new Error("探索浏览器没在运行（先启动）");
+  if (!cdpWs || cdpWs.readyState !== WebSocket.OPEN) throw new Error(i18n("lib.geekbrowser.357cfa691440"));
   seq += 1;
   const id = seq;
   return new Promise((resolve, reject) => {
@@ -88,7 +89,7 @@ async function cdp(method: string, params?: Record<string, unknown>): Promise<un
     window.setTimeout(() => {
       if (pending.has(id)) {
         pending.delete(id);
-        reject(new Error(`${method} 15 秒没回音`));
+        reject(new Error(i18n("lib.geekbrowser.48ac2b24891e", { method: String(method) })));
       }
     }, 15_000);
   });
@@ -103,14 +104,14 @@ export async function launchGeek(mode: string): Promise<GeekLaunch> {
 
 export async function geekNavigate(url: string): Promise<void> {
   const port = cdpPort;
-  if (!port) throw new Error("探索浏览器没在运行（先启动）");
+  if (!port) throw new Error(i18n("lib.geekbrowser.357cfa691440"));
   await connect(port);
   await cdp("Page.navigate", { url });
 }
 
 export async function geekEval(js: string): Promise<unknown> {
   const port = cdpPort;
-  if (!port) throw new Error("探索浏览器没在运行（先启动）");
+  if (!port) throw new Error(i18n("lib.geekbrowser.357cfa691440"));
   await connect(port);
   const r = (await cdp("Runtime.evaluate", { expression: js, returnByValue: true, awaitPromise: true })) as
     | { result?: { value?: unknown; type?: string; description?: string } }
@@ -126,7 +127,7 @@ export interface GeekSnapshot {
 
 export async function geekSnapshot(): Promise<GeekSnapshot> {
   const port = cdpPort;
-  if (!port) throw new Error("探索浏览器没在运行（先启动）");
+  if (!port) throw new Error(i18n("lib.geekbrowser.357cfa691440"));
   await connect(port);
   const r = (await cdp("Runtime.evaluate", {
     expression:

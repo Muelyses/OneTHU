@@ -30,6 +30,7 @@ import { parseCasFormHtml } from "../auth/cas.js";
 import { decodeUrl, webvpnWrap } from "../crypto/webvpn.js";
 import { ID_PREFIX } from "../auth/cas.js";
 import { encryptPassword } from "../crypto/sm2.js";
+import { isXkCourseTable, isXkEnglishSessionError, xkColumnIndex, xkHeaderCells, xkRejectionMessage } from "./html-language.js";
 
 const ZHJWXK = "http://zhjwxk.cic.tsinghua.edu.cn";
 
@@ -450,6 +451,7 @@ async function ensure(
  *  SSO 中转页被当数据解析 → 「教务返回异常页」卡。补上即走既有静默重登。 */
 function isXkDeadHtml(html: string): boolean {
   return html.includes("accessDenied")
+    || isXkEnglishSessionError(html)
     || html.includes("用户登陆超时或访问内容不存在。请重试")
     || html.includes("电子身份服务系统")
     || html.includes("do/off/ui/auth/login")
@@ -479,7 +481,7 @@ async function proxyZhjwxkApi(s: ZhjwxkSession, entry: ZhjwxkEntry, zhjwxkPath: 
 
 /** demo：html.includes('accessDenied') → session 过期 / 需要重新登录 */
 function assertNotDenied(s: ZhjwxkSession, html: string): void {
-  if (html.includes("accessDenied")) {
+  if (isXkDeadHtml(html)) {
     entryCache.delete(s); // 作废过期会话，重试时从新 demoCookies 重建
     throw new AuthRequiredError("选课系统会话已过期，请退出后重新登录");
   }
@@ -519,6 +521,7 @@ const ROW_RE = () => /<tr[^>]*class="trr2"[^>]*>([\s\S]*?)(?=<tr[^>]*class="trr[
 /** demo /api/courses 的 <tr class="trr2"> 行解析（server.js L290-302） */
 export function parseSelectedCourses(html: string): SelectedCourse[] {
   const courses: SelectedCourse[] = [];
+  const headers = xkHeaderCells(html);
   const rowRe = ROW_RE();
   let m: RegExpExecArray | null;
   while ((m = rowRe.exec(html)) !== null) {
@@ -526,6 +529,15 @@ export function parseSelectedCourses(html: string): SelectedCourse[] {
       t[1]!.replace(/<[^>]*>/g, "").trim(),
     );
     if (tds.length >= 4) {
+      const headerCode = xkColumnIndex(headers, "code"), headerName = xkColumnIndex(headers, "name");
+      if (headerCode >= 0 && headerName >= 0) {
+        const field = (key: Parameters<typeof xkColumnIndex>[1]): string => tds[xkColumnIndex(headers, key)] ?? "";
+        const code = field("code"), name = field("name");
+        if (/^[A-Za-z0-9]+$/.test(code) && /\d/.test(code) && name) {
+          courses.push({ typeLabel: field("type"), code, name, teacher: field("teacher"), time: field("time"), credits: parseFloat(field("credits")) || 0 });
+          continue;
+        }
+      }
       // 2026-2027-1 已选表改版实证：写死列号整体错位（code=「必修」、name=课号）。
       // 改为行内内容特征分类——每行独立定位，列序再变也不怕：
       //   类型=必修/限选…；课号=字母数字含数字；学分=≤10 的纯数；
@@ -773,9 +785,8 @@ export const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeou
 
 const TOKEN_RE = () => /name="token"\s+value="([^"]+)"/;
 
-/** 解析取证（2026-09-14 教师格"3"悬案）：目录行教师格解析为纯数字时回调
- *  原始行 HTML——前端写日志，一次定位教务多教师格的真实结构。 */
-export const xkParseDebug: { onOddTeacher?: (code: string, seq: string, teacher: string, rawRow: string) => void } = {};
+/** 结构诊断：教师格解析为纯数字时只回调行长度，不传页面、姓名或链接。 */
+export const xkParseDebug: { onOddTeacher?: (code: string, seq: string, teacher: string, rowSummary: string) => void } = {};
 
 function tdsOf(rowHtml: string): string[] {
   // 顶层 td 提取（嵌套表格免疫）：多教师格内嵌 <table> 时，朴素全局正则把
@@ -820,28 +831,21 @@ type CatalogHead = Record<CatalogKeys, number>;
 
 /** 表头列位自适应映射（DOM/正则两路共享）：列名→索引；code/name 双中才用表头 */
 function catalogHeadMap(headCells: string[]): { H: CatalogHead; useHead: boolean } {
-  const hIdx = (keys: string[]): number => {
-    for (const k of keys) {
-      const i = headCells.findIndex((c) => c.includes(k));
-      if (i >= 0) return i;
-    }
-    return -1;
-  };
   const H: CatalogHead = {
-    department: hIdx(["院系"]),
-    code: hIdx(["课号"]),
-    seq: hIdx(["课序号"]),
-    name: hIdx(["课程名称", "课程名"]),
-    credits: hIdx(["学分"]),
-    teacher: hIdx(["教师"]),
-    capacity: hIdx(["本科生容量", "本科容量"]),
-    remaining: hIdx(["本科生余量", "本科余量"]),
-    gradCapacity: hIdx(["研究生容量"]),
-    gradRemaining: hIdx(["研究生余量"]),
-    note: hIdx(["说明", "备注"]),
-    feature: hIdx(["课程特色", "特色"]),
-    grade: hIdx(["年级"]),
-    tongshi: hIdx(["通识"]),
+    department: xkColumnIndex(headCells, "department"),
+    code: xkColumnIndex(headCells, "code"),
+    seq: xkColumnIndex(headCells, "seq"),
+    name: xkColumnIndex(headCells, "name"),
+    credits: xkColumnIndex(headCells, "credits"),
+    teacher: xkColumnIndex(headCells, "teacher"),
+    capacity: xkColumnIndex(headCells, "capacity"),
+    remaining: xkColumnIndex(headCells, "remaining"),
+    gradCapacity: xkColumnIndex(headCells, "gradCapacity"),
+    gradRemaining: xkColumnIndex(headCells, "gradRemaining"),
+    note: xkColumnIndex(headCells, "note"),
+    feature: xkColumnIndex(headCells, "feature"),
+    grade: xkColumnIndex(headCells, "grade"),
+    tongshi: xkColumnIndex(headCells, "tongshi"),
   };
   return { H, useHead: H.code >= 0 && H.name >= 0 };
 }
@@ -854,7 +858,8 @@ function catalogRowOf(cells: string[], href: string, H: CatalogHead, useHead: bo
   if (cells.length < 11) return null;
   const td = (i: number): string => (cells[i] ?? "").replace(/\s+/g, " ").trim();
   // 时间地点列自适应：优先按内容特征「星期X…第N节」找列，找不到回落 10 列。
-  let timeIdx = cells.findIndex((t) => /星期[一二三四五六日]/.test(t) && /第\d+/.test(t));
+  let timeIdx = cells.findIndex((t) => /星期[一二三四五六日]/.test(t) && /第\d+/.test(t)
+    || /\b(?:Mon(?:day)?|Tue(?:sday)?|Wed(?:nesday)?|Thu(?:rsday)?|Fri(?:day)?|Sat(?:urday)?|Sun(?:day)?)\b/i.test(t) && /\d{1,2}:\d{2}/.test(t));
   if (timeIdx < 0) timeIdx = 10;
   const code = td(ix("code"));
   const name = td(ix("name"));
@@ -913,7 +918,7 @@ function parseXkCatalogDom(html: string): XkCourse[] {
     const c = catalogRowOf(cells, href, H, useHead, (tAnchor?.textContent ?? "").replace(/\s+/g, " ").trim());
     if (!c) continue;
     out.push(c);
-    if (/^\d{1,3}$/.test(c.teacher)) xkParseDebug.onOddTeacher?.(c.code, c.seq, c.teacher, (row.innerHTML || "").replace(/\s+/g, " ").slice(0, 600));
+    if (/^\d{1,3}$/.test(c.teacher)) xkParseDebug.onOddTeacher?.(c.code, c.seq, c.teacher, `rowLength=${row.innerHTML.length}`);
   }
   return out;
 }
@@ -938,7 +943,7 @@ function parseXkCatalogRegex(html: string): XkCourse[] {
     const c = catalogRowOf(tdsOf(m[1] ?? "").map((t) => t.replace(/\s+/g, " ").trim()), /href="([^"]*showJsDetail[^"]*)"/.exec(m[1] ?? "")?.[1] ?? "", H, useHead);
     if (!c) continue;
     out.push(c);
-    if (/^\d{1,3}$/.test(c.teacher)) xkParseDebug.onOddTeacher?.(c.code, c.seq, c.teacher, (m[1] ?? "").replace(/\s+/g, " ").slice(0, 600));
+    if (/^\d{1,3}$/.test(c.teacher)) xkParseDebug.onOddTeacher?.(c.code, c.seq, c.teacher, `rowLength=${(m[1] ?? "").length}`);
   }
   return out;
 }
@@ -1164,14 +1169,13 @@ export async function searchXkCourses(
     zhjwxkDebug?.(`[SEARCH-ROW] heads=${heads} rows=${JSON.stringify(rowsHtml)}`);
   }
   const rows = parseXkCatalogPage(html);
-  const tp = /共\s*(\d+)\s*页/.exec(html);
-  const totalPages = tp ? parseInt(tp[1]!, 10) : undefined;
+  const pager = parsePagerInfo(html);
+  const totalPages = pager.pages || undefined;
   // 底部精确总数：「共 294 页（共 5,864 条记录）」——核对爬取完整性的锁死基准
-  const tr = /共\s*[\d,]+\s*页（共\s*([\d,]+)\s*条记录/.exec(html);
-  const totalRows = tr ? parseInt(tr[1]!.replace(/,/g, ""), 10) : undefined;
+  const totalRows = pager.total || undefined;
   if (rows.length > 0) return { rows, page, hasMore: true, totalPages, totalRows, pageKind: "empty" };
   // 0 行分类：结果页（含结果表头）= 真无匹配；否则异常页，带首段诊断
-  const isResultPage = html.includes("选课文字说明") || html.includes("trr2");
+  const isResultPage = html.includes("选课文字说明") || html.includes("trr2") || isXkCourseTable(html);
   if (!isResultPage) return { rows, page, hasMore: false, totalPages, totalRows, pageKind: "unknown", htmlHead: html.slice(0, 600).replace(/\s+/g, " ") };
   // 外校课号兜底（NextTHUxk 2.0）：kkxxSearch 索引不命中 PK/GPK/BW 前缀课号
   // 且非纯数字 → 一级课表页签检索表单原样重搜（教务 web UI 同款路径）
@@ -1429,25 +1433,14 @@ const SUBMIT_M: Record<XkFlag, { search: string; save: string; id: string; zy: s
 
 /** 已选列表页是否含某 code+seq（pollUntil 判定） */
 function hasSelected(html: string, code: string, seq: string): boolean {
-  const rowRe = ROW_RE();
-  let m: RegExpExecArray | null;
-  while ((m = rowRe.exec(html)) !== null) {
-    if ((m[1] ?? "").includes(code)) return true;
-    void seq;
-  }
-  return false;
+  return parseXkSelectedFull(html).some(row => row.code === code && normSeq(row.seq) === normSeq(seq));
 }
 
 /** 业务拒绝字典（NextTHUxk 2.0 实证回移）：时间冲突/学分上限/先修不符等教务拒绝
  *  页此前落进轮询兜底，用户只看到「未生效」而不知道原因。成功串必须先行短路。 */
-const XK_REJECT_RE = /时间冲突|上课时间冲突|先修|不符合|不允许|无法选课|选课失败|提交失败|余量不足|课余量不足|人数已满|已选满|请先|验证码|超出|达不到|不满足|存在冲突|已选过|重复选课|操作被拒绝|被拒绝|失败|上限|已选课程学分/;
-
 function rejectOf(html: string): XkWriteResult | null {
-  if (!XK_REJECT_RE.test(html)) return null;
-  const alertMsg = /alert\(["']([^"']{2,160})["']\)/.exec(html)?.[1];
-  const plain = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
-  const snippet = /[^ ]{0,20}(?:冲突|先修|不符合|不允许|无法|失败|不足|已满|超出|请先|验证码|拒绝)[^ ]{0,30}/.exec(plain)?.[0];
-  return { ok: false, msg: ((alertMsg || snippet || "选课被教务拒绝").trim()).slice(0, 120), where: "none" };
+  const message = xkRejectionMessage(html);
+  return message ? { ok: false, msg: message, where: "none" } : null;
 }
 
 /** 选课：GET 搜索页取一次性 token → POST save*Kc → 满员二次 POST saveBksKcDl（响应新 token）→ 轮询确认 */
@@ -1482,7 +1475,7 @@ export async function submitXkCourse(
   if (opts.flag === "ty") fields.rxTyType = "";
 
   const respond = (html: string): XkWriteResult | null => {
-    if (html.includes("accessDenied")) return { ok: false, msg: "操作被拒绝（会话失效）", where: "none" };
+    if (isXkDeadHtml(html)) return { ok: false, msg: "操作被拒绝（会话失效）", where: "none" };
     if (html.includes("加入队列成功")) return { ok: true, msg: "已加入候补队列", where: "queue" };
     if (html.includes("选课成功")) return { ok: true, msg: "选课成功", where: "selected" };
     return rejectOf(html); // NextTHUxk 2.0：拒绝页明确失败并带出可读原因（不落轮询）
@@ -1490,7 +1483,7 @@ export async function submitXkCourse(
 
   let resp = await postZhjwxkApi(s, entry, "/xkBks.vxkBksXkbBs.do", fields);
   let result = respond(resp);
-  if (!result && resp.includes("是否排队") && resp.includes("saveBksKcDl")) {
+  if (!result && /是否排队|(?:join|enter) (?:the )?(?:waiting list|waitlist|queue)/i.test(resp) && resp.includes("saveBksKcDl")) {
     await sleep(1500); // v1.4.9：满员确认前置 1.5s
     const newToken = TOKEN_RE().exec(resp)?.[1];
     const queueFields: Record<string, string> = { ...fields, m: "saveBksKcDl" };
@@ -1501,7 +1494,7 @@ export async function submitXkCourse(
     resp = await postZhjwxkApi(s, entry, "/xkBks.vxkBksXkbBs.do", queueFields);
     result = respond(resp);
   }
-  if (result?.ok) return result;
+  if (result) return result;
 
   // 轮询确认（700ms × 3 查已选；再查候补）
   for (let i = 0; i < 3; i++) {
@@ -1510,7 +1503,8 @@ export async function submitXkCourse(
     if (hasSelected(yx, opts.code, opts.seq)) return { ok: true, msg: "选课成功（已确认）", where: "selected" };
   }
   const dl = await proxyZhjwxkApi(s, entry, `/xkBks.vxkBksXkbBs.do?m=dlSearch&p_xnxq=${semester}`);
-  if (dl.includes(opts.code)) return { ok: true, msg: "已加入候补队列（已确认）", where: "queue" };
+  assertNotDenied(s, dl);
+  if (parseQueueCandidates(dl).some(row => row.code === opts.code && normSeq(row.seq) === normSeq(opts.seq))) return { ok: true, msg: "已加入候补队列（已确认）", where: "queue" };
   return result ?? { ok: false, msg: "选课未生效，请确认课程类型与志愿", where: "none" };
 }
 
@@ -1541,7 +1535,7 @@ export async function dropXkCourse(
         p_del_id: `${semester};${opts.code};${opts.seq};`,
       };
   const resp = await postZhjwxkApi(s, entry, "/xkBks.vxkBksXkbBs.do", form);
-  if (resp.includes("accessDenied")) return { ok: false, msg: "操作被拒绝（会话失效）", where: "none" };
+  if (isXkDeadHtml(resp)) return { ok: false, msg: "操作被拒绝（会话失效）", where: "none" };
   const dropRej = rejectOf(resp); // NextTHUxk 2.0：退课被拒（如非本人课程/不允许退选）明确带出
   if (dropRej) return dropRej;
   for (let i = 0; i < 3; i++) {
@@ -1551,9 +1545,15 @@ export async function dropXkCourse(
       entry,
       `/xkBks.vxkBksXkbBs.do?m=${opts.isQueue ? "dlSearch" : "yxSearchTab"}&p_xnxq=${semester}${opts.isQueue ? "" : "&tokenPriFlag=yx"}&_t=${Date.now()}`,
     );
-    if (!check.includes(opts.code)) return { ok: true, msg: opts.isQueue ? "已退出候补队列" : "退选成功", where: "none" };
+    assertNotDenied(s, check);
+    const rows = opts.isQueue ? parseQueueCandidates(check) : parseXkSelectedFull(check);
+    const stillPresent = rows.some(row => row.code === opts.code && normSeq(row.seq) === normSeq(opts.seq));
+    // Absence is meaningful only when the result table was parsed completely.
+    // A translated/changed input structure must not turn existing rows into "empty".
+    const dataRows = [...check.matchAll(/<tr\b[^>]*class=["'][^"']*\btrr2\b[^"']*["'][^>]*>/gi)].length;
+    if (isXkCourseTable(check) && dataRows === rows.length && !stillPresent) return { ok: true, msg: opts.isQueue ? "已退出候补队列" : "退选成功", where: "none" };
   }
-  return { ok: true, msg: opts.isQueue ? "已提交退队（未即时确认）" : "已提交退选（未即时确认）", where: "none" };
+  return { ok: false, msg: opts.isQueue ? "退队结果未确认，请刷新候补列表" : "退选结果未确认，请刷新已选课程", where: "none" };
 }
 
 /** 调整志愿（changeZY；提交后固定等 1s，无轮询——v1.4.9 同款） */
@@ -1577,11 +1577,16 @@ export async function changeXkVolunteer(
     jhzy_kxh: opts.seq,
     jhzy_zy: String(opts.zy),
   });
-  if (resp.includes("accessDenied")) return { ok: false, msg: "操作被拒绝（会话失效）", where: "none" };
+  if (isXkDeadHtml(resp)) return { ok: false, msg: "操作被拒绝（会话失效）", where: "none" };
   const zyRej = rejectOf(resp); // NextTHUxk 2.0：志愿调整被拒明确带出（名额上限/时间冲突等）
   if (zyRej) return zyRej;
   await sleep(1000);
-  return { ok: true, msg: `志愿已调整为第 ${opts.zy} 志愿`, where: "selected" };
+  const check = await proxyZhjwxkApi(s, entry, `/xkBks.vxkBksXkbBs.do?m=yxSearchTab&p_xnxq=${semester}&tokenPriFlag=yx&_t=${Date.now()}`);
+  assertNotDenied(s, check);
+  const selected = parseXkSelectedFull(check).find(row => row.code === opts.code && normSeq(row.seq) === normSeq(opts.seq));
+  return selected?.zy === opts.zy
+    ? { ok: true, msg: `志愿已调整为第 ${opts.zy} 志愿`, where: "selected" }
+    : { ok: false, msg: "志愿调整结果未确认，请刷新已选课程", where: "none" };
 }
 
 /* ── 已选完整行（v1.4.9 fetchSelectedCourses：p_del_id + zyMap，退课/调志愿需要 seq）── */
@@ -1599,14 +1604,16 @@ export interface XkSelectedRow {
 }
 
 export function parseXkSelectedFull(html: string): XkSelectedRow[] {
+  const headers = xkHeaderCells(html);
+  const hasHeaders = xkColumnIndex(headers, "code") >= 0 && xkColumnIndex(headers, "name") >= 0;
   const zyMap: Record<string, { zy: number; typeCode: string; typeLabel: string }> = {};
-  const zyRe = /\[\s*"(\d+),(\d+)"\s*,\s*"(\d+)"\s*,\s*"(\d+)"\s*,\s*"([^"]*)"\s*,\s*"[^"]*"\s*\]/g;
+  const zyRe = /\[\s*"([A-Za-z0-9]+),(\d+)"\s*,\s*"(\d+)"\s*,\s*"(\d+)"\s*,\s*"([^"]*)"\s*,\s*"[^"]*"\s*\]/g;
   let zm: RegExpExecArray | null;
   while ((zm = zyRe.exec(html)) !== null) {
     zyMap[`${zm[1]}_${zm[2]}`] = {
       zy: parseInt(zm[3] ?? "") || 0,
       typeCode: zm[4] ?? "",
-      typeLabel: zm[5] === "是" ? "体育" : ({ "006": "必修", "008": "限选", "007": "任选" }[zm[4] ?? ""] ?? ""),
+      typeLabel: /^(?:是|yes|true)$/i.test(zm[5] ?? "") ? "体育" : ({ "006": "必修", "008": "限选", "007": "任选" }[zm[4] ?? ""] ?? ""),
     };
   }
   const out: XkSelectedRow[] = [];
@@ -1614,16 +1621,25 @@ export function parseXkSelectedFull(html: string): XkSelectedRow[] {
   let m: RegExpExecArray | null;
   while ((m = rowRe.exec(html)) !== null) {
     const row = m[1] ?? "";
-    const val = /name="p_del_id"[^>]*value="([^"]*)"/.exec(row)?.[1] ?? "";
+    const input = [...row.matchAll(/<input\b[^>]*>/gi)].find(m => /\bname\s*=\s*["']p_del_id["']/i.test(m[0]))?.[0] ?? "";
+    const val = /\bvalue\s*=\s*["']([^"']*)["']/i.exec(input)?.[1] ?? "";
     const parts = val.split(";");
     const code = parts[1] ?? "";
     const seq = parts[2] ?? "";
     if (!code) continue;
     const tds = tdsOf(row);
     const cell = (i: number): string => (tds[i] ?? "").replace(/\s+/g, " ").trim();
+    const field = (key: Parameters<typeof xkColumnIndex>[1], fallback: string): string => {
+      const index = hasHeaders ? xkColumnIndex(headers, key) : -1;
+      return index >= 0 ? cell(index) : fallback;
+    };
     const info = zyMap[`${code}_${seq}`] ?? { zy: 0, typeCode: "", typeLabel: "" };
-    const zyFromCell = /第([一二三])志愿/.exec(cell(2));
-    const isSports = !cell(1) && zyFromCell;
+    const priority = field("volunteer", cell(2));
+    const zyFromCell = /第([一二三])志愿/.exec(priority);
+    const englishPriority = /\b([123])(?:st|nd|rd)?(?:\s+(?:choice|preference))?\b|\b(first|second|third)\s+(?:choice|preference)\b/i.exec(priority);
+    const priorityValue = zyFromCell ? ({ 一: 1, 二: 2, 三: 3 }[zyFromCell[1] as "一" | "二" | "三"] ?? 0)
+      : englishPriority?.[1] ? Number(englishPriority[1]) : ({ first: 1, second: 2, third: 3 }[englishPriority?.[2]?.toLowerCase() ?? ""] ?? 0);
+    const isSports = !cell(1) && !!zyFromCell;
     // 2026-2027-1 起已选表列序变更（样本 xkBks.vxkBksXkbBs 实证）：课号独立成列
     // → cell(3)=课号、cell(4)=课名（教师/时间/学分未动）。自适应取第一个非纯
     // 数字的候选格，新旧列序通吃——否则预览课表整屏课号（实测事故）。
@@ -1631,12 +1647,12 @@ export function parseXkSelectedFull(html: string): XkSelectedRow[] {
     out.push({
       code,
       seq,
-      name: nameCell || cell(1),
-      teacher: cell(7) || cell(2),
-      time: cell(6) || cell(3),
-      credits: parseFloat(cell(8) || cell(4)) || 0,
-      typeLabel: isSports ? "体育" : cell(1) || info.typeLabel,
-      zy: info.zy || (zyFromCell ? ({ 一: 1, 二: 2, 三: 3 }[zyFromCell[1] as "一" | "二" | "三"] ?? 0) : 0),
+      name: field("name", nameCell || cell(1)),
+      teacher: field("teacher", cell(7) || cell(2)),
+      time: field("time", cell(6) || cell(3)),
+      credits: parseFloat(field("credits", cell(8) || cell(4))) || 0,
+      typeLabel: field("type", isSports ? "体育" : cell(1) || info.typeLabel),
+      zy: info.zy || priorityValue,
       typeCode: isSports ? "ty" : info.typeCode,
     });
   }

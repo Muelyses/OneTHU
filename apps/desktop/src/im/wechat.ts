@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 微信通道适配器（iLink 官方 Bot，扫码登录）。
  *
@@ -21,7 +22,7 @@ const SUSPEND_MS = 60 * 60_000; // -14 风控：暂停 1 小时（官方行为�
 
 export class WechatChannel implements ChannelAdapter {
   readonly id: ChannelId = "wechat";
-  readonly label = "微信（iLink 官方 Bot）";
+  get label(): string { return i18n("im.wechat.channelLabel"); }
 
   private running = false;
   private buf = "";
@@ -37,12 +38,12 @@ export class WechatChannel implements ChannelAdapter {
   probe(): { configured: boolean; missing: string } {
     const c = this.getCreds();
     if (c?.token) return { configured: true, missing: "" };
-    return { configured: false, missing: "未扫码登录（设置页点「扫码登录」）" };
+    return { configured: false, missing: i18n("im.wechat.scanRequired") };
   }
 
   async start(onInbound: (msg: InboundMessage) => void): Promise<void> {
     const creds = this.getCreds();
-    if (!creds?.token) throw new Error("未扫码登录");
+    if (!creds?.token) throw new Error(i18n("im.wechat.4c408d3226a4"));
     this.token = creds.token;
     this.baseUrl = creds.baseUrl || ILINK_API_BASE;
     this.buf = "";
@@ -55,7 +56,7 @@ export class WechatChannel implements ChannelAdapter {
   }
 
   async send(orig: InboundMessage, text: string): Promise<void> {
-    if (!this.token) throw new Error("微信通道未登录");
+    if (!this.token) throw new Error(i18n("im.wechat.f1ffea5c8b09"));
     await sendMessage(this.baseUrl, this.token, buildTextMessage(orig.sender, text, this.ctx.get(orig.sender)));
   }
 
@@ -69,7 +70,7 @@ export class WechatChannel implements ChannelAdapter {
         const r = await getUpdates(this.baseUrl, this.token, this.buf);
         if (r.ret === -14 || r.errcode === -14) {
           this.suspendUntil = Date.now() + SUSPEND_MS;
-          reportChannelStatus(this.id, "suspended", "微信风控（-14）：暂停 1 小时后自动恢复");
+          reportChannelStatus(this.id, "suspended", i18n("im.wechat.suspended"));
           continue;
         }
         if (r.ret && r.ret !== 0) {
@@ -142,10 +143,10 @@ export async function wechatLoginStart(): Promise<{ qrcode: string; imgContent: 
 
 /** 轮询扫码状态；confirmed 时保存凭据（密文）并返回 done=true */
 export async function wechatLoginPoll(): Promise<{ status: QrcodeStatus; note: string; done: boolean }> {
-  if (!login) return { status: "expired", note: "未发起登录", done: false };
+  if (!login) return { status: "expired", note: i18n("im.wechat.e3fe9d7adf2c"), done: false };
   if (Date.now() - login.startedAt > LOGIN_TTL_MS) {
     login = null;
-    return { status: "expired", note: "二维码已过期，请重新发起", done: false };
+    return { status: "expired", note: i18n("im.wechat.c383c734a8c7"), done: false };
   }
   const r = await pollQrcodeStatus(login.qrcode, {
     baseUrl: login.baseUrl,
@@ -168,16 +169,16 @@ export async function wechatLoginPoll(): Promise<{ status: QrcodeStatus; note: s
     });
     login = null;
     void logLine(`[IM] 微信扫码登录成功（bot=${r.ilink_bot_id ?? "?"}）`).catch(() => undefined);
-    return { status: "confirmed", note: "登录成功，通道已启用", done: true };
+    return { status: "confirmed", note: i18n("im.wechat.ed04656fa8e1"), done: true };
   }
   const notes: Record<string, string> = {
-    wait: "等待扫码…",
-    scaned: "已扫码，请在手机上确认",
-    need_verifycode: "需要在手机上输入验证码后重试",
-    expired: "二维码已过期，请重新发起",
-    verify_code_blocked: "验证失败次数过多，请重新发起",
-    binded_redirect: "该 Bot 已绑定到本机",
-    scaned_but_redirect: "已扫码（切换接入点）…",
+    wait: i18n("im.wechat.qr.wait"),
+    scaned: i18n("im.wechat.qr.scaned"),
+    need_verifycode: i18n("im.wechat.qr.needVerifyCode"),
+    expired: i18n("im.wechat.qr.expired"),
+    verify_code_blocked: i18n("im.wechat.qr.verifyBlocked"),
+    binded_redirect: i18n("im.wechat.qr.bound"),
+    scaned_but_redirect: i18n("im.wechat.qr.redirect"),
   };
   return { status: r.status, note: notes[r.status] ?? r.status, done: false };
 }

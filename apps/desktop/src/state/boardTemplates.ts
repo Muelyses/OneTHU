@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 起步模板（P2.5，纯逻辑）：给空板一套预制排版，避免用户面对"一块什么都没有的白板"。
  *
@@ -31,11 +32,11 @@ function tile(spec: WidgetSpec, x: number, y: number, w: number, h: number): Tem
 
 /** 四套起步排版只在用户主动选择时应用，不迁移已经保存的自由布局。 */
 export const BOARD_TEMPLATES: readonly BoardTemplate[] = [
-  {id: "tpl-home", name: "默认首页", description: "时钟、问候语、一级功能区与今日四件套。", items: homeStarterItems().map(it => ({spec: it.spec, cell: it.cell, rect: it.rect!, manual: it.manual}))},
+  {id: "tpl-home", get name() { return i18n("state.boardtemplates.e8ada398d92a"); }, get description() { return i18n("state.boardtemplates.3d0b47c6e59c"); }, items: homeStarterItems().map(it => ({spec: it.spec, cell: it.cell, rect: it.rect!, manual: it.manual}))},
   {
     id: "tpl-today",
-    name: "今日速览",
-    description: "课表与待办并排，下面接通知、下一节课和余额。",
+    get name() { return i18n("state.boardtemplates.2545760589cb"); },
+    get description() { return i18n("state.boardtemplates.811d02529318"); },
     items: [
       tile({ kind: "custom", id: "classes" }, 0, 0, 540, 480),
       tile({ kind: "custom", id: "homework" }, 564, 0, 540, 480),
@@ -46,8 +47,8 @@ export const BOARD_TEMPLATES: readonly BoardTemplate[] = [
   },
   {
     id: "tpl-learn",
-    name: "学习为主",
-    description: "全部作业、通知与课程文件，适合考试周盯着进度。",
+    get name() { return i18n("state.boardtemplates.d5e8c95c5448"); },
+    get description() { return i18n("state.boardtemplates.0a6fddad6b91"); },
     items: [
       tile({ kind: "custom", id: "learn-assignments" }, 0, 0, 540, 480),
       tile({ kind: "custom", id: "learn-notices" }, 564, 0, 540, 480),
@@ -57,10 +58,10 @@ export const BOARD_TEMPLATES: readonly BoardTemplate[] = [
   },
   {
     id: "tpl-min",
-    name: "极简",
-    description: "一个标题、一张课表、一条余额，先跑起来再慢慢加。",
+    get name() { return i18n("state.boardtemplates.2e67474d8dad"); },
+    get description() { return i18n("state.boardtemplates.353b51755790"); },
     items: [
-      tile({ kind: "text", text: "今天，从容一点。", variant: "title" }, 0, 0, 1104, 132),
+      tile({ kind: "text", get text() { return i18n("state.boardtemplates.c11531ab33d2"); }, variant: "title" }, 0, 0, 1104, 132),
       tile({ kind: "custom", id: "classes" }, 0, 156, 740, 480),
       tile({ kind: "custom", id: "balance-strip" }, 764, 156, 340, 176),
     ],

@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 今日组件库（万物原子化）：今日页 bespoke 卡的「纯展示体」+「自持组件」双形态。
@@ -51,15 +52,15 @@ export function calDaysUntil(d: Date): number {
 /** 截止徽标：按日历天算（当天 23:59 截止显示「今天截止」而非「1 天后」） */
 export function deadlineChip(h: Homework): { text: string; cls: string } {
   const d = parseLearnTime(h.deadline);
-  if (!d) return { text: "未知截止", cls: "chip-gray" };
-  if (h.graded) return { text: "已批改", cls: "chip-blue" };
-  if (h.submitted) return { text: "已提交", cls: "chip-green" };
+  if (!d) return { text: i18n("components.homewidgets.8e88f8b0acf1"), cls: "chip-gray" };
+  if (h.graded) return { text: i18n("components.homewidgets.d42baf1647c8"), cls: "chip-blue" };
+  if (h.submitted) return { text: i18n("components.homewidgets.bc37a6110a07"), cls: "chip-green" };
   const days = calDaysUntil(d);
-  if (d.getTime() < Date.now()) return { text: days === 0 ? "今天已截止" : "逾期 " + -days + " 天", cls: "chip-red" };
-  if (days === 0) return { text: "今天截止", cls: "chip-red" };
-  if (days === 1) return { text: "明天截止", cls: "chip-amber" };
-  if (days <= 3) return { text: days + " 天后截止", cls: "chip-amber" };
-  return { text: days + " 天后截止", cls: "chip-gray" };
+  if (d.getTime() < Date.now()) return { text: days === 0 ? i18n("components.homewidgets.115a5e14e269") : i18n("components.homewidgets.16612dac51bc") + -days + i18n("components.homewidgets.4ce3054e7c4d"), cls: "chip-red" };
+  if (days === 0) return { text: i18n("components.homewidgets.106e2c9d79fd"), cls: "chip-red" };
+  if (days === 1) return { text: i18n("components.homewidgets.1645edf73a88"), cls: "chip-amber" };
+  if (days <= 3) return { text: days + i18n("components.homewidgets.79bfedfa5fcb"), cls: "chip-amber" };
+  return { text: days + i18n("components.homewidgets.79bfedfa5fcb"), cls: "chip-gray" };
 }
 
 /** 清华本科小节开始时间（与 Schedule 页一致） */
@@ -145,6 +146,8 @@ export function EntryCard({
   disabled?: boolean;
   dimLabel?: string;
 }) {
+  const uiLocale = useUiLocale();
+
   // 数字滚动（local/anim-delight）：数值型从旧值滚到新值（数据到达时"长"出来）；
   // 字符串（"–"、"¥12.34"）原样显示，不硬凑动画。
   const rolled = useCountUp(typeof num === "number" ? num : 0);
@@ -157,7 +160,7 @@ export function EntryCard({
         disabled={disabled}
         style={disabled ? { opacity: 0.55, cursor: "default" } : undefined}
         aria-label={dimLabel ?? label}
-        title={disabled ? "数据加载后可用" : undefined}
+        title={disabled ? i18n("components.homewidgets.414869e94ef0") : undefined}
       >
         {icon}
         <span className="stat-text">
@@ -179,6 +182,8 @@ export function RowClick({
   children: ReactNode;
   style?: CSSProperties;
 }) {
+  const uiLocale = useUiLocale();
+
   const handle = disabled ? undefined : onClick;
   return (
     <div
@@ -208,6 +213,8 @@ export interface AgendaRow {
 }
 
 export function AgendaRows({ rows }: { rows: AgendaRow[] }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card className="list">
       {rows.map((r, i) => (
@@ -238,13 +245,15 @@ export function HomeworkRows({
   courseName: (courseId: string) => string;
   navigate: Nav;
 }) {
+  const uiLocale = useUiLocale();
+
   if (loading) return <SkeletonRows rows={4} />;
   if (rows.length === 0) {
     return (
       <Card>
         <Empty
-          text="没有未提交的作业，享受今天吧。"
-          action={<Btn variant="ghost" onClick={() => navigate("tasks")}>去待办看看</Btn>}
+          text={i18n("components.homewidgets.1156e9912bf8")}
+          action={<Btn variant="ghost" onClick={() => navigate("tasks")}>{i18n("components.homewidgets.4a61ef7cac46")}</Btn>}
         />
       </Card>
     );
@@ -266,14 +275,14 @@ export function HomeworkRows({
           >
             <div className="row-when">
               <b>{h.deadline.slice(5, 10)}</b>
-              <span>{h.deadline.slice(11, 16)} 截止</span>
+              <span>{i18nRich("components.homewidgets.e272d62dae3f", { value: h.deadline.slice(11, 16) })}</span>
             </div>
             <div className="row-main">
               <div className="row-title">
                 {/* R11 16.1：今日页不再显示来源徽标（雨课堂/TUOJ/Tyche/DSA OJ）——移动端拥挤，
                     来源只在「全部作业」页（shared.tsx HomeworkRow）显示；考试/旁听徽标保留。 */}
-                {h.kind === "exam" ? <span className="tag-exam" title="考试">考试</span> : null}
-                {h.audited ? <span className="tag-audit" title="旁听课堂">旁听</span> : null}
+                {h.kind === "exam" ? <span className="tag-exam" title={i18n("components.homewidgets.d26ef0190d6c")}>{i18n("components.homewidgets.d26ef0190d6c")}</span> : null}
+                {h.audited ? <span className="tag-audit" title={i18n("components.homewidgets.f7b18ee399fc")}>{i18n("components.homewidgets.f8308b0b2728")}</span> : null}
                 {h.title}
               </div>
               <div className="row-sub">{h.courseName ?? courseName(h.courseId)}</div>
@@ -285,9 +294,7 @@ export function HomeworkRows({
             {/* R23（霖需求）：雨课堂等外部作业部分作答 → 进行中（未交），在截止 chip
                 右侧标注「已完成 x/y 题」；整卷已交不显示（有 已提交/已批改 表达） */}
             {h.externalProgress && !h.submitted ? (
-              <span className="chip chip-gray" title={`已完成 ${h.externalProgress} 题`}>
-                已完成 {h.externalProgress} 题
-              </span>
+              <span className="chip chip-gray" title={i18n("components.homewidgets.849f9c17224f", { externalProgress: String(h.externalProgress) })}>{i18nRich("components.homewidgets.849f9c17224f", { externalProgress: h.externalProgress })}</span>
             ) : null}
             <IconChevron className="row-caret" width={14} height={14} />
           </RowClick>
@@ -306,12 +313,14 @@ export function NoticeRows({
   items: CampusDataT["notifications"];
   navigate: Nav;
 }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card className="list">
       {items.length === 0 ? (
         <Empty
-          text="暂时没有新通知。"
-          action={<Btn variant="ghost" onClick={() => navigate("learn")}>去网络学堂</Btn>}
+          text={i18n("components.homewidgets.00c13966da7b")}
+          action={<Btn variant="ghost" onClick={() => navigate("learn")}>{i18n("components.homewidgets.98d8baebd69d")}</Btn>}
         />
       ) : (
         items.slice(0, 3).map((n, i) => (
@@ -335,6 +344,8 @@ export function NoticeRows({
 
 /** 今日预约卡体（座位 + 研讨间，按今天聚合） */
 export function ResvRows({ list, navigate }: { list: ResvListT; navigate: Nav }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card className="list">
       {list.map((r, i) => (
@@ -346,14 +357,14 @@ export function ResvRows({ list, navigate }: { list: ResvListT; navigate: Nav })
             <div className="tl-sub">
               {(
                 r.kind === "seat"
-                  ? [r.place ? "座位 " + r.place : "", hm(r.start) + " 签到", r.note ?? ""]
+                  ? [r.place ? i18n("components.homewidgets.0631b8517ea4") + r.place : "", hm(r.start) + i18n("components.homewidgets.56209f0a5989"), r.note ?? ""]
                   : [r.start && r.end ? hm(r.start) + "~" + hm(r.end) : hm(r.start), r.venue, r.note ?? ""]
               )
                 .filter(Boolean)
                 .join(" · ")}
             </div>
           </div>
-          <span className="chip chip-gray">{r.kind === "seat" ? "座位" : "研讨间"}</span>
+          <span className="chip chip-gray">{r.kind === "seat" ? i18n("components.homewidgets.7bd9d53b62f0") : i18n("components.homewidgets.e4d40b4d6759")}</span>
           <IconChevron className="row-caret" width={14} height={14} />
         </RowClick>
       ))}
@@ -363,12 +374,14 @@ export function ResvRows({ list, navigate }: { list: ResvListT; navigate: Nav })
 
 /** 今日课程卡体 */
 export function ClassRows({ events, navigate }: { events: ScheduleEntry[]; navigate: Nav }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card className="list">
       {events.length === 0 ? (
         <Empty
-          text="今天没有课。"
-          action={<Btn variant="ghost" onClick={() => navigate("schedule")}>看本周课表</Btn>}
+          text={i18n("components.homewidgets.0ba4abe941a2")}
+          action={<Btn variant="ghost" onClick={() => navigate("schedule")}>{i18n("components.homewidgets.2073bb9744cb")}</Btn>}
         />
       ) : (
         events.map((s, i) => (
@@ -392,6 +405,8 @@ export function ClassRows({ events, navigate }: { events: ScheduleEntry[]; navig
 
 /** 订阅新闻卡体（订阅来源优先，回退最新；点击行直达该条新闻详情） */
 export function NewsRows({ feed, navigate }: { feed: TodayFeedT; navigate: Nav }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card className="list">
       {feed.list.map((n, i) => (
@@ -404,7 +419,7 @@ export function NewsRows({ feed, navigate }: { feed: TodayFeedT; navigate: Nav }
           <div className="tl-bar" style={{ background: "var(--border-strong)" }} />
           <div className="tl-main">
             <div className="tl-title" style={{ whiteSpace: "normal" }}>{n.name}</div>
-            <div className="tl-sub">{n.source || "校内通知"}</div>
+            <div className="tl-sub">{n.source || i18n("components.homewidgets.6699d0be5ff8")}</div>
           </div>
           <IconChevron className="row-caret" width={14} height={14} />
         </RowClick>
@@ -415,13 +430,15 @@ export function NewsRows({ feed, navigate }: { feed: TodayFeedT; navigate: Nav }
 
 /** 校园卡余额卡体（快捷入口；未加载完成前置灰不可点） */
 export function CardBalanceBody({ balance, navigate }: { balance: number | null; navigate: Nav }) {
+  const uiLocale = useUiLocale();
+
   return (
     <div className="stats" style={{ margin: 0 }}>
       <EntryCard
         icon={<span className="stat-icon amber"><IconCard width={17} height={17} /></span>}
         num={balance != null ? "¥" + balance.toFixed(2) : "–"}
-        label={balance != null ? "校园卡余额" : "校园卡"}
-        dimLabel={balance != null ? "校园卡余额" : "校园卡（加载中）"}
+        label={balance != null ? i18n("components.homewidgets.c0c6bb8b8618") : i18n("components.homewidgets.caf1f095b108")}
+        dimLabel={balance != null ? i18n("components.homewidgets.c0c6bb8b8618") : i18n("components.homewidgets.7979e047afe2")}
         disabled={balance == null}
         onClick={() => navigate("life", { lifeTab: "card" })}
       />
@@ -441,30 +458,32 @@ export function deadlineMs(s: string | undefined): number {
 export function countdownChip(beginMs: number, endMs: number, now: Date): { text: string; cls: string } {
   if (now.getTime() < beginMs) {
     const days = calDaysUntil(new Date(beginMs));
-    if (days <= 0) return { text: "今天开始", cls: "chip-red" };
-    if (days <= 7) return { text: "未开始 · " + days + " 天后", cls: "chip-amber" };
-    return { text: "未开始 · 还有 " + days + " 天", cls: "chip-gray" };
+    if (days <= 0) return { text: i18n("components.homewidgets.9b0b6c84ccb6"), cls: "chip-red" };
+    if (days <= 7) return { text: i18n("components.homewidgets.60367daaba0b") + days + i18n("components.homewidgets.aff97ddc4f4d"), cls: "chip-amber" };
+    return { text: i18n("components.homewidgets.c9f6e2ad23fd") + days + i18n("components.homewidgets.4ce3054e7c4d"), cls: "chip-gray" };
   }
   const days = Math.ceil((endMs - now.getTime()) / 86400000);
-  if (days <= 1) return { text: "今天结束", cls: "chip-red" };
-  return { text: "进行中 · 剩 " + days + " 天", cls: "chip-blue" };
+  if (days <= 1) return { text: i18n("components.homewidgets.fa22f0f0b501"), cls: "chip-red" };
+  return { text: i18n("components.homewidgets.b4768eecdbfd") + days + i18n("components.homewidgets.4ce3054e7c4d"), cls: "chip-blue" };
 }
 
 /** 今日概览条（未交作业 / 三日内截止 / 今日课程） */
 export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } } = {}) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const { data, state } = useCampusData();
   const now = new Date();
   const dataReady = !(state === "loading" && !data);
   // 合并外部作业（雨课堂/TUOJ/Tyche/DSA OJ）：未配置凭据时 extHw 恒为空，与改动前完全一致
   const ext = useExternalHomework();
-  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const extHw = useMemo(() => ext.items.map(toHomework), [uiLocale, ext.items]);
   const ignored = useIgnoredHw(); // R21c：忽略的作业不计入任何统计与列表
   // R23（霖需求）：外部平台同步未完成期间不冒充最终数——先显示网络学堂已到账部分 +
   // 动态省略号（如「3…」），同步完成后落为全量数（如 6）
   const learnOnlyUnsubmitted = useMemo(
     () => (data?.homework ?? []).filter((h) => !h.submitted && !ignored.has(h.id) && !h.audited).length,
-    [data, ignored],
+    [uiLocale, data, ignored],
   );
   const extPending = ext.configured && (ext.state === "idle" || ext.state === "loading");
   const unsubmitted = useMemo(
@@ -473,7 +492,7 @@ export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } 
         // R21c：已忽略不进未交统计；R23：旁听作业单列在「全部作业」页，不计入未交总数/列表
         .filter((h) => !h.submitted && !ignored.has(h.id) && !h.audited)
         .sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, extHw, ignored],
+    [uiLocale, data, extHw, ignored],
   );
   const dueSoon = useMemo(
     () =>
@@ -481,7 +500,7 @@ export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } 
         const d = parseLearnTime(h.deadline);
         return d && d.getTime() >= now.getTime() && calDaysUntil(d) <= 2;
       }).length,
-    [unsubmitted],
+    [uiLocale, unsubmitted],
   );
   const wd = now.getDay() === 0 ? 7 : now.getDay();
   const today = ymd(now);
@@ -494,7 +513,7 @@ export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } 
           const tb = b.startTime ?? SECTION_OF[b.startSection ?? 1] ?? "99:99";
           return ta.localeCompare(tb);
         }),
-    [data, today, wd],
+    [uiLocale, data, today, wd],
   );
   /* 档位越高，多铺一层信息：4×1 只给三项计数；4×2 再给最近一条截止；4×4 再把今天前几节课铺开。
      三层都来自同一批已算好的数据，不额外取数。 */
@@ -508,20 +527,20 @@ export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } 
           !dataReady
             ? "–"
             : extPending
-              ? <span className="num-pending" title="其他平台作业同步中">{learnOnlyUnsubmitted}<i className="num-dots" /></span>
+              ? <span className="num-pending" title={i18n("components.homewidgets.dba6c45f9f3a")}>{learnOnlyUnsubmitted}<i className="num-dots" /></span>
               : unsubmitted.length
         }
-        label="未交作业"
-        dimLabel="未交作业"
+        label={i18n("components.homewidgets.1236edf41da0")}
+        dimLabel={i18n("components.homewidgets.1236edf41da0")}
         disabled={!dataReady}
         onClick={() => navigate("learn-assignments")}
       />
-      <EntryCard num={dataReady ? dueSoon : "–"} label="三日内截止" dimLabel="三日内截止" disabled={!dataReady} onClick={() => navigate("learn-assignments")} />
-      <EntryCard num={dataReady ? todayEvents.length : "–"} label="今日课程" dimLabel="今日课程" disabled={!dataReady} onClick={() => navigate("schedule")} />
+      <EntryCard num={dataReady ? dueSoon : "–"} label={i18n("components.homewidgets.6dbfc7966582")} dimLabel={i18n("components.homewidgets.6dbfc7966582")} disabled={!dataReady} onClick={() => navigate("learn-assignments")} />
+      <EntryCard num={dataReady ? todayEvents.length : "–"} label={i18n("components.homewidgets.119099ab1bad")} dimLabel={i18n("components.homewidgets.119099ab1bad")} disabled={!dataReady} onClick={() => navigate("schedule")} />
       </div>
       {tierH >= 2 && dataReady && nearest ? (
         <div className="overview-line">
-          <span className="overview-line-title">{nearest.title || "待办作业"}</span>
+          <span className="overview-line-title">{nearest.title || i18n("components.homewidgets.1b2515c676f0")}</span>
           <span className="overview-line-side">{nearest.deadline}</span>
         </div>
       ) : null}
@@ -541,10 +560,12 @@ export function TodayOverviewWidget({ size }: { size?: { w: number; h: number } 
 
 /** 日程与提醒（校历 + 重要事项倒计时；两路都空 → null 整卡隐藏） */
 export function AgendaWidget({ size }: { size?: { w: number; h: number } } = {}): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const cal = useTodayCalendar();
   const { list: deadlineList, state: dlState } = useTodayDeadlines();
-  const stableNow = useMemo(() => new Date(), []);
+  const stableNow = useMemo(() => new Date(), [uiLocale]);
   const rows = useMemo<AgendaRow[]>(() => {
     const calRows: AgendaRow[] =
       cal.state !== "ready"
@@ -553,8 +574,8 @@ export function AgendaWidget({ size }: { size?: { w: number; h: number } } = {})
             key: n.key,
             date: n.date,
             title: n.name,
-            sub: "校历 · 星期" + WEEKDAYS[n.date.getDay()],
-            chipText: n.daysUntil === 0 ? "今天" : "还有 " + n.daysUntil + " 天",
+            sub: i18n("components.homewidgets.954daea3eaaa") + WEEKDAYS[n.date.getDay()],
+            chipText: n.daysUntil === 0 ? i18n("components.homewidgets.d5f5a7a01073") : i18n("components.homewidgets.1a1f6f3d0815") + n.daysUntil + i18n("components.homewidgets.4ce3054e7c4d"),
             chipCls: n.daysUntil <= 1 ? "chip-red" : n.daysUntil <= 7 ? "chip-amber" : "chip-gray",
             barCls: n.key.endsWith("-end") ? "var(--amber)" : undefined,
             onClick: () => navigate("schedule"),
@@ -573,7 +594,7 @@ export function AgendaWidget({ size }: { size?: { w: number; h: number } } = {})
                 key: "dl-" + d.title + "-" + d.begin,
                 date: new Date(d.beginMs),
                 title: d.title,
-                sub: "重要事项 · " + (d.begin ?? "").slice(5, 16) + " ~ " + (d.end ?? "").slice(5, 16),
+                sub: i18n("components.homewidgets.a0d4cfb9759e") + (d.begin ?? "").slice(5, 16) + " ~ " + (d.end ?? "").slice(5, 16),
                 chipText: chip.text,
                 chipCls: chip.cls,
                 barCls: "var(--border-strong)",
@@ -581,7 +602,7 @@ export function AgendaWidget({ size }: { size?: { w: number; h: number } } = {})
               } as AgendaRow;
             });
     return [...calRows, ...dlRows].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(0, 6);
-  }, [cal.state, cal.nodes, dlState, deadlineList, stableNow, navigate]);
+  }, [uiLocale, cal.state, cal.nodes, dlState, deadlineList, stableNow, navigate]);
   if (rows.length === 0) return null;
   /* 档位决定铺几条：4×2 只给最近两条，4×4 铺满（当前上限 6 条） */
   const limit = (size?.h ?? 4) >= 4 ? 6 : 2;
@@ -590,11 +611,13 @@ export function AgendaWidget({ size }: { size?: { w: number; h: number } } = {})
 
 /** 未提交作业（自持取数版） */
 export function HomeworkWidget(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const { data, state } = useCampusData();
   // 合并外部作业：与「全部作业」页同口径（未配置凭据时恒为空数组）
   const ext = useExternalHomework();
-  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const extHw = useMemo(() => ext.items.map(toHomework), [uiLocale, ext.items]);
   const ignored = useIgnoredHw(); // R21c：忽略的作业不计入任何统计与列表
   const unsubmitted = useMemo(
     () =>
@@ -602,14 +625,16 @@ export function HomeworkWidget(): ReactNode {
         // R21c：已忽略不进未交统计；R23：旁听作业单列在「全部作业」页，不计入未交总数/列表
         .filter((h) => !h.submitted && !ignored.has(h.id) && !h.audited)
         .sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, extHw, ignored],
+    [uiLocale, data, extHw, ignored],
   );
-  const courseName = (courseId: string) => data?.courses.find((c) => c.id === courseId)?.name ?? "课程";
+  const courseName = (courseId: string) => data?.courses.find((c) => c.id === courseId)?.name ?? i18n("components.homewidgets.60db1afb4022");
   return <HomeworkRows loading={state === "loading" && !data} rows={unsubmitted} courseName={courseName} navigate={navigate} />;
 }
 
 /** 最近通知（自持取数版） */
 export function RecentNoticesWidget(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const { data } = useCampusData();
   return <NoticeRows items={data?.notifications ?? []} navigate={navigate} />;
@@ -617,6 +642,8 @@ export function RecentNoticesWidget(): ReactNode {
 
 /** 校园卡余额（自持取数版） */
 export function CardBalanceWidget(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const card = useCard(1);
   return <CardBalanceBody balance={card.data?.info.balance ?? null} navigate={navigate} />;
@@ -624,6 +651,8 @@ export function CardBalanceWidget(): ReactNode {
 
 /** 今日预约（自持取数版；空/未就绪 → null） */
 export function TodayResvWidget(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const resv = useTodayReservations();
   if (resv.state !== "ready" || !resv.list || resv.list.length === 0) return null;
@@ -632,6 +661,8 @@ export function TodayResvWidget(): ReactNode {
 
 /** 今日课程（自持取数版） */
 export function TodayClassesWidget({ upcoming = false }: { upcoming?: boolean } = {}): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const { data } = useCampusData();
   const now = new Date();
@@ -647,7 +678,7 @@ export function TodayClassesWidget({ upcoming = false }: { upcoming?: boolean } 
           const tb = b.startTime ?? SECTION_OF[b.startSection ?? 1] ?? "99:99";
           return ta.localeCompare(tb);
         }),
-    [data, today, wd, upcoming, now.getHours(), now.getMinutes()],
+    [uiLocale, data, today, wd, upcoming, now.getHours(), now.getMinutes()],
   );
   return <ClassRows events={events} navigate={navigate} />;
 }
@@ -672,6 +703,8 @@ export function useSubsNewsFeed() {
 
 /** 订阅新闻（自持取数版；空 → null） */
 export function SubsNewsWidget(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const news = useSubsNewsFeed();
   if (news.state !== "ready" || !news.data || news.data.list.length === 0) return null;

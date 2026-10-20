@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 统一传输层 —— 清华服务端不允许跨域，浏览器 fetch 会被 CORS 拦截。
  *
@@ -5,6 +6,7 @@
  * 手动逐跳跟随重定向并在每一跳刷新 Cookie —— 与老 thu-app-desktop 验证过的方案同构。
  * 浏览器预览：退回 window.fetch（仅 UI 开发；登录会被 CORS 拦截并给出明确提示）。
  */
+import { networkLogUrl, networkLogCookieNames, redactNetworkLog } from "./networkLog.js";
 import type { FetchLike } from "@onethu/core";
 import { webvpnWrap } from "@onethu/core";
 // R21c：body 序列化的唯一真源（FormData→multipart / 二进制→base64）
@@ -75,7 +77,7 @@ async function invokeHttp(
   let onAbort: (() => void) | undefined;
   const abortPromise = signal
     ? new Promise<never>((_, rej) => {
-        const fire = (): void => rej(new DOMException("请求已取消", "AbortError"));
+        const fire = (): void => rej(new DOMException(i18n("lib.transport.cancelled"), "AbortError"));
         if (signal.aborted) fire();
         else {
           onAbort = fire;
@@ -89,7 +91,7 @@ async function invokeHttp(
   const guardMs = Math.max(45_000, (opts.timeoutMs ?? 0) + 5_000);
   let timer: ReturnType<typeof setTimeout> | undefined;
   const guard = new Promise<never>((_, rej) => {
-    timer = setTimeout(() => rej(new Error(`请求超时（${guardMs / 1000}s）：${url.slice(0, 120)}`)), guardMs);
+    timer = setTimeout(() => rej(new Error(i18n("lib.transport.cd880977cdbd", { value: String(guardMs / 1000), value2: networkLogUrl(url) }))), guardMs);
   });
   try {
     return await Promise.race(abortPromise ? [p, guard, abortPromise] : [p, guard]);
@@ -209,7 +211,7 @@ export async function nativeFetch(
   });
   let timer: ReturnType<typeof setTimeout> | undefined;
   const guard = new Promise<never>((_, rej) => {
-    timer = setTimeout(() => rej(new Error(`请求超时（90s）：${url.slice(0, 120)}`)), 90_000);
+    timer = setTimeout(() => rej(new Error(i18n("lib.transport.81870141c552", { value: networkLogUrl(url) }))), 90_000);
   });
   let res: HttpOutput;
   try {
@@ -330,9 +332,9 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
 
     const res = await invokeHttp(currentUrl, method, headers, body, bodyB64, { signal, timeoutMs });
     hopLogger?.(
-      currentUrl,
+      networkLogUrl(currentUrl),
       res.status,
-      [...pairs.keys()].join(",") + " ←新发[" + (res.set_cookies ?? []).map((sc) => sc.replace(/;.*$/, "").slice(0, 46)).join(" | ") + "]",
+      [...pairs.keys()].join(",") + " ←新发[" + networkLogCookieNames(res.set_cookies ?? []) + "]",
     );
 
     for (const sc of res.set_cookies) {
@@ -412,7 +414,7 @@ export async function tauriFetch(url: string, init: RequestInit = {}): Promise<R
     });
   }
 
-  throw new Error(`重定向次数超限（${maxHops}）末跳=${currentUrl.slice(0, 140)}`);
+  throw new Error(i18n("lib.transport.53480e72e233", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }));
 }
 
 /** base64 → 字节（二进制响应体通道；Response(string) 会把 0x89 等
@@ -443,40 +445,40 @@ export const universalFetch: FetchLike = (url, init) =>
 export { rawErrorText, isSessionExpiredError } from "./sessionErrors.js";
 import { rawErrorText } from "./sessionErrors.js";
 
-/** 最近一次界面报错的原文（只随「复制诊断摘要」带出，不自动上报） */
+/** 最近一次界面报错的安全摘要（只随「复制诊断摘要」带出，不自动上报） */
 let lastRawError = "";
 export function lastErrorText(): string {
   return lastRawError;
 }
 
 export function explainNetworkError(err: unknown): string {
-  const raw = rawErrorText(err).trim();
+  const raw = redactNetworkLog(rawErrorText(err).trim());
   lastRawError = raw;
-  if (!raw) return "操作失败（原生未给出原因，可到「设置 → 诊断」看日志）";
+  if (!raw) return i18n("lib.transport.noReason");
   // 原生侧的大小闸门：说清多大、该怎么办，而不是丢一个网络错误
   const big = /too-large:(\d+):(\d+)/.exec(raw);
   if (big) {
     const mb = (n: string): string => `${(Number(n) / 1024 / 1024).toFixed(1)} MB`;
-    return `文件较大（${mb(big[1]!)}），应用内预览上限 ${mb(big[2]!)}——请改用「下载」或「另存为」。`;
+    return i18n("lib.transport.fileTooLarge", {size:mb(big[1]!),limit:mb(big[2]!)});
   }
   if (/会话已失效|需要重新登录|未登录/.test(raw)) {
     // 修文案重复（2026-09-23，用户截图为证）：原样套前缀会把
     // 「会话已失效，需要重新登录」变成「会话已失效：会话已失效，需要重新登录（…）」，
     // 既重复又不提供任何新信息。现在只补一句可操作的下一步，且不重复补。
-    const advice = "下拉刷新即可重试；若持续出现，到「设置 → 账户」重新登录。";
+    const advice = i18n("lib.transport.reloginAdvice");
     if (raw === "会话已失效，需要重新登录") return advice;
     const clean = raw.replace(/^会话已失效[：:]\s*/, "");
     if (/重新登录|下拉刷新/.test(clean)) return clean;
     return `${/。[）」]$/.test(clean) ? clean : clean + "。"}${advice}`;
   }
   if (/^HTTP \d{3}/.test(raw)) {
-    return `${raw}：服务端拒绝了这次请求（登录态过期或该文件无权限）`;
+    return i18n("lib.transport.serverRejected", {error:raw});
   }
   if (!isTauri && /fetch|network|Failed to fetch/i.test(raw)) {
-    return "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev。";
+    return i18n("lib.transport.browserCors");
   }
   if (/网络错误|timed? ?out|timeout/i.test(raw)) {
-    return "网络超时：请确认校园网 / WebVPN 可达。";
+    return i18n("lib.transport.timeoutAdvice");
   }
   return raw;
 }

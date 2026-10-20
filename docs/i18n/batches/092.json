@@ -1,0 +1,262 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "state.widgets.d88ab50f7ac1",
+      "source": "来自「我的」页的已修学分，需要登录后才有数。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 196,
+          "context": "return i18n(\"state.widgets.d88ab50f7ac1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.dc6c9f070ee1",
+      "source": "已修课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 308,
+          "context": "return i18n(\"state.widgets.dc6c9f070ee1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.deb8f7305005",
+      "source": "选课入口与选课时间提示。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 98,
+          "context": "return i18n(\"state.widgets.deb8f7305005\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.df6cbf44585a",
+      "source": "你订阅的校内新闻。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 97,
+          "context": "return i18n(\"state.widgets.df6cbf44585a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.dfaad9edebfd",
+      "source": "清华园实时天气与未来三天预报，开放数据半小时一更。不需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 87,
+          "context": "return i18n(\"state.widgets.dfaad9edebfd\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.e4912d152656",
+      "source": "在网络学堂范围内搜索。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 112,
+          "context": "return i18n(\"state.widgets.e4912d152656\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.e842a5dff916",
+      "source": "总学分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 316,
+          "context": "return i18n(\"state.widgets.e842a5dff916\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.eb21e822e78e",
+      "source": "信息页课程信息栏目的数据卡。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 268,
+          "context": "return i18n(\"state.widgets.eb21e822e78e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.f42d1c6829c9",
+      "source": "最近一个学期的加权平均分。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 333,
+          "context": "return i18n(\"state.widgets.f42d1c6829c9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.f4802624f209",
+      "source": "成绩栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 211,
+          "context": "return i18n(\"state.widgets.f4802624f209\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.f48d92cf0b84",
+      "source": "空教室查询。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 120,
+          "context": "return i18n(\"state.widgets.f48d92cf0b84\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.f9d072c4804c",
+      "source": "学分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 195,
+          "context": "return i18n(\"state.widgets.f9d072c4804c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.fae0c4931d49",
+      "source": "校园网账号与流量。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 121,
+          "context": "return i18n(\"state.widgets.fae0c4931d49\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.fb4ffac2dc8d",
+      "source": "今天已经预约的场馆与座位。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 96,
+          "context": "return i18n(\"state.widgets.fb4ffac2dc8d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.fce8c2b36f6a",
+      "source": "校园卡余额、流水与充值。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 108,
+          "context": "return i18n(\"state.widgets.fce8c2b36f6a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.fd611796f383",
+      "source": "宿舍卫生成绩。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 116,
+          "context": "return i18n(\"state.widgets.fd611796f383\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

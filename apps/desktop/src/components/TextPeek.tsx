@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 手机端「双击看全文」。
  *
@@ -181,6 +182,8 @@ function anchorOf(el: HTMLElement): Anchor {
 }
 
 export function TextPeekHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [peek, setPeek] = useState<Peek | null>(null);
   const [place, setPlace] = useState<Placement | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);

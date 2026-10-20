@@ -1,0 +1,1389 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.organization.867698fb7b0c",
+      "source": "项目名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 544,
+          "context": "label:i18nMsg(\"pages.organization.867698fb7b0c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.86da79df695d",
+      "source": "关联 GitLab 仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 479,
+          "context": "openFormModal(i18nMsg(\"pages.organization.86da79df695d\"), [\n      { key: \"path\", label: i18nMsg(\"pages.organization.a5551da83869\"), required: true, placeholder: \"group/project\" },\n    ])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.88e67027847d",
+      "source": "组织还没有资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 734,
+          "context": "{i18n(\"pages.organization.88e67027847d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.893ebe28c87a",
+      "source": "最近读取 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(new Date(org.collaboration.lastReadAt).toLocaleTimeString())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 579,
+          "context": "org.collaboration.lastReadAt ? i18n(\"pages.organization.893ebe28c87a\", { value: String(new Date(org.collaboration.lastReadAt).toLocaleTimeString(getUiLocale())) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8952bf863820",
+      "source": "组织概况",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 620,
+          "context": "{i18n(\"pages.organization.8952bf863820\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8992ab3202b4",
+      "source": "加入链接（GitLab 组织 / 云盘资料库，可选）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 353,
+          "context": "label: i18nMsg(\"pages.organization.8992ab3202b4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.8b358d0f9742",
+      "source": "访客",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.organization.8b358d0f9742\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8be0ea36a9bb",
+      "source": "正在连接…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 581,
+          "context": "collabBusy?i18n(\"pages.organization.8be0ea36a9bb\"):i18n(\"pages.organization.0a071e483d36\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8de1bb55709d",
+      "source": "不过期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 51,
+          "context": "return i18nMsg(\"pages.organization.8de1bb55709d\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 64,
+          "context": "return i18n(\"pages.organization.8de1bb55709d\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 377,
+          "context": "expireDays > 0 ? i18n(\"pages.organization.37d624a5b84e\", { expireDays: String(expireDays) }) : i18n(\"pages.organization.8de1bb55709d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8e09dafb1ae1",
+      "source": "还没有共享给成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 744,
+          "context": "lib.sharedWith?.join(\"、\") || i18n(\"pages.organization.8e09dafb1ae1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8e5ba1de0a5c",
+      "source": "放进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 635,
+          "context": "{i18n(\"pages.organization.8e5ba1de0a5c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8e7847be62b6",
+      "source": "上一级",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 195,
+          "context": "{i18n(\"pages.organization.8e7847be62b6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8eeb2b0ca1de",
+      "source": "成员身份来自 GitLab。权限变更未完成时，可先编辑缺失或错误的云盘邮箱，再重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 694,
+          "context": "{i18n(\"pages.organization.8eeb2b0ca1de\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8f6f8d979c98",
+      "source": "已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 645,
+          "context": "showToast(i18nMsg(\"pages.organization.8f6f8d979c98\"))"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 863,
+          "context": "showToast(i18nMsg(\"pages.organization.8f6f8d979c98\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.92dcb4e03902",
+      "source": "权限根据服务器成员和云盘回读核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 744,
+          "context": "org.collaboration ? i18n(\"pages.organization.92dcb4e03902\") : i18n(\"pages.organization.4899ad0eba7a\", { value: String(lib.sharedWith?.join(\"、\") || i18n(\"pages.organization.8e09dafb1ae1\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.94df451074d7",
+      "source": "私有",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 266,
+          "context": "detail.visibility === \"private\" ? i18n(\"pages.organization.94df451074d7\") : detail.visibility === \"internal\" ? i18n(\"pages.organization.6f225eb36d6d\") : i18n(\"pages.organization.7a73baf0ce9a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.959d1ad22dc2",
+      "source": "解除资料库「{name}」与组织的关联？云盘里的资料库不会被删除。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(lib.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 751,
+          "context": "confirmOk(i18nMsg(\"pages.organization.959d1ad22dc2\", { name: String(lib.name) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.96812fd51b93",
+      "source": "预览文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 750,
+          "context": "openLib === lib.repoId ? i18n(\"pages.organization.5aff278dfeb0\") : i18n(\"pages.organization.96812fd51b93\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.97a3bc7f1fb2",
+      "source": "去关联仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 634,
+          "context": "{i18n(\"pages.organization.97a3bc7f1fb2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.9a2e2b263340",
+      "source": "还没有（新建仓库时自动创建）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 626,
+          "context": "org.gitlabGroup ? `${org.gitlabGroup.name}（${org.gitlabGroup.path}）` : i18n(\"pages.organization.9a2e2b263340\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.9a3cf166ef29",
+      "source": "改名称 / 接收人 / 有效期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 647,
+          "context": "{i18n(\"pages.organization.9a3cf166ef29\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.9e7804614304",
+      "source": "暂存箱里已经有这张名片了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 635,
+          "context": "r.ok ? i18nMsg(\"pages.organization.1cfd3b432295\") : i18nMsg(\"pages.organization.9e7804614304\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.9efd7e2871ec",
+      "source": "云盘里的资料库都已关联",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 443,
+          "context": "seafile.repos.length ? i18nMsg(\"pages.organization.9efd7e2871ec\") : i18nMsg(\"pages.organization.c7a1e9997e12\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.9f54beb67068",
+      "source": "GitLab 仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 627,
+          "context": "k: i18n(\"pages.organization.9f54beb67068\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.9f6a077a48fc",
+      "source": "GitLab 用户名（个人资料中的 @用户名）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 388,
+          "context": "label:i18nMsg(\"pages.organization.9f6a077a48fc\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.9fb58025ea25",
+      "source": "{length} 名成员 · {length2} 个资料库 · {length3} 个仓库{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(o.members.length)"
+        },
+        {
+          "name": "length2",
+          "expression": "String((o.libraries ?? []).length)"
+        },
+        {
+          "name": "length3",
+          "expression": "String((o.gitlabRepos ?? []).length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(o.brief ? \" · \" + o.brief : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 137,
+          "context": "{i18n(\"pages.organization.9fb58025ea25\", { length: String(o.members.length), length2: String((o.libraries ?? []).length), length3: String((o.gitlabRepos ?? []).length), value: String(o.brief ? \" · \" + o.brief : \"\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.a07198d1ffb2",
+      "source": "还没有资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 625,
+          "context": "libraries.length ? libraries.map((l) => l.name).join(\"、\") : i18n(\"pages.organization.a07198d1ffb2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.a17ba20c4f4c",
+      "source": "请先启用多人协作；成员身份与共享资料需要服务器确认。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 321,
+          "context": "setCollabError(i18n(\"pages.organization.a17ba20c4f4c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.a27b334c9efa",
+      "source": "在组织下新建仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 779,
+          "context": "org.gitlabGroup ? i18n(\"pages.organization.a27b334c9efa\") : i18n(\"pages.organization.e72c208a9eca\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.a525346277ed",
+      "source": "负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.organization.a525346277ed\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 546,
+          "context": "label:i18nMsg(\"pages.organization.a525346277ed\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 624,
+          "context": "k: i18n(\"pages.organization.a525346277ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.a5551da83869",
+      "source": "本组织私有仓库完整路径",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 480,
+          "context": "label: i18nMsg(\"pages.organization.a5551da83869\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.a6b97088a34a",
+      "source": "所有关联资源的权限已回读核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 473,
+          "context": "runRemote(()=>retryOrgPermissions(target.id),i18n(\"pages.organization.a6b97088a34a\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.a7345e453164",
+      "source": "选择资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 447,
+          "context": "label: i18nMsg(\"pages.organization.a7345e453164\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.a9ff0848a19b",
+      "source": "去通讯录「我的组织」",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 292,
+          "context": "{i18n(\"pages.organization.a9ff0848a19b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.aa2ed8e463b7",
+      "source": "加入方式（GitLab 组织 / 云盘资料库链接，可选）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 86,
+          "context": "label: i18nMsg(\"pages.organization.aa2ed8e463b7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.ab31e3c17be4",
+      "source": "用邀请口令加入组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 94,
+          "context": "openFormModal(i18nMsg(\"pages.organization.ab31e3c17be4\"), [\n      { key: \"code\", label: i18nMsg(\"pages.organization.1e0b8202b535\"), kind: \"textarea\", required: true },\n      { key: \"name\", label: i18nMsg(\"pages.organization.e2cce0244756\"), default: \"我\" },\n    ])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.ac1fa183249e",
+      "source": "组织多人协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 578,
+          "context": "org.collaboration ? i18n(\"pages.organization.ac1fa183249e\") : i18n(\"pages.organization.c90a2cd05ae2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.ad9737dafdbf",
+      "source": "添加成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 632,
+          "context": "{i18n(\"pages.organization.ad9737dafdbf\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 683,
+          "context": "{i18n(\"pages.organization.ad9737dafdbf\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.addfc25ab35b",
+      "source": "邀请成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 362,
+          "context": "openFormModal(i18nMsg(\"pages.organization.addfc25ab35b\"), [\n      { key: \"label\", label: i18nMsg(\"pages.organization.daa75e1875bd\"), default: target.invite?.label ?? \"\" },\n      { key: \"allowEmail\", label: i18nMsg(\"pages.organization.aeeeb7431935\"), default: target.invite?.allowEmail ?? \"\" },\n      { key: \"expireDays\", label: i18nMsg(\"pages.organization.c56cd8e33248\"), kind: \"select\", options: INVITE_EXPIRES, default: inviteExpireDays(target.invite) },\n    ])"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 596,
+          "context": "{i18n(\"pages.organization.addfc25ab35b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.aede3a1aba90",
+      "source": "文件太大，不适合直接预览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 225,
+          "context": "preview?.data.kind === \"too-big\" ? i18n(\"pages.organization.aede3a1aba90\") : i18n(\"pages.organization.0a419ff6b3a9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 194,
+          "context": "{i18n(\"pages.organization.aee887434131\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.aeeeb7431935",
+      "source": "只允许这个清华云盘邮箱接受（可选）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 364,
+          "context": "label: i18nMsg(\"pages.organization.aeeeb7431935\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.af4e39e43455",
+      "source": "还没有组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 122,
+          "context": "{i18n(\"pages.organization.af4e39e43455\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.afd4b783536b",
+      "source": "收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 864,
+          "context": "{i18n(\"pages.organization.afd4b783536b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b0cda987a0ff",
+      "source": "带着这些输入重新编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 588,
+          "context": "{i18n(\"pages.organization.b0cda987a0ff\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b13ec9094503",
+      "source": "尚未保存的项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 551,
+          "context": "label:i18n(\"pages.organization.b13ec9094503\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.b1bd19b13336",
+      "source": "组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 662,
+          "context": "{i18n(\"pages.organization.b1bd19b13336\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b20cb0bae1a1",
+      "source": "去建资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 633,
+          "context": "{i18n(\"pages.organization.b20cb0bae1a1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b231587899f3",
+      "source": "浏览器打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 799,
+          "context": "{i18n(\"pages.organization.b231587899f3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b285a8665e40",
+      "source": "第一个仓库名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 505,
+          "context": "group ? i18nMsg(\"pages.organization.838996610aeb\") : i18nMsg(\"pages.organization.b285a8665e40\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b3b03ad2638a",
+      "source": "邀请口令已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 654,
+          "context": "r.reason ?? i18n(\"pages.organization.b3b03ad2638a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b41fea3b8092",
+      "source": "把组织要做的事建成项目，记录负责人和进度。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 814,
+          "context": "{i18n(\"pages.organization.b41fea3b8092\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b4d203dea5b9",
+      "source": "组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 105,
+          "context": "title: i18n(\"pages.organization.b4d203dea5b9\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 110,
+          "context": "{i18n(\"pages.organization.b4d203dea5b9\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 284,
+          "context": "{i18n(\"pages.organization.b4d203dea5b9\")}"
+        }
+      ],
+      "translation": "Organization",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.b52ea6d355c2",
+      "source": "加入方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 628,
+          "context": "k: i18n(\"pages.organization.b52ea6d355c2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b553a6d53946",
+      "source": "{name} 的组织空间",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(target.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 520,
+          "context": "description: i18n(\"pages.organization.b553a6d53946\", { name: String(target.name) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b73971671bd8",
+      "source": "{value}月{value2}日 {value3}:{value4}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(d.getMonth() + 1)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(d.getDate())"
+        },
+        {
+          "name": "value3",
+          "expression": "String(String(d.getHours()).padStart(2, \"0\"))"
+        },
+        {
+          "name": "value4",
+          "expression": "String(String(d.getMinutes()).padStart(2, \"0\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 66,
+          "context": "return i18n(\"pages.organization.b73971671bd8\", { value: String(d.getMonth() + 1), value2: String(d.getDate()), value3: String(String(d.getHours()).padStart(2, \"0\")), value4: String(String(d.getMinutes()).padStart(2, \"0\")) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b838382181d9",
+      "source": "正在读取仓库…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 259,
+          "context": "{i18n(\"pages.organization.b838382181d9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b8e3e3e6c5e6",
+      "source": "任何人（拿到口令就能接受）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 859,
+          "context": "invite.allowEmail ?? i18n(\"pages.organization.b8e3e3e6c5e6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.b9dc0caf4b89",
+      "source": "修改云盘邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 399,
+          "context": "openFormModal(i18nMsg(\"pages.organization.b9dc0caf4b89\"), [{key:\"email\",label:i18nMsg(\"pages.organization.d095478efd68\", { username: String(member.username) }),default:member.email,required:true}])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.bd1aee6959f6",
+      "source": "还没有公告。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 839,
+          "context": "{i18n(\"pages.organization.bd1aee6959f6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.be276e340929",
+      "source": "公告已同步给组织成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 564,
+          "context": "runRemote(async()=>{\n      try { await saveRemoteContent(target.id,\"announcements\",notice,{id:notice?.id??crypto.randomUUID(),title:f.title!,body:f.body!,pinned:notice?.pinned??false,updatedAt:Date.now()}); setRetainedDraft(null); }\n      catch(e) { setRetainedDraft({label:i18n(\"pages.organization.51902a13beff\"),text:JSON.stringify(f,null,2),reopen:()=>void editNotice(orgSnapshot().orgs.find(o=>o.id===target.id)??target,orgSnapshot().orgs.find(o=>o.id===target.id)?.announcements?.find(n=>n.id===notice?.id),f)}); throw e; }\n    },i18n(\"pages.organization.be276e340929\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.c04beb5908e7",
+      "source": "这个资料库还是空的：可以到云盘里上传文件，回来就能预览。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 200,
+          "context": "{i18n(\"pages.organization.c04beb5908e7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c1e0eabac88e",
+      "source": "重试未完成的权限变更",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 583,
+          "context": "{i18n(\"pages.organization.c1e0eabac88e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c29f7a1f09d0",
+      "source": "还没连接清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 722,
+          "context": "{i18n(\"pages.organization.c29f7a1f09d0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c47b54e84e79",
+      "source": "角色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 390,
+          "context": "label:i18nMsg(\"pages.organization.c47b54e84e79\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.c505be585240",
+      "source": "成员与关联资源权限已移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 412,
+          "context": "runRemote(()=>changeRemoteMember(target.id,member.gitlabUserId,undefined,{email:member.email,role:member.role}),i18n(\"pages.organization.c505be585240\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c56cd8e33248",
+      "source": "有效期（改了会换一条新口令）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 365,
+          "context": "label: i18nMsg(\"pages.organization.c56cd8e33248\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.c583a7142d40",
+      "source": "打开 GitLab",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 781,
+          "context": "{i18n(\"pages.organization.c583a7142d40\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c697a5163f2d",
+      "source": "邀请口令无法识别",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 101,
+          "context": "r.reason ?? i18n(\"pages.organization.c697a5163f2d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c697f98ef8c1",
+      "source": "在 GitLab 组织下新建仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 508,
+          "context": "group ? i18nMsg(\"pages.organization.c697f98ef8c1\") : i18nMsg(\"pages.organization.472ef6d25612\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c73a21cff12c",
+      "source": "预览项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 798,
+          "context": "openRepo === repo.id ? i18n(\"pages.organization.0ae7312510f4\") : i18n(\"pages.organization.c73a21cff12c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c771248e511f",
+      "source": "打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 139,
+          "context": "{i18n(\"pages.organization.c771248e511f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c7a1e9997e12",
+      "source": "云盘里还没有资料库：先新建一个",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 443,
+          "context": "seafile.repos.length ? i18nMsg(\"pages.organization.9efd7e2871ec\") : i18nMsg(\"pages.organization.c7a1e9997e12\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c90a2cd05ae2",
+      "source": "启用组织多人协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 578,
+          "context": "org.collaboration ? i18n(\"pages.organization.ac1fa183249e\") : i18n(\"pages.organization.c90a2cd05ae2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.c92179b74af6",
+      "source": "取消置顶",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 846,
+          "context": "n.pinned ? i18n(\"pages.organization.c92179b74af6\") : i18n(\"pages.organization.173f88d28ebf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.ca51ffb73a0c",
+      "source": "{length} 人（{length2} 人已绑定邮箱）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(org.members.length)"
+        },
+        {
+          "name": "length2",
+          "expression": "String(org.members.filter((m) => m.email).length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 623,
+          "context": "v: i18n(\"pages.organization.ca51ffb73a0c\", { length: String(org.members.length), length2: String(org.members.filter((m) => m.email).length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.cbb93d90a17f",
+      "source": "成员及共享权限已验证完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 393,
+          "context": "runRemote(async () => { const binding = await resolveOrgUser(f.username!,f.email!); await changeRemoteMember(target.id,undefined,{...binding,role:(f.role??\"member\") as OrgRole}); }, i18n(\"pages.organization.cbb93d90a17f\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.cd84121acb17",
+      "source": "危险操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 666,
+          "context": "{i18n(\"pages.organization.cd84121acb17\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.cdd79829476d",
+      "source": "新建组织资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 424,
+          "context": "openFormModal(i18nMsg(\"pages.organization.cdd79829476d\"), [{ key: \"name\", label: i18nMsg(\"pages.organization.08008fa506a0\"), default: i18n(\"pages.organization.7fd872847a17\", { name: String(target.name) }), required: true }])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.d00013a32eac",
+      "source": "组织多人协作已启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 581,
+          "context": "runRemote(()=>enableOrgCollaboration(org.id),i18n(\"pages.organization.d00013a32eac\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

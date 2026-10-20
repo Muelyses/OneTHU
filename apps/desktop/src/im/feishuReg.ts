@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 飞书「扫码一键创建应用」客户端（OAuth Device-Code 流）。
  *
@@ -57,7 +58,7 @@ export async function beginFeishuRegistration(): Promise<FeishuRegSession> {
     request_user_info: "open_id",
   });
   const uri = String(r.verification_uri_complete ?? "");
-  if (!uri) throw new Error(`begin 未返回二维码地址：${JSON.stringify(r).slice(0, 160)}`);
+  if (!uri) throw new Error(i18n("im.feishureg.e5de60029f1b", { value: String(JSON.stringify(r).slice(0, 160)) }));
   const qrUrl = new URL(uri);
   qrUrl.searchParams.set("from", "oc_onboard");
   qrUrl.searchParams.set("tp", "ob_cli_app");
@@ -95,7 +96,7 @@ export async function pollFeishuRegistration(
 
   // 海外租户：切 Lark 域重试（下次轮询生效——返回 pending 让调用方继续）
   if (r.user_info?.tenant_brand === "lark" && domain === "feishu") {
-    return { status: "pending", note: "检测到 Lark（海外）租户，正在切换接入点…" };
+    return { status: "pending", note: i18n("im.feishureg.d170f4a5cb1e") };
   }
   if (r.client_id && r.client_secret) {
     return {
@@ -103,20 +104,20 @@ export async function pollFeishuRegistration(
       appId: r.client_id,
       appSecret: r.client_secret,
       openId: r.user_info?.open_id,
-      note: "应用创建成功",
+      note: i18n("im.feishureg.7e5f803b7990"),
     };
   }
   switch (r.error) {
     case undefined:
     case "authorization_pending":
-      return { status: "pending", note: "等待手机确认创建…" };
+      return { status: "pending", note: i18n("im.feishureg.b8a04f9752fe") };
     case "slow_down":
-      return { status: "pending", note: "请求过频，稍后继续…" };
+      return { status: "pending", note: i18n("im.feishureg.3e58ad192505") };
     case "access_denied":
-      return { status: "access_denied", note: "你在手机上取消了创建" };
+      return { status: "access_denied", note: i18n("im.feishureg.f9b4efe03903") };
     case "expired_token":
-      return { status: "expired", note: "二维码已过期，请重新发起" };
+      return { status: "expired", note: i18n("im.feishureg.c383c734a8c7") };
     default:
-      return { status: "error", note: `${r.error}: ${r.error_description ?? "未知原因"}` };
+      return { status: "error", note: `${r.error}: ${r.error_description ?? i18n("im.feishureg.unknownReason")}` };
   }
 }

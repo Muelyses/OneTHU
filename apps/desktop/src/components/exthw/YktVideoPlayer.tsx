@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 内嵌 HLS/MP4 播放器（R27）：雨课堂视频是 HLS（m3u8），Chromium 内核不原生支持，
@@ -10,6 +11,8 @@ import { useEffect, useRef, useState } from "react";
 import type HlsType from "hls.js";
 
 export function YktVideoPlayer({ src, title }: { src: string; title?: string }) {
+  const uiLocale = useUiLocale();
+
   const ref = useRef<HTMLVideoElement | null>(null);
   const [err, setErr] = useState("");
   const [mode, setMode] = useState<"loading" | "hls" | "direct" | "failed">("loading");
@@ -27,7 +30,7 @@ export function YktVideoPlayer({ src, title }: { src: string; title?: string }) 
         .then(({ default: Hls }) => {
           if (cancelled) return;
           if (!Hls.isSupported()) {
-            setErr("当前环境不支持 HLS 播放，可复制直链用其它播放器打开。");
+            setErr(i18n("components.exthw.yktvideoplayer.19a7e7a919c4"));
             setMode("failed");
             return;
           }
@@ -36,8 +39,8 @@ export function YktVideoPlayer({ src, title }: { src: string; title?: string }) 
             if (!data.fatal) return;
             setErr(
               data.type === Hls.ErrorTypes.NETWORK_ERROR
-                ? "视频分片加载失败（可能是地址已过期），请刷新后重试。"
-                : "视频播放失败，请刷新后重试。",
+                ? i18n("components.exthw.yktvideoplayer.e76486fc8553")
+                : i18n("components.exthw.yktvideoplayer.6a4fbd94df3d"),
             );
             setMode("failed");
             hls?.destroy();
@@ -47,7 +50,7 @@ export function YktVideoPlayer({ src, title }: { src: string; title?: string }) 
           setMode("hls");
         })
         .catch(() => {
-          setErr("播放组件加载失败，请重试。");
+          setErr(i18n("components.exthw.yktvideoplayer.0e09b5f31d3c"));
           setMode("failed");
         });
     } else {
@@ -69,9 +72,7 @@ export function YktVideoPlayer({ src, title }: { src: string; title?: string }) 
       {err ? (
         <div className="ykt-ans-empty">
           {err}
-          <Btn variant="ghost" onClick={copy}>
-            复制直链
-          </Btn>
+          <Btn variant="ghost" onClick={copy}>{i18n("components.exthw.yktvideoplayer.aedc355f35ae")}</Btn>
         </div>
       ) : null}
       {/* 失败时保留控件条以便用户重试；成功路径由 hls.js 或浏览器直接驱动 */}

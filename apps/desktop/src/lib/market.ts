@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 插件市场与 GitHub 仓库直装数据层。
  *
@@ -93,7 +94,7 @@ export interface RepoRef {
  *  非法输入抛 Error（message 面向用户）。 */
 export function parseRepoInput(input: string): RepoRef {
   let s = (input ?? "").trim();
-  if (!s) throw new Error("请输入仓库地址，如 user/repo");
+  if (!s) throw new Error(i18n("lib.market.bde49d8534fa"));
   s = s.replace(/^git@github\.com:/i, "https://github.com/");
   if (!/^https?:\/\//i.test(s)) {
     // 允许省略协议：github.com/user/repo 或 user/repo
@@ -102,7 +103,7 @@ export function parseRepoInput(input: string): RepoRef {
       const m = /^([\w.-]+)\/([\w.-]+?)(?:@([\w./-]+))?$/.exec(s);
       const owner = m?.[1];
       const repo = m?.[2];
-      if (!m || !owner || !repo) throw new Error("无法识别的仓库地址；示例：user/repo 或 user/repo@dev");
+      if (!m || !owner || !repo) throw new Error(i18n("lib.market.d8323fde8c21"));
       return { owner, repo: repo.replace(/\.git$/, ""), branch: m[3] || undefined };
     }
   }
@@ -110,14 +111,14 @@ export function parseRepoInput(input: string): RepoRef {
   try {
     u = new URL(s);
   } catch {
-    throw new Error("无法识别的仓库地址；示例：user/repo 或完整 GitHub URL");
+    throw new Error(i18n("lib.market.b494102993b9"));
   }
   if (!/(^|\.)github\.com$/i.test(u.hostname)) {
-    throw new Error("目前仅支持 GitHub 仓库（github.com）");
+    throw new Error(i18n("lib.market.90b62e711681"));
   }
   const parts = u.pathname.replace(/^\/+|\/+$/g, "").split("/");
   if (parts.length < 2 || !parts[0] || !parts[1]) {
-    throw new Error("缺少 owner/repo；示例：https://github.com/user/repo");
+    throw new Error(i18n("lib.market.2240fbc106e2"));
   }
   const owner = parts[0];
   let repo = parts[1].replace(/\.git$/, "");
@@ -135,7 +136,7 @@ export function parseRepoInput(input: string): RepoRef {
     }
   }
   if (!/^[\w.-]+$/.test(owner) || !/^[\w.-]+$/.test(repo)) {
-    throw new Error("owner/repo 含非法字符");
+    throw new Error(i18n("lib.market.6c1f697fcc8f"));
   }
   return { owner, repo, branch, subPath };
 }
@@ -227,7 +228,7 @@ export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<
     }
   }
   throw new Error(
-    `仓库中未找到插件入口（尝试：${tried.join("、")}）。仓库需在根目录提供 plugin.js（或 index.js / main.js，或清单指定 entry）。`,
+    i18n("lib.market.4101aa0579ae", { value: String(tried.join("、")) }),
   );
 }
 
@@ -302,7 +303,7 @@ export async function fetchRemoteManifestFromRepoRef(
     const mod = (await import(/* @vite-ignore */ blobUrl)) as { manifest?: { id?: unknown; version?: unknown; name?: unknown } };
     const m = mod?.manifest;
     if (!m || typeof m.id !== "string" || typeof m.version !== "string") {
-      throw new Error("仓库里的插件缺 manifest/version 字段");
+      throw new Error(i18n("lib.market.124d3a9ddf47"));
     }
     return { id: m.id, version: String(m.version), name: typeof m.name === "string" ? m.name : undefined };
   } finally {
@@ -390,9 +391,9 @@ export async function fetchRegistry(force = false): Promise<MarketRegistry> {
   }
   const bust = force ? (marketUrl().includes("?") ? "&" : "?") + `t=${Date.now()}` : "";
   const res = await externalFetch(marketUrl() + bust);
-  if (!res.ok) throw new Error(`市场名单拉取失败：HTTP ${res.status}`);
+  if (!res.ok) throw new Error(i18n("lib.market.5903a3de41a1", { status: String(res.status) }));
   const data = (await res.json()) as MarketRegistry;
-  if (!data || !Array.isArray(data.plugins)) throw new Error("市场名单格式无效（缺 plugins 数组）");
+  if (!data || !Array.isArray(data.plugins)) throw new Error(i18n("lib.market.5749fe713e6e"));
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify({ url: marketUrl(), at: Date.now(), data }));
   } catch {

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { gitlabCreateGroup, gitlabOrganizationApi } from "./gitlab.js";
 import { assertRepoAccountAcl, repoOwnerEmail, listRepoUserShares, setRepoUserPermission, removeRepoUserShare } from "./seafile.js";
 import { cacheRemoteOrg, currentOrgEmail, markOrgRemote, orgSnapshot, type Org, type OrgAnnouncement, type OrgProject } from "./org.js";
@@ -12,14 +13,14 @@ async function permissionGateway(): Promise<OrgPermissionGateway> {
   return {...await gitlabOrganizationApi(), listCloud:listRepoUserShares, cloudOwner:repoOwnerEmail, auditCloud:assertRepoAccountAcl, setCloud:setRepoUserPermission, removeCloud:removeRepoUserShare};
 }
 const keepBindings = (bindings: OrgRemoteBinding[]) => [...new Map(bindings.map(b=>[`${b.userId}:${b.email}`,b])).values()];
-const requireLocal = (id: string): Org => { const org = orgSnapshot().orgs.find(o => o.id === id); if (!org) throw new Error("找不到组织"); return org; };
+const requireLocal = (id: string): Org => { const org = orgSnapshot().orgs.find(o => o.id === id); if (!org) throw new Error(i18n("state.orgsync.f9a3b8011053")); return org; };
 function assertRef(ref: OrgRemoteRef): void {
-  if (!Number.isSafeInteger(ref.groupId) || ref.groupId <= 0 || !Number.isSafeInteger(ref.projectId) || ref.projectId <= 0 || ref.adminBranch !== "onethu-admin" || ref.contentBranch !== "onethu-content") throw new Error("组织协作地址不合法");
+  if (!Number.isSafeInteger(ref.groupId) || ref.groupId <= 0 || !Number.isSafeInteger(ref.projectId) || ref.projectId <= 0 || ref.adminBranch !== "onethu-admin" || ref.contentBranch !== "onethu-content") throw new Error(i18n("state.orgsync.8defedbcd2a0"));
 }
 function checkProtection(protections: GitOrgProtection[], name: string, minimum: number): void {
-  if (protections.length >= 100) throw new Error("分支保护规则过多，无法完整验证组织配置");
+  if (protections.length >= 100) throw new Error(i18n("state.orgsync.d42bb89b365b"));
   const matching = protections.filter(p => new RegExp("^" + p.name.split("*").map(part=>part.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join(".*") + "$").test(name));
-  if (!matching.some(p => p.name === name) || matching.some(p => p.allow_force_push || [...p.push_access_levels, ...p.merge_access_levels].some(a => (a.access_level > 0 && a.access_level < minimum) || a.user_id != null || a.group_id != null || a.deploy_key_id != null))) throw new Error(`组织分支 ${name} 的服务器保护不满足要求，请负责人检查 GitLab 分支保护`);
+  if (!matching.some(p => p.name === name) || matching.some(p => p.allow_force_push || [...p.push_access_levels, ...p.merge_access_levels].some(a => (a.access_level > 0 && a.access_level < minimum) || a.user_id != null || a.group_id != null || a.deploy_key_id != null))) throw new Error(i18n("state.orgsync.b4a14ad2c5e3", { name: String(name) }));
 }
 async function readSnapshot(ref: OrgRemoteRef): Promise<OrgRemoteSnapshot> {
   assertRef(ref);
@@ -28,12 +29,12 @@ async function readSnapshot(ref: OrgRemoteRef): Promise<OrgRemoteSnapshot> {
     api.me(), api.group(ref.groupId), api.project(ref.projectId), api.members("groups", ref.groupId, true), api.protections(ref.projectId),
     api.file(ref.projectId, ref.adminBranch, ADMIN_FILE), api.file(ref.projectId, ref.contentBranch, CONTENT_FILE),
   ]);
-  if (group.visibility !== "private" || group.parent_id || project.visibility !== "private" || project.namespace.id !== ref.groupId) throw new Error("组织资料必须位于对应 GitLab 私有群组的私有项目内");
-  if (!members.some(m => m.id === me.id && m.access_level >= 20)) throw new Error("当前 GitLab 账号尚未获得这个组织的访问权限，请让负责人先添加你的 GitLab 账号");
-  if (members.some(m=>m.access_level===40)) throw new Error("组织中存在 GitLab Maintainer 特殊权限，无法保证只有负责人能改管理资料；请先在 GitLab 调整为负责人或普通成员");
-  if (project.shared_with_groups?.length) throw new Error("组织元数据项目被共享给其他群组，请先在 GitLab 移除额外群组授权");
+  if (group.visibility !== "private" || group.parent_id || project.visibility !== "private" || project.namespace.id !== ref.groupId) throw new Error(i18n("state.orgsync.fc4f3897fb63"));
+  if (!members.some(m => m.id === me.id && m.access_level >= 20)) throw new Error(i18n("state.orgsync.7bdb46eb7930"));
+  if (members.some(m=>m.access_level===40)) throw new Error(i18n("state.orgsync.6ad659d36005"));
+  if (project.shared_with_groups?.length) throw new Error(i18n("state.orgsync.ab3125f51556"));
   const direct = await api.members("projects",ref.projectId,false);
-  if (direct.some(m=>!members.some(g=>g.id===m.id && g.access_level===50))) throw new Error("组织元数据项目存在额外直接成员授权，请先在 GitLab 移除");
+  if (direct.some(m=>!members.some(g=>g.id===m.id && g.access_level===50))) throw new Error(i18n("state.orgsync.8f58376b6cc9"));
   checkProtection(protections, ref.adminBranch, 40); checkProtection(protections, ref.contentBranch, 30);
   return { ref, me, members, group:{id:group.id,name:group.name,path:group.full_path,webUrl:group.web_url}, admin: decodeOrgFile<OrgRemoteAdmin>(af, "onethu-org-admin"), content: decodeOrgFile<OrgRemoteContent>(cf, "onethu-org-content") };
 }
@@ -46,12 +47,12 @@ function cache(snapshot: OrgRemoteSnapshot, localId?: string): Org {
     gitlabGroup:snapshot.group, legacyMembers:config.legacyMembers,
     libraries: config.libraries, gitlabRepos: config.gitlabRepos, projects: content.projects, announcements: content.announcements,
     members: members.map(m => ({ id: `gitlab:${m.id}`, gitlabUserId: m.id, username: m.username, name: m.name, email: config.bindings.find(b => b.userId === m.id)?.email ?? "", role: levelRole(m.access_level), joinedAt: previous?.members.find(p => p.gitlabUserId === m.id)?.joinedAt ?? Date.now() })),
-    collaboration: { ...ref, status: "ready", accountId: me.id, accessLevel: members.find(m => m.id === me.id)!.access_level, lastReadAt: Date.now(), pending: Boolean(config.pending) || config.permissionsVerified !== 1, error: config.pending?.errors?.join("；") ?? (config.permissionsVerified !== 1 ? "关联资源权限尚未核对，请负责人完成权限核对" : undefined) },
+    collaboration: { ...ref, status: "ready", accountId: me.id, accessLevel: members.find(m => m.id === me.id)!.access_level, lastReadAt: Date.now(), pending: Boolean(config.pending) || config.permissionsVerified !== 1, error: config.pending?.errors?.join("；") ?? (config.permissionsVerified !== 1 ? i18n("state.orgsync.permissionsUnverified") : undefined) },
   };
   cacheRemoteOrg(org); snapshots.set(id, snapshot); return org;
 }
 export async function refreshRemoteOrg(id: string): Promise<Org> {
-  const org = requireLocal(id); if (!org.collaboration) throw new Error("这个组织尚未启用多人协作");
+  const org = requireLocal(id); if (!org.collaboration) throw new Error(i18n("state.orgsync.5784fd684c09"));
   try { return cache(await readSnapshot(org.collaboration), id); }
   catch (e) { markOrgRemote(id, {...org.collaboration, status: "error", error: errorText(e), accessLevel: undefined}); throw e; }
 }
@@ -62,8 +63,8 @@ export async function joinRemoteOrg(ref: OrgRemoteRef): Promise<string> {
 }
 async function requireSnapshot(id: string, access: number, pendingAllowed = false): Promise<OrgRemoteSnapshot> {
   const org = await refreshRemoteOrg(id); const snapshot = snapshots.get(id)!;
-  if ((org.collaboration?.accessLevel ?? 0) < access) throw new Error(access >= 50 ? "只有服务器上的组织负责人可以执行此操作" : "当前账号没有编辑组织内容的权限");
-  if ((snapshot.admin.value.pending || snapshot.admin.value.permissionsVerified !== 1) && !pendingAllowed) throw new Error("上一次权限变更尚未完成，请先重试并完成它");
+  if ((org.collaboration?.accessLevel ?? 0) < access) throw new Error(access >= 50 ? i18n("state.orgsync.ownerOnly") : i18n("state.orgsync.cannotEdit"));
+  if ((snapshot.admin.value.pending || snapshot.admin.value.permissionsVerified !== 1) && !pendingAllowed) throw new Error(i18n("state.orgsync.47b018369530"));
   return snapshot;
 }
 async function writeAdmin(snapshot: OrgRemoteSnapshot, value: OrgRemoteAdmin): Promise<void> {
@@ -102,9 +103,9 @@ async function initializeOrgCollaboration(id: string): Promise<void> {
     cacheRemoteOrg({...org, gitlabGroup:group});
   }
   const [remoteGroup, members] = await Promise.all([api.group(group.id), api.members("groups", group.id, true)]);
-  if (remoteGroup.visibility !== "private" || remoteGroup.parent_id) throw new Error("多人协作需要你拥有的独立私有 GitLab 群组，不能使用公开群组或继承权限的子群组");
-  if (members.some(m=>m.access_level===40)) throw new Error("请先把群组中的 Maintainer 调整为负责人或普通成员，再初始化协作");
-  if (!members.some(m => m.id === me.id && m.access_level === 50)) throw new Error("当前 GitLab 账号不是这个群组的负责人");
+  if (remoteGroup.visibility !== "private" || remoteGroup.parent_id) throw new Error(i18n("state.orgsync.68b2e1779e6b"));
+  if (members.some(m=>m.access_level===40)) throw new Error(i18n("state.orgsync.9278a31bb0c8"));
+  if (!members.some(m => m.id === me.id && m.access_level === 50)) throw new Error(i18n("state.orgsync.2da1ab0ba765"));
   let project;
   if (org.collaboration) project = await api.project(org.collaboration.projectId);
   else {
@@ -116,7 +117,7 @@ async function initializeOrgCollaboration(id: string): Promise<void> {
       catch (created) { project = await lookup().catch(()=>{throw created;}); }
     }
   }
-  if (project.visibility !== "private" || project.namespace.id !== group.id || project.shared_with_groups?.length) throw new Error("元数据项目必须是该组织内未向其他群组共享的私有项目");
+  if (project.visibility !== "private" || project.namespace.id !== group.id || project.shared_with_groups?.length) throw new Error(i18n("state.orgsync.839d06db8102"));
   const ref: OrgRemoteRef = {groupId: group.id, projectId: project.id, adminBranch: "onethu-admin", contentBranch: "onethu-content"};
   markOrgRemote(id, {...ref, status: "initializing"});
   try {
@@ -134,7 +135,7 @@ async function initializeOrgCollaboration(id: string): Promise<void> {
       catch (e) { if (!missingRemote(e)) throw e; }
       if (existing) {
         const parsed = decodeOrgFile<OrgRemoteAdmin|OrgRemoteContent>(existing,value.kind);
-        if (parsed.value.kind === "onethu-org-admin" && parsed.value.orgId !== org.id) throw new Error("此协作项目已经属于另一个组织，不能用本机资料覆盖");
+        if (parsed.value.kind === "onethu-org-admin" && parsed.value.orgId !== org.id) throw new Error(i18n("state.orgsync.e6793d4dc90e"));
         // A previous initializer may have completed remotely; never overwrite its accepted edits.
       } else await api.createFile(project.id, branch, file, JSON.stringify(value, null, 2));
     }
@@ -166,10 +167,10 @@ export async function saveRemoteContent(id: string, collection: "projects"|"anno
 }
 export async function resolveOrgUser(username: string, email: string): Promise<OrgRemoteBinding> {
   const clean = username.trim().replace(/^@/, "");
-  if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) throw new Error("请填写准确的 GitLab 用户名和清华云盘邮箱");
+  if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) throw new Error(i18n("state.orgsync.f1478672fcff"));
   const users = await (await gitlabOrganizationApi()).searchUsers(clean);
   const user = users.find(u => u.username.toLowerCase() === clean.toLowerCase());
-  if (!user || user.state === "blocked") throw new Error("找不到可用的 GitLab 用户名，请让对方在 GitLab 个人资料中确认");
+  if (!user || user.state === "blocked") throw new Error(i18n("state.orgsync.fa0fdd1e567b"));
   return {userId:user.id, username:user.username, name:user.name, email:email.trim().toLowerCase()};
 }
 export async function changeRemoteMember(id: string, beforeId: number | undefined, target?: OrgRemoteBinding & {role: "owner"|"member"|"guest"}, expected?: {email:string;role:"owner"|"member"|"guest"}): Promise<void> {
@@ -177,34 +178,34 @@ export async function changeRemoteMember(id: string, beforeId: number | undefine
   const existingIntent = snapshot.admin.value.pending;
   if (existingIntent) {
     const member = snapshot.members.find(m=>m.id===beforeId);
-    if (!target || !beforeId || !member || target.userId !== beforeId || roleLevel(target.role) !== member.access_level || existingIntent.removeUserId === beforeId) throw new Error("未完成的权限变更期间，只能补充现有成员的云盘邮箱；角色与成员调整请先完成重试");
+    if (!target || !beforeId || !member || target.userId !== beforeId || roleLevel(target.role) !== member.access_level || existingIntent.removeUserId === beforeId) throw new Error(i18n("state.orgsync.a6cbed9d57aa"));
   }
-  if (!beforeId && target && snapshot.members.some(m=>m.id===target.userId)) throw new Error("这个 GitLab 账号已经是组织成员，请使用编辑或角色菜单");
+  if (!beforeId && target && snapshot.members.some(m=>m.id===target.userId)) throw new Error(i18n("state.orgsync.0ed5ca0bc425"));
   if (beforeId && expected) {
     const current = snapshot.members.find(m=>m.id===beforeId);
     const email = snapshot.admin.value.bindings.find(b=>b.userId===beforeId)?.email ?? "";
     if (!current || levelRole(current.access_level)!==expected.role || email!==expected.email) throw new OrgConflictError();
   }
-  if (target && beforeId && target.userId !== beforeId) throw new Error("更换 GitLab 账号请先移除旧成员，再添加新成员");
+  if (target && beforeId && target.userId !== beforeId) throw new Error(i18n("state.orgsync.b9043bc090ae"));
   const changing = snapshot.members.find(m=>m.id===(beforeId??target?.userId));
-  if (changing?.access_level === 50 && (!target || target.role !== "owner") && snapshot.members.filter(m=>m.access_level===50).length<=1) throw new Error("至少保留一位服务器上的组织负责人");
-  if (changing?.id === snapshot.me.id && (!target || target.role !== "owner")) throw new Error("请由另一位负责人执行你的移除或降级");
+  if (changing?.access_level === 50 && (!target || target.role !== "owner") && snapshot.members.filter(m=>m.access_level===50).length<=1) throw new Error(i18n("state.orgsync.15f11e1c75da"));
+  if (changing?.id === snapshot.me.id && (!target || target.role !== "owner")) throw new Error(i18n("state.orgsync.8d6293d606a5"));
   const bindings = (existingIntent?.bindings ?? snapshot.admin.value.bindings).filter(b => b.userId !== (beforeId ?? target?.userId));
   if (target) {
-    if (bindings.some(b => b.email && b.email === target.email)) throw new Error("这个云盘邮箱已经绑定其他组织成员");
+    if (bindings.some(b => b.email && b.email === target.email)) throw new Error(i18n("state.orgsync.275a305b9f8b"));
     const {role: _role, ...binding} = target; bindings.push(binding);
   }
   const pending: OrgPermissionIntent = existingIntent
     ? {...existingIntent, id:newId(), errors:undefined, bindings, target:existingIntent.target?.userId===target!.userId ? {...existingIntent.target,email:target!.email} : existingIntent.target,
       previousBindings:keepBindings([...existingIntent.previousBindings,...existingIntent.bindings])}
-    : {id:newId(), label:target ? `更新 ${target.username}` : "移除成员", createdAt:Date.now(), target, removeUserId:target ? undefined : beforeId, bindings, previousBindings:snapshot.admin.value.bindings};
+    : {id:newId(), label:target ? i18n("state.orgsync.updateMemberLabel", {username:target.username}) : i18n("state.orgsync.removeMemberLabel"), createdAt:Date.now(), target, removeUserId:target ? undefined : beforeId, bindings, previousBindings:snapshot.admin.value.bindings};
   await writeAdmin(snapshot, {...snapshot.admin.value, pending}); await retryOrgPermissions(id);
 }
 export async function retryOrgPermissions(id: string): Promise<void> {
   let snapshot = await requireSnapshot(id, 50, true);
   if (!snapshot.admin.value.pending) {
     const bindings = snapshot.admin.value.bindings;
-    await writeAdmin(snapshot, {...snapshot.admin.value, pending:{id:newId(), label:"核对全部权限", createdAt:Date.now(), bindings, previousBindings:bindings}});
+    await writeAdmin(snapshot, {...snapshot.admin.value, pending:{id:newId(), label:i18n("state.orgsync.43f661af3a74"), createdAt:Date.now(), bindings, previousBindings:bindings}});
     await refreshRemoteOrg(id); snapshot = snapshots.get(id)!;
   }
   const intent = snapshot.admin.value.pending!;
@@ -217,23 +218,23 @@ export async function retryOrgPermissions(id: string): Promise<void> {
   if (latest.admin.value.pending?.id !== intent.id) throw new OrgConflictError();
   await writeAdmin(latest, {...latest.admin.value, ...(errors.length ? {pending:{...intent, errors}} : {bindings:intent.bindings, permissionsVerified:1, legacyMembers:latest.admin.value.legacyMembers?.filter(m=>!intent.bindings.some(b=>b.email && b.email===m.email)), pending:undefined})});
   await refreshRemoteOrg(id);
-  if (errors.length) throw new Error(`权限变更尚未完成：${errors.join("；")}。修正原因后点击重试，已完成的步骤不会重复授予。`);
+  if (errors.length) throw new Error(i18n("state.orgsync.cd3d301c9ac0", { value: String(errors.join("；")) }));
 }
 export async function updateRemoteResources(id: string, collection: "libraries"|"gitlabRepos", before: OrgRemoteAdmin["libraries"]|OrgRemoteAdmin["gitlabRepos"], value: OrgRemoteAdmin["libraries"]|OrgRemoteAdmin["gitlabRepos"]): Promise<void> {
   const snapshot = await requireSnapshot(id, 50, true);
   if (JSON.stringify(snapshot.admin.value[collection]) !== JSON.stringify(before)) throw new OrgConflictError();
   const existing = snapshot.admin.value.pending;
   const key = (resource: OrgRemoteAdmin["libraries"][number] | OrgRemoteAdmin["gitlabRepos"][number]) => "repoId" in resource ? resource.repoId : resource.id;
-  if (existing && value.some(resource=>!before.some(old=>key(old)===key(resource)))) throw new Error("未完成的权限变更期间只能解除资源关联，请先完成重试再添加资源");
+  if (existing && value.some(resource=>!before.some(old=>key(old)===key(resource)))) throw new Error(i18n("state.orgsync.1345eb189bbb"));
   const bindings = existing?.bindings ?? snapshot.admin.value.bindings;
   const config = {...snapshot.admin.value, [collection]:value} as OrgRemoteAdmin;
-  const pending: OrgPermissionIntent = {...existing, id:newId(), label:"同步关联资源权限", createdAt:Date.now(), errors:undefined, bindings,
+  const pending: OrgPermissionIntent = {...existing, id:newId(), label:i18n("state.orgsync.fb99a121e507"), createdAt:Date.now(), errors:undefined, bindings,
     previousBindings:keepBindings([...(existing?.previousBindings ?? bindings),...(existing?.bindings ?? [])]),
     removedLibraries:[...(existing?.removedLibraries??[]),...(collection === "libraries" ? snapshot.admin.value.libraries.filter(old=>!(value as OrgRemoteAdmin["libraries"]).some(n=>n.repoId===old.repoId)) : [])],
     removedRepos:[...(existing?.removedRepos??[]),...(collection === "gitlabRepos" ? snapshot.admin.value.gitlabRepos.filter(old=>!(value as OrgRemoteAdmin["gitlabRepos"]).some(n=>n.id===old.id)) : [])]};
   // Validate new links before committing a blocking intent. Existing pending operations remain repairable.
   if (!existing) {
-    if (config.libraries.length && snapshot.members.some(m=>!bindings.some(b=>b.userId===m.id && b.email))) throw new Error("请先给每位组织成员填写云盘邮箱，再关联资料库");
+    if (config.libraries.length && snapshot.members.some(m=>!bindings.some(b=>b.userId===m.id && b.email))) throw new Error(i18n("state.orgsync.66f49a483a9b"));
     await auditOrgResources(await permissionGateway(), {...snapshot,admin:{...snapshot.admin,value:config}}, pending);
   }
   await writeAdmin(snapshot, {...config,pending});

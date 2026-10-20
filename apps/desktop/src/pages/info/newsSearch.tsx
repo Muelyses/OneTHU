@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 新闻本地检索辅助（SearchPage.tsx 打分思路的新闻版）+ 订阅持久化。
  * 打分模型：查询串按空白切词 + 中文 2-gram；字段权重 标题 10/词、来源 4/词、
@@ -104,6 +105,8 @@ export function byDateDesc(a: NewsItem, b: NewsItem): number {
 /* ---------- 命中词高亮（SearchPage Highlight 同款：贪心最长匹配、跳过重叠） ---------- */
 
 export function Highlight({ text, tokens }: { text: string; tokens: string[] }) {
+  const uiLocale = useUiLocale();
+
   if (!text || tokens.length === 0) return <>{text}</>;
   const lower = text.toLowerCase();
   const ordered = [...tokens].sort((a, b) => b.length - a.length);

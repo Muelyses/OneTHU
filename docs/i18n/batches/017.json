@@ -1,0 +1,1483 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.namecardsection.6e7ecbfdeb6c",
+      "source": "编辑资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 240,
+          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 579,
+          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6ebb64384907",
+      "source": "识别二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 557,
+          "context": "{i18n(\"components.namecardsection.6ebb64384907\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6eeeec8e5551",
+      "source": "还没有收到别人的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 535,
+          "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6f52cc94db65",
+      "source": "手机号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 153,
+          "context": "label: i18nMsg(\"components.namecardsection.6f52cc94db65\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 270,
+          "context": "k: i18n(\"components.namecardsection.6f52cc94db65\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.70c95a778953",
+      "source": "NFC 分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 249,
+          "context": "{i18n(\"components.namecardsection.70c95a778953\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.70d929b3b1f6",
+      "source": "星标：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 441,
+          "context": "starred.has(c.id) ? i18n(\"components.namecardsection.a619ae87fda9\") : i18n(\"components.namecardsection.70d929b3b1f6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.72198cd82905",
+      "source": "开通双向",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 629,
+          "context": "{i18n(\"components.namecardsection.72198cd82905\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.728a0cd5f147",
+      "source": "头像、网址、社交、手机号、简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 51,
+          "context": "return i18n(\"components.namecardsection.728a0cd5f147\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.79d504ee7bef",
+      "source": "共享云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 608,
+          "context": "k: i18n(\"components.namecardsection.79d504ee7bef\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 625,
+          "context": "sharingId === shown.id ? i18n(\"components.namecardsection.56b63def0e29\") : i18n(\"components.namecardsection.79d504ee7bef\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.7a456447d1df",
+      "source": "留空则使用应用自动识别的邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 157,
+          "context": "placeholder: i18nMsg(\"components.namecardsection.7a456447d1df\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.7f05190592e5",
+      "source": "未填写",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 267,
+          "context": "personal.name || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 268,
+          "context": "personal.website || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 269,
+          "context": "personal.social || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 270,
+          "context": "personal.phone || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 572,
+          "context": "personal.name || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 573,
+          "context": "personal.bio || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 574,
+          "context": "[personal.website, personal.social, personal.phone].filter(Boolean).join(\" · \") || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 605,
+          "context": "shown.note || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 607,
+          "context": "contactLink(shown) || i18n(\"components.namecardsection.7f05190592e5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.80e5b5076b66",
+      "source": "名片只在你主动分享（放进暂存箱 / 口令 / 碰一碰）时才离开这台设备。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.namecardsection.80e5b5076b66\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.8131eafd0239",
+      "source": "简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 573,
+          "context": "k: i18n(\"components.namecardsection.8131eafd0239\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 606,
+          "context": "k: i18n(\"components.namecardsection.8131eafd0239\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.86ee28991b99",
+      "source": "复制失败，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 210,
+          "context": "e instanceof Error ? e.message : i18nMsg(\"components.namecardsection.86ee28991b99\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.8791b9f80795",
+      "source": "卡面已保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 215,
+          "context": "showToast(i18nMsg(\"components.namecardsection.8791b9f80795\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.87e6ed03c487",
+      "source": "编辑我的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 149,
+          "context": "openFormModal(i18nMsg(\"components.namecardsection.87e6ed03c487\"), [\n      { key: \"name\", label: i18nMsg(\"components.namecardsection.6773310492a9\"), required: true, default: p.name },\n      { key: \"website\", label: i18nMsg(\"components.namecardsection.22530f991560\"), default: p.website },\n      { key: \"social\", label: i18nMsg(\"components.namecardsection.ed7ece7d61a0\"), default: p.social },\n      { key: \"phone\", label: i18nMsg(\"components.namecardsection.6f52cc94db65\"), default: p.phone },\n      {\n        key: \"cloudEmail\",\n        label: i18nMsg(\"components.namecardsection.cf09399631a7\"),\n        placeholder: i18nMsg(\"components.namecardsection.7a456447d1df\"),\n        default: p.cloudEmail || "
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.8af2bc38c6a7",
+      "source": "换卡面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 242,
+          "context": "personal.cover ? i18n(\"components.namecardsection.8af2bc38c6a7\") : i18n(\"components.namecardsection.bc6b27e11f11\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.8e5ba1de0a5c",
+      "source": "放进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 243,
+          "context": "{i18n(\"components.namecardsection.8e5ba1de0a5c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 581,
+          "context": "{i18n(\"components.namecardsection.8e5ba1de0a5c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 615,
+          "context": "{i18n(\"components.namecardsection.8e5ba1de0a5c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.90b310149a74",
+      "source": "未创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 608,
+          "context": "shown.shared?.shareUrl ? i18n(\"components.namecardsection.675b3c608daf\") : i18n(\"components.namecardsection.90b310149a74\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9196d03dd121",
+      "source": "创建组织后，这里会出现它的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 304,
+          "context": "{i18n(\"components.namecardsection.9196d03dd121\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9491ade2781f",
+      "source": "文件：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 667,
+          "context": "i18n(\"components.namecardsection.9491ade2781f\") + m.text"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.97f4308501ff",
+      "source": "复制失败，请手动复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 620,
+          "context": "showToast(i18nMsg(\"components.namecardsection.97f4308501ff\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 638,
+          "context": "showToast(i18nMsg(\"components.namecardsection.97f4308501ff\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.98a4e5fe3ab0",
+      "source": "名片已放进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 184,
+          "context": "showToast(i18nMsg(\"components.namecardsection.98a4e5fe3ab0\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 614,
+          "context": "r.ok ? i18nMsg(\"components.namecardsection.98a4e5fe3ab0\") : r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9e3899a169a0",
+      "source": "名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 592,
+          "context": "shown ? i18n(\"components.namecardsection.a12513e5d0fd\", { name: String(shown.name) }) : i18n(\"components.namecardsection.9e3899a169a0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9e7804614304",
+      "source": "暂存箱里已经有这张名片了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 185,
+          "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 614,
+          "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.9fc6a0e68737",
+      "source": "已加入通讯录：{ok} 张",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "ok",
+          "expression": "String(ok)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 377,
+          "context": "showToast(i18nMsg(\"components.namecardsection.9fc6a0e68737\", { ok: String(ok) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a12513e5d0fd",
+      "source": "{name} · 名片",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(shown.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 592,
+          "context": "shown ? i18n(\"components.namecardsection.a12513e5d0fd\", { name: String(shown.name) }) : i18n(\"components.namecardsection.9e3899a169a0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a24929811487",
+      "source": "共享云盘创建失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 393,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a24929811487\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a3c0025dd64c",
+      "source": "已恢复默认纸卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 231,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a3c0025dd64c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a3dd578bcf36",
+      "source": "「{name}」上传失败：{reason}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(f.name)"
+        },
+        {
+          "name": "reason",
+          "expression": "String(r.reason)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 415,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a3dd578bcf36\", { name: String(f.name), reason: String(r.reason) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a619ae87fda9",
+      "source": "取消星标：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 441,
+          "context": "starred.has(c.id) ? i18n(\"components.namecardsection.a619ae87fda9\") : i18n(\"components.namecardsection.70d929b3b1f6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a6f084e2fe02",
+      "source": "{name} 与我的共享云盘",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 384,
+          "context": "prepareAndShareFolder(`/Friends/${contactId}`, i18n(\"components.namecardsection.a6f084e2fe02\", { name: String(name) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a8b8730c9611",
+      "source": "正在生成…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 247,
+          "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a938ed15b3e5",
+      "source": "头像已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 174,
+          "context": "showToast(i18nMsg(\"components.namecardsection.a938ed15b3e5\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.a9f6d3616710",
+      "source": "对方给的名片口令粘进来，或识别分享二维码；暂存箱里已有的名片也能一次收进来。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 554,
+          "context": "{i18n(\"components.namecardsection.a9f6d3616710\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b1bd19b13336",
+      "source": "组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 297,
+          "context": "{i18n(\"components.namecardsection.b1bd19b13336\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b41cbf11b07d",
+      "source": "在「我的」里管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 582,
+          "context": "{i18n(\"components.namecardsection.b41cbf11b07d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b4d203dea5b9",
+      "source": "组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 482,
+          "context": "label: i18n(\"components.namecardsection.b4d203dea5b9\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 604,
+          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b4d203dea5b9\") : i18n(\"components.namecardsection.b9b1480dd6ec\")"
+        }
+      ],
+      "translation": "Organization",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.b52ea6d355c2",
+      "source": "加入方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 607,
+          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b8fde21bc2ca",
+      "source": "组织邀请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 82,
+          "context": "(c.card as OrgCard).brief || i18n(\"components.namecardsection.b8fde21bc2ca\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.b9b1480dd6ec",
+      "source": "好友",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 481,
+          "context": "label: i18n(\"components.namecardsection.b9b1480dd6ec\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 604,
+          "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b4d203dea5b9\") : i18n(\"components.namecardsection.b9b1480dd6ec\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.ba40014ff496",
+      "source": "类型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 604,
+          "context": "k: i18n(\"components.namecardsection.ba40014ff496\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.bc398485aa6a",
+      "source": "留言已写入共享云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 404,
+          "context": "r.ok ? i18nMsg(\"components.namecardsection.bc398485aa6a\") : i18nMsg(\"components.namecardsection.f272a8187531\", { reason: String(r.reason) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.bc6b27e11f11",
+      "source": "自定义卡面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 242,
+          "context": "personal.cover ? i18n(\"components.namecardsection.8af2bc38c6a7\") : i18n(\"components.namecardsection.bc6b27e11f11\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.c5c9b9b48b9c",
+      "source": "加入方式已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 637,
+          "context": "showToast(i18nMsg(\"components.namecardsection.c5c9b9b48b9c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.c747909af9bf",
+      "source": "只支持图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 170,
+          "context": "new Error(i18n(\"components.namecardsection.c747909af9bf\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.c779c2d1fbe9",
+      "source": "文件选择失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 419,
+          "context": "showToast(i18nMsg(\"components.namecardsection.c779c2d1fbe9\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.cf09399631a7",
+      "source": "清华云盘邮箱（已自动识别，可修改）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 156,
+          "context": "label: i18nMsg(\"components.namecardsection.cf09399631a7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.d35e72f2cbcf",
+      "source": "个人简介（≤120 字，碰一碰要短）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 160,
+          "context": "label: i18nMsg(\"components.namecardsection.d35e72f2cbcf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.d62e64a05006",
+      "source": "清空筛选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 545,
+          "context": "{i18n(\"components.namecardsection.d62e64a05006\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.d71efdfa0d21",
+      "source": "个人名片口令已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 209,
+          "context": "showToast(i18nMsg(\"components.namecardsection.d71efdfa0d21\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.d909fbc0d1e8",
+      "source": "传文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 675,
+          "context": "{i18n(\"components.namecardsection.d909fbc0d1e8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.daa435b57879",
+      "source": "清华云盘邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 271,
+          "context": "k: i18n(\"components.namecardsection.daa435b57879\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 575,
+          "context": "k: i18n(\"components.namecardsection.daa435b57879\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.daede9881787",
+      "source": "备注",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 605,
+          "context": "k: i18n(\"components.namecardsection.daede9881787\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.dff9e5a876ae",
+      "source": "星标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 485,
+          "context": "{i18n(\"components.namecardsection.dff9e5a876ae\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e180400bc837",
+      "source": "共享链接已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 619,
+          "context": "showToast(i18nMsg(\"components.namecardsection.e180400bc837\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e1bb8719dfa4",
+      "source": "收起通道",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 632,
+          "context": "channelId === shown.id ? i18n(\"components.namecardsection.e1bb8719dfa4\") : i18n(\"components.namecardsection.1ce1f2806523\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e5aeb36dd793",
+      "source": "头像设置失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 176,
+          "context": "showToast(i18nMsg(\"components.namecardsection.e5aeb36dd793\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.e84dedddc8c4",
+      "source": "打开{name}的组织主页",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(o.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 313,
+          "context": "{i18n(\"components.namecardsection.e84dedddc8c4\", { name: String(o.name) })}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 508,
+          "context": "{i18n(\"components.namecardsection.e84dedddc8c4\", { name: String(o.name) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.ed7ece7d61a0",
+      "source": "社交媒体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 152,
+          "context": "label: i18nMsg(\"components.namecardsection.ed7ece7d61a0\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 269,
+          "context": "k: i18n(\"components.namecardsection.ed7ece7d61a0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.namecardsection.f272a8187531",
+      "source": "留言只留在本机：{reason}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "reason",
+          "expression": "String(r.reason)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 404,
+          "context": "r.ok ? i18nMsg(\"components.namecardsection.bc398485aa6a\") : i18nMsg(\"components.namecardsection.f272a8187531\", { reason: String(r.reason) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.f2af14b00970",
+      "source": "换个关键词或切回「全部」；星标好友会排在卡片夹最前面。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 538,
+          "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.f3c602ccaabb",
+      "source": "搜索好友或组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 473,
+          "context": "{i18n(\"components.namecardsection.f3c602ccaabb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.f8802d448332",
+      "source": "碰一碰 / 分享口令都用这一张",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 264,
+          "context": "{i18n(\"components.namecardsection.f8802d448332\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.faf7ec668417",
+      "source": "在通讯录的「我的组织」中创建组织即可。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 305,
+          "context": "{i18n(\"components.namecardsection.faf7ec668417\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.fb17c85750c7",
+      "source": "换头像",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 241,
+          "context": "{i18n(\"components.namecardsection.fb17c85750c7\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 580,
+          "context": "{i18n(\"components.namecardsection.fb17c85750c7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.fb1cbf2a96f7",
+      "source": "已把 {ok} 个文件放进共享云盘",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "ok",
+          "expression": "String(ok)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 417,
+          "context": "showToast(i18nMsg(\"components.namecardsection.fb1cbf2a96f7\", { ok: String(ok) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.161e7274c791",
+      "source": "逐项检查授权、提醒排程与真实投递",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 213,
+          "context": "{i18n(\"components.notifysettingssection.161e7274c791\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.175f2b8dd07a",
+      "source": "{pluginId}（{length} 条）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "pluginId",
+          "expression": "String(g.pluginId)"
+        },
+        {
+          "name": "length",
+          "expression": "String(g.ids.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 239,
+          "context": "(g) => i18n(\"components.notifysettingssection.175f2b8dd07a\", { pluginId: String(g.pluginId), length: String(g.ids.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.1e9f2561b7cf",
+      "source": "通过",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 297,
+          "context": "st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.20684a2b9005",
+      "source": "已更新（排程 {scheduled} 条 / 撤销 {cancelled} 条）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "scheduled",
+          "expression": "String(r.scheduled)"
+        },
+        {
+          "name": "cancelled",
+          "expression": "String(r.cancelled)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 78,
+          "context": "r.error ? i18n(\"components.notifysettingssection.62a0cf48abea\", { error: String(r.error) }) : i18n(\"components.notifysettingssection.20684a2b9005\", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.2caa51eaf305",
+      "source": "不通过",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 297,
+          "context": "st.status === \"fail\" ? i18n(\"components.notifysettingssection.2caa51eaf305\") : st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.2d0bc5924351",
+      "source": " …共 {length} 条",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(plan.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 270,
+          "context": "plan.length > 3 ? i18n(\"components.notifysettingssection.2d0bc5924351\", { length: String(plan.length) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.35211f5bd0b3",
+      "source": "未能打开系统设置，请手动前往本应用的通知设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 223,
+          "context": "setMsg(i18n(\"components.notifysettingssection.35211f5bd0b3\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.3a1abf3422d2",
+      "source": "检测中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 205,
+          "context": "status === null\n            ? i18n(\"components.notifysettingssection.3a1abf3422d2\")\n            : hint.level === \"error\"\n              ? <Text slot=\"label\" tone=\"error\">{hint.text}</Text>\n              : hint.text"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.notifysettingssection.3df7b5791ab9",
+      "source": "作业 DDL 提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 168,
+          "context": "{i18n(\"components.notifysettingssection.3df7b5791ab9\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 170,
+          "context": "{i18n(\"components.notifysettingssection.3df7b5791ab9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.3ebea03d50ba",
+      "source": "当天有课、有日程或有截止时才发。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 175,
+          "context": "{i18n(\"components.notifysettingssection.3ebea03d50ba\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.40ff6300f981",
+      "source": "诊断",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 214,
+          "context": "busy ? i18n(\"components.notifysettingssection.fb11aa6f2982\") : i18n(\"components.notifysettingssection.40ff6300f981\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.43726fd0c89d",
+      "source": "近期没有需要提醒的事项。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 268,
+          "context": "plan.length === 0\n            ? i18n(\"components.notifysettingssection.43726fd0c89d\")\n            : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join(\"；\") +\n              (plan.length > 3 ? i18n(\"components.notifysettingssection.2d0bc5924351\", { length: String(plan.length) }) : \"\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.notifysettingssection.44f704a819d7",
+      "source": "投递失败，请运行诊断查看原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 108,
+          "context": "st.granted ? i18n(\"components.notifysettingssection.44f704a819d7\") : i18n(\"components.notifysettingssection.e8b6b0ba7d86\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

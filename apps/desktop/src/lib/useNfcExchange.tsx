@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { useEffect, useRef, useState } from 'react';
 import { ExchangeFeedback, type ExchangeState } from '../components/ExchangeFeedback.js';
 import { nfcReadText, nfcShareText, nfcStatus, type NfcStatus } from './nfc.js';
@@ -17,21 +18,21 @@ export function useNfcExchange(active = true) {
     window.addEventListener('focus', refresh);
     return () => { live = false; window.removeEventListener('focus', refresh); };
   }, [active]);
-  const hint = !status ? '正在检测 NFC…' : !status.available ? '此设备不支持 NFC，可复制口令分享' : !status.enabled ? '请先在系统设置开启 NFC，返回后重试' : '传送方开启 NFC 传送，接收方开启 NFC 接收，再将手机背面靠近';
+  const hint = !status ? i18n("lib.usenfcexchange.a4fb7d646812") : !status.available ? i18n("lib.usenfcexchange.113392f6a1c6") : !status.enabled ? i18n("lib.usenfcexchange.68f717a1ed08") : i18n("lib.usenfcexchange.0ae6a92e95dc");
   const available = !!status?.available && status.enabled;
   const run = async (makeCode?: () => string | Promise<string>) => {
     if (pending.current) return;
     pending.current = true;
     setBusy(true);
-    setState({ phase: 'reading', message: makeCode ? '正在准备要分享的内容…' : '正在等待 NFC 内容，请将手机背面靠近（10 秒内）' });
+    setState({ phase: 'reading', message: makeCode ? i18n("lib.usenfcexchange.ffc7745f39e3") : i18n("lib.usenfcexchange.6e17251696e8") });
     try {
       const current = await nfcStatus();
       setStatus(current);
-      if (!current.available) throw new Error('此设备不支持 NFC，请使用复制口令');
-      if (!current.enabled) throw new Error('NFC 未开启，请到系统设置中开启后重试');
+      if (!current.available) throw new Error(i18n("lib.usenfcexchange.810417d87789"));
+      if (!current.enabled) throw new Error(i18n("lib.usenfcexchange.1f80dd1ff89a"));
       if (makeCode) {
         await nfcShareText(await makeCode());
-        setState({ phase: 'ready', message: '传送已就绪，请让对方开启 NFC 接收并靠近；这里尚未收到对方确认。' });
+        setState({ phase: 'ready', message: i18n("lib.usenfcexchange.7f8924faa4e5") });
       } else {
         const message = await receiveExchangeCode(await nfcReadText());
         setState({ phase: 'success', message });

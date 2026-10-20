@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 首启导览的账号接入步骤（R21b，用户定案 2026-09-21）：雨课堂 / OJ / 邮箱日历 / 云盘。
  *
@@ -62,7 +63,7 @@ export async function connectYuketang(cookie: string): Promise<AccountStatus> {
 /** Tyche OJ：账号密码登录并保存会话 */
 export async function loginTyche(user: string, pwd: string): Promise<AccountStatus> {
   const u = user.trim();
-  if (!u || !pwd) throw new Error("请输入账号与密码");
+  if (!u || !pwd) throw new Error(i18n("state.accountsetup.88db247ca41b"));
   const r = await extHwLogin.tyche(u, pwd);
   await saveExtHwCreds({ ...getExtHwCreds(), tyche: { cookie: r.cookie, username: u } });
   void refreshExtHw();
@@ -72,7 +73,7 @@ export async function loginTyche(user: string, pwd: string): Promise<AccountStat
 /** DSA OJ：账号密码登录并保存会话 */
 export async function loginDsa(user: string, pwd: string): Promise<AccountStatus> {
   const u = user.trim();
-  if (!u || !pwd) throw new Error("请输入账号与密码");
+  if (!u || !pwd) throw new Error(i18n("state.accountsetup.88db247ca41b"));
   const r = await extHwLogin.dsa(u, pwd);
   await saveExtHwCreds({ ...getExtHwCreds(), dsa: { cookie: r.cookie, username: u } });
   void refreshExtHw();
@@ -81,14 +82,14 @@ export async function loginDsa(user: string, pwd: string): Promise<AccountStatus
 
 /** 邮箱日历（CalDAV）：完整邮箱 + 客户端专用密码 */
 export async function connectMail(email: string, authCode: string): Promise<AccountStatus> {
-  if (!email.trim() || !authCode) throw new Error("请输入邮箱与客户端专用密码");
+  if (!email.trim() || !authCode) throw new Error(i18n("state.accountsetup.ecbc67435fe1"));
   await configureCloudCal(email.trim(), authCode);
   return readAccountStatus();
 }
 
 /** 清华云盘：Web API Auth Token（setSeafileToken 会实际校验并返回账户信息） */
 export async function connectCloudDisk(token: string): Promise<AccountStatus> {
-  if (!token.trim()) throw new Error("请输入 Web API Auth Token");
+  if (!token.trim()) throw new Error(i18n("state.accountsetup.ec4d67a81570"));
   await setSeafileToken(token.trim());
   return readAccountStatus();
 }

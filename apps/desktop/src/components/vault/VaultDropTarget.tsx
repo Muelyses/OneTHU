@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 常驻「暂存箱」入口 + 局部接收扫描。
  *
@@ -23,6 +24,8 @@ type AnchorPoint = { left: number; top: number };
 type MenuPosition = AnchorPoint & { width: number; maxHeight: number };
 
 export function VaultDropTarget(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [fileDrag, setFileDrag] = useState(false);
   useEffect(() => installVaultDragSources(), []);
   useEffect(() => {
@@ -32,8 +35,8 @@ export function VaultDropTarget(): ReactNode {
       const text = window.getSelection?.()?.toString().trim() ?? "";
       if (!text) return;
       e.preventDefault();
-      const r = addToVault({ type: "text", title: text.slice(0, 40), sub: text.length > 40 ? `${text.length} 字` : undefined, text: text.slice(0, 4000), source: "选中文字" });
-      showToast(r.ok ? "选中文字已收进暂存箱" : "暂存箱里已经有这段文字了");
+      const r = addToVault({ type: "text", title: text.slice(0, 40), sub: text.length > 40 ? i18n("components.vault.vaultdroptarget.3e5110a967b4", { length: String(text.length) }) : undefined, text: text.slice(0, 4000), source: "选中文字" });
+      showToast(r.ok ? i18nMsg("components.vault.vaultdroptarget.47461fa18eb4") : i18nMsg("components.vault.vaultdroptarget.6fe38b267261"));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -56,11 +59,11 @@ export function VaultDropTarget(): ReactNode {
         let ok = 0;
         for (const f of staged) {
           const r = addToVault({ type: "file", title: f.name, sub: `${f.size} B · ${f.mime}`, file: { name: f.name, size: f.size, mime: f.mime, hash: f.sha256, cloudPath: null, stagedPath: f.localPath }, source: "文件拖入" }, targetId);
-          if (r.reason === "no-box") throw new Error(`暂存箱「${targetName}」已删除，请重新拖入文件`);
+          if (r.reason === "no-box") throw new Error(i18n("components.vault.vaultdroptarget.ce2bc6991899", { targetName: String(targetName) }));
           if (r.ok) ok++;
         }
-        showToast(ok ? `已收进「${targetName}」：${ok} 个文件` : "这些文件已在暂存箱里（按内容指纹去重）");
-      }).catch((err) => showToast(`文件读取失败：${err instanceof Error ? err.message : String(err)}`));
+        showToast(ok ? i18nMsg("components.vault.vaultdroptarget.8948961952b5", { targetName: String(targetName), ok: String(ok) }) : i18nMsg("components.vault.vaultdroptarget.9d6d1d45c849"));
+      }).catch((err) => showToast(i18nMsg("components.vault.vaultdroptarget.04dcb3f7b1ba", { value: String(err instanceof Error ? err.message : String(err)) })));
     };
     document.addEventListener("dragenter", onEnter);
     document.addEventListener("dragover", onOver);
@@ -85,8 +88,8 @@ export function VaultDropTarget(): ReactNode {
     {fileDrag ? <div className="vault-file-overlay">
         <div className="vault-file-overlay-box">
           <IconIn width={28} height={28} />
-          <span>松手收进「{box.name}」</span>
-          <span className="vault-file-overlay-sub">文件会先算内容指纹，同内容自动去重</span>
+          <span>{i18nRich("components.vault.vaultdroptarget.fddf331e7b4a", { name: box.name })}</span>
+          <span className="vault-file-overlay-sub">{i18n("components.vault.vaultdroptarget.9ee0ee785997")}</span>
         </div>
       </div> : null}
     </>, document.body);
@@ -94,6 +97,8 @@ export function VaultDropTarget(): ReactNode {
 
 /** 「发给小OH」提示：跟着 OH 胶囊走，胶囊在下半屏就冒在上方，否则冒在下方。 */
 function TransferHint({ target }: { target?: "vault" | "oh" }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [spot, setSpot] = useState<{ left: number; top: number; below: boolean } | null>(null);
   useLayoutEffect(() => {
     const measure = (): void => {
@@ -115,13 +120,15 @@ function TransferHint({ target }: { target?: "vault" | "oh" }): ReactNode {
       style={{ left: spot.left, top: spot.top }}
       role="status"
     >
-      {target === "oh" ? "松手发给小OH" : "发给小OH"}
+      {target === "oh" ? i18n("components.vault.vaultdroptarget.c36c6d23634f") : i18n("components.vault.vaultdroptarget.b7050e727b45")}
     </div>,
     document.body,
   );
 }
 
 function VaultButton(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const drag = useSyncExternalStore(subscribeVaultDrag, vaultDragSnapshot, vaultDragSnapshot);
   const doc = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
   const box = doc.boxes.find((b) => b.id === doc.activeId) ?? doc.boxes[0]!;
@@ -209,9 +216,9 @@ function VaultButton(): ReactNode {
           variant="solid"
           data-vault-drop
           aria-haspopup="dialog"
-          aria-description={drag.active ? drag.target === "vault" ? "松手存入暂存箱" : "可接收拖动内容" : undefined}
-          aria-label={`暂存箱，${items.length} 项`}
-          titleAttr="暂存箱 · 点击打开，拖动换位"
+          aria-description={drag.active ? drag.target === "vault" ? i18n("components.vault.vaultdroptarget.3cc6c4d02828") : i18n("components.vault.vaultdroptarget.3e6dd0e4876f") : undefined}
+          aria-label={i18n("components.vault.vaultdroptarget.9ff8b6ce8ac9", { length: String(items.length) })}
+          titleAttr={i18n("components.vault.vaultdroptarget.035626d80c03")}
           onPointerDown={edge.onPointerDown}
           onPointerMove={edge.onPointerMove}
           onPointerUp={edge.onPointerUp}
@@ -222,10 +229,10 @@ function VaultButton(): ReactNode {
           }}
         >
           <IconVault size="md" />
-          <span className="vault-box-label">暂存箱</span><span className="vault-box-count">{items.length}</span>
+          <span className="vault-box-label">{i18n("components.vault.vaultdroptarget.804002a9c49a")}</span><span className="vault-box-count">{items.length}</span>
         </Btn>
       </div>
-      {menu ? createPortal(<div ref={menuRef} className="vault-anchor-menu" role="menu" aria-label="暂存箱入口位置" style={position ? {left: position.left, top: position.top, width: position.width, maxHeight: position.maxHeight} : undefined}><p>拖动入口换位 · 点击打开暂存箱</p><Btn role="menuitem" variant="ghost" onClick={() => { edge.reset(); closeMenu(); }}>恢复默认位置</Btn><Btn role="menuitem" variant="ghost" onClick={closeMenu}>关闭</Btn></div>, document.body) : null}
+      {menu ? createPortal(<div ref={menuRef} className="vault-anchor-menu" role="menu" aria-label={i18n("components.vault.vaultdroptarget.263096ab84a5")} style={position ? {left: position.left, top: position.top, width: position.width, maxHeight: position.maxHeight} : undefined}><p>{i18n("components.vault.vaultdroptarget.4a283514ba2f")}</p><Btn role="menuitem" variant="ghost" onClick={() => { edge.reset(); closeMenu(); }}>{i18n("components.vault.vaultdroptarget.db96771fdccc")}</Btn><Btn role="menuitem" variant="ghost" onClick={closeMenu}>{i18n("components.vault.vaultdroptarget.3fd47edce45b")}</Btn></div>, document.body) : null}
       {drag.active ? <VaultRadarScope
         left={edge.placement.left + (anchor.current?.offsetWidth ?? 64) / 2}
         top={edge.placement.top + (anchor.current?.offsetHeight ?? 48) / 2}

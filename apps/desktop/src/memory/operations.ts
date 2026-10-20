@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 记忆操作（工具契约见 docs/memory-cloud/01 §6，与 facade/未来 harness 工具一一对应）：
  *   memory_search / read / list（只读，memory:read）
@@ -63,7 +64,7 @@ async function findByPermalink(permalink: string): Promise<{ path: string; note:
 function guard(...parts: string[]): void {
   for (const p of parts) {
     const bad = memoryBlacklist(p);
-    if (bad) throw new Error(`记忆写入被拦截：${bad}——凭据类内容不允许进入长期记忆`);
+    if (bad) throw new Error(i18n("memory.operations.6383fb8dcdcc", { bad: String(bad) }));
   }
 }
 
@@ -75,7 +76,7 @@ export async function memorySearch(q: { query?: string; tags?: string[]; type?: 
 
 export async function memoryRead(permalink: string): Promise<string> {
   const hit = await findByPermalink(permalink);
-  if (!hit) throw new Error(`未找到记忆：${permalink}`);
+  if (!hit) throw new Error(i18n("memory.operations.f564f74f2806", { permalink: String(permalink) }));
   const LIMIT = 8 * 1024;
   return hit.raw.length > LIMIT ? hit.raw.slice(0, LIMIT) + "\n\n…（超 8KB 截断）" : hit.raw;
 }
@@ -126,7 +127,7 @@ export async function memoryWrite(input: MemoryWriteInput): Promise<{ permalink:
 
   // 同名实体已存在 → 拒绝新建（引导 append，防重复实体）
   const existing = (await memoryList()).find((x) => x.title === input.title);
-  if (existing) throw new Error(`已存在同名记忆「${input.title}」（${existing.permalink}）——用 memory_append 追加观察`);
+  if (existing) throw new Error(i18n("memory.operations.e613fe77a194", { title: String(input.title), permalink: String(existing.permalink) }));
 
   const permalink = await genPermalink(input.title, salt());
   const folder = (input.folder ?? FOLDER_BY_TYPE[type] ?? "knowledge").replace(/^\/+|\/+$/g, "");
@@ -156,7 +157,7 @@ export async function memoryWrite(input: MemoryWriteInput): Promise<{ permalink:
 export async function memoryAppend(permalink: string, category: string, text: string, context?: string): Promise<void> {
   guard(text);
   const hit = await findByPermalink(permalink);
-  if (!hit) throw new Error(`未找到记忆：${permalink}`);
+  if (!hit) throw new Error(i18n("memory.operations.f564f74f2806", { permalink: String(permalink) }));
   hit.note.observations.push({ category, text, tags: [], context });
   hit.note.modified = nowIso();
   const raw = renderNote(hit.note);
@@ -169,8 +170,8 @@ export async function memoryAppend(permalink: string, category: string, text: st
 export async function memoryEdit(permalink: string, find: string, replace: string): Promise<void> {
   guard(replace);
   const hit = await findByPermalink(permalink);
-  if (!hit) throw new Error(`未找到记忆：${permalink}`);
-  if (!hit.raw.includes(find)) throw new Error(`未找到待替换文本（${find.slice(0, 30)}…）——请先 memory_read 核对原文`);
+  if (!hit) throw new Error(i18n("memory.operations.f564f74f2806", { permalink: String(permalink) }));
+  if (!hit.raw.includes(find)) throw new Error(i18n("memory.operations.ccc5a5900f02", { value: String(find.slice(0, 30)) }));
   const raw = hit.raw.split(find).join(replace);
   await mWrite(hit.path, raw);
   await ledgerPut(hit.path, raw, nowIso());
@@ -180,7 +181,7 @@ export async function memoryEdit(permalink: string, find: string, replace: strin
 
 export async function memoryDelete(permalink: string, reason?: string): Promise<{ trashedTo: string }> {
   const hit = await findByPermalink(permalink);
-  if (!hit) throw new Error(`未找到记忆：${permalink}`);
+  if (!hit) throw new Error(i18n("memory.operations.f564f74f2806", { permalink: String(permalink) }));
   const trashPath = `.trash/${hit.path}`;
   const banner = `<!-- 归档 ${nowIso()}${reason ? `：${reason}` : ""} -->\n`;
   await mWrite(trashPath, banner + hit.raw);

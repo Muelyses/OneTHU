@@ -20,7 +20,10 @@
     "docs:stamp": "node tools/docs-stamp.mjs",
     "guard:xiaoda": "node --import ./tools/lib/xiaoda-guard-loader.mjs tools/xiaoda-entries-test.mjs",
     "guard:onegui": "node tools/onegui-guard.mjs && node --import ./tools/ts-resolve-register.mjs tools/onegui-system-test.mjs",
-    "guard:contrast": "node tools/contrast-guard.mjs"
+    "guard:contrast": "node tools/contrast-guard.mjs",
+    "i18n:check": "node tools/i18n-test.mjs",
+    "i18n:handoff": "node tools/i18n/build-handoff.mjs",
+    "test:i18n": "node tools/i18n-test.mjs && node tools/i18n-batch-test.mjs && node --import ./tools/ts-resolve-register.mjs tools/i18n-runtime-test.mjs && node --import ./tools/ts-resolve-register.mjs tools/i18n-settings-routing-test.mjs && node tools/i18n-business-boundaries-test.mjs && node tools/gui-locale-test.mjs && node tools/i18n-final-display-test.mjs && node --import ./tools/ts-resolve-register.mjs tools/widget-i18n-test.mjs && node tools/i18n-display-memo-test.mjs"
   },
   "devDependencies": {
     "@material/material-color-utilities": "^0.4.0",

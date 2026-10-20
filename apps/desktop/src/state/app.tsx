@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /** 应用全局状态：登录（含 2FA）→ 会话 → 轻路由 */
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import * as clients from "../lib/clients.js";
@@ -227,6 +228,8 @@ if (PREVIEW_MODE) {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const uiLocale = useUiLocale();
+
   const [status, setStatus] = useState<SessionStatus>("booting");
   const [user, setUser] = useState<SessionUser | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -277,7 +280,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ]);
       const silent = silentResult.ok === true;
       void import("../lib/clients.js").then(({ logLine }) =>
-        logLine(`BOOT-T trySilentRelogin(${silent ? "成功" : "失败"}) +${Date.now() - TS}ms`),
+        logLine(`BOOT-T trySilentRelogin(${silent ? i18n("state.app.053461ce86d2") : i18n("state.app.28384d7afd2e")}) +${Date.now() - TS}ms`),
       ).catch(() => undefined);
       if (cancelled) return;
       if (silent) {
@@ -327,7 +330,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         // 用刚输入的同一凭据静默重试一次，两次都失败才回登录页；重试期间保持
         // connecting 态（spinner），用户感知是「多转了一会儿」而不是「被踹出来」。
         void import("../lib/clients.js")
-          .then(({ logLine }) => logLine(`LOGIN-RETRY 首次失败，静默重试一次：${String(firstErr).slice(0, 120)}`))
+          .then(({ logLine }) => logLine(i18n("state.app.5ac30ce1e9bb", { value: String(String(firstErr).slice(0, 120)) })))
           .catch(() => undefined);
         try {
           const second = await clients.login(username, password, { remember });
@@ -412,7 +415,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logout,
       dismissError: () => setError(null),
     }),
-    [status, user, page, navParams, error, twoFactor, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
+    [uiLocale, status, user, page, navParams, error, twoFactor, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

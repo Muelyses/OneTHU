@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 云同步状态层 —— 清华邮箱 CalDAV 日程（M2/M3 地基）。
  *
@@ -51,7 +52,7 @@ function enqueue<T>(fn: () => Promise<T>): Promise<T> {
   return result;
 }
 function assertAccount(epoch: number): void {
-  if (epoch !== accountEpoch) throw new Error("云同步账号已变更，请重试当前操作");
+  if (epoch !== accountEpoch) throw new Error(i18n("state.cloudcal.5a6208164ba7"));
 }
 const accountKey = (email: string): string => email.trim().toLowerCase();
 const configListeners = new Set<() => void>();
@@ -118,9 +119,9 @@ export async function ensureCloudCalCredentialsLoaded(): Promise<void> {
     let restored: CloudCalConfig | null = null;
     if (raw !== null) {
       const stored = JSON.parse(raw) as { email?: unknown; secret?: unknown } | null;
-      if (!stored || typeof stored.email !== "string" || !stored.email.trim() || typeof stored.secret !== "string" || !stored.secret) throw new Error("邮箱连接配置损坏，请重新配置");
+      if (!stored || typeof stored.email !== "string" || !stored.email.trim() || typeof stored.secret !== "string" || !stored.secret) throw new Error(i18n("state.cloudcal.6d9090d5290b"));
       const authCode = deobfuscateSecret(stored.secret, stored.email);
-      if (!authCode) throw new Error("邮箱连接配置无法读取，请重新配置");
+      if (!authCode) throw new Error(i18n("state.cloudcal.5b53abc907c9"));
       restored = { email: stored.email, authCode };
     }
     cfg = restored;
@@ -142,8 +143,8 @@ async function ensureLoaded(): Promise<void> {
     const [cacheRaw, localRaw] = await Promise.all([fileRead(CACHE_FILE), fileRead(LOCAL_FILE)]);
     const cache = cacheRaw ? JSON.parse(cacheRaw) as Partial<CacheShape> : null;
     const local = localRaw ? JSON.parse(localRaw) as { events?: caldav.IcsEvent[] } : null;
-    if (cache && !Array.isArray(cache.events)) throw new Error("云日历缓存损坏，未覆盖已有日程");
-    if (local && !Array.isArray(local.events)) throw new Error("本地日程存档损坏，未覆盖已有日程");
+    if (cache && !Array.isArray(cache.events)) throw new Error(i18n("state.cloudcal.fe20ed20d492"));
+    if (local && !Array.isArray(local.events)) throw new Error(i18n("state.cloudcal.33de4f649f2f"));
     assertAccount(epoch);
     // 旧无账号缓存不可证明归属，重新同步；本地日程独立保留。
     const matched = cfg && cache?.email && accountKey(cache.email) === accountKey(cfg.email);
@@ -156,7 +157,7 @@ async function ensureLoaded(): Promise<void> {
     if (cloudEvents.length || localEvents.length) emitChange();
   })();
   try { await loadPromise; }
-  catch (error) { lastError = "日历存档读取失败，请重试"; emit(); throw error; }
+  catch (error) { lastError = i18n("state.cloudcal.6b8367664e76"); emit(); throw error; }
   finally { loadPromise = null; }
 }
 
@@ -229,7 +230,7 @@ function makeClient(): CalDavClient | null {
 export async function configureCloudCal(email: string, authCode: string): Promise<string[]> {
   const intent = ++configIntent;
   const next = { email: email.trim(), authCode: authCode.trim() };
-  if (!next.email || !next.authCode) throw new Error("请填写邮箱和授权码");
+  if (!next.email || !next.authCode) throw new Error(i18n("state.cloudcal.5e7a239fbc21"));
   const probe = new CalDavClient(universalFetch, next);
   const names = (await probe.testConnection()).calendars;
   await commitCredentials(next, intent);
@@ -243,7 +244,7 @@ export async function disconnectCloudCal(): Promise<void> {
 /** 显式恢复入口只替换凭据；日历坏文件保留，仍须通过内容就绪检查。 */
 async function commitCredentials(next: CloudCalConfig | null, intent: number): Promise<void> {
   const pending = credentialWriteTail.then(async () => {
-    if (intent !== configIntent) throw new Error("云同步配置已变更，本次验证结果未应用");
+    if (intent !== configIntent) throw new Error(i18n("state.cloudcal.f3f8e2d173eb"));
     // 不等待远端扫描，也不预先发布“已连接”；写失败保留原连接状态。
     await persistCredentials(next);
     const changed = !next || !cfg || accountKey(cfg.email) !== accountKey(next.email);
@@ -277,7 +278,7 @@ async function readCloud(client: CalDavClient, epoch: number): Promise<SyncResul
     else {
       const ics = await client.getIcs(meta.href);
       assertAccount(epoch);
-      if (!/BEGIN:VCALENDAR/i.test(ics) || !/END:VCALENDAR/i.test(ics)) throw new Error("服务器返回了无效日历，已保留本地镜像");
+      if (!/BEGIN:VCALENDAR/i.test(ics) || !/END:VCALENDAR/i.test(ics)) throw new Error(i18n("state.cloudcal.72574f41faea"));
       next.push(...caldav.parseIcs(ics).map(ev => ({ ...ev, href: meta.href, etag: meta.etag })));
       if (old) updated++; else added++;
     }
@@ -298,7 +299,7 @@ export async function syncCloudCal(): Promise<SyncResult> {
   await ensureLoaded();
   const epoch = accountEpoch;
   const client = makeClient();
-  if (!client) throw new Error("未配置云同步");
+  if (!client) throw new Error(i18n("state.cloudcal.253f54401fa7"));
   if (syncFlight?.epoch === epoch) return syncFlight.promise;
   const promise = enqueue(async () => {
     assertAccount(epoch); syncing = true; lastError = null; emit();
@@ -313,10 +314,10 @@ export async function syncCloudCal(): Promise<SyncResult> {
 async function writeCloud(ev: caldav.IcsEvent, epoch: number): Promise<void> {
   assertAccount(epoch);
   const client = makeClient();
-  if (!client) throw new Error("未配置云同步");
+  if (!client) throw new Error(i18n("state.cloudcal.253f54401fa7"));
   const previous = cloudEvents.find(e => e.uid === ev.uid && e.recurrenceId === ev.recurrenceId);
   const resource = previous?.href ? cloudEvents.filter(e => e.href === previous.href) : [];
-  if (previous && !previous.etag) throw new Error("日程版本信息缺失，请先同步再编辑");
+  if (previous && !previous.etag) throw new Error(i18n("state.cloudcal.812d9e62ba2d"));
   const merged = { ...previous, ...ev };
   const content = resource.length ? resource.map(e => e === previous ? merged : e) : [merged];
   const meta = await client.putIcs(ev.uid, caldav.serializeCalendar(content), previous
@@ -330,10 +331,10 @@ async function writeCloud(ev: caldav.IcsEvent, epoch: number): Promise<void> {
 async function removeCloud(uid: string, epoch: number, expectedEtag?: string): Promise<void> {
   assertAccount(epoch);
   const client = makeClient();
-  if (!client) throw new Error("未配置云同步");
+  if (!client) throw new Error(i18n("state.cloudcal.253f54401fa7"));
   const target = cloudEvents.find(e => e.uid === uid);
-  if (!target) throw new Error("未找到日程，请先同步后再删除");
-  if (!target.href || !target.etag) throw new Error("日程版本信息缺失，请先同步再删除");
+  if (!target) throw new Error(i18n("state.cloudcal.bd5ff99826df"));
+  if (!target.href || !target.etag) throw new Error(i18n("state.cloudcal.fc42ba627dce"));
   await client.deleteEvent(target.href, expectedEtag || target.etag);
   assertAccount(epoch);
   const next = cloudEvents.filter(e => e.href !== target.href);
@@ -370,7 +371,7 @@ export async function saveCalendarEvent(ev: caldav.IcsEvent, options: { cloud: b
     const source = (options.originalCloud ? cloudEvents : localEvents).find(e => e.uid === ev.uid && e.recurrenceId === ev.recurrenceId);
     const merged = { ...source, ...ev };
     if (options.originalCloud !== undefined && options.originalCloud !== options.cloud && (source?.rrule || source?.recurrenceId !== undefined || (options.originalCloud ? cloudEvents : localEvents).filter(e => e.uid === ev.uid).length > 1)) {
-      throw new Error("重复日程请先导出完整系列，不能只移动单个实例");
+      throw new Error(i18n("state.cloudcal.6600b7092f4c"));
     }
     if (options.cloud) await writeCloud(merged, epoch);
     else { const { href: _href, etag: _etag, ...local } = merged; await writeLocal([...localEvents.filter(e => e.uid !== ev.uid || e.recurrenceId !== ev.recurrenceId), local]); }
@@ -378,7 +379,7 @@ export async function saveCalendarEvent(ev: caldav.IcsEvent, options: { cloud: b
     try {
       if (options.originalCloud) await removeCloud(ev.uid, epoch, ev.etag || source?.etag);
       else await writeLocal(localEvents.filter(e => e.uid !== ev.uid));
-    } catch { throw new Error("新位置已保存，原位置清理失败，两侧日程均保留；请同步后再清理重复项"); }
+    } catch { throw new Error(i18n("state.cloudcal.892291a664b5")); }
   }));
 }
 
@@ -454,7 +455,7 @@ function validDate(date: string | undefined): date is string {
   return Number.isFinite(ms) && new Date(ms).toISOString().slice(0, 10) === date;
 }
 function semesterRange(semester: { firstDay: string; weekCount: number }): { start: string; end: string } {
-  if (!validDate(semester.firstDay) || !Number.isInteger(semester.weekCount) || semester.weekCount < 1 || semester.weekCount > 60) throw new Error("学期信息无效");
+  if (!validDate(semester.firstDay) || !Number.isInteger(semester.weekCount) || semester.weekCount < 1 || semester.weekCount > 60) throw new Error(i18n("state.cloudcal.e2f9152c9203"));
   const end = Date.parse(`${semester.firstDay}T00:00:00Z`) + (semester.weekCount * 7 - 1) * 86_400_000;
   return { start: semester.firstDay, end: new Date(end).toISOString().slice(0, 10) };
 }
@@ -509,10 +510,10 @@ export async function exportSemesterToCloud(
   return enqueue(() => withBatch(async () => {
     assertAccount(epoch);
     const client = makeClient();
-    if (!client) throw new Error("未配置云同步");
+    if (!client) throw new Error(i18n("state.cloudcal.253f54401fa7"));
     const { events, skipped } = await buildSemesterEvents(semester, fetchSchedule);
     // 部分/损坏的源数据不能被当成完整学期去删除远端课程。
-    if (skipped) throw new Error("课表含无法识别的场次，未修改云日历");
+    if (skipped) throw new Error(i18n("state.cloudcal.8120a4a0177c"));
     await readCloud(client, epoch);
     const stale = cloudEvents.filter(e => (e.onethuSource === "course" || e.onethuSource === "exam") && !events.some(w => w.uid === e.uid));
     let written = 0, removed = 0;
@@ -579,7 +580,7 @@ export async function syncSemesterToCloudAuto(): Promise<{ written: number; remo
     const entries = await info.getSchedule(range.start, range.end);
     assertAccount(epoch);
     const { events, skipped } = await buildSemesterEvents(sem, async () => entries);
-    if (skipped) throw new Error("课表含无法识别的场次，未修改云日历");
+    if (skipped) throw new Error(i18n("state.cloudcal.8120a4a0177c"));
     await syncCloudCal();
     assertAccount(epoch);
     // 标题、地点、结束时刻变动也必须更新。

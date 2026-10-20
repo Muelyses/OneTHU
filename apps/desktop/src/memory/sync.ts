@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OH 记忆云盘同步（OH-Memory 资料库）。
  *
@@ -45,7 +46,7 @@ export async function ensureMemoryRepo(): Promise<string | null> {
     const repos2 = await invoke<Array<{ id: string; name: string }>>("seafile_repos", { token: tk });
     repo = repos2.find((r) => r.name === REPO_NAME);
   }
-  if (!repo) throw new Error("OH-Memory 资料库建立失败（云盘侧未出现）");
+  if (!repo) throw new Error(i18n("memory.sync.9f1773200fb8"));
   localStorage.setItem(REPO_KEY, repo.id);
   void logLine(`[MEMORY] 云盘记忆库就绪：《${repo.name}》(${repo.id.slice(0, 8)}…)`).catch(() => undefined);
   return repo.id;

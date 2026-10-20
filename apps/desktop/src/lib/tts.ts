@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 原生语音合成（TTS）客户端 —— 需求 4「她合成的话要不要念出来」的前端唯一入口。
  *
@@ -147,7 +148,7 @@ async function invokeSpeak(clean: string, opts: SpeakOptions): Promise<void> {
 /** 开始朗读（失败 reject 带原因；"未开始" 也当失败，调用方好解释） */
 export async function ttsSpeak(text: string, opts: SpeakOptions = {}): Promise<void> {
   const clean = plainForSpeech(text);
-  if (!clean) throw new Error("空文本");
+  if (!clean) throw new Error(i18n("lib.tts.98f963cb664a"));
   await invokeSpeak(clean, opts);
 }
 
@@ -238,11 +239,11 @@ export function previewSpeak(text: string, opts: SpeakOptions = {}): Promise<boo
  */
 export function plainForSpeech(text: string, max = MAX_SPEAK_CHARS): string {
   let s = typeof text === "string" ? text : "";
-  s = s.replace(/```[\s\S]*?```/g, " （代码略） ");
+  s = s.replace(/```[\s\S]*?```/g, () => i18n("lib.tts.56b01b7faa9d"));
   s = s.replace(/`([^`]*)`/g, "$1");
   s = s.replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1");
   s = s.replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
-  s = s.replace(/https?:\/\/[^\s，。；）)]+/g, "链接");
+  s = s.replace(/https?:\/\/[^\s，。；）)]+/g, () => i18n("lib.tts.305378ddd2b8"));
   s = s.replace(/^[ \t]{0,3}(#{1,6}|>|[-*+]|\d+[.)])[ \t]+/gm, ""); // 行首标记
   s = s.replace(/^\s*([-*_]\s*){3,}$/gm, ""); // 分隔线
   s = s.replace(/[*_~]{1,3}/g, ""); // 强调/删除线符号
@@ -254,7 +255,7 @@ export function plainForSpeech(text: string, max = MAX_SPEAK_CHARS): string {
       head.lastIndexOf("。"), head.lastIndexOf("！"), head.lastIndexOf("？"),
       head.lastIndexOf("\n"), head.lastIndexOf("；"),
     );
-    s = (cut > max * 0.5 ? head.slice(0, cut + 1) : head) + "……（内容较长，剩下的看屏幕吧）";
+    s = (cut > max * 0.5 ? head.slice(0, cut + 1) : head) + i18n("lib.tts.c031b065a3a3");
   }
   return s;
 }
@@ -262,7 +263,7 @@ export function plainForSpeech(text: string, max = MAX_SPEAK_CHARS): string {
 /** ROM 引擎报的音色名 → 用户看得懂的短标签（如 zh-cn-x-ccc-network → CCC） */
 export function prettyVoiceName(name: string): string {
   const n = (name || "").trim();
-  if (!n) return "引擎默认音色";
+  if (!n) return i18n("lib.tts.9138d2ecd64e");
   const m = /(?:^|-)([a-z]{3})(?:-|$)/i.exec(n.split("-x-")[1] ?? "");
   if (n.includes("-x-") && m?.[1]) return m[1].toUpperCase();
   return n;

@@ -3,6 +3,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
+import './ts-resolve-register.mjs';
+const i18n = await import('../apps/desktop/src/i18n/index.ts');
 let checks = 0;
 const check = (v, name) => { assert.ok(v, name); checks++; };
 const eq = (a, b, name) => { assert.deepEqual(a, b, name); checks++; };
@@ -50,6 +52,7 @@ async function fixture({ files = new Map(), readGate } = {}) {
     throw new Error(`unexpected fake DAV request: ${method}`);
   };
   const deps = {
+    '../i18n/index.js': i18n,
     react: { useEffect() {}, useState() {} },
     '@onethu/core': { CalDavClient, caldav: ics },
     '../lib/transport.js': { universalFetch: fetch },

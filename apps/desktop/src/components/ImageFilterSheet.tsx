@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, Chip, Inline, Row, Sheet, Stack, Surface, Text } from "@onethu/gui";
 /**
  * 图片滤镜编辑（需求 8）：预设缩略图横排 + 旋转 + 应用/取消。
@@ -50,20 +51,22 @@ export interface ImageFilterSheetProps {
 const ROTATIONS: RotationDeg[] = [0, 90, 180, 270];
 
 function msgOf(e: unknown): string {
-  return e instanceof Error && e.message ? e.message : "这一步没做完，请重试";
+  return e instanceof Error && e.message ? e.message : i18n("components.imagefiltersheet.90a4851cb62d");
 }
 
 function outputName(base: string | undefined, preset: FilterPreset, rotate: RotationDeg, mime: string): string {
-  const raw = (base || "图片").replace(/\.[^.]*$/, "");
+  const raw = (base || i18n("components.imagefiltersheet.d24c10d37db0")).replace(/\.[^.]*$/, "");
   const suffix = `${preset === "original" ? "" : `-${preset}`}${rotate ? `-r${rotate}` : ""}`;
   return `${raw}${suffix}.${extForMime(mime)}`;
 }
 
 
 export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
+  const uiLocale = useUiLocale();
+
   const {
     src, fileName, onApply, onCancel, maxEdge = MAX_EDGE, mime = "image/jpeg", quality = 0.88,
-    title = "编辑图片",
+    title = i18n("components.imagefiltersheet.9393fa8872d2"),
   } = props;
   const [preset, setPreset] = useState<FilterPreset>("original");
   const [rotate, setRotate] = useState<RotationDeg>(0);
@@ -158,10 +161,10 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
   const note = err
     ? err
     : !loaded
-      ? "正在读取图片…"
+      ? i18n("components.imagefiltersheet.0ecc16e7fa2c")
       : busy
-        ? "正在生成，请稍候…"
-        : `${info?.hint ?? ""}${rotate ? ` · 已旋转 ${rotate}°` : ""}${dirty ? "" : " · 未改动"}`;
+        ? i18n("components.imagefiltersheet.5217984b59e5")
+        : `${info?.hint ?? ""}${rotate ? i18n("components.imagefiltersheet.fc1f2c7428d8", { rotate: String(rotate) }) : ""}${dirty ? "" : i18n("components.imagefiltersheet.e6a608674c0f")}`;
 
   if (typeof document === "undefined") return null;
 
@@ -176,10 +179,10 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
     >
       <Stack gap={3}>
         <Surface level={2} radius="md" pad="sm" className="ohf-stage">
-          {preview ? <img src={preview} alt="处理后的预览" /> : <Text slot="label" tone="faint">读取中…</Text>}
+          {preview ? <img src={preview} alt={i18n("components.imagefiltersheet.2e603f5665a4")} /> : <Text slot="label" tone="faint">{i18n("components.imagefiltersheet.346ff60e6c7c")}</Text>}
         </Surface>
 
-        <div role="group" aria-label="滤镜预设">
+        <div role="group" aria-label={i18n("components.imagefiltersheet.e4fe3a04ff89")}>
         <Inline gap={2} wrap>
           {thumbs.map((t) => {
             const meta = FILTER_PRESETS.find((f) => f.id === t.id);
@@ -198,14 +201,14 @@ export function ImageFilterSheet(props: ImageFilterSheetProps): ReactNode {
         </div>
 
         <Row
-          leading={<Btn variant="outline" size="sm" onClick={() => setRotate((r) => ROTATIONS[(ROTATIONS.indexOf(r) + 1) % ROTATIONS.length] ?? 0)}>旋转 90°</Btn>}
+          leading={<Btn variant="outline" size="sm" onClick={() => setRotate((r) => ROTATIONS[(ROTATIONS.indexOf(r) + 1) % ROTATIONS.length] ?? 0)}>{i18n("components.imagefiltersheet.1a9d08f722bd")}</Btn>}
           title={<Text slot="label" tone="faint">{note}</Text>}
         />
       </Stack>
 
       <Inline gap={2} justify="end" className="ohf-foot">
-        <Btn variant="outline" onClick={onCancel} disabled={busy}>取消</Btn>
-        <Btn variant="solid" tone="brand" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>{busy ? "处理中…" : "应用"}</Btn>
+        <Btn variant="outline" onClick={onCancel} disabled={busy}>{i18n("components.imagefiltersheet.2cd0f3be8738")}</Btn>
+        <Btn variant="solid" tone="brand" onClick={() => void doApply()} disabled={!loaded || busy || !!err}>{busy ? i18n("components.imagefiltersheet.d3d21191f32e") : i18n("components.imagefiltersheet.63c73c4730f4")}</Btn>
       </Inline>
     </Sheet>,
     document.body,

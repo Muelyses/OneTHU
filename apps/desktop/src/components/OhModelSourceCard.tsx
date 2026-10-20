@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 小 OH 模型源卡片（设置里通用，完整/极简/实用模式共用）：
  *  - 选择模型源：学校 MadModel 免费档 / 自己的 API；
@@ -20,13 +21,15 @@ function patchHarnessSettings(patch: Record<string, unknown>): void {
 
 function expireText(token: string): string {
   const exp = jwtExpiresAt(token);
-  if (!exp) return "有效期未知（以服务端为准）";
-  if (exp <= Date.now()) return "已过期 · 点一键续签";
+  if (!exp) return i18n("components.ohmodelsourcecard.2a0bbb86011e");
+  if (exp <= Date.now()) return i18n("components.ohmodelsourcecard.d11b082f9ce4");
   const h = Math.max(1, Math.round((exp - Date.now()) / 3600_000));
-  return h >= 24 ? `约 ${Math.floor(h / 24)} 天有效` : `约 ${h} 小时有效`;
+  return h >= 24 ? i18n("components.ohmodelsourcecard.68ec985f4e52", { value: String(Math.floor(h / 24)) }) : i18n("components.ohmodelsourcecard.904cae8267a3", { h: String(h) });
 }
 
 export function OhModelSourceCard(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [, force] = useState(0);
   useEffect(() => subscribe(() => force((v) => v + 1)), []);
   /* 插件设置是可变单例：订阅 registry 变化后直接读，不用对象快照（快照每次新对象会死循环）。 */
@@ -42,10 +45,10 @@ export function OhModelSourceCard(): ReactNode {
     void ensureMadModelToken(true)
       .then(() => {
         force((v) => v + 1);
-        showToast("学校登录状态已更新");
+        showToast(i18nMsg("components.ohmodelsourcecard.2c8fd279faba"));
       })
       .catch((e) => {
-        showToast(`续签失败：${e instanceof Error ? e.message : String(e)}（可改用自己的 API）`);
+        showToast(i18nMsg("components.ohmodelsourcecard.d58d1914534e", { value: String(e instanceof Error ? e.message : String(e)) }));
       })
       .finally(() => setBusy(false));
   }, []);
@@ -55,31 +58,31 @@ export function OhModelSourceCard(): ReactNode {
       <Stack gap={3}>
         <Inline gap={2} wrap justify="between">
           <Stack gap={1}>
-            <Text slot="title">小 OH · 模型源</Text>
+            <Text slot="title">{i18n("components.ohmodelsourcecard.f3230e3c122f")}</Text>
             <Text slot="micro" tone="faint">
-              {isMad ? `当前：学校 MadModel 免费档 · ${model}` : `当前：自己的 API · ${model || "未填模型"}`}
+              {isMad ? i18n("components.ohmodelsourcecard.760af7198e4d", { model: String(model) }) : i18n("components.ohmodelsourcecard.54e8c9587c83", { value: String(model || i18n("components.ohmodelsourcecard.a0e70984b929")) })}
             </Text>
           </Stack>
           {isMad ? (
-            <Btn variant="solid" tone="brand" disabled={busy} onClick={renew}>{busy ? "续签中…" : "一键续签"}</Btn>
+            <Btn variant="solid" tone="brand" disabled={busy} onClick={renew}>{busy ? i18n("components.ohmodelsourcecard.35843c4cc623") : i18n("components.ohmodelsourcecard.a2b21883b5f3")}</Btn>
           ) : (
-            <Btn variant="ghost" onClick={() => patchHarnessSettings({ provider: "madmodel" })}>改用学校 MadModel</Btn>
+            <Btn variant="ghost" onClick={() => patchHarnessSettings({ provider: "madmodel" })}>{i18n("components.ohmodelsourcecard.621e4cb3a245")}</Btn>
           )}
         </Inline>
         <Segment
           value={isMad ? "madmodel" : "custom"}
           onChange={(v) => patchHarnessSettings({ provider: v })}
           options={[
-            { value: "madmodel", label: "学校 MadModel（免费）" },
-            { value: "custom", label: "自己的 API" },
+            { value: "madmodel", label: i18n("components.ohmodelsourcecard.23f0474b0502") },
+            { value: "custom", label: i18n("components.ohmodelsourcecard.ef1b0e23a0a5") },
           ]}
         />
         <Text slot="micro" tone="faint">
           {isMad
-            ? `${expireText(token)}。请求限流时请稍后重试。`
+            ? i18n("components.ohmodelsourcecard.7d44e665e640", { value: String(expireText(token)) })
             : apiKey
-              ? `已配置 API Key；地址与模型在下方「小 OH · 自己的 API」里调整。`
-              : "自己的 API 的地址、Key 与模型在下方「小 OH · 自己的 API」里填写。"}
+              ? i18n("components.ohmodelsourcecard.279475c2940d")
+              : i18n("components.ohmodelsourcecard.b5ad43409b01")}
         </Text>
       </Stack>
     </Card>

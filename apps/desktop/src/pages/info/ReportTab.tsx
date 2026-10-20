@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 成绩页 —— getReport（thu-info-lib basics.ts getReport 同源解析）。
  * 学期分组表格 + 学期/学年/全部加权平均分统计（P 等非数字绩点不计入统计）。
@@ -32,30 +33,32 @@ function gradeClass(grade: string): string {
 }
 
 export function ReportTab() {
+  const uiLocale = useUiLocale();
+
   const { data, state, error, reload } = useReport();
 
   const groups = useMemo(() => {
     if (!data) return [];
     const bySemester = new Map<string, ReportRow[]>();
     for (const row of data) {
-      const key = row.semester || "未知学期";
+      const key = row.semester || i18n("pages.info.reporttab.c58ec2570388");
       const list = bySemester.get(key);
       if (list) list.push(row);
       else bySemester.set(key, [row]);
     }
     // 学期倒序（最新在前）：semester 形如 "2024-2025秋"，字符串序即时间序
     return [...bySemester.entries()].sort((a, b) => b[0].localeCompare(a[0]));
-  }, [data]);
+  }, [uiLocale, data]);
 
-  const overall = useMemo(() => (data ? weightedAverage(data) : null), [data]);
+  const overall = useMemo(() => (data ? weightedAverage(data) : null), [uiLocale, data]);
   const totalCredits = useMemo(
     () =>
       (data ?? [])
         .filter((r) => Number.isFinite(r.credit))
         .reduce((sum, r) => sum + r.credit, 0),
-    [data],
+    [uiLocale, data],
   );
-  const latestAvg = useMemo(() => (groups.length > 0 ? weightedAverage(groups[0]?.[1] ?? []) : null), [groups]);
+  const latestAvg = useMemo(() => (groups.length > 0 ? weightedAverage(groups[0]?.[1] ?? []) : null), [uiLocale, groups]);
 
   const yearStats = useMemo(() => {
     const byYear = new Map<string, ReportRow[]>();
@@ -66,7 +69,7 @@ export function ReportTab() {
       else byYear.set(year, [row]);
     }
     return [...byYear.entries()].sort((a, b) => b[0].localeCompare(a[0]));
-  }, [data]);
+  }, [uiLocale, data]);
 
   return (
     <>
@@ -77,7 +80,7 @@ export function ReportTab() {
           </span>
           <div>
             <div className="stat-num">{state === "loading" && !data ? "–" : (data?.length ?? 0)}</div>
-            <div className="stat-label">已修课程</div>
+            <div className="stat-label">{i18n("pages.info.reporttab.dc6c9f070ee1")}</div>
           </div>
         </Card>
         <Card className="stat-card">
@@ -86,7 +89,7 @@ export function ReportTab() {
           </span>
           <div>
             <div className="stat-num">{totalCredits ? totalCredits.toFixed(1) : "–"}</div>
-            <div className="stat-label">总学分</div>
+            <div className="stat-label">{i18n("pages.info.reporttab.e842a5dff916")}</div>
           </div>
         </Card>
         <Card className="stat-card">
@@ -95,7 +98,7 @@ export function ReportTab() {
           </span>
           <div>
             <div className="stat-num">{overall === null ? "–" : overall.toFixed(3)}</div>
-            <div className="stat-label">全部学年加权</div>
+            <div className="stat-label">{i18n("pages.info.reporttab.499dfff8b69c")}</div>
           </div>
         </Card>
         <Card className="stat-card">
@@ -104,7 +107,7 @@ export function ReportTab() {
           </span>
           <div>
             <div className="stat-num">{latestAvg === null ? "–" : latestAvg.toFixed(3)}</div>
-            <div className="stat-label">最新学期（{groups[0]?.[0] ?? "–"}）</div>
+            <div className="stat-label">{i18nRich("pages.info.reporttab.cdf6c06897e6", { value: groups[0]?.[0] ?? "–" })}</div>
           </div>
         </Card>
       </div>
@@ -115,7 +118,7 @@ export function ReportTab() {
         <SkeletonRows rows={6} />
       ) : (data?.length ?? 0) === 0 ? (
         <Card>
-          <Empty text="暂无成绩记录。" />
+          <Empty text={i18n("pages.info.reporttab.96b26224eb33")} />
         </Card>
       ) : (
         <>
@@ -125,16 +128,16 @@ export function ReportTab() {
               <div key={semester} style={{ marginBottom: 18 }}>
                 <SectionHead
                   title={semester}
-                  aside={`加权平均 ${avg === null ? "–" : avg.toFixed(3)} · ${rows.length} 门`}
+                  aside={i18n("pages.info.reporttab.8763e1ee9a80", { value: String(avg === null ? "–" : avg.toFixed(3)), length: String(rows.length) })}
                 />
                 <Card style={{ padding: 0, overflow: "hidden" }}>
                   <table className="data-table">
                     <thead>
                       <tr>
-                        <th>课程</th>
-                        <th className="num">学分</th>
-                        <th className="num">等级</th>
-                        <th className="num">绩点</th>
+                        <th>{i18n("pages.info.reporttab.60db1afb4022")}</th>
+                        <th className="num">{i18n("pages.info.reporttab.f9d072c4804c")}</th>
+                        <th className="num">{i18n("pages.info.reporttab.337717173807")}</th>
+                        <th className="num">{i18n("pages.info.reporttab.6a678f86c93a")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -153,15 +156,15 @@ export function ReportTab() {
             );
           })}
 
-          <SectionHead title="学年汇总" aside="按学分加权（不计 P/EXE 等非绩点课程）" />
+          <SectionHead title={i18n("pages.info.reporttab.b16415ce0520")} aside={i18n("pages.info.reporttab.f8085fddfe0a")} />
           <Card style={{ padding: 0, overflow: "hidden" }}>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>学年</th>
-                  <th className="num">课程</th>
-                  <th className="num">学分</th>
-                  <th className="num">加权平均分</th>
+                  <th>{i18n("pages.info.reporttab.61fd2cb63d18")}</th>
+                  <th className="num">{i18n("pages.info.reporttab.60db1afb4022")}</th>
+                  <th className="num">{i18n("pages.info.reporttab.f9d072c4804c")}</th>
+                  <th className="num">{i18n("pages.info.reporttab.392d02e60ed7")}</th>
                 </tr>
               </thead>
               <tbody>

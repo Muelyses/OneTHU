@@ -1,0 +1,1509 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.schedule.31da7d33b80d",
+      "source": "下一周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1063,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.31da7d33b80d\") : i18n(\"pages.schedule.3e0b634699d4\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1063,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.31da7d33b80d\") : i18n(\"pages.schedule.3e0b634699d4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.32eb57893bcb",
+      "source": "没有地点，无法寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1231,
+          "context": "d.location ? i18n(\"pages.schedule.741addee8c05\", { location: String(d.location) }) : i18n(\"pages.schedule.32eb57893bcb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.368cc0699764",
+      "source": "{courseName}（{value}）DDL {value2}–{value3} · {value4} · {value5} · 点击查看",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseName",
+          "expression": "String(p.entry.courseName)"
+        },
+        {
+          "name": "value",
+          "expression": "String(p.entry.location ?? \"\")"
+        },
+        {
+          "name": "value2",
+          "expression": "String(hhmm(p.beginMin))"
+        },
+        {
+          "name": "value3",
+          "expression": "String(hhmm(p.endMin))"
+        },
+        {
+          "name": "value4",
+          "expression": "String(p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\"))"
+        },
+        {
+          "name": "value5",
+          "expression": "String(p.entry.hwMeta?.ext ? p.entry.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\") : i18n(\"pages.schedule.aa39cac2b409\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 991,
+          "context": "p.entry.src === \"hw\"\n                            ? i18n(\"pages.schedule.368cc0699764\", { courseName: String(p.entry.courseName), value: String(p.entry.location ?? \"\"), value2: String(hhmm(p.beginMin)), value3: String(hhmm(p.endMin)), value4: String(p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")), value5: String(p.entry.hwMeta?.ext ? p.entry.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\") : i18n(\"pages.schedule.aa39cac2b409\")) })\n                            : `${p.entry.courseName}${p.entry.teacher ? \" · \" + p.entry.teacher : \"\"}${\n                                p.entry.location ? \" @\" + p.entry.location : \"\"\n                       "
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.3a4fe1c0f0d6",
+      "source": "第 {startSection}–{value} 节",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "startSection",
+          "expression": "String(d.startSection)"
+        },
+        {
+          "name": "value",
+          "expression": "String(d.endSection ?? d.startSection)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1218,
+          "context": "d.startSection ? i18n(\"pages.schedule.3a4fe1c0f0d6\", { startSection: String(d.startSection), value: String(d.endSection ?? d.startSection) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.3c3687e79a53",
+      "source": "假期（学期外）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1068,
+          "context": "detected ? i18n(\"pages.schedule.dba0129db99f\", { value: String(detected.sem.semesterName || detected.sem.semesterId), weekNo: String(detected.weekNo) }) : i18n(\"pages.schedule.3c3687e79a53\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.3df7a207af75",
+      "source": "这是重复日程，保存和删除会作用于整个系列。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1331,
+          "context": "{i18n(\"pages.schedule.3df7a207af75\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.3e0b634699d4",
+      "source": "下个月",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1063,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.31da7d33b80d\") : i18n(\"pages.schedule.3e0b634699d4\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1063,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.31da7d33b80d\") : i18n(\"pages.schedule.3e0b634699d4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1234,
+          "context": "{i18n(\"pages.schedule.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.43cecd06c54d",
+      "source": "上一年",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1074,
+          "context": "{i18n(\"pages.schedule.43cecd06c54d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.46005f62ee0e",
+      "source": "时间轴（周）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1113,
+          "context": "[\"timetable\", i18n(\"pages.schedule.46005f62ee0e\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.48cbf2cb0bd7",
+      "source": "正在从教务系统取数…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 933,
+          "context": "winLoading ? i18n(\"pages.schedule.48cbf2cb0bd7\") : i18n(\"pages.schedule.310a9aa08211\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.4d103a2b0e94",
+      "source": "同步失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 692,
+          "context": "setMsg(i18n(\"pages.schedule.4d103a2b0e94\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.4de047cb8209",
+      "source": "周切换 / 筛选 / 同步 / 新建日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1037,
+          "context": "{i18n(\"pages.schedule.4de047cb8209\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.4e2238b74ec7",
+      "source": "同步中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1172,
+          "context": "cal.syncing ? i18n(\"pages.schedule.4e2238b74ec7\") : i18n(\"pages.schedule.07c9a15ad13f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.4f8a1b346d71",
+      "source": "课程与考试来自教务系统数据，不能在此修改；自建日程点击即可编辑。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1298,
+          "context": "isHw\n                    ? i18n(\"pages.schedule.70af7a03daec\", { value: String(simple ? \"\" : i18n(\"pages.schedule.efa33939d466\")) })\n                    : i18n(\"pages.schedule.4f8a1b346d71\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.4f9f7bd42e5d",
+      "source": "云同步未配置（设置页开启）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1166,
+          "context": "canCloud ? `${cal.email} · ${lastSyncText}` : i18n(\"pages.schedule.4f9f7bd42e5d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.5090d53a1cce",
+      "source": "新建日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1315,
+          "context": "sd.uid ? i18n(\"pages.schedule.a3064785f1db\") : i18n(\"pages.schedule.5090d53a1cce\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.51fdbeb883e5",
+      "source": "上次同步 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(new Date(cal.lastSyncAt).toLocaleTimeString(\"zh-CN\", { hour: \"2-digit\", minute: \"2-digit\" }))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 684,
+          "context": "cal.lastSyncAt ? i18n(\"pages.schedule.51fdbeb883e5\", { value: String(new Date(cal.lastSyncAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" })) }) : i18n(\"pages.schedule.e6618e00221b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.537352400c49",
+      "source": "可选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1363,
+          "context": "{i18n(\"pages.schedule.537352400c49\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1366,
+          "context": "{i18n(\"pages.schedule.537352400c49\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.572388f3b096",
+      "source": "周五",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.58dcda214bad",
+      "source": "上一月",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1075,
+          "context": "{i18n(\"pages.schedule.58dcda214bad\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.5e6a5170f6ac",
+      "source": "＋ 添加日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1189,
+          "context": "{i18n(\"pages.schedule.5e6a5170f6ac\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.5e9a401745fa",
+      "source": "本周课程取数失败（日程仍显示）：{winError}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "winError",
+          "expression": "String(winError)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 862,
+          "context": "{i18n(\"pages.schedule.5e9a401745fa\", { winError: String(winError) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.5e9e9ab95a7b",
+      "source": "删除失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 801,
+          "context": "setMsg(i18n(\"pages.schedule.5e9e9ab95a7b\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.60458dfb4c14",
+      "source": "寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1231,
+          "context": "{i18n(\"pages.schedule.60458dfb4c14\")}"
+        }
+      ],
+      "translation": "Trace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 848,
+          "context": "newTab(\"learn\", null, i18n(\"pages.schedule.60db1afb4022\"))"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 981,
+          "context": "p.entry.src === \"hw\" ? i18n(\"pages.schedule.9b702fb32d62\") : i18n(\"pages.schedule.60db1afb4022\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1275,
+          "context": "k: i18n(\"pages.schedule.60db1afb4022\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.62502d2d618b",
+      "source": "{courseName}（{value}–{value2}）：{value3} · 点击展开",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseName",
+          "expression": "String(p.entry.courseName)"
+        },
+        {
+          "name": "value",
+          "expression": "String(hhmm(p.beginMin))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(hhmm(p.endMin))"
+        },
+        {
+          "name": "value3",
+          "expression": "String(p.entry.clusterItems?.map((m) => `${m.courseName}${m.location ? \"@\" + m.location : \"\"}`).join(\"；\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 989,
+          "context": "p.entry.src === \"cluster\"\n                          ? i18n(\"pages.schedule.62502d2d618b\", { courseName: String(p.entry.courseName), value: String(hhmm(p.beginMin)), value2: String(hhmm(p.endMin)), value3: String(p.entry.clusterItems?.map((m) => `${m.courseName}${m.location ? \"@\" + m.location : \"\"}`).join(\"；\")) })\n                          : p.entry.src === \"hw\"\n                            ? i18n(\"pages.schedule.368cc0699764\", { courseName: String(p.entry.courseName), value: String(p.entry.location ?? \"\"), value2: String(hhmm(p.beginMin)), value3: String(hhmm(p.endMin)), value4: String(p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")), valu"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.6320b4a8722a",
+      "source": "状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1279,
+          "context": "k: i18n(\"pages.schedule.6320b4a8722a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.6861d0375b15",
+      "source": " · 点击查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 994,
+          "context": "p.entry.src === \"cloud\" || p.entry.src === \"local\" ? i18n(\"pages.schedule.8fa104ed3b07\") : i18n(\"pages.schedule.6861d0375b15\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.6a9906c79f26",
+      "source": "开始时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1352,
+          "context": "{i18n(\"pages.schedule.6a9906c79f26\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.6d338c4a9155",
+      "source": "作业刷新失败：{error}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "learn.error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1168,
+          "context": "{i18nRich(\"pages.schedule.6d338c4a9155\", { error: learn.error })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.702b1048fceb",
+      "source": "恢复全天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1136,
+          "context": "{i18n(\"pages.schedule.702b1048fceb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.70af7a03daec",
+      "source": "作业来自网络学堂 / 外部作业源；「前往」会{value}打开这条作业。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(simple ? \"\" : i18n(\"pages.schedule.efa33939d466\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1297,
+          "context": "isHw\n                    ? i18n(\"pages.schedule.70af7a03daec\", { value: String(simple ? \"\" : i18n(\"pages.schedule.efa33939d466\")) })\n                    : i18n(\"pages.schedule.4f8a1b346d71\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.72d71f2db0b4",
+      "source": "外部",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 991,
+          "context": "p.entry.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1219,
+          "context": "d.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.741addee8c05",
+      "source": "寻迹 {location}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "location",
+          "expression": "String(d.location)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1231,
+          "context": "d.location ? i18n(\"pages.schedule.741addee8c05\", { location: String(d.location) }) : i18n(\"pages.schedule.32eb57893bcb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.7431d8a58c9b",
+      "source": "{location} · 此时间段事项较多，已合并显示",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "location",
+          "expression": "d.location"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1241,
+          "context": "{i18nRich(\"pages.schedule.7431d8a58c9b\", { location: d.location })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.760506491eef",
+      "source": "开始日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1337,
+          "context": "{i18n(\"pages.schedule.760506491eef\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1338,
+          "context": "{i18n(\"pages.schedule.760506491eef\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.77609a0fe15d",
+      "source": "存入系统日历失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 707,
+          "context": "setMsg(i18n(\"pages.schedule.77609a0fe15d\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.79a4ef019e9c",
+      "source": "学期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1145,
+          "context": "{i18n(\"pages.schedule.79a4ef019e9c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.7ab942d11ed6",
+      "source": "已删除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 799,
+          "context": "setMsg(i18n(\"pages.schedule.7ab942d11ed6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.7e335ee498e8",
+      "source": "云同步账号已变更，请重新打开日程后编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 768,
+          "context": "new Error(i18n(\"pages.schedule.7e335ee498e8\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.8032af4a590f",
+      "source": "未提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 991,
+          "context": "p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1260,
+          "context": "m.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1282,
+          "context": "d.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.823ed2175ed0",
+      "source": "{date} {time} 截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "date",
+          "expression": "String(ddl.date)"
+        },
+        {
+          "name": "time",
+          "expression": "String(ddl.time)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1216,
+          "context": "ddl ? i18n(\"pages.schedule.823ed2175ed0\", { date: String(ddl.date), time: String(ddl.time) }) : d.date && (d.startTime || d.endTime)\n          ? `${d.date}${d.startTime && d.endTime ? ` ${d.startTime}–${d.endTime}` : \"\"}`\n          : d.startSection ? i18n(\"pages.schedule.3a4fe1c0f0d6\", { startSection: String(d.startSection), value: String(d.endSection ?? d.startSection) }) : \"\""
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1276,
+          "context": "{i18n(\"pages.schedule.823ed2175ed0\", { date: String(ddl.date), time: String(ddl.time) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.88a5267852f9",
+      "source": "选日期跳到该日期所在的教学周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1103,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.88a5267852f9\") : i18n(\"pages.schedule.c533aa41c064\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.895cd52fbbb6",
+      "source": "结束日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1342,
+          "context": "sd.allDay ? i18n(\"pages.schedule.ce40d3d5810a\") : i18n(\"pages.schedule.895cd52fbbb6\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1343,
+          "context": "{i18n(\"pages.schedule.895cd52fbbb6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.8b6ff498515b",
+      "source": "时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1288,
+          "context": "k: i18n(\"pages.schedule.8b6ff498515b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.8fa104ed3b07",
+      "source": " · 点击编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 994,
+          "context": "p.entry.src === \"cloud\" || p.entry.src === \"local\" ? i18n(\"pages.schedule.8fa104ed3b07\") : i18n(\"pages.schedule.6861d0375b15\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.93cfacc290a0",
+      "source": "同步到云日历{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(canCloud ? i18n(\"pages.schedule.df071eb5a79b\") : i18n(\"pages.schedule.e046ece55b12\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1372,
+          "context": "{i18n(\"pages.schedule.93cfacc290a0\", { value: String(canCloud ? i18n(\"pages.schedule.df071eb5a79b\") : i18n(\"pages.schedule.e046ece55b12\")) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.9b702fb32d62",
+      "source": "作业截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 981,
+          "context": "p.entry.src === \"hw\" ? i18n(\"pages.schedule.9b702fb32d62\") : i18n(\"pages.schedule.60db1afb4022\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1191,
+          "context": "{i18n(\"pages.schedule.a14f23af7016\")}"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a3030bf8f16d",
+      "source": "保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1320,
+          "context": "busy ? i18n(\"pages.schedule.ff509c9ba052\") : i18n(\"pages.schedule.a3030bf8f16d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a3064785f1db",
+      "source": "编辑日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1315,
+          "context": "sd.uid ? i18n(\"pages.schedule.a3064785f1db\") : i18n(\"pages.schedule.5090d53a1cce\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a3299407580e",
+      "source": "保存失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 785,
+          "context": "setMsg(i18n(\"pages.schedule.a3299407580e\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a488e93d69cc",
+      "source": "来源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1277,
+          "context": "k: i18n(\"pages.schedule.a488e93d69cc\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1291,
+          "context": "k: i18n(\"pages.schedule.a488e93d69cc\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a6654120cbec",
+      "source": "教师",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1290,
+          "context": "k: i18n(\"pages.schedule.a6654120cbec\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.a80ca7344396",
+      "source": "打开日历，快速跳到任意年月",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1060,
+          "context": "{i18n(\"pages.schedule.a80ca7344396\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 991,
+          "context": "p.entry.hwMeta?.ext ? p.entry.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\") : i18n(\"pages.schedule.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1219,
+          "context": "d.hwMeta?.ext ? (d.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\")) : i18n(\"pages.schedule.aa39cac2b409\")"
+        }
+      ],
+      "translation": "Learn",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.aa5750053364",
+      "source": "部分外部作业刷新失败，请在作业页检查连接。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1169,
+          "context": "{i18n(\"pages.schedule.aa5750053364\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.ad6d92fd400c",
+      "source": "同步到系统日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1175,
+          "context": "sysNative === false ? i18n(\"pages.schedule.exportIcs\") : i18n(\"pages.schedule.ad6d92fd400c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.aedd6814ff8c",
+      "source": "列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1113,
+          "context": "[\"agenda\", i18n(\"pages.schedule.aedd6814ff8c\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1183,
+          "context": "{i18n(\"pages.schedule.aee887434131\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.af3a93e86aa6",
+      "source": " · 考试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1291,
+          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b0e3601510d8",
+      "source": "在桌面小组件显示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1375,
+          "context": "{i18n(\"pages.schedule.b0e3601510d8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b179143d79a6",
+      "source": "云同步账号已变更，请重新打开日程后删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 795,
+          "context": "new Error(i18n(\"pages.schedule.b179143d79a6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b2e93997a40b",
+      "source": "未找到「{courseName}」对应的网络学堂课程，已打开课程页，可在其中查找。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseName",
+          "expression": "String(d.courseName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 847,
+          "context": "setMsg(i18n(\"pages.schedule.b2e93997a40b\", { courseName: String(d.courseName) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b4c6c3eb0bce",
+      "source": "本周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1064,
+          "context": "{i18n(\"pages.schedule.b4c6c3eb0bce\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.bc37a6110a07",
+      "source": "已提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 991,
+          "context": "p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1260,
+          "context": "m.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1282,
+          "context": "d.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.bd2f0b059d14",
+      "source": "要做什么…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1333,
+          "context": "{i18n(\"pages.schedule.bd2f0b059d14\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.be7a93a8502e",
+      "source": "全天 · {label}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "c.label"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 897,
+          "context": "{i18nRich(\"pages.schedule.be7a93a8502e\", { label: c.label })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.schedule.c0b859346782",
+      "source": "上一周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1054,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1054,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c0eb0fdf8c4e",
+      "source": "下一月",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1077,
+          "context": "{i18n(\"pages.schedule.c0eb0fdf8c4e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c1c41b33594e",
+      "source": "教务系统{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1291,
+          "context": "{i18nRich(\"pages.schedule.c1c41b33594e\", { value: d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c3405f8c7d9d",
+      "source": "标题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1332,
+          "context": "{i18n(\"pages.schedule.c3405f8c7d9d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c430f4c12eaa",
+      "source": "周一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c533aa41c064",
+      "source": "选日期跳到该日期所在月份",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1103,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.88a5267852f9\") : i18n(\"pages.schedule.c533aa41c064\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c728528fbd8f",
+      "source": "作业刷新失败，当前截止时间可能不完整：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(learn.error ?? \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 868,
+          "context": "{i18n(\"pages.schedule.c728528fbd8f\", { value: String(learn.error ?? \"\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c7b24e7997e9",
+      "source": "结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1356,
+          "context": "{i18n(\"pages.schedule.c7b24e7997e9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c8d7c83a9995",
+      "source": "学期 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(i + 1)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1151,
+          "context": "sm.semesterName || sm.semesterId || i18n(\"pages.schedule.c8d7c83a9995\", { value: String(i + 1) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.ce40d3d5810a",
+      "source": "最后一天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1342,
+          "context": "sd.allDay ? i18n(\"pages.schedule.ce40d3d5810a\") : i18n(\"pages.schedule.895cd52fbbb6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.ce708f891fc3",
+      "source": "第 {w} 周",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "w",
+          "expression": "w"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1156,
+          "context": "{i18nRich(\"pages.schedule.ce708f891fc3\", { w: w })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

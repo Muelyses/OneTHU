@@ -86,6 +86,7 @@ import { FormModalHost } from "./lib/formModal.js";
 import { RootErrorBoundary } from "./components/RootErrorBoundary.js";
 import { TextPeekHost } from "./components/TextPeek.js";
 import { ImageViewerHost } from "./components/ImageViewer.js";
+import { I18nProvider } from "./i18n/I18nProvider.js";
 
 /* 竖屏取景框（dev）：`?phone-frame=1` 时整页就是一块真手机视口（同源 iframe，登录态照旧）。
    这条分支走在应用引导之前——取景框自己不需要会话/插件/取色，那些副作用留给 iframe 里的文档。 */
@@ -117,6 +118,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {/* R24：根级错误边界——任何渲染期崩溃都变成可读卡片，不再整窗白屏 */}
     <RootErrorBoundary>
+      <I18nProvider>
       <App />
       <ConfirmHost />
       <FormModalHost />
@@ -124,6 +126,7 @@ createRoot(document.getElementById("root")!).render(
       <TextPeekHost />
       {/* 手机端长按看图：全屏查看 + 双指缩放 + 保存到相册，单击任意处退出 */}
       <ImageViewerHost />
+      </I18nProvider>
     </RootErrorBoundary>
   </StrictMode>,
 );

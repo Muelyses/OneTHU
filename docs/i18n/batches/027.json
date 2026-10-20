@@ -1,0 +1,1394 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.vault.vaultsheet.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultSheet.tsx",
+          "line": 33,
+          "context": "{i18n(\"components.vault.vaultsheet.804002a9c49a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultsheet.81e4bd9720a0",
+      "source": "入口位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultSheet.tsx",
+          "line": 34,
+          "context": "{i18n(\"components.vault.vaultsheet.81e4bd9720a0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaulttextpreview.29636e43fdb4",
+      "source": "复制文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultTextPreview.tsx",
+          "line": 28,
+          "context": "{i18n(\"components.vault.vaulttextpreview.29636e43fdb4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaulttextpreview.654ba67673c8",
+      "source": "复制失败，可直接选中正文手动复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultTextPreview.tsx",
+          "line": 27,
+          "context": "showToast(i18nMsg(\"components.vault.vaulttextpreview.654ba67673c8\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaulttextpreview.cd78767c92e6",
+      "source": "文字已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultTextPreview.tsx",
+          "line": 27,
+          "context": "showToast(i18nMsg(\"components.vault.vaulttextpreview.cd78767c92e6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.017799558da2",
+      "source": "没有找到相关内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.017799558da2\") : i18n(\"components.vault.vaultworkspace.2a6304d5346d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.01c3348965f5",
+      "source": "新建暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 74,
+          "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.01c3348965f5\"), [{ key: \"name\", label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\"), required: true, default: i18n(\"components.vault.vaultworkspace.4dc6d8e7a87a\") }])"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 109,
+          "context": "{i18n(\"components.vault.vaultworkspace.01c3348965f5\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 114,
+          "context": "{i18n(\"components.vault.vaultworkspace.01c3348965f5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.04393fb8fdca",
+      "source": "原暂存箱已删除，请重新添加文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 66,
+          "context": "new Error(i18n(\"components.vault.vaultworkspace.04393fb8fdca\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.04d78aa54101",
+      "source": "暂存项操作菜单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 129,
+          "context": "{i18n(\"components.vault.vaultworkspace.04d78aa54101\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.0d0cbac2eee5",
+      "source": "重命名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 82,
+          "context": "label: i18n(\"components.vault.vaultworkspace.0d0cbac2eee5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.105a1b5daf4b",
+      "source": "{length} 项内容，随时取用",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(box.items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 115,
+          "context": "box.items.length ? i18n(\"components.vault.vaultworkspace.105a1b5daf4b\", { length: String(box.items.length) }) : i18n(\"components.vault.vaultworkspace.61924286426a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.124b06b7f26a",
+      "source": "长按收纳 · 拖到 OH 胶囊交给小OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 126,
+          "context": "{i18n(\"components.vault.vaultworkspace.124b06b7f26a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.13a5f3ed956e",
+      "source": "目标暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 95,
+          "context": "label: i18nMsg(\"components.vault.vaultworkspace.13a5f3ed956e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.17fa33d72406",
+      "source": "当前暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 115,
+          "context": "{i18n(\"components.vault.vaultworkspace.17fa33d72406\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.1cb589a18057",
+      "source": "目标暂存箱已不存在，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 99,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.1cb589a18057\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.21b57ecf4c6a",
+      "source": "长按内容后拖到箱子；电脑也可以直接拖入文件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.21b57ecf4c6a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.29636e43fdb4",
+      "source": "复制文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 92,
+          "context": "label: i18n(\"components.vault.vaultworkspace.29636e43fdb4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.2a6304d5346d",
+      "source": "先放进来，稍后再处理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.017799558da2\") : i18n(\"components.vault.vaultworkspace.2a6304d5346d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.31fe3c2b0bba",
+      "source": "移到其他箱子",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 93,
+          "context": "label: i18n(\"components.vault.vaultworkspace.31fe3c2b0bba\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.38d4ac4ea494",
+      "source": "已从暂存箱移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 102,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.38d4ac4ea494\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.39932f24fe11",
+      "source": "文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 24,
+          "context": "return i18n(\"components.vault.vaultworkspace.39932f24fe11\");"
+        }
+      ],
+      "translation": "Files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.42e970981c31",
+      "source": "{length} 项",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "visible.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18nRich(\"components.vault.vaultworkspace.42e970981c31\", { length: visible.length })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.45548176eb84",
+      "source": "文件、文字和页面入口，都可以收在一起。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.ab70eecb29dc\") : i18n(\"components.vault.vaultworkspace.45548176eb84\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.496b211080c6",
+      "source": "删除「{name}」及其中的内容？已发出的口令需单独撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(box.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 84,
+          "context": "confirmOk(i18nMsg(\"components.vault.vaultworkspace.496b211080c6\", { name: String(box.name) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.4b409085c396",
+      "source": "已移动到所选暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 98,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.4b409085c396\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.4dc6d8e7a87a",
+      "source": "新暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 74,
+          "context": "default: i18n(\"components.vault.vaultworkspace.4dc6d8e7a87a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.4f17124dd970",
+      "source": "暂存箱操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 114,
+          "context": "{i18n(\"components.vault.vaultworkspace.4f17124dd970\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 115,
+          "context": "{i18n(\"components.vault.vaultworkspace.4f17124dd970\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.51d8ab62786e",
+      "source": "已放进首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 90,
+          "context": "result.added ? i18nMsg(\"components.vault.vaultworkspace.51d8ab62786e\") : result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.5259cc54976d",
+      "source": "删除此箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 84,
+          "context": "label: i18n(\"components.vault.vaultworkspace.5259cc54976d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.5560decc5a07",
+      "source": "放进首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 87,
+          "context": "label: i18n(\"components.vault.vaultworkspace.5560decc5a07\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.564ff4ed9876",
+      "source": "先收好，需要时再打开、分享或交给小OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 111,
+          "context": "{i18n(\"components.vault.vaultworkspace.564ff4ed9876\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.57588aea6e6a",
+      "source": "这些文件已经在箱子里了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 69,
+          "context": "added ? i18nMsg(\"components.vault.vaultworkspace.d7ff9e26df0d\", { added: String(added), targetName: String(targetName) }) : i18nMsg(\"components.vault.vaultworkspace.57588aea6e6a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.6135d4159e89",
+      "source": "移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 102,
+          "context": "label: i18n(\"components.vault.vaultworkspace.6135d4159e89\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.61924286426a",
+      "source": "把想留住的内容放进来",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 115,
+          "context": "box.items.length ? i18n(\"components.vault.vaultworkspace.105a1b5daf4b\", { length: String(box.items.length) }) : i18n(\"components.vault.vaultworkspace.61924286426a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.6726270958a4",
+      "source": "切换暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 114,
+          "context": "{i18n(\"components.vault.vaultworkspace.6726270958a4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.69cb3fb1fdd6",
+      "source": "文件读取失败，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 70,
+          "context": "error instanceof Error ? error.message : i18nMsg(\"components.vault.vaultworkspace.69cb3fb1fdd6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.704da93b664d",
+      "source": "清空「{name}」的 {length} 项内容？已发出的口令需单独撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(box.name)"
+        },
+        {
+          "name": "length",
+          "expression": "String(box.items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 83,
+          "context": "confirmOk(i18nMsg(\"components.vault.vaultworkspace.704da93b664d\", { name: String(box.name), length: String(box.items.length) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.7548dfb917ce",
+      "source": "我的箱子",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 109,
+          "context": "{i18n(\"components.vault.vaultworkspace.7548dfb917ce\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.75d248782548",
+      "source": "连接云盘以分享文件与口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 126,
+          "context": "{i18n(\"components.vault.vaultworkspace.75d248782548\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.81ded76ddc48",
+      "source": "我的暂存箱列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 108,
+          "context": "{i18n(\"components.vault.vaultworkspace.81ded76ddc48\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.918d44cf93b2",
+      "source": "暂时无法放进首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 90,
+          "context": "result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.9797d33f081b",
+      "source": "重命名暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 78,
+          "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.9797d33f081b\"), [{ key: \"name\", label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\"), required: true, default: box.name }])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ab70eecb29dc",
+      "source": "试试其他关键词，或查看箱内全部内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "term ? i18n(\"components.vault.vaultworkspace.ab70eecb29dc\") : i18n(\"components.vault.vaultworkspace.45548176eb84\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.abf541ded48d",
+      "source": "复制失败，请打开内容后手动复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 92,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.abf541ded48d\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ad9daebe00dc",
+      "source": "添加文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 116,
+          "context": "{i18n(\"components.vault.vaultworkspace.ad9daebe00dc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.b96760b70dab",
+      "source": "首页已经有这一项了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 90,
+          "context": "result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.bc3dd14b898a",
+      "source": "清空内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 83,
+          "context": "label: i18n(\"components.vault.vaultworkspace.bc3dd14b898a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.c05d4e484881",
+      "source": "移动暂存项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 95,
+          "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.c05d4e484881\"), [{ key: \"box\", label: i18nMsg(\"components.vault.vaultworkspace.13a5f3ed956e\"), kind: \"select\", options: doc.boxes.filter(entry => entry.id !== target.boxId).map(entry => ({ value: entry.id, label: entry.name })) }])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.c95ed9f3eec2",
+      "source": "箱子名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 74,
+          "context": "label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\")"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 78,
+          "context": "label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.cd78767c92e6",
+      "source": "文字已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 92,
+          "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.cd78767c92e6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.d1cb5866d979",
+      "source": "更多操作：{title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(item.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.d1cb5866d979\", { title: String(item.title) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultworkspace.d7ff9e26df0d",
+      "source": "已将 {added} 个文件放入「{targetName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "added",
+          "expression": "String(added)"
+        },
+        {
+          "name": "targetName",
+          "expression": "String(targetName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 69,
+          "context": "added ? i18nMsg(\"components.vault.vaultworkspace.d7ff9e26df0d\", { added: String(added), targetName: String(targetName) }) : i18nMsg(\"components.vault.vaultworkspace.57588aea6e6a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.d9d455b6afd7",
+      "source": "暂存箱内容管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 107,
+          "context": "{i18n(\"components.vault.vaultworkspace.d9d455b6afd7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.dad3c42e9d64",
+      "source": "暂存箱操作菜单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 128,
+          "context": "{i18n(\"components.vault.vaultworkspace.dad3c42e9d64\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.e2d666e87d74",
+      "source": "查找箱内内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.e4bbf7bc2d7e",
+      "source": "松手放入「{name}」",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "box.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 124,
+          "context": "{i18nRich(\"components.vault.vaultworkspace.e4bbf7bc2d7e\", { name: box.name })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ee32f25f7050",
+      "source": "清除搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.ee32f25f7050\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.03e731b6fbf6",
+      "source": "{value}。可在系统设置 → 无障碍/语言 → 文字转语音 里安装或启用引擎与中文语音数据，再回来点「重新检查」。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 61,
+          "context": "desc: i18n(\"components.voicesettingssection.03e731b6fbf6\", { value: String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.06c47ff40845",
+      "source": "　可选音色 {length} 个。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "voices.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 173,
+          "context": "{i18nRich(\"components.voicesettingssection.06c47ff40845\", { length: voices.length })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.08ceb2822aa1",
+      "source": "系统没有可用的文字转语音引擎",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 61,
+          "context": "st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.0c278a68af8a",
+      "source": "引擎尚未初始化",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 64,
+          "context": "title: i18n(\"components.voicesettingssection.0c278a68af8a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.1aa0e6cae35c",
+      "source": "稍等一下，初始化完成后试听与朗读才会出声。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 50,
+          "context": "desc: i18n(\"components.voicesettingssection.1aa0e6cae35c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.1ead396a0d02",
+      "source": "正在朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 57,
+          "context": "title: i18n(\"components.voicesettingssection.1ead396a0d02\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.20e403134d07",
+      "source": "当前平台是否支持语音合成 / 重新检查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.20e403134d07\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.2a015c420014",
+      "source": "音色、语速、音高全部回到原声，并关闭自动朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.voicesettingssection.2a015c420014\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.36aaad1be5c9",
+      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3b6c48ce496b",
+      "source": "全部恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3e3b45ef84ac",
+      "source": "引擎状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.3e3b45ef84ac\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.5e4df038f43b",
+      "source": "正在准备朗读引擎…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 40,
+          "context": "title: i18n(\"components.voicesettingssection.5e4df038f43b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.5ffbeb114a74",
+      "source": "试听失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 156,
+          "context": "setMsg(i18n(\"components.voicesettingssection.5ffbeb114a74\", { value: String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.6ab9d2bde92c",
+      "source": "音色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 72,
+          "context": "return i18n(\"components.voicesettingssection.6ab9d2bde92c\");"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 183,
+          "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 190,
+          "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.6e5d0cde3be6",
+      "source": "引擎不可用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 60,
+          "context": "title: i18n(\"components.voicesettingssection.6e5d0cde3be6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.7603ae8c852e",
+      "source": "系统引擎首次初始化需要一两秒。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 40,
+          "context": "desc: i18n(\"components.voicesettingssection.7603ae8c852e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.7f0a0fda741c",
+      "source": "试听",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 268,
+          "context": "{i18n(\"components.voicesettingssection.7f0a0fda741c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 273,
+          "context": "speaking ? i18n(\"components.voicesettingssection.ca4d973c0b00\") : i18n(\"components.voicesettingssection.7f0a0fda741c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.82ee2ef744bf",
+      "source": "点「重新检查」触发一次初始化。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 64,
+          "context": "desc: i18n(\"components.voicesettingssection.82ee2ef744bf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.853dd990730b",
+      "source": "系统引擎没有报出可选的普通话嗓音，用引擎默认音色朗读。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 186,
+          "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.87e2903f67f2",
+      "source": "不同 ROM 自带的嗓音不同（如小艺、小爱、Google 的普通话嗓音）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 187,
+          "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.892033f846ab",
+      "source": "说完会自动停下。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 57,
+          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.892033f846ab\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.8c286c301431",
+      "source": "引擎就绪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 53,
+          "context": "title: i18n(\"components.voicesettingssection.8c286c301431\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.8f463b50e0cb",
+      "source": "本机使用的引擎：{engine}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "engine",
+          "expression": "String(st.engine)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 54,
+          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.bd3bac24c982\")"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 57,
+          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.892033f846ab\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

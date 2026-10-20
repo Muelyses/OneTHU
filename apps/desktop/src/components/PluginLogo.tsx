@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 /** 插件 logo 统一解析点：logo 随插件包走（plugins/<id>/logo.svg|png），
  *  由宿主读取转 dataURL；无 logo 回退双字母针脚。第三方插件包内自带即生效。 */
 import { useEffect, useState, type ReactNode } from "react";
@@ -29,6 +30,8 @@ function load(id: string): Promise<string | null> {
 }
 
 export function PluginLogo({ id, fallback }: { id: string; fallback: ReactNode }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [url, setUrl] = useState<string | null | undefined>(cache.get(id));
   useEffect(() => {
     let alive = true;

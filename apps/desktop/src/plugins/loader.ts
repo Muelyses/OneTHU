@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /** 插件加载器：blob 动态 import + 权限门面注入 + 生命周期（安装/启用/停用/删除） */
 import { buildApi } from "./facade.js";
 import { isAndroidNavigator } from "../lib/androidHost.js";
@@ -10,7 +11,7 @@ import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe,
 import { registerPluginTab, unregisterPluginTabs } from "./tabs.js";
 /** ctx 方法的权限门禁：manifest.permissions 未声明即抛错（安装确认向用户说明过这些权限） */
 function gate(perms: Set<string>, perm: string, what: string): void {
-  if (!perms.has(perm)) throw new Error(`[PLUGIN] 权限未声明：${what} 需要 ${perm}`);
+  if (!perms.has(perm)) throw new Error(i18n("plugins.loader.7c3e3fd1ed4c", { what: String(what), perm: String(perm) }));
 }
 import { pluginAtomKindOf, registerPluginAtom, unregisterPluginAtoms } from "./pluginAtoms.js";
 import { logLine } from "../lib/clients.js";
@@ -71,18 +72,18 @@ export async function installPlugin(
     mod = await import(/* @vite-ignore */ blobUrl);
   } catch (e) {
     URL.revokeObjectURL(blobUrl);
-    throw new Error(`插件模块加载失败：${String(e).slice(0, 160)}`);
+    throw new Error(i18n("plugins.loader.45a9f71f85ee", { value: String(String(e).slice(0, 160)) }));
   }
   if (!validateManifest(mod.manifest)) {
     URL.revokeObjectURL(blobUrl);
-    throw new Error("插件清单非法：须导出 manifest { id, name, version, permissions[] }");
+    throw new Error(i18n("plugins.loader.343ed9a71667"));
   }
   const isTheme = isThemeEntry(mod.manifest as { category?: string; themes?: unknown } | undefined);
   if (typeof mod.default !== "function" && !(isTheme && mod.theme && typeof mod.theme === "object")) {
     URL.revokeObjectURL(blobUrl);
     throw new Error(isTheme
-      ? "主题插件须导出 theme: ThemeDef（或另加 default(ctx) 提供命令）"
-      : "插件须导出 default(ctx) 激活函数");
+      ? i18n("plugins.loader.66e63df3fb0a")
+      : i18n("plugins.loader.d87b3e6576de"));
   }
   const manifest = mod.manifest as PluginManifest;
   /** 本版模块声明的主题 id（主题插件才有）——覆盖安装时保留，其余旧主题回收 */
@@ -159,7 +160,7 @@ function defaultsOf(m: PluginManifest): Record<string, string> {
 
 async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> {
   const rec = getPlugin(id);
-  if (!rec) throw new Error(`插件不存在：${id}`);
+  if (!rec) throw new Error(i18n("plugins.loader.e8ce81d059b5", { id: String(id) }));
   let m = mod;
   let url = blobUrl;
   if (!m) {
@@ -174,7 +175,7 @@ async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> 
     if (rec.embedded) {
       hand = await startHarnessEmbedded(id);
     } else {
-      if (!rec.binPath) throw new Error("rust 插件缺少二进制路径");
+      if (!rec.binPath) throw new Error(i18n("plugins.loader.85a66adff00c"));
       hand = await spawnRustPlugin(id, rec.binPath);
     }
     live.set(id, { id, kind: "rust", mod: null, blobUrl: "" });
@@ -338,7 +339,7 @@ export async function uninstallPlugin(id: string): Promise<void> {
   const rec = getPlugin(id);
   // 内核守卫：OH 是 App 的一部分（sidecar / 内嵌），任何路径不可卸载
   if (id === "onethu.harness" || rec?.builtin || rec?.embedded) {
-    throw new Error("内置插件不可卸载——它是 OneTHU 应用的一部分");
+    throw new Error(i18n("plugins.loader.125e05bb74f0"));
   }
   await deactivate(id).catch(() => undefined);
   removePlugin(id);
@@ -355,7 +356,7 @@ export async function runCommand(pluginId: string, cmdId: string, input: string)
     return out;
   }
   const c = liveCommands.get(`${pluginId}:${cmdId}`);
-  if (!c) throw new Error(`命令未注册或插件未启用：${pluginId}:${cmdId}`);
+  if (!c) throw new Error(i18n("plugins.loader.26133491e82f", { pluginId: String(pluginId), cmdId: String(cmdId) }));
   return c.run(input);
 }
 export function isLive(id: string): boolean {
@@ -386,7 +387,7 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
   name: "OneTHU Harness",
   version: "0.1.5",
   author: "smartThise",
-  description: "大模型驱动的清华校园助手（Rust 骨干·内嵌核心）：对话式查课表/日程/成绩/新闻/空教室/校园卡/电费/校园网，日程云同步（查/建/改/删），图书馆座位与研讨间查询预约（两段式确认），左下角常驻对话面板，实时进度与打断，多会话历史与对话导出，用量与花费控制。",
+  get description() { return i18n("plugins.loader.5567681c1fcb"); },
   permissions: [
     "user:read", "info:read", "card:read", "dorm:read",
     "library:read", "library:book", "network:read",
@@ -398,39 +399,39 @@ const EMBEDDED_HARNESS_MANIFEST: PluginManifest = {
   // 标签 ≤42 字、R1 禁词清零（token→通行证/花费上限，上下文→对话历史）、thinking/stream 升 select。
   // 标签改动会触发 seedBuiltinHarness 的清单自愈（一次性重注册，用户 settings 保留），属预期。
   settings: [
-    { key: "provider", label: "模型源", type: "select", default: "", options: [
-      { value: "madmodel", label: "清华 MadModel 免费（校园网/VPN · 自动续期）" },
-      { value: "custom", label: "自费 API（填好下方 Key 与服务地址后生效）" },
-      { value: "", label: "默认（自动：填了 Key 走自费，没填走 MadModel）" },
+    { key: "provider", get label() { return i18n("plugins.loader.6ad329874813"); }, type: "select", default: "", options: [
+      { value: "madmodel", get label() { return i18n("plugins.loader.b761f4b378ca"); } },
+      { value: "custom", get label() { return i18n("plugins.loader.501704641ca5"); } },
+      { value: "", get label() { return i18n("plugins.loader.52ff11b158fd"); } },
     ] },
-    { key: "apiKey", label: "API Key（自费模式用）", type: "password", placeholder: "sk-…" },
-    { key: "baseUrl", label: "服务地址（OpenAI 兼容，以 /v1 结尾）", type: "text", default: "https://api.deepseek.com/v1" },
-    { key: "madmodelModel", label: "免费档模型（自动同步站点清单；留空用默认）", type: "select", optionsFrom: "madmodelModels", options: [
-      { value: "", label: "默认（DeepSeek-V4.1-Flash）" },
+    { key: "apiKey", get label() { return i18n("plugins.loader.9da85b4807f2"); }, type: "password", placeholder: "sk-…" },
+    { key: "baseUrl", get label() { return i18n("plugins.loader.155e1866a76a"); }, type: "text", default: "https://api.deepseek.com/v1" },
+    { key: "madmodelModel", get label() { return i18n("plugins.loader.6d64fd9fb7c5"); }, type: "select", optionsFrom: "madmodelModels", options: [
+      { value: "", get label() { return i18n("plugins.loader.e9cbdd258b61"); } },
     ] },
-    { key: "model", label: "模型（自费模式用；免费档默认 DeepSeek-V4.1-Flash）", type: "text", default: "deepseek-chat" },
-    { key: "thinking", label: "思考模式（开＝想得深、更慢更花）", type: "select", options: [
-      { value: "off", label: "关闭（更快更省）" },
-      { value: "on", label: "开启（深想推理；更慢更花）" },
+    { key: "model", get label() { return i18n("plugins.loader.86ebd904019e"); }, type: "text", default: "deepseek-chat" },
+    { key: "thinking", get label() { return i18n("plugins.loader.7de097ef7288"); }, type: "select", options: [
+      { value: "off", get label() { return i18n("plugins.loader.2a4b2f825848"); } },
+      { value: "on", get label() { return i18n("plugins.loader.5a56669687e7"); } },
     ], default: "off" },
     // 多模态开关（2026-10-11）：**必须与 plugins/OneTHU-Harness/manifest.json 里的同名字段
     // 逐字段同序**——seedBuiltinHarness 的清单自愈走 JSON.stringify 字符串比对，
     // 两处不一致会让「内置 OH 已刷新」每次开机都触发一遍。
-    { key: "multimodal", label: "多模态（图片输入；仅部分模型支持）", type: "select", options: [
-      { value: "off", label: "关闭（图片只传路径与文字预览）" },
-      { value: "on", label: "开启（图片按图像模态直接喂给模型）" },
+    { key: "multimodal", get label() { return i18n("plugins.loader.0c113f1913ec"); }, type: "select", options: [
+      { value: "off", get label() { return i18n("plugins.loader.57ebfbd072d4"); } },
+      { value: "on", get label() { return i18n("plugins.loader.82022b3e8d52"); } },
     ], default: "off" },
-    { key: "maxContext", label: "对话历史预算（默认 24000≈2.4 万字；超出自动收成要点）", type: "text", default: "24000" },
-    { key: "stream", label: "逐字显示回答（关＝等整段生成完一次给出）", type: "select", options: [
-      { value: "on", label: "开启（打字机式逐字显示）" },
-      { value: "off", label: "关闭（整段生成完一次给出）" },
+    { key: "maxContext", get label() { return i18n("plugins.loader.845ea122cff3"); }, type: "text", default: "24000" },
+    { key: "stream", get label() { return i18n("plugins.loader.c7689034a299"); }, type: "select", options: [
+      { value: "on", get label() { return i18n("plugins.loader.334583bcaa6f"); } },
+      { value: "off", get label() { return i18n("plugins.loader.f5c252ff822a"); } },
     ], default: "on" },
-    { key: "priceIn", label: "输入单价（美元，每百万 tokens；自费模式）", type: "text", default: "0.27" },
-    { key: "priceOut", label: "输出单价（美元，每百万 tokens；自费模式）", type: "text", default: "1.10" },
-    { key: "budget", label: "自费花费上限（美元；到量自动停止）", type: "text", default: "2" },
-    { key: "maxSteps", label: "单次任务最多工具调用步数（默认 16）", type: "text", default: "16" },
-    { key: "madmodelToken", label: "MadModel 免费档通行证（自动维护，勿手改）", type: "text", default: "", auto: true },
-    { key: "madmodelAt", label: "MadModel 签发时刻（自动维护，勿手改）", type: "text", default: "", auto: true },
+    { key: "priceIn", get label() { return i18n("plugins.loader.e7a25c627c2f"); }, type: "text", default: "0.27" },
+    { key: "priceOut", get label() { return i18n("plugins.loader.360864e1b0cd"); }, type: "text", default: "1.10" },
+    { key: "budget", get label() { return i18n("plugins.loader.eb582a7f804c"); }, type: "text", default: "2" },
+    { key: "maxSteps", get label() { return i18n("plugins.loader.c3b7ba70078b"); }, type: "text", default: "16" },
+    { key: "madmodelToken", get label() { return i18n("plugins.loader.3eed177246c5"); }, type: "text", default: "", auto: true },
+    { key: "madmodelAt", get label() { return i18n("plugins.loader.656626d64486"); }, type: "text", default: "", auto: true },
   ],
 };
 

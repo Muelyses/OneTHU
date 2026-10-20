@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Btn, Inline, Modal, Slider, Stack, Text } from "@onethu/gui";
 import { fileToBytes, pickFile } from "../lib/attach.js";
@@ -84,15 +85,15 @@ function pickInk(canvas: HTMLCanvasElement): "light" | "dark" {
 
 /** 图片文件 → 压缩 JPEG dataURL + 自动字色。 */
 async function prepareImage(file: Awaited<ReturnType<typeof pickFile>>): Promise<{ src: string; ink: "light" | "dark" }> {
-  if (!file) throw new Error("没有选择文件");
-  if (!file.mime.startsWith("image/")) throw new Error("只支持图片");
+  if (!file) throw new Error(i18n("components.cardcovereditor.9dc9d764371e"));
+  if (!file.mime.startsWith("image/")) throw new Error(i18n("components.cardcovereditor.c747909af9bf"));
   const bytes = await fileToBytes(file, 12 * 1024 * 1024);
   const blob = new Blob([bytes], { type: file.mime || "image/jpeg" });
   const bitmap = await decodeImage(blob);
   try {
     const bw = bitmap.width;
     const bh = bitmap.height;
-    if (!bw || !bh) throw new Error("这张图片解不出尺寸，换一张试试");
+    if (!bw || !bh) throw new Error(i18n("components.cardcovereditor.b237570a2d05"));
     const scale = Math.min(1, MAX_SIDE / Math.max(bw, bh));
     const w = Math.max(1, Math.round(bw * scale));
     const h = Math.max(1, Math.round(bh * scale));
@@ -100,7 +101,7 @@ async function prepareImage(file: Awaited<ReturnType<typeof pickFile>>): Promise
     canvas.width = w;
     canvas.height = h;
     const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("当前环境不支持图片处理");
+    if (!ctx) throw new Error(i18n("components.cardcovereditor.419afe6b5d6f"));
     /* 透明 PNG 铺白底，避免 JPEG 把透明区压成黑块。 */
     ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--og-media-underlay").trim();
     ctx.fillRect(0, 0, w, h);
@@ -135,6 +136,8 @@ export function CardCoverEditor({
   onSave: (cover: CardCover) => void;
   onRemove: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [draft, setDraft] = useState<CardCover | null>(null);
   const [busy, setBusy] = useState(false);
   /** 自动字色之外给个手动兜底：真实照片里「亮处压着暗处」时用户可以自己定。 */
@@ -157,7 +160,7 @@ export function CardCoverEditor({
       const image = await prepareImage(file);
       setDraft((prev) => ({ ...(prev ?? {}), ...image, focusX: 0.5, focusY: 0.5, zoom: 1.1, updatedAt: Date.now() }));
     } catch (e) {
-      showToast(`卡面设置失败：${e instanceof Error ? e.message : String(e)}`);
+      showToast(i18nMsg("components.cardcovereditor.3594f9ab39f6", { value: String(e instanceof Error ? e.message : String(e)) }));
     } finally {
       setBusy(false);
     }
@@ -173,7 +176,7 @@ export function CardCoverEditor({
   const previewCard: PersonalCard = shown ? { ...card, cover: shown } : card;
 
   return (
-    <Modal open={open} onClose={onClose} title="自定义卡面" size="lg">
+    <Modal open={open} onClose={onClose} title={i18n("components.cardcovereditor.bc6b27e11f11")} size="lg">
       <Stack gap={4}>
         {draft ? (
           <>
@@ -204,17 +207,17 @@ export function CardCoverEditor({
             >
               <IdentityCard card={previewCard} variant="hero" />
             </div>
-            <Text slot="micro" tone="faint">拖动卡片调整取景位置；字色会按背景亮度自动取黑/白。</Text>
+            <Text slot="micro" tone="faint">{i18n("components.cardcovereditor.313b55413b1c")}</Text>
             <Inline gap={2} wrap>
-              <Text slot="micro" tone="faint">字色：</Text>
-              {([["auto", "自动"], ["light", "白字"], ["dark", "黑字"]] as const).map(([v, label]) => (
+              <Text slot="micro" tone="faint">{i18n("components.cardcovereditor.e5309c3b81d8")}</Text>
+              {([["auto", i18n("components.cardcovereditor.7eb336e42cb5")], ["light", i18n("components.cardcovereditor.f5276534dcfe")], ["dark", i18n("components.cardcovereditor.62ccb8635c09")]] as const).map(([v, label]) => (
                 <Btn key={v} size="sm" variant={inkMode === v ? "solid" : "ghost"} tone={inkMode === v ? "brand" : undefined} onClick={() => setInkMode(v)}>{label}</Btn>
               ))}
             </Inline>
             <div className="cover-editor-zoom">
-              <Text slot="micro" tone="faint">缩放 {shown?.zoom.toFixed(2) ?? "1.00"}×</Text>
+              <Text slot="micro" tone="faint">{i18nRich("components.cardcovereditor.d2d826483315", { value: shown?.zoom.toFixed(2) ?? "1.00" })}</Text>
               <Slider
-                aria-label="卡面缩放"
+                aria-label={i18n("components.cardcovereditor.c3c3600c04ea")}
                 min={1}
                 max={2.5}
                 step={0.05}
@@ -223,19 +226,19 @@ export function CardCoverEditor({
               />
             </div>
             <Inline gap={2} wrap>
-              <Btn variant="outline" disabled={busy} onClick={() => void choose()}>{busy ? "处理中…" : "换一张照片"}</Btn>
-              <Btn variant="ghost" tone="error" onClick={() => { onRemove(); onClose(); }}>移除封面</Btn>
-              <Btn variant="ghost" onClick={onClose}>取消</Btn>
-              <Btn variant="solid" tone="brand" onClick={save}>保存卡面</Btn>
+              <Btn variant="outline" disabled={busy} onClick={() => void choose()}>{busy ? i18n("components.cardcovereditor.d3d21191f32e") : i18n("components.cardcovereditor.975a35806bdc")}</Btn>
+              <Btn variant="ghost" tone="error" onClick={() => { onRemove(); onClose(); }}>{i18n("components.cardcovereditor.de2e34c35fc6")}</Btn>
+              <Btn variant="ghost" onClick={onClose}>{i18n("components.cardcovereditor.2cd0f3be8738")}</Btn>
+              <Btn variant="solid" tone="brand" onClick={save}>{i18n("components.cardcovereditor.09422286308c")}</Btn>
             </Inline>
           </>
         ) : (
           <Stack gap={3}>
-            <Text slot="micro" tone="faint">选一张照片做卡面：可以拖动取景、缩放，字色会按背景亮度自动变黑/变白。</Text>
+            <Text slot="micro" tone="faint">{i18n("components.cardcovereditor.9f99b5ddd3ae")}</Text>
             <Inline gap={2} wrap>
-              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void choose()}>{busy ? "处理中…" : "选择照片"}</Btn>
-              {card.cover ? <Btn variant="ghost" onClick={() => { onRemove(); onClose(); }}>移除封面</Btn> : null}
-              <Btn variant="ghost" onClick={onClose}>取消</Btn>
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void choose()}>{busy ? i18n("components.cardcovereditor.d3d21191f32e") : i18n("components.cardcovereditor.cae3ab4bfdb2")}</Btn>
+              {card.cover ? <Btn variant="ghost" onClick={() => { onRemove(); onClose(); }}>{i18n("components.cardcovereditor.de2e34c35fc6")}</Btn> : null}
+              <Btn variant="ghost" onClick={onClose}>{i18n("components.cardcovereditor.2cd0f3be8738")}</Btn>
             </Inline>
           </Stack>
         )}

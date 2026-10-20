@@ -131,6 +131,7 @@ rm -rf "$TAURI_DIR/target" # 误落在 exFAT 上的 target（若上一次构建�
 # ⑤ 构建
 echo "· 开始构建（JDK $(java -version 2>&1 | head -1 | sed 's/.*"\(.*\)".*/\1/')，NDK $(basename "$NDK_HOME")）"
 cd "$REPO/apps/desktop"
+mkdir -p "$OUT_DIR"
 LOG="$OUT_DIR/apk-build.log"
 if ! npx tauri android build --apk --target aarch64 > "$LOG" 2>&1; then
   echo "✗ 构建失败，错误摘要："
@@ -158,8 +159,13 @@ KS="${ONETHU_KEYSTORE:-$HOME/.android/debug.keystore}"
 KS_ALIAS="${ONETHU_KEY_ALIAS:-androiddebugkey}"
 KS_PASS="${ONETHU_KS_PASS:-android}"
 KEY_PASS="${ONETHU_KEY_PASS:-android}"
+# 不把私钥口令放进可被进程列表读取的 argv。只传变量名给 apksigner。
+export ONETHU_APK_SIGN_STORE_PASS="$KS_PASS"
+export ONETHU_APK_SIGN_KEY_PASS="$KEY_PASS"
 "$BT/apksigner" sign --ks "$KS" --ks-key-alias "$KS_ALIAS" \
-  --ks-pass "pass:$KS_PASS" --key-pass "pass:$KEY_PASS" "$OUT"
+  --ks-pass env:ONETHU_APK_SIGN_STORE_PASS --key-pass env:ONETHU_APK_SIGN_KEY_PASS "$OUT"
+unset ONETHU_APK_SIGN_STORE_PASS ONETHU_APK_SIGN_KEY_PASS
+"$BT/apksigner" verify --verbose "$OUT"
 
 echo
 echo "✓ 产物：$OUT ($(du -h "$OUT" | cut -f1))"

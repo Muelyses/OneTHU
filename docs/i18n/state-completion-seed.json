@@ -1,0 +1,1208 @@
+{
+  "messages": {
+    "state.vaultshare.b2e333bd5624": {
+      "key": "state.vaultshare.b2e333bd5624",
+      "source": "口令版本或结构不受支持",
+      "zh": "口令版本或结构不受支持",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 145,
+          "context": "口令版本或结构不受支持"
+        }
+      ]
+    },
+    "state.vaultshare.00b9a4acaf92": {
+      "key": "state.vaultshare.00b9a4acaf92",
+      "source": "口令已过期；请让分享者重新生成",
+      "zh": "口令已过期；请让分享者重新生成",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 146,
+          "context": "口令已过期；请让分享者重新生成"
+        }
+      ]
+    },
+    "state.vaultshare.b37b72a03e7d": {
+      "key": "state.vaultshare.b37b72a03e7d",
+      "source": "口令清单超过上限（300 项）",
+      "zh": "口令清单超过上限（300 项）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 158,
+          "context": "口令清单超过上限（300 项）"
+        }
+      ]
+    },
+    "state.vaultshare.ae3ba9170d2f": {
+      "key": "state.vaultshare.ae3ba9170d2f",
+      "source": "口令过大（超过 96KB），不是本应用的正常口径",
+      "zh": "口令过大（超过 96KB），不是本应用的正常口径",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 174,
+          "context": "口令过大（超过 96KB），不是本应用的正常口径"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 190,
+          "context": "口令过大（超过 96KB），不是本应用的正常口径"
+        }
+      ]
+    },
+    "state.vaultshare.9ae3c2acf2c1": {
+      "key": "state.vaultshare.9ae3c2acf2c1",
+      "source": "口令格式不完整",
+      "zh": "口令格式不完整",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 176,
+          "context": "口令格式不完整"
+        }
+      ]
+    },
+    "state.vaultshare.09cc0bb41763": {
+      "key": "state.vaultshare.09cc0bb41763",
+      "source": "口令内容损坏（base64 解码失败）",
+      "zh": "口令内容损坏（base64 解码失败）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 178,
+          "context": "口令内容损坏（base64 解码失败）"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 198,
+          "context": "口令内容损坏（base64 解码失败）"
+        }
+      ]
+    },
+    "state.vaultshare.63205c669579": {
+      "key": "state.vaultshare.63205c669579",
+      "source": "口令校验失败（可能被篡改或复制不完整）",
+      "zh": "口令校验失败（可能被篡改或复制不完整）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 181,
+          "context": "口令校验失败（可能被篡改或复制不完整）"
+        }
+      ]
+    },
+    "state.vaultshare.2fb90783488d": {
+      "key": "state.vaultshare.2fb90783488d",
+      "source": "口令校验失败",
+      "zh": "口令校验失败",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 184,
+          "context": "口令校验失败"
+        }
+      ]
+    },
+    "state.vaultshare.df690d6050a8": {
+      "key": "state.vaultshare.df690d6050a8",
+      "source": "不是 OneTHU 分享口令（应以 ONV1. 开头）",
+      "zh": "不是 OneTHU 分享口令（应以 ONV1. 开头）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 192,
+          "context": "不是 OneTHU 分享口令（应以 ONV1. 开头）"
+        }
+      ]
+    },
+    "state.vaultshare.989f1cde10a3": {
+      "key": "state.vaultshare.989f1cde10a3",
+      "source": "口令校验失败（可能复制不完整）",
+      "zh": "口令校验失败（可能复制不完整）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 200,
+          "context": "口令校验失败（可能复制不完整）"
+        }
+      ]
+    },
+    "state.vaultshare.7aa0c43fe053": {
+      "key": "state.vaultshare.7aa0c43fe053",
+      "source": "口令内容不是合法 JSON",
+      "zh": "口令内容不是合法 JSON",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 204,
+          "context": "口令内容不是合法 JSON"
+        }
+      ]
+    },
+    "state.vaultshare.b149e6ae5817": {
+      "key": "state.vaultshare.b149e6ae5817",
+      "source": "旧口令已失效，请重新生成分享",
+      "zh": "旧口令已失效，请重新生成分享",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 330,
+          "context": "旧口令已失效，请重新生成分享"
+        }
+      ]
+    },
+    "state.vaultshare.c97b00b652fa": {
+      "key": "state.vaultshare.c97b00b652fa",
+      "source": "旧私密分享尚未升级，请重试",
+      "zh": "旧私密分享尚未升级，请重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 334,
+          "context": "旧私密分享尚未升级，请重试"
+        }
+      ]
+    },
+    "state.vaultshare.b713d28a9ae7": {
+      "key": "state.vaultshare.b713d28a9ae7",
+      "source": "升级后的分享不可读取",
+      "zh": "升级后的分享不可读取",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 336,
+          "context": "升级后的分享不可读取"
+        }
+      ]
+    },
+    "state.vaultshare.c4591b5b1fe8": {
+      "key": "state.vaultshare.c4591b5b1fe8",
+      "source": "口令无法解析",
+      "zh": "口令无法解析",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 362,
+          "context": "口令无法解析"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 436,
+          "context": "口令无法解析"
+        }
+      ]
+    },
+    "state.vaultshare.ee75d1a72727": {
+      "key": "state.vaultshare.ee75d1a72727",
+      "source": "分享缺少读取链接",
+      "zh": "分享缺少读取链接",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 370,
+          "context": "分享缺少读取链接"
+        }
+      ]
+    },
+    "state.vaultshare.ced6988b78e7": {
+      "key": "state.vaultshare.ced6988b78e7",
+      "source": "分享里没有可接收的内容",
+      "zh": "分享里没有可接收的内容",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 376,
+          "context": "分享里没有可接收的内容"
+        }
+      ]
+    },
+    "state.vaultshare.716036f1e95d": {
+      "key": "state.vaultshare.716036f1e95d",
+      "source": "云盘读取失败：{error}",
+      "zh": "云盘读取失败：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 382,
+          "context": "云盘读取失败：{error}"
+        }
+      ]
+    },
+    "state.vaultshare.a473c3b43384": {
+      "key": "state.vaultshare.a473c3b43384",
+      "source": "当前没有暂存箱",
+      "zh": "当前没有暂存箱",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 388,
+          "context": "当前没有暂存箱"
+        }
+      ]
+    },
+    "state.vaultshare.de371c09cf24": {
+      "key": "state.vaultshare.de371c09cf24",
+      "source": "更换接收范围仍待完成，请重试：{error}",
+      "zh": "更换接收范围仍待完成，请重试：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error?e.message:String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 433,
+          "context": "更换接收范围仍待完成，请重试：{error}"
+        }
+      ]
+    },
+    "state.vaultshare.c5479cb871fa": {
+      "key": "state.vaultshare.c5479cb871fa",
+      "source": "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样",
+      "zh": "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 445,
+          "context": "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样"
+        }
+      ]
+    },
+    "state.vaultshare.b431db21b7df": {
+      "key": "state.vaultshare.b431db21b7df",
+      "source": "这条是旧版本地口令，内容写在口令里改不了；请重新生成新口令",
+      "zh": "这条是旧版本地口令，内容写在口令里改不了；请重新生成新口令",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 449,
+          "context": "这条是旧版本地口令，内容写在口令里改不了；请重新生成新口令"
+        }
+      ]
+    },
+    "state.vaultshare.857b79bf69f3": {
+      "key": "state.vaultshare.857b79bf69f3",
+      "source": "请先连接清华云盘（改口令要更新云盘里的清单）",
+      "zh": "请先连接清华云盘（改口令要更新云盘里的清单）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 454,
+          "context": "请先连接清华云盘（改口令要更新云盘里的清单）"
+        }
+      ]
+    },
+    "state.vaultshare.65381bdff463": {
+      "key": "state.vaultshare.65381bdff463",
+      "source": "当前云盘适配器不支持就地更新，请重新生成口令",
+      "zh": "当前云盘适配器不支持就地更新，请重新生成口令",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 455,
+          "context": "当前云盘适配器不支持就地更新，请重新生成口令"
+        }
+      ]
+    },
+    "state.vaultshare.9aa4c7ceb155": {
+      "key": "state.vaultshare.9aa4c7ceb155",
+      "source": "找不到这条口令的云盘位置，请在暂存箱里重新生成口令",
+      "zh": "找不到这条口令的云盘位置，请在暂存箱里重新生成口令",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 461,
+          "context": "找不到这条口令的云盘位置，请在暂存箱里重新生成口令"
+        }
+      ]
+    },
+    "state.vaultshare.b8aeb1a1f261": {
+      "key": "state.vaultshare.b8aeb1a1f261",
+      "source": "读取云盘清单失败：{error}",
+      "zh": "读取云盘清单失败：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 475,
+          "context": "读取云盘清单失败：{error}"
+        }
+      ]
+    },
+    "state.vaultshare.cb2fdf85ee42": {
+      "key": "state.vaultshare.cb2fdf85ee42",
+      "source": "更换接收范围未完成，请重试：{error}",
+      "zh": "更换接收范围未完成，请重试：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error?e.message:String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 494,
+          "context": "更换接收范围未完成，请重试：{error}"
+        }
+      ]
+    },
+    "state.vaultshare.65841f3a49c8": {
+      "key": "state.vaultshare.65841f3a49c8",
+      "source": "更新云盘清单失败：{error}",
+      "zh": "更新云盘清单失败：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 500,
+          "context": "更新云盘清单失败：{error}"
+        }
+      ]
+    },
+    "state.vaultshare.1677a739e1a4": {
+      "key": "state.vaultshare.1677a739e1a4",
+      "source": "这条口令限定给 {recipient} 接收：请先用该邮箱连接清华云盘，再打开这条口令",
+      "zh": "这条口令限定给 {recipient} 接收：请先用该邮箱连接清华云盘，再打开这条口令",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "recipient",
+          "expression": "want"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 535,
+          "context": "这条口令限定给 {recipient} 接收：请先用该邮箱连接清华云盘，再打开这条口令"
+        }
+      ]
+    },
+    "state.vaultshare.dd39d27f2eaf": {
+      "key": "state.vaultshare.dd39d27f2eaf",
+      "source": "这条口令限定给 {recipient} 接收；当前连接的云盘账号是 {currentAccount}",
+      "zh": "这条口令限定给 {recipient} 接收；当前连接的云盘账号是 {currentAccount}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "recipient",
+          "expression": "want"
+        },
+        {
+          "name": "currentAccount",
+          "expression": "mine"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 536,
+          "context": "这条口令限定给 {recipient} 接收；当前连接的云盘账号是 {currentAccount}"
+        }
+      ]
+    },
+    "state.org.22f86a2a8ff2": {
+      "key": "state.org.22f86a2a8ff2",
+      "source": "当前没有可删除的邀请口令",
+      "zh": "当前没有可删除的邀请口令",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 369,
+          "context": "当前没有可删除的邀请口令"
+        }
+      ]
+    },
+    "state.org.c6b6912e4bd5": {
+      "key": "state.org.c6b6912e4bd5",
+      "source": "本地记录已删除；云盘分享撤销未成功（可能已过期）",
+      "zh": "本地记录已删除；云盘分享撤销未成功（可能已过期）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 377,
+          "context": "本地记录已删除；云盘分享撤销未成功（可能已过期）"
+        }
+      ]
+    },
+    "state.org.1f5874fd9b2a": {
+      "key": "state.org.1f5874fd9b2a",
+      "source": "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）",
+      "zh": "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 383,
+          "context": "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）"
+        }
+      ]
+    },
+    "state.org.3dc0aa93b10c": {
+      "key": "state.org.3dc0aa93b10c",
+      "source": "口令内容损坏",
+      "zh": "口令内容损坏",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 385,
+          "context": "口令内容损坏"
+        }
+      ]
+    },
+    "state.org.989f1cde10a3": {
+      "key": "state.org.989f1cde10a3",
+      "source": "口令校验失败（可能复制不完整）",
+      "zh": "口令校验失败（可能复制不完整）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 386,
+          "context": "口令校验失败（可能复制不完整）"
+        }
+      ]
+    },
+    "state.org.1e4404a53a1d": {
+      "key": "state.org.1e4404a53a1d",
+      "source": "口令版本不受支持",
+      "zh": "口令版本不受支持",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 389,
+          "context": "口令版本不受支持"
+        }
+      ]
+    },
+    "state.org.7aa0c43fe053": {
+      "key": "state.org.7aa0c43fe053",
+      "source": "口令内容不是合法 JSON",
+      "zh": "口令内容不是合法 JSON",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 400,
+          "context": "口令内容不是合法 JSON"
+        }
+      ]
+    },
+    "state.org.c4591b5b1fe8": {
+      "key": "state.org.c4591b5b1fe8",
+      "source": "口令无法解析",
+      "zh": "口令无法解析",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 425,
+          "context": "口令无法解析"
+        }
+      ]
+    },
+    "state.vaultregistry.a56851062d27": {
+      "key": "state.vaultregistry.a56851062d27",
+      "source": "这个对象已失效（可能没有权限或已被删除），可移除后重新收录",
+      "zh": "这个对象已失效（可能没有权限或已被删除），可移除后重新收录",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 24,
+          "context": "这个对象已失效（可能没有权限或已被删除），可移除后重新收录"
+        }
+      ]
+    },
+    "state.vaultregistry.18fb3a6dfa2c": {
+      "key": "state.vaultregistry.18fb3a6dfa2c",
+      "source": "文字预览暂时无法打开，请重试",
+      "zh": "文字预览暂时无法打开，请重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 37,
+          "context": "文字预览暂时无法打开，请重试"
+        }
+      ]
+    },
+    "state.vaultregistry.24ec304b41bb": {
+      "key": "state.vaultregistry.24ec304b41bb",
+      "source": "文件引用缺失，请重新添加",
+      "zh": "文件引用缺失，请重新添加",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 41,
+          "context": "文件引用缺失，请重新添加"
+        }
+      ]
+    },
+    "state.vaultregistry.c5d06fdd2936": {
+      "key": "state.vaultregistry.c5d06fdd2936",
+      "source": "名片已加入通讯录",
+      "zh": "名片已加入通讯录",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 76,
+          "context": "名片已加入通讯录"
+        }
+      ]
+    },
+    "state.vaultregistry.dcd9b29df966": {
+      "key": "state.vaultregistry.dcd9b29df966",
+      "source": "通讯录里已经有这张名片了",
+      "zh": "通讯录里已经有这张名片了",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 77,
+          "context": "通讯录里已经有这张名片了"
+        }
+      ]
+    },
+    "state.vaultregistry.75aa9163a82e": {
+      "key": "state.vaultregistry.75aa9163a82e",
+      "source": "这是你自己的名片，已在「我的名片」里",
+      "zh": "这是你自己的名片，已在「我的名片」里",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 77,
+          "context": "这是你自己的名片，已在「我的名片」里"
+        }
+      ]
+    },
+    "state.vaultregistry.94220dc7197e": {
+      "key": "state.vaultregistry.94220dc7197e",
+      "source": "已打开插件页；插件引用保留在暂存箱",
+      "zh": "已打开插件页；插件引用保留在暂存箱",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 83,
+          "context": "已打开插件页；插件引用保留在暂存箱"
+        }
+      ]
+    },
+    "state.vaultregistry.14947083ab6d": {
+      "key": "state.vaultregistry.14947083ab6d",
+      "source": "主题已应用",
+      "zh": "主题已应用",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 92,
+          "context": "主题已应用"
+        }
+      ]
+    },
+    "state.vaultregistry.666f4160f861": {
+      "key": "state.vaultregistry.666f4160f861",
+      "source": "壁纸已应用",
+      "zh": "壁纸已应用",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 100,
+          "context": "壁纸已应用"
+        }
+      ]
+    },
+    "state.vaultregistry.fe7d0003cf59": {
+      "key": "state.vaultregistry.fe7d0003cf59",
+      "source": "已打开云盘资料库，文件位置见条目说明",
+      "zh": "已打开云盘资料库，文件位置见条目说明",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 115,
+          "context": "已打开云盘资料库，文件位置见条目说明"
+        }
+      ]
+    },
+    "state.vaultregistry.7b3408d0e018": {
+      "key": "state.vaultregistry.7b3408d0e018",
+      "source": "附件地址已失效；可到原页面重新下载",
+      "zh": "附件地址已失效；可到原页面重新下载",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 123,
+          "context": "附件地址已失效；可到原页面重新下载"
+        }
+      ]
+    },
+    "state.vaultregistry.ab9c4ba06c08": {
+      "key": "state.vaultregistry.ab9c4ba06c08",
+      "source": "这条设置项在当前版本里找不到了",
+      "zh": "这条设置项在当前版本里找不到了",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 145,
+          "context": "这条设置项在当前版本里找不到了"
+        }
+      ]
+    },
+    "state.vaultregistry.2808a4f9d0f0": {
+      "key": "state.vaultregistry.2808a4f9d0f0",
+      "source": "这个对象暂不支持直接打开；可以先留在暂存箱里",
+      "zh": "这个对象暂不支持直接打开；可以先留在暂存箱里",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 150,
+          "context": "这个对象暂不支持直接打开；可以先留在暂存箱里"
+        }
+      ]
+    },
+    "lib.contentexchange.3bdb847af08f": {
+      "key": "lib.contentexchange.3bdb847af08f",
+      "source": "已收到 {contents}（部分内容本地已有）",
+      "zh": "已收到 {contents}（部分内容本地已有）",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "contents",
+          "expression": "new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 46,
+          "context": "已收到 {contents}（部分内容本地已有）"
+        }
+      ]
+    },
+    "lib.contentexchange.b3cbed6586bd": {
+      "key": "lib.contentexchange.b3cbed6586bd",
+      "source": "已收到 {contents}",
+      "zh": "已收到 {contents}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "contents",
+          "expression": "new Intl.ListFormat(getLocale(), { style: \"long\", type: \"conjunction\" }).format(parts)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 46,
+          "context": "已收到 {contents}"
+        }
+      ]
+    },
+    "lib.contentexchange.97ca5653783f": {
+      "key": "lib.contentexchange.97ca5653783f",
+      "source": "碰一碰口令无法导入",
+      "zh": "碰一碰口令无法导入",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 39,
+          "context": "碰一碰口令无法导入"
+        }
+      ]
+    },
+    "lib.contentexchange.4dc6d8e7a87a": {
+      "key": "lib.contentexchange.4dc6d8e7a87a",
+      "source": "新暂存箱",
+      "zh": "新暂存箱",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 41,
+          "context": "新暂存箱"
+        }
+      ]
+    },
+    "lib.contentexchange.17fa33d72406": {
+      "key": "lib.contentexchange.17fa33d72406",
+      "source": "当前暂存箱",
+      "zh": "当前暂存箱",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 41,
+          "context": "当前暂存箱"
+        }
+      ]
+    },
+    "lib.contentexchange.fd5394f29856": {
+      "key": "lib.contentexchange.fd5394f29856",
+      "source": "个人名片",
+      "zh": "个人名片",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 42,
+          "context": "个人名片"
+        }
+      ]
+    },
+    "lib.contentexchange.b8fde21bc2ca": {
+      "key": "lib.contentexchange.b8fde21bc2ca",
+      "source": "组织邀请",
+      "zh": "组织邀请",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 43,
+          "context": "组织邀请"
+        }
+      ]
+    },
+    "lib.contentexchange.290e61e70691": {
+      "key": "lib.contentexchange.290e61e70691",
+      "source": "本地已有这张名片（未重复添加）",
+      "zh": "本地已有这张名片（未重复添加）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 45,
+          "context": "本地已有这张名片（未重复添加）"
+        }
+      ]
+    },
+    "lib.contentexchange.045720f46a17": {
+      "key": "lib.contentexchange.045720f46a17",
+      "source": "这个口令里没有新内容",
+      "zh": "这个口令里没有新内容",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 45,
+          "context": "这个口令里没有新内容"
+        }
+      ]
+    },
+    "lib.contentexchange.354191707f33": {
+      "key": "lib.contentexchange.354191707f33",
+      "source": "暂存箱口令无法导入",
+      "zh": "暂存箱口令无法导入",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 53,
+          "context": "暂存箱口令无法导入"
+        }
+      ]
+    },
+    "lib.contentexchange.36987ff12d5e": {
+      "key": "lib.contentexchange.36987ff12d5e",
+      "source": "已收到 {count} 项内容，已存入新暂存箱",
+      "zh": "已收到 {count} 项内容，已存入新暂存箱",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "r.imported ?? 0"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 55,
+          "context": "已收到 {count} 项内容，已存入新暂存箱"
+        }
+      ]
+    },
+    "lib.contentexchange.9111f2690fbb": {
+      "key": "lib.contentexchange.9111f2690fbb",
+      "source": "已导入 {count} 项，替换为当前暂存箱",
+      "zh": "已导入 {count} 项，替换为当前暂存箱",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "r.imported ?? 0"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 56,
+          "context": "已导入 {count} 项，替换为当前暂存箱"
+        }
+      ]
+    },
+    "lib.contentexchange.f69fb628aaab": {
+      "key": "lib.contentexchange.f69fb628aaab",
+      "source": "组织邀请无法识别",
+      "zh": "组织邀请无法识别",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 60,
+          "context": "组织邀请无法识别"
+        }
+      ]
+    },
+    "lib.contentexchange.2c608891c3c4": {
+      "key": "lib.contentexchange.2c608891c3c4",
+      "source": "组织已添加到通讯录；成员身份和访问权限由服务器确认。",
+      "zh": "组织已添加到通讯录；成员身份和访问权限由服务器确认。",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/contentExchange.ts",
+          "line": 61,
+          "context": "组织已添加到通讯录；成员身份和访问权限由服务器确认。"
+        }
+      ]
+    },
+    "state.madmodel.03964a43d8ea": {
+      "key": "state.madmodel.03964a43d8ea",
+      "source": "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
+      "zh": "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 295,
+          "context": "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。"
+        }
+      ]
+    },
+    "state.madmodel.cc4b425932b8": {
+      "key": "state.madmodel.cc4b425932b8",
+      "source": "学校登录状态已过期，暂时无法完成校验",
+      "zh": "学校登录状态已过期，暂时无法完成校验",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 529,
+          "context": "学校登录状态已过期，暂时无法完成校验"
+        }
+      ]
+    },
+    "state.madmodel.302ca473236a": {
+      "key": "state.madmodel.302ca473236a",
+      "source": "更新学校登录状态暂缓，请稍后重试",
+      "zh": "更新学校登录状态暂缓，请稍后重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 535,
+          "context": "更新学校登录状态暂缓，请稍后重试"
+        }
+      ]
+    },
+    "state.madmodel.0e0df04b7d65": {
+      "key": "state.madmodel.0e0df04b7d65",
+      "source": "学校登录状态已过期，请重新登录",
+      "zh": "学校登录状态已过期，请重新登录",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 538,
+          "context": "学校登录状态已过期，请重新登录"
+        }
+      ]
+    },
+    "state.madmodel.c04cfb0974f5": {
+      "key": "state.madmodel.c04cfb0974f5",
+      "source": "更新登录凭证失败",
+      "zh": "更新登录凭证失败",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 542,
+          "context": "更新登录凭证失败"
+        }
+      ]
+    },
+    "state.madmodel.93c04445723a": {
+      "key": "state.madmodel.93c04445723a",
+      "source": "学校模型暂不可用：{reason}。登录状态失效时请重新登录清华账号；网络或限流问题请稍后重试。",
+      "zh": "学校模型暂不可用：{reason}。登录状态失效时请重新登录清华账号；网络或限流问题请稍后重试。",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "reason",
+          "expression": "why"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 550,
+          "context": "学校模型暂不可用：{reason}。登录状态失效时请重新登录清华账号；网络或限流问题请稍后重试。"
+        }
+      ]
+    },
+    "lib.venue.9ae22ae4d71c": {
+      "key": "lib.venue.9ae22ae4d71c",
+      "source": "该账号需要二次认证",
+      "zh": "该账号需要二次认证",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 37,
+          "context": "该账号需要二次认证"
+        }
+      ]
+    },
+    "lib.venue.62fb79046777": {
+      "key": "lib.venue.62fb79046777",
+      "source": "验证码错误或已过期",
+      "zh": "验证码错误或已过期",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 348,
+          "context": "验证码错误或已过期"
+        }
+      ]
+    },
+    "state.data.0f1ade7c641d": {
+      "key": "state.data.0f1ade7c641d",
+      "source": "粘贴导出的草稿 JSON",
+      "zh": "粘贴导出的草稿 JSON",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1823,
+          "context": "粘贴导出的草稿 JSON"
+        }
+      ]
+    },
+    "state.data.35552730badd": {
+      "key": "state.data.35552730badd",
+      "source": "流水明细获取失败，已显示上次拉到的明细",
+      "zh": "流水明细获取失败，已显示上次拉到的明细",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 2372,
+          "context": "流水明细获取失败，已显示上次拉到的明细"
+        }
+      ]
+    }
+  }
+}

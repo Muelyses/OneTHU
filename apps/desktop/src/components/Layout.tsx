@@ -1,3 +1,5 @@
+import { allSearchRows } from "../state/searchRows.js";
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { BrandLogo } from "./BrandLogo.js";
 import { useExperienceMode, useIsSimpleLike, useSimpleRoute } from "../state/experienceMode.js";
 import { SimpleHeader } from "./SimpleExperience.js";
@@ -93,27 +95,27 @@ export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactN
   // 目录里再列一遍等于「首页 → 首页」；而且它是程序坞默认球的第一颗
   //（homeSpheres 的 docked = NAV.slice(0,8)）。删掉后老用户持久化的 "home" 球
   // 会被 sanitize 的 NAV 白名单自动过滤掉，不用写迁移。
-  { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
+  { page: "tasks", get label() { return i18n("components.layout.52fdbbaeda4c"); }, icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
   // R30：这一栏现在同时收纳网络学堂与雨课堂的课程，侧栏用中性的「课程」；
   // 「网络学堂」保留为**来源名**（课程卡/作业行上的来源徽标、今日页等处不改）。
-  { page: "learn", label: "课程", icon: IconLearn },
-  { page: "schedule", label: "日程", icon: IconSchedule },
-  { page: "trace", label: "寻迹", icon: IconTrace },
-  { page: "contacts", label: "通讯录", icon: IconMail },
-  { page: "mail", label: "邮箱", icon: IconMail },
-  { page: "cloud", label: "云盘", icon: IconCloud },
+  { page: "learn", get label() { return i18n("components.layout.60db1afb4022"); }, icon: IconLearn },
+  { page: "schedule", get label() { return i18n("components.layout.a14f23af7016"); }, icon: IconSchedule },
+  { page: "trace", get label() { return i18n("components.layout.60458dfb4c14"); }, icon: IconTrace },
+  { page: "contacts", get label() { return i18n("components.layout.06657c279571"); }, icon: IconMail },
+  { page: "mail", get label() { return i18n("components.layout.73075237fd0f"); }, icon: IconMail },
+  { page: "cloud", get label() { return i18n("components.layout.f75562426e77"); }, icon: IconCloud },
   { page: "gitlab", label: "GitLab", icon: IconGitLab },
   { page: "thubook", label: "THUBook", icon: IconBook },
   /* 清小搭（2026-10-15 用户点名「加入一级功能区程序坞」）：一级页，排在 thubook 之后——
      前八颗（程序坞默认球 = NAV.slice(0,8)）一颗不动，它作为第九颗出现在坞上；
      它是 homeSpheres 白名单（known）的一员，否则 sanitize 会把持久化的这颗球吃掉。 */
-  { page: "xiaoda", label: "清小搭", icon: IconXiaoda },
-  { page: "info", label: "信息", icon: IconInfo },
-  { page: "life", label: "生活", icon: IconCard },
-  { page: "reserve", label: "预约", icon: IconCalendar },
-  { page: "zhjwxk", label: "选课", icon: IconXk },
-  { page: "thos", label: "在线服务", icon: IconThos },
-  { page: "otherinfo", label: "其他 Info 应用", icon: IconExternal },
+  { page: "xiaoda", get label() { return i18n("components.layout.b1abb3dc2271"); }, icon: IconXiaoda },
+  { page: "info", get label() { return i18n("components.layout.e7028601e7da"); }, icon: IconInfo },
+  { page: "life", get label() { return i18n("components.layout.15d208d1b4c9"); }, icon: IconCard },
+  { page: "reserve", get label() { return i18n("components.layout.352cdc807892"); }, icon: IconCalendar },
+  { page: "zhjwxk", get label() { return i18n("components.layout.fd17d86dd268"); }, icon: IconXk },
+  { page: "thos", get label() { return i18n("components.layout.1760b98532ec"); }, icon: IconThos },
+  { page: "otherinfo", get label() { return i18n("components.layout.4ebe692f5dbb"); }, icon: IconExternal },
 ];
 
 /** 插件动态 tab（useSyncExternalStore 订阅；PageHead 的 navLabel 消歧也用它） */
@@ -139,18 +141,20 @@ export { BrandLogo } from "./BrandLogo.js";
 /** 竖版标签栏：左侧栏（横版时不渲染）；同时给根节点打 tabs-vertical，主内容区据此让出左栏 */
 /** 竖版侧栏底部：复制 / 设置 / 宽窄切换（完整 ↔ 窄）。窄模式下竖排 */
 function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarrow: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { activeId } = useExplorerState();
   const canDup = activeId !== HOME_TAB_ID;
   return (
     <div className="ex-rail-actions">
-      <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
-      <IconBtn label="我的" icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
+      <IconBtn label={i18n("components.layout.fb32cf481c29")} icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
+      <IconBtn label={i18n("components.layout.7f1d9dd04cd1")} icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
       <button
         className="icon-btn ex-rail-width"
         onClick={onToggleNarrow}
         aria-pressed={narrow}
-        aria-label={narrow ? "侧栏：窄（悬停展开）→ 切换为完整" : "侧栏：完整 → 切换为窄（悬停展开）"}
-        title={narrow ? "切换为完整显示" : "切换为窄模式（缩略图，悬停展开）"}
+        aria-label={narrow ? i18n("components.layout.b5c07fc4f827") : i18n("components.layout.0be1eb29d29d")}
+        title={narrow ? i18n("components.layout.76fb5d2b725f") : i18n("components.layout.6ac6519ea0d3")}
       >
         <IconSidebarRail width={16} height={16} />
       </button>
@@ -161,6 +165,8 @@ function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarr
 const RAIL_NARROW_KEY = "ex-rail-narrow";
 
 function TabRail(): ReactNode {
+  const uiLocale = useUiLocale();
+
   /* 手机（dev-explorer 二轮拍板）：竖栏永不出现——html.is-phone 下只允许横标签页；
      即便存过「竖版」默认值，这里也把 tabs-vertical 类一起收回，内容区不让位。 */
   const phone = useIsPhone();
@@ -185,7 +191,7 @@ function TabRail(): ReactNode {
   }, [mode, narrow, phone]);
   if (mode !== "v" || phone) return null;
   return (
-    <aside className="ex-rail" aria-label="标签页">
+    <aside className="ex-rail" aria-label={i18n("components.layout.a626aad412b7")}>
       <TabStrip />
       <RailActions narrow={narrow} onToggleNarrow={() => setNarrow((v) => !v)} />
     </aside>
@@ -193,6 +199,8 @@ function TabRail(): ReactNode {
 }
 
 function TopBar(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const layout = useTabLayoutMode();
   /* 手机（A2/A3，2026-10-16 改口径）：顶栏只留一个圆形首页钮（房子），复制钮不要；
      **标签条彻底退役**——横竖都不渲染，换标签只走底栏「标签页」抽屉。 */
@@ -216,17 +224,17 @@ function TopBar(): ReactNode {
       {phone ? (
         /* 手机档（2026-10-16 用户口径）：顶部只留一个**圆形房子钮**回首页——
            横竖都不再有标签条（换标签只走底栏「标签页」抽屉）。此前是 OneTHU monogram 玻璃片。 */
-        <button className="ex-tb-home-mark" onClick={() => focusTab(HOME_TAB_ID)} aria-label="首页" title="首页">
+        <button className="ex-tb-home-mark" onClick={() => focusTab(HOME_TAB_ID)} aria-label={i18n("components.layout.203c08e0d44a")} title={i18n("components.layout.203c08e0d44a")}>
           <IconHome width={19} height={19} />
         </button>
       ) : layout === "h" ? (
-        <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
+        <IconBtn label={i18n("components.layout.fb32cf481c29")} icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
       ) : null}
       {layout === "h" && !phone ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
       <ChromeMore />
-      <IconBtn label="我的" icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
+      <IconBtn label={i18n("components.layout.7f1d9dd04cd1")} icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
     </header>
   );
 }
@@ -247,6 +255,8 @@ export function SegmentedOverflow({
   style?: CSSProperties;
   children: ReactNode;
 }) {
+  const uiLocale = useUiLocale();
+
   const [rowRef, pillRef] = useSegPill();
   const indiRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLElement>(null);
@@ -376,6 +386,8 @@ export function SegmentedOverflow({
 
 /** Slogan：One 衬线 · THUer 现代黑体 · 其余等宽 · 句尾 OneTHU 用完整品牌标识 */
 export function Slogan({ size = 13 }: { size?: number }) {
+  const uiLocale = useUiLocale();
+
   return (
     <span className="slogan" style={{ fontSize: size }}>
       <span className="s-one">One</span>
@@ -389,6 +401,8 @@ export function Slogan({ size = 13 }: { size?: number }) {
 
 /** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
+  const uiLocale = useUiLocale();
+
   const mode = useExperienceMode();
   const simple = useIsSimpleLike(); /* 极简与实用共用简洁壳 */
   useEffect(() => { document.documentElement.dataset.experience = mode; return () => { delete document.documentElement.dataset.experience; }; }, [mode]);
@@ -471,6 +485,8 @@ function readFabPos(): FabPos | null {
 const FAB_OBSTACLES = ".ex-bbar, .oneshot, .schedule-dock, .board-viewport-tools, .free-fab-col, .vault-dock, .vault-anchor, .top-fab, .chat-dock, .dock-panel, .ex-mini";
 
 export function HardRefreshButton() {
+  const uiLocale = useUiLocale();
+
   const [showTop, setShowTop] = useState(false);
   const [stored, setStored] = useState<FabPos | null>(readFabPos);
   const [auto, setAuto] = useState<FabPos | null>(null);
@@ -590,8 +606,8 @@ export function HardRefreshButton() {
         <button
           className="hard-refresh-fab top-fab"
           style={topStyle}
-          title="回到顶层"
-          aria-label="回到顶层"
+          title={i18n("components.layout.61156d427af0")}
+          aria-label={i18n("components.layout.61156d427af0")}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <IconArrowUp width={18} height={18} />
@@ -601,8 +617,8 @@ export function HardRefreshButton() {
         ref={fabRef}
         className={"hard-refresh-fab" + (dragging ? " is-dragging" : "")}
         style={fabStyle}
-        title="硬刷新（整页重载）· 按住可拖动位置"
-        aria-label="硬刷新"
+        title={i18n("components.layout.7a007b29bf56")}
+        aria-label={i18n("components.layout.f9e31e1d63d5")}
         onClick={() => {
           if (skipClick.current) { skipClick.current = false; return; }
           window.location.reload();
@@ -632,6 +648,8 @@ export function PageHead({
    *  与 actions 的分工是「页面级操作 vs 工具栏」。 */
   menu?: PageMenuItem[];
 }) {
+  const uiLocale = useUiLocale();
+
   /* 把菜单同步给顶栏。**本 PageHead 的稳定 token**：页切换期间可能同时存在两代 PageHead，
      卸载时只允许清掉自己写进去的那份（见 pageChrome.clearPageChrome）。 */
   const chromeToken = useRef<object>({});
@@ -687,46 +705,42 @@ export function slugOf(text: string): string {
   return t || "item";
 }
 
-/** 给当前 DOM 里的设置行/分节打 id（幂等；路由变化时重跑）。
- *  设置行文字 = 标题 + 说明（搜索按这两个字段匹配，所以 id 也从标题出）。 */
+/** Copy explicit source anchors only. Labels can change without changing IDs. */
 export function markSettingsRows(): void {
-  // 两族一起认：OneGUI 渲染 .og-section，未迁移页面还写着 .section-head
-  const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section > .og-section-titles, .og-section"));
-  heads.forEach((h) => {
-    const t = (h.textContent ?? "").trim();
-    if (t && !h.dataset.setId) h.dataset.setId = "sec-" + slugOf(t);
-  });
-  const rows = Array.from(document.querySelectorAll<HTMLElement>(".setting-row, .og-settings-row"));
-  rows.forEach((r) => {
-    if (r.dataset.setId) return;
-    const title = (r.querySelector(".setting-title, .og-settings-row-title")?.textContent ?? "").trim();
-    if (title) r.dataset.setId = "row-" + slugOf(title);
+  document.querySelectorAll<HTMLElement>("[id^=row-], [id^=sec-]").forEach(node => {
+    if (!node.dataset.setId) node.dataset.setId = node.id;
   });
 }
 
-/** 滚动并高亮某个设置行 / 分节（复用既有请求机制；`.sec-focus` 的分节版已在 Settings.tsx）。
- *  解析顺序 = 行/分节的稳定 id → 行文本 → **动作按钮文本**。 */
-export function focusSettingsTarget(target: string): boolean {
+/** Stable row/section IDs first. Legacy title requests remain compatible, but never mint IDs. */
+export function focusSettingsTarget(target: string, root: ParentNode = document): boolean {
   const want = target.trim();
-  const slug = slugOf(want);
-  const byId = document.querySelector<HTMLElement>(
-    `[data-set-id="row-${slug}"],[data-set-id="sec-${slug}"],[id="row-${slug}"],[id="sec-${slug}"]`,
-  );
-  let hit = byId ?? Array.from(document.querySelectorAll<HTMLElement>(".setting-row,.section-head,.og-settings-row,.og-section"))
-    .find((el) => (el.textContent ?? "").includes(want));
+  if (!want) return false;
+  const row = allSearchRows().find(item => item.id === want || item.title === want || item.breadcrumb?.at(-1) === want);
+  const ids = new Set([want, `row-${want}`, `sec-${want}`, `row-${slugOf(want)}`, `sec-${slugOf(want)}`]);
+  if (row) ids.add(`row-${row.id}`);
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>("[data-set-id], [id]"));
+  const rendered = (node: HTMLElement): HTMLElement => getComputedStyle(node).display === "contents"
+    ? Array.from(node.querySelectorAll<HTMLElement>("*")).find(child => child.getClientRects().length > 0) ?? node : node;
+  const visible = (node: HTMLElement): boolean => !node.closest("[hidden]") && rendered(node).getClientRects().length > 0;
+  let hit = nodes.find(node => visible(node) && (ids.has(node.dataset.setId ?? "") || ids.has(node.id)));
+  // Older callers can still request a section ID; the theme lives in Appearance.
   if (!hit) {
-    const btn = Array.from(document.querySelectorAll<HTMLElement>(".explorer-settings-body .btn, .explorer-settings-body button"))
-      .find((el) => {
-        const t = (el.textContent ?? "").trim();
-        if (!t || !el.offsetParent || el.classList.contains("plg-danger")) return false;
-        return t === want || t.replace(/\s+/g, "") === want.replace(/\s+/g, "");
-      });
-    if (btn) hit = btn;
+    const section = want === "主题" ? "外观" : want;
+    hit = Array.from(root.querySelectorAll<HTMLElement>("[data-settings-section]"))
+      .find(node => visible(node) && node.dataset.settingsSection === section);
+  }
+  // Compatibility for external plugin actions that have not adopted an explicit anchor.
+  if (!hit && !row) {
+    hit = Array.from(root.querySelectorAll<HTMLElement>(".setting-row,.section-head,.og-settings-row,.og-section,button"))
+      .find(node => visible(node) && !node.classList.contains("plg-danger") && (node.textContent ?? "").trim() === want);
   }
   if (!hit) return false;
+  hit = rendered(hit);
   hit.scrollIntoView({ block: "center", behavior: "smooth" });
   hit.classList.add("row-focus");
-  window.setTimeout(() => hit?.classList.remove("row-focus"), 1800);
+  const focused = hit;
+  window.setTimeout(() => focused.classList.remove("row-focus"), 1800);
   return true;
 }
 
@@ -749,13 +763,15 @@ export function useNarrowBox(threshold = 300): [React.RefObject<HTMLDivElement |
 /** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— 现挂在设置浮层内部做快速换段。
  *  手机与桌面同款（LevelBox 原样保留，goEntry 直接换浮层段）。 */
 export function LevelBox(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const entry = useEntry(); // 高亮**唯一来源**
   const [boxRef, narrow] = useNarrowBox(300);
   /* 窄栏：只渲染图标（title/aria-label 承载全名），**禁止文字换行**；宽栏：文字完整不截断 */
   const cells: Array<{ id: Entry; label: string; icon: ReactNode }> = [
-    { id: "profile", label: "我的名片", icon: <IconUser /> },
-    { id: "settings", label: "设置", icon: <IconSettings /> },
-    { id: "plugins", label: "插件", icon: <IconPlug /> },
+    { id: "profile", label: i18n("components.layout.487e926379fe"), icon: <IconUser /> },
+    { id: "settings", label: i18n("components.layout.df3d58c7d84b"), icon: <IconSettings /> },
+    { id: "plugins", label: i18n("components.layout.e806fbbe8ec6"), icon: <IconPlug /> },
     { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },
   ];
   const cell = (c: { id: Entry; label: string; icon: ReactNode }): ReactNode => (
@@ -800,6 +816,8 @@ export function LevelBox(): ReactNode {
  * 放在外层会拿到 NOOP——表现就是「点了没反应」。
  */
 function ChromeMore() {
+  const uiLocale = useUiLocale();
+
   const ctx = useContextMenu();
   const chrome = useSyncExternalStore(subscribePageChrome, pageChromeSnapshot, pageChromeSnapshot);
   const moreRef = useRef<HTMLButtonElement | null>(null);
@@ -812,7 +830,7 @@ function ChromeMore() {
     if (import.meta.env.DEV) {
       items.push({
         key: "dev-phone-frame",
-        label: "竖屏取景框（dev）",
+        label: i18n("components.layout.56043fcf0aa1"),
         onSelect: () => { window.location.href = window.location.pathname + "?phone-frame=1"; },
       });
     }
@@ -824,7 +842,7 @@ function ChromeMore() {
       className="topbar-more"
       ref={moreRef}
       onClick={openMenu}
-      aria-label="更多操作"
+      aria-label={i18n("components.layout.9f07d2ce4115")}
       aria-haspopup="menu"
     >
       <IconMore width={18} height={18} />
@@ -833,13 +851,17 @@ function ChromeMore() {
 }
 
 export function SectionHead({
+  id,
   title,
   aside,
 }: {
+  id?: string;
   title: string;
   aside?: ReactNode;
 }) {
-  return <OGSection title={title} aside={aside} />;
+  const uiLocale = useUiLocale();
+
+  return <OGSection id={id} title={title} aside={aside} />;
 }
 
 export function Card({
@@ -851,6 +873,8 @@ export function Card({
   style?: CSSProperties;
   children: ReactNode;
 }) {
+  const uiLocale = useUiLocale();
+
   // 旧约定：className 里带 "list" 表示"内容自己贴边"（行自带内边距）→ 贴边卡
   const flush = /(^|\s)(list|stat-click|course-card)(\s|$)/.test(className);
   const rest = className.replace(/(^|\s)list(\s|$)/g, " ").trim();
@@ -876,20 +900,26 @@ export function Empty({
   hint?: string;
   action?: ReactNode;
 }) {
+  const uiLocale = useUiLocale();
+
   return <OGEmptyState title={text} icon={icon} hint={hint} action={action} />;
 }
 
 export function ErrorNote({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  const uiLocale = useUiLocale();
+
   return (
     <OGBanner
       tone="error"
       title={<ErrorLine text={text} />}
-      action={onRetry ? <OGBtn variant="ghost" tone="error" size="sm" onClick={onRetry}>重试</OGBtn> : null}
+      action={onRetry ? <OGBtn variant="ghost" tone="error" size="sm" onClick={onRetry}>{i18n("components.layout.b8784c8dd563")}</OGBtn> : null}
     />
   );
 }
 
 export function SkeletonRows({ rows = 4 }: { rows?: number }) {
+  const uiLocale = useUiLocale();
+
   return (
     <OGCard pad="none">
       <OGLoadingBlock rows={rows} />
@@ -906,6 +936,8 @@ export function Switch({
   onChange: (v: boolean) => void;
   label: string;
 }) {
+  const uiLocale = useUiLocale();
+
   return <OGSwitch checked={on} onChange={() => onChange(!on)} aria-label={label} />;
 }
 

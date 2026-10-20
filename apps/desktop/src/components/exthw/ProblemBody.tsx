@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * R20-B3：题干 / 我的作答正文渲染组件（docs 28.10）。
  *
@@ -134,7 +135,9 @@ export function readYktDocTheme(container: Element | null): YktDocTheme {
   };
 }
 
-export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", className }: ProblemBodyProps) {
+export function ProblemBody({ html, fontUrl, cookies, title = i18n("components.exthw.problembody.cd833817789d"), className }: ProblemBodyProps) {
+  const uiLocale = useUiLocale();
+
   const [doc, setDoc] = useState("");
   const [height, setHeight] = useState(YKT_FRAME_MIN_H);
   const frameRef = useRef<HTMLIFrameElement | null>(null);
@@ -164,7 +167,7 @@ export function ProblemBody({ html, fontUrl, cookies, title = "题目内容", cl
       );
       setHeight(YKT_FRAME_MIN_H);
     },
-    [html, themeTick],
+    [html, themeTick, uiLocale],
   );
 
   /* 首建：渲染器与字体并行取，任一失败各自降级，不影响另一环 */

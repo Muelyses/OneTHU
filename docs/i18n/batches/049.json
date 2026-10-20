@@ -1,0 +1,1433 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.info.kongjiantab.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 347,
+          "context": "{i18n(\"pages.info.kongjiantab.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.2ec81db68e25",
+      "source": "全部房间…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 277,
+          "context": "{i18n(\"pages.info.kongjiantab.2ec81db68e25\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.434f5b0b9e74",
+      "source": "公共空间预约记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 360,
+          "context": "{i18n(\"pages.info.kongjiantab.434f5b0b9e74\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.50b5b1d2abef",
+      "source": "姓名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 341,
+          "context": "{i18n(\"pages.info.kongjiantab.50b5b1d2abef\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.58ed0c97a7b1",
+      "source": "选择空间（{length} 个）…",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(page.spaces.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 257,
+          "context": "{i18n(\"pages.info.kongjiantab.58ed0c97a7b1\", { length: String(page.spaces.length) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.5e02f649e2b6",
+      "source": "取消预约：{space} {time}？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "space",
+          "expression": "String(rec.space)"
+        },
+        {
+          "name": "time",
+          "expression": "String(rec.time)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 211,
+          "context": "confirmOk(i18nMsg(\"pages.info.kongjiantab.5e02f649e2b6\", { space: String(rec.space), time: String(rec.time) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.60ac5285aa4d",
+      "source": "用途（选填）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 345,
+          "context": "{i18n(\"pages.info.kongjiantab.60ac5285aa4d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.6325654ae002",
+      "source": "共享家园网暂不可用，请稍后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 238,
+          "context": "unavailable ? i18n(\"pages.info.kongjiantab.6325654ae002\") : (error ?? \"\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.698451e7a267",
+      "source": "该房间/日期暂无开放场次。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 307,
+          "context": "{i18n(\"pages.info.kongjiantab.698451e7a267\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.6dbaeff68e66",
+      "source": "全部房间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 278,
+          "context": "label: i18n(\"pages.info.kongjiantab.6dbaeff68e66\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.kongjiantab.70d0c1b33626",
+      "source": "日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 292,
+          "context": "{i18n(\"pages.info.kongjiantab.70d0c1b33626\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.72944bf6d779",
+      "source": "确认预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 338,
+          "context": "{i18n(\"pages.info.kongjiantab.72944bf6d779\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.96b2d406041b",
+      "source": "房间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 271,
+          "context": "{i18n(\"pages.info.kongjiantab.96b2d406041b\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 284,
+          "context": "page.rooms.find((r) => r.id === effRoomId)?.name ?? i18n(\"pages.info.kongjiantab.96b2d406041b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.9820727211b1",
+      "source": "公共空间列表为空（门户页兜底未命中）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 93,
+          "context": "new Error(i18n(\"pages.info.kongjiantab.9820727211b1\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.98fde9b93a54",
+      "source": "共享家园网 · 活动空间预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 235,
+          "context": "{i18n(\"pages.info.kongjiantab.98fde9b93a54\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.99ed81157283",
+      "source": "取消失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 216,
+          "context": "window.alert(i18n(\"pages.info.kongjiantab.99ed81157283\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.9e9bead81498",
+      "source": "活动",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 60,
+          "context": "useState(i18n(\"pages.info.kongjiantab.9e9bead81498\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.a0624ace1039",
+      "source": "未获取到公共空间列表（可能未开放或登录态失效）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 244,
+          "context": "{i18n(\"pages.info.kongjiantab.a0624ace1039\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.a4c0233f1d6c",
+      "source": "不可约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 328,
+          "context": "slot.state || i18n(\"pages.info.kongjiantab.a4c0233f1d6c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.a9b1124b3461",
+      "source": "晚上",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 230,
+          "context": "[i18n(\"pages.info.kongjiantab.a9b1124b3461\"), slots.filter((x) => Number(String(x.time).split(\":\")[0]) >= 17)]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.af81dcf37aa8",
+      "source": "下午",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 229,
+          "context": "[i18n(\"pages.info.kongjiantab.af81dcf37aa8\"), slots.filter((x) => { const h = Number(String(x.time).split(\":\")[0]); return h >= 12 && h < 17; })]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.bc37a6110a07",
+      "source": "已提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 198,
+          "context": "picked.state || i18n(\"pages.info.kongjiantab.bc37a6110a07\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.bf8b5d378f01",
+      "source": "电话",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 343,
+          "context": "{i18n(\"pages.info.kongjiantab.bf8b5d378f01\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.c3b180cc0d49",
+      "source": "暂无预约记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 362,
+          "context": "{i18n(\"pages.info.kongjiantab.c3b180cc0d49\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.c4d678ef6e37",
+      "source": "学号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 342,
+          "context": "{i18n(\"pages.info.kongjiantab.c4d678ef6e37\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.d1d50368fefe",
+      "source": "可约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 328,
+          "context": "bookable ? i18n(\"pages.info.kongjiantab.d1d50368fefe\") : slot.state || i18n(\"pages.info.kongjiantab.a4c0233f1d6c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.da32887460b5",
+      "source": "确定预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 348,
+          "context": "busy ? i18n(\"pages.info.kongjiantab.18931020ad52\") : i18n(\"pages.info.kongjiantab.da32887460b5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 251,
+          "context": "{i18n(\"pages.info.kongjiantab.e81059e1a712\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 264,
+          "context": "spaces.find((sp) => sp.id === spaceId)?.name ?? i18n(\"pages.info.kongjiantab.e81059e1a712\")"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.f68b28f7f2a2",
+      "source": "宿舍公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 235,
+          "context": "{i18n(\"pages.info.kongjiantab.f68b28f7f2a2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.fe4a11b61bf6",
+      "source": "提交失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 202,
+          "context": "setNotice(i18n(\"pages.info.kongjiantab.fe4a11b61bf6\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.0362227e8948",
+      "source": "座位 {zhName} 预约成功，须在预约开始后 30 分钟内完成签到",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "zhName",
+          "expression": "String(seat.zhName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 523,
+          "context": "text: i18n(\"pages.info.librarytab.0362227e8948\", { zhName: String(seat.zhName) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.08db97b4fd8b",
+      "source": "预约中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 776,
+          "context": "busySeat !== null ? i18n(\"pages.info.librarytab.08db97b4fd8b\") : i18n(\"pages.info.librarytab.72944bf6d779\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.0addd7784578",
+      "source": "取消中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 832,
+          "context": "busyCancel !== null ? i18n(\"pages.info.librarytab.0addd7784578\") : i18n(\"pages.info.librarytab.b741efb628be\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.0afc4fe3d305",
+      "source": "取消预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 841,
+          "context": "{i18n(\"pages.info.librarytab.0afc4fe3d305\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.1a558735ea57",
+      "source": "我的预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 787,
+          "context": "{i18n(\"pages.info.librarytab.1a558735ea57\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.1e0034462d91",
+      "source": "可约 {usableCount}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "usableCount",
+          "expression": "usableCount"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 736,
+          "context": "{i18nRich(\"pages.info.librarytab.1e0034462d91\", { usableCount: usableCount })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.266e6cb77079",
+      "source": "图书馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 611,
+          "context": "libs?.find((l) => l.id === libId)?.zhName ?? i18n(\"pages.info.librarytab.266e6cb77079\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.2bc5f3d52c71",
+      "source": "{caption}加载失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "caption",
+          "expression": "String(caption)"
+        },
+        {
+          "name": "msg",
+          "expression": "String(img.msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 102,
+          "context": "{i18n(\"pages.info.librarytab.2bc5f3d52c71\", { caption: String(caption), msg: String(img.msg) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 769,
+          "context": "{i18n(\"pages.info.librarytab.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.2e205d7f1965",
+      "source": "无可用区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 642,
+          "context": "sections.length === 0 ? i18n(\"pages.info.librarytab.2e205d7f1965\") : i18n(\"pages.info.librarytab.40955d56e66e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.30289a8d04c0",
+      "source": "预约座位 {zhName}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "zhName",
+          "expression": "pendingSeat.zhName"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 761,
+          "context": "{i18nRich(\"pages.info.librarytab.30289a8d04c0\", { zhName: pendingSeat.zhName })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.312d122d681e",
+      "source": "有电源插座",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 739,
+          "context": "{i18n(\"pages.info.librarytab.312d122d681e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.31c17158ebdb",
+      "source": "图书馆座位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 571,
+          "context": "{i18n(\"pages.info.librarytab.31c17158ebdb\")}"
+        }
+      ],
+      "translation": "Library seat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.328966d7d40c",
+      "source": "已取消预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 549,
+          "context": "text: i18n(\"pages.info.librarytab.328966d7d40c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.3382870bc4ad",
+      "source": "区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 637,
+          "context": "{i18n(\"pages.info.librarytab.3382870bc4ad\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 663,
+          "context": "sections?.find((sec) => sec.id === sectionId)?.zhName ?? i18n(\"pages.info.librarytab.3382870bc4ad\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 819,
+          "context": "r.pos || r.id || i18n(\"pages.info.librarytab.352cdc807892\")"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.36f1b7b0d4cf",
+      "source": " · 有插座",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 130,
+          "context": "s.hasPower ? i18n(\"pages.info.librarytab.36f1b7b0d4cf\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.3c4849cb1508",
+      "source": "确认取消该预约？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 825,
+          "context": "{i18n(\"pages.info.librarytab.3c4849cb1508\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.40955d56e66e",
+      "source": "选择区域…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 642,
+          "context": "sections.length === 0 ? i18n(\"pages.info.librarytab.2e205d7f1965\") : i18n(\"pages.info.librarytab.40955d56e66e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.4927a53bcc88",
+      "source": "加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 621,
+          "context": "!floors ? i18n(\"pages.info.librarytab.4927a53bcc88\") : floors.length === 0 ? i18n(\"pages.info.librarytab.81453cb31460\") : i18n(\"pages.info.librarytab.fc39fa88920f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 642,
+          "context": "!sections ? i18n(\"pages.info.librarytab.4927a53bcc88\") : sections.length === 0 ? i18n(\"pages.info.librarytab.2e205d7f1965\") : i18n(\"pages.info.librarytab.40955d56e66e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.4e7028070d16",
+      "source": "须在预约开始后 30 分钟内完成签到",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 767,
+          "context": "{i18n(\"pages.info.librarytab.4e7028070d16\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.53d496172b27",
+      "source": "馆列表为空（数据源未返回内容，登录状态可能未建立）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 285,
+          "context": "new Error(i18n(\"pages.info.librarytab.53d496172b27\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.56e603f6d1da",
+      "source": "馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 596,
+          "context": "{i18n(\"pages.info.librarytab.56e603f6d1da\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.6776297fac38",
+      "source": "选择馆…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 601,
+          "context": "{i18n(\"pages.info.librarytab.6776297fac38\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.6b7589029582",
+      "source": "算了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 834,
+          "context": "{i18n(\"pages.info.librarytab.6b7589029582\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.70d0c1b33626",
+      "source": "日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 669,
+          "context": "{i18n(\"pages.info.librarytab.70d0c1b33626\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 671,
+          "context": "{i18n(\"pages.info.librarytab.70d0c1b33626\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.72944bf6d779",
+      "source": "确认预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 776,
+          "context": "busySeat !== null ? i18n(\"pages.info.librarytab.08db97b4fd8b\") : i18n(\"pages.info.librarytab.72944bf6d779\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.733125b04b38",
+      "source": "= 有电源插座",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 740,
+          "context": "{i18n(\"pages.info.librarytab.733125b04b38\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.784c472214f9",
+      "source": "已显示前 {SEAT_CAP} 个（共 {length} 个）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "SEAT_CAP",
+          "expression": "SEAT_CAP"
+        },
+        {
+          "name": "length",
+          "expression": "seatList.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 743,
+          "context": "{i18nRich(\"pages.info.librarytab.784c472214f9\", { SEAT_CAP: SEAT_CAP, length: seatList.length })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.7bd9d53b62f0",
+      "source": "座位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 684,
+          "context": "{i18n(\"pages.info.librarytab.7bd9d53b62f0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.81453cb31460",
+      "source": "无可用楼层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 621,
+          "context": "floors.length === 0 ? i18n(\"pages.info.librarytab.81453cb31460\") : i18n(\"pages.info.librarytab.fc39fa88920f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.8299d1d4bae5",
+      "source": "{zhName} · 座位分布",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "zhName",
+          "expression": "String(section.zhName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 694,
+          "context": "{i18n(\"pages.info.librarytab.8299d1d4bae5\", { zhName: String(section.zhName) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.8a2ffcb89689",
+      "source": "（暂不可约）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 604,
+          "context": "!l.valid ? i18n(\"pages.info.librarytab.8a2ffcb89689\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.90bd6800e5b6",
+      "source": "需要先登录（未读取到学号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 513,
+          "context": "setBookError(i18n(\"pages.info.librarytab.90bd6800e5b6\"))"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 542,
+          "context": "text: i18n(\"pages.info.librarytab.90bd6800e5b6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.95003d952366",
+      "source": "已约/不可约 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "gridSeats.length - usableCount"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 737,
+          "context": "{i18nRich(\"pages.info.librarytab.95003d952366\", { value: gridSeats.length - usableCount })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.9ebbc08083a7",
+      "source": " · 点击预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 130,
+          "context": "usable ? i18n(\"pages.info.librarytab.9ebbc08083a7\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 83,
+          "context": "m.trim().slice(0, 160) || i18n(\"pages.info.librarytab.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.a4c0233f1d6c",
+      "source": "不可约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 129,
+          "context": "s.valid ? i18n(\"pages.info.librarytab.dae661d17c2d\") : i18n(\"pages.info.librarytab.a4c0233f1d6c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.b1d841b978fb",
+      "source": "明天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 676,
+          "context": "{i18n(\"pages.info.librarytab.b1d841b978fb\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 685,
+          "context": "dateChoice === 0 ? i18n(\"pages.info.librarytab.d5f5a7a01073\") : i18n(\"pages.info.librarytab.b1d841b978fb\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 762,
+          "context": "dateChoice === 0 ? i18n(\"pages.info.librarytab.d5f5a7a01073\") : i18n(\"pages.info.librarytab.b1d841b978fb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.b741efb628be",
+      "source": "确认取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 832,
+          "context": "busyCancel !== null ? i18n(\"pages.info.librarytab.0addd7784578\") : i18n(\"pages.info.librarytab.b741efb628be\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.b8784c8dd563",
+      "source": "重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 103,
+          "context": "{i18n(\"pages.info.librarytab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 584,
+          "context": "{i18n(\"pages.info.librarytab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 720,
+          "context": "{i18n(\"pages.info.librarytab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 801,
+          "context": "{i18n(\"pages.info.librarytab.b8784c8dd563\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.c3b180cc0d49",
+      "source": "暂无预约记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 809,
+          "context": "{i18n(\"pages.info.librarytab.c3b180cc0d49\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.c84b1d592f6d",
+      "source": "位置：{locTrace}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "locTrace",
+          "expression": "locTrace"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 765,
+          "context": "{i18nRich(\"pages.info.librarytab.c84b1d592f6d\", { locTrace: locTrace })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.cdbc73064158",
+      "source": "座位预约记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 787,
+          "context": "{i18n(\"pages.info.librarytab.cdbc73064158\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.ce3b386bd714",
+      "source": "楼层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 616,
+          "context": "{i18n(\"pages.info.librarytab.ce3b386bd714\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 632,
+          "context": "floors?.find((f) => f.id === floorId)?.zhName ?? i18n(\"pages.info.librarytab.ce3b386bd714\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.d01c30463932",
+      "source": "{zhName} · 楼层平面图",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "zhName",
+          "expression": "String(floor.zhName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 697,
+          "context": "{i18n(\"pages.info.librarytab.d01c30463932\", { zhName: String(floor.zhName) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 675,
+          "context": "{i18n(\"pages.info.librarytab.d5f5a7a01073\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 685,
+          "context": "dateChoice === 0 ? i18n(\"pages.info.librarytab.d5f5a7a01073\") : i18n(\"pages.info.librarytab.b1d841b978fb\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 762,
+          "context": "dateChoice === 0 ? i18n(\"pages.info.librarytab.d5f5a7a01073\") : i18n(\"pages.info.librarytab.b1d841b978fb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.dae661d17c2d",
+      "source": "空闲",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 129,
+          "context": "s.valid ? i18n(\"pages.info.librarytab.dae661d17c2d\") : i18n(\"pages.info.librarytab.a4c0233f1d6c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.e977820670a9",
+      "source": "该区域暂无座位数据。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 728,
+          "context": "{i18n(\"pages.info.librarytab.e977820670a9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.librarytab.fc39fa88920f",
+      "source": "选择楼层…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
+          "line": 621,
+          "context": "floors.length === 0 ? i18n(\"pages.info.librarytab.81453cb31460\") : i18n(\"pages.info.librarytab.fc39fa88920f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

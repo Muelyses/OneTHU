@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchTab } from "../../lib/vaultCatch.js";
 import { Input, Text } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -74,12 +75,14 @@ type TipState = { kind: "copy" | "tab" | "gear"; tabId?: string; rect: DOMRect }
 const HOVER_TIP_MS = 150; /* 用户实测原生 title 出得慢——自绘接管后 150ms 即现 */
 
 function TabstripTip({ tip }: { tip: TipState }): ReactNode {
+  const uiLocale = useUiLocale();
+
   useTabTitleTick();
   const { tabs } = useExplorerTabs();
   const tab = tip.tabId ? tabs.find((t) => t.id === tip.tabId) ?? null : null;
   const isHome = tab?.kind === "home";
-  const full = tab ? (isHome ? "首页" : resolveTabTitle(tab.page, tab.params).full) : "";
-  const text = tip.kind === "copy" ? ("复制当前页面 · " + resolveTabTitle(activeTab().page, activeTab().params).full) : tip.kind === "gear" ? "设置" : (isHome ? "首页 · 不可关闭" : full);
+  const full = tab ? (isHome ? i18n("components.explorer.tabstrip.203c08e0d44a") : resolveTabTitle(tab.page, tab.params).full) : "";
+  const text = tip.kind === "copy" ? (i18n("components.explorer.tabstrip.bfdc8bd31343") + resolveTabTitle(activeTab().page, activeTab().params).full) : tip.kind === "gear" ? i18n("components.explorer.tabstrip.df3d58c7d84b") : (isHome ? i18n("components.explorer.tabstrip.1cff7673a712") : full);
   /* 小标识（用户定案）：只要悬停出现的小行卡，不带动作与宽卡 */
   const strip = document.querySelector(".ex-tabstrip")?.getBoundingClientRect();
   const top = (strip?.bottom ?? tip.rect.bottom) + 4;
@@ -148,6 +151,8 @@ export function atomRefOfTab(tab: ExplorerTab): AtomRef | null {
 
 /** 星形图标：未收藏描边灰，收藏点亮起（fill 随 .is-lit 的 svg path 通配） */
 export function StarGlyph(): ReactNode {
+  const uiLocale = useUiLocale();
+
   return <IconStar width={13} height={13} />;
 }
 
@@ -174,6 +179,8 @@ function groupTabs(tabs: ExplorerTab[]): TabGroup[] {
 
 /** 工作区底板头：logo + 名字 + 折叠 + 大关闭按钮（关闭=关掉成员标签并移除工作区） */
 function WsHeader({ ws, count }: { ws: ExplorerWorkspace; count: number }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const Glyph = WS_ICON_GLYPH[ws.icon ?? "folder"] ?? IconFolder;
   return (
     <div
@@ -181,14 +188,14 @@ function WsHeader({ ws, count }: { ws: ExplorerWorkspace; count: number }): Reac
       onContextMenu={(e) => {
         e.preventDefault();
         const items: MenuItem[] = [
-          { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(ws.id) },
-          { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), sepBefore: true },
+          { label: i18n("components.explorer.tabstrip.c6d80849d9f5"), onSelect: () => openWorkspaceEditor(ws.id) },
+          { label: i18n("components.explorer.tabstrip.40561d059752"), onSelect: () => dissolveWorkspace(ws.id), sepBefore: true },
           {
-            label: "彻底删除工作区（连同标签页）",
+            label: i18n("components.explorer.tabstrip.4068d620bc34"),
             danger: true,
             sepBefore: true,
             onSelect: () =>
-              void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+              void confirmOk(i18nMsg("components.explorer.tabstrip.9e76a0089e2c", { name: String(ws.name), count: String(count) })).then((ok) => {
                 if (ok) closeLiveWorkspace(ws.id);
               }),
           },
@@ -200,7 +207,7 @@ function WsHeader({ ws, count }: { ws: ExplorerWorkspace; count: number }): Reac
         type="button"
         className="ex-ws-fold"
         aria-expanded={!ws.collapsed}
-        title={ws.collapsed ? "展开工作区" : "折叠工作区"}
+        title={ws.collapsed ? i18n("components.explorer.tabstrip.5d3f97b3fe45") : i18n("components.explorer.tabstrip.52fc5d80cf25")}
         onClick={() => patchLiveWorkspace(ws.id, { collapsed: !ws.collapsed })}
       >
         <Glyph width={12} height={12} />
@@ -210,10 +217,10 @@ function WsHeader({ ws, count }: { ws: ExplorerWorkspace; count: number }): Reac
       <button
         type="button"
         className="ex-ws-close"
-        aria-label={"关闭工作区 " + ws.name}
-        title="关闭工作区（同时关闭其中的标签页）"
+        aria-label={i18n("components.explorer.tabstrip.e9913cd546bf") + ws.name}
+        title={i18n("components.explorer.tabstrip.07bb25e3e6ea")}
         onClick={() =>
-          void confirmOk(`关闭工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+          void confirmOk(i18nMsg("components.explorer.tabstrip.2389ded014dd", { name: String(ws.name), count: String(count) })).then((ok) => {
             if (ok) closeLiveWorkspace(ws.id);
           })
         }
@@ -573,7 +580,9 @@ function useTabReorder(stripRef: { current: HTMLDivElement | null }, vertical: b
 
 /** 现场建工作区：颜色 / 名字 / logo（松手即建，成员 = 被拖标签 + 停留标签）。导出给 TabDrawer 手机端复用 */
 export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { name: string; color: string; icon: string }) => void; onCancel: () => void }): ReactNode {
-  const [name, setName] = useState("工作区");
+  const uiLocale = useUiLocale();
+
+  const [name, setName] = useState(i18n("components.explorer.tabstrip.37979829426b"));
   const [color, setColor] = useState<string>(WORKSPACE_COLORS[0]);
   const [icon, setIcon] = useState<string>(WORKSPACE_ICONS[0]);
   /* portal 到 body：拖拽系统会给 tabstrip 祖先/标签残留内联 transform——
@@ -589,18 +598,18 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
     >
       <div
         role="dialog"
-        aria-label="新建工作区"
+        aria-label={i18n("components.explorer.tabstrip.946897d10708")}
         style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", padding: 18, width: 320, boxShadow: "var(--og-elev-menu)" }}
       >
-        <Text as="div" weight="semibold">新建工作区</Text>
-        <div style={{ width: "100%", marginBottom: 12 }}>{<Input autoFocus value={name} onChange={(value) => setName(value)} placeholder="工作区名字" />}</div>
-        <div style={{ marginBottom: 6 }}><Text slot="label" tone="faint">底板颜色</Text></div>
+        <Text as="div" weight="semibold">{i18n("components.explorer.tabstrip.946897d10708")}</Text>
+        <div style={{ width: "100%", marginBottom: 12 }}>{<Input autoFocus value={name} onChange={(value) => setName(value)} placeholder={i18n("components.explorer.tabstrip.b2a947fe366c")} />}</div>
+        <div style={{ marginBottom: 6 }}><Text slot="label" tone="faint">{i18n("components.explorer.tabstrip.126e112774d5")}</Text></div>
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           {WORKSPACE_COLORS.map((c) => (
             <button
               key={c}
               type="button"
-              aria-label={"颜色 " + c}
+              aria-label={i18n("components.explorer.tabstrip.4b8b25735e9b") + c}
               aria-pressed={color === c}
               onClick={() => setColor(c)}
               style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--og-content-1)" : "1px solid transparent", background: c, cursor: "pointer" }}
@@ -626,8 +635,8 @@ export function WorkspaceCreateDialog({ onCreate, onCancel }: { onCreate: (o: { 
           })}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <Btn variant="outline" onClick={onCancel}>取消</Btn>
-          <Btn variant="outline" onClick={() => onCreate({ name, color, icon })}>创建</Btn>
+          <Btn variant="outline" onClick={onCancel}>{i18n("components.explorer.tabstrip.2cd0f3be8738")}</Btn>
+          <Btn variant="outline" onClick={() => onCreate({ name, color, icon })}>{i18n("components.explorer.tabstrip.cde2cd071d25")}</Btn>
         </div>
       </div>
     </div>,
@@ -671,6 +680,8 @@ function TabGlyph({ page, star, boardIcon, pluginIcon }: {
   boardIcon?: string | undefined;
   pluginIcon?: string | undefined;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   if (pluginIcon) {
     return <span className="ex-tab-glyph ex-tab-plugin-glyph" aria-hidden="true" dangerouslySetInnerHTML={{ __html: pluginIcon }} />;
   }
@@ -684,11 +695,13 @@ function TabGlyph({ page, star, boardIcon, pluginIcon }: {
 }
 
 export function TabStrip(): ReactNode {
+  const uiLocale = useUiLocale();
+
   useTabTitleTick(); // 15s 节拍：数据快照晚于开 tab 时，实体名自动升级
   const { tabs, activeId } = useExplorerTabs();
   /* 插件页图标由插件注册时提供；OnePage 标签用当前打开的板自己的 icon。 */
   const pluginTabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
-  const pluginIcons = useMemo(() => new Map(pluginTabs.map((t) => [t.pageKey, t.iconSvg ?? ""] as const)), [pluginTabs]);
+  const pluginIcons = useMemo(() => new Map(pluginTabs.map((t) => [t.pageKey, t.iconSvg ?? ""] as const)), [uiLocale, pluginTabs]);
   /* OnePage 改名/换图标只发 boards.changed，不动 explorer store——不订阅的话标签标题与图标
      会停在旧值（改完 icon 在标签栏看不见）。 */
   const [boardsTick, setBoardsTick] = useState(0);
@@ -705,7 +718,7 @@ export function TabStrip(): ReactNode {
       return undefined;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabs, boardsTick]);
+  }, [uiLocale, tabs, boardsTick]);
   /* ① 横向滚动进度条（Layout 旧 SegmentedOverflow 的 indi/thumb 同款）：
      放不下（scrollWidth > clientWidth）才渲染，scrollLeft 比例驱动 thumb 宽/位；
      resize（ResizeObserver）+ scroll 双监听，开关标签后 tabs.length 变化再补一拍。 */
@@ -872,12 +885,12 @@ export function TabStrip(): ReactNode {
       if (!ws) return;
       const count = allTabs().filter((x) => x.workspaceId === wsId).length;
       const items: MenuItem[] = [
-        { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(ws.id) },
-        { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), sepBefore: true, danger: true },
+        { label: i18n("components.explorer.tabstrip.c6d80849d9f5"), onSelect: () => openWorkspaceEditor(ws.id) },
+        { label: i18n("components.explorer.tabstrip.40561d059752"), onSelect: () => dissolveWorkspace(ws.id), sepBefore: true, danger: true },
         {
-          label: "彻底删除（连同标签页）",
+          label: i18n("components.explorer.tabstrip.e9a95effb2f5"),
           onSelect: () =>
-            void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+            void confirmOk(i18nMsg("components.explorer.tabstrip.9e76a0089e2c", { name: String(ws.name), count: String(count) })).then((ok) => {
               if (ok) closeLiveWorkspace(ws.id);
             }),
           sepBefore: true,
@@ -962,22 +975,22 @@ export function TabStrip(): ReactNode {
       }
       return;
     }
-    void confirmOk(`确定删除 OnePage「${existing.name}」（${name.full}）？\n这块白板和其中的内容都会永久消失！`).then((ok) => {
+    void confirmOk(i18nMsg("components.explorer.tabstrip.1831b25872ac", { name: String(existing.name), full: String(name.full) })).then((ok) => {
       if (ok) removeOnePage(existing.id);
     });
   };
   /** 标签操作菜单（鼠标右键与触屏长按共用一份坐标形态） */
   const openTabMenuAt = (x: number, y: number, t: ExplorerTab): void => {
     const items: MenuItem[] = [
-      { label: "聚焦此标签页", onSelect: () => focusTab(t.id) },
-      { label: "复制本标签页", onSelect: () => duplicateTab(t.id) },
-      { label: "关闭本标签页", onSelect: () => closeTab(t.id), sepBefore: true },
-      { label: isStarred(t) ? "移出 OnePage（取消一星）" : "加入 OnePage（一星）", onSelect: () => toggleOnePage(t) },
+      { label: i18n("components.explorer.tabstrip.c6a451fd4a5b"), onSelect: () => focusTab(t.id) },
+      { label: i18n("components.explorer.tabstrip.0bd930dcb332"), onSelect: () => duplicateTab(t.id) },
+      { label: i18n("components.explorer.tabstrip.e5d7d964c0e2"), onSelect: () => closeTab(t.id), sepBefore: true },
+      { label: isStarred(t) ? i18n("components.explorer.tabstrip.6e00cb5b1b1c") : i18n("components.explorer.tabstrip.7788d86c6f5d"), onSelect: () => toggleOnePage(t) },
     ];
     if (t.workspaceId) {
-      items.push({ label: "移出工作区", onSelect: () => setTabWorkspace(t.id, null), sepBefore: true });
+      items.push({ label: i18n("components.explorer.tabstrip.8bcb372db593"), onSelect: () => setTabWorkspace(t.id, null), sepBefore: true });
       const ws = explorerSnapshot().workspaces.find((w) => w.id === t.workspaceId);
-      if (ws) items.push({ label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), danger: true });
+      if (ws) items.push({ label: i18n("components.explorer.tabstrip.40561d059752"), onSelect: () => dissolveWorkspace(ws.id), danger: true });
     }
     openContextMenu(x, y, items);
   };
@@ -1053,7 +1066,7 @@ export function TabStrip(): ReactNode {
       <div
         className={"ex-tabstrip" + (vertical ? " is-vertical" : "")}
         role="tablist"
-        aria-label="标签页"
+        aria-label={i18n("components.explorer.tabstrip.a626aad412b7")}
         ref={stripRef}
         onPointerDown={phoneUi ? onStripPointerDown : drag.onPointerDown}
         onPointerMove={phoneUi ? onStripPointerMove : undefined}
@@ -1065,8 +1078,8 @@ export function TabStrip(): ReactNode {
         const inner = (g.ws?.collapsed ? [] : g.tabs).map((t) => {
         const active = t.id === activeId;
         const isHome = t.kind === "home";
-        const label = isHome ? "首页" : resolveTabTitle(t.page, t.params).label;
-        const full = isHome ? "首页" : resolveTabTitle(t.page, t.params).full;
+        const label = isHome ? i18n("components.explorer.tabstrip.203c08e0d44a") : resolveTabTitle(t.page, t.params).label;
+        const full = isHome ? i18n("components.explorer.tabstrip.203c08e0d44a") : resolveTabTitle(t.page, t.params).full;
         return (
           <div
             key={t.id}
@@ -1084,8 +1097,8 @@ export function TabStrip(): ReactNode {
             {isHome ? null : (
               <button
                 className="ex-tab-close"
-                aria-label={`关闭 ${label}`}
-                title={`关闭 · ${full}`}
+                aria-label={i18n("components.explorer.tabstrip.9da364f29a6e", { label: String(label) })}
+                title={i18n("components.explorer.tabstrip.49b14b7e938c", { full: String(full) })}
                 onClick={(e) => {
                   e.stopPropagation();
                   closeTab(t.id);
@@ -1107,8 +1120,8 @@ export function TabStrip(): ReactNode {
       })}
       <button
         className="ex-tab-add"
-        title="新标签页（回首页）"
-        aria-label="新标签页"
+        title={i18n("components.explorer.tabstrip.c3b5c8e51c87")}
+        aria-label={i18n("components.explorer.tabstrip.9c5d341609cd")}
         onClick={() => openTab("homepage", null, { forceNew: true })}
       >
         <IconPlus width={14} height={14} />

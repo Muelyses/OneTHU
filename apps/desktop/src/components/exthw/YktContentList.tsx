@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 雨课堂内容行列表（就地展开，R29）：课程详情页把雨课堂的「资料 → 文件」「公告 → 通知」
  * 并进网络学堂对应栏位后，用本组件渲染这些行，行为与雨课堂课程页一致：
@@ -14,6 +15,8 @@ import { YktContentBody } from "./YktContentBody.js";
 import { fmtWhenParts } from "../../pages/learn/shared.js";
 
 export function YktContentList({ items }: { items: ExternalContent[] }) {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState<{
     id: string;
     title: string;
@@ -42,12 +45,12 @@ export function YktContentList({ items }: { items: ExternalContent[] }) {
           }
           const ids = c.noticeIdCandidates?.length ? c.noticeIdCandidates : c.noticeId ? [c.noticeId] : [];
           if (ids.length === 0) {
-            setOpen({ id: c.id, title: c.title, state: "error", error: "这条公告没有取到可用的内容标识。" });
+            setOpen({ id: c.id, title: c.title, state: "error", error: i18n("components.exthw.yktcontentlist.7965aadb4537") });
             return;
           }
           const d = await fetchYktNoticeDetail(c.courseId, ids);
           if (!d.bodyHtml && !d.images?.length) {
-            setOpen({ id: c.id, title: c.title, state: "error", error: "没取到这条公告的正文，请稍后重试。" });
+            setOpen({ id: c.id, title: c.title, state: "error", error: i18n("components.exthw.yktcontentlist.ddbd641e1d5c") });
             return;
           }
           setOpen({ id: c.id, title: c.title, state: "ready", detail: d });
@@ -63,13 +66,13 @@ export function YktContentList({ items }: { items: ExternalContent[] }) {
           setOpen({ id: c.id, title: c.title, state: "ready", detail: d });
           return;
         }
-        setOpen({ id: c.id, title: c.title, state: "error", error: "这条内容没有可内嵌渲染的正文。" });
+        setOpen({ id: c.id, title: c.title, state: "error", error: i18n("components.exthw.yktcontentlist.ca6001f90452") });
       } catch (e) {
         setOpen({
           id: c.id,
           title: c.title,
           state: "error",
-          error: e instanceof Error ? e.message : "加载失败，请重试。",
+          error: e instanceof Error ? e.message : i18n("components.exthw.yktcontentlist.dc91444c4449"),
         });
       }
     },
@@ -101,9 +104,7 @@ export function YktContentList({ items }: { items: ExternalContent[] }) {
               </div>
               <div className="row-main">
                 <div className="row-title">{c.title}</div>
-                <div className="row-sub">
-                  雨课堂 · {isOpen && open?.state === "loading" ? "正在加载…" : isOpen ? "点击收起" : "点击查看"}
-                </div>
+                <div className="row-sub">{i18nRich("components.exthw.yktcontentlist.f053f24bd333", { value: isOpen && open?.state === "loading" ? i18n("components.exthw.yktcontentlist.21bd738e0d71") : isOpen ? i18n("components.exthw.yktcontentlist.3afccd0197f6") : i18n("components.exthw.yktcontentlist.f0b19fcb3a58") })}</div>
               </div>
               <span className="chip chip-blue">{c.kindText}</span>
               <IconChevron className="row-caret" width={14} height={14} />
@@ -111,7 +112,7 @@ export function YktContentList({ items }: { items: ExternalContent[] }) {
             {isOpen ? (
               <div className="ykt-content-panel">
                 {open?.state === "loading" ? (
-                  <div className="row-sub">正在加载内容…</div>
+                  <div className="row-sub">{i18n("components.exthw.yktcontentlist.2b1fde913dc6")}</div>
                 ) : open?.state === "error" ? (
                   <div className="row-sub">{open.error}</div>
                 ) : (

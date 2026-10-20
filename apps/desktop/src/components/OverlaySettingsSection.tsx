@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 全局悬浮球设置（需求 5）：开关 + 授权状态 + 「本次关闭」说明。
  * 真源在原生侧（SharedPreferences，安卓系统悬浮层）/ 悬浮球窗口（桌面），
@@ -17,22 +18,24 @@ import { goOhRow } from "./OhSettingsPage.js";
 
 
 /* task-19/22：悬浮球设置行注册。
-   双形态：开关行的标题是「在其他应用上层显示 OH 悬浮球」（JSX 已钉 id="row-开启悬浮球"），
+   双形态：开关行的标题是「在其他应用上层显示 OH 悬浮球」（JSX 已钉 id="row-overlay-on"），
    平台不支持时该开关不出现 → visible 条件隐藏：落 OH 基础档根（TierSwitch 锚点）+ 一句解释。 */
 defineSearchRows([
   {
-    id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", title: "开启悬浮球", aliases: ["悬浮球", "浮窗", "overlay", "权限"], desc: "浮在其他应用上层的 OH 球；需要悬浮窗权限" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "悬浮球", "开启悬浮球"], displayRoot: "设置",
+    id: "overlay-on", tab: "OneTHU Harness", section: "悬浮球", get title() { return i18n("components.overlaysettingssection.905c17e31387"); }, aliases: ["悬浮球", "浮窗", "overlay", "权限"], get desc() { return i18n("components.overlaysettingssection.49a3266d6fc6"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "悬浮球", "开启悬浮球"], displayRoot: "设置",
     visible: () => isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined),
     fallbackNote: "当前平台不支持在其他应用上层显示悬浮球（仅安卓可用）；已带到 OH「悬浮球」分节。",
     /* 落点=OH 基础档的档位按钮（OhSettingsPage 的 TierSwitch，data-set-id=`row-基础设置`）。
        注意：focusSettingsTarget 会自己补 `row-`/`sec-` 前缀 —— 这里传**档位名**，不是锚点全名
        （旧值 "oh-tier-basic" 会被拼成 `row-oh-tier-basic`，谁都命中不了）。 */
     root: "基础设置",
-    go: () => goOhRow("开启悬浮球", "basic"),
+    go: () => goOhRow("overlay-on", "basic"),
   },
 ]);
 
 export function OverlaySettingsSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [supported, setSupported] = useState<boolean | null>(null);
   const [open, setOpen] = useState<boolean>(!isOverlayClosedByUser());
   const [perm, setPerm] = useState<boolean | null>(null);
@@ -77,8 +80,8 @@ export function OverlaySettingsSection(): ReactNode {
     return (
       <SettingsList>
         <SettingsRow
-          title="全局悬浮球"
-          sub="当前平台不支持在其他应用上层显示（仅安卓与桌面端可用）"
+          title={i18n("components.overlaysettingssection.53c53ec1d550")}
+          sub={i18n("components.overlaysettingssection.8eed0df5580d")}
         />
       </SettingsList>
     );
@@ -88,16 +91,16 @@ export function OverlaySettingsSection(): ReactNode {
     <SettingsList>
       {/* task-22 检索直达：注册表按「开启悬浮球」检索，这里钉标准 id，让这条行无论叫什么都落点唯一 */}
       <SettingsRow
-        id="row-开启悬浮球"
-        title="在其他应用上层显示 OH 悬浮球"
-        sub={`单击展开对话，长按说话；在别的应用里也能用，不会把你拉回 OneTHU。${perm === false ? "（需要先授予「显示在其他应用上层」权限）" : ""}`}
-        control={<Switch checked={open} aria-label="在其他应用上层显示 OH 悬浮球" onChange={(v) => void toggle(v)} />}
+        id="row-overlay-on"
+        title={i18n("components.overlaysettingssection.46fe6b9d4522")}
+        sub={i18n("components.overlaysettingssection.39b8579b7eb8", { value: String(perm === false ? i18n("components.overlaysettingssection.ca35c0484565") : "") })}
+        control={<Switch checked={open} aria-label={i18n("components.overlaysettingssection.46fe6b9d4522")} onChange={(v) => void toggle(v)} />}
       />
       {open ? (
         <SettingsRow
-          title="本次关闭悬浮球"
-          sub="关闭后不再自动出现，回到这里（或 OH 对话界面）可重新打开"
-          control={<Btn variant="ghost" size="sm" onClick={() => void toggle(false)}>关闭悬浮球</Btn>}
+          title={i18n("components.overlaysettingssection.5c2c170b5e1d")}
+          sub={i18n("components.overlaysettingssection.e322a9564c88")}
+          control={<Btn variant="ghost" size="sm" onClick={() => void toggle(false)}>{i18n("components.overlaysettingssection.512a854aacf2")}</Btn>}
         />
       ) : null}
     </SettingsList>

@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { useExperienceMode, useIsSimpleLike, experienceMode, isSimpleLike } from "../../state/experienceMode.js";
 import { SimpleHost } from "../SimpleExperience.js";
 /**
@@ -44,6 +45,8 @@ import { gestureOwner, subscribeGesture } from "../../lib/gestureArena.js";
 /** 每个标签页一个 Provider：页面里 useApp() 读到的是**该 tab 自己**的 page/params，
  *  navigate 只动这一个 tab。外壳（TopBar/齿轮等）在 Shell 层，不受覆盖影响。 */
 function TabScope({ tab, children }: { tab: ExplorerTab; children: ReactNode }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const outer = useApp();
   const navigate = useCallback(
     (p: Page, params?: LearnNav) => {
@@ -61,7 +64,7 @@ function TabScope({ tab, children }: { tab: ExplorerTab; children: ReactNode }):
   );
   const value = useMemo<AppState>(
     () => ({ ...outer, page: tab.page, navParams: tab.params, navigate }),
-    [outer, tab.page, tab.params, navigate],
+    [uiLocale, outer, tab.page, tab.params, navigate],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
@@ -114,6 +117,8 @@ function TabContextMenu({
   /** 打开壁纸库选择器（菜单关、选择器接着开，同一坐标）：壁纸只有全屏一档 */
   onPick: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const menuRef = useRef<HTMLDivElement>(null);
   const [placement, setPlacement] = useState({ left: pos.x, top: pos.y });
   useLayoutEffect(() => {
@@ -134,14 +139,14 @@ function TabContextMenu({
      「画布化定案」：壁纸只有全屏一档——右键菜单的「本页」三件套已删（2026-10-14）。 */
   const hasGlobal = !!wallpaperSnapshot().global;
   const items: Array<{ label: string; danger?: boolean; act: () => void }> = [
-    { label: "在新标签页打开此页", act: () => duplicateTab(pos.tabId) },
-    { label: "换壁纸 · 从库选…", act: () => onPick() },
+    { label: i18n("components.explorer.tabhost.9a857306bfc3"), act: () => duplicateTab(pos.tabId) },
+    { label: i18n("components.explorer.tabhost.5a45a31ad546"), act: () => onPick() },
     ...BUILTIN_WALLPAPERS.slice(0, 4).map((b) => ({
-      label: "全屏壁纸 · " + b.label,
+      label: i18n("components.explorer.tabhost.e5f5d7df200a") + b.label,
       act: () => setGlobalWallpaper("builtin:" + b.id),
     })),
-    ...(hasGlobal ? [{ label: "清除全屏壁纸", danger: true, act: () => setGlobalWallpaper(null) }] : []),
-    ...(isHome ? [] : [{ label: "关闭标签页", danger: true, act: () => closeTab(pos.tabId) }]),
+    ...(hasGlobal ? [{ label: i18n("components.explorer.tabhost.6af504b380f2"), danger: true, act: () => setGlobalWallpaper(null) }] : []),
+    ...(isHome ? [] : [{ label: i18n("components.explorer.tabhost.83deaec053e9"), danger: true, act: () => closeTab(pos.tabId) }]),
   ];
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -185,6 +190,8 @@ function WallPickerCard({
   top: number;
   onClose: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", h);
@@ -208,6 +215,8 @@ function WallPickerCard({
 /* ══════════ 宿主 ══════════ */
 
 export function TabHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const simple = useIsSimpleLike(); /* 极简与实用都走简洁壳（无标签页） */
   const st = useExplorerState();
   const activeId = st.activeId;
@@ -255,9 +264,9 @@ export function TabHost(): ReactNode {
   useEffect(() => subscribeGesture(owner => { if (owner) clearPress(); }), [clearPress]);
 
   const all = useMemo(() => {
-    const home: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
+    const home: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, title: i18n("components.explorer.tabhost.203c08e0d44a"), workspaceId: null, createdAt: 0, lastActiveAt: 0 };
     return [home, ...st.tabs];
-  }, [st.tabs]);
+  }, [uiLocale, st.tabs]);
 
   const onHomeFree = (target: EventTarget | null): boolean =>
     !!(target instanceof Element && target.closest(".home-free"));

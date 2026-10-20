@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Btn } from "@onethu/gui";
 import { selectStudioScreen, type StudioScreenSource } from "./tourStudioScreens.js";
@@ -20,27 +21,27 @@ export interface TourIllustrationProps {
 }
 type SceneSpec = { name: string; before: string; after: string };
 const SCENES: Record<string, SceneSpec> = {
-  board: { name: "自由白板", before: "把卡片放到顺手的位置。", after: "白板上的组件可以移动、调整大小。" },
-  vault: { name: "暂存箱收纳", before: "长按内容，再拖到边缘暂存箱。", after: "三项内容收好了，原来的内容仍然保留。" },
-  code: { name: "短口令传递", before: "一组内容，只需要分享一个短口令。", after: "生成的短口令连接这一组内容。" },
-  nfc: { name: "碰一碰", before: "双方进入收发，再把设备靠近。", after: "传递完成的示意；真实使用需设备支持 NFC。" },
-  organization: { name: "组织协作", before: "创建组织后，名片与组织直接绑定。", after: "成员、资料、项目和公告，围绕同一个组织。" },
-  today: { name: "今日首页", before: "今天要做的事，和接下来要上的课。", after: "首页会把今日待办和下一节课整理清楚。" },
-  quick: { name: "五个快捷入口", before: "五个清晰入口，随时回到需要的功能。", after: "课表就在手边；首页和 OH 搜索始终可用。" },
-  more: { name: "更多功能", before: "常用的放在下方，其余服务从这里找。", after: "按目录找服务，点名称就能进入。" },
-  swap: { name: "调整快捷入口", before: "从更多功能选择，再挑一个入口位置。", after: "第一格换成云盘了；其余入口保持原样。" },
-  "mode-simple": { name: "极简模式", before: "今日待办、课程和五个固定入口。", after: "打开就看今天，其他复杂功能收起来。" },
-  "mode-practical": { name: "实用模式", before: "保留简单首页，常用入口可以自己安排。", after: "更多功能按目录打开，常用四格可以替换。" },
-  "mode-full": { name: "完整模式", before: "标签、白板、收纳与协作，按你的方式组合。", after: "内容可以自由组织，完整设置随时保留。" },
-  ready: { name: "准备出发", before: "选好的模式，随时可以在设置里调整。", after: "回到首页，从今天的一件小事开始。" },
+  board: { get name() { return i18n("components.tourillustration.4a8eac97e960"); }, get before() { return i18n("components.tourillustration.5f716b7dedd8"); }, get after() { return i18n("components.tourillustration.ee40e75e813e"); } },
+  vault: { get name() { return i18n("components.tourillustration.a53febdc5466"); }, get before() { return i18n("components.tourillustration.3a7769c0aa16"); }, get after() { return i18n("components.tourillustration.4c7a7f26e106"); } },
+  code: { get name() { return i18n("components.tourillustration.96b3145a6b73"); }, get before() { return i18n("components.tourillustration.420be7bc077e"); }, get after() { return i18n("components.tourillustration.d9c8475ca6a6"); } },
+  nfc: { get name() { return i18n("components.tourillustration.fd962d16dac1"); }, get before() { return i18n("components.tourillustration.a134c7737c93"); }, get after() { return i18n("components.tourillustration.7b25b8069c23"); } },
+  organization: { get name() { return i18n("components.tourillustration.24a36e5f10e5"); }, get before() { return i18n("components.tourillustration.299d568b581f"); }, get after() { return i18n("components.tourillustration.f65def27f883"); } },
+  today: { get name() { return i18n("components.tourillustration.92ea3aacf873"); }, get before() { return i18n("components.tourillustration.bf5b53af13f4"); }, get after() { return i18n("components.tourillustration.8173df51f2a7"); } },
+  quick: { get name() { return i18n("components.tourillustration.7119f12b506b"); }, get before() { return i18n("components.tourillustration.6f56d8a61fe3"); }, get after() { return i18n("components.tourillustration.c6331cafc401"); } },
+  more: { get name() { return i18n("components.tourillustration.9c7a9fcee92f"); }, get before() { return i18n("components.tourillustration.6cc2a4b7bfc9"); }, get after() { return i18n("components.tourillustration.f4ad88248fc0"); } },
+  swap: { get name() { return i18n("components.tourillustration.16afed511861"); }, get before() { return i18n("components.tourillustration.c20f83cc52d2"); }, get after() { return i18n("components.tourillustration.081c32889cff"); } },
+  "mode-simple": { get name() { return i18n("components.tourillustration.c89246ea218f"); }, get before() { return i18n("components.tourillustration.e8332f3f0437"); }, get after() { return i18n("components.tourillustration.9593aef7149a"); } },
+  "mode-practical": { get name() { return i18n("components.tourillustration.d8aa9757d2b3"); }, get before() { return i18n("components.tourillustration.6d3f6f685e53"); }, get after() { return i18n("components.tourillustration.dd52e4b6a630"); } },
+  "mode-full": { get name() { return i18n("components.tourillustration.413088d3b1a0"); }, get before() { return i18n("components.tourillustration.14904f50ba72"); }, get after() { return i18n("components.tourillustration.7d20856e7f07"); } },
+  ready: { get name() { return i18n("components.tourillustration.bb3cdc17373c"); }, get before() { return i18n("components.tourillustration.c3d0e8d4b506"); }, get after() { return i18n("components.tourillustration.2af3e3257866"); } },
 };
 const EXTRAS: Record<string, { title: string; items: string[] }> = {
-  explorer: { title: "保存一组正在进行的事", items: ["课程标签", "资料标签", "工作区"] },
-  onego: { title: "从 OneGO! 接着做", items: ["OnePage", "工作区", "OneFlow"] },
-  plugin: { title: "按需要扩展能力", items: ["插件", "小 OH", "模型设置"] },
-  customize: { title: "换成你习惯的样子", items: ["主题", "壁纸", "字号", "入口"] },
-  campus: { title: "校园服务，一处进入", items: ["学习", "生活", "预约", "云盘"] },
-  data: { title: "换台设备，继续使用", items: ["同步日程", "导出数据", "恢复设置"] },
+  explorer: { get title() { return i18n("components.tourillustration.88f643c1b98a"); }, items: ["课程标签", "资料标签", "工作区"] },
+  onego: { get title() { return i18n("components.tourillustration.fe0f7b11128c"); }, items: ["OnePage", "工作区", "OneFlow"] },
+  plugin: { get title() { return i18n("components.tourillustration.2f356fc75c90"); }, items: ["插件", "小 OH", "模型设置"] },
+  customize: { get title() { return i18n("components.tourillustration.3c3ca96372d1"); }, items: ["主题", "壁纸", "字号", "入口"] },
+  campus: { get title() { return i18n("components.tourillustration.fa060d19d9cd"); }, items: ["学习", "生活", "预约", "云盘"] },
+  data: { get title() { return i18n("components.tourillustration.d924d8e8fe20"); }, items: ["同步日程", "导出数据", "恢复设置"] },
 };
 
 function useSceneMotion(playing: boolean, paused: boolean, host: React.RefObject<HTMLElement | null>) {
@@ -65,7 +66,9 @@ function useSceneMotion(playing: boolean, paused: boolean, host: React.RefObject
 
 /** The graphics fallback uses the exact same app captures as the 3D screen textures. */
 function RealScreen({ before, after, tablet = false }: { before: StudioScreenSource; after: StudioScreenSource; tablet?: boolean }): ReactNode {
-  if (!before.url || !after.url) return <span className="tour-studio-loading">真实界面暂未载入</span>;
+  const uiLocale = useUiLocale();
+
+  if (!before.url || !after.url) return <span className="tour-studio-loading">{i18n("components.tourillustration.a31b16bc552a")}</span>;
   return <figure className={"tour-real-device" + (tablet ? " is-tablet" : "")}>
     <div className="tour-real-display">
       <img src={before.url} alt="" draggable={false} data-screen={before.key} className="tour-real-before" />
@@ -74,6 +77,8 @@ function RealScreen({ before, after, tablet = false }: { before: StudioScreenSou
   </figure>;
 }
 function RealScene({ lesson, mode }: { lesson: string; mode: ExperienceMode }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const before = selectStudioScreen(lesson, mode, false), after = selectStudioScreen(lesson, mode, true);
   return <div className={"tour-real-scene" + (before.secondary ? " is-pair" : "")}>
     <RealScreen before={before.primary} after={after.primary} tablet={before.primary.key === "board-full"} />
@@ -85,6 +90,8 @@ type SettledScene = { lesson: string; after: boolean; replayKey: number | string
 
 /** CSS fallback shares the automatic sequence without requiring WebGL callbacks. */
 function AutomaticFallback({ children, running, state, onSettled }: { children: ReactNode; running: boolean; state: SettledScene; onSettled: (state: SettledScene) => void }) {
+  const uiLocale = useUiLocale();
+
   useEffect(() => {
     if (!running) return;
     const timer = window.setTimeout(() => onSettled(state), 1800);
@@ -95,6 +102,8 @@ function AutomaticFallback({ children, running, state, onSettled }: { children: 
 
 /** Automatic local choreography: never imports stores, network, NFC or permission APIs. */
 export function TourIllustration({ lesson, mode = "full", playing = true, replayKey = 0 }: TourIllustrationProps): ReactNode {
+  const uiLocale = useUiLocale();
+
   const host = useRef<HTMLElement>(null);
   const [paused, setPaused] = useState(false);
   const { reduced, running } = useSceneMotion(playing, paused, host);
@@ -130,12 +139,12 @@ export function TourIllustration({ lesson, mode = "full", playing = true, replay
     }
   }, [running]);
   const extra = EXTRAS[lesson];
-  const spec = SCENES[lesson] ?? {name:extra?.title??"功能入口",before:"从一个入口，找到相关功能。",after:"这些能力在同一处，按需要选择。"};
+  const spec = SCENES[lesson] ?? {name:extra?.title??i18n("components.tourillustration.6d78bc490e7e"),before:i18n("components.tourillustration.60d33c9c54ae"),after:i18n("components.tourillustration.e431c37e9bdc")};
   const singlePhone = !["board", "mode-full", "vault", "code", "nfc", "organization"].includes(lesson);
   const content = <RealScene lesson={lesson} mode={mode}/>;
   const fallback = <AutomaticFallback running={running} state={{lesson, after, replayKey: sceneKey}} onSettled={onSettled}>{content}</AutomaticFallback>;
-  return <section ref={host} className="tour-stage" data-lesson={lesson} data-device={singlePhone ? "phone" : undefined} data-phase={after?"after":"before"} data-running={String(running)} data-reduced={String(reduced)} data-autoplay="true" aria-label={`动画演示：${spec.name}`}>
-    <div className="tour-stage-tools"><span><i aria-hidden="true"/>{reduced?"静态示意":paused?"已暂停":"自动演示"}</span><div><Btn variant="ghost" size="sm" disabled={reduced} aria-label={reduced?"已减弱动画":paused?"播放演示":"暂停演示"} aria-pressed={paused} onClick={()=>setPaused(value=>!value)}>{reduced?"静态示意":paused?"播放":"暂停"}</Btn></div></div>
+  return <section ref={host} className="tour-stage" data-lesson={lesson} data-device={singlePhone ? "phone" : undefined} data-phase={after?"after":"before"} data-running={String(running)} data-reduced={String(reduced)} data-autoplay="true" aria-label={i18n("components.tourillustration.37bf31378e03", { name: String(spec.name) })}>
+    <div className="tour-stage-tools"><span><i aria-hidden="true"/>{reduced?i18n("components.tourillustration.65c89582594c"):paused?i18n("components.tourillustration.eb0c326b60ae"):i18n("components.tourillustration.3272fe53c0f6")}</span><div><Btn variant="ghost" size="sm" disabled={reduced} aria-label={reduced?i18n("components.tourillustration.76aa084fbdd3"):paused?i18n("components.tourillustration.73446b07bee3"):i18n("components.tourillustration.0d450810e15f")} aria-pressed={paused} onClick={()=>setPaused(value=>!value)}>{reduced?i18n("components.tourillustration.65c89582594c"):paused?i18n("components.tourillustration.c3396195e91c"):i18n("components.tourillustration.8d12fc0d4eb2")}</Btn></div></div>
     <div className="tour-stage-canvas">
       <StudioLoadBoundary fallback={fallback}>
         <Suspense fallback={fallback}>
@@ -144,6 +153,6 @@ export function TourIllustration({ lesson, mode = "full", playing = true, replay
       </StudioLoadBoundary>
     </div>
     <div className="tour-stage-console"><p>{after&&(reduced||settledCue===cue)?spec.after:spec.before}</p></div>
-    <span className="tour-stage-sandbox">仅为操作示意，不会修改你的内容</span>
+    <span className="tour-stage-sandbox">{i18n("components.tourillustration.81a9402f9808")}</span>
   </section>;
 }

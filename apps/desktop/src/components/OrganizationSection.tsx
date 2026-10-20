@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { useCallback, type ReactNode } from "react";
 /**
  * 通讯录「我的组织」页签：组织列表 + 新建/加入。
@@ -17,57 +18,61 @@ import { confirmOk } from "../lib/confirm.js";
 
 defineSearchRows([
   {
-    id: "set-orgs", tab: "账号", section: "我的组织", title: "我的组织",
-    aliases: ["组织", "建组织", "成员", "邀请"], desc: "建立组织、邀请成员、共享资料库与 GitLab 仓库",
+    id: "set-orgs", tab: "账号", section: "我的组织", get title() { return i18n("components.organizationsection.51cc2efa3e8d"); },
+    aliases: ["组织", "建组织", "成员", "邀请"], get desc() { return i18n("components.organizationsection.9f2eb342aba2"); },
     breadcrumb: ["设置", "账号", "我的组织", "我的组织"],
+    go: () => openTab("contacts", { section: "orgs" }),
   },
   {
-    id: "set-org-invite", tab: "账号", section: "我的组织", title: "组织邀请口令",
-    aliases: ["邀请口令", "加入组织", "组织名片"], desc: "生成/接受组织邀请口令（可限定接收邮箱）",
+    id: "set-org-invite", tab: "账号", section: "我的组织", get title() { return i18n("components.organizationsection.10f106e00d20"); },
+    aliases: ["邀请口令", "加入组织", "组织名片"], get desc() { return i18n("components.organizationsection.6d690d15464a"); },
     breadcrumb: ["设置", "账号", "我的组织", "组织邀请口令"],
+    go: () => openTab("contacts", { section: "orgs" }),
   },
 ]);
 
 export function OrganizationSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const doc = useOrgs();
 
   const create = useCallback(async (): Promise<void> => {
     const email = await currentOrgEmail();
-    const f = await openFormModal("新建组织", [
-      { key: "name", label: "组织名称", required: true },
-      { key: "brief", label: "一句话简介（可选）", kind: "textarea" },
-      { key: "joinUrl", label: "加入方式（GitLab 组织 / 云盘资料库链接，可选）" },
+    const f = await openFormModal(i18nMsg("components.organizationsection.d045f8d60a45"), [
+      { key: "name", label: i18nMsg("components.organizationsection.3f38e493103b"), required: true },
+      { key: "brief", label: i18nMsg("components.organizationsection.d2e163c18cd9"), kind: "textarea" },
+      { key: "joinUrl", label: i18nMsg("components.organizationsection.aa2ed8e463b7") },
     ]);
     if (!f?.name) return;
     const org = createOrg({ name: f.name, brief: f.brief, joinUrl: f.joinUrl, ownerEmail: email });
     openTab("org", { orgId: org.id }, { title: org.name });
-    showToast(`已创建「${org.name}」`);
+    showToast(i18nMsg("components.organizationsection.d1403c75a692", { name: String(org.name) }));
   }, []);
 
   const join = useCallback(async (): Promise<void> => {
-    const f = await openFormModal("加入组织", [
-      { key: "code", label: "组织邀请口令（ON-…，兼容旧口令）", kind: "textarea", required: true },
-      { key: "name", label: "你在这个组织里的名字", default: "我" },
+    const f = await openFormModal(i18nMsg("components.organizationsection.f6e4b6f78585"), [
+      { key: "code", label: i18nMsg("components.organizationsection.276c9bcadb27"), kind: "textarea", required: true },
+      { key: "name", label: i18nMsg("components.organizationsection.786e9c3ff0d0"), default: "我" },
     ]);
     if (!f?.code) return;
     const r = await acceptOrgInvite(f.code, f.name || "我");
     if (!r.ok) {
-      showToast(r.reason ?? "邀请口令无法识别");
+      showToast(r.reason ?? i18n("components.organizationsection.c697a5163f2d"));
       return;
     }
-    showToast("已加入组织");
-    if (r.orgId) openTab("org", { orgId: r.orgId }, { title: "组织" });
+    showToast(i18nMsg("components.organizationsection.096678f835a7"));
+    if (r.orgId) openTab("org", { orgId: r.orgId }, { title: i18n("components.organizationsection.b4d203dea5b9") });
   }, []);
 
   return (
     <Card>
       <div className="name-card">
         <div className="name-card-actions">
-          <Btn variant="solid" tone="brand" size="sm" onClick={() => void create()}>新建组织</Btn>
-          <Btn variant="ghost" size="sm" onClick={() => void join()}>用邀请口令加入</Btn>
+          <Btn variant="solid" tone="brand" size="sm" onClick={() => void create()}>{i18n("components.organizationsection.d045f8d60a45")}</Btn>
+          <Btn variant="ghost" size="sm" onClick={() => void join()}>{i18n("components.organizationsection.1a428fa57dd7")}</Btn>
         </div>
         {doc.orgs.length === 0 ? (
-          <Text slot="micro" tone="faint">还没有组织。建一个：成员按邮箱加入，资料库共享到邮箱。</Text>
+          <Text slot="micro" tone="faint">{i18n("components.organizationsection.1d3b05b3fd2d")}</Text>
         ) : (
           <List divided>
             {doc.orgs.map((o) => (
@@ -76,11 +81,11 @@ export function OrganizationSection(): ReactNode {
                 flush
                 title={o.name}
                 onClick={() => openTab("org", { orgId: o.id }, { title: o.name })}
-                sub={`${o.members.length} 名成员 · ${(o.libraries ?? []).length} 个资料库 · ${(o.gitlabRepos ?? []).length} 个仓库${o.joinUrl ? " · 已设加入方式" : ""}`}
+                sub={i18n("components.organizationsection.9fb58025ea25", { length: String(o.members.length), length2: String((o.libraries ?? []).length), length3: String((o.gitlabRepos ?? []).length), value: String(o.joinUrl ? i18n("components.organizationsection.82cae3dbbbd0") : "") })}
                 trailing={
                   <span className="name-card-actions">
-                    <Btn variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); openTab("org", { orgId: o.id }, { title: o.name }); }}>管理组织</Btn>
-                    <Btn variant="ghost" size="sm" tone="error" onClick={(e) => { e.stopPropagation(); void confirmOk(`删除组织「${o.name}」？成员清单会一起删除（云盘资料库与 GitLab 仓库不动）。`).then((ok) => { if (ok) deleteOrg(o.id); }); }}>删除</Btn>
+                    <Btn variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); openTab("org", { orgId: o.id }, { title: o.name }); }}>{i18n("components.organizationsection.4dd6695c0a10")}</Btn>
+                    <Btn variant="ghost" size="sm" tone="error" onClick={(e) => { e.stopPropagation(); void confirmOk(i18nMsg("components.organizationsection.40c6a5e5d509", { name: String(o.name) })).then((ok) => { if (ok) deleteOrg(o.id); }); }}>{i18n("components.organizationsection.2f9daa828907")}</Btn>
                   </span>
                 }
               />

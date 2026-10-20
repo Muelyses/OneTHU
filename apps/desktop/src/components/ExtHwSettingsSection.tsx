@@ -1,3 +1,5 @@
+import { getLocale as getUiLocale } from "../i18n/index.js";
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /* ══════════════════════════════════════════════════════════════════════════════
  * 外部作业源分节（2026-10-14 自 Settings.tsx 机械搬运，YE 逻辑零改动）：
  * 本文件是换血后剩余最大的单文件独立样式收敛点——exthw-* 卡片族、
@@ -53,11 +55,13 @@ function OjSourceRow({
   note?: ReactNode;
   children?: ReactNode;
 }) {
+  const uiLocale = useUiLocale();
+
   return (
     <div className="exthw-src">
       <div className="exthw-src-head">
         <OGText weight="semibold" nowrap={false}>{name}</OGText>
-        <Tag tone={logged ? "success" : undefined}>{logged ? `已登录${via ? `·${via}` : ""}` : "未登录"}</Tag>
+        <Tag tone={logged ? "success" : undefined}>{logged ? i18n("components.exthwsettingssection.32eed2adc456", { value: String(via ? `·${via}` : "") }) : i18n("components.exthwsettingssection.c1f658373079")}</Tag>
         <span className="exthw-src-actions">
           {primary}
           {more}
@@ -71,6 +75,8 @@ function OjSourceRow({
 
 /* ── 外部作业源（雨课堂 / TUOJ 系 / Tyche / DSA OJ）── */
 export function ExtHwSettingsSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const ext = useExternalHomework();
   // 雨课堂
   const [yktPhone, setYktPhone] = useState("");
@@ -205,7 +211,7 @@ export function ExtHwSettingsSection(): ReactNode {
   };
 
   const onSave = () => {
-    void saveExtHwCreds(credsWith()).then(() => notify("range", "已保存到本机。"));
+    void saveExtHwCreds(credsWith()).then(() => notify("range", i18n("components.exthwsettingssection.e4c4cca922f3")));
   };
 
   const onRefresh = () => {
@@ -213,8 +219,8 @@ export function ExtHwSettingsSection(): ReactNode {
     setMsg(null);
     void saveExtHwCreds(credsWith())
       .then(() => refreshExtHw())
-      .then(() => notify("range", "刷新完成。"))
-      .catch((e: unknown) => notify("range", `刷新失败：${errMsg(e)}`))
+      .then(() => notify("range", i18n("components.exthwsettingssection.0cfeab7fbfd6")))
+      .catch((e: unknown) => notify("range", i18n("components.exthwsettingssection.434a1a95686a", { value: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -228,12 +234,12 @@ export function ExtHwSettingsSection(): ReactNode {
     void runYktSessionCheck()
       .then((st) => {
         if (!st) {
-          notify("yuketang", "未配置雨课堂登录状态——请先登录。");
+          notify("yuketang", i18n("components.exthwsettingssection.738b37dc7cba"));
           return;
         }
-        if (st.alive === true) notify("yuketang", `会话有效${st.userName ? `（${st.userName}）` : ""}。`);
-        else if (st.alive === false) notify("yuketang", `会话已失效（${st.reason ?? "未知原因"}）——可扫码重登，或导入其他设备导出的 Cookie。`);
-        else notify("yuketang", "检查未成功：网络异常，登录状态未知");
+        if (st.alive === true) notify("yuketang", i18n("components.exthwsettingssection.ee5c26c496a4", { value: String(st.userName ? `（${st.userName}）` : "") }));
+        else if (st.alive === false) notify("yuketang", i18n("components.exthwsettingssection.1f2ada659e8f", { value: String(st.reason ?? i18n("components.exthwsettingssection.a1a9da9ee6ed")) }));
+        else notify("yuketang", i18n("components.exthwsettingssection.52ca90b5c7ad"));
       })
       .finally(() => setBusy(null));
   };
@@ -244,10 +250,10 @@ export function ExtHwSettingsSection(): ReactNode {
     setMsg(null);
     void (async (): Promise<string> => {
       if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
-        throw new Error("浏览器预览不支持导出，请在桌面端操作");
+        throw new Error(i18n("components.exthwsettingssection.7cf1f3f97fff"));
       }
       const c = await ensureExtHwCredsLoaded();
-      if (!c.yuketang?.cookie?.trim()) throw new Error("尚未登录雨课堂，无可导出的登录状态");
+      if (!c.yuketang?.cookie?.trim()) throw new Error(i18n("components.exthwsettingssection.e980b77af601"));
       const json = buildYktCookieExportJson(c.yuketang);
       const { invoke } = await import("@tauri-apps/api/core");
       const date = new Date().toISOString().slice(0, 10);
@@ -255,11 +261,11 @@ export function ExtHwSettingsSection(): ReactNode {
         filename: `onethu-yuketang-cookie-${date}.json`,
         contents: json,
       });
-      if (!path) return "已取消导出。";
-      return `已导出到 ${path}。⚠️ 该文件等同账号凭据：勿放同步盘 / 群聊 / 仓库，导入完成后请删除。`;
+      if (!path) return i18n("components.exthwsettingssection.84880323c334");
+      return i18n("components.exthwsettingssection.59e30b592976", { path: String(path) });
     })()
       .then((m) => notify("yuketang", m))
-      .catch((e: unknown) => notify("yuketang", `导出失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("yuketang", i18n("components.exthwsettingssection.177a41a28139", { value: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -269,12 +275,12 @@ export function ExtHwSettingsSection(): ReactNode {
     setMsg(null);
     void (async (): Promise<string> => {
       if (typeof window === "undefined" || !("__TAURI_INTERNALS__" in window)) {
-        throw new Error("浏览器预览不支持导入，请在桌面端操作");
+        throw new Error(i18n("components.exthwsettingssection.ec3a87632682"));
       }
       const { open } = await import("@tauri-apps/plugin-dialog");
       const { invoke } = await import("@tauri-apps/api/core");
-      const sel = await open({ multiple: false, filters: [{ name: "雨课堂登录状态", extensions: ["json"] }] });
-      if (!sel || typeof sel !== "string") return "已取消导入。";
+      const sel = await open({ multiple: false, filters: [{ name: i18n("components.exthwsettingssection.1c907131183c"), extensions: ["json"] }] });
+      if (!sel || typeof sel !== "string") return i18n("components.exthwsettingssection.ae79f5df3c38");
       const text = await invoke<string>("read_file_text", { path: sel });
       const parsed = parseYktCookieExportJson(text);
       const cur = await ensureExtHwCredsLoaded();
@@ -289,10 +295,10 @@ export function ExtHwSettingsSection(): ReactNode {
       setYktCookie(parsed.cookie);
       if (parsed.phone) setYktPhone(parsed.phone);
       void refreshExtHw();
-      return "已导入雨课堂登录状态，正在刷新外部作业。";
+      return i18n("components.exthwsettingssection.6ac888d9d8a4");
     })()
       .then((m) => notify("yuketang", m))
-      .catch((e: unknown) => notify("yuketang", `导入失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("yuketang", i18n("components.exthwsettingssection.7a334a5f33f2", { value: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -314,10 +320,10 @@ export function ExtHwSettingsSection(): ReactNode {
         await saveExtHwCreds(
           source === "tuoj" ? credsWith({ tuoj: r.cookie, tuojVia: "cas" }) : credsWith({ classic: r.cookie, classicVia: "cas" }),
         );
-        notify("oj", `${SOURCE_NAMES[source]} 已通过清华统一认证登录，已保存。`);
+        notify("oj", i18n("components.exthwsettingssection.0046b5364303", { value: String(SOURCE_NAMES[source]) }));
         void refreshExtHw();
       })
-      .catch((e: unknown) => notify("oj", `${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.a33c8a6739b3", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -345,10 +351,10 @@ export function ExtHwSettingsSection(): ReactNode {
             ? credsWith({ tuoj: r.cookie, tuojVia: "password" })
             : credsWith({ classic: r.cookie, classicVia: "password" }),
         );
-        notify("oj", `${SOURCE_NAMES[source]} 登录成功，已保存。`);
+        notify("oj", i18n("components.exthwsettingssection.81c77d061430", { value: String(SOURCE_NAMES[source]) }));
         void refreshExtHw();
       })
-      .catch((e: unknown) => notify("oj", `${SOURCE_NAMES[source]} 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.a33c8a6739b3", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -368,10 +374,10 @@ export function ExtHwSettingsSection(): ReactNode {
         setTychePwd("");
         setTycheFormOpen(false);
         await saveExtHwCreds(credsWith({ tyche: r.cookie, tychePwd: tycheRemember ? pwdNow : undefined }));
-        notify("oj", tycheRemember ? "Tyche 登录成功，已记住密码" : "Tyche 登录成功，已保存。");
+        notify("oj", tycheRemember ? i18n("components.exthwsettingssection.e9da66a5f095") : i18n("components.exthwsettingssection.30060dffb676"));
         void refreshExtHw();
       })
-      .catch((e: unknown) => notify("oj", `Tyche 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.94cd45f219ce", { value: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -385,17 +391,17 @@ export function ExtHwSettingsSection(): ReactNode {
         setDsaPwd("");
         setDsaFormOpen(false);
         await saveExtHwCreds(credsWith({ dsa: r.cookie }));
-        notify("oj", "DSA OJ 登录成功，已保存。");
+        notify("oj", i18n("components.exthwsettingssection.c5f1befc6cc9"));
         void refreshExtHw();
       })
-      .catch((e: unknown) => notify("oj", `DSA OJ 登录失败：${errMsg(e)}`))
+      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.8da916259f48", { value: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
   /** R12 17.2：单源退出登录 —— 确认后只清该源凭据，不影响其他源 */
   const onLogout = (source: ExtHwSourceId) => {
     const label = SOURCE_NAMES[source];
-    void confirmOk(`确定退出${label}登录？将清除本机保存的${label}凭据，不影响其他源。`).then(
+    void confirmOk(i18nMsg("components.exthwsettingssection.9332d0724ed2", { label: String(label), label2: String(label) })).then(
       async (ok) => {
         if (!ok) return;
         setBusy(`logout-${source}`);
@@ -423,10 +429,10 @@ export function ExtHwSettingsSection(): ReactNode {
             setDsaCookie("");
             setDsaPwd("");
           }
-          notify(source === "yuketang" ? "yuketang" : "oj", `已退出${label}登录。`);
+          notify(source === "yuketang" ? "yuketang" : "oj", i18n("components.exthwsettingssection.5fd4a0702e98", { label: String(label) }));
           void refreshExtHw();
         } catch (e: unknown) {
-          notify(source === "yuketang" ? "yuketang" : "oj", `退出${label}登录失败：${errMsg(e)}`);
+          notify(source === "yuketang" ? "yuketang" : "oj", i18n("components.exthwsettingssection.b666588e7bed", { label: String(label), value: String(errMsg(e)) }));
         } finally {
           setBusy(null);
         }
@@ -448,12 +454,10 @@ export function ExtHwSettingsSection(): ReactNode {
       <>
         {ext.errors[source] ? <OGText as="div" slot="label" tone="error">{ext.errors[source]}</OGText> : null}
         {st.kind === "failed" ? (
-          <OGText as="div" slot="label" tone="warning">
-            自动登录未成功{st.message ? `（${st.message.slice(0, 160)}）` : ""}——可点「统一认证登录」重试。
-          </OGText>
+          <OGText as="div" slot="label" tone="warning">{i18nRich("components.exthwsettingssection.65493396ab5b", { value: st.message ? `（${st.message.slice(0, 160)}）` : "" })}</OGText>
         ) : null}
         {st.kind === "no-courses" ? (
-          <OGText as="div" slot="label" tone="faint">统一认证已通过，未返回课程（可能未注册或未选课）。</OGText>
+          <OGText as="div" slot="label" tone="faint">{i18n("components.exthwsettingssection.f81d3377be28")}</OGText>
         ) : null}
       </>
     );
@@ -465,41 +469,37 @@ export function ExtHwSettingsSection(): ReactNode {
 
   return (
     <div id="settings-exthw">
-      <OGText as="div" slot="label" tone="faint">
-        把各平台作业 DDL 合并到「全部作业」与「今日」；只读拉取（标题 / 课程 / 截止时间），不提交、
-        不抓题目。登录信息在本机加密保存，只用来读取作业。
-      </OGText>
+      <OGText as="div" slot="label" tone="faint">{i18n("components.exthwsettingssection.e9acc8eb6b0c")}</OGText>
 
       {/* ── R14 19.1 / R15 20.3：雨课堂独立 Card，统一行范式 ── */}
       <SectionHead title={SOURCE_CATEGORY_NAMES.courseware} />
       <Card>
         <div className="exthw-src">
           <div className="exthw-src-head">
-            <OGText weight="semibold">雨课堂</OGText>
+            <OGText weight="semibold">{i18n("components.exthwsettingssection.38b9eabcae1b")}</OGText>
             <Tag tone={configured.yuketang ? "success" : undefined}>
-              {configured.yuketang ? "已登录" : "未登录"}
+              {configured.yuketang ? i18n("components.exthwsettingssection.0a01eee1cd37") : i18n("components.exthwsettingssection.c1f658373079")}
             </Tag>
             <span className="exthw-src-actions">
               {configured.yuketang ? (
-                <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("yuketang")}>{busy === "logout-yuketang" ? "退出中…" : "退出"}</Btn>
+                <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("yuketang")}>{busy === "logout-yuketang" ? i18n("components.exthwsettingssection.4803e2da0873") : i18n("components.exthwsettingssection.498e1d59b4d7")}</Btn>
               ) : (
                 <>
                   <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => {
                       setYktWebOpen(false);
                       setYktQrOpen((v) => !v);
-                    }}>{yktQrOpen ? "收起扫码" : "微信扫码登录"}</Btn>
+                    }}>{yktQrOpen ? i18n("components.exthwsettingssection.dd647f03c880") : i18n("components.exthwsettingssection.9e0181f35fc5")}</Btn>
                   {/* R18 24.2：官方网页登录通道（应用内 WebView，支持扫码 / 短信）
                       R18b 25.3.2：桌面端原生窗口实测白屏卡死 → 隐藏该入口（二维码可用），仅 Android 保留 */}
                   {YKT_WEB_LOGIN_AVAILABLE ? (
-                    <Btn variant="outline" disabled={busy !== null} titleAttr="在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录" onClick={() => {
+                    <Btn variant="outline" disabled={busy !== null} titleAttr={i18n("components.exthwsettingssection.04bc193e4244")} onClick={() => {
                         setYktQrOpen(false);
                         setYktWebOpen((v) => !v);
-                      }}>{yktWebOpen ? "收起网页登录" : "官方网页登录"}</Btn>
+                      }}>{yktWebOpen ? i18n("components.exthwsettingssection.f3553abadd4a") : i18n("components.exthwsettingssection.0a5f3151f8a9")}</Btn>
                   ) : null}
                 </>
               )}
-              <Btn variant="ghost" disabled titleAttr="雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码">短信验证码（暂不可用）
-              </Btn>
+              <Btn variant="ghost" disabled titleAttr={i18n("components.exthwsettingssection.e1d7e2b94ecd")}>{i18n("components.exthwsettingssection.8230bba29c97")}</Btn>
             </span>
           </div>
           {/* R17 23.2：官方登录页发短信前先取图形验证码（TencentCaptcha/hCaptcha），
@@ -508,8 +508,8 @@ export function ExtHwSettingsSection(): ReactNode {
               R18b 25.3.2：桌面端该入口隐藏，文案不再引导到它。 */}
           <OGText as="div" slot="label" tone="faint">
             {YKT_WEB_LOGIN_AVAILABLE
-              ? "雨课堂已开启图形验证码：请用微信扫码，或选「官方网页登录」。"
-              : "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。"}
+              ? i18n("components.exthwsettingssection.5492e8498b9c")
+              : i18n("components.exthwsettingssection.9249fcc53449")}
           </OGText>
           {msg && msgArea === "yuketang" ? (
             <div role="status"><OGText as="div" slot="label" tone="faint">{msg}</OGText></div>
@@ -520,28 +520,24 @@ export function ExtHwSettingsSection(): ReactNode {
             <>
               <OGText as="div" slot="label" tone="faint">
                 {ext.yktSession.checkedAt === null
-                  ? "登录状态：尚未检查（应用启动后会自动检查，约每 6 小时一次，也可手动检查）。"
+                  ? i18n("components.exthwsettingssection.27e7d6344316")
                   : ext.yktSession.alive === true
-                    ? `会话健康：有效${ext.yktSession.userName ? `（${ext.yktSession.userName}）` : ""} · 检查于 ${new Date(ext.yktSession.checkedAt).toLocaleTimeString()}`
+                    ? i18n("components.exthwsettingssection.8b512420e036", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : ""), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })
                     : ext.yktSession.alive === false
-                      ? `会话健康：已失效（${ext.yktSession.reason}）· 检查于 ${new Date(ext.yktSession.checkedAt).toLocaleTimeString()}`
-                      : "登录状态：未知（上次检查时网络异常，不判定为失效）"}
+                      ? i18n("components.exthwsettingssection.d2c8f261037f", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })
+                      : i18n("components.exthwsettingssection.4acec185ba86")}
               </OGText>
               <div style={fieldStyle}>
-                <Btn variant="outline" disabled={busy !== null} onClick={onYktCheckSession}>{busy === "ykt-check" ? "检查中…" : "检查登录状态"}</Btn>
-                <Btn variant="outline" disabled={busy !== null} titleAttr="导出当前登录状态，供其他设备导入（免重复扫码）。文件等同账号绑定，用完请即删。" onClick={onYktExportCookie}>{busy === "ykt-export" ? "导出中…" : "导出登录状态"}</Btn>
-                <Btn variant="outline" disabled={busy !== null} titleAttr="导入其他已登录设备导出的登录状态文件，免扫码直接恢复登录" onClick={onYktImportCookie}>{busy === "ykt-import" ? "导入中…" : "导入登录状态"}</Btn>
+                <Btn variant="outline" disabled={busy !== null} onClick={onYktCheckSession}>{busy === "ykt-check" ? i18n("components.exthwsettingssection.fb11aa6f2982") : i18n("components.exthwsettingssection.8a21d7219a96")}</Btn>
+                <Btn variant="outline" disabled={busy !== null} titleAttr={i18n("components.exthwsettingssection.fb4017d5b95f")} onClick={onYktExportCookie}>{busy === "ykt-export" ? i18n("components.exthwsettingssection.dce6e572314e") : i18n("components.exthwsettingssection.11968ab19a8b")}</Btn>
+                <Btn variant="outline" disabled={busy !== null} titleAttr={i18n("components.exthwsettingssection.4ba279389d5a")} onClick={onYktImportCookie}>{busy === "ykt-import" ? i18n("components.exthwsettingssection.2f58b6eddc08") : i18n("components.exthwsettingssection.103d97629702")}</Btn>
               </div>
               {ext.yktSession.alive === false ? (
-                <OGText as="div" slot="label" tone="error">
-                  会话已失效：作业页将拉不到雨课堂数据。可「一键重登（扫码）」，或在其他已登录设备「导出
-                  Cookie」后在此「导入 Cookie」恢复。
-                  <div style={{ marginTop: 6 }}>
+                <OGText as="div" slot="label" tone="error">{i18n("components.exthwsettingssection.c0102ddf9ffc")}<div style={{ marginTop: 6 }}>
                     <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => {
                         setYktWebOpen(false);
                         setYktQrOpen(true);
-                      }}>一键重登（扫码）
-                    </Btn>
+                      }}>{i18n("components.exthwsettingssection.da57a53a43da")}</Btn>
                   </div>
                 </OGText>
               ) : null}
@@ -554,7 +550,7 @@ export function ExtHwSettingsSection(): ReactNode {
                 setYktCookie(cookie);
                 setYktQrOpen(false);
                 void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
-                  notify("yuketang", "雨课堂扫码登录成功，已保存。");
+                  notify("yuketang", i18n("components.exthwsettingssection.a61cd4faa5ed"));
                   void refreshExtHw();
                 });
               }}
@@ -567,7 +563,7 @@ export function ExtHwSettingsSection(): ReactNode {
                 setYktCookie(cookie);
                 setYktWebOpen(false);
                 void saveExtHwCreds(credsWith({ ykt: cookie })).then(() => {
-                  notify("yuketang", "雨课堂官方网页登录成功，已保存登录状态。");
+                  notify("yuketang", i18n("components.exthwsettingssection.ecc6fb1d43a1"));
                   void refreshExtHw();
                 });
               }}
@@ -577,21 +573,21 @@ export function ExtHwSettingsSection(): ReactNode {
       </Card>
 
       {/* ── R14 19.2 / R15 20.3：OJ 平台组默认折叠，标题行常显 4 源接入状态 ── */}
-      <SectionHead title={SOURCE_CATEGORY_NAMES.oj} aside="按个人情况登录" />
+      <SectionHead title={SOURCE_CATEGORY_NAMES.oj} aside={i18n("components.exthwsettingssection.44ff02182964")} />
       <Card>
         <AccordionItem
           id="oj"
-          title="OJ 平台登录"
+          title={i18n("components.exthwsettingssection.07a0f114d30b")}
           open={ojOpen}
           onToggle={() => setOjOpen((v) => !v)}
           trailing={
             <Inline gap={2} wrap>
               {(["tuoj", "tuojClassic", "tyche", "dsa"] as const).map((id) => (
                 <Tag key={id} tone={configured[id] ? "success" : undefined}>
-                  {SOURCE_NAMES[id]} {configured[id] ? "✅" : "未登录"}
+                  {SOURCE_NAMES[id]} {configured[id] ? "✅" : i18n("components.exthwsettingssection.c1f658373079")}
                 </Tag>
               ))}
-              <OGText slot="label" tone="faint">{ojOpen ? "点击收起" : "点击展开登录"}</OGText>
+              <OGText slot="label" tone="faint">{ojOpen ? i18n("components.exthwsettingssection.3afccd0197f6") : i18n("components.exthwsettingssection.3e7440664c75")}</OGText>
             </Inline>
           }
         >        {msg && msgArea === "oj" ? (
@@ -604,30 +600,29 @@ export function ExtHwSettingsSection(): ReactNode {
               logged={configured.tuoj}
               via={
                 tuojVia === "cas" || ext.tuojAuto.tuoj.kind === "ok"
-                  ? "统一认证"
+                  ? i18n("components.exthwsettingssection.99e398c6de5c")
                   : tuojVia === "password"
-                    ? "账号密码"
+                    ? i18n("components.exthwsettingssection.164c7afc6158")
                     : undefined
               }
               primary={
                 configured.tuoj ? (
-                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tuoj")}>{busy === "logout-tuoj" ? "退出中…" : "退出"}</Btn>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tuoj")}>{busy === "logout-tuoj" ? i18n("components.exthwsettingssection.4803e2da0873") : i18n("components.exthwsettingssection.498e1d59b4d7")}</Btn>
                 ) : (
-                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => onTuojCasLogin("tuoj")}>{busy === "tuoj-cas-tuoj" ? "登录中…" : "统一认证登录"}</Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => onTuojCasLogin("tuoj")}>{busy === "tuoj-cas-tuoj" ? i18n("components.exthwsettingssection.3f06ed8f8c38") : i18n("components.exthwsettingssection.7c1c6d7e68c6")}</Btn>
                 )
               }
               more={
-                <Btn variant="ghost" onClick={() => setTuojPwdOpen((v) => !v)}>{tuojPwdOpen ? "▾" : "▸"}账号密码
-                </Btn>
+                <Btn variant="ghost" onClick={() => setTuojPwdOpen((v) => !v)}>{i18nRich("components.exthwsettingssection.b9e0b1e6f221", { value: tuojPwdOpen ? "▾" : "▸" })}</Btn>
               }
               note={tuojNote("tuoj")}
             >
               {tuojPwdOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder="用户名" value={tuojUser} onChange={(value) => setTuojUser(value.trim())} />}</div>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={tuojPwd} onChange={(value) => setTuojPwd(value)} />}</div>
-                    <Btn variant="outline" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={() => onTuojPwdLogin("tuoj")}>{busy === "tuoj-pwd-tuoj" ? "登录中…" : "登录"}</Btn>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder={i18n("components.exthwsettingssection.1a3f0617d6de")} value={tuojUser} onChange={(value) => setTuojUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder={i18n("components.exthwsettingssection.a621ab606db2")} value={tuojPwd} onChange={(value) => setTuojPwd(value)} />}</div>
+                    <Btn variant="outline" disabled={busy !== null || !tuojUser.trim() || !tuojPwd} onClick={() => onTuojPwdLogin("tuoj")}>{busy === "tuoj-pwd-tuoj" ? i18n("components.exthwsettingssection.3f06ed8f8c38") : i18n("components.exthwsettingssection.1e2df9c3075a")}</Btn>
                   </div>
                 </div>
               ) : null}
@@ -639,30 +634,29 @@ export function ExtHwSettingsSection(): ReactNode {
               logged={configured.tuojClassic}
               via={
                 classicVia === "cas" || ext.tuojAuto.tuojClassic.kind === "ok"
-                  ? "统一认证"
+                  ? i18n("components.exthwsettingssection.99e398c6de5c")
                   : classicVia === "password"
-                    ? "账号密码"
+                    ? i18n("components.exthwsettingssection.164c7afc6158")
                     : undefined
               }
               primary={
                 configured.tuojClassic ? (
-                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tuojClassic")}>{busy === "logout-tuojClassic" ? "退出中…" : "退出"}</Btn>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tuojClassic")}>{busy === "logout-tuojClassic" ? i18n("components.exthwsettingssection.4803e2da0873") : i18n("components.exthwsettingssection.498e1d59b4d7")}</Btn>
                 ) : (
-                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => onTuojCasLogin("tuojClassic")}>{busy === "tuoj-cas-tuojClassic" ? "登录中…" : "统一认证登录"}</Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => onTuojCasLogin("tuojClassic")}>{busy === "tuoj-cas-tuojClassic" ? i18n("components.exthwsettingssection.3f06ed8f8c38") : i18n("components.exthwsettingssection.7c1c6d7e68c6")}</Btn>
                 )
               }
               more={
-                <Btn variant="ghost" onClick={() => setClassicPwdOpen((v) => !v)}>{classicPwdOpen ? "▾" : "▸"}账号密码
-                </Btn>
+                <Btn variant="ghost" onClick={() => setClassicPwdOpen((v) => !v)}>{i18nRich("components.exthwsettingssection.b9e0b1e6f221", { value: classicPwdOpen ? "▾" : "▸" })}</Btn>
               }
               note={tuojNote("tuojClassic")}
             >
               {classicPwdOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder="用户名" value={classicUser} onChange={(value) => setClassicUser(value.trim())} />}</div>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={classicPwd} onChange={(value) => setClassicPwd(value)} />}</div>
-                    <Btn variant="outline" disabled={busy !== null || !classicUser.trim() || !classicPwd} onClick={() => onTuojPwdLogin("tuojClassic")}>{busy === "tuoj-pwd-tuojClassic" ? "登录中…" : "登录"}</Btn>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder={i18n("components.exthwsettingssection.1a3f0617d6de")} value={classicUser} onChange={(value) => setClassicUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder={i18n("components.exthwsettingssection.a621ab606db2")} value={classicPwd} onChange={(value) => setClassicPwd(value)} />}</div>
+                    <Btn variant="outline" disabled={busy !== null || !classicUser.trim() || !classicPwd} onClick={() => onTuojPwdLogin("tuojClassic")}>{busy === "tuoj-pwd-tuojClassic" ? i18n("components.exthwsettingssection.3f06ed8f8c38") : i18n("components.exthwsettingssection.1e2df9c3075a")}</Btn>
                   </div>
                 </div>
               ) : null}
@@ -674,38 +668,37 @@ export function ExtHwSettingsSection(): ReactNode {
               logged={configured.tyche}
               primary={
                 configured.tyche ? (
-                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tyche")}>{busy === "logout-tyche" ? "退出中…" : "退出"}</Btn>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("tyche")}>{busy === "logout-tyche" ? i18n("components.exthwsettingssection.4803e2da0873") : i18n("components.exthwsettingssection.498e1d59b4d7")}</Btn>
                 ) : (
-                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => setTycheFormOpen((v) => !v)}>{tycheFormOpen ? "收起" : "登录"}</Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => setTycheFormOpen((v) => !v)}>{tycheFormOpen ? i18n("components.exthwsettingssection.afd4b783536b") : i18n("components.exthwsettingssection.1e2df9c3075a")}</Btn>
                 )
               }
               more={
                 configured.tyche ? (
-                  <Btn variant="ghost" onClick={() => setTycheFormOpen((v) => !v)}>{tycheFormOpen ? "▾" : "▸"}重新登录
-                  </Btn>
+                  <Btn variant="ghost" onClick={() => setTycheFormOpen((v) => !v)}>{i18nRich("components.exthwsettingssection.97434a01ddf6", { value: tycheFormOpen ? "▾" : "▸" })}</Btn>
                 ) : undefined
               }
               note={
                 ext.errors.tyche ? (
                   <OGText as="div" slot="label" tone="error">{ext.errors.tyche}</OGText>
                 ) : tycheRemember && configured.tyche ? (
-                  <OGText as="div" slot="label" tone="faint">已记住密码，登录状态失效时自动重新登录。</OGText>
+                  <OGText as="div" slot="label" tone="faint">{i18n("components.exthwsettingssection.e32ac47f5825")}</OGText>
                 ) : undefined
               }
             >
               {tycheFormOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder="用户名" value={tycheUser} onChange={(value) => setTycheUser(value.trim())} />}</div>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={tychePwd} onChange={(value) => setTychePwd(value)} />}</div>
-                    <Btn variant="solid" tone="brand" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>{busy === "tyche-login" ? "登录中…" : "登录"}</Btn>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input placeholder={i18n("components.exthwsettingssection.1a3f0617d6de")} value={tycheUser} onChange={(value) => setTycheUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder={i18n("components.exthwsettingssection.a621ab606db2")} value={tychePwd} onChange={(value) => setTychePwd(value)} />}</div>
+                    <Btn variant="solid" tone="brand" disabled={busy !== null || !tycheUser.trim() || !tychePwd} onClick={onTycheLogin}>{busy === "tyche-login" ? i18n("components.exthwsettingssection.3f06ed8f8c38") : i18n("components.exthwsettingssection.1e2df9c3075a")}</Btn>
                   </div>
                   {/* R21-A：记住密码 → 会话失效时用存档账密静默自动重登一次（同源 ≥10min、每进程 ≤3 次） */}
-                  <Checkbox checked={tycheRemember} onChange={(v) => setTycheRemember(v)} label="记住密码（登录状态失效后自动登录）" />
+                  <Checkbox checked={tycheRemember} onChange={(v) => setTycheRemember(v)} label={i18n("components.exthwsettingssection.5510d7040d50")} />
                   <OGText as="div" slot="label" tone="faint">
                     {tycheRemember
-                      ? "密码以密文存在本机，不上传、不进日志；退出登录即清除。"
-                      : "不勾选则只保存本次登录状态，失效后需手动重新登录。"}
+                      ? i18n("components.exthwsettingssection.aaa8da9598f1")
+                      : i18n("components.exthwsettingssection.40c00674621e")}
                   </OGText>
                 </div>
               ) : null}
@@ -717,15 +710,14 @@ export function ExtHwSettingsSection(): ReactNode {
               logged={configured.dsa}
               primary={
                 configured.dsa ? (
-                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("dsa")}>{busy === "logout-dsa" ? "退出中…" : "退出"}</Btn>
+                  <Btn variant="outline" disabled={busy !== null} onClick={() => onLogout("dsa")}>{busy === "logout-dsa" ? i18n("components.exthwsettingssection.4803e2da0873") : i18n("components.exthwsettingssection.498e1d59b4d7")}</Btn>
                 ) : (
-                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => setDsaFormOpen((v) => !v)}>{dsaFormOpen ? "收起" : "登录"}</Btn>
+                  <Btn variant="solid" tone="brand" disabled={busy !== null} onClick={() => setDsaFormOpen((v) => !v)}>{dsaFormOpen ? i18n("components.exthwsettingssection.afd4b783536b") : i18n("components.exthwsettingssection.1e2df9c3075a")}</Btn>
                 )
               }
               more={
                 configured.dsa ? (
-                  <Btn variant="ghost" onClick={() => setDsaFormOpen((v) => !v)}>{dsaFormOpen ? "▾" : "▸"}重新登录
-                  </Btn>
+                  <Btn variant="ghost" onClick={() => setDsaFormOpen((v) => !v)}>{i18nRich("components.exthwsettingssection.97434a01ddf6", { value: dsaFormOpen ? "▾" : "▸" })}</Btn>
                 ) : undefined
               }
               note={ext.errors.dsa ? <OGText as="div" slot="label" tone="error">{ext.errors.dsa}</OGText> : undefined}
@@ -733,9 +725,9 @@ export function ExtHwSettingsSection(): ReactNode {
               {dsaFormOpen ? (
                 <div className="exthw-src-body">
                   <div style={fieldStyle}>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="email" placeholder="邮箱" value={dsaUser} onChange={(value) => setDsaUser(value.trim())} />}</div>
-                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder="密码" value={dsaPwd} onChange={(value) => setDsaPwd(value)} />}</div>
-                    <Btn variant="solid" tone="brand" disabled={busy !== null || !dsaUser.trim() || !dsaPwd} onClick={onDsaLogin}>{busy === "dsa-login" ? "登录中…" : "登录"}</Btn>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="email" placeholder={i18n("components.exthwsettingssection.73075237fd0f")} value={dsaUser} onChange={(value) => setDsaUser(value.trim())} />}</div>
+                    <div style={{ minWidth: 160, flex: 1 }}>{<Input type="password" placeholder={i18n("components.exthwsettingssection.a621ab606db2")} value={dsaPwd} onChange={(value) => setDsaPwd(value)} />}</div>
+                    <Btn variant="solid" tone="brand" disabled={busy !== null || !dsaUser.trim() || !dsaPwd} onClick={onDsaLogin}>{busy === "dsa-login" ? i18n("components.exthwsettingssection.3f06ed8f8c38") : i18n("components.exthwsettingssection.1e2df9c3075a")}</Btn>
                   </div>
                 </div>
               ) : null}
@@ -748,33 +740,32 @@ export function ExtHwSettingsSection(): ReactNode {
       <div style={{ marginTop: 18 }}>
         <Card>
         <div>
-          <OGText weight="semibold">抓取范围与刷新</OGText>
-          <OGText as="div" slot="label" tone="faint">对所有源生效；已过期的作业仍显示。</OGText>
+          <OGText weight="semibold">{i18n("components.exthwsettingssection.c1547f6ba316")}</OGText>
+          <OGText as="div" slot="label" tone="faint">{i18n("components.exthwsettingssection.cd2e0ccbc607")}</OGText>
 
             <div style={{ marginTop: 12, display: "grid", gap: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <OGText weight="medium">只保留未来</OGText>
+                <OGText weight="medium">{i18n("components.exthwsettingssection.58d2b2a8dc03")}</OGText>
                 <Input inputMode="numeric" value={days} onChange={(value) => setDays(value.replace(/[^0-9]/g, ""))} />
-                <OGText slot="label" tone="faint">天（已过期的仍显示）</OGText>
+                <OGText slot="label" tone="faint">{i18n("components.exthwsettingssection.f8f540b20b2a")}</OGText>
               </div>
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <Btn variant="solid" tone="brand" onClick={onSave}>保存</Btn>
-                <Btn variant="outline" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>{busy === "refresh" || ext.state === "loading" ? "刷新中…" : "立即刷新"}</Btn>
+                <Btn variant="solid" tone="brand" onClick={onSave}>{i18n("components.exthwsettingssection.a3030bf8f16d")}</Btn>
+                <Btn variant="outline" disabled={busy !== null || ext.state === "loading"} onClick={onRefresh}>{busy === "refresh" || ext.state === "loading" ? i18n("components.exthwsettingssection.7f3c8312816f") : i18n("components.exthwsettingssection.130123e01753")}</Btn>
               </div>
 
               {/* 高级：手动粘贴浏览器登录信息（一般用户用不到） */}
               <div>
-                <Btn variant="ghost" onClick={() => setAdvanced((v) => !v)}>{advanced ? "▾" : "▸"}高级：手动粘贴浏览器登录信息
-                </Btn>
+                <Btn variant="ghost" onClick={() => setAdvanced((v) => !v)}>{i18nRich("components.exthwsettingssection.abf483faf3b6", { value: advanced ? "▾" : "▸" })}</Btn>
                 {advanced ? (
                   <div style={{ display: "grid", gap: 10, marginTop: 8 }}>
-                    <TextArea mono placeholder="雨课堂登录状态" value={yktCookie} onChange={(value) => setYktCookie(value)} />
-                    <TextArea mono placeholder="TUOJ（AI 版）登录状态" value={tuojCookie} onChange={(value) => setTuojCookie(value)} />
-                    <TextArea mono placeholder="TUOJ（经典版）登录状态" value={classicCookie} onChange={(value) => setClassicCookie(value)} />
+                    <TextArea mono placeholder={i18n("components.exthwsettingssection.1c907131183c")} value={yktCookie} onChange={(value) => setYktCookie(value)} />
+                    <TextArea mono placeholder={i18n("components.exthwsettingssection.6c0cdf48d1b3")} value={tuojCookie} onChange={(value) => setTuojCookie(value)} />
+                    <TextArea mono placeholder={i18n("components.exthwsettingssection.d066ae4f03e8")} value={classicCookie} onChange={(value) => setClassicCookie(value)} />
                     <TextArea mono placeholder="Tyche Cookie（JSESSIONID / username / uid）" value={tycheCookie} onChange={(value) => setTycheCookie(value)} />
                     <TextArea mono placeholder="DSA OJ Cookie（PHPSESSID …）" value={dsaCookie} onChange={(value) => setDsaCookie(value)} />
-                    <OGText as="div" slot="label" tone="faint">粘贴后点击上方「保存」生效。</OGText>
+                    <OGText as="div" slot="label" tone="faint">{i18n("components.exthwsettingssection.498e524101ad")}</OGText>
                   </div>
                 ) : null}
               </div>
@@ -785,8 +776,8 @@ export function ExtHwSettingsSection(): ReactNode {
                   const err = ext.errors[id];
                   return (
                     <OGText as="div" key={id}>
-                      {label}：{logged ? "已登录" : "未登录"} ·{" "}
-                      {err ? <OGText tone="error">需重新登录</OGText> : `${count} 条`}
+                      {label}：{logged ? i18n("components.exthwsettingssection.0a01eee1cd37") : i18n("components.exthwsettingssection.c1f658373079")} ·{" "}
+                      {err ? <OGText tone="error">{i18n("components.exthwsettingssection.8aee3f656a95")}</OGText> : i18n("components.exthwsettingssection.92559c8f277f", { count: String(count) })}
                     </OGText>
                   );
                 })}

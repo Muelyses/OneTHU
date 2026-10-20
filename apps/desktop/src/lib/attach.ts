@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 附件入口（需求 6/8）：拍照 / 相册 / 上传 → 统一成 AttachFile → 交给 OH。
  *
@@ -95,7 +96,7 @@ export function baseName(pathOrName: string): string {
 
 /** 人读的文件大小（沿用 im/mediaPipe.ts 的写法） */
 export function formatSize(bytes: number): string {
-  if (!bytes || bytes <= 0) return "大小未知";
+  if (!bytes || bytes <= 0) return i18n("lib.attach.f8f5f153c20d");
   if (bytes >= 1024 * 1024) return `${(bytes / 1048576).toFixed(1)}MB`;
   return `${Math.max(1, Math.round(bytes / 1024))}KB`;
 }
@@ -121,7 +122,7 @@ interface InputPickSpec {
 /** 点一次隐藏 input，等用户选完。返回 File[]；用户取消 / 一直没回来给 null */
 function pickViaInput(spec: InputPickSpec): Promise<File[] | null> {
   if (typeof document === "undefined") {
-    return Promise.reject(new Error("当前环境没有取件界面，请在应用内操作"));
+    return Promise.reject(new Error(i18n("lib.attach.9155bd07598c")));
   }
   const input = document.createElement("input");
   input.type = "file";
@@ -208,8 +209,8 @@ export async function pickGallery(opts: PickOptions = {}): Promise<AttachFile | 
 async function pickPathsViaDialog(multiple: boolean): Promise<string[] | null> {
   const { open } = await import("@tauri-apps/plugin-dialog");
   const sel = multiple
-    ? await open({ multiple: true, directory: false, title: "选择文件" })
-    : await open({ multiple: false, directory: false, title: "选择文件" });
+    ? await open({ multiple: true, directory: false, title: i18n("lib.attach.822fb37dba29") })
+    : await open({ multiple: false, directory: false, title: i18n("lib.attach.822fb37dba29") });
   if (!sel) return null;
   return Array.isArray(sel) ? sel : [sel];
 }
@@ -267,7 +268,7 @@ export async function fileToBytes(f: AttachFile, maxBytes = MAX_READ_BYTES): Pro
     const b64 = await invoke<string>("read_file_base64", { path: f.path, maxBytes });
     return base64ToBytes(b64);
   }
-  throw new Error("这份附件读不到内容，请重新选择文件");
+  throw new Error(i18n("lib.attach.0e36df52d6f5"));
 }
 
 /** 附件 → Blob（图片编辑、上传动作都吃 Blob） */
@@ -360,7 +361,7 @@ export async function buildOhAttachments(files: AttachFile[]): Promise<OhAttachP
       const bytes = await fileToBytes(f, MAX_OH_IMAGE_BYTES);
       attachments.push({ name: f.name, mime: f.mime || "image/jpeg", dataBase64: bytesToBase64(bytes) });
     } catch (e) {
-      skipped.push({ name: f.name, reason: e instanceof Error ? e.message : "读不到内容" });
+      skipped.push({ name: f.name, reason: e instanceof Error ? e.message : i18n("lib.attach.d82cecc3a306") });
     }
   }
   return { attachments, skipped };

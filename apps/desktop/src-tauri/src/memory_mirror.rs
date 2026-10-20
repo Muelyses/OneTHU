@@ -28,15 +28,7 @@ fn safe_rel(rel: &str) -> Result<std::path::PathBuf, String> {
     if trimmed.is_empty() {
         return Err("记忆镜像路径为空".into());
     }
-    let p = std::path::Path::new(trimmed);
-    let mut out = std::path::PathBuf::new();
-    for comp in p.components() {
-        match comp {
-            std::path::Component::Normal(c) => out.push(c),
-            _ => return Err(format!("记忆镜像路径含非法组件（禁止 .. 或盘符）：{rel}")),
-        }
-    }
-    Ok(out)
+    crate::native_security::relative_path(trimmed)
 }
 
 #[derive(serde::Serialize)]
@@ -75,7 +67,7 @@ fn mirror_io_at(root: &std::path::Path, op: &str, path: &str, content: Option<St
             Err(e)
         }
     })?;
-    let abs = root.join(&rel);
+    let abs = crate::native_security::confined_path(root, &rel)?;
     match op {
         "write" => {
             let Some(text) = content else {
@@ -87,10 +79,7 @@ fn mirror_io_at(root: &std::path::Path, op: &str, path: &str, content: Option<St
             if let Some(parent) = abs.parent() {
                 std::fs::create_dir_all(parent).map_err(|e| format!("建目录失败：{e}"))?;
             }
-            // 原子写（同 state_write 纪律）：临时文件 + rename，强退不留半截 markdown
-            let tmp = std::path::PathBuf::from(format!("{}.tmp", abs.display()));
-            std::fs::write(&tmp, text.as_bytes()).map_err(|e| format!("写镜像失败：{e}"))?;
-            std::fs::rename(&tmp, &abs).map_err(|e| format!("落盘镜像失败：{e}"))?;
+            crate::native_security::private_atomic_write(&abs, text.as_bytes())?;
             Ok(json!({ "path": abs.to_string_lossy() }))
         }
         "abspath" => Ok(json!({ "path": abs.to_string_lossy() })),
@@ -115,6 +104,8 @@ fn mirror_io_at(root: &std::path::Path, op: &str, path: &str, content: Option<St
             let mut out: Vec<MirrorEntry> = Vec::new();
             let rd = std::fs::read_dir(&abs).map_err(|e| format!("列镜像目录失败：{e}"))?;
             for entry in rd.flatten() {
+                let Ok(kind) = entry.file_type() else { continue };
+                if kind.is_symlink() { continue; }
                 let Ok(md) = entry.metadata() else { continue };
                 let mtime = md
                     .modified()
@@ -152,7 +143,8 @@ mod tests {
     use super::*;
 
     fn root() -> std::path::PathBuf {
-        let dir = std::env::temp_dir().join(format!("onethu-mem-test-{}", std::process::id()));
+        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let dir = std::env::temp_dir().join(format!("onethu-mem-test-{}-{}", std::process::id(), NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed)));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
         dir
@@ -209,5 +201,22 @@ mod tests {
         let r = root();
         let big = "x".repeat(5 * 1024 * 1024);
         assert!(mirror_io_at(&r, "write", "big.md", Some(big)).is_err(), "超 4MB 上限被拒");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn symlink_cannot_escape_mirror_or_redirect_temporary_write() {
+        let r = root();
+        let outside = root();
+        std::fs::write(outside.join("secret"), "unchanged").unwrap();
+        std::os::unix::fs::symlink(&outside, r.join("link")).unwrap();
+        for op in ["read", "write", "delete", "abspath"] {
+            assert!(mirror_io_at(&r, op, "link/secret", Some("bad".into())).is_err(), "{op}");
+        }
+        std::os::unix::fs::symlink(outside.join("secret"), r.join("safe.md.tmp")).unwrap();
+        mirror_io_at(&r, "write", "safe.md", Some("safe".into())).unwrap();
+        assert_eq!(std::fs::read_to_string(outside.join("secret")).unwrap(), "unchanged");
+        std::fs::remove_dir_all(r).unwrap();
+        std::fs::remove_dir_all(outside).unwrap();
     }
 }

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 通知状态 → 用户该看到什么（纯函数，可测）。
  *
@@ -26,34 +27,34 @@ export interface NotifyHint {
 }
 
 const BACKEND_LABEL: Record<string, string> = {
-  android: "Android 通知渠道 + 定时闹钟",
-  macos: "macOS 通知中心",
-  windows: "Windows 通知",
+  get android() { return i18n("state.notifystatus.571c1a7180e0"); },
+  get macos() { return i18n("state.notifystatus.ca8b58ed4c71"); },
+  get windows() { return i18n("state.notifystatus.94b0e03aba0d"); },
 };
 
 export function notifyHint(s: NotifyStatusInput): NotifyHint {
   const label = BACKEND_LABEL[s.backend] ?? s.backend;
 
   if (!s.backend || s.backend === "none") {
-    return { level: "error", text: "本平台暂未接入系统通知，提醒不会发出（应用内仍可看到待办）。" };
+    return { level: "error", text: i18n("state.notifystatus.8533a6995d6d") };
   }
   if (!s.granted) {
     return {
       level: "error",
-      text: "通知未授权，提醒发不出来。请到系统设置里为本应用打开通知权限。",
-      action: { kind: "app", label: "去系统设置授权" },
+      text: i18n("state.notifystatus.03f0a153cd11"),
+      action: { kind: "app", label: i18n("state.notifystatus.b19160883cfe") },
     };
   }
   if (s.backend === "android" && !s.exact) {
     return {
       level: "warn",
-      text: "通知已可用；「精确提醒」还没允许，系统可能略有延迟（不影响送达）。可在系统设置的「闹钟与提醒」里允许精确提醒。",
-      action: { kind: "exact-alarm", label: "允许精确提醒" },
+      text: i18n("state.notifystatus.cef529305e3b"),
+      action: { kind: "exact-alarm", label: i18n("state.notifystatus.6fd3264bb821") },
     };
   }
   return {
     level: "ok",
-    text: `通知已就绪（${label}）。`,
-    action: { kind: "channels", label: s.backend === "android" ? "通知渠道设置" : "系统通知设置" },
+    text: i18n("state.notifystatus.a9c6ad5d54e8", { label: String(label) }),
+    action: { kind: "channels", label: s.backend === "android" ? i18n("state.notifystatus.8657a95fc74c") : i18n("state.notifystatus.13632693e676") },
   };
 }

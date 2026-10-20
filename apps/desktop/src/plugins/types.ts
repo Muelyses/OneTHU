@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 插件系统类型（v1）
  *
@@ -52,45 +53,45 @@ export type PluginPermission =
   | "notify"; // 发送系统通知（三端；内容与时刻由插件自定）
 
 export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: string; desc: string }> = [
-  { id: "user:read", label: "读取基本信息", desc: "姓名/学号/院系与登录状态" },
-  { id: "info:read", label: "读取信息门户", desc: "成绩、考试、新闻、校历、空教室、缴费记录等只读查询" },
-  { id: "learn:read", label: "读取网络学堂", desc: "课程/作业/通知/文件/讨论区只读查询" },
-  { id: "learn:write", label: "网络学堂发帖", desc: "讨论区发帖/回帖（写操作，需确认）" },
-  { id: "venue:read", label: "读取体育场馆", desc: "场馆场景/可约场地/我的预约只读查询" },
-  { id: "venue:book", label: "预约与取消场馆", desc: "体育场馆预约与取消（写操作，需确认）" },
-  { id: "xk:read", label: "读取选课数据", desc: "选课目录/已选/志愿/社区评价只读查询" },
-  { id: "kongjian:book", label: "预约公共空间", desc: "宿舍公共空间预约与取消（写操作，需确认）" },
-  { id: "cal:read", label: "读取日程", desc: "云同步日历与本地日程的只读查询" },
-  { id: "cal:write", label: "管理日程", desc: "新建/编辑/删除日程（云或本地，写操作）" },
-  { id: "mail:read", label: "读取邮箱", desc: "清华邮箱收件箱/已发送查询、读信与全箱搜索" },
-  { id: "mail:write", label: "发邮件", desc: "从清华邮箱发信（写操作，需确认）" },
-  { id: "cloud:read", label: "读取云盘", desc: "清华云盘资料库、目录浏览、库内搜索与下载" },
-  { id: "cloud:write", label: "上传/分享云盘", desc: "上传文件到云盘、生成分享链接（写操作，需确认）" },
-  { id: "memory:read", label: "读取记忆", desc: "检索/读取 OH 长期记忆（个人偏好、课程上下文、任务状态）" },
-  { id: "memory:write", label: "写入记忆", desc: "新建/追加/改写/归档 OH 记忆（写操作，需确认）" },
-  { id: "gitlab:read", label: "读取 GitLab", desc: "清华 GitLab 项目、仓库文件、Issue、合并请求与流水线（只读）" },
-  { id: "gitlab:write", label: "GitLab 写操作", desc: "新建 Issue、发表评论、关闭或重开 Issue 与合并请求（写操作，需确认）" },
-  { id: "card:read", label: "读取校园卡", desc: "余额与消费流水（只读，不含充值）" },
-  { id: "dorm:read", label: "读取宿舍信息", desc: "电费余额/缴费记录/卫生分（只读）" },
-  { id: "library:read", label: "查询图书馆", desc: "楼层/区域/座位分布/预约记录 + 研讨间资源查询" },
-  { id: "library:book", label: "预约图书馆", desc: "座位与研讨间的预约/取消（写操作）" },
-  { id: "network:read", label: "读取校园网账户", desc: "余额/在线设备/账号信息（只读）" },
-  { id: "nav", label: "应用内跳转", desc: "跳转到应用的任意页面与子栏" },
-  { id: "ui", label: "显示提示", desc: "弹出 toast 消息" },
-  { id: "storage", label: "本地存储", desc: "插件私有键值存储（卸载即清除）" },
-  { id: "net:external", label: "外部网络请求", desc: "直接请求任意外部网络地址（HTTP(S)）（大模型 API 等）" },
-  { id: "ws:external", label: "外部 WebSocket 连接", desc: "经宿主与外部建立并收发 WebSocket 长连接（直播弹幕、实时通知等；由宿主 Rust 层出网，累计 10 分钟空闲自动清理）" },
-  { id: "widget", label: "桌面小组件", desc: "向 Android 桌面小组件声明要显示的内容（渲染与取值由宿主完成，插件不写原生代码）" },
-  { id: "notify", label: "发送系统通知", desc: "向系统通知中心推送通知（三端），内容与时刻由插件决定" },
-  { id: "css", label: "注入全局样式", desc: "注入影响整个应用外观的 CSS（安装时重点确认）" },
-  { id: "clipboard:read", label: "读取剪贴板", desc: "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）" },
-  { id: "plugins:call", label: "调用其他插件", desc: "列出并执行其他已启用插件的命令（含写操作）" },
-  { id: "tsinghua:sdk", label: "访问任意校内服务", desc: "以你的登录态访问任意清华校内系统（自定义服务接入）" },
-  { id: "theme", label: "主题控制", desc: "查询与应用主题、参与昼夜跟随调度（可改变全局外观）" },
-  { id: "llm", label: "模型对话", desc: "经内置 Harness 调用大模型（清华免费档或你的自费 API）" },
-  { id: "exthw:read", label: "读取外部作业源", desc: "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照" },
-  { id: "exthw:refresh", label: "刷新外部作业源", desc: "触发外部作业源网络刷新" },
-  { id: "webview", label: "应用内网页", desc: "在应用内打开网页（Android 桌面模式浏览）" },
+  { id: "user:read", get label() { return i18n("plugins.types.db8046b7bb4f"); }, get desc() { return i18n("plugins.types.dd2d1636c619"); } },
+  { id: "info:read", get label() { return i18n("plugins.types.92acc8140843"); }, get desc() { return i18n("plugins.types.e98935ae658f"); } },
+  { id: "learn:read", get label() { return i18n("plugins.types.cf01361e883f"); }, get desc() { return i18n("plugins.types.d7ca0f2e28a2"); } },
+  { id: "learn:write", get label() { return i18n("plugins.types.112f4f9c033a"); }, get desc() { return i18n("plugins.types.eeb2d48d3eaa"); } },
+  { id: "venue:read", get label() { return i18n("plugins.types.6dc54a9470ed"); }, get desc() { return i18n("plugins.types.c958b2f88de5"); } },
+  { id: "venue:book", get label() { return i18n("plugins.types.1004769bdb4e"); }, get desc() { return i18n("plugins.types.5171b9b529e4"); } },
+  { id: "xk:read", get label() { return i18n("plugins.types.27922c7aab59"); }, get desc() { return i18n("plugins.types.1ff6bbfc90da"); } },
+  { id: "kongjian:book", get label() { return i18n("plugins.types.2cc9c0bad3d7"); }, get desc() { return i18n("plugins.types.3fb5a1122255"); } },
+  { id: "cal:read", get label() { return i18n("plugins.types.056ff6cc3d7e"); }, get desc() { return i18n("plugins.types.bb44113c1bc4"); } },
+  { id: "cal:write", get label() { return i18n("plugins.types.dcaf20f7619c"); }, get desc() { return i18n("plugins.types.c4aa15d951ce"); } },
+  { id: "mail:read", get label() { return i18n("plugins.types.08eccad108d6"); }, get desc() { return i18n("plugins.types.efe0261e5829"); } },
+  { id: "mail:write", get label() { return i18n("plugins.types.b15c42776a94"); }, get desc() { return i18n("plugins.types.556c5fcee2ec"); } },
+  { id: "cloud:read", get label() { return i18n("plugins.types.627dd0f3fd6e"); }, get desc() { return i18n("plugins.types.9f61b41430d2"); } },
+  { id: "cloud:write", get label() { return i18n("plugins.types.48e21aca2214"); }, get desc() { return i18n("plugins.types.b5df04d0e95e"); } },
+  { id: "memory:read", get label() { return i18n("plugins.types.7ad8378abec1"); }, get desc() { return i18n("plugins.types.9665288d3db6"); } },
+  { id: "memory:write", get label() { return i18n("plugins.types.9f78589bce11"); }, get desc() { return i18n("plugins.types.0e3c0e14077d"); } },
+  { id: "gitlab:read", get label() { return i18n("plugins.types.3821452a894a"); }, get desc() { return i18n("plugins.types.0b0aeead7381"); } },
+  { id: "gitlab:write", get label() { return i18n("plugins.types.48ad7913a562"); }, get desc() { return i18n("plugins.types.c4fad583342d"); } },
+  { id: "card:read", get label() { return i18n("plugins.types.0dc09ebd6c0e"); }, get desc() { return i18n("plugins.types.584c7658f468"); } },
+  { id: "dorm:read", get label() { return i18n("plugins.types.78a788aeb3ed"); }, get desc() { return i18n("plugins.types.3c455efb9961"); } },
+  { id: "library:read", get label() { return i18n("plugins.types.14dceca5d51a"); }, get desc() { return i18n("plugins.types.feef1c678595"); } },
+  { id: "library:book", get label() { return i18n("plugins.types.5d78a4c234e1"); }, get desc() { return i18n("plugins.types.c6cb8feb5896"); } },
+  { id: "network:read", get label() { return i18n("plugins.types.27d28e1cb812"); }, get desc() { return i18n("plugins.types.b47c2c0ce65a"); } },
+  { id: "nav", get label() { return i18n("plugins.types.781fead7e82d"); }, get desc() { return i18n("plugins.types.4b9d52da5277"); } },
+  { id: "ui", get label() { return i18n("plugins.types.b2101414fb98"); }, get desc() { return i18n("plugins.types.c0c4378797b8"); } },
+  { id: "storage", get label() { return i18n("plugins.types.7015255aa19b"); }, get desc() { return i18n("plugins.types.062675c673b0"); } },
+  { id: "net:external", get label() { return i18n("plugins.types.b0709765f8a8"); }, get desc() { return i18n("plugins.types.b4ccc4a10048"); } },
+  { id: "ws:external", get label() { return i18n("plugins.types.6f73980048f5"); }, get desc() { return i18n("plugins.types.c6990190c123"); } },
+  { id: "widget", get label() { return i18n("plugins.types.28b0433b1b95"); }, get desc() { return i18n("plugins.types.e821edec359c"); } },
+  { id: "notify", get label() { return i18n("plugins.types.c26692150916"); }, get desc() { return i18n("plugins.types.0b73861126d5"); } },
+  { id: "css", get label() { return i18n("plugins.types.db1b60955a4e"); }, get desc() { return i18n("plugins.types.94d7e3d8ab44"); } },
+  { id: "clipboard:read", get label() { return i18n("plugins.types.e059f380bf07"); }, get desc() { return i18n("plugins.types.50500d372141"); } },
+  { id: "plugins:call", get label() { return i18n("plugins.types.1a2130a92d14"); }, get desc() { return i18n("plugins.types.c73bd6334e39"); } },
+  { id: "tsinghua:sdk", get label() { return i18n("plugins.types.2601413e9019"); }, get desc() { return i18n("plugins.types.ef2ab4dbea94"); } },
+  { id: "theme", get label() { return i18n("plugins.types.33a65099fe72"); }, get desc() { return i18n("plugins.types.01e0b2699c29"); } },
+  { id: "llm", get label() { return i18n("plugins.types.4bcb26f88d39"); }, get desc() { return i18n("plugins.types.2f907548af0c"); } },
+  { id: "exthw:read", get label() { return i18n("plugins.types.1daf510cf2b5"); }, get desc() { return i18n("plugins.types.5bbe605e0a01"); } },
+  { id: "exthw:refresh", get label() { return i18n("plugins.types.ec461a12a38e"); }, get desc() { return i18n("plugins.types.40a17d15ad1e"); } },
+  { id: "webview", get label() { return i18n("plugins.types.a245f4a0189e"); }, get desc() { return i18n("plugins.types.e41be5c33320"); } },
 ];
 
 /** 插件设置项：安装后由应用代为渲染表单（插件不自带 UI） */
@@ -788,6 +789,6 @@ export interface PluginRecord {
 /** 权限不足时抛出 */
 export class PluginPermissionError extends Error {
   constructor(permission: string, what: string) {
-    super(`插件未获授权「${permission}」，无法执行：${what}`);
+    super(i18n("plugins.types.0a267e07b231", { permission: permission, action: what }));
   }
 }

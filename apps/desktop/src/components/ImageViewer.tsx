@@ -1,3 +1,4 @@
+import { msg as i18nMsg, t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 手机端「长按看图」。
@@ -86,6 +87,8 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 export function ImageViewerHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [shot, setShot] = useState<Shot | null>(null);
   /** 浮层是否开着：事件回调里要同步读，不能等 state 回流 */
   const openRef = useRef(false);
@@ -280,6 +283,8 @@ interface Gesture {
 }
 
 function Viewer({ shot, onClose }: { shot: Shot; onClose: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const rootRef = useRef<HTMLDivElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -470,16 +475,16 @@ function Viewer({ shot, onClose }: { shot: Shot; onClose: () => void }): ReactNo
   const save = useCallback((): void => {
     setSaving(true);
     void saveImageToGallery(shot.src, shot.alt)
-      .then(() => showToast("已保存到相册", 3000))
+      .then(() => showToast(i18nMsg("components.imageviewer.8a4c192efb6b"), 3000))
       .catch((e: unknown) => {
         const msg = e instanceof Error ? e.message : String(e);
-        showToast(`保存失败：${msg}`, 9000);
+        showToast(i18nMsg("components.imageviewer.f1326e4568dd", { msg: String(msg) }), 9000);
       })
       .finally(() => setSaving(false));
   }, [shot]);
 
   return createPortal(
-    <div className="imgview" ref={rootRef} style={{ zIndex: Z_VIEW }} role="dialog" aria-modal="true" aria-label="查看图片">
+    <div className="imgview" ref={rootRef} style={{ zIndex: Z_VIEW }} role="dialog" aria-modal="true" aria-label={i18n("components.imageviewer.a9769c635970")}>
       <div className="imgview-stage" ref={stageRef}>
         <img className="imgview-img" ref={imgRef} src={shot.src} alt="" draggable={false} />
       </div>
@@ -487,7 +492,7 @@ function Viewer({ shot, onClose }: { shot: Shot; onClose: () => void }): ReactNo
         <Btn variant="outline" disabled={saving} onClick={(e) => {
             e.stopPropagation();
             save();
-          }}>{saving ? "保存中" : "保存图片"}</Btn>
+          }}>{saving ? i18n("components.imageviewer.a1a1720d3eb5") : i18n("components.imageviewer.850de13a01d9")}</Btn>
       </div>
     </div>,
     document.body,

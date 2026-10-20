@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchWorkspace } from "../../lib/vaultCatch.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -606,10 +607,10 @@ export function useDrawerRowsReorder(opts: DrawerRowsOpts): DrawerRowsApi {
 function relTime(ts: number): string {
   if (!ts) return "—";
   const d = Date.now() - ts;
-  if (d < 60_000) return "刚刚";
-  if (d < 3_600_000) return `${Math.floor(d / 60_000)}分钟前`;
-  if (d < 86_400_000) return `${Math.floor(d / 3_600_000)}小时前`;
-  return `${Math.floor(d / 86_400_000)}天前`;
+  if (d < 60_000) return i18n("components.explorer.tabdrawer.de6785d99e02");
+  if (d < 3_600_000) return i18n("components.explorer.tabdrawer.1bdf469558d6", { value: String(Math.floor(d / 60_000)) });
+  if (d < 86_400_000) return i18n("components.explorer.tabdrawer.ba2af719b503", { value: String(Math.floor(d / 3_600_000)) });
+  return i18n("components.explorer.tabdrawer.a7d2979413c2", { value: String(Math.floor(d / 86_400_000)) });
 }
 
 
@@ -654,6 +655,8 @@ function MoveMenu({
   snap: ExplorerStateView;
   onClose: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [naming, setNaming] = useState(false);
   const [name, setName] = useState("");
   const others = snap.workspaces.filter((w) => w.id !== tab.workspaceId);
@@ -684,25 +687,19 @@ function MoveMenu({
       <div className="explorer-ctxmenu" style={{ left, top, zIndex: 1351 }} role="menu">
         {naming ? (
           <div className="explorer-ctxmenu-naming">
-            <Input placeholder="工作区名称" value={name} autoFocus onChange={(value) => setName(value)} onKeyDown={(e) => {
+            <Input placeholder={i18n("components.explorer.tabdrawer.22dc6ee0c645")} value={name} autoFocus onChange={(value) => setName(value)} onKeyDown={(e) => {
                 if (e.key === "Enter") createAndMove();
               }} />
-            <Btn variant="solid" tone="brand" onClick={createAndMove}>存</Btn>
+            <Btn variant="solid" tone="brand" onClick={createAndMove}>{i18n("components.explorer.tabdrawer.a0fb6bc1d3c5")}</Btn>
           </div>
         ) : (
           <>
             {others.map((w) => (
-              <button key={w.id} className="explorer-ctxmenu-item" role="menuitem" onClick={() => { setTabWorkspace(tab.id, w.id); onClose(); }}>
-                移入「{w.name}」
-              </button>
+              <button key={w.id} className="explorer-ctxmenu-item" role="menuitem" onClick={() => { setTabWorkspace(tab.id, w.id); onClose(); }}>{i18nRich("components.explorer.tabdrawer.179bb9615b50", { name: w.name })}</button>
             ))}
-            <button className="explorer-ctxmenu-item" role="menuitem" onClick={() => setNaming(true)}>
-              新建工作区…
-            </button>
+            <button className="explorer-ctxmenu-item" role="menuitem" onClick={() => setNaming(true)}>{i18n("components.explorer.tabdrawer.35e7242f8826")}</button>
             {tab.workspaceId ? (
-              <button className="explorer-ctxmenu-item" role="menuitem" onClick={() => { setTabWorkspace(tab.id, null); onClose(); }}>
-                移出（未分组）
-              </button>
+              <button className="explorer-ctxmenu-item" role="menuitem" onClick={() => { setTabWorkspace(tab.id, null); onClose(); }}>{i18n("components.explorer.tabdrawer.9b62e2597e5b")}</button>
             ) : null}
           </>
         )}
@@ -720,6 +717,8 @@ function membersOf(snap: ExplorerStateView, wsId: string): ExplorerTab[] {
 }
 
 export function WorkspacePanel(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const snap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   const [naming, setNaming] = useState(false);
   const [name, setName] = useState("");
@@ -733,35 +732,34 @@ export function WorkspacePanel(): ReactNode {
   };
 
   return (
-    <section className="ex-ws" aria-label="工作区">
+    <section className="ex-ws" aria-label={i18n("components.explorer.tabdrawer.37979829426b")}>
       <div className="ex-sec-head">
-        <b>工作区</b>
-        <span className="ex-sec-head-note">标签页的归属组合；恢复时按实例去重</span>
+        <b>{i18n("components.explorer.tabdrawer.37979829426b")}</b>
+        <span className="ex-sec-head-note">{i18n("components.explorer.tabdrawer.f22548ae0eb0")}</span>
         {snap.tabs.length > 0 ? (
           naming ? (
             <span className="ex-ws-naming">
-              <Input placeholder="工作区名称" value={name} autoFocus onChange={(value) => setName(value)} onKeyDown={(e) => {
+              <Input placeholder={i18n("components.explorer.tabdrawer.22dc6ee0c645")} value={name} autoFocus onChange={(value) => setName(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") save();
                   if (e.key === "Escape") setNaming(false);
                 }} />
-              <Btn variant="solid" tone="brand" onClick={save}>保存</Btn>
-              <Btn variant="ghost" onClick={() => setNaming(false)}>取消</Btn>
+              <Btn variant="solid" tone="brand" onClick={save}>{i18n("components.explorer.tabdrawer.a3030bf8f16d")}</Btn>
+              <Btn variant="ghost" onClick={() => setNaming(false)}>{i18n("components.explorer.tabdrawer.2cd0f3be8738")}</Btn>
             </span>
           ) : (
-            <Btn variant="ghost" onClick={() => setNaming(true)}>存当前 {snap.tabs.length}个为工作区
-            </Btn>
+            <Btn variant="ghost" onClick={() => setNaming(true)}>{i18nRich("components.explorer.tabdrawer.8f82afeb9cd5", { length: snap.tabs.length })}</Btn>
           )
         ) : null}
       </div>
       {snap.workspaces.length === 0 ? (
-        <div className="ex-empty-hint">还没有工作区。把眼下的标签页组合存起来，下次一键回到这个工作状态；也可以在上面的标签行里用「⋯」把单个标签移入工作区。</div>
+        <div className="ex-empty-hint">{i18n("components.explorer.tabdrawer.0f0e5de771d4")}</div>
       ) : (
         <div className="ex-ws-list">
           {snap.workspaces.map((w) => {
             const members = membersOf(snap, w.id);
             // 活工作区：看实时成员；已解散/已保存：看快照（w.tabs），这样解散后仍能看到其中的标签
             const names = w.live
-              ? members.map((t) => (t.kind === "home" ? "首页" : resolveTabTitle(t.page, t.params).label))
+              ? members.map((t) => (t.kind === "home" ? i18n("components.explorer.tabdrawer.203c08e0d44a") : resolveTabTitle(t.page, t.params).label))
               : w.tabs.map((t) => t.title);
             const count = names.length;
             const preview = names.slice(0, 4).join("、");
@@ -771,21 +769,20 @@ export function WorkspacePanel(): ReactNode {
                 <div className="ex-row-main">
                   <span className="ex-row-title">{w.name}</span>
                   <span className="ex-row-sub">
-                    {count > 0 ? `${count} 个标签：${preview}${count > 4 ? "…" : ""}` : "暂无成员标签"}
+                    {count > 0 ? i18n("components.explorer.tabdrawer.96163ffaeeac", { count: String(count), preview: String(preview), value: String(count > 4 ? "…" : "") }) : i18n("components.explorer.tabdrawer.d12be229eea4")}
                   </span>
                 </div>
                 <div className="ex-row-actions">
-                  <Btn variant="ghost" onClick={() => { openWorkspace(w.id); closeTabDrawer(); }}>打开</Btn>
-                  <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>编辑</Btn>
+                  <Btn variant="ghost" onClick={() => { openWorkspace(w.id); closeTabDrawer(); }}>{i18n("components.explorer.tabdrawer.c771248e511f")}</Btn>
+                  <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>{i18n("components.explorer.tabdrawer.051836569928")}</Btn>
                   {w.live ? (
-                    <Btn variant="ghost" titleAttr="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</Btn>
+                    <Btn variant="ghost" titleAttr={i18n("components.explorer.tabdrawer.dc04bd26995b")} onClick={() => dissolveWorkspace(w.id)}>{i18n("components.explorer.tabdrawer.5c551062c8a5")}</Btn>
                   ) : null}
-                  <Btn variant="ghost" titleAttr="彻底删除：连同其中的标签页一起关闭" onClick={() =>
-                      void confirmOk(`彻底删除工作区「${w.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+                  <Btn variant="ghost" titleAttr={i18n("components.explorer.tabdrawer.d4b82994b06a")} onClick={() =>
+                      void confirmOk(i18nMsg("components.explorer.tabdrawer.9e76a0089e2c", { name: String(w.name), count: String(count) })).then((ok) => {
                         if (ok) closeLiveWorkspace(w.id);
                       })
-                    }>彻底删除
-                  </Btn>
+                    }>{i18n("components.explorer.tabdrawer.7aa6d0ef5feb")}</Btn>
                 </div>
               </div>
             );
@@ -805,9 +802,11 @@ function TabRow({
   tab: ExplorerTab;
   onMove: (tab: ExplorerTab, x: number, y: number) => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const isHome = tab.kind === "home";
   const { label, full } = isHome
-    ? { label: "首页", full: "首页" }
+    ? { label: i18n("components.explorer.tabdrawer.203c08e0d44a"), full: i18n("components.explorer.tabdrawer.203c08e0d44a") }
     : resolveTabTitle(tab.page, tab.params);
   const active = tab.id === activeTabId();
   return (
@@ -816,15 +815,15 @@ function TabRow({
       <button className="ex-row-main ex-row-clickable" onClick={() => { focusTab(tab.id); closeTabDrawer(); }}>
         <span className="ex-row-title">{label}</span>
         <span className="ex-row-sub">
-          {isHome ? "首页 · 不可关闭" : `${full} · ${relTime(tab.lastActiveAt)}`}
+          {isHome ? i18n("components.explorer.tabdrawer.1cff7673a712") : `${full} · ${relTime(tab.lastActiveAt)}`}
         </span>
       </button>
       {isHome ? null : (
         <div className="ex-row-actions">
-          <button className="ex-mini" title="移入工作区" aria-label={`把「${label}」移入工作区`} onClick={(e) => { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); onMove(tab, r.left, r.bottom + 4); }}>⋯</button>
-          <button className="ex-mini" title="上移" aria-label={`上移 ${label}`} onClick={() => moveTab(tab.id, -1)}>↑</button>
-          <button className="ex-mini" title="下移" aria-label={`下移 ${label}`} onClick={() => moveTab(tab.id, 1)}>↓</button>
-          <button className="ex-mini" title="关闭" aria-label={`关闭 ${label}`} onClick={() => closeTab(tab.id)}>
+          <button className="ex-mini" title={i18n("components.explorer.tabdrawer.d6ecf973bad0")} aria-label={i18n("components.explorer.tabdrawer.b93adf4b48a8", { label: String(label) })} onClick={(e) => { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); onMove(tab, r.left, r.bottom + 4); }}>⋯</button>
+          <button className="ex-mini" title={i18n("components.explorer.tabdrawer.f853a70b1204")} aria-label={i18n("components.explorer.tabdrawer.0bfa64848a64", { label: String(label) })} onClick={() => moveTab(tab.id, -1)}>↑</button>
+          <button className="ex-mini" title={i18n("components.explorer.tabdrawer.e75e8b4e5c97")} aria-label={i18n("components.explorer.tabdrawer.609072c18c11", { label: String(label) })} onClick={() => moveTab(tab.id, 1)}>↓</button>
+          <button className="ex-mini" title={i18n("components.explorer.tabdrawer.3fd47edce45b")} aria-label={i18n("components.explorer.tabdrawer.9da364f29a6e", { label: String(label) })} onClick={() => closeTab(tab.id)}>
             <IconX width={11} height={11} />
           </button>
         </div>
@@ -837,12 +836,14 @@ function TabRow({
 /* ══════════ ⑦ 小窗内搜索：已打开标签页按 label/full 过滤（大小写不敏感） ══════════ */
 
 function SearchTabResults({ query, onMove }: { query: string; onMove: (tab: ExplorerTab, x: number, y: number) => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const q = query.trim().toLowerCase();
   const hits = allTabs().filter((t) => {
-    const { label, full } = t.kind === "home" ? { label: "首页", full: "首页" } : resolveTabTitle(t.page, t.params);
+    const { label, full } = t.kind === "home" ? { label: i18n("components.explorer.tabdrawer.203c08e0d44a"), full: i18n("components.explorer.tabdrawer.203c08e0d44a") } : resolveTabTitle(t.page, t.params);
     return label.toLowerCase().includes(q) || full.toLowerCase().includes(q);
   });
-  if (hits.length === 0) return <div className="ex-empty-hint">没有匹配的标签页。</div>;
+  if (hits.length === 0) return <div className="ex-empty-hint">{i18n("components.explorer.tabdrawer.60dd2bf62494")}</div>;
   return (
     <div className="ex-row-list">
       {hits.map((t) => (
@@ -855,6 +856,8 @@ function SearchTabResults({ query, onMove }: { query: string; onMove: (tab: Expl
 /* ══════════ 抽屉本体 ══════════ */
 
 function TabDrawerInner(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const open = useDrawerOpen();
   const layout = useTabLayoutMode();
   /* 手机端归宿 seeking 抽屉（A4）：GestureRecognizer = PhoneSheet 的把手 + 两档惯吸 */
@@ -877,14 +880,14 @@ function TabDrawerInner(): ReactNode {
   /** 标签行菜单（A4 拍板的最小集合）：右键与触屏长按共用 */
   const openTabMenuAt = useCallback((x: number, y: number, t: ExplorerTab): void => {
     const items: MenuItem[] = [
-      { label: "聚焦此标签页", onSelect: () => { focusTab(t.id); closeTabDrawer(); } },
-      { label: "复制本标签页", onSelect: () => duplicateTab(t.id) },
-      { label: "关闭本标签页", onSelect: () => closeTab(t.id), sepBefore: true },
+      { label: i18n("components.explorer.tabdrawer.c6a451fd4a5b"), onSelect: () => { focusTab(t.id); closeTabDrawer(); } },
+      { label: i18n("components.explorer.tabdrawer.0bd930dcb332"), onSelect: () => duplicateTab(t.id) },
+      { label: i18n("components.explorer.tabdrawer.e5d7d964c0e2"), onSelect: () => closeTab(t.id), sepBefore: true },
     ];
     if (t.workspaceId) {
-      items.push({ label: "移出工作区", onSelect: () => setTabWorkspace(t.id, null) });
+      items.push({ label: i18n("components.explorer.tabdrawer.8bcb372db593"), onSelect: () => setTabWorkspace(t.id, null) });
       const ws = explorerSnapshot().workspaces.find((w) => w.id === t.workspaceId);
-      if (ws) items.push({ label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(ws.id), danger: true, sepBefore: true });
+      if (ws) items.push({ label: i18n("components.explorer.tabdrawer.40561d059752"), onSelect: () => dissolveWorkspace(ws.id), danger: true, sepBefore: true });
     }
     openContextMenu(x, y, items);
   }, []);
@@ -895,13 +898,13 @@ function TabDrawerInner(): ReactNode {
     if (!ws) return;
     const count = explorerSnapshot().tabs.filter((t) => t.workspaceId === wsId).length;
     const items: MenuItem[] = [
-      { label: "打开工作区", onSelect: () => { openWorkspace(wsId); closeTabDrawer(); } },
-      { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(wsId) },
-      { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(wsId), danger: true, sepBefore: true },
+      { label: i18n("components.explorer.tabdrawer.05cc68bdf7ae"), onSelect: () => { openWorkspace(wsId); closeTabDrawer(); } },
+      { label: i18n("components.explorer.tabdrawer.c6d80849d9f5"), onSelect: () => openWorkspaceEditor(wsId) },
+      { label: i18n("components.explorer.tabdrawer.40561d059752"), onSelect: () => dissolveWorkspace(wsId), danger: true, sepBefore: true },
       {
-        label: "彻底删除（连同标签页）",
+        label: i18n("components.explorer.tabdrawer.e9a95effb2f5"),
         onSelect: () =>
-          void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+          void confirmOk(i18nMsg("components.explorer.tabdrawer.9e76a0089e2c", { name: String(ws.name), count: String(count) })).then((ok) => {
             if (ok) closeLiveWorkspace(wsId);
           }),
         danger: true,
@@ -952,7 +955,7 @@ function TabDrawerInner(): ReactNode {
         ref={phoneUi ? sheetRef : undefined}
         className={"ex-sheet ex-tabdrawer" + (expanded ? " ex-pop" : "") + (closing ? " is-closing" : "") + sheetMobClass}
         role="dialog"
-        aria-label="标签页"
+        aria-label={i18n("components.explorer.tabdrawer.a626aad412b7")}
         style={phoneUi
           ? { height: sheet.dragH != null ? `${sheet.dragH}px` : undefined }
           : expanded ? { top: anchor?.top, left: anchor?.left, bottom: "auto", right: "auto", visibility: anchor ? undefined : "hidden" } : undefined}
@@ -961,35 +964,35 @@ function TabDrawerInner(): ReactNode {
         onClickCapture={rowsCtl.onClickCapture}
       >
         {/* 手机端（A4）：seeking 抽屉的拖把手（44px 触目标，惯性吸附 0.6vh ⟷ 0.94vh） */}
-        {phoneUi ? <PhoneSheetGrip label="拖住改高度（半屏或全屏）" gripProps={sheet.gripProps} /> : null}
+        {phoneUi ? <PhoneSheetGrip label={i18n("components.explorer.tabdrawer.1f5c44171ba4")} gripProps={sheet.gripProps} /> : null}
         <header className="ex-sheet-head">
-          <b>标签页</b>
-          <span className="ex-sec-head-note">{pageTabs.length} 个工作标签</span>
-          <Btn variant="ghost" onClick={requestClose}>完成</Btn>
+          <b>{i18n("components.explorer.tabdrawer.a626aad412b7")}</b>
+          <span className="ex-sec-head-note">{i18nRich("components.explorer.tabdrawer.961f0edb859e", { length: pageTabs.length })}</span>
+          <Btn variant="ghost" onClick={requestClose}>{i18n("components.explorer.tabdrawer.c0b3fbff51cc")}</Btn>
         </header>
         {/* A1：手机只有横标签页——横/竖版切换分段在手机不渲染（设置里的默认值行同样收掉） */}
         {phoneUi ? null : (
         <div className="ex-seg-row">
-          <div className="segmented ex-seg" role="tablist" aria-label="标签栏布局">
-            <button className={layout === "h" ? "is-active" : ""} role="tab" aria-selected={layout === "h"} onClick={() => setTabLayoutMode("h")}>横版</button>
-            <button className={layout === "v" ? "is-active" : ""} role="tab" aria-selected={layout === "v"} onClick={() => setTabLayoutMode("v")}>竖版</button>
+          <div className="segmented ex-seg" role="tablist" aria-label={i18n("components.explorer.tabdrawer.6527f59a6589")}>
+            <button className={layout === "h" ? "is-active" : ""} role="tab" aria-selected={layout === "h"} onClick={() => setTabLayoutMode("h")}>{i18n("components.explorer.tabdrawer.f807a7b72a2c")}</button>
+            <button className={layout === "v" ? "is-active" : ""} role="tab" aria-selected={layout === "v"} onClick={() => setTabLayoutMode("v")}>{i18n("components.explorer.tabdrawer.f3683b41fe52")}</button>
           </div>
         </div>
         )}
         <div className="ex-sheet-body">
           <div className="ex-sheet-search">
-            <Input placeholder="搜索已打开的标签页…" value={query} onChange={(value) => setQuery(value)} />
+            <Input placeholder={i18n("components.explorer.tabdrawer.d37482ed02e3")} value={query} onChange={(value) => setQuery(value)} />
           </div>
           {query.trim() ? (
-            <section aria-label="搜索结果">
+            <section aria-label={i18n("components.explorer.tabdrawer.88d72ece7cf7")}>
               <SearchTabResults query={query} onMove={(tab, x, y) => setMenuFor({ tab, x, y })} />
             </section>
           ) : (
-          <section aria-label="当前标签页">
+          <section aria-label={i18n("components.explorer.tabdrawer.f991f79fa551")}>
             <div className="ex-sec-head">
-              <b>当前标签页</b>
+              <b>{i18n("components.explorer.tabdrawer.f991f79fa551")}</b>
               {pageTabs.length > 1 ? (
-                <Btn variant="ghost" onClick={() => closeOtherTabs(activeTabId())}>关闭其他</Btn>
+                <Btn variant="ghost" onClick={() => closeOtherTabs(activeTabId())}>{i18n("components.explorer.tabdrawer.b92d86f4f557")}</Btn>
               ) : null}
             </div>
             <div className="ex-row-list">
@@ -997,7 +1000,7 @@ function TabDrawerInner(): ReactNode {
               {ungrouped.length > 0 ? (
                 <>
                   <div className="ex-group-head">
-                    <span className="ex-group-name">未分组</span>
+                    <span className="ex-group-name">{i18n("components.explorer.tabdrawer.e86ea3f280d9")}</span>
                     <span className="ex-group-count">{ungrouped.length}</span>
                   </div>
                   {ungrouped.map((t) => (
@@ -1023,8 +1026,7 @@ function TabDrawerInner(): ReactNode {
           {query.trim() ? null : <WorkspacePanel />}
         </div>
         <footer className="ex-sheet-foot">
-          <Btn variant="ghost" onClick={() => { focusTab(HOME_TAB_ID); closeTabDrawer(); }}>+ 新建标签页（回首页）
-          </Btn>
+          <Btn variant="ghost" onClick={() => { focusTab(HOME_TAB_ID); closeTabDrawer(); }}>{i18n("components.explorer.tabdrawer.ad235f51d8f9")}</Btn>
         </footer>
       </aside>
       {menuFor ? <MoveMenu tab={menuFor.tab} x={menuFor.x} y={menuFor.y} snap={snap} onClose={() => setMenuFor(null)} /> : null}
@@ -1043,5 +1045,7 @@ function TabDrawerInner(): ReactNode {
 }
 
 export function TabDrawer(): ReactNode {
+  const uiLocale = useUiLocale();
+
   return <TabDrawerInner />;
 }

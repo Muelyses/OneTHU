@@ -1,3 +1,5 @@
+import { t as i18n } from "../../i18n/index.js";
+import { msg as i18nMsg } from "../../i18n/index.js";
 /**
  * 全局「长按内容 → 拖入暂存箱 / 发给 OH」交互层。
  *
@@ -110,7 +112,7 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
   try {
     if (!commit || !cat) return;
     if (!target) {
-      showToast("没放进暂存箱：拖到「暂存箱」目标上再松手");
+      showToast(i18nMsg("components.vault.vaultdrag.0867b328e8e5"));
       return;
     }
     if (isOH) {
@@ -123,16 +125,16 @@ function endDrag(commit: boolean, x: number, y: number, cat: VaultCatch | null):
     if (r.ok) {
       outcome = "store";
       if (cat.remote && r.item) {
-        showToast(`已收进暂存箱：${cat.title}（正在缓存到云盘…）`);
+        showToast(i18nMsg("components.vault.vaultdrag.242051a1c702", { title: String(cat.title) }));
         void cacheRemoteFileToVault(r.item.id, cat.remote, cat.title);
       } else {
-        showToast(`已收进暂存箱：${cat.title}`);
+        showToast(i18nMsg("components.vault.vaultdrag.1df6c09b14cb", { title: String(cat.title) }));
       }
     }
-    else if (r.reason === "duplicate") showToast(`暂存箱里已经有「${cat.title}」了`);
-    else showToast("暂存箱暂时不可用：稍后再试");
+    else if (r.reason === "duplicate") showToast(i18nMsg("components.vault.vaultdrag.978144ccbfda", { title: String(cat.title) }));
+    else showToast(i18nMsg("components.vault.vaultdrag.04ff630c002d"));
   } catch (error) {
-    showToast(error instanceof Error ? error.message : "内容交接失败，请重试");
+    showToast(error instanceof Error ? error.message : i18n("components.vault.vaultdrag.6789a190a816"));
   } finally {
     motion?.finish(outcome, destination, destinationEl ?? undefined);
   }
@@ -279,7 +281,7 @@ export function installVaultDragSources(): () => void {
         const title = (row.querySelector<HTMLElement>(".og-settings-row-title,.setting-title")?.textContent ?? "").trim();
         if (title) {
           el = row;
-          cat = { type: "payload", title, sub: "设置项", payload: { settingTitle: title }, source: "设置" };
+          cat = { type: "payload", title, sub: i18n("components.vault.vaultdrag.44bc7ccc3677"), payload: { settingTitle: title }, source: "设置" };
         }
       }
     }

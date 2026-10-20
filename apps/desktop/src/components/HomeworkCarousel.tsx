@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, IconBtn } from "@onethu/gui";
 import { Empty } from "./Layout.js";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
@@ -17,14 +18,14 @@ import { normalizeWheelDelta, takeWheelStep } from "../lib/detailSlots.js";
 /** DDL 解析：剩余天数 + 色档 + 展示文案（大数字 + 日期两行） */
 export function ddlInfo(deadline: string): { days: number | null; overdue: boolean; big: string; small: string; date: string; cls: string } {
   const d = parseLearnTime(deadline);
-  if (!d) return { days: null, overdue: false, big: "—", small: "截止", date: "", cls: "task-ddl-gray" };
+  if (!d) return { days: null, overdue: false, big: "—", small: i18n("components.homeworkcarousel.fb37c61898d5"), date: "", cls: "task-ddl-gray" };
   const diff = d.getTime() - Date.now();
   const hm = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
   const md = String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-  if (diff < 0) return { days: 0, overdue: true, big: "已逾期", small: "尽快处理", date: md + " " + hm, cls: "task-ddl-red" };
+  if (diff < 0) return { days: 0, overdue: true, big: i18n("components.homeworkcarousel.13c68d134847"), small: i18n("components.homeworkcarousel.cac076fbec2f"), date: md + " " + hm, cls: "task-ddl-red" };
   const days = Math.ceil(diff / 86400000);
-  if (days <= 1) return { days, overdue: false, big: "<1 天", small: "就要截止", date: md + " " + hm, cls: "task-ddl-red" };
-  return { days, overdue: false, big: days + " 天", small: "还剩", date: md + " " + hm, cls: days <= 3 ? "task-ddl-amber" : days <= 7 ? "task-ddl-blue" : "task-ddl-gray" };
+  if (days <= 1) return { days, overdue: false, big: i18n("components.homeworkcarousel.f299c513a8fc"), small: i18n("components.homeworkcarousel.07b65092ac19"), date: md + " " + hm, cls: "task-ddl-red" };
+  return { days, overdue: false, big: days + i18n("components.homeworkcarousel.4ce3054e7c4d"), small: i18n("components.homeworkcarousel.4881997d6f3a"), date: md + " " + hm, cls: days <= 3 ? "task-ddl-amber" : days <= 7 ? "task-ddl-blue" : "task-ddl-gray" };
 }
 
 /** Shared by the page and home widget: pending first, overdue at the end. */
@@ -36,9 +37,9 @@ export function pendingHomework(items: Homework[], ignored: { has(id: string): b
 /** 状态标签 */
 function hwTags(h: Homework): Array<{ text: string; cls: string }> {
   const tags: Array<{ text: string; cls: string }> = [];
-  tags.push({ text: h.source ? SOURCE_NAMES[h.source] ?? "外部作业" : "网络学堂", cls: "task-tag-src" });
-  if (h.externalProgress) tags.push({ text: "交了 " + h.externalProgress, cls: "task-tag" });
-  if (ddlInfo(h.deadline).overdue) tags.push({ text: "逾期", cls: "task-tag-red" });
+  tags.push({ text: h.source ? SOURCE_NAMES[h.source] ?? i18n("components.homeworkcarousel.7849c0828e15") : i18n("components.homeworkcarousel.aa39cac2b409"), cls: "task-tag-src" });
+  if (h.externalProgress) tags.push({ text: i18n("components.homeworkcarousel.a80f2d59cd5f") + h.externalProgress, cls: "task-tag" });
+  if (ddlInfo(h.deadline).overdue) tags.push({ text: i18n("components.homeworkcarousel.da7ecec544ad"), cls: "task-tag-red" });
   return tags;
 }
 
@@ -46,6 +47,8 @@ function hwTags(h: Homework): Array<{ text: string; cls: string }> {
 const STEP_DEFAULT = 170;
 
 export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onPick, onFront, captureWheel = true }: { items: Homework[]; courseNameOf: (id: string) => string; courseLabelOf: (h: Homework) => string; semesterId?: string; onPick?: (h: Homework) => void; onFront?: (h: Homework) => void; captureWheel?: boolean }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   // 位置真值放 ref，setPos 只做渲染镜像：逐帧补间时避免闭包读旧值
   const posRef = useRef(0);
@@ -125,7 +128,7 @@ export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onP
         if (r?.mode && r.mode !== "prebaked" && !hapticPathLogged.current) {
           hapticPathLogged.current = true;
           void import("../lib/clients.js")
-            .then((m) => m.logLine(`[HAPTIC] 预烘焙不可用，降级路径=${r.mode}`))
+            .then((m) => m.logLine(i18n("components.homeworkcarousel.759af5356c1e", { mode: String(r.mode) })))
             .catch(() => undefined);
         }
       })
@@ -170,9 +173,9 @@ export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onP
   if (n === 0) {
     return (
       <div className="hw-carousel-empty">
-        <Empty text="作业都交完了，痛快去玩吧。" />
+        <Empty text={i18n("components.homeworkcarousel.4bdb0fcd89b8")} />
         <div className="svc-actions">
-          <Btn variant="outline" onClick={() => navigate("learn-assignments")}>查看全部作业</Btn>
+          <Btn variant="outline" onClick={() => navigate("learn-assignments")}>{i18n("components.homeworkcarousel.d4b1b25d27b2")}</Btn>
         </div>
       </div>
     );
@@ -326,12 +329,12 @@ export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onP
                 <div className={"hw-card-actions" + (front ? "" : " is-hidden")} onClick={(e) => e.stopPropagation()}>
                   <IconBtn
                     className="hw-card-act"
-                    label="忽略这条作业"
+                    label={i18n("components.homeworkcarousel.e9d65d05f085")}
                     icon={<IconX />}
                     tabIndex={front ? 0 : -1}
                     onClick={async () => {
                       const ok = await confirmDanger(
-                      `确定要忽略《${h.title}》吗？\n\n忽略后它不再出现在作业区与日程提醒中，可在「全部作业 → 已忽略」恢复。`,
+                      i18nMsg("components.homeworkcarousel.11ac26dfc826", { title: String(h.title) }),
                         CONFIRM_IGNORE_HW,
                       );
                       if (ok) ignoreHw(h.id, h.title);
@@ -339,7 +342,7 @@ export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onP
                   />
                   <HwRemindButton h={h} />
                   {!h.source && semesterId ? (
-                    <CollectStar atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, courseNameOf(h.courseId), semesterId) }} title="收藏作业" />
+                    <CollectStar atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, courseNameOf(h.courseId), semesterId) }} title={i18n("components.homeworkcarousel.8cc765f4b8b9")} />
                   ) : null}
                 </div>
               </div>

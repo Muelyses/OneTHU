@@ -20,6 +20,8 @@ mod overlay_win;
 mod updater;
 mod ws_bridge;
 mod plugins;
+mod native_security;
+mod plugin_package;
 use std::collections::HashMap;
 use std::error::Error as _;
 use std::time::Duration;
@@ -496,24 +498,9 @@ fn trace_key() -> String {
         .collect()
 }
 
-/// 调试日志文件路径：所有写点统一走这里（Windows 下 /tmp 语义为「当前盘根 \tmp\」）。
-const DEBUG_LOG_PATH: &str = "/tmp/onethu-debug.log";
-
-/// 调试日志落点。R21：安卓此前只有 logcat（无 /tmp），用户拿不到日志、真机问题
-/// 全靠猜（2026-09-21「在线服务跳浏览器」「校内启动 20s」两个实录的教训）——
-/// 现在安卓落 app_data_dir/logs/onethu-debug.log，设置页可一键转存系统下载。
-fn debug_log_path() -> std::path::PathBuf {
-    if let Some(app) = LOG_APP.get() {
-        #[cfg(target_os = "android")]
-        {
-            use tauri::Manager;
-            if let Ok(dir) = app.path().app_data_dir() {
-                return dir.join("logs").join("onethu-debug.log");
-            }
-        }
-        let _ = app;
-    }
-    std::path::PathBuf::from(DEBUG_LOG_PATH)
+/// All platforms use the application's private directory. Before setup, skip file logs.
+fn debug_log_path() -> Option<std::path::PathBuf> {
+    LOG_APP.get()?.path().app_data_dir().ok().map(|dir| dir.join("logs").join("onethu-debug.log"))
 }
 
 /// setup 时注入全局句柄（命令/内部日志统一取落点，不必层层穿参）
@@ -521,16 +508,23 @@ static LOG_APP: std::sync::OnceLock<tauri::AppHandle> = std::sync::OnceLock::new
 
 /// Rust 侧直接写调试日志（逐跳计时 / THOS-SEED / VENUEVIEW 等）——与 JS log_debug 同一落点。
 fn debug_log_line(line: &str) {
-    let path = debug_log_path();
+    // File and logcat must receive exactly the same sanitized record.
+    let line = native_security::redact_log(line);
+    let Some(path) = debug_log_path() else { return };
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
     }
-    let ok = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&path)
+    if native_security::confined_path(path.parent().unwrap(), std::path::Path::new("onethu-debug.log")).is_err() { return; }
+    let mut options = std::fs::OpenOptions::new();
+    options.create(true).append(true);
+    #[cfg(unix)]
+    { use std::os::unix::fs::OpenOptionsExt; options.mode(0o600); }
+    let ok = options.open(&path)
         .ok()
-        .and_then(|mut f| std::io::Write::write_all(&mut f, format!("{line}\n").as_bytes()).ok());
+        .and_then(|mut f| {
+            native_security::private_permissions(&path).ok()?;
+            std::io::Write::write_all(&mut f, format!("{line}\n").as_bytes()).ok()
+        });
     // Android：**始终**镜像一份到 logcat（tag=onethu）。落盘文件在应用私有目录，
     // 真机 adb 读不到（release 包 run-as 不可用、导出要用户手点），而排查真机问题恰恰
     // 需要实时现场 → `adb logcat -s onethu:V` 即可跟着复现看日志。
@@ -551,7 +545,7 @@ fn debug_log_line(line: &str) {
 #[tauri::command]
 fn log_debug(line: String) -> Result<(), String> {
     // 体积闸门：超 16MB 轮转为 .old（防 HTML dump 类循环刷盘——曾灌到 1GB）
-    let path = debug_log_path();
+    let path = debug_log_path().ok_or("日志目录尚未就绪")?;
     if let Ok(meta) = std::fs::metadata(&path) {
         if meta.len() > 16 * 1024 * 1024 {
             let _ = std::fs::rename(&path, path.with_extension("log.old"));
@@ -565,7 +559,7 @@ fn log_debug(line: String) -> Result<(), String> {
 /// 返回用户可说的落点（「下载/onethu-debug.log」或桌面绝对路径）。
 #[tauri::command]
 fn debug_log_export(app: tauri::AppHandle) -> Result<String, String> {
-    let src = debug_log_path();
+    let src = debug_log_path().ok_or("日志目录尚未就绪")?;
     let bytes = std::fs::read(&src).map_err(|e| {
         if e.kind() == std::io::ErrorKind::NotFound {
             "还没有日志：先复现一次问题再导出".to_string()
@@ -614,54 +608,13 @@ fn debug_log_export(app: tauri::AppHandle) -> Result<String, String> {
  * WebView 内 window.open / <a target=_blank> 均无效，必须交给系统默认浏览器。
  * 主通道是官方 opener 插件；open_external 是免 ACL 的自写兜底（插件异常时前端降级调用）。 */
 
-/// 用系统默认程序打开 URL（平台分派：open / start / xdg-open）
-#[cfg(target_os = "macos")]
-fn spawn_system_open(url: &str) -> Result<(), String> {
-    std::process::Command::new("open")
-        .arg(url)
-        .spawn()
-        .map(|_| ())
-        .map_err(|e| format!("调用系统 open 失败: {e}"))
-}
-
-#[cfg(target_os = "windows")]
-fn spawn_system_open(url: &str) -> Result<(), String> {
-    // start 的第一个引号参数是窗口标题，必须占位空串，否则 URL 被吞
-    use std::os::windows::process::CommandExt; // creation_flags 仅 Windows 提供
-    std::process::Command::new("cmd")
-        .args(["/C", "start", "", url])
-        .creation_flags(0x0800_0000) // CREATE_NO_WINDOW，不闪控制台黑框
-        .spawn()
-        .map(|_| ())
-        .map_err(|e| format!("调用系统 start 失败: {e}"))
-}
-
-#[cfg(all(unix, not(target_os = "macos")))]
-fn spawn_system_open(url: &str) -> Result<(), String> {
-    std::process::Command::new("xdg-open")
-        .arg(url)
-        .spawn()
-        .map(|_| ())
-        .map_err(|e| format!("调用 xdg-open 失败: {e}"))
-}
-
-#[cfg(not(any(
-    target_os = "macos",
-    target_os = "windows",
-    all(unix, not(target_os = "macos"))
-)))]
-fn spawn_system_open(_url: &str) -> Result<(), String> {
-    Err("当前平台不支持外部打开".into())
-}
-
 /* ---------------- 本地文件：打开 / 定位（免 ACL 的自写命令） ----------------
  * 官方 opener 插件的 open_path / reveal_item_in_dir 除命令权限外，还需要 capability 里配
  * **路径 scope**（allow 列表里给具体路径通配项，例如用户主目录下的 glob）；
  * 只给 `opener:allow-open-path` 会直接报 "Not allowed to open path ..."。而下载与「另存为」
  * 的落盘位置由用户决定（任意盘符/目录），白名单式 scope 覆盖不全，故自写命令直接交给系统
- * shell —— 自定义命令不受插件 ACL 约束。
- * 安全：只接受**绝对路径**且**必须已存在**；不放行任何 URL/scheme；不做 shell 字符串拼接
- * （Windows 用 raw_arg 逐段追加、路径整体加引号，空格与特殊字符都不会被重新解析）。 */
+ * opener 的 Rust API —— 自定义命令不受插件 ACL 约束。
+ * 安全：只接受绝对路径且必须已存在；不放行 URL/scheme，不拼接 shell 命令。 */
 
 fn validate_local_path(path: &str) -> Result<std::path::PathBuf, String> {
     if path.trim().is_empty() {
@@ -677,84 +630,19 @@ fn validate_local_path(path: &str) -> Result<std::path::PathBuf, String> {
     Ok(p)
 }
 
-/// 用系统默认应用打开本地文件
+/// 用系统默认应用打开本地文件；使用 opener 的原生实现，禁止经 cmd 字符串解释。
 #[tauri::command]
-fn onethu_open_path(path: String) -> Result<(), String> {
-    let p = validate_local_path(&path)?;
-    #[cfg(target_os = "windows")]
-    {
-        use std::os::windows::process::CommandExt;
-        let mut c = std::process::Command::new("cmd");
-        c.raw_arg("/C");
-        c.raw_arg("start");
-        c.raw_arg("\"\""); // start 的第一个引号参数是窗口标题，必须占位，否则路径被吞
-        c.raw_arg(format!("\"{}\"", p.display()));
-        c.creation_flags(0x0800_0000); // CREATE_NO_WINDOW，不闪控制台黑框
-        c.spawn().map(|_| ()).map_err(|e| format!("调用系统打开失败: {e}"))
-    }
-    #[cfg(target_os = "macos")]
-    {
-        std::process::Command::new("open")
-            .arg(&p)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用系统 open 失败: {e}"))
-    }
-    #[cfg(all(unix, not(target_os = "macos")))]
-    {
-        std::process::Command::new("xdg-open")
-            .arg(&p)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用 xdg-open 失败: {e}"))
-    }
-    #[cfg(not(any(target_os = "windows", target_os = "macos", all(unix, not(target_os = "macos")))))]
-    {
-        let _ = p;
-        Err("当前平台不支持打开本地文件".into())
-    }
+fn onethu_open_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let path = validate_local_path(&path)?;
+    app.opener().open_path(path.to_string_lossy().into_owned(), None::<&str>).map_err(|e| e.to_string())
 }
 
-/// 在文件管理器中定位并选中本地文件
 #[tauri::command]
-fn onethu_reveal_path(path: String) -> Result<(), String> {
-    let p = validate_local_path(&path)?;
-    #[cfg(target_os = "windows")]
-    {
-        use std::os::windows::process::CommandExt;
-        let mut c = std::process::Command::new("explorer");
-        // explorer 只认 `/select,"路径"` 这种一整段参数形式：raw_arg 原样追加，避免被引号转义破坏
-        c.raw_arg(format!("/select,\"{}\"", p.display()));
-        c.creation_flags(0x0800_0000);
-        c.spawn().map(|_| ()).map_err(|e| format!("调用资源管理器失败: {e}"))
-    }
-    #[cfg(target_os = "macos")]
-    {
-        std::process::Command::new("open")
-            .arg("-R")
-            .arg(&p)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用 Finder 失败: {e}"))
-    }
-    #[cfg(all(unix, not(target_os = "macos")))]
-    {
-        // Linux 无统一的「定位选中」语义：退化为打开所在目录
-        let dir = p
-            .parent()
-            .map(|d| d.to_path_buf())
-            .unwrap_or_else(|| std::path::PathBuf::from("/"));
-        std::process::Command::new("xdg-open")
-            .arg(dir)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用 xdg-open 失败: {e}"))
-    }
-    #[cfg(not(any(target_os = "windows", target_os = "macos", all(unix, not(target_os = "macos")))))]
-    {
-        let _ = p;
-        Err("当前平台不支持定位本地文件".into())
-    }
+fn onethu_reveal_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let path = validate_local_path(&path)?;
+    app.opener().reveal_item_in_dir(path).map_err(|e| e.to_string())
 }
 
 /// 兜底外链打开：Rust 侧再校验一次 scheme，仅放行 http/https
@@ -775,12 +663,10 @@ fn open_external(app: tauri::AppHandle, url: String) -> Result<(), String> {
             return Ok(());
         }
     }
-    #[cfg(not(target_os = "android"))]
-    let _ = &app;
-    if !(url.starts_with("http://") || url.starts_with("https://")) {
-        return Err(format!("拒绝打开非 http(s) 链接: {url}"));
-    }
-    spawn_system_open(&url)
+    use tauri_plugin_opener::OpenerExt;
+    let parsed = reqwest::Url::parse(&url).map_err(|e| format!("非法 URL：{e}"))?;
+    native_security::http_url(&parsed)?;
+    app.opener().open_url(parsed.as_str(), None::<&str>).map_err(|e| e.to_string())
 }
 
 /* ---------------- 本机状态文件（appData/state 下的 JSON 文件） ----------------
@@ -814,15 +700,15 @@ fn safe_name(name: &str) -> String {
 #[tauri::command]
 fn state_write<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String, content: String) -> Result<(), String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
-    // 原子写：临时文件 + rename，强退/断电不留半截 JSON
-    let tmp = path.with_extension("json.tmp");
-    std::fs::write(&tmp, content.as_bytes()).map_err(|e| e.to_string())?;
-    std::fs::rename(&tmp, &path).map_err(|e| e.to_string())
+    native_security::confined_path(path.parent().ok_or("缺少状态目录")?, path.file_name().ok_or("缺少状态文件名")?.as_ref())?;
+    native_security::private_atomic_write(&path, content.as_bytes())
 }
 
 #[tauri::command]
 fn state_read<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String) -> Result<Option<String>, String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
+    native_security::confined_path(path.parent().ok_or("缺少状态目录")?, path.file_name().ok_or("缺少状态文件名")?.as_ref())?;
+    if path.exists() { native_security::private_permissions(&path)?; }
     match std::fs::read_to_string(&path) {
         Ok(s) => Ok(Some(s)),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
@@ -907,10 +793,8 @@ pub fn plugins_root(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String
 
 /// 取插件子目录（不存在则创建）；id 防路径穿越（只允许字母数字.-_）
 fn plugin_dir(app: &tauri::AppHandle, id: &str) -> Result<std::path::PathBuf, String> {
-    if id.is_empty() || !id.chars().all(|c| c.is_alphanumeric() || matches!(c, '.' | '-' | '_')) {
-        return Err(format!("非法插件 id：{id}"));
-    }
-    Ok(plugins_root(app)?.join(id))
+    native_security::plugin_id(id)?;
+    native_security::confined_path(&plugins_root(app)?, std::path::Path::new(id))
 }
 
 /// 导入 rust 插件（文件夹形态）：把所选目录全部文件复制进 plugins/<id>/，
@@ -922,130 +806,13 @@ fn plugin_dir_install_rust(
     manifest_dir: String,
     bin: String,
 ) -> Result<String, String> {
-    use std::path::Path;
-    let dir = plugin_dir(&app, &id)?;
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let src = Path::new(&manifest_dir);
-    let rd = std::fs::read_dir(src).map_err(|e| format!("读取目录失败：{e}"))?;
-    for entry in rd {
-        let entry = entry.map_err(|e| e.to_string())?;
-        if !entry.file_type().map(|t| t.is_file()).unwrap_or(false) {
-            continue;
-        }
-        let name = entry.file_name();
-        let data = std::fs::read(entry.path()).map_err(|e| format!("读取 {:?} 失败：{e}", name))?;
-        std::fs::write(dir.join(&name), data).map_err(|e| format!("写入 {:?} 失败：{e}", name))?;
-    }
-    let bin_path = dir.join(&bin);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let _ = std::fs::set_permissions(&bin_path, std::fs::Permissions::from_mode(0o755));
-    }
-    Ok(bin_path.to_string_lossy().to_string())
+    plugin_package::install_rust(&plugins_root(&app)?, &id, std::path::Path::new(&manifest_dir), &bin)
 }
 
-/// zip 防路径穿越（zip-slip）：展开路径必须留在目标目录内
-fn zip_safe_path(dir: &std::path::Path, name: &str) -> Result<std::path::PathBuf, String> {
-    let rel = std::path::Path::new(name);
-    if name.starts_with('/') || name.contains('\\') && name.contains("..")
-        || rel.components().any(|c| matches!(c, std::path::Component::ParentDir | std::path::Component::RootDir | std::path::Component::Prefix(_)))
-    {
-        return Err(format!("zip 内非法路径：{name}"));
-    }
-    Ok(dir.join(rel))
-}
-
-/// 导入插件压缩包（rust/js 通用）：安全解包进 plugins/<id>/ 并返回登记所需信息。
-/// rust → binPath；js → 返回入口 js 源码（注册表仍存 code，目录留存文件与 logo）。
+/// 完整验证与暂存后替换；非法包不会破坏已安装版本。
 #[tauri::command]
-fn plugin_dir_import_zip(
-    app: tauri::AppHandle,
-    zip_path: String,
-) -> Result<serde_json::Value, String> {
-    use std::io::Read;
-    let file = std::fs::File::open(&zip_path).map_err(|e| format!("打开压缩包失败：{e}"))?;
-    let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("读取压缩包失败：{e}"))?;
-    // 先读 manifest.json 定 id（支持根目录或单一一级子目录）
-    let mut manifest_text: Option<String> = None;
-    let mut prefix = String::new();
-    {
-        for i in 0..archive.len() {
-            let mut e = archive.by_index(i).map_err(|e| e.to_string())?;
-            let name = e.name().to_string();
-            if e.is_dir() { continue; }
-            let parts: Vec<&str> = name.split('/').filter(|p| !p.is_empty()).collect();
-            if parts.last() == Some(&"manifest.json") && parts.len() <= 2 {
-                let mut text = String::new();
-                e.read_to_string(&mut text).map_err(|er| er.to_string())?;
-                manifest_text = Some(text);
-                prefix = if parts.len() == 2 { format!("{}/", parts[0]) } else { String::new() };
-                break;
-            }
-        }
-    }
-    let manifest_text = manifest_text.ok_or("压缩包根目录未找到 manifest.json")?;
-    let manifest: serde_json::Value =
-        serde_json::from_str(&manifest_text).map_err(|e| format!("manifest.json 解析失败：{e}"))?;
-    let id = manifest
-        .get("id")
-        .and_then(|v| v.as_str())
-        .ok_or("manifest.json 缺 id")?
-        .to_string();
-    let kind = manifest.get("kind").and_then(|v| v.as_str()).unwrap_or("js").to_string();
-    let dir = plugin_dir(&app, &id)?;
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    // 整包解压（prefix 剥离一级目录）
-    for i in 0..archive.len() {
-        let mut e = archive.by_index(i).map_err(|er| er.to_string())?;
-        let name = e.name().to_string();
-        if e.is_dir() { continue; }
-        let rel = name.strip_prefix(&prefix).unwrap_or(&name).to_string();
-        if rel.is_empty() { continue; }
-        let out = zip_safe_path(&dir, &rel)?;
-        if let Some(pp) = out.parent() {
-            std::fs::create_dir_all(pp).map_err(|er| er.to_string())?;
-        }
-        let mut w = std::fs::File::create(&out).map_err(|er| er.to_string())?;
-        std::io::copy(&mut e, &mut w).map_err(|er| format!("解压 {rel} 失败：{er}"))?;
-    }
-    if kind == "rust" {
-        let bin = manifest
-            .get("bin")
-            .and_then(|v| v.as_str())
-            .ok_or("rust 插件 manifest 缺 bin")?
-            .to_string();
-        let bin_path = dir.join(&bin);
-        if !bin_path.exists() {
-            return Err(format!("压缩包内缺二进制：{bin}"));
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            let _ = std::fs::set_permissions(&bin_path, std::fs::Permissions::from_mode(0o755));
-        }
-        return Ok(serde_json::json!({
-            "kind": "rust", "manifest": manifest, "binPath": bin_path.to_string_lossy(),
-        }));
-    }
-    // js：入口 = manifest.entry 或根目录唯一 .js
-    let entry = manifest
-        .get("entry")
-        .and_then(|v| v.as_str())
-        .map(|s| s.to_string())
-        .or_else(|| {
-            std::fs::read_dir(&dir)
-                .ok()?
-                .filter_map(|r| r.ok())
-                .map(|r| r.file_name().to_string_lossy().to_string())
-                .filter(|n| n.ends_with(".js"))
-                .collect::<Vec<_>>()
-                .into_iter()
-                .next()
-        })
-        .ok_or("js 插件包缺入口（manifest.entry 或根目录 .js）")?;
-    let code = std::fs::read_to_string(dir.join(&entry)).map_err(|e| format!("读取 {entry} 失败：{e}"))?;
-    Ok(serde_json::json!({ "kind": "js", "manifest": manifest, "code": code }))
+fn plugin_dir_import_zip(app: tauri::AppHandle, zip_path: String) -> Result<serde_json::Value, String> {
+    plugin_package::import_zip(&plugins_root(&app)?, std::path::Path::new(&zip_path))
 }
 
 /// 插件 logo 读取（logo 随插件包走：plugins/<id>/logo.svg|png）→ dataURL
@@ -1065,7 +832,7 @@ fn plugin_logo_data(app: tauri::AppHandle, id: String) -> Result<Option<String>,
     );
     for dir in &dirs {
         for (name, mime) in [("logo.svg", "image/svg+xml"), ("logo.png", "image/png")] {
-            let p = dir.join(name);
+            let p = native_security::confined_path(dir, std::path::Path::new(name))?;
             if let Ok(bytes) = std::fs::read(&p) {
                 return Ok(Some(format!(
                     "data:{mime};base64,{}",
@@ -1120,19 +887,22 @@ fn builtin_sidecar_install(app: tauri::AppHandle) -> Result<Option<String>, Stri
     };
     let dir = plugin_dir(&app, "onethu.harness")?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let dst = dir.join(exe_name);
+    let dst = native_security::confined_path(&dir, std::path::Path::new(exe_name))?;
     // 内容一致则跳过复制（重复开机免写）
     let need = match std::fs::read(&res) {
         Ok(src) => std::fs::read(&dst).map(|d| d != src).unwrap_or(true),
         Err(_) => false,
     };
     if need {
-        std::fs::copy(&res, &dst).map_err(|e| format!("内置 sidecar 复制失败：{e}"))?;
+        let bytes = std::fs::read(&res).map_err(|e| format!("内置 sidecar 读取失败：{e}"))?;
+        native_security::private_atomic_write(&dst, &bytes)?;
     }
     // logo 随包（logo.svg 与二进制同目录打包在资源里）
     if let Some(logo) = res.parent().map(|pp| pp.join("logo.svg")) {
         if logo.exists() {
-            let _ = std::fs::copy(&logo, dir.join("logo.svg"));
+            let destination = native_security::confined_path(&dir, std::path::Path::new("logo.svg"))?;
+            let bytes = std::fs::read(&logo).map_err(|e| e.to_string())?;
+            native_security::private_atomic_write(&destination, &bytes)?;
         }
     }
     #[cfg(unix)]
@@ -1236,7 +1006,7 @@ pub(crate) async fn fetch_attachment(
         .map_err(|e| e.to_string())?;
     if !resp.status().is_success() {
         // 带上 URL：404 必须能一眼看出是哪条链接（历史上正是靠这条线索才发现走错了端点）
-        eprintln!("[onethu] fetch_attachment {} {}", resp.status(), url);
+        eprintln!("[onethu] fetch_attachment {} {}", resp.status(), native_security::safe_url_log(resp.url()));
         return Err(format!("HTTP {} — {}", resp.status(), url));
     }
     let content_disposition = resp
@@ -1451,7 +1221,7 @@ async fn fetch_binary(
         .await
         .map_err(|e| e.to_string())?;
     if !resp.status().is_success() {
-        eprintln!("[onethu] fetch_binary {} {}", resp.status(), url);
+        eprintln!("[onethu] fetch_binary {} {}", resp.status(), native_security::safe_url_log(resp.url()));
         return Err(format!("HTTP {} — {}", resp.status(), url));
     }
     let mime = resp
@@ -1501,8 +1271,7 @@ struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>, std::sync::
 
 /// cookie 仓落盘（2026-09-17：纯内存仓每次进程重启丢光 id 信任票据 →
 /// 服务器反复索要 2FA；持久化后冷启动直接带票复用，登录/2FA 频率大幅下降）。
-/// 行格式：domain<TAB>path<TAB>secure<TAB>name=value（Domain/Path 显式回种，
-/// 不存 Expires——加载即会话票，运行期由服务器重新盖章续命）。
+/// 新格式保存 cookie_store 的完整属性；仍兼容旧 TSV，不读取真实凭据用于测试。
 impl SharedNativeJar {
     fn seed_line(&self, url: &str, line: &str) {
         let Ok(u) = reqwest::Url::parse(url) else { return };
@@ -1515,27 +1284,25 @@ impl SharedNativeJar {
     }
     fn save_to_file(&self, path: &std::path::Path) {
         let g = self.0.read().unwrap();
-        let mut out = String::new();
-        for c in g.iter_unexpired() {
-            let domain = c.domain().unwrap_or("");
-            let path = c.path().unwrap_or("/");
-            let host = domain.trim_start_matches('.');
-            if host.is_empty() { continue; }
-            let line = format!(
-                "{domain}\t{path}\t{}\t{}={}",
-                if c.secure().unwrap_or(false) { "1" } else { "0" },
-                c.name(),
-                c.value()
-            );
-            out.push_str(&line);
-            out.push('\n');
+        // Serialize cookie_store's real attributes: host-only, Secure, HttpOnly,
+        // path and expiry must survive a restart. Session cookies remain supported.
+        let Ok(out) = serde_json::to_vec(&g.iter_unexpired().collect::<Vec<_>>()) else { return };
+        if native_security::private_atomic_write(path, &out).is_ok() {
+            self.1.store(false, std::sync::atomic::Ordering::Relaxed);
         }
-        let _ = std::fs::write(path, out);
-        self.1.store(false, std::sync::atomic::Ordering::Relaxed);
     }
     fn load_from_file(&self, path: &std::path::Path) {
+        if native_security::private_permissions(path).is_err() { return; }
         let Ok(text) = std::fs::read_to_string(path) else { return };
         let mut g = self.0.write().unwrap();
+        if text.trim_start().starts_with('[') {
+            if let Ok(loaded) = cookie_store::serde::json::load(text.as_bytes()) {
+                *g = loaded;
+                self.1.store(false, std::sync::atomic::Ordering::Relaxed);
+            }
+            return;
+        }
+        // Legacy TSV remains readable; it did not record host-only/expiry attributes.
         for line in text.lines() {
             let parts: Vec<&str> = line.split('\t').collect();
             if parts.len() != 4 { continue; }
@@ -1543,7 +1310,7 @@ impl SharedNativeJar {
             let host = domain.trim_start_matches('.');
             let scheme = if secure == "1" { "https" } else { "http" };
             let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
-            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
+            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}{}", if secure == "1" { "; Secure" } else { "" });
             let _ = g.parse(&set_cookie, &u);
         }
         self.1.store(false, std::sync::atomic::Ordering::Relaxed);
@@ -1615,6 +1382,12 @@ async fn http_native(
     app: tauri::AppHandle,
     input: HttpInput,
 ) -> Result<HttpOutput, String> {
+    let _ = app;
+    let client = NATIVE_CLIENT.read().map_err(|_| "网络客户端锁失败")?.clone();
+    http_native_with_client(input, client).await
+}
+
+async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> Result<HttpOutput, String> {
     let method: reqwest::Method = input
         .method
         .to_uppercase()
@@ -1623,6 +1396,8 @@ async fn http_native(
 
 
     let mut url: reqwest::Url = input.url.parse().map_err(|e| format!("非法 URL: {e}"))?;
+    native_security::http_url(&url)?;
+    let mut request_headers = input.headers.clone();
     let mut method_cur = method;
     let mut body_bytes: Option<Vec<u8>> = if let Some(b64) = &input.body_b64 {
         use base64::Engine as _;
@@ -1643,16 +1418,9 @@ async fn http_native(
     let mut final_url = url.to_string();
 
     for _hop in 0..=25u32 {
-        let client = NATIVE_CLIENT.read().unwrap().clone();
-        let mut req = client.request(method_cur.clone(), url.clone());
-        // 诊断：首跳外发 cookie 名单 + 逐跳 URL/状态（铸票断链定位）
-        if _hop == 0 {
-            let sent = reqwest::cookie::CookieStore::cookies(NATIVE_JAR_ARC.as_ref(), &url)
-                .and_then(|c: reqwest::header::HeaderValue| c.to_str().ok().map(|s: &str| s.to_string()))
-                .unwrap_or_else(|| "(无)".into());
-            debug_log_line(&format!("[NATIVE-STORE] {} → {}", url.host_str().unwrap_or("?"), sent));
-        }
-        for (k, v) in &input.headers {
+        let mut req = client.request(method_cur.clone(), url.clone())
+            .timeout(Duration::from_millis(input.timeout_ms.unwrap_or(60_000).clamp(1, 300_000)));
+        for (k, v) in &request_headers {
             let lower = k.to_lowercase();
             // Cookie 由原生仓管理，手动传入反而跨跳污染
             if matches!(lower.as_str(), "host" | "content-length" | "cookie") {
@@ -1664,13 +1432,13 @@ async fn http_native(
             req = req.body(b.clone());
         }
         let hop_t0 = std::time::Instant::now();
-        let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
+        let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e.without_url())))?;
         let hop_ms = hop_t0.elapsed().as_millis();
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
         // R21 逐跳计时入文件：定位「校内启动 20s」吃在哪一跳（logcat 读不到的旧痛）
-        debug_log_line(&format!("[NATIVE-HOP{}] {} {}ms {} {}", _hop, status.as_u16(), hop_ms, method_cur.as_str(), resp.url().as_str().chars().take(210).collect::<String>()));
+        debug_log_line(&format!("[NATIVE-HOP{}] {} {}ms {} {}", _hop, status.as_u16(), hop_ms, method_cur.as_str(), native_security::safe_url_log(resp.url())));
 
         let mut headers = HashMap::new();
         let mut set_cookies = Vec::new();
@@ -1684,17 +1452,12 @@ async fn http_native(
             }
         }
 
-        // 跟随重定向（浏览器语义：303 一律 GET；301/302 的 POST 转 GET）
-        if status.is_redirection() {
-            if let Some(loc) = headers.get("location").cloned() {
-                let next = url.join(&loc).map_err(|e| format!("重定向地址解析失败: {e}"))?;
-                if status.as_u16() == 303
-                    || ((status.as_u16() == 301 || status.as_u16() == 302)
-                        && method_cur == reqwest::Method::POST)
-                {
-                    method_cur = reqwest::Method::GET;
-                    body_bytes = None;
-                }
+        if matches!(status.as_u16(), 301 | 302 | 303 | 307 | 308) {
+            if let Some(loc) = headers.get("location") {
+                if _hop == 25 { return Err("重定向次数超过上限".into()); }
+                let next = url.join(loc).map_err(|e| format!("重定向地址解析失败: {e}"))?;
+                native_security::redirect_request(&url, &next, status.as_u16(),
+                    &mut method_cur, &mut body_bytes, &mut request_headers)?;
                 url = next;
                 continue;
             }
@@ -1702,25 +1465,8 @@ async fn http_native(
 
         final_headers = headers;
         final_set_cookies = set_cookies;
-        let body_url_tag = resp.url().as_str().to_string();
         final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {}", error_chain(&e)))?.to_vec();
-        // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
-        if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList") || body_url_tag.contains("checkSingle")) && method_cur.as_str() == "POST" {
-            let mut hdr_dump = String::new();
-            for (k, v) in &input.headers {
-                hdr_dump.push_str(&format!("{}={:?}; ", k, v));
-            }
-            let body_str = body_bytes.as_ref().map(|b| String::from_utf8_lossy(b).chars().take(180).collect::<String>()).unwrap_or_default();
-            println!("[NATIVE-REQ] {} HEADERS[{}] BODY[{}]", &body_url_tag[..body_url_tag.len().min(130)], hdr_dump, body_str);
-        }
-        // learn 域响应体首段（2026-09-17：200 装 HTML 的会话死法专诊）
-        {
-            let u = &body_url_tag;
-            if u.contains("wlxt") {
-                let head = String::from_utf8_lossy(&final_body[..final_body.len().min(1400)]).replace(['\n', '\r', '\t'], " ");
-                println!("[NATIVE-BODY] {} | {}", &u[u.len().saturating_sub(70)..], head);
-            }
-        }
+        // Never log headers, cookies or response/request bodies: they contain login tickets and personal data.
         break;
     }
 
@@ -1771,34 +1517,16 @@ fn http_native_clear_cookies() -> Result<(), String> {
 #[tauri::command]
 fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String> {
     let suffixes: Vec<String> = suffixes.iter().map(|s| s.to_lowercase()).collect();
-    let keep: Vec<String> = {
-        let g = NATIVE_JAR_ARC.0.read().unwrap();
-        let mut lines = Vec::new();
-        for c in g.iter_unexpired() {
-            let domain = c.domain().unwrap_or("").trim_start_matches('.').to_lowercase();
-            if domain.is_empty() { continue; }
-            let hit = suffixes.iter().any(|s| domain == *s || domain.ends_with(&format!(".{}", s)));
-            if hit { continue; }
-            let path = c.path().unwrap_or("/").to_string();
-            let secure = if c.secure().unwrap_or(false) { "1" } else { "0" };
-            lines.push(format!("{}\t{}\t{}\t{}={}", c.domain().unwrap_or(""), path, secure, c.name(), c.value()));
-        }
-        lines
-    };
-    NATIVE_JAR_ARC.clear();
-    {
-        let mut g = NATIVE_JAR_ARC.0.write().unwrap();
-        for line in &keep {
-            let parts: Vec<&str> = line.split('\t').collect();
-            if parts.len() != 4 { continue; }
-            let (domain, cpath, secure, kv) = (parts[0], parts[1], parts[2], parts[3]);
-            let host = domain.trim_start_matches('.');
-            let scheme = if secure == "1" { "https" } else { "http" };
-            let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
-            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
-            let _ = g.parse(&set_cookie, &u);
-        }
-    }
+    let mut jar = NATIVE_JAR_ARC.0.write().map_err(|_| "Cookie 仓锁失败")?;
+    let remove = jar.iter_any().filter_map(|cookie| {
+        let domain = match &cookie.domain {
+            cookie_store::CookieDomain::HostOnly(host) | cookie_store::CookieDomain::Suffix(host) => host,
+            _ => return None,
+        };
+        let hit = suffixes.iter().any(|suffix| domain == suffix || domain.ends_with(&format!(".{suffix}")));
+        hit.then(|| (domain.clone(), String::from(&cookie.path), cookie.name().to_string()))
+    }).collect::<Vec<_>>();
+    for (domain, path, name) in remove { jar.remove(&domain, &path, &name); }
     NATIVE_JAR_ARC.1.store(true, std::sync::atomic::Ordering::Relaxed);
     Ok(())
 }
@@ -2232,7 +1960,7 @@ async fn thos_open_portal(
                 .map(|v| v.trim_matches('"').to_string())
                 .unwrap_or_else(|| "http://tauri.localhost/#/thos".to_string())
         };
-        thos_log(&format!("[THOS-SEED] 链启动 url={} 来路={}", &url[..url.len().min(60)], origin_url));
+        thos_log("[THOS-SEED] 会话链启动");
         let (seed_host, seed_header) = {
             // 目标 URL 的域决定在哪个 origin 种 cookie（webvpn 模式=webvpn 域，
             // 直连模式=thos 域）；webvpn 域优先级最高——全程代理域
@@ -2468,12 +2196,12 @@ async fn thos_open_portal(
         webview
             .eval(&format!("location.href = {}", serde_json::to_string(&url).unwrap_or_default()))
             .map_err(|e| format!("导航目标: {e}"))?;
-        thos_log(&format!("[THOS-SEED] 会话链完成 → {}", &url[..url.len().min(60)]));
+        thos_log("[THOS-SEED] 会话链完成");
         // 5) 桌面统一：跳回 app 页面（THOS 官方页由系统浏览器打开的需求后续再议）
         webview
             .eval(&format!("location.href = {}", serde_json::to_string(&origin_url).unwrap_or_default()))
             .ok();
-        thos_log(&format!("[THOS-SEED] 已跳回 {}", origin_url));
+        thos_log("[THOS-SEED] 已跳回应用");
         Ok(())
     }
 }
@@ -3024,27 +2752,8 @@ async fn cloud_webvpn_profile(
         }
     }
     let need_confirm = text.contains("checkSingle") || final_url.contains("checkSingle");
-    // SPA 壳全文脱敏落日志（≥16 连续 hex 打码）：挖「显示口令」的真实 ajax 端点。
-    if final_url.contains("cloud.tsinghua.edu.cn/profile") && plain_token.is_empty() {
-        let masked: String = {
-            let mut out = String::with_capacity(text.len());
-            let mut run = String::new();
-            for c in text.chars() {
-                if c.is_ascii_hexdigit() {
-                    run.push(c);
-                } else {
-                    if run.len() >= 16 { out.push_str(&format!("<hex{}>", run.len())); } else { out.push_str(&run); }
-                    run.clear();
-                    out.push(c);
-                }
-            }
-            out
-        };
-        let flat = masked.split_whitespace().collect::<Vec<_>>().join(" ");
-        for (i, chunk) in flat.as_bytes().chunks(1800).enumerate() {
-            debug_log_line(&format!("[CLOUD-SHELL] {i}: {}", String::from_utf8_lossy(chunk)));
-        }
-    }
+    // The authenticated HTML can contain non-hex credentials and personal data.
+    // Return it to the caller, but never dump it into diagnostic logs.
     Ok(CloudWebvpnProfile { final_url, body: text, need_confirm, plain_token })
 }
 
@@ -4393,7 +4102,7 @@ async fn venue_proxy_fetch(
     venue_log(&format!(
         "REQ {} {} auth={}",
         request.method(),
-        pq.split('&').next().unwrap_or(""),
+        pq.split('?').next().unwrap_or(""),
         auth_len
     ));
     // 页面请求 query 里的 ?token=<JWT>：官方 SPA 开机从 localStorage["token"]
@@ -4441,8 +4150,8 @@ async fn venue_proxy_fetch(
     let resp = match req.send().await {
         Ok(r) => r,
         Err(e) => {
-            venue_log(&format!("ERR upstream {e} {pq}"));
-            return upstream_err(format!("upstream: {e}"));
+            venue_log(&format!("ERR upstream {} {}", e.without_url(), pq.split('?').next().unwrap_or("")));
+            return upstream_err("upstream request failed".into());
         }
     };
     let status = resp.status();
@@ -4479,8 +4188,15 @@ async fn venue_proxy_fetch(
                     // 预置登录态（token + refreshToken 空值兜底）+ 读写监听探针：
                     // hook getItem("token")/removeItem/clear，回执经 __rd/__clr/__rm
                     // 图片请求进日志——谁读、读到多长、谁删，全部留痕。
+                    // JSON handles JS quotes/control characters; escaping "<" also prevents
+                    // HTML's raw-text parser from ending the script at a token's </script>.
+                    let token_json = serde_json::to_string(jwt)
+                        .expect("a string always serializes as JSON")
+                        .replace('<', "\\u003c")
+                        .replace('\u{2028}', "\\u2028")
+                        .replace('\u{2029}', "\\u2029");
                     let script = format!(
-                        r#"<script>(function(){{var t="{jwt}";var ok=0,err="";try{{localStorage.setItem("token",JSON.stringify(t));localStorage.setItem("headers",JSON.stringify(JSON.stringify({{token:t}})));localStorage.setItem("refreshToken",JSON.stringify(""));ok=localStorage.getItem("token")===JSON.stringify(t)?1:0;}}catch(e){{err=String(e);}}try{{new Image().src="/venue/index.html?__probe=1&ok="+ok+"&err="+encodeURIComponent(err)+"&ts="+Date.now();}}catch(e){{}}try{{var og=Storage.prototype.getItem;Storage.prototype.getItem=function(k){{var v=og.call(this,k);if(k==="token"){{try{{new Image().src="/venue/index.html?__rd=1&len="+(v?v.length:0)+"&ts="+Date.now();}}catch(e){{}}}}return v;}};var oc=Storage.prototype.clear;Storage.prototype.clear=function(){{try{{new Image().src="/venue/index.html?__clr=1&ts="+Date.now();}}catch(e){{}}return oc.call(this);}};var orm=Storage.prototype.removeItem;Storage.prototype.removeItem=function(k){{if(k==="token"){{try{{new Image().src="/venue/index.html?__rm=1&ts="+Date.now();}}catch(e){{}}}}return orm.call(this,k);}};}}catch(e){{}}}})();</script>"#
+                        r#"<script>(function(){{var t={token_json};var ok=0,err="";try{{localStorage.setItem("token",JSON.stringify(t));localStorage.setItem("headers",JSON.stringify(JSON.stringify({{token:t}})));localStorage.setItem("refreshToken",JSON.stringify(""));ok=localStorage.getItem("token")===JSON.stringify(t)?1:0;}}catch(e){{err=String(e);}}try{{new Image().src="/venue/index.html?__probe=1&ok="+ok+"&err="+encodeURIComponent(err)+"&ts="+Date.now();}}catch(e){{}}try{{var og=Storage.prototype.getItem;Storage.prototype.getItem=function(k){{var v=og.call(this,k);if(k==="token"){{try{{new Image().src="/venue/index.html?__rd=1&len="+(v?v.length:0)+"&ts="+Date.now();}}catch(e){{}}}}return v;}};var oc=Storage.prototype.clear;Storage.prototype.clear=function(){{try{{new Image().src="/venue/index.html?__clr=1&ts="+Date.now();}}catch(e){{}}return oc.call(this);}};var orm=Storage.prototype.removeItem;Storage.prototype.removeItem=function(k){{if(k==="token"){{try{{new Image().src="/venue/index.html?__rm=1&ts="+Date.now();}}catch(e){{}}}}return orm.call(this,k);}};}}catch(e){{}}}})();</script>"#
                     );
                     let bytes = script.as_bytes();
                     let head_pos = body
@@ -4499,19 +4215,12 @@ async fn venue_proxy_fetch(
             venue_log(&format!(
                 "RSP {} {} ct={} len={} inject={} tok={}",
                 status,
-                pq.split('&').next().unwrap_or(""),
+                pq.split('?').next().unwrap_or(""),
                 ct,
                 body.len(),
                 injected,
                 sso_token.is_some()
             ));
-            // 小 JSON 体直接记内容（未登录/错误判词一眼可见）
-            if ct.starts_with("application/json") && body.len() <= 400 {
-                venue_log(&format!(
-                    "BODY {}",
-                    String::from_utf8_lossy(&body).replace('\n', " ")
-                ));
-            }
             tauri::http::Response::builder()
                 .status(status)
                 .header(CONTENT_TYPE, ct)

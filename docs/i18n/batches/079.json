@@ -1,0 +1,1279 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "plugins.types.5bbe605e0a01",
+      "source": "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 92,
+          "context": "return i18n(\"plugins.types.5bbe605e0a01\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.5d78a4c234e1",
+      "source": "预约图书馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 77,
+          "context": "return i18n(\"plugins.types.5d78a4c234e1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.627dd0f3fd6e",
+      "source": "读取云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 68,
+          "context": "return i18n(\"plugins.types.627dd0f3fd6e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.6dc54a9470ed",
+      "source": "读取体育场馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 60,
+          "context": "return i18n(\"plugins.types.6dc54a9470ed\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.6f73980048f5",
+      "source": "外部 WebSocket 连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 83,
+          "context": "return i18n(\"plugins.types.6f73980048f5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.7015255aa19b",
+      "source": "本地存储",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 81,
+          "context": "return i18n(\"plugins.types.7015255aa19b\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.781fead7e82d",
+      "source": "应用内跳转",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 79,
+          "context": "return i18n(\"plugins.types.781fead7e82d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.78a788aeb3ed",
+      "source": "读取宿舍信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 75,
+          "context": "return i18n(\"plugins.types.78a788aeb3ed\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.7ad8378abec1",
+      "source": "读取记忆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 70,
+          "context": "return i18n(\"plugins.types.7ad8378abec1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.92acc8140843",
+      "source": "读取信息门户",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 57,
+          "context": "return i18n(\"plugins.types.92acc8140843\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.94d7e3d8ab44",
+      "source": "注入影响整个应用外观的 CSS（安装时重点确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 86,
+          "context": "return i18n(\"plugins.types.94d7e3d8ab44\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.9665288d3db6",
+      "source": "检索/读取 OH 长期记忆（个人偏好、课程上下文、任务状态）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 70,
+          "context": "return i18n(\"plugins.types.9665288d3db6\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.9f61b41430d2",
+      "source": "清华云盘资料库、目录浏览、库内搜索与下载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 68,
+          "context": "return i18n(\"plugins.types.9f61b41430d2\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.9f78589bce11",
+      "source": "写入记忆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 71,
+          "context": "return i18n(\"plugins.types.9f78589bce11\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.a245f4a0189e",
+      "source": "应用内网页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 94,
+          "context": "return i18n(\"plugins.types.a245f4a0189e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.b0709765f8a8",
+      "source": "外部网络请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 82,
+          "context": "return i18n(\"plugins.types.b0709765f8a8\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.b15c42776a94",
+      "source": "发邮件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 67,
+          "context": "return i18n(\"plugins.types.b15c42776a94\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.b2101414fb98",
+      "source": "显示提示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 80,
+          "context": "return i18n(\"plugins.types.b2101414fb98\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.b47c2c0ce65a",
+      "source": "余额/在线设备/账号信息（只读）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 78,
+          "context": "return i18n(\"plugins.types.b47c2c0ce65a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.b4ccc4a10048",
+      "source": "直接请求任意外部网络地址（HTTP(S)）（大模型 API 等）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 82,
+          "context": "return i18n(\"plugins.types.b4ccc4a10048\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.b5df04d0e95e",
+      "source": "上传文件到云盘、生成分享链接（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 69,
+          "context": "return i18n(\"plugins.types.b5df04d0e95e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.bb44113c1bc4",
+      "source": "云同步日历与本地日程的只读查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 64,
+          "context": "return i18n(\"plugins.types.bb44113c1bc4\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c0c4378797b8",
+      "source": "弹出 toast 消息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 80,
+          "context": "return i18n(\"plugins.types.c0c4378797b8\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c26692150916",
+      "source": "发送系统通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 85,
+          "context": "return i18n(\"plugins.types.c26692150916\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c4aa15d951ce",
+      "source": "新建/编辑/删除日程（云或本地，写操作）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 65,
+          "context": "return i18n(\"plugins.types.c4aa15d951ce\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c4fad583342d",
+      "source": "新建 Issue、发表评论、关闭或重开 Issue 与合并请求（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 73,
+          "context": "return i18n(\"plugins.types.c4fad583342d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c6990190c123",
+      "source": "经宿主与外部建立并收发 WebSocket 长连接（直播弹幕、实时通知等；由宿主 Rust 层出网，累计 10 分钟空闲自动清理）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 83,
+          "context": "return i18n(\"plugins.types.c6990190c123\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c6cb8feb5896",
+      "source": "座位与研讨间的预约/取消（写操作）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 77,
+          "context": "return i18n(\"plugins.types.c6cb8feb5896\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c73bd6334e39",
+      "source": "列出并执行其他已启用插件的命令（含写操作）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 88,
+          "context": "return i18n(\"plugins.types.c73bd6334e39\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.c958b2f88de5",
+      "source": "场馆场景/可约场地/我的预约只读查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 60,
+          "context": "return i18n(\"plugins.types.c958b2f88de5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.cf01361e883f",
+      "source": "读取网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 58,
+          "context": "return i18n(\"plugins.types.cf01361e883f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.d7ca0f2e28a2",
+      "source": "课程/作业/通知/文件/讨论区只读查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 58,
+          "context": "return i18n(\"plugins.types.d7ca0f2e28a2\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.db1b60955a4e",
+      "source": "注入全局样式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 86,
+          "context": "return i18n(\"plugins.types.db1b60955a4e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.db8046b7bb4f",
+      "source": "读取基本信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 56,
+          "context": "return i18n(\"plugins.types.db8046b7bb4f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.dcaf20f7619c",
+      "source": "管理日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 65,
+          "context": "return i18n(\"plugins.types.dcaf20f7619c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.dd2d1636c619",
+      "source": "姓名/学号/院系与登录状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 56,
+          "context": "return i18n(\"plugins.types.dd2d1636c619\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.e059f380bf07",
+      "source": "读取剪贴板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 87,
+          "context": "return i18n(\"plugins.types.e059f380bf07\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.e41be5c33320",
+      "source": "在应用内打开网页（Android 桌面模式浏览）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 94,
+          "context": "return i18n(\"plugins.types.e41be5c33320\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.e821edec359c",
+      "source": "向 Android 桌面小组件声明要显示的内容（渲染与取值由宿主完成，插件不写原生代码）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 84,
+          "context": "return i18n(\"plugins.types.e821edec359c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.e98935ae658f",
+      "source": "成绩、考试、新闻、校历、空教室、缴费记录等只读查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 57,
+          "context": "return i18n(\"plugins.types.e98935ae658f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.ec461a12a38e",
+      "source": "刷新外部作业源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 93,
+          "context": "return i18n(\"plugins.types.ec461a12a38e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.eeb2d48d3eaa",
+      "source": "讨论区发帖/回帖（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 59,
+          "context": "return i18n(\"plugins.types.eeb2d48d3eaa\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.ef2ab4dbea94",
+      "source": "以你的登录态访问任意清华校内系统（自定义服务接入）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 89,
+          "context": "return i18n(\"plugins.types.ef2ab4dbea94\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.efe0261e5829",
+      "source": "清华邮箱收件箱/已发送查询、读信与全箱搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 66,
+          "context": "return i18n(\"plugins.types.efe0261e5829\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.feef1c678595",
+      "source": "楼层/区域/座位分布/预约记录 + 研讨间资源查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 76,
+          "context": "return i18n(\"plugins.types.feef1c678595\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.09a831a64684",
+      "source": "清小搭暂时不可用：{err}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "err",
+          "expression": "String(err)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 71,
+          "context": "phase === \"boot\" ? i18n(\"plugins.xiaodapane.bfb954706240\") : i18n(\"plugins.xiaodapane.09a831a64684\", { err: String(err) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.1956d71c54c5",
+      "source": "在下方胶囊里输入问题、回车即发。这里是新的默认对话，不接续别处的历史。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 169,
+          "context": "{i18n(\"plugins.xiaodapane.1956d71c54c5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.7e5de34cad87",
+      "source": "仅供实验与参考",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 154,
+          "context": "{i18n(\"plugins.xiaodapane.7e5de34cad87\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.b70bb4acc048",
+      "source": "我",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 74,
+          "context": "agentName: i18n(\"plugins.xiaodapane.b70bb4acc048\")"
+        },
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 173,
+          "context": "isUser ? i18n(\"plugins.xiaodapane.b70bb4acc048\") : AGENT_NAME"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.ba38dfe30d1c",
+      "source": "清小搭暂时不可用，请稍后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 164,
+          "context": "{i18n(\"plugins.xiaodapane.ba38dfe30d1c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.bfb954706240",
+      "source": "清小搭还在准备，稍等一下",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 71,
+          "context": "phase === \"boot\" ? i18n(\"plugins.xiaodapane.bfb954706240\") : i18n(\"plugins.xiaodapane.09a831a64684\", { err: String(err) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.c90cd1ec2872",
+      "source": "发送失败，可再发一次重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 201,
+          "context": "{i18n(\"plugins.xiaodapane.c90cd1ec2872\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.ca4d973c0b00",
+      "source": "停止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 208,
+          "context": "{i18n(\"plugins.xiaodapane.ca4d973c0b00\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.d4bdd78f6bb0",
+      "source": "正在输入…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 188,
+          "context": "{i18n(\"plugins.xiaodapane.d4bdd78f6bb0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.d89aac9533a3",
+      "source": "正在准备清小搭…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 160,
+          "context": "{i18n(\"plugins.xiaodapane.d89aac9533a3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.edecf0ae6e51",
+      "source": "发送",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 206,
+          "context": "{i18n(\"plugins.xiaodapane.edecf0ae6e51\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.xiaodapane.f620f4d59995",
+      "source": "新建对话失败，请再发一次重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/XiaodaPane.tsx",
+          "line": 85,
+          "context": "new Error(i18n(\"plugins.xiaodapane.f620f4d59995\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "prompt.input",
+      "source": "输入内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 139,
+          "context": "request ? resolveMessage(request.title) : t(\"prompt.input\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 163,
+          "context": "shown ? resolveMessage(shown.title) : t(\"prompt.input\")"
+        }
+      ],
+      "translation": "Enter text",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "settings.label.about",
+      "source": "关于",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "About",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.account",
+      "source": "账号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Account",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.advanced",
+      "source": "高级配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Advanced configuration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.appearance",
+      "source": "外观与布局",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Appearance & layout",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.basic",
+      "source": "基础设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Basic settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.bindings",
+      "source": "账号与绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Accounts & connections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.cloud",
+      "source": "云同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Cloud sync",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.download",
+      "source": "下载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Downloads",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.downloads",
+      "source": "下载与存储",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Downloads & storage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.favorites",
+      "source": "收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Favorites",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.geek",
+      "source": "极客模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Browser automation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.harness",
+      "source": "OneTHU Harness",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OneTHU Harness",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.help",
+      "source": "帮助",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Help",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.home",
+      "source": "首页布局",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Home layout",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.homework",
+      "source": "外部作业源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Assignment sources",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.market",
+      "source": "插件市场",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Plugin marketplace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.myPlugins",
+      "source": "我的插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "My plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.notification",
+      "source": "通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Notifications",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.notifications",
+      "source": "通知与提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Notifications",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.oneshot",
+      "source": "OneShot 快捷入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OneShot shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.plugins",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.route.1a7930272017",
+      "source": "入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

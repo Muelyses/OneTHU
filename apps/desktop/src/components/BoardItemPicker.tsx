@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 「具体项」选择器（霖 2026-10-11 定）。
@@ -38,6 +39,8 @@ export function BoardItemPicker({
   onPick: (props: Record<string, unknown>) => void;
   onClose: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [shown, setShown] = useState(open);
   const [leaving, setLeaving] = useState(false);
   const [q, setQ] = useState("");
@@ -64,7 +67,7 @@ export function BoardItemPicker({
     const kw = q.trim().toLowerCase();
     if (!kw) return items;
     return items.filter((it) => (it.label + " " + (it.sub ?? "")).toLowerCase().includes(kw));
-  }, [items, q]);
+  }, [uiLocale, items, q]);
 
   if (!shown) return null;
 
@@ -75,18 +78,18 @@ export function BoardItemPicker({
         <div className="add-drawer-inner">
           <div className="picker-head">
             <span className="picker-title">{title}</span>
-            <Btn variant="outline" onClick={onClose}>关闭</Btn>
+            <Btn variant="outline" onClick={onClose}>{i18n("components.boarditempicker.3fd47edce45b")}</Btn>
           </div>
           <input
             className="picker-search"
             type="search"
             value={q}
-            placeholder={searchHint ?? "搜索…"}
+            placeholder={searchHint ?? i18n("components.boarditempicker.a249f60ce7e8")}
             onChange={(ev) => setQ(ev.target.value)}
           />
           <div className="picker-list">
             {list.length === 0 ? (
-              <div className="wg-card-empty">没有匹配的条目</div>
+              <div className="wg-card-empty">{i18n("components.boarditempicker.4031b1da2311")}</div>
             ) : (
               list.map((it) => (
                 <button

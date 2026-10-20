@@ -7,7 +7,7 @@
  * 真机侧一旦失败，链路靠降级保证不破相（空调色板 → 清华紫），所以这里重点钉"失败时安全"。
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 import { rolesFromPalette, detectInverted, mix, alpha } from "../apps/desktop/src/lib/dynamicRoles.ts";
 import { dynamicPlan, paletteUsable } from "../apps/desktop/src/lib/dynamicPlan.ts";
 

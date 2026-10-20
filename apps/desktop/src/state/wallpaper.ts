@@ -1,3 +1,4 @@
+import { msg as i18nMsg, t as i18n } from "../i18n/index.js";
 /**
  * 壁纸系统（2026-10-14 定案：单一全屏档 + 亮度自适应 + 壁纸库 + 视频动态壁纸）。
  *
@@ -126,7 +127,7 @@ function commit(next: WallpaperDoc): void {
   } catch {
     saved = false; // 存储满：内存态保留到刷新，但必须让用户知道（尤其刚入库的图）
   }
-  if (!saved) showToast("本机存不下这份壁纸，请删几张库里旧的再试");
+  if (!saved) showToast(i18nMsg("state.wallpaper.b1afa0df864c"));
   shellCacheKey = ""; // 壳层快照失效（见下方 memo）
   listeners.forEach((f) => f());
 }
@@ -156,10 +157,10 @@ export function replaceWallpaperDoc(raw: unknown): boolean {
 /* ── 内置渐变壁纸（轻量免图选项；值是 CSS background 简写，按 "builtin:<id>" 引用） ── */
 
 export const BUILTIN_WALLPAPERS: Array<{ id: string; label: string; css: string }> = [
-  { id: "aurora", label: "极光", css: "linear-gradient(135deg, #1a2340 0%, #233a5c 45%, #1c4a4a 100%)" },
-  { id: "dusk", label: "暮色", css: "linear-gradient(160deg, #2b2140 0%, #4a2c4d 55%, #6b3a3f 100%)" },
-  { id: "matcha", label: "抹茶", css: "linear-gradient(150deg, #22332a 0%, #2f4a38 60%, #3d5a45 100%)" },
-  { id: "ink", label: "墨", css: "linear-gradient(180deg, #17181c 0%, #23252b 100%)" },
+  { id: "aurora", get label() { return i18n("state.wallpaper.c1ff4d488144"); }, css: "linear-gradient(135deg, #1a2340 0%, #233a5c 45%, #1c4a4a 100%)" },
+  { id: "dusk", get label() { return i18n("state.wallpaper.b53cdead995f"); }, css: "linear-gradient(160deg, #2b2140 0%, #4a2c4d 55%, #6b3a3f 100%)" },
+  { id: "matcha", get label() { return i18n("state.wallpaper.fa67a660d4b7"); }, css: "linear-gradient(150deg, #22332a 0%, #2f4a38 60%, #3d5a45 100%)" },
+  { id: "ink", get label() { return i18n("state.wallpaper.fe4786177622"); }, css: "linear-gradient(180deg, #17181c 0%, #23252b 100%)" },
 ];
 
 export function builtinCss(ref: string): string | null {
@@ -303,7 +304,7 @@ export function libraryItems(): LibraryEntry[] {
 /** 入库：满员/重复给文案（调用方 toast），成功返回 null */
 export function addToLibrary(ref: string, name: string): string | null {
   if (!isWallpaperRef(ref) || ref.startsWith("builtin:")) return null; // 内置渐变常驻，不入库
-  if (doc.library.length >= LIBRARY_MAX) return `壁纸库满员（${LIBRARY_MAX} 张），删一张再入库`;
+  if (doc.library.length >= LIBRARY_MAX) return i18n("state.wallpaper.8bd1eebd6969", { limit: LIBRARY_MAX });
   if (doc.library.some((it) => it.ref === ref)) return null; // 已在库里，静默当成功
   const item: WallpaperLibItem = {
     id: "lib-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7),
@@ -344,8 +345,8 @@ export interface ImportResult {
 export async function importWallpaperFile(file: File): Promise<ImportResult> {
   if (file.type.startsWith("video/")) {
     const okType = file.type === "video/mp4" || file.type === "video/webm";
-    if (!okType) return Promise.resolve({ ref: null, error: "动态壁纸只认 mp4 / webm" });
-    if (file.size > VIDEO_MAX_BYTES) return Promise.resolve({ ref: null, error: "视频超过 12MB，请先剪短再试" });
+    if (!okType) return Promise.resolve({ ref: null, error: i18n("state.wallpaper.cdc37c08fb5b") });
+    if (file.size > VIDEO_MAX_BYTES) return Promise.resolve({ ref: null, error: i18n("state.wallpaper.17b2bd6e97e6") });
     /* 存档落盘（local:<绝对路径>）：整串 base64 塞 localStorage 必爆 blob 上限，
        渲染端对超大 dataURL 也常拒 —— 用户实测「动态壁纸坏 / 灰一大片」的根因。
        2026-10-15 补刀：invoke 参数曾写成 data_base64（Tauri v2 要 camelCase），
@@ -363,14 +364,14 @@ export async function importWallpaperFile(file: File): Promise<ImportResult> {
         const reader = new FileReader();
         reader.onload = () => {
           const r = typeof reader.result === "string" && reader.result.startsWith("data:video/") ? reader.result : null;
-          resolve(r ? { ref: r, error: null } : { ref: null, error: "这个视频读不出来，换一个试试" });
+          resolve(r ? { ref: r, error: null } : { ref: null, error: i18n("state.wallpaper.b900150b992d") });
         };
-        reader.onerror = () => resolve({ ref: null, error: "这个视频读不出来，换一个试试" });
+        reader.onerror = () => resolve({ ref: null, error: i18n("state.wallpaper.b900150b992d") });
         reader.readAsDataURL(file);
       });
     }
   }
-  if (!file.type.startsWith("image/")) return Promise.resolve({ ref: null, error: "壁纸只认图片或视频" });
+  if (!file.type.startsWith("image/")) return Promise.resolve({ ref: null, error: i18n("state.wallpaper.b7f2922f045c") });
   return new Promise((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -382,7 +383,7 @@ export async function importWallpaperFile(file: File): Promise<ImportResult> {
         canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
         canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
         const ctx = canvas.getContext("2d");
-        if (!ctx) return resolve({ ref: null, error: "这张图处理失败，换一张试试" });
+        if (!ctx) return resolve({ ref: null, error: i18n("state.wallpaper.47afb8f5d184") });
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         /* 图片同样落盘存档（local:）：与视频同根因；写盘失败回落 dataURL */
         const blob = await new Promise<Blob | null>((rb) => canvas.toBlob((b) => rb(b), "image/jpeg", 0.82));
@@ -399,14 +400,14 @@ export async function importWallpaperFile(file: File): Promise<ImportResult> {
         }
         resolve({ ref: canvas.toDataURL("image/jpeg", 0.82), error: null });
       } catch {
-        resolve({ ref: null, error: "这张图处理失败，换一张试试" });
+        resolve({ ref: null, error: i18n("state.wallpaper.47afb8f5d184") });
       } finally {
         URL.revokeObjectURL(url);
       }
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      resolve({ ref: null, error: "这张图处理失败，换一张试试" });
+      resolve({ ref: null, error: i18n("state.wallpaper.47afb8f5d184") });
     };
     img.src = url;
   });

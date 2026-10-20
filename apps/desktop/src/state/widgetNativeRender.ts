@@ -26,6 +26,7 @@
  * 30 分钟兜底自续 tick + 状态翻转点的精准闹钟（WidgetTicker）保证重画真的会发生。
  */
 import type { WidgetRow } from "./widgetSnapshot.js";
+import { widgetText, type WidgetLocaleSnapshot } from "./widgetText.js";
 
 /** 某一时刻的重画结果：一行或被剔除 */
 export interface NativeRowOut {
@@ -46,7 +47,9 @@ export interface NativeCounts {
   hadClass: boolean;
 }
 
-export interface NativeRenderInput {
+export interface NativeRenderInput extends WidgetLocaleSnapshot {
+  title?: string;
+  footer?: string;
   rows: WidgetRow[];
   counts?: NativeCounts;
   /** 快照归属日（epoch ms）；缺省＝不可知，隔天残留守卫退化为按 at 判 */
@@ -73,16 +76,8 @@ function hm(ms: number): string {
 }
 
 /** 「还有 40 分钟」/「还有 3 小时」/「还有 2 天」（与快照构建侧同口径） */
-export function leftText(ms: number): string {
-  const m = Math.max(1, Math.round(ms / 60_000));
-  if (m < 60) return `还有 ${m} 分钟`;
-  if (m < 2880) return `还有 ${Math.round(m / 60)} 小时`;
-  return `还有 ${Math.round(m / 1440)} 天`;
-}
-
-/** DDL 次行的日期段：同一天「今天」，其余「M/d」 */
-function ddlDayLabel(at: number, now: number): string {
-  return dayKey(at) === dayKey(now) ? "今天" : `${new Date(at).getMonth() + 1}/${new Date(at).getDate()}`;
+export function leftText(ms: number, language: WidgetLocaleSnapshot = {}): string {
+  return widgetText(language).left(ms);
 }
 
 /**
@@ -94,7 +89,8 @@ function ddlDayLabel(at: number, now: number): string {
  *  - ddl：at > now 可见（次行「今天/M/d HH:MM · 还有 X」）；at ≤ now 剔除。
  *  - event：与 ddl 同一分支（同理的过点失效型；at 由快照按「定时=开始 / 全天=当天结束」定）。
  */
-export function nativeRow(r: WidgetRow, now: number, titleAt?: number): NativeRowOut {
+export function nativeRow(r: WidgetRow, now: number, titleAt?: number, language: WidgetLocaleSnapshot = {}): NativeRowOut {
+  const words = widgetText(language);
   const at = typeof r.at === "number" && r.at > 0 ? r.at : 0;
   const until = typeof r.until === "number" && r.until > 0 ? r.until : 0;
   const out: NativeRowOut = {
@@ -113,15 +109,15 @@ export function nativeRow(r: WidgetRow, now: number, titleAt?: number): NativeRo
     if (until > 0 && until <= now) return { ...out, visible: false };   // 已下课
     if (until > 0 && at <= now && now < until) {
       // 正在上课：次行重排 + 抢眼
-      return { ...out, visible: true, strong: true, sub: ["正在上课", r.loc ?? ""].filter(Boolean).join(" · ") };
+      return { ...out, visible: true, strong: true, sub: words.join([words.text("ongoing"), r.loc ?? ""]) };
     }
     if (until === 0 && at <= now) return { ...out, visible: false };    // 无结束时间的课，过点当结束
-    return { ...out, visible: true, strong: false, sub: [r.loc ?? "", leftText(at - now)].filter(Boolean).join(" · ") };
+    return { ...out, visible: true, strong: false, sub: words.join([r.loc ?? "", words.left(at - now)]) };
   }
 
   // ddl / event（以及未来可能的其他过点失效型）
   if (at <= now) return { ...out, visible: false };
-  const sub = `${ddlDayLabel(at, now)} ${hm(at)} · ${leftText(at - now)}`;
+  const sub = words.text("relativeRow", { day: dayKey(at) === dayKey(now) ? words.text("today") : words.date(at), time: hm(at), remaining: words.left(at - now) });
   return { ...out, visible: true, strong: at - now <= 6 * 3600_000, sub };
 }
 
@@ -132,9 +128,10 @@ export function nativeRow(r: WidgetRow, now: number, titleAt?: number): NativeRo
  * 与「还有几项」分别数，两者之和为仍有效的条目总数。
  */
 export function nativeRender(input: NativeRenderInput): NativeRenderOut {
+  const words = widgetText(input);
   const now = input.now;
   const c = input.counts;
-  const all = (input.rows ?? []).map((row) => ({ row, out: nativeRow(row, now, input.titleAt) }));
+  const all = (input.rows ?? []).map((row) => ({ row, out: nativeRow(row, now, input.titleAt, input) }));
   const visible = all.filter((x) => x.out.visible);
   const cap = typeof input.maxRows === "number" ? Math.max(1, input.maxRows) : visible.length;
   const shown = visible.slice(0, cap);
@@ -151,19 +148,20 @@ export function nativeRender(input: NativeRenderInput): NativeRenderOut {
   for (const x of visible) if (x.row.rel === "class" || x.row.rel === "ddl" || x.row.rel === "event") visibleRel++;
 
   const parts: string[] = [];
-  if (shownClasses) parts.push(`${shownClasses} 节课`);
-  if (shownDdls) parts.push(`${shownDdls} 个截止`);
-  if (shownEvents) parts.push(`${shownEvents} 项日程`);
+  if (shownClasses) parts.push(words.count("classes", shownClasses));
+  if (shownDdls) parts.push(words.count("ddls", shownDdls));
+  if (shownEvents) parts.push(words.count("events", shownEvents));
   let footer: string;
   if (parts.length === 0) {
     footer = c?.hadClass && (!input.titleAt || dayKey(input.titleAt) === dayKey(now))
-      ? "今天的课已上完"
-      : "今天没有课与截止";
+      ? words.text("completed")
+      : words.text("empty");
   } else {
     // 还有 N 项 = 仍有效但没显示在卡片上的（可见行 − 已显示行） + 快照都没装下的
     const hidden = visibleRel - (shownClasses + shownDdls + shownEvents) + (c?.more ?? 0);
-    footer = `${parts.join(" · ")}${hidden > 0 ? ` · 还有 ${hidden} 项` : ""}`;
+    footer = words.join([...parts, hidden > 0 ? words.count("more", hidden) : ""]);
   }
-  const title = `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`;
+  const title = !c && input.title !== undefined ? input.title : words.title(now);
+  if (!c && input.footer !== undefined) footer = input.footer;
   return { rows: shown.map((x) => x.out), footer, title };
 }

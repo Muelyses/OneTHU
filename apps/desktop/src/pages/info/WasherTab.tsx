@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Input } from "@onethu/gui";
 /**
  * 洗衣机页 —— 楼栋分组 → 楼层设备状态。
@@ -31,13 +32,13 @@ type DeviceState = "idle" | "loading" | "error" | "ready";
 /** 设备视觉（状态点 + 徽标 + 文案）：空闲绿 / 运行中琥珀 / 待机离线灰 / 故障红。
  *  待机与离线不能都算「故障」——前者随时可用、后者是网络掉线，含义完全不同。 */
 function deviceVisual(w: WasherDevice): { dot: string; chip: string; text: string } {
-  if (w.status === "idle") return { dot: "is-idle", chip: "chip chip-green", text: "空闲" };
+  if (w.status === "idle") return { dot: "is-idle", chip: "chip chip-green", text: i18n("pages.info.washertab.dae661d17c2d") };
   if (w.status === "working")
-    return { dot: "is-working", chip: "chip chip-amber", text: w.eta > 0 ? `剩余 ${w.eta} 分` : "运行中" };
-  if (w.status === "standby") return { dot: "is-idle", chip: "chip chip-gray", text: "待机" };
-  if (w.status === "offline") return { dot: "is-error", chip: "chip chip-gray", text: "离线" };
-  if (w.status === "unknown") return { dot: "is-error", chip: "chip chip-gray", text: "状态未知" };
-  return { dot: "is-error", chip: "chip chip-red", text: "故障" };
+    return { dot: "is-working", chip: "chip chip-amber", text: w.eta > 0 ? i18n("pages.info.washertab.4d5ffe182d08", { eta: String(w.eta) }) : i18n("pages.info.washertab.1f0eb99b7ed0") };
+  if (w.status === "standby") return { dot: "is-idle", chip: "chip chip-gray", text: i18n("pages.info.washertab.bed4c87f1838") };
+  if (w.status === "offline") return { dot: "is-error", chip: "chip chip-gray", text: i18n("pages.info.washertab.be1b4f3c6c1c") };
+  if (w.status === "unknown") return { dot: "is-error", chip: "chip chip-gray", text: i18n("pages.info.washertab.93e474c68ed5") };
+  return { dot: "is-error", chip: "chip chip-red", text: i18n("pages.info.washertab.5a0cc6c04776") };
 }
 
 export function WasherTab({
@@ -54,6 +55,8 @@ export function WasherTab({
   /** 要高亮滚动的设备名 */
   deepMachine?: string;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   const [groups, setGroups] = useState<WasherBuildingGroup[] | null>(null);
@@ -158,8 +161,8 @@ export function WasherTab({
   return (
     <>
       <SectionHead
-        title="洗衣机"
-        aside="数据来自三家：捷利 · 海乐生活 · 小兰智慧"
+        title={i18n("pages.info.washertab.6acfa1db6a62")}
+        aside={i18n("pages.info.washertab.eb6e062fe2c4")}
       />
       {gState === "error" ? <ErrorNote text={gError ?? ""} onRetry={() => void loadGroups()} /> : null}
       {gState === "loading" && !groups ? (
@@ -192,17 +195,17 @@ export function WasherTab({
                 className="input filter-dd-btn"
                 onClick={() => setDdOpen((o) => !o)}
               >
-                <span>{sel ? sel.name : "选择楼栋…"}</span>
+                <span>{sel ? sel.name : i18n("pages.info.washertab.20f1ae81c877")}</span>
                 <span style={{ opacity: 0.55 }}>▾</span>
               </button>
               {ddOpen ? (
                 <>
                   <div className="seg-menu-backdrop" onClick={() => setDdOpen(false)} />
                   <div className="filter-dd-panel">
-                    <Input placeholder="搜索楼栋…" value={query} onChange={(value) => setQuery(value)} />
+                    <Input placeholder={i18n("pages.info.washertab.a537eecd2300")} value={query} onChange={(value) => setQuery(value)} />
                     <div className="washer-dd-list">
                       {matched.length === 0 ? (
-                        <div className="washer-dd-empty">无匹配楼栋</div>
+                        <div className="washer-dd-empty">{i18n("pages.info.washertab.883871884efe")}</div>
                       ) : (
                         matched.map((g) => (
                           <div key={g.name}>
@@ -247,35 +250,37 @@ export function WasherTab({
           {dState === "error" ? <ErrorNote text={dError ?? ""} onRetry={() => void loadDevices(sel)} /> : null}
           {dState === "ready" && (floors ?? []).length === 0 ? (
             <Card>
-              <Empty text="该楼栋暂无设备数据。" />
+              <Empty text={i18n("pages.info.washertab.d98a7674edd7")} />
             </Card>
           ) : null}
           {(floors ?? []).map((f) => {
             const free = f.washers.filter((x) => x.status === "idle").length;
             return (
               <div key={f.floor}>
-                <SectionHead title={f.floor} aside={`${f.washers.length} 台设备 · 空闲 ${free} 台`} />
+                <SectionHead title={f.floor} aside={i18n("pages.info.washertab.f2ac9226cb38", { length: String(f.washers.length), free: String(free) })} />
                 <div className="washer-grid">
                   {f.washers.map((w, i) => {
                     const v = deviceVisual(w);
-                    const title = w.name || w.location || w.type || "设备";
+                    // Persisted AtomRef/deep-link identities must survive locale changes.
+                    const deviceKey = w.name || w.location || w.type || "设备";
+                    const title = w.name || w.location || w.type || i18n("pages.info.washertab.e1506406a5bd");
                     const sub = [
                       w.location && w.location !== title ? w.location : "",
                       w.type,
-                      w.updateTime ? `更新 ${w.updateTime}` : "",
+                      w.updateTime ? i18n("pages.info.washertab.14f31582e7ec", { updateTime: String(w.updateTime) }) : "",
                     ]
                       .filter(Boolean)
                       .join(" · ");
                     return (
                       <Card className={`washer-card ${v.dot}`} key={`${w.name}-${i}`}>
                         <span className="washer-dot" aria-hidden />
-                        <div className="washer-main" data-dev={title}>
+                        <div className="washer-main" data-dev={deviceKey}>
                           <div className="washer-name">{title}</div>
                           {sub ? <div className="washer-sub">{sub}</div> : null}
                         </div>
                         <span className={v.chip}>{v.text}</span>
                         <CollectStar
-                          atom={{ kind: "washer-m", key: enc(sel.id, sel.name, washerProviderCode(sel.provider), title) }}
+                          atom={{ kind: "washer-m", key: enc(sel.id, sel.name, washerProviderCode(sel.provider), deviceKey) }}
                           title={sel.name + " · " + title}
                         />
                       </Card>

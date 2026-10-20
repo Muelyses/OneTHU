@@ -1,0 +1,1384 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.voicesettingssection.8fb65b97b8dc",
+      "source": "音高",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 74,
+          "context": "return i18n(\"components.voicesettingssection.8fb65b97b8dc\");"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 234,
+          "context": "{i18n(\"components.voicesettingssection.8fb65b97b8dc\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 243,
+          "context": "{i18n(\"components.voicesettingssection.8fb65b97b8dc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.9138d2ecd64e",
+      "source": "引擎默认音色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 190,
+          "context": "{i18n(\"components.voicesettingssection.9138d2ecd64e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.95ac0ce3b08b",
+      "source": "复位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 227,
+          "context": "{i18n(\"components.voicesettingssection.95ac0ce3b08b\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 261,
+          "context": "{i18n(\"components.voicesettingssection.95ac0ce3b08b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.993d7857beb9",
+      "source": "引擎正在初始化…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 50,
+          "context": "title: i18n(\"components.voicesettingssection.993d7857beb9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.99f2b52319a6",
+      "source": "当前平台不支持语音合成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 46,
+          "context": "title: i18n(\"components.voicesettingssection.99f2b52319a6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.a1849a34d66f",
+      "source": "0.5×（慢一半）到 2.0×（快一倍），松手即生效。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 201,
+          "context": "{i18n(\"components.voicesettingssection.a1849a34d66f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.a26073d57821",
+      "source": "系统引擎报出的可选嗓音",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 72,
+          "context": "return i18n(\"components.voicesettingssection.a26073d57821\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.a930fa97ad36",
+      "source": "朗读出错（{reason}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "reason",
+          "expression": "String(reason)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 125,
+          "context": "setMsg(i18n(\"components.voicesettingssection.a930fa97ad36\", { reason: String(reason) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.bd3bac24c982",
+      "source": "本机系统引擎可用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 54,
+          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.bd3bac24c982\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.bd80a69f212e",
+      "source": "朗读快慢",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 73,
+          "context": "return i18n(\"components.voicesettingssection.bd80a69f212e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.c25fb86b1e96",
+      "source": "重新检查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 177,
+          "context": "busy ? i18n(\"components.voicesettingssection.fb11aa6f2982\") : i18n(\"components.voicesettingssection.c25fb86b1e96\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.c4b08459fe2e",
+      "source": "已恢复默认（静音 · 原声原速 · 引擎默认音色）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 278,
+          "context": "setMsg(i18n(\"components.voicesettingssection.c4b08459fe2e\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.c6d7dc8d5c1d",
+      "source": "1.00 是原声；调低更沉稳，调高更清亮。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 235,
+          "context": "{i18n(\"components.voicesettingssection.c6d7dc8d5c1d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.ca4d973c0b00",
+      "source": "停止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 273,
+          "context": "speaking ? i18n(\"components.voicesettingssection.ca4d973c0b00\") : i18n(\"components.voicesettingssection.7f0a0fda741c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.cbe095bfb926",
+      "source": "　试听不看「自动朗读」开关，随时可以点。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.cbe095bfb926\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.cd97a36868f3",
+      "source": "语速",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 73,
+          "context": "return i18n(\"components.voicesettingssection.cd97a36868f3\");"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.voicesettingssection.cd97a36868f3\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 209,
+          "context": "{i18n(\"components.voicesettingssection.cd97a36868f3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.dd73594225ff",
+      "source": "正在读取引擎状态…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 41,
+          "context": "title: i18n(\"components.voicesettingssection.dd73594225ff\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.e54687f4ae5c",
+      "source": "语音合成走 Android 系统自带的文字转语音引擎（华为/荣耀小艺、小爱、Google TTS 等），桌面端没有这条通道。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 47,
+          "context": "desc: i18n(\"components.voicesettingssection.e54687f4ae5c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.f4b29bf393be",
+      "source": "引擎未就绪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 156,
+          "context": "lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.f4feaf735d87",
+      "source": "朗读高低",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 74,
+          "context": "return i18n(\"components.voicesettingssection.f4feaf735d87\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.fb11aa6f2982",
+      "source": "检查中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 177,
+          "context": "busy ? i18n(\"components.voicesettingssection.fb11aa6f2982\") : i18n(\"components.voicesettingssection.c25fb86b1e96\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.0b38085b73e4",
+      "source": "已恢复为「日程与 DDL」",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 214,
+          "context": "done(i18n(\"components.widgetbindmodal.0b38085b73e4\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.0d59f4339593",
+      "source": "夹里的收藏项会以图标并列显示在这块小组件上（放不下的自动略过）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 228,
+          "context": "{i18n(\"components.widgetbindmodal.0d59f4339593\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.14b34146dee0",
+      "source": "{length} 个收藏项（放不下的自动略过）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "f.items.filter((it) => it.t === \"a\").length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 235,
+          "context": "{i18nRich(\"components.widgetbindmodal.14b34146dee0\", { length: f.items.filter((it) => it.t === \"a\").length })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.17a0e39c6089",
+      "source": "日程与 DDL",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 69,
+          "context": "return i18n(\"components.widgetbindmodal.17a0e39c6089\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.1d0050cf33ef",
+      "source": "当前显示：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "bindingSummary(cur, favs.data)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 183,
+          "context": "{i18nRich(\"components.widgetbindmodal.1d0050cf33ef\", { value: bindingSummary(cur, favs.data) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.203497c15f75",
+      "source": "读取桌面上的小组件失败：应用刚更新时请先完全退出再打开一次。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 147,
+          "context": "{i18n(\"components.widgetbindmodal.203497c15f75\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.28cea6fbdb23",
+      "source": "收藏夹图标组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.widgetbindmodal.28cea6fbdb23\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.2a5e99245dd8",
+      "source": "正在读取桌面上的小组件…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 149,
+          "context": "{i18n(\"components.widgetbindmodal.2a5e99245dd8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.378759fdd1e8",
+      "source": "点它",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 161,
+          "context": "{i18n(\"components.widgetbindmodal.378759fdd1e8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 142,
+          "context": "{i18n(\"components.widgetbindmodal.3fd47edce45b\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 180,
+          "context": "{i18n(\"components.widgetbindmodal.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.40db44fd1071",
+      "source": "已绑定：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(bindingSummary(binding, favs.data))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 125,
+          "context": "done(i18n(\"components.widgetbindmodal.40db44fd1071\", { value: String(bindingSummary(binding, favs.data)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.4b0011fadb3e",
+      "source": "课程、作业、洗衣机…显示它的详情，拉得越高行数越多",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 70,
+          "context": "return i18n(\"components.widgetbindmodal.4b0011fadb3e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.567db422036f",
+      "source": "一个收藏项占满",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 70,
+          "context": "return i18n(\"components.widgetbindmodal.567db422036f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.572cf45ba436",
+      "source": "返回",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 225,
+          "context": "{i18n(\"components.widgetbindmodal.572cf45ba436\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.57ba46d6a1b3",
+      "source": "桌面上还没有 OneTHU 小组件。长按桌面 → 小组件 → 选「OneTHU」，放好一块再回来。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 151,
+          "context": "{i18n(\"components.widgetbindmodal.57ba46d6a1b3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.5aaf3005e398",
+      "source": "这块小组件显示什么？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 179,
+          "context": "{i18n(\"components.widgetbindmodal.5aaf3005e398\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.5ae60d0c946d",
+      "source": "当前：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: \"today\" }, favs.data)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 159,
+          "context": "{i18nRich(\"components.widgetbindmodal.5ae60d0c946d\", { value: bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: \"today\" }, favs.data) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.5d4640f1dbd2",
+      "source": "把某个收藏夹嵌到桌面：若干收藏项图标并列，各自可点",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.widgetbindmodal.5d4640f1dbd2\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.6ab335864461",
+      "source": "快捷方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 72,
+          "context": "return i18n(\"components.widgetbindmodal.6ab335864461\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.6ae61cd0b12a",
+      "source": "还没有收藏夹：先在收藏夹页建一个再放上桌面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 196,
+          "context": "showToast(i18nMsg(\"components.widgetbindmodal.6ae61cd0b12a\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.73795817b5de",
+      "source": "（已失效）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 56,
+          "context": "resolveAtom(binding.atom)?.title ?? i18n(\"components.widgetbindmodal.73795817b5de\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.widgetbindmodal.76d1caab2105",
+      "source": "恢复默认（日程与 DDL）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 215,
+          "context": "{i18n(\"components.widgetbindmodal.76d1caab2105\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.7aba37c0e712",
+      "source": "图标 + 名称，放成 1×1 就像桌面快捷方式。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 249,
+          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.7aba37c0e712\") : i18n(\"components.widgetbindmodal.bf955b4b0454\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.7edf6b8c5da0",
+      "source": "应用不能替你往桌面添加小组件，只能给已经存在的那些换内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 145,
+          "context": "{i18n(\"components.widgetbindmodal.7edf6b8c5da0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.86a6223fda86",
+      "source": "{value} 个",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "atomsIn(f)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 237,
+          "context": "{i18nRich(\"components.widgetbindmodal.86a6223fda86\", { value: atomsIn(f) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.96b17d4fdea5",
+      "source": "选一个收藏项做快捷方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 248,
+          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.96b17d4fdea5\") : i18n(\"components.widgetbindmodal.e177d59e40d1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.aa715722613a",
+      "source": "放到哪一块小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 139,
+          "context": "{i18n(\"components.widgetbindmodal.aa715722613a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.accde02d15d4",
+      "source": "放到哪一块小组件？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 141,
+          "context": "{i18n(\"components.widgetbindmodal.accde02d15d4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.bf955b4b0454",
+      "source": "这块小组件会被它占满：拉得越高，显示的细节越多。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 249,
+          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.7aba37c0e712\") : i18n(\"components.widgetbindmodal.bf955b4b0454\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.c8c9de54712b",
+      "source": "今天的课、考试与作业截止（最常用的一块）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 69,
+          "context": "return i18n(\"components.widgetbindmodal.c8c9de54712b\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.cb2c998643fd",
+      "source": "选一个收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 222,
+          "context": "{i18n(\"components.widgetbindmodal.cb2c998643fd\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 224,
+          "context": "{i18n(\"components.widgetbindmodal.cb2c998643fd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.e177d59e40d1",
+      "source": "选一个收藏项显示详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 248,
+          "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.96b17d4fdea5\") : i18n(\"components.widgetbindmodal.e177d59e40d1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.e8748ab06b1a",
+      "source": "一个功能页或收藏项的图标快捷方式（1×1 起）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 72,
+          "context": "return i18n(\"components.widgetbindmodal.e8748ab06b1a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.ea9677c3d21f",
+      "source": "要显示：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "bindingSummary(binding, favs.data)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 145,
+          "context": "{i18nRich(\"components.widgetbindmodal.ea9677c3d21f\", { value: bindingSummary(binding, favs.data) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.fce3bfe1b135",
+      "source": "这块小组件显示什么",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 177,
+          "context": "{i18n(\"components.widgetbindmodal.fce3bfe1b135\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.ff6541441f00",
+      "source": "桌面上可以同时放多块，各显示各的（点卡片即可换）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 183,
+          "context": "{i18n(\"components.widgetbindmodal.ff6541441f00\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.15539ef189fb",
+      "source": "它依赖的功能可能已改名或被移除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 48,
+          "context": "{i18n(\"components.widgethost.15539ef189fb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.32f8c1be3eb7",
+      "source": "该组件已不可用，请从白板移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 47,
+          "context": "{i18n(\"components.widgethost.32f8c1be3eb7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.7d77a938e62b",
+      "source": "暂无内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 92,
+          "context": "{i18n(\"components.widgethost.7d77a938e62b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.857e5e59690b",
+      "source": "这条入口已失效，请从白板移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 70,
+          "context": "{i18n(\"components.widgethost.857e5e59690b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.b77883b96b72",
+      "source": "内容由原页面提供",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 98,
+          "context": "{i18n(\"components.widgethost.b77883b96b72\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.021377fb5c78",
+      "source": "尚未添加小组件：桌面长按 → 小组件 → OneTHU，添加后可选择显示内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 103,
+          "context": "instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.130123e01753",
+      "source": "立即刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.widgetsettingssection.130123e01753\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.15eb664681a3",
+      "source": "{length} 种：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(status.providersRegistered.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(status.providersRegistered.map(plainShapeName).join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 136,
+          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.174b9ff2e902",
+      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 135,
+          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.17a0e39c6089",
+      "source": "日程与 DDL",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 195,
+          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.23a5d87729b6",
+      "source": "刷新失败，详情见运行日志",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 78,
+          "context": "okNow ? i18n(\"components.widgetsettingssection.6a46a714e7c0\") : i18n(\"components.widgetsettingssection.23a5d87729b6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.23c3567bc418",
+      "source": "选择每个槽位显示哪块插件小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 38,
+          "context": "return i18n(\"components.widgetsettingssection.23c3567bc418\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.28b0433b1b95",
+      "source": "桌面小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 36,
+          "context": "return i18n(\"components.widgetsettingssection.28b0433b1b95\");"
+        },
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 85,
+          "context": "{i18n(\"components.widgetsettingssection.28b0433b1b95\")}"
+        }
+      ],
+      "translation": "Desktop widgets",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.2a85a7e5a3ad",
+      "source": "刚放上桌面、还没选的块用它兜底：{value}。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "bindingSummary(map.fallback, favs.data)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 177,
+          "context": "{i18nRich(\"components.widgetsettingssection.2a85a7e5a3ad\", { value: bindingSummary(map.fallback, favs.data) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.35588dcb9be3",
+      "source": "重新载入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 124,
+          "context": "{i18n(\"components.widgetsettingssection.35588dcb9be3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.502498767131",
+      "source": "　尚未选择内容（桌面显示「点一下选择」）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 157,
+          "context": "{i18n(\"components.widgetsettingssection.502498767131\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.5321a21a1d1c",
+      "source": "当前启动器不支持一键添加，请长按桌面 → 小组件 → OneTHU",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 119,
+          "context": "showToast(i18nMsg(\"components.widgetsettingssection.5321a21a1d1c\"), 6000)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.651c36e836dd",
+      "source": "桌面小组件由 Android 版提供：日程与 DDL、某个收藏项的详情、收藏夹图标组、1×1 快捷方式； 当前平台不支持。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 86,
+          "context": "{i18n(\"components.widgetsettingssection.651c36e836dd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.6a46a714e7c0",
+      "source": "桌面小组件已刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 78,
+          "context": "okNow ? i18n(\"components.widgetsettingssection.6a46a714e7c0\") : i18n(\"components.widgetsettingssection.23a5d87729b6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.770e44c4c483",
+      "source": "默认内容用哪个收藏项做快捷方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 205,
+          "context": "{i18n(\"components.widgetsettingssection.770e44c4c483\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.796fd26679bc",
+      "source": "添加到桌面的 OneTHU 小组件与内容设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 36,
+          "context": "return i18n(\"components.widgetsettingssection.796fd26679bc\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.83b518207df9",
+      "source": "系统判定：{rom}（依据 {romSignals}）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "rom",
+          "expression": "status.rom"
+        },
+        {
+          "name": "romSignals",
+          "expression": "status.romSignals"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 141,
+          "context": "{i18nRich(\"components.widgetsettingssection.83b518207df9\", { rom: status.rom, romSignals: status.romSignals })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.86b6d0d63062",
+      "source": "正在读取…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 101,
+          "context": "instances === null\n                ? i18n(\"components.widgetsettingssection.86b6d0d63062\")\n                : instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

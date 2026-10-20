@@ -1,3 +1,5 @@
+import { labelForId } from "../i18n/staticLabels.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 「选一个收藏项」的选择层：**先给收藏夹里的收藏项，再给搜索**。
@@ -36,6 +38,8 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
   onPick: (atom: AtomRef) => void;
   onClose: () => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const favs = useFavs();
   const [q, setQ] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +69,7 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
       }
     }
     return out;
-  }, [favs.data]);
+  }, [uiLocale, favs.data]);
 
   const results = useMemo<Hit[]>(() => {
     const needle = q.trim().toLowerCase();
@@ -75,9 +79,9 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
     const extra: Hit[] = searchAtoms(q)
       .filter((h) => !seen.has(`${h.kind}:${h.key}`))
       .slice(0, 30)
-      .map((h) => ({ ref: { kind: h.kind, key: h.key }, title: h.title, sub: h.sub, from: h.group, fav: false, icon: h.icon }));
+      .map((h) => ({ ref: { kind: h.kind, key: h.key }, title: h.title, sub: h.sub, from: labelForId(h.group), fav: false, icon: h.icon }));
     return [...inFav, ...extra];
-  }, [q, favHits]);
+  }, [uiLocale, q, favHits]);
 
   const [closing, requestClose] = useExitPhase(onClose);
 
@@ -86,7 +90,7 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
       <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>{title}</h3>
-          <Btn variant="ghost" onClick={requestClose}>关闭</Btn>
+          <Btn variant="ghost" onClick={requestClose}>{i18n("components.favatompicker.3fd47edce45b")}</Btn>
         </div>
         <div className="home-modal-body">
           <div className="collect-search">
@@ -94,23 +98,20 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
             <input
               ref={inputRef}
               className="input"
-              placeholder={q.trim() ? "继续输入以缩小范围…" : `在 ${favHits.length} 个收藏收藏项里查找，或搜索其它收藏项`}
+              placeholder={q.trim() ? i18n("components.favatompicker.bf61819dfd14") : i18n("components.favatompicker.92d8c06afc63", { length: String(favHits.length) })}
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
           </div>
           {q.trim() === "" ? (
-            <div className="home-modal-hint">
-              {hint ? <>{hint}<br /></> : null}
-              收藏夹里的收藏项全部列在下面（不需要先打开对应页面）；想找没收藏过的，输入关键词搜。
-            </div>
+            <div className="home-modal-hint">{i18nRich("components.favatompicker.d535b6d96f8e", { value: hint ? <>{hint}<br /></> : null })}</div>
           ) : null}
 
           {results.length === 0 ? (
             <div className="home-modal-hint">
               {q.trim()
-                ? "没找到。先去收藏夹页打开一次对应页面再试。"
-                : "收藏夹还是空的：先去收藏夹页收几个收藏项，或直接输入关键词搜索。"}
+                ? i18n("components.favatompicker.85a9b873ace1")
+                : i18n("components.favatompicker.d5f2b81a7e6d")}
             </div>
           ) : (
             <div className="wb-list">

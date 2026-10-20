@@ -11,7 +11,8 @@
  *
  * 跑法：node --import ./tools/ts-resolve-register.mjs tools/board-edit-test.mjs ｜ 0 通过 / 1 违规
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 
 const fails = [];
 const ok = (c, m) => { if (!c) fails.push(m); };

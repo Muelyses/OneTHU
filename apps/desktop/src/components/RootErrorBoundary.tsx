@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 根级渲染错误边界（R24）。
@@ -45,10 +46,8 @@ export class RootErrorBoundary extends Component<Props, State> {
     if (this.state.err === null) return this.props.children;
     return (
       <div style={{ padding: 24, fontFamily: "inherit", color: "var(--text-1, #1b1f24)" }}>
-        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>本页出现问题，已停留在当前页面，可刷新页面重试</div>
-        <div style={{ fontSize: 13, color: "var(--text-3, #9aa1ac)", lineHeight: 1.8, marginBottom: 12 }}>
-          应用其余数据与已保存的设置不受影响。可以先「重试」回到出错前的页面；仍不行就「重新加载」。
-        </div>
+        <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{i18n("components.rooterrorboundary.94fb0a9e7128")}</div>
+        <div style={{ fontSize: 13, color: "var(--text-3, #9aa1ac)", lineHeight: 1.8, marginBottom: 12 }}>{i18n("components.rooterrorboundary.c77c64cd556b")}</div>
         <div
           style={{
             fontSize: 11.5,
@@ -65,12 +64,9 @@ export class RootErrorBoundary extends Component<Props, State> {
           {this.state.err.slice(0, 300)}
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <Btn variant="solid" tone="brand" onClick={() => this.setState({ err: null, stack: "" })}>重试
-          </Btn>
-          <Btn variant="outline" onClick={() => window.location.reload()}>重新加载
-          </Btn>
-          <Btn variant="ghost" onClick={() => void navigator.clipboard?.writeText(`${this.state.err}\n${this.state.stack}`).catch(() => undefined)}>复制错误信息
-          </Btn>
+          <Btn variant="solid" tone="brand" onClick={() => this.setState({ err: null, stack: "" })}>{i18n("components.rooterrorboundary.b8784c8dd563")}</Btn>
+          <Btn variant="outline" onClick={() => window.location.reload()}>{i18n("components.rooterrorboundary.7bdd5ce1e298")}</Btn>
+          <Btn variant="ghost" onClick={() => void navigator.clipboard?.writeText(`${this.state.err}\n${this.state.stack}`).catch(() => undefined)}>{i18n("components.rooterrorboundary.786e47d1be6b")}</Btn>
         </div>
       </div>
     );

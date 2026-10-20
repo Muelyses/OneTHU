@@ -167,7 +167,7 @@ function legacyCssLines() {
 const APPEARANCE_PROPS = /(color|background|border|boxShadow|font|padding|margin|borderRadius|opacity|transform)\s*:/;
 
 function appCounts() {
-  const files = walk(APP, [".tsx", ".ts"]);
+  const files = walk(APP, [".tsx", ".ts"]).filter(f => !f.startsWith(join(APP, "i18n/locales") + "/"));
   const inline = {};
   const colors = {};
   const rawControls = {};
@@ -257,7 +257,12 @@ function checkGallery() {
     return;
   }
   const gallery = readFileSync(GALLERY, "utf8");
-  const API_NAMES = new Set(["OneGUIProvider", "Scope", "StyleDirector", "SCOPE_TOKENS", "OneStyle", "DataRow"]);
+  // Providers and static message catalogs expose no visual component to showcase.
+  // Keep this explicit: an uppercase component constant must still be registered.
+  const API_NAMES = new Set([
+    "OneGUIProvider", "Scope", "StyleDirector", "SCOPE_TOKENS", "OneStyle", "DataRow",
+    "OneGUILocaleProvider", "ONE_GUI_ZH_CN", "ONE_GUI_EN_US", "ONE_GUI_MESSAGE_KEYS",
+  ]);
   const missing = [...exported].filter((name) =>
     !API_NAMES.has(name) && !/^Icon/.test(name) && !new RegExp(`\\b${name}\\b`).test(gallery));
   const iconUsed = /\bIcon[A-Z]/.test(gallery);

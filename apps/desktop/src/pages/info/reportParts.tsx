@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 成绩的统计块与明细行（霖 2026-10-11，元素级拆分 B5）。
  *
@@ -14,7 +15,7 @@ import { weightedAverage } from "../../lib/grades.js";
 /** 学期串 → 学年（"2024-2025秋" → "2024-2025"） */
 export function academicYear(semester: string): string {
   const m = /^(\d{4})-(\d{4})/.exec(semester);
-  return m ? m[1] + "-" + m[2] : semester || "未知学年";
+  return m ? m[1] + "-" + m[2] : semester || i18n("pages.info.reportparts.3740209363f9");
 }
 
 export interface ReportStats {
@@ -28,18 +29,19 @@ export interface ReportStats {
 }
 
 export function useReportStats(): ReportStats {
+  const uiLocale = useUiLocale();
   const { data, state } = useReport();
   const groups = useMemo(() => {
     if (!data) return [];
     const bySemester = new Map<string, ReportRow[]>();
     for (const row of data) {
-      const key = row.semester || "未知学期";
+      const key = row.semester || i18n("pages.info.reportparts.c58ec2570388");
       const list = bySemester.get(key);
       if (list) list.push(row);
       else bySemester.set(key, [row]);
     }
     return [...bySemester.entries()].sort((a, b) => b[0].localeCompare(a[0]));
-  }, [data]);
+  }, [data, uiLocale]);
   const overall = useMemo(() => (data ? weightedAverage(data) : null), [data]);
   const totalCredits = useMemo(
     () => (data ?? []).filter((r) => Number.isFinite(r.credit)).reduce((sum, r) => sum + r.credit, 0),
@@ -73,6 +75,8 @@ export function StatTile({
   /** 2×2 档最下面一行进度（如「已修 12/40」）。 */
   sub?: string | null;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <Card className="stat-card stat-tiered">
       <span className={"stat-icon" + (tone ? " " + tone : "")}>{icon}</span>
@@ -86,20 +90,24 @@ export function StatTile({
 
 /** 已修课程（门数）。2×2 补一行学分小计。 */
 export function ReportStatDone(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const s = useReportStats();
   const n = s.rows?.length ?? 0;
   return (
     <StatTile
       icon={<IconPen width={17} height={17} />}
       num={s.loading ? "–" : n}
-      label="已修课程"
-      cap={s.loading || !n ? null : "共 " + s.totalCredits.toFixed(1) + " 学分"}
+      label={i18n("pages.info.reportparts.dc6c9f070ee1")}
+      cap={s.loading || !n ? null : i18n("pages.info.reportparts.2428420e407f") + s.totalCredits.toFixed(1) + i18n("pages.info.reportparts.b023876f7825")}
     />
   );
 }
 
 /** 总学分。2×2 补一行最近学期的学分。 */
 export function ReportStatCredit(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const s = useReportStats();
   const latestSem = s.groups[0]?.[0] ?? null;
   const latestCredit = s.groups[0]?.[1]?.reduce((sum, r) => sum + (Number.isFinite(r.credit) ? r.credit : 0), 0) ?? 0;
@@ -108,7 +116,7 @@ export function ReportStatCredit(): ReactNode {
       tone="green"
       icon={<IconRefresh width={17} height={17} />}
       num={s.totalCredits ? s.totalCredits.toFixed(1) : "–"}
-      label="总学分"
+      label={i18n("pages.info.reportparts.e842a5dff916")}
       cap={latestSem ? latestSem + " " + latestCredit.toFixed(1) : null}
     />
   );
@@ -116,34 +124,40 @@ export function ReportStatCredit(): ReactNode {
 
 /** 全部学年加权。2×2 补一行参与统计的学期数。 */
 export function ReportStatOverall(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const s = useReportStats();
   return (
     <StatTile
       tone="amber"
       icon={<IconPen width={17} height={17} />}
       num={s.overall === null ? "–" : s.overall.toFixed(3)}
-      label="全部学年加权"
-      cap={s.groups.length ? "共 " + s.groups.length + " 个学期" : null}
+      label={i18n("pages.info.reportparts.499dfff8b69c")}
+      cap={s.groups.length ? i18n("pages.info.reportparts.2428420e407f") + s.groups.length + i18n("pages.info.reportparts.3e3b777bd013") : null}
     />
   );
 }
 
 /** 最新学期加权。2×2 补一行学期名（2×1 的名称已含学期，这里只在 2×2 出现，避免重复）。 */
 export function ReportStatLatest(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const s = useReportStats();
   const sem = s.groups[0]?.[0] ?? null;
   return (
     <StatTile
       icon={<IconRefresh width={17} height={17} />}
       num={s.latestAvg === null ? "–" : s.latestAvg.toFixed(3)}
-      label="最新学期加权"
-      cap={sem ? sem + " · " + (s.groups[0]?.[1]?.length ?? 0) + " 门" : null}
+      label={i18n("pages.info.reportparts.671b407e8328")}
+      cap={sem ? sem + " · " + (s.groups[0]?.[1]?.length ?? 0) + i18n("pages.info.reportparts.c0f31a102088") : null}
     />
   );
 }
 
 /** 成绩明细：按学期分组，只取前 limit 行（卡片里不做内部滚动）。 */
 export function ReportScoreRows({ limit = 8 }: { limit?: number }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const s = useReportStats();
   const rows: ReactNode[] = [];
   let used = 0;
@@ -152,7 +166,7 @@ export function ReportScoreRows({ limit = 8 }: { limit?: number }): ReactNode {
     rows.push(
       <div className="wg-card-subhead" key={semester}>
         <span>{semester}</span>
-        <span className="wg-card-subhead-side">加权 {list.length ? (weightedAverage(list)?.toFixed(3) ?? "–") : "–"} · {list.length} 门</span>
+        <span className="wg-card-subhead-side">{i18nRich("pages.info.reportparts.55178619ea6a", { value: list.length ? (weightedAverage(list)?.toFixed(3) ?? "–") : "–", length: list.length })}</span>
       </div>,
     );
     for (const r of list) {
@@ -166,6 +180,6 @@ export function ReportScoreRows({ limit = 8 }: { limit?: number }): ReactNode {
       );
     }
   }
-  if (!rows.length) return <div className="wg-card-empty">{s.loading ? "读取中…" : "暂无成绩"}</div>;
+  if (!rows.length) return <div className="wg-card-empty">{s.loading ? i18n("pages.info.reportparts.346ff60e6c7c") : i18n("pages.info.reportparts.224302fb8431")}</div>;
   return <div className="wg-card-rows">{rows}</div>;
 }

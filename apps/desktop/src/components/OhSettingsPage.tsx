@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, SettingsRow, Text } from "@onethu/gui";
 /**
  * OH 独立页（设置 →「OH」页签）：**普通配置 / 高级配置** 两档。
@@ -44,18 +45,18 @@ const tierListeners = new Set<() => void>();
    两处都命中不了 → 落地点名存实亡（用户侧表现=搜到点了没反应）。档位根改用按钮文本
    「高级配置」（focusSettingsTarget 的第三条：动作按钮文本，在 .explorer-settings-body 内）。 */
 defineSearchRows([
-  { id: "oh-root", tab: "OneTHU Harness", section: "入口", title: "OneTHU Harness / 小OH 设置", aliases: ["小OH", "OH 设置", "OH", "Harness", "助手设置"], desc: "OH 的基础设置与高级配置入口" , breadcrumb: ["插件", "OneTHU Harness", "入口", "OneTHU Harness / 小OH 设置"], displayRoot: "设置" },
-  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", title: "MadModel 免费档", aliases: ["免费额度", "额度", "重新签", "token"], desc: "额度不足或过期时点重新签一次" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置", go: () => goOhRow("MadModel 免费档", "basic") },
-  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", title: "OH 模型 / 多模态开关", aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], desc: "模型来源、Key、模型名与多模态（图片输入）" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("OH 模型 / 多模态开关", "basic") },
-  { id: "oh-contextmode", tab: "OneTHU Harness", section: "模型与多模态", title: "上下文记忆模式", aliases: ["上下文", "记忆", "压缩", "历史", "要点", "压缩内容制"], desc: "历史超长自动收成要点清单，重要内容不再丢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "上下文记忆模式"], displayRoot: "设置", go: () => goOhRow("上下文记忆模式", "basic") },
-  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", title: "后台保活（华为 / 荣耀）", aliases: ["保活", "自启动", "电池优化", "后台"], desc: "应用启动管理设手动管理并允许自启动/关联启动/后台活动" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置", go: () => goOhRow("后台保活（华为 / 荣耀）", "basic") },
-  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "模型 / 配额预算 / MCP / 命令与日志 / 权限", aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "模型MCP日志", fallbackTarget: "高级配置", waitMs: 1400 }); } },
+  { id: "oh-root", tab: "OneTHU Harness", section: "入口", get title() { return i18n("components.ohsettingspage.75be22d41cd1"); }, aliases: ["小OH", "OH 设置", "OH", "Harness", "助手设置"], get desc() { return i18n("components.ohsettingspage.5ac4509019c2"); } , breadcrumb: ["插件", "OneTHU Harness", "入口", "OneTHU Harness / 小OH 设置"], displayRoot: "设置" },
+  { id: "oh-madmodel", tab: "OneTHU Harness", section: "免费额度", get title() { return i18n("components.ohsettingspage.f2b78947c49a"); }, aliases: ["免费额度", "额度", "重新签", "token"], get desc() { return i18n("components.ohsettingspage.26e02469dd36"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "免费额度", "MadModel 免费档"], displayRoot: "设置", go: () => goOhRow("oh-madmodel", "basic") },
+  { id: "oh-multimodal", tab: "OneTHU Harness", section: "模型与多模态", get title() { return i18n("components.ohsettingspage.898487493b0d"); }, aliases: ["多模态", "图片输入", "模型", "provider", "apiKey", "baseUrl", "maxContext", "stream"], get desc() { return i18n("components.ohsettingspage.9f8a1c12cbdf"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "OH 模型 / 多模态开关"], displayRoot: "设置", go: () => goOhRow("oh-multimodal", "basic") },
+  { id: "oh-contextmode", tab: "OneTHU Harness", section: "模型与多模态", get title() { return i18n("components.ohsettingspage.fbf9575ea3c9"); }, aliases: ["上下文", "记忆", "压缩", "历史", "要点", "压缩内容制"], get desc() { return i18n("components.ohsettingspage.dc1d05f60500"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "模型与多模态", "上下文记忆模式"], displayRoot: "设置", go: () => goOhRow("oh-contextmode", "basic") },
+  { id: "oh-keepalive", tab: "OneTHU Harness", section: "保活", get title() { return i18n("components.ohsettingspage.d096e4516aa5"); }, aliases: ["保活", "自启动", "电池优化", "后台"], get desc() { return i18n("components.ohsettingspage.6e2846f3e5bb"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "保活", "后台保活（华为 / 荣耀）"], displayRoot: "设置", go: () => goOhRow("oh-keepalive", "basic") },
+  { id: "oh-adv-plugins", tab: "OneTHU Harness", section: "模型 / MCP / 日志", get title() { return i18n("components.ohsettingspage.2613429ed9e3"); }, aliases: ["MCP", "配额", "预算", "日志", "权限", "命令"], breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "模型 / 配额预算 / MCP / 命令与日志 / 权限"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "模型MCP日志", fallbackTarget: "高级配置", waitMs: 1400 }); } },
   /* 本轮新接线（2026-10-15）：OH MCP **服务器**总闸（把 OneTHU 自己暴露成本机 MCP）。
      控件本体在 pages/Plugins.tsx 的 McpSwitchRow（这是「OH 是插件页子页」的既有事实），
      行注册放这里 = OH 家族唯一注册点；target 传行标题，markSettingsRows 会把它打成 row-<slug>。 */
-  { id: "oh-mcp-server", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "OH MCP 服务器", aliases: ["MCP 服务器", "本机 MCP", "8787", "外部客户端"], desc: "让本机其它助手连上 OneTHU（默认关闭）" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "OH MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "OH MCP 服务器", fallbackTarget: "模型MCP日志", waitMs: 2000 }); } },
+  { id: "oh-mcp-server", tab: "OneTHU Harness", section: "模型 / MCP / 日志", get title() { return i18n("components.ohsettingspage.af7a3fa54da7"); }, aliases: ["MCP 服务器", "本机 MCP", "8787", "外部客户端"], get desc() { return i18n("components.ohsettingspage.5a639744982a"); } , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "OH MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "oh-mcp-server", fallbackTarget: "模型MCP日志", waitMs: 2000 }); } },
   /* 反向（OH 当客户端去连别人的 MCP）：管理列表在高级档的「连接外部 MCP 服务器」行。 */
-  { id: "oh-mcp-client", tab: "OneTHU Harness", section: "模型 / MCP / 日志", title: "连接外部 MCP 服务器", aliases: ["MCP 客户端", "外部 MCP", "添加 MCP 服务器", "MCP 服务器列表", "filesystem MCP", "stdio MCP"], desc: "让 OH 调用外部 MCP server 的工具（增删改在插件页高级档）" , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "连接外部 MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "连接外部 MCP 服务器", fallbackTarget: "模型MCP日志", waitMs: 2200 }); } },
+  { id: "oh-mcp-client", tab: "OneTHU Harness", section: "模型 / MCP / 日志", get title() { return i18n("components.ohsettingspage.1dda1d69edf9"); }, aliases: ["MCP 客户端", "外部 MCP", "添加 MCP 服务器", "MCP 服务器列表", "filesystem MCP", "stdio MCP"], get desc() { return i18n("components.ohsettingspage.465962a0ceba"); } , breadcrumb: ["插件", "OneTHU Harness", "高级配置", "模型 / MCP / 日志", "连接外部 MCP 服务器"], displayRoot: "设置", go: () => { requestOhTier("advanced"); requestPluginsFocus({ target: "oh-mcp-client", fallbackTarget: "模型MCP日志", waitMs: 2200 }); } },
 ]);
 
 /* task-22：OH 行级直达的**本地快捷**（三段式的 ②+③）：切档 + 滚到行（找不到行时落档位根）。+
@@ -95,6 +96,8 @@ const TIER_ANCHOR: Record<"basic" | "advanced", string> = { basic: "row-基础�
 
 /** 档位切换条（分段控件，与设置页页签同形态但更轻） */
 function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: (t: "basic" | "advanced") => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const item = (id: "basic" | "advanced", label: string): ReactNode => (
     <button
       className={"nav-item" + (tier === id ? " is-active" : "")}
@@ -120,11 +123,12 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
         border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
         background: "var(--md-sys-color-surface-container-lowest)",
       }}
+      data-set-id="row-oh-root"
       role="tablist"
-      aria-label="OH 配置档位"
+      aria-label={i18n("components.ohsettingspage.675459adb527")}
     >
-      {item("basic", "基础设置")}
-      {item("advanced", "高级配置")}
+      {item("basic", i18n("components.ohsettingspage.692873ddd8f4"))}
+      {item("advanced", i18n("components.ohsettingspage.36a045ebcc6d"))}
     </div>
   );
 }
@@ -132,6 +136,8 @@ function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: 
 /** 小节标题：**刻意不用 SectionHead**——设置页的页签显隐是按 `.section-head` 走的，
  *  这里再塞一个会被当成新分节被显隐逻辑收走。 */
 function SubHead({ children, id }: { children: ReactNode; id?: string }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     /* ② 左内边距对齐行（og-settings-row 的 --og-card-pad）；id（task-22 检索直达）**照挂 data-set-id**，
        供 goSearchRow 的离家行 / 无行控件落地——OneGUI 后仍认这一锚点。 */
@@ -143,6 +149,8 @@ function SubHead({ children, id }: { children: ReactNode; id?: string }): ReactN
 
 /** MadModel 免费档：状态 + 一键重新签（token 逻辑全在 state/madmodel.ts，这里只调用） */
 function MadModelRow(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [warn, setWarn] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -159,9 +167,9 @@ function MadModelRow(): ReactNode {
     };
   }, [done]);
   return (
-    <SettingsRow
-      title="MadModel 免费档"
-      sub={busy ? "正在续签…" : checking ? "正在检查免费模型连接…" : !madmodelActive() ? "当前使用自费 API；切换模型源后检查免费档。" : warn ? warn : "学校登录状态会在到期前自动更新。"}
+    <SettingsRow id="row-oh-madmodel"
+      title={i18n("components.ohsettingspage.f2b78947c49a")}
+      sub={busy ? i18n("components.ohsettingspage.d121e4ba4f4c") : checking ? i18n("components.ohsettingspage.f96003eb203c") : !madmodelActive() ? i18n("components.ohsettingspage.be90f17a88bf") : warn ? warn : i18n("components.ohsettingspage.fc7d3e679982")}
       control={
         <Btn variant="outline" size="sm" disabled={busy} onClick={() => {
             setBusy(true);
@@ -171,8 +179,7 @@ function MadModelRow(): ReactNode {
                 setBusy(false);
                 setDone((v) => !v);
               });
-          }}>一键续签
-        </Btn>
+          }}>{i18n("components.ohsettingspage.a2b21883b5f3")}</Btn>
       }
     />
   );
@@ -185,33 +192,30 @@ function MadModelRow(): ReactNode {
  * 这个回落分支只在没传时兜底——文案对齐 2026-10-11 的信息架构（插件子页就地配置）。
  */
 function OhAdvancedSlot(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   return (
     <div className="setting-row">
       <div>
-        <div className="setting-title">OH 模型配置 / 花费上限</div>
-        <div className="setting-desc">
-          模型 / 花费上限 / MCP / 日志在插件子页就地配置——插件页 → OneTHU Harness → 高级配置。
-        </div>
+        <div className="setting-title">{i18n("components.ohsettingspage.0e5b7545605e")}</div>
+        <div className="setting-desc">{i18n("components.ohsettingspage.605427ab6130")}</div>
       </div>
-      <Btn variant="outline" onClick={() => goEntry("plugins")}>打开插件设置
-      </Btn>
+      <Btn variant="outline" onClick={() => goEntry("plugins")}>{i18n("components.ohsettingspage.cccadd30d14d")}</Btn>
     </div>
   );
 }
 
 /** 保活指引（华为 / 荣耀）：文案 + 跳系统应用设置（安卓才显示按钮，桌面只留说明） */
 function KeepAliveRow(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [jumped, setJumped] = useState(false);
   return (
-    <div className="setting-row">
+    <div data-set-id="row-oh-keepalive" className="setting-row">
       <div>
-        <div className="setting-title">后台保活（华为 / 荣耀）</div>
-        <div className="setting-desc">
-          系统设置 → 应用 → 应用启动管理 → OneTHU 设「手动管理」，并允许自启动、关联启动、后台活动；
-          再把 OneTHU 加入电池优化白名单。设置完悬浮球与语音在后台才不会被系统掐掉。
-          {jumped ? "（已跳转系统应用设置页）" : ""}
-        </div>
+        <div className="setting-title">{i18n("components.ohsettingspage.d096e4516aa5")}</div>
+        <div className="setting-desc">{i18nRich("components.ohsettingspage.d09e846cd4ab", { value: jumped ? i18n("components.ohsettingspage.02fe3492daa4") : "" })}</div>
       </div>
       {isAndroid ? (
         <Btn variant="outline" onClick={() => {
@@ -219,14 +223,15 @@ function KeepAliveRow(): ReactNode {
               .then((m) => m.invoke("open_app_settings"))
               .catch(() => undefined);
             setJumped(true);
-          }}>打开系统设置
-        </Btn>
+          }}>{i18n("components.ohsettingspage.0407dbdaf0dd")}</Btn>
       ) : null}
     </div>
   );
 }
 
 export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode } = {}): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const [tier, setTier] = useState<"basic" | "advanced">("basic");
 
@@ -248,56 +253,50 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
 
       {tier === "basic" ? (
         <>
-          <SubHead>语音</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.89fcbbfdca16")}</SubHead>
           <VoiceSettingsSection />
 
-          <SubHead>悬浮球</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.72704d8e1e47")}</SubHead>
           <OverlaySettingsSection />
 
-          <SubHead>免费额度</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.4f0d5e092ff1")}</SubHead>
           <MadModelRow />
 
-          <SubHead>模型与多模态</SubHead>
-          <div className="setting-row">
+          <SubHead>{i18n("components.ohsettingspage.444fd1f85256")}</SubHead>
+          <div data-set-id="row-oh-multimodal" className="setting-row">
             <div>
-              <div className="setting-title">OH 模型 / 多模态开关</div>
-              <div className="setting-desc">
-                模型来源、自费 Key、模型名与「多模态（图片输入）」在插件的
-                设置面板里就地配置——插件页 → OneTHU Harness → 高级配置。
-              </div>
+              <div className="setting-title">{i18n("components.ohsettingspage.898487493b0d")}</div>
+              <div className="setting-desc">{i18n("components.ohsettingspage.066c7402ec5f")}</div>
             </div>
-            <Btn variant="outline" onClick={() => goEntry("plugins")}>打开插件设置
-            </Btn>
+            <Btn variant="outline" onClick={() => goEntry("plugins")}>{i18n("components.ohsettingspage.cccadd30d14d")}</Btn>
           </div>
 
           {/* 2026-10-13 压缩内容制（fa54a9c）：给一行机制说明——历史超长不再裸丢。
               这行只是说明，没有可切换项（机制永远开启；预算大小在插件设置里调）。 */}
-          <div className="setting-row">
+          <div data-set-id="row-oh-contextmode" className="setting-row">
             <div>
-              <div className="setting-title">上下文记忆模式</div>
-              <div className="setting-desc">
-                历史超长自动收成要点清单，重要内容不再丢
-              </div>
+              <div className="setting-title">{i18n("components.ohsettingspage.fbf9575ea3c9")}</div>
+              <div className="setting-desc">{i18n("components.ohsettingspage.dc1d05f60500")}</div>
             </div>
           </div>
 
-          <SubHead>IM 基础（扫码绑定 / 解绑）</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.6d47abc2d3c7")}</SubHead>
           {/* 同一份 ImSettingsSection 的 basic 档：扫码创建应用 + 绑定主人（生成码/解绑）+ 连接状态 */}
           <ImSettingsSection tier="basic" />
 
-          <SubHead>保活</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.3c02623c9a2b")}</SubHead>
           <KeepAliveRow />
         </>
       ) : (
         <>
-          <SubHead>IM 通道（进阶）</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.359213279505")}</SubHead>
           {/* 同一份实现的 advanced 档：通道开关、手工凭据、微信灰置说明 */}
           <ImSettingsSection tier="advanced" />
 
-          <SubHead>免费额度（MadModel）</SubHead>
+          <SubHead>{i18n("components.ohsettingspage.f204a61ba9f0")}</SubHead>
           <MadModelRow />
 
-          <SubHead id="sec-模型MCP日志">模型 / MCP / 日志</SubHead>
+          <SubHead id="sec-模型MCP日志">{i18n("components.ohsettingspage.3f0404bdc67a")}</SubHead>
           {advancedPanels ?? <OhAdvancedSlot />}
         </>
       )}

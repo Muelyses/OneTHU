@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Input } from "@onethu/gui";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -26,7 +27,7 @@ export function SearchSelect({
   value,
   onChange,
   options,
-  placeholder = "请选择…",
+  placeholder = i18n("components.searchselect.4242d6b50c86"),
   disabled,
 }: {
   value: string;
@@ -35,6 +36,8 @@ export function SearchSelect({
   placeholder?: string;
   disabled?: boolean;
 }) {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const btnRef = useRef<HTMLButtonElement | null>(null);
@@ -108,11 +111,11 @@ export function SearchSelect({
           }}
         >
           {searchable ? (
-            <Input placeholder="搜索…" value={query} onChange={(value) => setQuery(value)} />
+            <Input placeholder={i18n("components.searchselect.a249f60ce7e8")} value={query} onChange={(value) => setQuery(value)} />
           ) : null}
           <div className="search-dd-list" style={{ overflowY: "auto", flex: 1, minHeight: 0 }}>
             {shown.length === 0 ? (
-              <div className="search-dd-empty">无匹配项</div>
+              <div className="search-dd-empty">{i18n("components.searchselect.336cba9a9241")}</div>
             ) : (
               groups.map((g, gi) => (
                 <div key={g.name ?? `g${gi}`}>

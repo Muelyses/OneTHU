@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn, Segment } from "@onethu/gui";
 /**
  * 雨课堂课程内容页（R25，learn-ykt-course）：把一门雨课堂课发布过的**全部内容**
@@ -36,15 +37,17 @@ import { yktKindToCourseTab, type CourseTabKey } from "./courseMerge.js";
 /** 已确认类型的展示顺序（未知类型排在其后，按类型名排序） */
 const KNOWN_TAB_ORDER = ["作业", "试卷", "课件", "投票"];
 const COURSE_TABS: Array<{ key: CourseTabKey; label: string }> = [
-  { key: "assignments", label: "作业" },
-  { key: "notices", label: "通知" },
-  { key: "files", label: "文件" },
+  { key: "assignments", get label() { return i18n("pages.learn.yktcoursepage.b0dff016ff17"); } },
+  { key: "notices", get label() { return i18n("pages.learn.yktcoursepage.4b6ded8a7f18"); } },
+  { key: "files", get label() { return i18n("pages.learn.yktcoursepage.39932f24fe11"); } },
 ];
 function courseEntryTab(tab?: string): string {
   return COURSE_TABS.some((entry) => entry.key === tab) ? `course:${tab}` : "all";
 }
 
 export function YktCoursePage() {
+  const uiLocale = useUiLocale();
+
   const { navigate, navParams } = useApp();
   const ext = useExternalHomework();
   const ignored = useIgnoredHw();
@@ -67,7 +70,7 @@ export function YktCoursePage() {
   }, [courseId, navParams?.courseTab]);
   const fallbackName = navParams?.extCourseName ?? remembered?.name ?? "";
   const course = ext.courses.find((c) => c.source === "yuketang" && c.id === courseId);
-  const courseName = course?.name || fallbackName || "雨课堂课程";
+  const courseName = course?.name || fallbackName || i18n("pages.learn.yktcoursepage.261255a76c11");
   /** 标题用课程本名（与官方卡片大标题一致），课堂全名放进 meta 副标题 */
   const courseTitle = course?.title ?? courseName;
   const courseSub = course?.title && course.name !== course.title ? course.name : "";
@@ -75,17 +78,17 @@ export function YktCoursePage() {
   /** 本课全部内容（含作业/试卷，与作业列表同源、同一轮刷新） */
   const contents = useMemo(
     () => ext.contents.filter((c) => c.source === "yuketang" && c.courseId === courseId),
-    [ext.contents, courseId],
+    [uiLocale, ext.contents, courseId],
   );
   const courseGroups = useMemo(() => {
     const result: Record<CourseTabKey, ExternalContent[]> = { assignments: [], notices: [], files: [] };
     for (const content of contents) result[yktKindToCourseTab(content.kind)].push(content);
     return result;
-  }, [contents]);
+  }, [uiLocale, contents]);
   /** 本课作业（带提交状态/分数；点开走站内原生详情） */
   const homework = useMemo(
     () => ext.items.filter((i) => i.source === "yuketang" && i.classroomId === courseId).map(toHomework),
-    [ext.items, courseId],
+    [uiLocale, ext.items, courseId],
   );
   /** leaf_type_id → 作业条目（内容条目与作业条目对齐用） */
   const hwByLeaf = useMemo(() => {
@@ -94,7 +97,7 @@ export function YktCoursePage() {
       if (h.externalLeafTypeId) m.set(h.externalLeafTypeId, h);
     }
     return m;
-  }, [homework]);
+  }, [uiLocale, homework]);
 
   /** 按类型分栏（用 kindText 作键：未知类型各自成栏而不合并） */
   const groups = useMemo(() => {
@@ -110,7 +113,7 @@ export function YktCoursePage() {
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
     });
     return { map: m, texts };
-  }, [contents]);
+  }, [uiLocale, contents]);
 
   /**
    * R32：本课公告的「站内通知详情页」id（= 全部通知页里那条公告的 id）。
@@ -122,7 +125,7 @@ export function YktCoursePage() {
       if (c.kind === "announcement") m.set(c.id, toExternalNotice(c).id);
     }
     return m;
-  }, [contents]);
+  }, [uiLocale, contents]);
 
   const shown = useMemo(() => {
     const list = tab === "all"
@@ -132,7 +135,7 @@ export function YktCoursePage() {
         : groups.map.get(tab) ?? [];
     // 有时间的按时间倒序（新内容在前），无时间的保持原顺序排在后面
     return [...list].sort((a, b) => (b.deadline ?? "").localeCompare(a.deadline ?? ""));
-  }, [contents, courseGroups, groups, tab]);
+  }, [uiLocale, contents, courseGroups, groups, tab]);
 
   const unfinished = homework.filter((h) => !h.submitted && !h.audited && !ignored.has(h.id)).length;
   const loading = ext.state !== "ready" && contents.length === 0;
@@ -169,12 +172,12 @@ export function YktCoursePage() {
               ? [c.noticeId]
               : [];
           if (ids.length === 0) {
-            setOpen({ id: c.id, title: c.title, state: "error", error: "这条公告没有取到可用的内容标识。" });
+            setOpen({ id: c.id, title: c.title, state: "error", error: i18n("pages.learn.yktcoursepage.7965aadb4537") });
             return;
           }
           const d = await fetchYktNoticeDetail(c.courseId, ids);
           if (!d.bodyHtml && !d.images?.length) {
-            setOpen({ id: c.id, title: c.title, state: "error", error: "没取到这条公告的正文，请稍后重试。" });
+            setOpen({ id: c.id, title: c.title, state: "error", error: i18n("pages.learn.yktcoursepage.ddbd641e1d5c") });
             return;
           }
           setOpen({ id: c.id, title: c.title, state: "ready", detail: d });
@@ -195,14 +198,14 @@ export function YktCoursePage() {
           id: c.id,
           title: c.title,
           state: "error",
-          error: "这条内容没有可内嵌渲染的正文。",
+          error: i18n("pages.learn.yktcoursepage.ca6001f90452"),
         });
       } catch (e) {
         setOpen({
           id: c.id,
           title: c.title,
           state: "error",
-          error: e instanceof Error ? e.message : "加载失败，请重试。",
+          error: e instanceof Error ? e.message : i18n("pages.learn.yktcoursepage.dc91444c4449"),
         });
       }
     },
@@ -213,23 +216,17 @@ export function YktCoursePage() {
     <>
       <PageHead
         title={courseTitle}
-        meta={`雨课堂${courseSub ? ` · ${courseSub}` : ""}${course?.teacher ? ` · ${course.teacher}` : ""} · ${contents.length} 项内容${
-          unfinished > 0 ? ` · 未交 ${unfinished}` : ""
-        }`}
+        meta={i18n("pages.learn.yktcoursepage.e0f169917d0a", { value: String(courseSub ? ` · ${courseSub}` : ""), value2: String(course?.teacher ? ` · ${course.teacher}` : ""), length: String(contents.length), value3: String(unfinished > 0 ? i18n("pages.learn.yktcoursepage.3f41bfa8628f", { unfinished: String(unfinished) }) : "") })}
         actions={
           <>
-            <BackButton to="learn" label="课程列表" />
-            <Btn variant="ghost" onClick={() => navigate("learn-assignments", { extCourseId: courseId, extCourseName: courseName })}>只看作业
-            </Btn>
-            <Btn variant="outline" onClick={() => ext.reload()} disabled={ext.state === "loading"}><IconRefresh width={14} height={14} />刷新
-            </Btn>
+            <BackButton to="learn" label={i18n("pages.learn.yktcoursepage.e5da2c107242")} />
+            <Btn variant="ghost" onClick={() => navigate("learn-assignments", { extCourseId: courseId, extCourseName: courseName })}>{i18n("pages.learn.yktcoursepage.775809537dc4")}</Btn>
+            <Btn variant="outline" onClick={() => ext.reload()} disabled={ext.state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.yktcoursepage.aee887434131")}</Btn>
           </>
         }
       />
 
-      <div className="row-sub" style={{ margin: "0 0 10px" }}>
-        这里列出这门课的全部内容：作业与试卷点开是站内详情，课件、视频、资料直接在应用内预览。
-      </div>
+      <div className="row-sub" style={{ margin: "0 0 10px" }}>{i18n("pages.learn.yktcoursepage.ca895baa13a1")}</div>
 
       {ext.errors.yuketang ? <ErrorNote text={ext.errors.yuketang} onRetry={() => ext.reload()} /> : null}
 
@@ -237,14 +234,14 @@ export function YktCoursePage() {
         value={tab}
         onChange={setTab}
         options={[
-          { value: "all", label: `全部 ${contents.length}` },
+          { value: "all", label: i18n("pages.learn.yktcoursepage.ec80eda36409", { length: String(contents.length) }) },
           ...COURSE_TABS.map(({ key, label }) => ({
             value: `course:${key}`,
             label: `${label} ${courseGroups[key].length}`,
           })),
           ...groups.texts.map((text) => ({
             value: text,
-            label: `${COURSE_TABS.some((entry) => entry.label === text) ? `仅${text}` : text} ${groups.map.get(text)?.length ?? 0}`,
+            label: `${COURSE_TABS.some((entry) => entry.label === text) ? i18n("pages.learn.yktcoursepage.ab8bbc103e33", { text: String(text) }) : text} ${groups.map.get(text)?.length ?? 0}`,
           })),
         ]}
       />
@@ -256,8 +253,8 @@ export function YktCoursePage() {
           <Empty
             text={
               contents.length === 0
-                ? "这门课暂时没有取到内容，或数据还没就绪。"
-                : "该类型暂无内容。"
+                ? i18n("pages.learn.yktcoursepage.f9ba60504ac2")
+                : i18n("pages.learn.yktcoursepage.8f6a68a79b19")
             }
           />
         </Card>
@@ -307,12 +304,12 @@ export function YktCoursePage() {
                   <div className="row-sub">
                     {c.courseName} ·{" "}
                     {noticeNavId
-                      ? "点击查看公告"
+                      ? i18n("pages.learn.yktcoursepage.6cc82444b5de")
                       : isOpen && open?.state === "loading"
-                        ? "正在加载…"
+                        ? i18n("pages.learn.yktcoursepage.21bd738e0d71")
                         : isOpen
-                          ? "点击收起"
-                          : "点击内嵌预览"}
+                          ? i18n("pages.learn.yktcoursepage.3afccd0197f6")
+                          : i18n("pages.learn.yktcoursepage.9d7ed987c913")}
                   </div>
                 </div>
                 <span className="chip chip-gray">{c.kindText}</span>
@@ -321,7 +318,7 @@ export function YktCoursePage() {
               {isOpen ? (
                 <div className="ykt-content-panel">
                   {open?.state === "loading" ? (
-                    <div className="row-sub">正在加载内容…</div>
+                    <div className="row-sub">{i18n("pages.learn.yktcoursepage.2b1fde913dc6")}</div>
                   ) : open?.state === "error" ? (
                     <div className="row-sub">{open.error}</div>
                   ) : (

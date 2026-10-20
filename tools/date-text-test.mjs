@@ -6,6 +6,7 @@
  * JS 的 + 从左往右算，第一个操作数是字符串时后面全程变字符串拼接，"" + 8 + 1 === "81"。
  * 所以这里既做**行为断言**（格式化函数本身对不对），也做**源码扫描**（别又有人在外面裸拼月份）。
  */
+import "./ts-resolve-register.mjs";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 

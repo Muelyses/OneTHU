@@ -225,7 +225,7 @@ const kt = readFileSync(new URL("../apps/desktop/src-tauri/plugins/onethu-mobile
 const manifest = readFileSync(new URL("../apps/desktop/src-tauri/plugins/onethu-mobile/android/src/main/AndroidManifest.xml", import.meta.url), "utf8");
 
 assert.ok(kt.includes("正在上课"), "Kotlin 侧必须有「正在上课」重算");
-assert.ok(kt.includes("private fun leftText"), "Kotlin 侧必须有 leftText 镜像");
+assert.ok(kt.includes("language.left(at - now)"), "Kotlin 侧必须用快照语言重新计算剩余时间");
 assert.ok(kt.includes("private fun dayKey"), "Kotlin 侧必须有 dayKey（隔天守卫）");
 assert.ok(kt.includes("fun scheduleNextTick"), "Kotlin 侧必须有下一次重画排程");
 assert.ok(kt.includes("object WidgetTicker") && kt.includes("OnethuWidgetTickReceiver"), "重画闹钟链必须在位");
@@ -264,14 +264,14 @@ assert.ok(
   "脚注的「还有 N 项」必须是「没显示的有效行 + 快照都没装下的条目」",
 );
 assert.ok(
-  kt.includes("private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, shownEvents: Int, visibleRel: Int)"),
+  kt.includes("private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, shownEvents: Int, visibleRel: Int, language: WidgetText)"),
   "footerOf 必须同时拿到「已显示的行数」与「全部有效行数」，否则算不出还有几项",
 );
 /* 「在桌面小组件显示」的自定义日程（rel="event"）：两端必须同款处理——
  * 原生走与 ddl 相同的过点失效分支、单独计数、脚注写「项日程」。 */
 assert.ok(kt.includes("\"event\" -> visEvents++") && kt.includes("\"event\" -> shownEvents++"),
   "Kotlin 必须把 rel=event 计入可见与已显示条数（否则脚注的「还有 N 项」会漂）");
-assert.ok(kt.includes("parts.add(\"$shownEvents 项日程\")"), "Kotlin 脚注必须单独写「项日程」");
+assert.ok(kt.includes("parts.add(language.count(\"events\", shownEvents.toLong()))"), "Kotlin 脚注必须单独写「项日程」");
 assert.ok(kt.includes("(rel0 == \"ddl\" || rel0 == \"event\")"),
   "Kotlin 的 6 小时内加粗必须覆盖日程行（与 JS nativeRow 的 strong 同口径）");
 assert.ok(nativeRow({ text: "日程 组会", rel: "event", at: T(2026, 9, 21, 14, 0) }, now).strong === true,

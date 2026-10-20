@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 清小搭小窗（OH 胶囊三态之一：搜索 / OH / 清小搭）—— 2026-10-15。
  *
@@ -25,6 +26,8 @@ const DISCLAIMER = "清小搭功能仅供实验与参考：无法取代 OneTHU H
 const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [phase, setPhase] = useState<"boot" | "ready" | "error">("boot");
   const [err, setErr] = useState("");
   const [msgs, setMsgs] = useState<XiaodaChatMessage[]>([]);
@@ -65,10 +68,10 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
       const q = text.trim();
       if (!q || sending) return;
       if (phase !== "ready") {
-        onNotice?.(phase === "boot" ? "清小搭还在准备，稍等一下" : `清小搭暂时不可用：${err}`);
+        onNotice?.(phase === "boot" ? i18n("plugins.xiaodapane.bfb954706240") : i18n("plugins.xiaodapane.09a831a64684", { err: String(err) }));
         return;
       }
-      setMsgs((prev) => [...prev, bubble({ role: "user", content: q, agentName: "我" }), bubble({})]);
+      setMsgs((prev) => [...prev, bubble({ role: "user", content: q, agentName: i18n("plugins.xiaodapane.b70bb4acc048") }), bubble({})]);
       setDockInputValue("");
       setSending(true);
       setErr("");
@@ -79,7 +82,7 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
         /* 只开新对话：小窗内第一次发送时向后端申请对话号，之后沿用 */
         if (!convIdRef.current) {
           const cid = await xiaodaClient.createConversation();
-          if (!cid) throw new Error("新建对话失败，请再发一次重试");
+          if (!cid) throw new Error(i18n("plugins.xiaodapane.f620f4d59995"));
           convIdRef.current = cid;
         }
         await xiaodaClient.chatNative({
@@ -148,30 +151,26 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
           gap: "var(--og-space-3)",
         }}
       >
-      <Banner tone="warning" title="仅供实验与参考">
+      <Banner tone="warning" title={i18n("plugins.xiaodapane.7e5de34cad87")}>
         {DISCLAIMER}
       </Banner>
       {phase === "boot" ? (
         <Inline gap={2}>
           <Spinner size="sm" />
-          <Text slot="label" tone="faint">
-            正在准备清小搭…
-          </Text>
+          <Text slot="label" tone="faint">{i18n("plugins.xiaodapane.d89aac9533a3")}</Text>
         </Inline>
       ) : null}
       {phase === "error" ? (
-        <Banner tone="error" title="清小搭暂时不可用，请稍后重试">
+        <Banner tone="error" title={i18n("plugins.xiaodapane.ba38dfe30d1c")}>
           {err}
         </Banner>
       ) : null}
       {phase === "ready" && msgs.length === 0 ? (
-        <Text slot="label" tone="quiet">
-          在下方胶囊里输入问题、回车即发。这里是新的默认对话，不接续别处的历史。
-        </Text>
+        <Text slot="label" tone="quiet">{i18n("plugins.xiaodapane.1956d71c54c5")}</Text>
       ) : null}
       {msgs.map((m, i) => {
         const isUser = m.role === "user";
-        const name = isUser ? "我" : AGENT_NAME;
+        const name = isUser ? i18n("plugins.xiaodapane.b70bb4acc048") : AGENT_NAME;
         const waiting = !isUser && !m.content && sending && i === msgs.length - 1;
         return (
           <Inline key={m.id || `x${i}`} gap={3} vAlign="start" justify={isUser ? "end" : "start"}>
@@ -186,9 +185,7 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
                   {waiting ? (
                     <Inline gap={2}>
                       <Spinner size="sm" />
-                      <Text slot="label" tone="faint">
-                        正在输入…
-                      </Text>
+                      <Text slot="label" tone="faint">{i18n("plugins.xiaodapane.d4bdd78f6bb0")}</Text>
                     </Inline>
                   ) : null}
                 </Stack>
@@ -201,18 +198,14 @@ export function XiaodaPane({ onNotice }: { onNotice?: (s: string) => void }): Re
       <div ref={bottomRef} />
       </div>
       {err && phase === "ready" ? (
-        <Banner tone="error" title="发送失败，可再发一次重试">
+        <Banner tone="error" title={i18n("plugins.xiaodapane.c90cd1ec2872")}>
           {err}
         </Banner>
       ) : null}
       <Inline gap={2}>
-        <Btn variant="solid" size="sm" disabled={phase !== "ready" || sending || !draft.trim()} onClick={() => void send(draft)}>
-          发送
-        </Btn>
+        <Btn variant="solid" size="sm" disabled={phase !== "ready" || sending || !draft.trim()} onClick={() => void send(draft)}>{i18n("plugins.xiaodapane.edecf0ae6e51")}</Btn>
         {sending ? (
-          <Btn variant="outline" size="sm" onClick={stop}>
-            停止
-          </Btn>
+          <Btn variant="outline" size="sm" onClick={stop}>{i18n("plugins.xiaodapane.ca4d973c0b00")}</Btn>
         ) : null}
       </Inline>
     </div>

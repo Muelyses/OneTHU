@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 暂存箱（Phase 1）：万物皆可收纳的本地清单层。
  *
@@ -75,11 +76,11 @@ export interface VaultDoc {
 const KEY = "onethu.vaults.v1";
 
 export const VAULT_TYPE_LABEL: Record<VaultItemType, string> = {
-  atom: "应用对象",
-  text: "文字",
-  file: "文件",
-  "board-item": "白板组件",
-  payload: "数据",
+  get atom() { return i18n("state.vault.1fd167c6ae13"); },
+  get text() { return i18n("state.vault.14b69bd6eeb0"); },
+  get file() { return i18n("state.vault.39932f24fe11"); },
+  get "board-item"() { return i18n("state.vault.206359b4b54d"); },
+  get payload() { return i18n("state.vault.5440f7424f28"); },
 };
 
 function newId(prefix: string): string {

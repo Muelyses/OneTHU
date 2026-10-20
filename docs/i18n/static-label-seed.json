@@ -1,0 +1,228 @@
+{
+  "messages": {
+    "enum.label.2118cbc10988": {
+      "zh-CN": "学习",
+      "en-US": "Study"
+    },
+    "enum.label.a14f23af7016": {
+      "zh-CN": "日程",
+      "en-US": "Schedule"
+    },
+    "enum.label.15d208d1b4c9": {
+      "zh-CN": "生活",
+      "en-US": "Life"
+    },
+    "enum.label.352cdc807892": {
+      "zh-CN": "预约",
+      "en-US": "Reservations"
+    },
+    "enum.label.e79890c96ee6": {
+      "zh-CN": "行政",
+      "en-US": ""
+    },
+    "enum.label.e806fbbe8ec6": {
+      "zh-CN": "插件",
+      "en-US": "Plugins"
+    },
+    "enum.label.5c55a67935af": {
+      "zh-CN": "全部",
+      "en-US": ""
+    },
+    "enum.label.1760b98532ec": {
+      "zh-CN": "在线服务",
+      "en-US": "Online services"
+    },
+    "enum.label.8289e67df525": {
+      "zh-CN": "科研",
+      "en-US": ""
+    },
+    "enum.label.6ac380cbd716": {
+      "zh-CN": "人事",
+      "en-US": ""
+    },
+    "enum.label.aaabe42b5a23": {
+      "zh-CN": "党建",
+      "en-US": ""
+    },
+    "enum.label.506c068a2a1e": {
+      "zh-CN": "财务",
+      "en-US": ""
+    },
+    "enum.label.b0938ffbd07c": {
+      "zh-CN": "外事",
+      "en-US": ""
+    },
+    "enum.label.6e098153a586": {
+      "zh-CN": "采购",
+      "en-US": ""
+    },
+    "enum.label.ef94275bd96f": {
+      "zh-CN": "实验设备",
+      "en-US": ""
+    },
+    "enum.label.5f45bb826b16": {
+      "zh-CN": "资产",
+      "en-US": ""
+    },
+    "enum.label.21255f717947": {
+      "zh-CN": "校园生活",
+      "en-US": ""
+    },
+    "enum.label.3deae16f1adb": {
+      "zh-CN": "公共服务",
+      "en-US": ""
+    },
+    "enum.label.a0f88ca9398c": {
+      "zh-CN": "就业离校",
+      "en-US": ""
+    },
+    "enum.label.31c5f1aaa0d5": {
+      "zh-CN": "满意度调查",
+      "en-US": ""
+    },
+    "enum.label.e310bbf0e506": {
+      "zh-CN": "北大",
+      "en-US": ""
+    },
+    "enum.label.a17b8666e5d9": {
+      "zh-CN": "北大研",
+      "en-US": ""
+    },
+    "enum.label.d7d6b21c2cf5": {
+      "zh-CN": "北外",
+      "en-US": ""
+    },
+    "enum.label.e96da2049129": {
+      "zh-CN": "课程编号",
+      "en-US": ""
+    },
+    "enum.label.bd2d74b297d1": {
+      "zh-CN": "课程名称",
+      "en-US": ""
+    },
+    "enum.label.fc0c0d12a458": {
+      "zh-CN": "总学时数",
+      "en-US": ""
+    },
+    "enum.label.e842a5dff916": {
+      "zh-CN": "总学分",
+      "en-US": ""
+    },
+    "enum.label.3b806a76e492": {
+      "zh-CN": "课程内容简介",
+      "en-US": ""
+    },
+    "enum.label.541fbddf4725": {
+      "zh-CN": "Course Description",
+      "en-US": ""
+    },
+    "enum.label.be67cc45b9f0": {
+      "zh-CN": "考核安排",
+      "en-US": ""
+    },
+    "enum.label.3303b56982a0": {
+      "zh-CN": "联系人",
+      "en-US": ""
+    },
+    "enum.label.a914a7b52cec": {
+      "zh-CN": "教材及参考书",
+      "en-US": ""
+    },
+    "enum.label.4a3572036143": {
+      "zh-CN": "上课教师",
+      "en-US": ""
+    },
+    "enum.label.8459c1e91bc0": {
+      "zh-CN": "选课指导语",
+      "en-US": ""
+    },
+    "enum.label.ea664afac033": {
+      "zh-CN": "先修要求",
+      "en-US": ""
+    },
+    "enum.label.75bd5f68e277": {
+      "zh-CN": "教师教学特色",
+      "en-US": ""
+    },
+    "enum.label.1eed24ed8f6f": {
+      "zh-CN": "Office Hour",
+      "en-US": ""
+    },
+    "enum.label.f2260568b289": {
+      "zh-CN": "成绩评定标准",
+      "en-US": ""
+    },
+    "enum.label.f24ccb00a8ab": {
+      "zh-CN": "参考书",
+      "en-US": ""
+    },
+    "enum.label.9151a836f996": {
+      "zh": "GitLab",
+      "en": ""
+    },
+    "enum.label.d4f7864690bb": {
+      "zh": "Info 应用",
+      "en": ""
+    },
+    "enum.label.26ee9467d4b0": {
+      "zh": "courseX",
+      "en": ""
+    },
+    "enum.label.ef7be5be3c13": {
+      "zh": "体育",
+      "en": ""
+    },
+    "enum.label.e81059e1a712": {
+      "zh": "公共空间",
+      "en": ""
+    },
+    "enum.label.266e6cb77079": {
+      "zh": "图书馆",
+      "en": ""
+    },
+    "enum.label.4c11cd93c142": {
+      "zh": "我的收藏夹",
+      "en": ""
+    },
+    "enum.label.ed31fbb483ee": {
+      "zh": "操作",
+      "en": ""
+    },
+    "enum.label.d39567b2b9f1": {
+      "zh": "新闻",
+      "en": ""
+    },
+    "enum.label.a626aad412b7": {
+      "zh": "标签页",
+      "en": ""
+    },
+    "enum.label.6acfa1db6a62": {
+      "zh": "洗衣机",
+      "en": ""
+    },
+    "enum.label.e4d40b4d6759": {
+      "zh": "研讨间",
+      "en": ""
+    },
+    "enum.label.ecc11c8afea8": {
+      "zh": "空教室",
+      "en": ""
+    },
+    "enum.label.783d638053ea": {
+      "zh": "组件",
+      "en": ""
+    },
+    "enum.label.aa39cac2b409": {
+      "zh": "网络学堂",
+      "en": ""
+    },
+    "enum.label.3d708e8e8b1f": {
+      "zh": "邮件",
+      "en": ""
+    },
+    "enum.label.452c7b10d57a": {
+      "zh": "页面",
+      "en": ""
+    }
+  }
+}

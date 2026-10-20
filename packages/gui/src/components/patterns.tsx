@@ -1,3 +1,4 @@
+import { useOneGUILocale } from "../locale.js";
 /* OneGUI · 页面模式：Page / PageHead / Toolbar / SettingsList / Tabs / Segment / Banner / SectionCard
  *
  * 旧代码里的 9 套标签系统（tabstrip/segmented/seg-track/plg-tab/gitlab-tabs/thos-tabs/settings-seg/ex-tab…）
@@ -59,10 +60,11 @@ export interface PageHeadProps {
 }
 
 export function PageHead({ title, sub, meta, actions, onBack, scope, className }: PageHeadProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
     <div {...scopeProps(scope)} className={cx("og-pagehead", className)}>
       {onBack ? (
-        <IconBtn label="返回" variant="ghost" onClick={onBack} icon={<Icon><path d="M15 5l-7 7 7 7" /></Icon>} />
+        <IconBtn label={guiText("gui.action.back")} variant="ghost" onClick={onBack} icon={<Icon><path d="M15 5l-7 7 7 7" /></Icon>} />
       ) : null}
       <div className="og-pagehead-main">
         <div className="og-pagehead-topic">
@@ -361,6 +363,7 @@ export interface SegmentProps {
 
 /** Persistent, draggable scroll affordance; rendered only when choices overflow. */
 function SegmentScrollIndicator({ scrollRef, count }: { scrollRef: React.RefObject<HTMLDivElement | null>; count: number }): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const track = useRef<HTMLDivElement>(null);
   const thumb = useRef<HTMLSpanElement>(null);
   const drag = useRef<{ x: number; scroll: number } | null>(null);
@@ -386,7 +389,7 @@ function SegmentScrollIndicator({ scrollRef, count }: { scrollRef: React.RefObje
     return () => { ro.disconnect(); el.removeEventListener("scroll", update); };
   }, [update, count]);
   return <div ref={track} className="og-segment-scroll" data-overflow={overflowing || undefined}
-    role="scrollbar" aria-label="滚动选项" aria-orientation="horizontal" aria-valuemin={0} tabIndex={overflowing ? 0 : -1}
+    role="scrollbar" aria-label={guiText("gui.segment.scroll")} aria-orientation="horizontal" aria-valuemin={0} tabIndex={overflowing ? 0 : -1}
     onKeyDown={e => {
       const el = scrollRef.current; if (!el) return;
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
@@ -464,6 +467,7 @@ export interface BannerProps {
 }
 
 export function Banner({ tone = "info", title, icon, action, onDismiss, scope, className, children }: BannerProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
     <div {...scopeProps(scope)} className={cx(one("banner").tone(tone).toString(), className)} role={tone === "error" ? "alert" : "status"}>
       {icon !== undefined ? <span className="og-banner-icon" aria-hidden="true">{icon}</span> : null}
@@ -472,7 +476,7 @@ export function Banner({ tone = "info", title, icon, action, onDismiss, scope, c
         {children ?? null}
       </div>
       {action ? <div className="og-banner-action">{action}</div> : null}
-      {onDismiss ? <IconBtn label="关闭" variant="ghost" size="sm" onClick={onDismiss} icon={<Icon><path d="M6 6l12 12M18 6L6 18" /></Icon>} /> : null}
+      {onDismiss ? <IconBtn label={guiText("gui.action.close")} variant="ghost" size="sm" onClick={onDismiss} icon={<Icon><path d="M6 6l12 12M18 6L6 18" /></Icon>} /> : null}
     </div>
   );
 }

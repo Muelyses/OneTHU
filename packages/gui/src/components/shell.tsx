@@ -1,3 +1,4 @@
+import { useOneGUILocale } from "../locale.js";
 /* OneGUI · 应用壳（AppShell）+ 导航件（NavRail / TabStrip / MobileTabBar）
  *
  * 全站唯一的外框：桌面=左竖栏 + 顶栏 + 内容；手机=顶栏 + 内容 + 底部标签条。
@@ -40,8 +41,9 @@ export interface NavRailProps {
 
 /** 桌面左竖栏：一行一个标签页，激活项是整行胶囊 */
 export function NavRail({ tabs, activeTab, onSelect, narrow, actions, brand, scope, className }: NavRailProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
-    <aside {...scopeProps(scope)} className={cx("og-rail", narrow ? "og-rail--narrow" : "", className)} aria-label="标签页">
+    <aside {...scopeProps(scope)} className={cx("og-rail", narrow ? "og-rail--narrow" : "", className)} aria-label={guiText("gui.tabs.label")}>
       {brand ? <div className="og-rail-brand">{brand}</div> : null}
       <div className="og-rail-list" role="tablist" aria-orientation="vertical">
         {tabs.map((t) => (
@@ -62,7 +64,7 @@ export function NavRail({ tabs, activeTab, onSelect, narrow, actions, brand, sco
               <span
                 role="button"
                 tabIndex={-1}
-                aria-label="关闭标签页"
+                aria-label={guiText("gui.tabs.close")}
                 className="og-rail-close"
                 onClick={(e) => { e.stopPropagation(); t.onClose?.(); }}
               >
@@ -91,6 +93,7 @@ export interface TabStripProps {
 
 /** 横版标签条：可横滑 + 鼠标拖动，激活项下有滑动指示条 */
 export function TabStrip({ tabs, activeTab, onSelect, onMore, leading, scope, className }: TabStripProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const rowRef = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ x: number; scrollLeft: number; moved: boolean } | null>(null);
@@ -157,7 +160,7 @@ export function TabStrip({ tabs, activeTab, onSelect, onMore, leading, scope, cl
               <span
                 role="button"
                 tabIndex={-1}
-                aria-label="关闭标签页"
+                aria-label={guiText("gui.tabs.close")}
                 className="og-tabitem-close"
                 onClick={(e) => { e.stopPropagation(); t.onClose?.(); }}
               >
@@ -167,7 +170,7 @@ export function TabStrip({ tabs, activeTab, onSelect, onMore, leading, scope, cl
           </button>
         ))}
       </div>
-      {onMore ? <IconBtn label="全部标签页" size="sm" variant="ghost" onClick={onMore} icon={<Icon size="sm"><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></Icon>} /> : null}
+      {onMore ? <IconBtn label={guiText("gui.tabs.all")} size="sm" variant="ghost" onClick={onMore} icon={<Icon size="sm"><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></Icon>} /> : null}
     </div>
   );
 }
@@ -248,6 +251,7 @@ export function AppShell({
   tabs, activeTab, onSelectTab, desktopLayout = "rail", railNarrow, onMore, railActions, tabLeading,
   actions, brand, wallpaper, scope, className, children, platform: platformProp,
 }: AppShellProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const axisPlatform = useAxes().platform;
   const platform = platformProp ?? axisPlatform;
   const mobile = platform === "mobile";
@@ -270,7 +274,7 @@ export function AppShell({
       <div className="og-shell-main">
         <header className={cx("og-topbar", scrolled ? "is-scrolled" : "")}>
           {mobile ? (
-            <button type="button" className="og-topbar-brand" onClick={() => onSelectTab(tabs[0]?.id ?? "")} aria-label="首页">
+            <button type="button" className="og-topbar-brand" onClick={() => onSelectTab(tabs[0]?.id ?? "")} aria-label={guiText("gui.navigation.home")}>
               {brand}
             </button>
           ) : desktopLayout === "strip" ? (

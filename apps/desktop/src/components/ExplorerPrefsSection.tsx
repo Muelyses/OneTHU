@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 「搜索与胶囊」设置分节（dev-explorer，explorer-oh 专属）：
  *  - 点击胶囊默认打开：搜索 / OH（explorerPrefs.capsuleTap）
@@ -14,6 +15,8 @@ import {
 } from "../state/explorerPrefs.js";
 
 export function ExplorerPrefsSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const prefs = useExplorerPrefs();
   const hist = useSearchHistory();
   const [arming, setArming] = useState(false);
@@ -36,26 +39,26 @@ export function ExplorerPrefsSection(): ReactNode {
 
   return (
     <>
-      <Section title="搜索与胶囊" hint="底栏胶囊与悬浮球的二合一入口" />
+      <Section title={i18n("components.explorerprefssection.faa18ef93208")} hint={i18n("components.explorerprefssection.2c2a533ac8e4")} />
       <SettingsList>
-        <SettingsRow
-          title="点击胶囊默认打开"
-          sub="搜索模式可搜功能/作业/文件并直达；OH 模式直接进对话"
+        <SettingsRow id="row-set-capsule-tap"
+          title={i18n("components.explorerprefssection.464f0207d4ff")}
+          sub={i18n("components.explorerprefssection.48875ae74158")}
           control={
             <Segment
               value={prefs.capsuleTap}
               onChange={(v) => setExplorerPrefs({ capsuleTap: v as CapsuleDefault })}
-              options={[{ value: "search", label: "搜索" }, { value: "oh", label: "OH" }]}
+              options={[{ value: "search", label: i18n("components.explorerprefssection.44ce7ae909bb") }, { value: "oh", label: "OH" }]}
             />
           }
         />
         {/* voiceTarget 已废弃（用户定案）：胶囊/语音只产生文字，送谁由小窗内的搜索|OH 切换决定 */}
-        <SettingsRow
-          title="最近搜索记录"
-          sub={hist.length > 0 ? `保留最近 10 条，当前 ${hist.length} 条` : "暂无记录"}
+        <SettingsRow id="row-set-search-history"
+          title={i18n("components.explorerprefssection.461301d93770")}
+          sub={hist.length > 0 ? i18n("components.explorerprefssection.26b3d168dbfe", { length: String(hist.length) }) : i18n("components.explorerprefssection.46ca86da52b3")}
           control={
             <Btn variant="ghost" size="sm" disabled={hist.length === 0} onClick={onClear}>
-              {arming ? "再点一次确认清空" : "清空记录"}
+              {arming ? i18n("components.explorerprefssection.563b252befe6") : i18n("components.explorerprefssection.80e015bfff38")}
             </Btn>
           }
         />

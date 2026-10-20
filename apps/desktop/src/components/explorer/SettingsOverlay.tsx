@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { SimpleSettings } from "../SimpleSettings.js";
 import { useIsSimpleLike } from "../../state/experienceMode.js";
 import { IconBtn, IconUser } from "@onethu/gui";
@@ -22,13 +23,15 @@ import { HarnessMark } from "../HarnessMark.js";
 import { IconPlug } from "../Icons.js";
 
 const SEGMENTS: Array<{ id: OverlayEntry; label: string; icon: ReactNode }> = [
-  { id: "profile", label: "我的名片", icon: <IconUser size="sm" /> },
-  { id: "settings", label: "个人设置", icon: <IconSettings width={14} height={14} /> },
-  { id: "plugins", label: "插件", icon: <IconPlug width={14} height={14} /> },
+  { id: "profile", get label() { return i18n("components.explorer.settingsoverlay.487e926379fe"); }, icon: <IconUser size="sm" /> },
+  { id: "settings", get label() { return i18n("components.explorer.settingsoverlay.c2952a5ffcc3"); }, icon: <IconSettings width={14} height={14} /> },
+  { id: "plugins", get label() { return i18n("components.explorer.settingsoverlay.e806fbbe8ec6"); }, icon: <IconPlug width={14} height={14} /> },
   { id: "oh", label: "Harness", icon: <HarnessMark size={12} /> },
 ];
 
 export function SettingsOverlay(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const simple = useIsSimpleLike();
   const entry = useOverlayEntry(); // null = 关闭
   const expanded = useExpanded();
@@ -59,10 +62,10 @@ export function SettingsOverlay(): ReactNode {
 
   return createPortal(
     <div className={mask} onClick={requestClose}>
-      <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label="我的">
+      <div className={panel} onClick={(e) => e.stopPropagation()} role="dialog" aria-label={i18n("components.explorer.settingsoverlay.7f1d9dd04cd1")}>
         <div className="settings-head">
           <span className="workbench-settings-brand">OneTHU</span>
-          {!simple && <div className="settings-seg" role="tablist" aria-label="设置分段">
+          {!simple && <div className="settings-seg" role="tablist" aria-label={i18n("components.explorer.settingsoverlay.b31841ccaf3d")}>
             {SEGMENTS.map((s) => (
               <button
                 key={s.id}
@@ -76,7 +79,7 @@ export function SettingsOverlay(): ReactNode {
               </button>
             ))}
           </div>}
-          <IconBtn label="关闭设置" size="sm" variant="outline" titleAttr="关闭设置（Esc）" icon={<IconX width={14} height={14} />} onClick={requestClose} />
+          <IconBtn label={i18n("components.explorer.settingsoverlay.77b17fc4a52a")} size="sm" variant="outline" titleAttr={i18n("components.explorer.settingsoverlay.51f560817509")} icon={<IconX width={14} height={14} />} onClick={requestClose} />
         </div>
         <div className={"explorer-settings-body" + (entry === "settings" ? "" : " workbench-plugin-settings")}>
           {simple ? <SimpleSettings/> : entry === "profile" ? <NameCardSection view="personal" /> : entry === "settings" ? <SettingsPage /> : <PluginsPage />}

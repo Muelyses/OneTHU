@@ -13,7 +13,7 @@
  *   ③ OH 一侧（门面 visit.fill 只填草稿、不许代提交；页面必须订阅草稿）
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 

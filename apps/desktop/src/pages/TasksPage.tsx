@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 待办聚合页 v2.1（UI/UX 改造 §2.2，按用户《待办页施工方案》+ 实机反馈迭代）。
@@ -41,6 +42,8 @@ export { HwCarousel } from "../components/HomeworkCarousel.js";
 import { HwCarousel, ddlInfo, pendingHomework } from "../components/HomeworkCarousel.js";
 
 export function TasksPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   useLearnNavSemester();
   const { data, state, reload } = useLearnData();
@@ -61,11 +64,11 @@ export function TasksPage(): ReactNode {
   const [courseFilter, setCourseFilter] = useState<string>(""); // "" = 全部课程
   const wide = useExpanded(); // ≥840px（§2.8.1 expanded）：学习/生活 双栏同显
 
-  const courseMap = useMemo(() => new Map((data?.courses ?? []).map((c) => [c.id, c.name])), [data]);
-  const courseNameOf = (id: string): string => courseMap.get(id) ?? "课程";
-  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const courseMap = useMemo(() => new Map((data?.courses ?? []).map((c) => [c.id, c.name])), [uiLocale, data]);
+  const courseNameOf = (id: string): string => courseMap.get(id) ?? i18n("pages.taskspage.60db1afb4022");
+  const extHw = useMemo(() => ext.items.map(toHomework), [uiLocale, ext.items]);
 
-  const flowAll = useMemo(() => pendingHomework([...(data?.homework ?? []), ...extHw], ignored), [data, extHw, ignored]);
+  const flowAll = useMemo(() => pendingHomework([...(data?.homework ?? []), ...extHw], ignored), [uiLocale, data, extHw, ignored]);
 
   // 按课程检索（作业流上方的下拉）：默认全部；候选只列**当前确实有未完成作业**的课程，
   // 免得选到一门已清空的课只看到空态。
@@ -73,14 +76,14 @@ export function TasksPage(): ReactNode {
   // 合成值 ext:yuketang，不在课程表里，按老写法它们的课永远进不了这份清单。
   // 聚合逻辑抽到 lib/hwCourse.ts 并带单测（tools/hw-course-test.mjs）：真机上雨课堂当前没有
   // 未完成作业，只能靠单测钉住「同源多课分开、空课程表也能列出外部源」这两条口径。
-  const flowCourses = useMemo(() => hwCourseGroups(flowAll, courseMap, extHwSourceName), [flowAll, courseMap]);
+  const flowCourses = useMemo(() => hwCourseGroups(flowAll, courseMap, extHwSourceName), [uiLocale, flowAll, courseMap]);
   const flowExtSources = useMemo(
     () => [...new Set(flowCourses.map((c) => c.source).filter((s): s is NonNullable<typeof s> => !!s))],
-    [flowCourses],
+    [uiLocale, flowCourses],
   );
   const flow = useMemo(
     () => (courseFilter ? flowAll.filter((h) => hwCourseKey(h) === courseFilter) : flowAll),
-    [flowAll, courseFilter],
+    [uiLocale, flowAll, courseFilter],
   );
   // 宽屏分栏右栏（§2.8.2）：默认「生活」，点卡片换成该作业详情——不点就是生活、点了就是详情、
   // 关掉回到生活。与计划书的「左列表/右详情」和主人要的「左学习/右生活」合成一体。
@@ -162,7 +165,7 @@ export function TasksPage(): ReactNode {
   const dueSoon = flow.filter((h) => { const i = ddlInfo(h.deadline); return !i.overdue && i.days != null && i.days <= 3; }).length;
   const semesterId = data?.semester.id;
 
-  const notices = useMemo(() => (data?.notifications ?? []), [data]);
+  const notices = useMemo(() => (data?.notifications ?? []), [uiLocale, data]);
   // 未读口径与通知页/详情页完全一致：服务端 sfyd ∪ 本地已读覆盖（lib/noticeRead）。
   // 此前待办页另起了一套只按 id 记的私有 localStorage，与全站口径不一致，故
   // 会出现「别处 11 条未读、这里暂无未读」。
@@ -193,26 +196,25 @@ export function TasksPage(): ReactNode {
   return (
     <>
       <PageHead
-        title="待办"
-        meta={data ? semesterText(data.semester.id) : "今天该管的事"}
+        title={i18n("pages.taskspage.52fdbbaeda4c")}
+        meta={data ? semesterText(data.semester.id) : i18n("pages.taskspage.06389c978872")}
         actions={
           <>
-            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
-            </Btn>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.taskspage.aee887434131")}</Btn>
           </>
         }
       />
 
       {!wide ? (
         <SegmentedOverflow>
-          <button role="tab" aria-selected={tab === "learn"} className={tab === "learn" ? "is-active" : ""} onClick={() => setTab("learn")}>学习</button>
-          <button role="tab" aria-selected={tab === "life"} className={tab === "life" ? "is-active" : ""} onClick={() => setTab("life")}>生活</button>
+          <button role="tab" aria-selected={tab === "learn"} className={tab === "learn" ? "is-active" : ""} onClick={() => setTab("learn")}>{i18n("pages.taskspage.2118cbc10988")}</button>
+          <button role="tab" aria-selected={tab === "life"} className={tab === "life" ? "is-active" : ""} onClick={() => setTab("life")}>{i18n("pages.taskspage.15d208d1b4c9")}</button>
         </SegmentedOverflow>
       ) : null}
 
       <div className={"tasks-body" + (wide ? " is-wide" : "")} onPointerDown={onHDown} onPointerUp={onHUp}>
       <section className={"tasks-pane" + (wide || tab === "learn" ? "" : " is-hidden")}>
-        <div className="tasks-pane-head">学习</div>
+        <div className="tasks-pane-head">{i18n("pages.taskspage.2118cbc10988")}</div>
         {/* 元素出场（§3.6：「待办页元素错峰出场」此前延后到动效令牌落地）：
             只在这一层用一个 .stagger——筛选行 → 卡片流 → 统计/入口逐项上浮 26ms。
             不在子容器再套一层：父子同时进场会糊成一团，也不给卡片流内的卡加动画
@@ -224,11 +226,11 @@ export function TasksPage(): ReactNode {
               className="hw-filter-select"
               value={courseFilter}
               onChange={(e) => setCourseFilter(e.target.value)}
-              aria-label="按课程筛选作业"
+              aria-label={i18n("pages.taskspage.1281738c7a2b")}
             >
-              <option value="">全部课程（{flowAll.length}）</option>
+              <option value="">{i18nRich("pages.taskspage.d9a72ce83c42", { length: flowAll.length })}</option>
               {flowCourses.some((c) => !c.source) ? (
-                <optgroup label="网络学堂">
+                <optgroup label={i18n("pages.taskspage.aa39cac2b409")}>
                   {flowCourses.filter((c) => !c.source).map((c) => (
                     <option key={c.key} value={c.key}>{c.label}（{c.count}）</option>
                   ))}
@@ -243,13 +245,13 @@ export function TasksPage(): ReactNode {
               ))}
             </select>
             {courseFilter ? (
-              <button className="hw-filter-clear" onClick={() => setCourseFilter("")}>清除</button>
+              <button className="hw-filter-clear" onClick={() => setCourseFilter("")}>{i18n("pages.taskspage.bce2377283c2")}</button>
             ) : null}
           </div>
           {/* 作业卡片流（拖拽实时跟手） */}
           <div className="tasks-flow-wrap">
             {state === "loading" && flow.length === 0 ? (
-              <Card><Empty text="正在取作业…" /></Card>
+              <Card><Empty text={i18n("pages.taskspage.6f3b6788c68c")} /></Card>
       ) : (
               <HwCarousel
                 items={flow}
@@ -267,16 +269,16 @@ export function TasksPage(): ReactNode {
               {/* 两项计数各自独立成卡（轻拟物：受光面 + 投影 + 内高光，按下内凹） */}
               <button className="task-stat" onClick={() => navigate("learn-assignments")}>
                 <span className="task-stat-num" key={"n" + flow.length}>{flow.length}</span>
-                <span className="task-stat-label">还剩作业</span>
+                <span className="task-stat-label">{i18n("pages.taskspage.e7b5dca4c106")}</span>
               </button>
               <button className="task-stat" onClick={() => navigate("learn-assignments")}>
                 <span className="task-stat-num task-stat-urgent" key={"s" + dueSoon}>{dueSoon}</span>
-                <span className="task-stat-label">3 日内截止</span>
+                <span className="task-stat-label">{i18n("pages.taskspage.2f7e202b64d3")}</span>
               </button>
             </div>
             <div className="tasks-entries">
-              <button className="task-entry" onClick={() => navigate("learn-assignments")}>全部作业 →</button>
-              <button className="task-entry" onClick={() => navigate("learn")}>进入网络学堂 →</button>
+              <button className="task-entry" onClick={() => navigate("learn-assignments")}>{i18n("pages.taskspage.1522cf51a469")}</button>
+              <button className="task-entry" onClick={() => navigate("learn")}>{i18n("pages.taskspage.873399e71de9")}</button>
             </div>
           </div>
           {/* 课程通知提示条（不再列条目） */}
@@ -284,15 +286,14 @@ export function TasksPage(): ReactNode {
             <span className="task-dot" style={{ visibility: unread.length > 0 ? "visible" : "hidden" }} />
             <span className="notice-strip-text">
               {unread.length > 0 ? (
-                <>
-                  课程通知：<b>{unread.length} 条未读</b>
-                  {hasImportantUnread ? <span className="task-unread-important">重要未读</span> : null}
+                <>{i18n("pages.taskspage.2ebabbe9e7d7")}<b>{i18nRich("pages.taskspage.625aecb7d77b", { length: unread.length })}</b>
+                  {hasImportantUnread ? <span className="task-unread-important">{i18n("pages.taskspage.7bd83a8ffaff")}</span> : null}
                 </>
               ) : (
-                <>课程通知：暂无未读</>
+                <>{i18n("pages.taskspage.aed87d6c236b")}</>
               )}
             </span>
-            <button className="task-sec-more" onClick={() => navigate("learn-notices")}>全部通知 →</button>
+            <button className="task-sec-more" onClick={() => navigate("learn-notices")}>{i18n("pages.taskspage.0d261d034491")}</button>
           </div>
         </div>
       </section>
@@ -300,10 +301,10 @@ export function TasksPage(): ReactNode {
         {wide && pcSel ? (
           <>
             <div className="tasks-pane-head">
-              <span>作业详情</span>
+              <span>{i18n("pages.taskspage.d4af30a738c7")}</span>
               <span className="tasks-pane-acts">
                 <button className="tasks-pane-close" onClick={() => toggleFull(!pcFull)}>
-                  {pcFull ? "收起 ⤡" : "展开 ⤢"}
+                  {pcFull ? i18n("pages.taskspage.0d1d9183d7d0") : i18n("pages.taskspage.d9d9d95f3a25")}
                 </button>
                 <button
                   className="tasks-pane-close"
@@ -311,9 +312,7 @@ export function TasksPage(): ReactNode {
                     setPcFull(false);
                     setPcSel(null);
                   }}
-                >
-                  返回生活 →
-                </button>
+                >{i18n("pages.taskspage.091a3375f53e")}</button>
               </span>
             </div>
             {/* 复用现有详情组件（§2.8.2：只改容器渲染，不改数据流与子组件）：
@@ -324,7 +323,7 @@ export function TasksPage(): ReactNode {
               {pcFull ? (
                 <div className="tasks-detail-fullbar">
                   <span className="tasks-detail-fulltitle">{pcSel.title}</span>
-                  <button className="tasks-pane-close" onClick={() => toggleFull(false)}>收起 ⤡</button>
+                  <button className="tasks-pane-close" onClick={() => toggleFull(false)}>{i18n("pages.taskspage.0d1d9183d7d0")}</button>
                 </div>
               ) : null}
               {pcSlots.map((s) => (
@@ -346,29 +345,29 @@ export function TasksPage(): ReactNode {
           </>
         ) : (
           <>
-        <div className="tasks-pane-head">生活</div>
+        <div className="tasks-pane-head">{i18n("pages.taskspage.15d208d1b4c9")}</div>
         <div className="tasks-life tab-anim" data-dir="prev">
           {cardLow ? (
             <Card className="task-card">
               <button className="task-row" onClick={() => navigate("life", { lifeTab: "card" })}>
                 <span className="task-row-main">
-                  <span className="task-row-name">校园卡余额不足</span>
-                  <span className="task-row-sub">当前 ¥{card.data?.info.balance}，建议充值</span>
+                  <span className="task-row-name">{i18n("pages.taskspage.8c75e6d5e446")}</span>
+                  <span className="task-row-sub">{i18nRich("pages.taskspage.b8a9cf5d2a77", { balance: card.data?.info.balance })}</span>
                 </span>
-                <span className="task-row-meta">去充值 →</span>
+                <span className="task-row-meta">{i18n("pages.taskspage.13239e085f0a")}</span>
               </button>
             </Card>
       ) : null}
           <div className="task-sec-head">
-            <span className="task-sec-title">最近新闻</span>
-            <button className="task-sec-more" onClick={() => navigate("info", { infoTab: "news" })}>全部新闻 →</button>
+            <span className="task-sec-title">{i18n("pages.taskspage.b6ac37044ccd")}</span>
+            <button className="task-sec-more" onClick={() => navigate("info", { infoTab: "news" })}>{i18n("pages.taskspage.b457a3c1c9a1")}</button>
           </div>
           {news.state === "ready" && (news.data?.list.length ?? 0) > 0 ? (
             <NewsRows feed={news.data!} navigate={navigate} />
       ) : (
-            <Card><Empty text="新闻还在路上，稍后再来看看。" /></Card>
+            <Card><Empty text={i18n("pages.taskspage.4706dde1fb19")} /></Card>
       )}
-          <div className="task-life-note">行政类通知（报到、党团活动等）暂无稳定数据源，接入后补充到这里。</div>
+          <div className="task-life-note">{i18n("pages.taskspage.dd67ab4b0109")}</div>
         </div>
           </>
         )}

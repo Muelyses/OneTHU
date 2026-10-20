@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 壁纸渲染件（2026-10-13 二期）：
  * - WallpaperVideoBox：动态壁纸 <video> 层（自动播放 / 循环 / 静音起播；inactive 面板暂停省电）。
@@ -25,6 +26,8 @@ export function WallpaperVideoBox({
   sound: boolean;
   active: boolean;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const ref = useRef<HTMLVideoElement | null>(null);
   useEffect(() => {
     const v = ref.current;
@@ -41,6 +44,8 @@ export function WallpaperVideoBox({
 }
 
 export function ShellWallpaperLayer(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const wp = useSyncExternalStore(subscribeWallpaper, shellWallpaperSnapshot, shellWallpaperSnapshot);
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   const anchor = useRef<HTMLDivElement | null>(null);

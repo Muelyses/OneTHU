@@ -265,12 +265,12 @@ export class HttpClient {
    *  链各自内部重舞 oauth，票据互相顶掉成环）。 */
   #reloginInflight: Promise<void> | null = null;
 
-  /** 诊断现场：最后一次 text() 响应（URL + 状态 + 正文前 800 字）。
+  /** 诊断现场：最后一次 text() 响应的类型、状态与长度，不含正文或 URL。
    *  info/learn 解析失败时由 UI 落盘到 /tmp/onethu-debug.log 定位。 */
   lastDebug = "";
 
   /** 最后一次请求的实际 wire 目标（包装后）。tauriFetch 不回传 response.url，
-   *  lastDebug 必须显式区分"逻辑 URL"与"实际 wire URL"，否则排查会被误导。 */
+   *  仅供请求/会话判断；诊断不得复制原始 URL。 */
   lastTarget = "";
   /** 最近一次请求的最终落点 URL（重定向链终点；业务层判「被踢到错误页/登录页」用） */
   lastFinalUrl = "";
@@ -430,16 +430,17 @@ export class HttpClient {
   debug?: (line: string) => void;
   /** 引导页票种同时播种到原生仓（jar→rust 桥；fetch 走原生通道的实例必接） */
   nativeSeedHook?: (url: string, cookiePair: string) => void;
-  /** wengine 注入页（含 __vpn_*）时把较完整 body 送调试通道——定位引导页 vs 被代理登录页 */
+  /** 引导页也可能携带令牌/姓名；调试通道只保留结构。 */
   #emitDebug(body: string): void {
-    if (!this.debug) return;
     if (body.includes("__vpn_hostname_data")) {
-      this.debug(
-        "[HTTP-WENGINE] cookies=" + this.lastCookieNames + " body(" + body.length + ")=" +
-          body.slice(0, 10000).replace(/\s+/g, " ") +
-          " ...TAIL... " + body.slice(-1500).replace(/\s+/g, " "),
-      );
+      this.debug?.(`[HTTP-WENGINE] len=${body.length} interstitial=${this.wengineInterstitial(body)}`);
     }
+  }
+
+  #recordTextDebug(response: Response, body: string): void {
+    const type = response.headers.get("content-type") ?? "";
+    const kind = /html/i.test(type) ? "html" : /json/i.test(type) ? "json" : /xml/i.test(type) ? "xml" : "text";
+    this.lastDebug = `type=${kind} status=${response.status} len=${body.length}`;
   }
 
   /** GET 并解析为文本；wengine 引导页补救 + 登录页特征检测 + 自动重登录重放 */
@@ -449,11 +450,7 @@ export class HttpClient {
     // myhome 等老站是 GBK；按 Content-Type charset 解码，别拿 UTF-8 硬解（否则中文
     // 全成 U+FFFD，回传按钮值变乱码被服务器 400、门户正则/登录探测全部失灵）
     let body = await response.text();
-    const wireNote = this.lastTarget && this.lastTarget !== url
-      ? "[wire " + this.lastTarget.slice(0, 100) + "] " : "";
-    this.lastDebug = wireNote + "cookies=" + this.lastCookieNames + " " +
-      (response.url || url).slice(0, 160) + " status=" + response.status + " body=" +
-      body.slice(0, 800).replace(/\s+/g, " ");
+    this.#recordTextDebug(response, body);
     this.#emitDebug(body);
     // wengine 引导页：包装请求返回 __vpn_hostname_data 页 = wengine 要求客户端
     // 先经 /wengine-vpn/cookie?method=get 领取目标域 cookie 串再重放原请求
@@ -464,11 +461,7 @@ export class HttpClient {
       if (merged > 0) {
         response = await this.request(url, init);
         body = await response.text();
-        const wireNoteB = this.lastTarget && this.lastTarget !== url
-          ? "[wire " + this.lastTarget.slice(0, 100) + "] " : "";
-        this.lastDebug = wireNoteB + "cookies=" + this.lastCookieNames + " " +
-          (response.url || url).slice(0, 160) + " status=" + response.status + " body=" +
-          body.slice(0, 800).replace(/\s+/g, " ");
+        this.#recordTextDebug(response, body);
         this.#emitDebug(body);
       }
     }
@@ -479,11 +472,7 @@ export class HttpClient {
       await this.#reloginInflight;
       response = await this.request(url, init);
       body = await response.text();
-      const wireNote2 = this.lastTarget && this.lastTarget !== url
-        ? "[wire " + this.lastTarget.slice(0, 100) + "] " : "";
-      this.lastDebug = wireNote2 +
-        (response.url || url).slice(0, 160) + " status=" + response.status + " body=" +
-        body.slice(0, 800).replace(/\s+/g, " ");
+      this.#recordTextDebug(response, body);
     }
     return body;
   }

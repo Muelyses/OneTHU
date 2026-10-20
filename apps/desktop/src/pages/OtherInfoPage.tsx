@@ -1,3 +1,5 @@
+import { labelForId } from "../i18n/staticLabels.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 其他 Info 应用 —— 信息门户原始「应用导航」的功能化重排：
  * - 静态目录（lib/infoApps.ts，已剔除与 OneTHU 已有功能重复的条目）；
@@ -18,6 +20,8 @@ import { INFO_APPS, INFO_APP_CATS, infoAppUrl } from "../lib/infoApps.js";
 import { openExternal } from "./info/openExternal.js";
 
 export function OtherInfoPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<string>("all");
 
@@ -28,7 +32,7 @@ export function OtherInfoPage(): ReactNode {
     return INFO_APP_CATS.map((c) => ({ cat: c, apps: INFO_APPS.filter((a) => a.cat === c && match(a.name, a.cat)) })).filter(
       (g) => g.apps.length > 0,
     );
-  }, [q, cat]);
+  }, [uiLocale, q, cat]);
   const total = groups.reduce((n, g) => n + g.apps.length, 0);
 
   const open = (id: string): void => { void openExternal(infoAppUrl(id)); };
@@ -40,21 +44,19 @@ export function OtherInfoPage(): ReactNode {
           type="search"
           size="md"
           icon={<IconSearch size="sm" />}
-          placeholder="搜索应用名 / 分类（如：报销 / 奖学金 / 后勤）"
-          aria-label="搜索 Info 应用"
+          placeholder={i18n("pages.otherinfopage.d0b30aeb01e7")}
+          aria-label={i18n("pages.otherinfopage.eb7639723a18")}
           value={query}
           onChange={setQuery}
         />
         <Inline gap={2} wrap>
-          <Chip selected={cat === "all"} onClick={() => setCat("all")}>
-            全部（{INFO_APPS.length}）
-          </Chip>
+          <Chip selected={cat === "all"} onClick={() => setCat("all")}>{i18nRich("pages.otherinfopage.b6a2a8d49021", { length: INFO_APPS.length })}</Chip>
           {INFO_APP_CATS.map((c) => {
             const n = INFO_APPS.filter((a) => a.cat === c).length;
             if (n === 0) return null;
             return (
               <Chip key={c} selected={cat === c} onClick={() => setCat(c)}>
-                {c}（{n}）
+                {labelForId(c)} ({n})
               </Chip>
             );
           })}
@@ -63,12 +65,12 @@ export function OtherInfoPage(): ReactNode {
 
       {total === 0 ? (
         <Card>
-          <EmptyState title="没有匹配的应用——换个关键词，或切回「全部」分类。" />
+          <EmptyState title={i18n("pages.otherinfopage.78efa46ffcf6")} />
         </Card>
       ) : (
         groups.map((g) => (
           <Stack key={g.cat} gap={3}>
-            <Section title={g.cat} hint={`${g.apps.length} 项`} />
+            <Section title={labelForId(g.cat)} hint={i18n("pages.otherinfopage.42e970981c31", { length: String(g.apps.length) })} />
             <Grid min="sm">
               {g.apps.map((a) => (
                 <Card
@@ -77,7 +79,7 @@ export function OtherInfoPage(): ReactNode {
                   interactive
                   role="button"
                   tabIndex={0}
-                  aria-label={`${a.name}——在系统浏览器打开`}
+                  aria-label={i18n("pages.otherinfopage.d97c92ab7ac4", { name: String(a.name) })}
                   onClick={() => open(a.id)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") open(a.id); }}
                 >

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { experienceMode, isSimpleLike, navigateSimple } from "./experienceMode.js";
 /**
  * Explorer（工作空间革命 · dev-explorer）核心状态机：标签页 / 工作区 / 设置浮层。
@@ -171,7 +172,7 @@ export function explorerSnapshot(): ExplorerState {
 /* ══════════ 查询 ══════════ */
 
 /** 首页标签页（模块级单例：getSnapshot 必须返回稳定引用，否则 useSyncExternalStore 死循环） */
-const HOME_TAB: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, title: "首页", workspaceId: null, createdAt: 0, lastActiveAt: 0 };
+const HOME_TAB: ExplorerTab = { id: HOME_TAB_ID, kind: "home", page: "homepage", params: null, get title() { return i18n("state.explorer.203c08e0d44a"); }, workspaceId: null, createdAt: 0, lastActiveAt: 0 };
 
 /** 全部标签页（home 恒在最前；home 是稳定单例，数组本身仅供渲染期使用） */
 export function allTabs(): ExplorerTab[] {
@@ -226,47 +227,47 @@ export function findInstanceTab(page: Page, params: LearnNav | null): ExplorerTa
 
 /** 页级静态名（兜底；数据快照未就绪时 TabStrip 至少显示域清晰的标题） */
 const PAGE_TITLES: Partial<Record<Page, string>> = {
-  board: "白板",
-  boards: "所有白板",
-  "learn-course": "课程详情",
-  "learn-assignments": "网络学堂 · 全部作业",
-  "learn-notices": "网络学堂 · 全部通知",
-  "learn-files": "网络学堂 · 全部文件",
-  "learn-search": "网络学堂 · 搜索",
-  "learn-semester": "学期切换",
-  "learn-assignment-detail": "作业详情",
-  "learn-notice-detail": "通知详情",
-  "learn-forum-thread": "讨论区话题",
-  "learn-file-detail": "文件详情",
-  "learn-ykt-detail": "雨课堂作业",
+  get board() { return i18n("state.explorer.55add4b94983"); },
+  get boards() { return i18n("state.explorer.ac9a3e2c965a"); },
+  get "learn-course"() { return i18n("state.explorer.22519a88484f"); },
+  get "learn-assignments"() { return i18n("state.explorer.c0262b668835"); },
+  get "learn-notices"() { return i18n("state.explorer.617416a4719a"); },
+  get "learn-files"() { return i18n("state.explorer.44028d43b39b"); },
+  get "learn-search"() { return i18n("state.explorer.2d3197fccc89"); },
+  get "learn-semester"() { return i18n("state.explorer.231ff6cd9b63"); },
+  get "learn-assignment-detail"() { return i18n("state.explorer.d4af30a738c7"); },
+  get "learn-notice-detail"() { return i18n("state.explorer.483fe390159f"); },
+  get "learn-forum-thread"() { return i18n("state.explorer.564f7a2748bb"); },
+  get "learn-file-detail"() { return i18n("state.explorer.27b6154b3fd3"); },
+  get "learn-ykt-detail"() { return i18n("state.explorer.f0cd4338679e"); },
   folder: "OnePage",
-  tasks: "待办",
-  services: "服务",
-  favs: "收藏",
-  xiaoda: "清小搭",
-  org: "组织",
+  get tasks() { return i18n("state.explorer.52fdbbaeda4c"); },
+  get services() { return i18n("state.explorer.ec309ab207ef"); },
+  get favs() { return i18n("state.explorer.60a53514eb92"); },
+  get xiaoda() { return i18n("state.explorer.b1abb3dc2271"); },
+  get org() { return i18n("state.explorer.b4d203dea5b9"); },
 };
 
 /** 聚合页栏目的中文短名（tab 可深链到具体栏目：信息-新闻，但主题仍是信息） */
 /* 一级页标题 + 子栏目名：与各页面原始栏目 TABS 一致（信息页/生活页/预约页）。
  * 不得自行缩写（此前「体测成绩→体测」「校历→日历」「图书馆座位→图书馆」等缩略已撤回）。 */
-const PAGE_HEADER: Partial<Record<Page, string>> = { info: "信息", life: "生活", reserve: "预约" };
+const PAGE_HEADER: Partial<Record<Page, string>> = { get info() { return i18n("state.explorer.e7028601e7da"); }, get life() { return i18n("state.explorer.15d208d1b4c9"); }, get reserve() { return i18n("state.explorer.352cdc807892"); } };
 const TAB_SUFFIX: Record<string, Record<string, string>> = {
-  info: { report: "成绩", fitness: "体测成绩", exams: "考试", evaluation: "教学评估", calendar: "校历", news: "新闻", profile: "个人信息", courseinfo: "课程信息" },
-  life: { dorm: "宿舍", washer: "洗衣机", hygiene: "卫生成绩", card: "校园卡", invoice: "电子发票", payroll: "银行代发", gradincome: "研究生收入", network: "校园网" },
-  reserve: { lib: "图书馆座位", libroom: "研讨间", classroom: "空教室", sports: "体育", kongjian: "公共空间" },
+  info: { get report() { return i18n("state.explorer.fdcd1bd074c9"); }, get fitness() { return i18n("state.explorer.316da6d69b7d"); }, get exams() { return i18n("state.explorer.d26ef0190d6c"); }, get evaluation() { return i18n("state.explorer.14384c9d60cc"); }, get calendar() { return i18n("state.explorer.4792ab1440aa"); }, get news() { return i18n("state.explorer.d39567b2b9f1"); }, get profile() { return i18n("state.explorer.640803d89773"); }, get courseinfo() { return i18n("state.explorer.4da04dfef534"); } },
+  life: { get dorm() { return i18n("state.explorer.3a74de9a9014"); }, get washer() { return i18n("state.explorer.6acfa1db6a62"); }, get hygiene() { return i18n("state.explorer.41d497d6e07e"); }, get card() { return i18n("state.explorer.caf1f095b108"); }, get invoice() { return i18n("state.explorer.92341cf02c56"); }, get payroll() { return i18n("state.explorer.24be2018df29"); }, get gradincome() { return i18n("state.explorer.336dbe5fd82f"); }, get network() { return i18n("state.explorer.dd94488f5269"); } },
+  reserve: { get lib() { return i18n("state.explorer.31c17158ebdb"); }, get libroom() { return i18n("state.explorer.e4d40b4d6759"); }, get classroom() { return i18n("state.explorer.ecc11c8afea8"); }, get sports() { return i18n("state.explorer.ef7be5be3c13"); }, get kongjian() { return i18n("state.explorer.e81059e1a712"); } },
 };
 
 export function titleOf(page: Page, params?: LearnNav | null, fallback?: string): string {
   if (fallback) return fallback;
-  if (page === "homepage") return "首页";
+  if (page === "homepage") return i18n("state.explorer.203c08e0d44a");
   const header = PAGE_HEADER[page];
   if (header) {
     const suffixes = TAB_SUFFIX[page] ?? {};
     const key = page === "info" ? params?.infoTab : page === "life" ? params?.lifeTab : params?.reserveTab;
     return key && suffixes[key] ? `${header} · ${suffixes[key]}` : header;
   }
-  return NAV_REGISTRY.find((e) => e.page === page)?.name ?? PAGE_TITLES[page] ?? "页面";
+  return NAV_REGISTRY.find((e) => e.page === page)?.name ?? PAGE_TITLES[page] ?? i18n("state.explorer.452c7b10d57a");
 }
 
 /* ══════════ hash（由本模块统一写；外部深链 = 开新标签页） ══════════ */
@@ -312,7 +313,7 @@ function openBoardFromHash(hash: string): boolean {
   if (!m) return false;
   const id = m[1] ?? "";
   if (!id) return false;
-  let title = "白板";
+  let title = i18n("state.explorer.55add4b94983");
   try {
     title = loadBoard().boards.find((b) => b.id === id)?.name ?? title;
   } catch {
@@ -572,7 +573,7 @@ export function saveWorkspace(name: string, tabIds?: string[]): string {
   if (source.length === 0) return "";
   const ws: ExplorerWorkspace = {
     id: `w_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
-    name: name.trim() || "工作区",
+    name: name.trim() || i18n("state.explorer.37979829426b"),
     createdAt: Date.now(),
     tabs: source.map((t) => ({ page: t.page, params: t.params, title: t.title })),
   };
@@ -586,7 +587,7 @@ export function saveWorkspace(name: string, tabIds?: string[]): string {
 export function createLiveWorkspace(opts: { name: string; color: string; icon: string }, tabIds: string[]): string {
   const ws: ExplorerWorkspace = {
     id: `w_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
-    name: opts.name.trim() || "工作区",
+    name: opts.name.trim() || i18n("state.explorer.37979829426b"),
     createdAt: Date.now(),
     tabs: [],
     color: opts.color,

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 分享口令（联网短口令阶段）：云盘清单 + 固定长度短码。
  *
@@ -117,7 +118,7 @@ export function encodeShare(payload: VaultSharePayload): string {
 }
 
 async function sha256Hex(text: string): Promise<string> {
-  if (!globalThis.crypto?.subtle) throw new Error("当前环境没有 WebCrypto，无法生成口令摘要");
+  if (!globalThis.crypto?.subtle) throw new Error(i18n("state.vaultshare.af175fd37c73"));
   const bytes = utf8Bytes(text);
   const copy = new Uint8Array(bytes.byteLength);
   copy.set(bytes);
@@ -141,8 +142,8 @@ export interface DecodeResult {
 
 /** 共享的 payload 校验/净化（v1/v2 同口径）。 */
 function validatePayload(p: VaultSharePayload): DecodeResult {
-  if (p?.v !== 1 || p.kind !== "vault-share" || typeof p.name !== "string") return { ok: false, reason: "口令版本或结构不受支持" };
-  if (p.expiresAt && Date.now() > p.expiresAt) return { ok: false, reason: "口令已过期；请让分享者重新生成" };
+  if (p?.v !== 1 || p.kind !== "vault-share" || typeof p.name !== "string") return { ok: false, reason: i18n("state.vaultshare.b2e333bd5624") };
+  if (p.expiresAt && Date.now() > p.expiresAt) return { ok: false, reason: i18n("state.vaultshare.00b9a4acaf92") };
   /* 口令名 / 限定邮箱是不可信输入：截断 + 只接受像邮箱的值。 */
   if (p.label !== undefined) {
     const label = typeof p.label === "string" ? p.label.trim().slice(0, 60) : "";
@@ -154,7 +155,7 @@ function validatePayload(p: VaultSharePayload): DecodeResult {
     else p.allowEmail = email;
   }
   if (p.items !== undefined) {
-    if (!Array.isArray(p.items) || p.items.length > MAX_ITEMS) return { ok: false, reason: "口令清单超过上限（300 项）" };
+    if (!Array.isArray(p.items) || p.items.length > MAX_ITEMS) return { ok: false, reason: i18n("state.vaultshare.b37b72a03e7d") };
     const items = p.items.map(sanitizeCatch).filter((x): x is VaultCatch => x !== null);
     p.items = items;
     p.name = p.name.slice(0, MAX_TITLE) || "分享的暂存箱";
@@ -170,37 +171,37 @@ export async function decodeShareAsync(code: string): Promise<DecodeResult> {
     catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
   }
   if (!raw.startsWith(SHARE_PREFIX_V2 + ".")) return decodeShare(raw);
-  if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: "口令过大（超过 96KB），不是本应用的正常口径" };
+  if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: i18n("state.vaultshare.ae3ba9170d2f") };
   const parts = raw.split(".");
-  if (parts.length !== 3) return { ok: false, reason: "口令格式不完整" };
+  if (parts.length !== 3) return { ok: false, reason: i18n("state.vaultshare.9ae3c2acf2c1") };
   let json: string;
-  try { json = new TextDecoder().decode(fromBase64Url(parts[1]!)); } catch { return { ok: false, reason: "口令内容损坏（base64 解码失败）" }; }
+  try { json = new TextDecoder().decode(fromBase64Url(parts[1]!)); } catch { return { ok: false, reason: i18n("state.vaultshare.09cc0bb41763") }; }
   try {
     const sum = (await sha256Hex(json)).slice(0, 32);
-    if (sum !== parts[2]) return { ok: false, reason: "口令校验失败（可能被篡改或复制不完整）" };
+    if (sum !== parts[2]) return { ok: false, reason: i18n("state.vaultshare.63205c669579") };
     return validatePayload(JSON.parse(json) as VaultSharePayload);
   } catch (e) {
-    return { ok: false, reason: e instanceof Error ? e.message : "口令校验失败" };
+    return { ok: false, reason: e instanceof Error ? e.message : i18n("state.vaultshare.2fb90783488d") };
   }
 }
 
 export function decodeShare(code: string): DecodeResult {
   const raw = String(code ?? "").trim();
-  if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: "口令过大（超过 96KB），不是本应用的正常口径" };
+  if (raw.length > MAX_CODE_CHARS) return { ok: false, reason: i18n("state.vaultshare.ae3ba9170d2f") };
   const parts = raw.split(".");
-  if (parts.length !== 3 || parts[0] !== SHARE_PREFIX) return { ok: false, reason: "不是 OneTHU 分享口令（应以 ONV1. 开头）" };
+  if (parts.length !== 3 || parts[0] !== SHARE_PREFIX) return { ok: false, reason: i18n("state.vaultshare.df690d6050a8") };
   const [, body, sum] = parts;
   let json: string;
   try {
     json = new TextDecoder().decode(fromBase64Url(body!));
   } catch {
-    return { ok: false, reason: "口令内容损坏（base64 解码失败）" };
+    return { ok: false, reason: i18n("state.vaultshare.09cc0bb41763") };
   }
-  if (checksum(json) !== sum) return { ok: false, reason: "口令校验失败（可能复制不完整）" };
+  if (checksum(json) !== sum) return { ok: false, reason: i18n("state.vaultshare.989f1cde10a3") };
   try {
     return validatePayload(JSON.parse(json) as VaultSharePayload);
   } catch {
-    return { ok: false, reason: "口令内容不是合法 JSON" };
+    return { ok: false, reason: i18n("state.vaultshare.7aa0c43fe053") };
   }
 }
 
@@ -299,18 +300,18 @@ function applyShareMeta(payload: VaultSharePayload, meta?: ShareMeta): VaultShar
   const label = String(meta?.label ?? "").trim().slice(0, 60);
   if (label) out.label = label;
   const email = String(meta?.allowEmail ?? "").trim().toLowerCase();
-  if (email && !EMAIL_RE.test(email)) throw new Error("接收邮箱格式不正确");
+  if (email && !EMAIL_RE.test(email)) throw new Error(i18n("state.vaultshare.5dec5b6cd859"));
   if (email) out.allowEmail = email;
   return out;
 }
 
 /** 生成口令：必须连接清华云盘——上传清单，口令只带分享凭据的短码。 */
 export async function mintShareCode(box: VaultBox, from?: string, meta?: ShareMeta): Promise<{ code: string; payload: VaultSharePayload }> {
-  if (!adapter) throw new Error("请先连接清华云盘，再生成分享口令");
+  if (!adapter) throw new Error(i18n("state.vaultshare.e1b89010df35"));
   const payload = applyShareMeta(payloadFromVault(box, from, true), meta);
   const cloud = await adapter.upload(payload);
   const final = { ...payload, items: undefined, cloud };
-  if (!final.cloud?.shareUrl) throw new Error("云盘没有返回分享链接");
+  if (!final.cloud?.shareUrl) throw new Error(i18n("state.vaultshare.6e106dfb0757"));
   const code = shortCodeForLink(final.cloud.shareUrl);
   // 上传期间箱子可能已被编辑：旧快照的口令不能冒充当前内容。
   const current = vaultSnapshot().boxes.find(b => b.id === box.id);
@@ -326,13 +327,13 @@ export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; pa
     const pending=pendingRotations()[box.lastShareCode];
     const code=pending?await finishRotation(box.lastShareCode,pending):box.lastShareCode;
     const dec = await decodeShareAsync(code);
-    if (!dec.ok || !dec.payload) throw new Error(dec.reason ?? "旧口令已失效，请重新生成分享");
+    if (!dec.ok || !dec.payload) throw new Error(dec.reason ?? i18n("state.vaultshare.b149e6ae5817"));
     const payload = dec.payload;
     if(payload.allowEmail&&!payload.cloud?.keyRepoId){
       const upgraded=await updateShareMeta(code,{allowEmail:payload.allowEmail});
-      if(!upgraded.ok||!upgraded.code)throw new Error(upgraded.reason??"旧私密分享尚未升级，请重试");
+      if(!upgraded.ok||!upgraded.code)throw new Error(upgraded.reason??i18n("state.vaultshare.c97b00b652fa"));
       const secured=await decodeShareAsync(upgraded.code);
-      if(!secured.ok||!secured.payload)throw new Error(secured.reason??"升级后的分享不可读取");
+      if(!secured.ok||!secured.payload)throw new Error(secured.reason??i18n("state.vaultshare.b713d28a9ae7"));
       return {code:upgraded.code,payload:secured.payload};
     }
     recordIssuedShare(box, code, payload);
@@ -346,19 +347,19 @@ export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; pa
       return { code, payload: old.payload };
     }
   }
-  if (!box.items.length) throw new Error('暂存箱还是空的，先收进一些内容');
+  if (!box.items.length) throw new Error(i18n("state.vaultshare.561b8b9a8f82"));
   /* 雷达/名片这些小形态可能没经过暂存箱页（适配器在那儿才装）：这里补一次，
      已连接云盘才会注册；动态 import 避免 vaultCloud ↔ vaultShare 静态环。 */
   const { installVaultCloudAdapter } = await import('./vaultCloud.js');
   await installVaultCloudAdapter();
-  if (!adapter) throw new Error('请先连接清华云盘，再分享暂存箱');
+  if (!adapter) throw new Error(i18n("state.vaultshare.d2880ea01ca6"));
   return mintShareCode(box);
 }
 
 /** 解析后导入：旧入口默认替换当前箱；直接交换传 new，完整保留已有箱子。 */
 export async function importShareCodeAsCurrent(code: string, target: "current" | "new" = "current"): Promise<{ ok: boolean; imported?: number; reason?: string }> {
   const dec = await decodeShareAsync(code);
-  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
+  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.vaultshare.c4591b5b1fe8") };
   let payload = dec.payload;
   const denied = await shareAccessReason(payload.allowEmail);
   if (denied) return { ok: false, reason: denied };
@@ -366,25 +367,25 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
     try {
       if (adapter) payload = await adapter.resolve(payload.cloud);
       else {
-        if (!payload.cloud.shareUrl) return { ok: false, reason: "分享缺少读取链接" };
+        if (!payload.cloud.shareUrl) return { ok: false, reason: i18n("state.vaultshare.ee75d1a72727") };
         const text = await (await import("./seafile.js")).seafileShareRead(payload.cloud.shareUrl, payload.cloud.manifestName);
-        if (text.length > 2 * 1024 * 1024) throw new Error("分享内容超过支持的大小");
+        if (text.length > 2 * 1024 * 1024) throw new Error(i18n("state.vaultshare.388fc6c63ebe"));
         payload = await (await import("./sealedShare.js")).readSharedJson(text) as VaultSharePayload;
       }
       const checked = validatePayload(payload);
-      if (!checked.ok || !checked.payload?.items) return { ok: false, reason: checked.reason || "分享里没有可接收的内容" };
+      if (!checked.ok || !checked.payload?.items) return { ok: false, reason: checked.reason || i18n("state.vaultshare.ced6988b78e7") };
       payload = checked.payload;
       /* 云盘清单是权威：发送方后来改过限定邮箱，这里以清单为准再拦一次。 */
       const deniedLate = await shareAccessReason(payload.allowEmail);
       if (deniedLate) return { ok: false, reason: deniedLate };
     } catch (e) {
-      return { ok: false, reason: `云盘读取失败：${e instanceof Error ? e.message : String(e)}` };
+      return { ok: false, reason: i18n("state.vaultshare.716036f1e95d", { error: e instanceof Error ? e.message : String(e) }) };
     }
   }
   const items = payload.items ?? [];
   for(const item of items)if(item.file?.cloudPath&&dec.payload?.cloud?.shareUrl){item.file.shareUrl=dec.payload.cloud.shareUrl;item.file.shareKeyRepoId=dec.payload.cloud.keyRepoId;}
   const box = target === "new" ? createVault(payload.name || "收到的暂存箱") : vaultSnapshot().boxes.find((b) => b.id === vaultSnapshot().activeId);
-  if (!box) return { ok: false, reason: "当前没有暂存箱" };
+  if (!box) return { ok: false, reason: i18n("state.vaultshare.a473c3b43384") };
   replaceVaultItems(box.id, items);
   return { ok: true, imported: items.length };
 }
@@ -403,7 +404,7 @@ function saveRotation(code:string,rotation?:ShareRotation):void{
 }
 async function finishRotation(code:string,rotation:ShareRotation):Promise<string>{
   if(!adapter)await(await import("./vaultCloud.js")).installVaultCloudAdapter();
-  if(!adapter)throw new Error("请先连接清华云盘");
+  if(!adapter)throw new Error(i18n("state.vaultshare.f6d2148271ab"));
   await adapter.revoke(rotation.old);
   const updated=shortCodeForLink(rotation.next.shareUrl!);
   (await import("./vaultShareLog.js")).replaceIssuedShareCode(code,updated,rotation.payload);
@@ -429,10 +430,10 @@ export async function updateShareMeta(
       const updated=await finishRotation(code,pending);
       const result=await updateShareMeta(updated,patch);
       return result.ok?{...result,code:result.code??updated}:result;
-    }catch(e){return {ok:false,reason:`更换接收范围仍待完成，请重试：${e instanceof Error?e.message:String(e)}`};}
+    }catch(e){return {ok:false,reason:i18n("state.vaultshare.de371c09cf24", { error: e instanceof Error?e.message:String(e) })};}
   }
   const dec = await decodeShareAsync(code);
-  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
+  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.vaultshare.c4591b5b1fe8") };
   const payload: VaultSharePayload = { ...dec.payload };
   if (patch.label !== undefined) {
     const label = String(patch.label ?? "").trim().slice(0, 60);
@@ -441,23 +442,23 @@ export async function updateShareMeta(
   }
   if (patch.allowEmail !== undefined) {
     const email = String(patch.allowEmail ?? "").trim().toLowerCase();
-    if (email && !EMAIL_RE.test(email)) return { ok: false, reason: "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样" };
+    if (email && !EMAIL_RE.test(email)) return { ok: false, reason: i18n("state.vaultshare.c5479cb871fa") };
     if (email) payload.allowEmail = email;
     else delete payload.allowEmail;
   }
-  if (!payload.cloud) return { ok: false, reason: "这条是旧版本地口令，内容写在口令里改不了；请重新生成新口令" };
+  if (!payload.cloud) return { ok: false, reason: i18n("state.vaultshare.b431db21b7df") };
   if (!adapter) {
     const { installVaultCloudAdapter } = await import("./vaultCloud.js");
     await installVaultCloudAdapter();
   }
-  if (!adapter) return { ok: false, reason: "请先连接清华云盘（改口令要更新云盘里的清单）" };
-  if (!adapter.update) return { ok: false, reason: "当前云盘适配器不支持就地更新，请重新生成口令" };
+  if (!adapter) return { ok: false, reason: i18n("state.vaultshare.857b79bf69f3") };
+  if (!adapter.update) return { ok: false, reason: i18n("state.vaultshare.65381bdff463") };
   /* 短码解码出的 cloud 引用只有分享链接，缺 repoId/path；从本地台账补全。
      清单必须整份读回来再改：直接拿解码结果写回去会丢 items。 */
   const { issuedSharesSnapshot } = await import("./vaultShareLog.js");
   const entry = issuedSharesSnapshot().entries.find((e) => e.code === code);
   const ref = { ...payload.cloud, ...(entry?.cloud ?? {}) };
-  if (!ref.repoId) return { ok: false, reason: "找不到这条口令的云盘位置，请在暂存箱里重新生成口令" };
+  if (!ref.repoId) return { ok: false, reason: i18n("state.vaultshare.9aa4c7ceb155") };
   let full: VaultSharePayload = { ...payload, cloud: ref };
   try {
     const resolved = await adapter.resolve(ref);
@@ -471,7 +472,7 @@ export async function updateShareMeta(
       else delete full.allowEmail;
     }
   } catch (e) {
-    return { ok: false, reason: `读取云盘清单失败：${e instanceof Error ? e.message : String(e)}` };
+    return { ok: false, reason: i18n("state.vaultshare.b8aeb1a1f261", { error: e instanceof Error ? e.message : String(e) }) };
   }
   // Changing recipients rotates the key and shortcode; old recipients must not keep
   // access through a previously public link or an old private key library.
@@ -482,7 +483,7 @@ export async function updateShareMeta(
       for(const item of full.items??[]){if(item.file?.cloudPath){item.file.stagedPath=await materializeSharedFile(ref,item.file.cloudPath,item.file.name);delete item.file.cloudPath;}}
       delete full.cloud;
       next=await adapter.upload(full);
-      if(!next.shareUrl)throw new Error("云盘未返回新分享链接");
+      if(!next.shareUrl)throw new Error(i18n("state.vaultshare.fab167848c3e"));
       const rotation:ShareRotation={old:ref,next,payload:{...full,items:undefined,cloud:next}};
       saveRotation(code,rotation);
       return {ok:true,code:await finishRotation(code,rotation)};
@@ -490,13 +491,13 @@ export async function updateShareMeta(
       // Once journaled, preserve the new encrypted share for a retry. A partially
       // revoked old share must never make both copies irrecoverable.
       if(next&&!pendingRotations()[code])await adapter.revoke(next).catch(()=>undefined);
-      return {ok:false,reason:`更换接收范围未完成，请重试：${e instanceof Error?e.message:String(e)}`};
+      return {ok:false,reason:i18n("state.vaultshare.cb2fdf85ee42", { error: e instanceof Error?e.message:String(e) })};
     }
   }
   try {
     await adapter.update(ref, full);
   } catch (e) {
-    return { ok: false, reason: `更新云盘清单失败：${e instanceof Error ? e.message : String(e)}` };
+    return { ok: false, reason: i18n("state.vaultshare.65841f3a49c8", { error: e instanceof Error ? e.message : String(e) }) };
   }
   const { updateIssuedShareMeta } = await import("./vaultShareLog.js");
   updateIssuedShareMeta(code, { label: payload.label??"", allowEmail: payload.allowEmail??"" });
@@ -531,8 +532,8 @@ export async function shareAccessReason(allowEmail?: string): Promise<string | n
       /* 刷新失败：按当前缓存判 */
     }
   }
-  if (!mine) return `这条口令限定给 ${want} 接收：请先用该邮箱连接清华云盘，再打开这条口令`;
-  if (mine !== want) return `这条口令限定给 ${want} 接收；当前连接的云盘账号是 ${mine}`;
+  if (!mine) return i18n("state.vaultshare.1677a739e1a4", { recipient: want });
+  if (mine !== want) return i18n("state.vaultshare.dd39d27f2eaf", { recipient: want, currentAccount: mine });
   return null;
 }
 

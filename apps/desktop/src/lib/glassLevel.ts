@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 玻璃程度（四档，名字按**实际观感**定，2026-10-15 用户实测校准）：
  *   clear 透彻 / balanced 无（默认：不落属性 → 中性面，即无玻璃）/ rich 透光 / deep 均衡。
@@ -14,10 +15,10 @@ const LEVELS: GlassLevel[] = ["clear", "balanced", "rich", "deep"];
 
 export function glassLevels(): Array<{ id: GlassLevel; label: string }> {
   return [
-    { id: "clear", label: "透彻" },
-    { id: "balanced", label: "无" },
-    { id: "rich", label: "透光" },
-    { id: "deep", label: "均衡" },
+    { id: "clear", label: i18n("lib.glasslevel.3ea0f0b117e3") },
+    { id: "balanced", label: i18n("lib.glasslevel.484d55613910") },
+    { id: "rich", label: i18n("lib.glasslevel.02180509cf78") },
+    { id: "deep", label: i18n("lib.glasslevel.2588b5b9bacc") },
   ];
 }
 

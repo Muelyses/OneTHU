@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 校内新闻页 —— getNews 列表 + getNewsDetail 站内预览（thu-info-lib news.ts 同源）。
  * 点击条目先在应用内看正文（NEWS_DETAIL?xxid=…&_csrf= → object.xxDto），
@@ -124,13 +125,15 @@ function NewsRow({
   showSourceChip?: boolean;
   onOpen: (item: NewsItem) => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const dateStr = n.date ? n.date.slice(5, 10).replace("-", "/") : "--";
   return (
     <Row
       flush
       role="button"
       tabIndex={0}
-      titleAttr="点击查看详情"
+      titleAttr={i18n("pages.info.newstab.ebfa3e62fea6")}
       onClick={() => onOpen(n)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -141,7 +144,7 @@ function NewsRow({
       trailing={
         <>
           {showSourceChip && n.source ? <Tag tone="neutral">{n.source}</Tag> : null}
-          {n.url ? <IconExternal size="sm" title="原文链接" /> : null}
+          {n.url ? <IconExternal size="sm" title={i18n("pages.info.newstab.e3e8e974ffdc")} /> : null}
           {n.xxid ? (
             <CollectStar atom={{ kind: "news", key: enc(n.xxid, n.name, n.source) }} title={n.name} />
           ) : null}
@@ -152,13 +155,13 @@ function NewsRow({
         <Text slot="body" weight="medium">
           {n.topped ? (
             <>
-              <Tag tone="brand">置顶</Tag>{" "}
+              <Tag tone="brand">{i18n("pages.info.newstab.173f88d28ebf")}</Tag>{" "}
             </>
           ) : null}
           <Highlight text={n.name} tokens={tokens} />
         </Text>
         <Text slot="micro" tone="faint" nowrap>
-          {dateStr} · {n.source || "校内"}
+          {dateStr} · {n.source || i18n("pages.info.newstab.b5a18d43cada")}
         </Text>
       </Stack>
     </Row>
@@ -182,6 +185,8 @@ export function NewsTab({
   /** 订阅源原子深链：条件就绪后切「订阅动态」并选中同名条件（news-src 原子用） */
   deepSubSource?: string;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const [page, setPage] = useState(1);
   const { data, state, error, reload } = useNews(page, PAGE_SIZE);
   const [detail, setDetail] = useState<DetailState | null>(null);
@@ -199,9 +204,9 @@ export function NewsTab({
     setDlHint(null);
     try {
       const path = await downloadLearnUrl(url, name || "news-attachment");
-      setDlHint({ text: `已下载到：${path}`, path });
+      setDlHint({ text: i18n("pages.info.newstab.2d2ab24375ce", { path: String(path) }), path });
     } catch (err: unknown) {
-      setDlHint({ text: "下载失败：" + explainNetworkError(err) });
+      setDlHint({ text: i18n("pages.info.newstab.90f9253844e7") + explainNetworkError(err) });
     } finally {
       setDlAtt(null);
     }
@@ -263,7 +268,7 @@ export function NewsTab({
   const fetchedList = useMemo(() => {
     for (const n of data ?? []) if (n.xxid) fetchedRef.current.set(n.xxid, n);
     return [...fetchedRef.current.values()];
-  }, [data]);
+  }, [uiLocale, data]);
 
   /* 原子搜索缓存：已拉到的新闻入库（搜索框不主动请求新闻服务） */
   useEffect(() => {
@@ -308,12 +313,12 @@ export function NewsTab({
 
   /* OG Modal 自带 Esc/遮罩/滚动锁关闭（ Courses 弹窗同款出口），此处不再手挂 keydown */
 
-  const tokens = useMemo(() => tokenize(query), [query]);
+  const tokens = useMemo(() => tokenize(query), [uiLocale, query]);
 
   /* 本地兜底检索：标题 10 / 来源 4 / 正文摘要 2（plainBump=新预览正文后重算） */
   const localResults = useMemo(
     () => rankNews(fetchedList, tokens, (n) => plainRef.current.get(n.xxid) ?? ""),
-    [fetchedList, tokens, plainBump],
+    [uiLocale, fetchedList, tokens, plainBump],
   );
 
   const searching = query.length > 0;
@@ -375,7 +380,7 @@ export function NewsTab({
     return (subsServer ?? [])
       .filter((c) => c.id)
       .map((c) => ({ id: c.id, label: c.source || c.title || c.channel || c.keyword || `#${c.id}` }));
-  }, [subsServer]);
+  }, [uiLocale, subsServer]);
   /** 选中条件 id（「all」= 全部条件合并分页，不传 dyid） */
   const subDyid = subSel === "all" ? undefined : subSel;
   /* 选中条件已被删除（不在 chips 中）→ 回退「全部」并重置分页 */
@@ -431,7 +436,7 @@ export function NewsTab({
       searching
         ? rankNews(subItems, tokens, (n) => plainRef.current.get(n.xxid) ?? "").map((r) => r.item)
         : subItems,
-    [subItems, searching, tokens, plainBump],
+    [uiLocale, subItems, searching, tokens, plainBump],
   );
   /* thu-info-app 同判据：返回空页 = 到底；非空页即认为还有下一页 */
   const subCanNext = (subFeed?.length ?? 0) > 0;
@@ -448,7 +453,7 @@ export function NewsTab({
     };
     if (sources) [...sources].reverse().forEach(push);
     return rows;
-  }, [sources]);
+  }, [uiLocale, sources]);
 
   /** 切换订阅动态来源 chip（按条件 id）：重置分页（「全部」= 全部条件合并分页） */
   const selectSubChip = (id: string) => {
@@ -467,7 +472,7 @@ export function NewsTab({
     setOpBusy(c.id);
     try {
       const ok = await info.removeNewsSubscription(c.id);
-      if (!ok) throw new Error("删除未成功，请刷新后重试");
+      if (!ok) throw new Error(i18n("pages.info.newstab.5f172c5140ca"));
       setSubsTick((t) => t + 1);
       setSubFeedTick((t) => t + 1);
     } catch (err: unknown) {
@@ -487,11 +492,11 @@ export function NewsTab({
       if (existing.length > 0) {
         for (const c of existing) {
           const ok = await info.removeNewsSubscription(c.id);
-          if (!ok) throw new Error("删除未成功，请刷新后重试");
+          if (!ok) throw new Error(i18n("pages.info.newstab.5f172c5140ca"));
         }
       } else {
         const ok = await info.addNewsSubscription({ sourceId: unit.sourceId });
-        if (!ok) throw new Error("添加未成功，请刷新后重试");
+        if (!ok) throw new Error(i18n("pages.info.newstab.44c55113208f"));
       }
       setSubsTick((t) => t + 1);
       setSubFeedTick((t) => t + 1);
@@ -549,8 +554,8 @@ export function NewsTab({
   return (
     <Stack gap={3}>
       <Section
-        title="校内新闻"
-        hint="信息门户发布 · 点击在系统浏览器打开"
+        title={i18n("pages.info.newstab.279658ea601c")}
+        hint={i18n("pages.info.newstab.3dd09b78c050")}
         /* 分页/搜索切换时重挂以重放进场节奏 */
         key={`head-${page}`}
       />
@@ -564,35 +569,30 @@ export function NewsTab({
             icon={<IconSearch size="sm" />}
             value={input}
             onChange={setInput}
-            placeholder="搜索标题 / 正文 / 来源（服务端优先，本地兜底）"
-            aria-label="搜索新闻"
+            placeholder={i18n("pages.info.newstab.3b275fe0df2c")}
+            aria-label={i18n("pages.info.newstab.260cbb8afb63")}
           />
         </Grow>
-        <Btn variant="outline" onClick={() => setSubsOpen(true)}>订阅管理{subs.length > 0 ? `（${subs.length}）` : ""}
-        </Btn>
+        <Btn variant="outline" onClick={() => setSubsOpen(true)}>{i18nRich("pages.info.newstab.0b4ff6ccd332", { value: subs.length > 0 ? `（${subs.length}）` : "" })}</Btn>
       </Inline>
 
       {/* segmented 二级分栏（InfoPage 同款；无订阅时隐藏，只显示全部新闻） */}
       {subs.length > 0 ? (
-        <SegmentedOverflow ariaLabel="新闻分栏">
+        <SegmentedOverflow ariaLabel={i18n("pages.info.newstab.988287587a26")}>
           <Btn
             size="sm"
             variant={activeSeg === "all" ? "tonal" : "ghost"}
             role="tab"
             aria-selected={activeSeg === "all"}
             onClick={() => setSeg("all")}
-          >
-            全部新闻
-          </Btn>
+          >{i18n("pages.info.newstab.70b6105c0180")}</Btn>
           <Btn
             size="sm"
             variant={activeSeg === "subs" ? "tonal" : "ghost"}
             role="tab"
             aria-selected={activeSeg === "subs"}
             onClick={() => setSeg("subs")}
-          >
-            订阅动态（{subs.length}）
-          </Btn>
+          >{i18nRich("pages.info.newstab.94dfc8f77ac1", { length: subs.length })}</Btn>
         </SegmentedOverflow>
       ) : null}
 
@@ -600,30 +600,27 @@ export function NewsTab({
       {activeSeg === "all" ? (
         <Inline gap={2}>
           <Spacer />
-          <Text slot="label" tone="faint" nowrap>第 {page} 页</Text>
-          <Btn variant="outline" disabled={!canPrev || state === "loading" || searching} onClick={() => setPage((p) => Math.max(1, p - 1))}>上一页
-          </Btn>
-          <Btn variant="outline" disabled={!fullPage || state === "loading" || searching} onClick={() => setPage((p) => p + 1)}>下一页
-          </Btn>
-          <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}>刷新
-          </Btn>
+          <Text slot="label" tone="faint" nowrap>{i18nRich("pages.info.newstab.acac3da6c629", { page: page })}</Text>
+          <Btn variant="outline" disabled={!canPrev || state === "loading" || searching} onClick={() => setPage((p) => Math.max(1, p - 1))}>{i18n("pages.info.newstab.c9b9ae7a6144")}</Btn>
+          <Btn variant="outline" disabled={!fullPage || state === "loading" || searching} onClick={() => setPage((p) => p + 1)}>{i18n("pages.info.newstab.8a8542f69648")}</Btn>
+          <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}>{i18n("pages.info.newstab.aee887434131")}</Btn>
         </Inline>
       ) : null}
 
       {searching && activeSeg === "all" ? (
         <Fragment key={`search-${query}`}>
           <Section
-            title={`搜索：${query}`}
+            title={i18n("pages.info.newstab.cb6f03cf2a75", { query: String(query) })}
             hint={
               showServer
-                ? `服务端搜索 · ${searchItems.length} 条`
+                ? i18n("pages.info.newstab.477b586d63a0", { length: String(searchItems.length) })
                 : serverState === "loading"
                   ? localResults.length > 0
-                    ? `本地先行 ${localResults.length} 条 · 服务端搜索中…`
-                    : "服务端搜索中…"
+                    ? i18n("pages.info.newstab.69862d19f52a", { length: String(localResults.length) })
+                    : i18n("pages.info.newstab.3f0a56b66693")
                   : serverState === "fallback"
-                    ? `本地兜底 · 已抓取 ${fetchedList.length} 条内检索（服务端搜索不可用）`
-                    : `本地检索 · ${searchItems.length} 条`
+                    ? i18n("pages.info.newstab.4d022a7599b4", { length: String(fetchedList.length) })
+                    : i18n("pages.info.newstab.2a5dc59262cb", { length: String(searchItems.length) })
             }
           />
           {searchItems.length === 0 ? (
@@ -631,8 +628,8 @@ export function NewsTab({
               <EmptyState
                 title={
                   serverState === "loading" && localResults.length === 0
-                    ? "正在检索…"
-                    : `没有与“${query}”相关的新闻。`
+                    ? i18n("pages.info.newstab.1dad8492f8c1")
+                    : i18n("pages.info.newstab.5a91a7f48009", { query: String(query) })
                 }
               />
             </Card>
@@ -654,13 +651,13 @@ export function NewsTab({
       ) : activeSeg === "subs" ? (
         <Fragment key={`sub-feed-${searching ? query : ""}-${subPage}-${subSel}`}>
           <Section
-            title="订阅动态"
+            title={i18n("pages.info.newstab.23d18fc44de0")}
             hint={
               searching
-                ? `“${query}” 命中 ${subShown.length} 条（${subSel === "all" ? "全部订阅" : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`}内检索）`
+                ? i18n("pages.info.newstab.260d6f3af87e", { query: String(query), length: String(subShown.length), value: String(subSel === "all" ? i18n("pages.info.newstab.045f5aadace2") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`) })
                 : subSel === "all"
-                  ? `已订阅 ${subsServer?.length ?? subs.length} 个条件 · 第 ${subPage} 页 · ${subShown.length} 条`
-                  : `来源：${subChips.find((c) => c.id === subSel)?.label ?? subSel} · 第 ${subPage} 页 · ${subShown.length} 条`
+                  ? i18n("pages.info.newstab.762b04cd10e9", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })
+                  : i18n("pages.info.newstab.602e9f6984cb", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })
             }
           />
 
@@ -672,9 +669,7 @@ export function NewsTab({
                 size="sm"
                 selected={subSel === "all"}
                 onClick={() => selectSubChip("all")}
-              >
-                全部
-              </Chip>
+              >{i18n("pages.info.newstab.5c55a67935af")}</Chip>
               {subChips.map((c) => (
                 <Chip
                   key={c.id}
@@ -698,10 +693,10 @@ export function NewsTab({
               <EmptyState
                 title={
                   searching
-                    ? `订阅动态中没有与“${query}”相关的新闻。`
+                    ? i18n("pages.info.newstab.89bc802be658", { query: String(query) })
                     : subPage > 1
-                      ? "本页没有更多订阅动态了。"
-                      : "该订阅条件暂无新闻——稍后刷新，或到订阅管理调整条件。"
+                      ? i18n("pages.info.newstab.44125167a03f")
+                      : i18n("pages.info.newstab.9ada62f74acb")
                 }
               />
             ) : (
@@ -721,13 +716,10 @@ export function NewsTab({
           {!searching ? (
             <Inline gap={2}>
               <Spacer />
-              <Text slot="label" tone="faint" nowrap>第 {subPage} 页</Text>
-              <Btn variant="outline" disabled={subPage <= 1 || subFeedState === "loading"} onClick={() => setSubPage((p) => Math.max(1, p - 1))}>上一页
-              </Btn>
-              <Btn variant="outline" disabled={!subCanNext || subFeedState === "loading"} onClick={() => setSubPage((p) => p + 1)}>下一页
-              </Btn>
-              <Btn variant="outline" disabled={subFeedState === "loading"} onClick={() => setSubFeedTick((t) => t + 1)}>刷新
-              </Btn>
+              <Text slot="label" tone="faint" nowrap>{i18nRich("pages.info.newstab.0986893ba243", { subPage: subPage })}</Text>
+              <Btn variant="outline" disabled={subPage <= 1 || subFeedState === "loading"} onClick={() => setSubPage((p) => Math.max(1, p - 1))}>{i18n("pages.info.newstab.c9b9ae7a6144")}</Btn>
+              <Btn variant="outline" disabled={!subCanNext || subFeedState === "loading"} onClick={() => setSubPage((p) => p + 1)}>{i18n("pages.info.newstab.8a8542f69648")}</Btn>
+              <Btn variant="outline" disabled={subFeedState === "loading"} onClick={() => setSubFeedTick((t) => t + 1)}>{i18n("pages.info.newstab.aee887434131")}</Btn>
             </Inline>
           ) : null}
         </Fragment>
@@ -741,7 +733,7 @@ export function NewsTab({
             </Card>
           ) : (data?.length ?? 0) === 0 ? (
             <Card>
-              <EmptyState title={page > 1 ? "本页没有更多新闻了。" : "暂无新闻。"} />
+              <EmptyState title={page > 1 ? i18n("pages.info.newstab.c23d1354916d") : i18n("pages.info.newstab.21ac3d54fe13")} />
             </Card>
           ) : (
             <Card flush>
@@ -767,14 +759,14 @@ export function NewsTab({
             open
             onClose={() => setDetail(null)}
             size="lg"
-            title={detail.item.name || detail.data?.title || "新闻详情"}
+            title={detail.item.name || detail.data?.title || i18n("pages.info.newstab.abf7eab39ae9")}
             foot={
               <>
                 {detail.item.url ? (
-                  <Btn variant="outline" icon={<IconExternal size="sm" />} onClick={() => void openExternal(detail.item.url!)}><span>在浏览器打开</span>
+                  <Btn variant="outline" icon={<IconExternal size="sm" />} onClick={() => void openExternal(detail.item.url!)}><span>{i18n("pages.info.newstab.c744c961f0ab")}</span>
                   </Btn>
                 ) : null}
-                <Btn variant="ghost" onClick={() => setDetail(null)}>关闭</Btn>
+                <Btn variant="ghost" onClick={() => setDetail(null)}>{i18n("pages.info.newstab.3fd47edce45b")}</Btn>
               </>
             }
           >
@@ -791,24 +783,23 @@ export function NewsTab({
               ) : (
                 <>
                   {/* 门户远端富文本（站外 HTML），MailPage 判例豁免：不可令牌化 */}
-                  <RichContent html={detail.data?.html} fallback="正文为空。" />
+                  <RichContent html={detail.data?.html} fallback={i18n("pages.info.newstab.7c54c6a29f75")} />
                   {detail.data && detail.data.attachments.length > 0 ? (
-                    <SectionCard title={`附件（${detail.data.attachments.length}）`} flush>
+                    <SectionCard title={i18n("pages.info.newstab.c10e686a2131", { length: String(detail.data.attachments.length) })} flush>
                       <List>
                         {detail.data.attachments.map((a, i) => (
                           <Row
                             key={`${i}-${a.url}`}
                             flush
                             size="sm"
-                            data-vault-catch={vaultCatchAttachment({ kind: "news", name: a.name, url: a.url, label: "新闻附件" })}
-                            leading={<IconFile size="sm" title="附件" />}
+                            data-vault-catch={vaultCatchAttachment({ kind: "news", name: a.name, url: a.url, label: i18n("pages.info.newstab.9eb3f2fa22ec") })}
+                            leading={<IconFile size="sm" title={i18n("pages.info.newstab.c7225dbf105e")} />}
                             titleAttr={a.name}
                             trailing={
                               <>
-                                <Btn size="sm" variant="ghost" onClick={() => openFilePreview({ name: a.name, url: a.url })}>预览
-                                </Btn>
+                                <Btn size="sm" variant="ghost" onClick={() => openFilePreview({ name: a.name, url: a.url })}>{i18n("pages.info.newstab.13d61fea9f17")}</Btn>
                                 <Btn size="sm" variant="ghost" disabled={dlAtt === a.url} icon={<IconDownload size="sm" />} onClick={() => void doDownloadAtt(a.url, a.name)}>
-                                  {dlAtt === a.url ? "下载中…" : "下载"}
+                                  {dlAtt === a.url ? i18n("pages.info.newstab.bcc2333dc631") : i18n("pages.info.newstab.4673a2306165")}
                                 </Btn>
                               </>
                             }
@@ -838,26 +829,21 @@ export function NewsTab({
             open
             onClose={() => setSubsOpen(false)}
             size="md"
-            title="订阅管理"
+            title={i18n("pages.info.newstab.3725212d2092")}
           >
             <Stack gap={3}>
-              <Text slot="micro" tone="faint">
-                订阅条件以信息门户服务端为权威（与 thu-info 同接口、同账号），添加/删除
-                即时写入门户订阅并刷新；本机 localStorage 仅作界面偏好缓存。
-              </Text>
+              <Text slot="micro" tone="faint">{i18n("pages.info.newstab.1629c4dfeeb4")}</Text>
               {opErr ? <ErrorNote text={opErr} /> : null}
 
               {/* 我的订阅（服务端权威条件列表） */}
               <Stack gap={2}>
-                <Text slot="label" weight="semibold">
-                  我的订阅{subsServer ? `（${subsServer.length}）` : ""}
-                </Text>
+                <Text slot="label" weight="semibold">{i18nRich("pages.info.newstab.920430f19806", { value: subsServer ? `（${subsServer.length}）` : "" })}</Text>
                 {subsServer === null ? (
                   <Card pad="none">
                     <LoadingBlock rows={2} />
                   </Card>
                 ) : subsServer.length === 0 ? (
-                  <EmptyState title="暂无订阅条件——在下方点选发布单位即可添加。" />
+                  <EmptyState title={i18n("pages.info.newstab.9dd579ff5cfa")} />
                 ) : (
                   <Card flush>
                     <List>
@@ -868,9 +854,9 @@ export function NewsTab({
                           size="sm"
                           title={c.title || conditionLabel(c)}
                           sub={[
-                            c.source ? `来源：${c.source}` : "",
-                            c.channel ? `栏目：${c.channel}` : "",
-                            c.keyword ? `关键词：${c.keyword}` : "",
+                            c.source ? i18n("pages.info.newstab.1bd26803ad79", { source: String(c.source) }) : "",
+                            c.channel ? i18n("pages.info.newstab.7f6d2d65f737", { channel: String(c.channel) }) : "",
+                            c.keyword ? i18n("pages.info.newstab.c98f5ee16d10", { keyword: String(c.keyword) }) : "",
                           ].filter(Boolean).join(" · ") || `#${c.id}`}
                           trailing={
                             <Btn
@@ -878,9 +864,9 @@ export function NewsTab({
                               size="sm"
                               disabled={opBusy !== null}
                               onClick={() => void removeCondition(c)}
-                              titleAttr="删除该服务端订阅条件"
+                              titleAttr={i18n("pages.info.newstab.79515962cf6e")}
                           >
-                              {opBusy === c.id ? "删除中…" : "删除"}
+                              {opBusy === c.id ? i18n("pages.info.newstab.5e8e7af57abb") : i18n("pages.info.newstab.2f9daa828907")}
                             </Btn>
                           }
                         />
@@ -892,11 +878,9 @@ export function NewsTab({
 
               {/* 添加订阅（点选发布单位 → addSubscribeCondition） */}
               <Stack gap={2}>
-                <Text slot="label" weight="semibold">
-                  添加订阅（点选发布单位）
-                </Text>
+                <Text slot="label" weight="semibold">{i18n("pages.info.newstab.241cfdfe3554")}</Text>
                 {sourcesErr ? (
-                  <ErrorNote text={`可订阅单位列表加载失败：${sourcesErr}`} />
+                  <ErrorNote text={i18n("pages.info.newstab.71e8dd51594c", { sourcesErr: String(sourcesErr) })} />
                 ) : null}
                 {!sources && !sourcesErr ? (
                   <Card pad="none">
@@ -925,7 +909,7 @@ export function NewsTab({
                     })}
                   </Inline>
                 ) : sources && !sourcesErr ? (
-                  <EmptyState title="可订阅单位列表为空。" />
+                  <EmptyState title={i18n("pages.info.newstab.088536fe1994")} />
                 ) : null}
               </Stack>
             </Stack>

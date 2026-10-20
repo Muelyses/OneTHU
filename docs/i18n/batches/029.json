@@ -1,0 +1,1300 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.widgetsettingssection.a5f712b24b56",
+      "source": "　桌面「小组件」列表里能选的就是这些。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 137,
+          "context": "{i18n(\"components.widgetsettingssection.a5f712b24b56\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.a73b70af248d",
+      "source": "桌面上的小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 96,
+          "context": "{i18n(\"components.widgetsettingssection.a73b70af248d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.ac32b4f647b8",
+      "source": "调用系统方式直接在桌面放一块标准形态小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 110,
+          "context": "{i18n(\"components.widgetsettingssection.ac32b4f647b8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.ae0f6a0341d8",
+      "source": "小组件槽位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 38,
+          "context": "return i18n(\"components.widgetsettingssection.ae0f6a0341d8\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.b016c8cdb0fd",
+      "source": "快捷方式…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 195,
+          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.b85432068f08",
+      "source": "　添加时系统会自动弹出选择层，通常无需设置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 177,
+          "context": "{i18n(\"components.widgetsettingssection.b85432068f08\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.ba2e93e73037",
+      "source": "恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 167,
+          "context": "{i18n(\"components.widgetsettingssection.ba2e93e73037\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.cf91efc66059",
+      "source": "本机可用的小组件尺寸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 132,
+          "context": "{i18n(\"components.widgetsettingssection.cf91efc66059\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.d1b082232f2a",
+      "source": "放到桌面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 122,
+          "context": "{i18n(\"components.widgetsettingssection.d1b082232f2a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.d1eb26fb94e9",
+      "source": "尚未选择内容时，桌面小组件先显示此项。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 206,
+          "context": "{i18n(\"components.widgetsettingssection.d1eb26fb94e9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.d6a437ad7912",
+      "source": "读取失败；若为刚安装的版本，请完全退出应用后重新打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 99,
+          "context": "readFailed\n              ? i18n(\"components.widgetsettingssection.d6a437ad7912\")\n              : instances === null\n                ? i18n(\"components.widgetsettingssection.86b6d0d63062\")\n                : instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.da34afed35d2",
+      "source": "系统未接受放置请求，请长按桌面 → 小组件 → OneTHU 手动添加",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 117,
+          "context": "showToast(i18nMsg(\"components.widgetsettingssection.da34afed35d2\"), 6000)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.ddfbdc2f2337",
+      "source": "换内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 161,
+          "context": "{i18n(\"components.widgetsettingssection.ddfbdc2f2337\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.dea5a08f19a0",
+      "source": "共 {length} 块，每块各显示各的（点「换内容」改这一块）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(instances.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 104,
+          "context": "instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.e4f9bcd60944",
+      "source": "新小组件的默认内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 176,
+          "context": "{i18n(\"components.widgetsettingssection.e4f9bcd60944\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.f607db600fe1",
+      "source": "已请求系统添加到桌面，请查看桌面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 114,
+          "context": "showToast(i18nMsg(\"components.widgetsettingssection.f607db600fe1\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsizes.07bb9d27fc45",
+      "source": "选择大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 363,
+          "context": "{i18n(\"components.widgetsizes.07bb9d27fc45\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 370,
+          "context": "{i18n(\"components.widgetsizes.07bb9d27fc45\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsizes.7d7127517bd7",
+      "source": "已选 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "cur ? tierLabel(cur) : \"—\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 364,
+          "context": "{i18nRich(\"components.widgetsizes.7d7127517bd7\", { value: cur ? tierLabel(cur) : \"—\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.widgetsizes.beb4816bf802",
+      "source": "选择 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSizes.tsx",
+          "line": 385,
+          "context": "i18n(\"components.widgetsizes.beb4816bf802\") + tierLabel(t)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.dangerTitle",
+      "source": "此操作不可撤销，请确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 52,
+          "context": "opts.title ?? uiMessage(\"confirm.dangerTitle\")"
+        }
+      ],
+      "translation": "This action cannot be undone. Please confirm.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.dropCourseAction",
+      "source": "确认退选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 84,
+          "context": "confirmText: uiMessage(\"confirm.dropCourseAction\")"
+        }
+      ],
+      "translation": "Drop course",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.dropCourseTitle",
+      "source": "即将退选，请确认！",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 84,
+          "context": "title: uiMessage(\"confirm.dropCourseTitle\")"
+        }
+      ],
+      "translation": "You are about to drop this course.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.execute",
+      "source": "确认执行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 53,
+          "context": "opts.confirmText ?? uiMessage(\"confirm.execute\")"
+        }
+      ],
+      "translation": "Confirm action",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.ignore",
+      "source": "忽略",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 89,
+          "context": "cancelText: uiMessage(\"confirm.ignore\")"
+        }
+      ],
+      "translation": "Ignore",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.ignoreHomeworkAction",
+      "source": "确认忽略",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 85,
+          "context": "confirmText: uiMessage(\"confirm.ignoreHomeworkAction\")"
+        }
+      ],
+      "translation": "Ignore assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.ignoreHomeworkTitle",
+      "source": "忽略这条作业，请确认！",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 85,
+          "context": "title: uiMessage(\"confirm.ignoreHomeworkTitle\")"
+        }
+      ],
+      "translation": "Ignore this assignment?",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.imageReloginTitle",
+      "source": "正文图片加载失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 89,
+          "context": "title: uiMessage(\"confirm.imageReloginTitle\")"
+        }
+      ],
+      "translation": "Unable to load images",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "confirm.relogin",
+      "source": "重新登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 89,
+          "context": "confirmText: uiMessage(\"confirm.relogin\")"
+        }
+      ],
+      "translation": "Sign in again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "confirm.title",
+      "source": "请确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Please confirm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "enum.label.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 8,
+          "context": "return t(\"enum.label.15d208d1b4c9\");"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.1760b98532ec",
+      "source": "在线服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 13,
+          "context": "return t(\"enum.label.1760b98532ec\");"
+        }
+      ],
+      "translation": "Online services",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.1eed24ed8f6f",
+      "source": "Office Hour",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 42,
+          "context": "return t(\"enum.label.1eed24ed8f6f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.2118cbc10988",
+      "source": "学习",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 6,
+          "context": "return t(\"enum.label.2118cbc10988\");"
+        }
+      ],
+      "translation": "Study",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.21255f717947",
+      "source": "校园生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 22,
+          "context": "return t(\"enum.label.21255f717947\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.266e6cb77079",
+      "source": "图书馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 50,
+          "context": "return t(\"enum.label.266e6cb77079\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.26ee9467d4b0",
+      "source": "courseX",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 47,
+          "context": "return t(\"enum.label.26ee9467d4b0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.31c5f1aaa0d5",
+      "source": "满意度调查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 25,
+          "context": "return t(\"enum.label.31c5f1aaa0d5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3303b56982a0",
+      "source": "联系人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 36,
+          "context": "return t(\"enum.label.3303b56982a0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 9,
+          "context": "return t(\"enum.label.352cdc807892\");"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3b806a76e492",
+      "source": "课程内容简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 33,
+          "context": "return t(\"enum.label.3b806a76e492\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3d708e8e8b1f",
+      "source": "邮件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 60,
+          "context": "return t(\"enum.label.3d708e8e8b1f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.3deae16f1adb",
+      "source": "公共服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 23,
+          "context": "return t(\"enum.label.3deae16f1adb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.452c7b10d57a",
+      "source": "页面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 61,
+          "context": "return t(\"enum.label.452c7b10d57a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.4a3572036143",
+      "source": "上课教师",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 38,
+          "context": "return t(\"enum.label.4a3572036143\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.4c11cd93c142",
+      "source": "我的收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 51,
+          "context": "return t(\"enum.label.4c11cd93c142\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.506c068a2a1e",
+      "source": "财务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 17,
+          "context": "return t(\"enum.label.506c068a2a1e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.541fbddf4725",
+      "source": "Course Description",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 34,
+          "context": "return t(\"enum.label.541fbddf4725\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.5c55a67935af",
+      "source": "全部",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 12,
+          "context": "return t(\"enum.label.5c55a67935af\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.5f45bb826b16",
+      "source": "资产",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 21,
+          "context": "return t(\"enum.label.5f45bb826b16\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.6ac380cbd716",
+      "source": "人事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 15,
+          "context": "return t(\"enum.label.6ac380cbd716\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 55,
+          "context": "return t(\"enum.label.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.6e098153a586",
+      "source": "采购",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 19,
+          "context": "return t(\"enum.label.6e098153a586\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.75bd5f68e277",
+      "source": "教师教学特色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 41,
+          "context": "return t(\"enum.label.75bd5f68e277\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.783d638053ea",
+      "source": "组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 58,
+          "context": "return t(\"enum.label.783d638053ea\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.8289e67df525",
+      "source": "科研",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 14,
+          "context": "return t(\"enum.label.8289e67df525\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.8459c1e91bc0",
+      "source": "选课指导语",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 39,
+          "context": "return t(\"enum.label.8459c1e91bc0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.9151a836f996",
+      "source": "GitLab",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 45,
+          "context": "return t(\"enum.label.9151a836f996\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a0f88ca9398c",
+      "source": "就业离校",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 24,
+          "context": "return t(\"enum.label.a0f88ca9398c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 7,
+          "context": "return t(\"enum.label.a14f23af7016\");"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a17b8666e5d9",
+      "source": "北大研",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 27,
+          "context": "return t(\"enum.label.a17b8666e5d9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 54,
+          "context": "return t(\"enum.label.a626aad412b7\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.a914a7b52cec",
+      "source": "教材及参考书",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 37,
+          "context": "return t(\"enum.label.a914a7b52cec\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 59,
+          "context": "return t(\"enum.label.aa39cac2b409\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.aaabe42b5a23",
+      "source": "党建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 16,
+          "context": "return t(\"enum.label.aaabe42b5a23\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.b0938ffbd07c",
+      "source": "外事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 18,
+          "context": "return t(\"enum.label.b0938ffbd07c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.bd2d74b297d1",
+      "source": "课程名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 30,
+          "context": "return t(\"enum.label.bd2d74b297d1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.be67cc45b9f0",
+      "source": "考核安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 35,
+          "context": "return t(\"enum.label.be67cc45b9f0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 53,
+          "context": "return t(\"enum.label.d39567b2b9f1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.d4f7864690bb",
+      "source": "Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 46,
+          "context": "return t(\"enum.label.d4f7864690bb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.d7d6b21c2cf5",
+      "source": "北外",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 28,
+          "context": "return t(\"enum.label.d7d6b21c2cf5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e310bbf0e506",
+      "source": "北大",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 26,
+          "context": "return t(\"enum.label.e310bbf0e506\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 56,
+          "context": "return t(\"enum.label.e4d40b4d6759\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e79890c96ee6",
+      "source": "行政",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 10,
+          "context": "return t(\"enum.label.e79890c96ee6\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e806fbbe8ec6",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 11,
+          "context": "return t(\"enum.label.e806fbbe8ec6\");"
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 49,
+          "context": "return t(\"enum.label.e81059e1a712\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e842a5dff916",
+      "source": "总学分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 32,
+          "context": "return t(\"enum.label.e842a5dff916\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.e96da2049129",
+      "source": "课程编号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 29,
+          "context": "return t(\"enum.label.e96da2049129\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.ea664afac033",
+      "source": "先修要求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 40,
+          "context": "return t(\"enum.label.ea664afac033\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.ecc11c8afea8",
+      "source": "空教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 57,
+          "context": "return t(\"enum.label.ecc11c8afea8\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.ed31fbb483ee",
+      "source": "操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 52,
+          "context": "return t(\"enum.label.ed31fbb483ee\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    }
+  ]
+}

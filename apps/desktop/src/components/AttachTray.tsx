@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 附件入口条（需求 6/8）：拍照 / 相册 / 上传 三个按钮 → AttachFile[] → 交给 OH。
  *
@@ -33,9 +34,9 @@ type Source = "camera" | "gallery" | "file";
 
 /** 三个入口：线性图标 + 短标签（2026-10-10 用户：emoji 占地方又不好看 → 全换 Icons 基座） */
 const SOURCES: Array<{ id: Source; label: string; title: string; icon: (p: SVGProps<SVGSVGElement>) => ReactElement }> = [
-  { id: "camera", label: "拍照", title: "调起相机拍一张", icon: IconCamera },
-  { id: "gallery", label: "相册", title: "从相册选图片", icon: IconImage },
-  { id: "file", label: "上传", title: "选任意文件", icon: IconUpload },
+  { id: "camera", get label() { return i18n("components.attachtray.6e3a10ade7c7"); }, get title() { return i18n("components.attachtray.89afb0385380"); }, icon: IconCamera },
+  { id: "gallery", get label() { return i18n("components.attachtray.38793c1c1c23"); }, get title() { return i18n("components.attachtray.350e5e3d21b9"); }, icon: IconImage },
+  { id: "file", get label() { return i18n("components.attachtray.9e07e3c0532d"); }, get title() { return i18n("components.attachtray.d450f913c03a"); }, icon: IconUpload },
 ];
 
 interface Editing {
@@ -44,11 +45,13 @@ interface Editing {
 }
 
 function msgOf(e: unknown): string {
-  return e instanceof Error && e.message ? e.message : "没取到文件，请重试或换一个入口。";
+  return e instanceof Error && e.message ? e.message : i18n("components.attachtray.754ee51e025b");
 }
 
 
 export function AttachTray({ onPicked, allowEdit = true, className, style }: AttachTrayProps): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [busy, setBusy] = useState<Source | null>(null);
   const [note, setNote] = useState("");
   const [editing, setEditing] = useState<Editing | null>(null);
@@ -69,7 +72,7 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
   const pick = useCallback(async (source: Source): Promise<void> => {
     if (busy) return;
     setBusy(source);
-    setNote("正在打开…");
+    setNote(i18n("components.attachtray.821ffb8cd6a2"));
     try {
       let files: AttachFile[] = [];
       if (source === "camera") {
@@ -82,7 +85,7 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
         files = await pickFiles({ multiple: true });
       }
       if (files.length === 0) {
-        setNote("已取消");
+        setNote(i18n("components.attachtray.a37778f17c5f"));
         return;
       }
       const first = files[0];
@@ -97,10 +100,10 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
       owned.current = [...owned.current, ...files];
       await handoff(files);
       // 宿主接管时它自己给反馈，这里不抢话；走默认通道才提示「已交给 OH」
-      setNote(onPicked ? "" : "已交给 OH");
+      setNote(onPicked ? "" : i18n("components.attachtray.10d48a747e83"));
     } catch (e) {
       setNote(msgOf(e));
-      void logLine(`[附件] 取件失败：${msgOf(e)}`).catch(() => undefined);
+      void logLine(i18n("components.attachtray.9290540bb472", { value: String(msgOf(e)) })).catch(() => undefined);
     } finally {
       setBusy(null);
     }
@@ -122,7 +125,7 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
     setEditing(null);
     if (cur) releaseAttachPreviews([cur.file]);
     owned.current = owned.current.filter((f) => f !== cur?.file);
-    setNote("已取消");
+    setNote(i18n("components.attachtray.a37778f17c5f"));
   }, [editing]);
 
   // 卸载：把还没交出去的预览地址回收（不回收 = 长会话里的内存泄漏）
@@ -135,7 +138,7 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
   );
 
   return (
-    <div className={`oh-attach${className ? ` ${className}` : ""}`} style={style} role="group" aria-label="添加附件">
+    <div className={`oh-attach${className ? ` ${className}` : ""}`} style={style} role="group" aria-label={i18n("components.attachtray.c8a47d001848")}>
       {SOURCES.map((src) => (
         <Chip
           key={src.id}
@@ -144,7 +147,7 @@ export function AttachTray({ onPicked, allowEdit = true, className, style }: Att
           onClick={busy !== null ? undefined : () => void pick(src.id)}
           disabled={busy !== null}
         >
-          {busy === src.id ? "打开中…" : src.label}
+          {busy === src.id ? i18n("components.attachtray.67d676d9a46e") : src.label}
         </Chip>
       ))}
       {note ? <span className="oh-attach-note" aria-live="polite">{note}</span> : null}

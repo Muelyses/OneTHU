@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * core 客户端装配：统一会话（CampusSession）+ 凭证存储。
  * 一次 CAS 登录 → learn / info 共享会话；Tauri 桌面端走 Rust 网络层（无 CORS）。
@@ -20,6 +21,7 @@ import {
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
 import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
+import { redactNetworkLog } from "./networkLog.js";
 import { withPrivacy } from "./privacy.js";
 
 export type { TwoFactorMethod };
@@ -301,22 +303,19 @@ http.onAuthRequired(async () => {
 export async function logLine(text: string): Promise<void> {
   try {
     const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("log_debug", { line: new Date().toISOString() + " | " + text });
+    await invoke("log_debug", { line: new Date().toISOString() + " | " + redactNetworkLog(text) });
   } catch {
     /* noop */
   }
 }
 
-// R10：图书馆首页全量转储（log_debug 单行有截断，分块绕过）
+// Keep the diagnostic hook without persisting the page body or hidden fields.
 void (async () => {
   try {
     const { InfoClient } = await import("@onethu/core");
     InfoClient.onDebugDump = (label, content) => {
-      const CHUNK = 6000;
-      const n = Math.ceil(content.length / CHUNK);
-      for (let i = 0; i < n; i++) {
-        void logLine(`DUMP ${label} ${i + 1}/${n}: ${content.slice(i * CHUNK, (i + 1) * CHUNK)}`);
-      }
+      // Full school pages can contain student data and hidden authentication fields.
+      void logLine(`DUMP ${label}: omitted page body (${content.length} characters)`);
     };
   } catch {
     /* 钩子失败不影响主流程 */
@@ -792,12 +791,12 @@ async function fetchImageDataUrl(url: string, forceWrap: boolean): Promise<strin
   const resp = await nativeFetch(sessionUrl(url, forceWrap), { method: "GET" });
   const mime = (resp.headers.get("content-type") ?? "").split(";")[0]?.trim() ?? "";
   const buf = new Uint8Array(await resp.arrayBuffer());
-  if (buf.length > IMG_MAX_BYTES) throw new Error(`图片过大（${buf.length} 字节），请用浏览器打开查看`);
-  if (isLoginWallBody(mime, buf)) throw new Error("会话已失效，需要重新登录");
+  if (buf.length > IMG_MAX_BYTES) throw new Error(i18n("lib.clients.dc300032c143", { length: String(buf.length) }));
+  if (isLoginWallBody(mime, buf)) throw new Error(i18n("lib.clients.193d04db6243"));
   // mime 守卫（2026-09-13 用户实锤「通知/作业图片渲染不出来但讨论区好」）：会话墙/404
   // 返回 HTML，字节照样抓回来——不校验就把登录页当图片塞 <img>，静默碎图且 catch 永不触发。
   if (!/^image\//i.test(mime) || buf.length < 80) {
-    throw new Error(`图片响应非图片（mime=${mime} bytes=${buf.length}）`);
+    throw new Error(i18n("lib.clients.cbad5bdfa19f", { mime: String(mime), length: String(buf.length) }));
   }
   return `data:${mime};base64,${bytesToBase64(buf)}`;
 }

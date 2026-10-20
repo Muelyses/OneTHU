@@ -1,3 +1,4 @@
+import { t as i18n, localizedList as i18nList } from "../i18n/index.js";
 /**
  * 日期文案格式化。
  *
@@ -10,9 +11,9 @@
  */
 
 /** 星期名（getDay() 下标，0 = 周日） */
-export const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"] as const;
+export const WEEKDAYS = i18nList(["lib.datetext.85217f7aff77","lib.datetext.51a75f4634df","lib.datetext.084b42f6e95e","lib.datetext.a4c3313deb18","lib.datetext.754a9d5828d5","lib.datetext.c9b87f516a38","lib.datetext.de07b5383874"]);
 
 /** "9月28日 星期一" */
 export function fmtMonthDayWeek(d: Date): string {
-  return `${d.getMonth() + 1}月${d.getDate()}日 星期${WEEKDAYS[d.getDay()]}`;
+  return i18n("lib.datetext.a619476ecb90", { value: String(d.getMonth() + 1), value2: String(d.getDate()), value3: String(WEEKDAYS[d.getDay()]) });
 }

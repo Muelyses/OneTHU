@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * IM 通道注册表与核心策略层。
  *
@@ -62,11 +63,11 @@ const running = new Set<ChannelId>();
 /** 启动一个通道（幂等：已在跑则先停再启——配置变更路径复用同一入口） */
 export async function startChannel(id: ChannelId): Promise<void> {
   const adapter = adapters.get(id);
-  if (!adapter) throw new Error(`通道未注册：${id}`);
+  if (!adapter) throw new Error(i18n("im.registry.1a301117fb34", { id: String(id) }));
   const cfg = await loadImConfig();
-  if (!cfg.enabled[id]) throw new Error("通道未启用");
+  if (!cfg.enabled[id]) throw new Error(i18n("im.registry.02e3d60f5728"));
   const probe = adapter.probe();
-  if (!probe.configured) throw new Error(`配置不完整：缺 ${probe.missing}`);
+  if (!probe.configured) throw new Error(i18n("im.registry.1e831ff53d8e", { missing: String(probe.missing) }));
   await stopChannel(id);
   running.add(id);
   setStatus(id, { phase: "connecting", note: "" });
@@ -180,19 +181,19 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       await replyTo(
         msg,
         [
-          "📖 指令清单：",
+          i18n("im.registry.d114e94fa699"),
           "/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词",
           "/bind 码（绑定主人）· /status（通道状态）",
           "",
-          "· /list —— 列出会话（1=主对话，永久保留不可删；←当前）",
-          "· /new —— 新建会话并切换",
-          "· /switch N —— 切换到编号 N 的会话",
-          "· /detail N [x-y] —— 查看编号 N 会话的第 x 到 y 轮（默认 1-5）",
-          "· /delete N —— 删除编号 N 的会话（1 号主对话不可删）",
-          "· /search 关键词 —— 查找关键词出现在哪些会话（含轮次定位）",
+          i18n("im.registry.a6317abbaa8b"),
+          i18n("im.registry.1d40e0790123"),
+          i18n("im.registry.0894809f5000"),
+          i18n("im.registry.fe67e76559d3"),
+          i18n("im.registry.c4b26873708a"),
+          i18n("im.registry.c7900a839486"),
           "",
-          "📎 发文件/图片给我：自动读取内容、建议云盘目录，回「存」确认转存（默认不出公开链接，回「要链接」再生成）。",
-          "⚠️ 预约/取消等写操作：出现确认提示后回「确认执行」才执行（省略回复不认，防误触）。",
+          i18n("im.registry.e64bb18a2933"),
+          i18n("im.registry.8b9c82d7f5dc"),
         ].join("\n"),
       );
       return;
@@ -204,7 +205,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
         | null;
       const list = r?.sessions ?? [];
       if (!list.length) {
-        await replyTo(msg, "还没有会话。");
+        await replyTo(msg, i18n("im.registry.2fb556ba8785"));
         return;
       }
       sessionMenu.set(pk0, list.map((x) => x.id));
@@ -215,13 +216,13 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
         const tm = new Date(x.updatedAt).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
         return `${no}. ${main}${x.title || "（未命名）"} · ${x.messages} 轮 · ${tm}${cur}`;
       });
-      await replyTo(msg, `会话（最近 10 条，1 号为主对话）：\n${lines.join("\n")}\n/detail N 看内容 · /switch N 切换 · /delete N 删除`);
+      await replyTo(msg, i18n("im.registry.1995eb67cce4", { value: String(lines.join("\n")) }));
       return;
     }
 
     if (t0 === "/new" || t0 === "/新会话") {
       const r = (await ohRun("new_session")) as { ok?: boolean } | null;
-      await replyTo(msg, r?.ok ? "已开新会话（1 号主对话仍保留，/switch 1 可回）。" : "新建失败。");
+      await replyTo(msg, r?.ok ? i18n("im.registry.2a20bd367600") : i18n("im.registry.76588d6a5d1a"));
       return;
     }
 
@@ -229,30 +230,30 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       const arg = t0.slice(7).trim();
       const id = /^\d+$/.test(arg) ? menu()[Number(arg) - 1] : arg;
       if (!id) {
-        await replyTo(msg, "先回 /list 看编号，再「/switch 编号」。");
+        await replyTo(msg, i18n("im.registry.103831bac44b"));
         return;
       }
       const r = (await ohRun("switch_session", id)) as { ok?: boolean } | null;
-      await replyTo(msg, r?.ok ? "已切换。/detail 1 5-8 可直接看第 5-8 轮。" : "切换失败（编号过期？回 /list 重看）。");
+      await replyTo(msg, r?.ok ? i18n("im.registry.30627e4f5d7b") : i18n("im.registry.b34bb467f031"));
       return;
     }
 
     if (t0.startsWith("/detail")) {
       const m = /^\/detail\s+(\d+)(?:\s+(\d+)-(\d+))?/.exec(t0);
       if (!m) {
-        await replyTo(msg, "用法：/detail 编号 [起始轮-结束轮]，如 /detail 2 或 /detail 1 5-8（默认 1-5）。");
+        await replyTo(msg, i18n("im.registry.37cddcf59a45"));
         return;
       }
       const id = menu()[Number(m[1]) - 1];
       if (!id) {
-        await replyTo(msg, "编号不存在（先 /list）。");
+        await replyTo(msg, i18n("im.registry.6ab73e995f59"));
         return;
       }
       const from = Math.max(1, Number(m[2] ?? 1));
       const to = Math.min(from + 19, Number(m[3] ?? from + 4));
       const ex = (await ohRun("export_session", id)) as { ok?: boolean; json?: string } | null;
       if (!ex?.ok || !ex.json) {
-        await replyTo(msg, "读取失败。");
+        await replyTo(msg, i18n("im.registry.5215599023ee"));
         return;
       }
       const sess = JSON.parse(ex.json) as { title?: string; messages?: Array<{ role: string; content: string }> };
@@ -263,7 +264,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
         else if (rounds.length > 0 && mm.role === "assistant") rounds[rounds.length - 1]!.a.push(mm.content ?? "");
       }
       if (!rounds.length) {
-        await replyTo(msg, "该会话没有可显示的对话轮。");
+        await replyTo(msg, i18n("im.registry.3857e11aade6"));
         return;
       }
       const clamp = (str: string, n: number): string => {
@@ -283,11 +284,11 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
     if (t0.startsWith("/delete")) {
       const arg = t0.slice(7).trim();
       if (!/^\d+$/.test(arg) || !menu()[Number(arg) - 1]) {
-        await replyTo(msg, "用法：/delete 编号（先 /list 查看）。");
+        await replyTo(msg, i18n("im.registry.68eca2ae3b84"));
         return;
       }
       if (Number(arg) === 1) {
-        await replyTo(msg, "1 号主对话永久保留，不可删除（用户定案）。想清空就 /switch 1 后 /new 新开。");
+        await replyTo(msg, i18n("im.registry.d09bfe8fc388"));
         return;
       }
       const id = menu()[Number(arg) - 1]!;
@@ -295,9 +296,9 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       if (r?.ok) {
         // 菜单同步（去掉被删项）
         sessionMenu.set(pk0, menu().filter((x) => x !== id));
-        await replyTo(msg, `已删除编号 ${arg} 的会话。`);
+        await replyTo(msg, i18n("im.registry.f8ce08058aa6", { arg: String(arg) }));
       } else {
-        await replyTo(msg, r?.error ?? "删除失败。");
+        await replyTo(msg, r?.error ?? i18n("im.registry.f06e4127fc8b"));
       }
       return;
     }
@@ -305,7 +306,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
     if (t0.startsWith("/search")) {
       const kw = t0.slice(7).trim();
       if (!kw) {
-        await replyTo(msg, "用法：/search 关键词（搜会话标题与内容）。");
+        await replyTo(msg, i18n("im.registry.7844068377fb"));
         return;
       }
       const r = (await ohRun("list_sessions")) as { sessions?: Array<{ id: string; title: string }> } | null;
@@ -333,8 +334,8 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       await replyTo(
         msg,
         hits.length
-          ? `「${kw}」命中 ${hits.length} 个会话：\n${hits.join("\n")}\n/detail 编号 查看（/list 重取编号）。`
-          : `「${kw}」没有命中（搜了最近 20 条会话的标题与内容）。`,
+          ? i18n("im.registry.7b6bcc474a8c", { kw: String(kw), length: String(hits.length), value: String(hits.join("\n")) })
+          : i18n("im.registry.03e93eccef32", { kw: String(kw) }),
       );
       return;
     }
@@ -347,8 +348,8 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
     await replyTo(
       msg,
       r.ok
-        ? `✅ 云盘已自动连接${r.account?.name ? `（${r.account.name}）` : ""}——现在可以转存文件了。`
-        : `连接失败：${r.error ?? "未知原因"}。也可在电脑端 OneTHU 的「云盘」页再点一次自动连接。`,
+        ? i18n("im.registry.138dbe11a0d8", { value: String(r.account?.name ? `（${r.account.name}）` : "") })
+        : i18n("im.registry.106ec22a4ae9", { value: String(r.error ?? i18n("im.registry.a1a9da9ee6ed")) }),
     );
     return;
   }
@@ -356,18 +357,18 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
   if (text.startsWith("/bind")) {
     const code = text.slice(5).trim().toUpperCase();
     if (!bindCode || Date.now() > bindCode.expiresAt) {
-      await replyTo(msg, "绑定码已过期：请在电脑端重新生成后发送「/bind 码」。");
+      await replyTo(msg, i18n("im.registry.c2569c12dd05"));
       return;
     }
     if (code !== bindCode.code) {
-      await replyTo(msg, "绑定码不正确，请核对后重发「/bind 码」。");
+      await replyTo(msg, i18n("im.registry.614102b3fb66"));
       return;
     }
     bindCode = null;
     await patchImConfig((c) => {
       c.bindings[msg.channel] = msg.sender;
     });
-    await replyTo(msg, "绑定成功，这台电脑的 OneTHU 现在听你指挥。发送 /status 查看状态。");
+    await replyTo(msg, i18n("im.registry.68e326aeaae1"));
     void logLine(`[IM] ${msg.channel} 完成绑定 sender=${msg.sender.slice(0, 10)}…`);
     return;
   }
@@ -384,7 +385,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
     } catch {
       cloudLine = "\n☁️ 云盘状态未知";
     }
-    await replyTo(msg, `[OneTHU] ${msg.channel} 通道在线，${bound}。电脑保持开机与 OneTHU 运行，我才会回复。${cloudLine}`);
+    await replyTo(msg, i18n("im.registry.ebb6664ef64f", { channel: String(msg.channel), bound: String(bound), cloudLine: String(cloudLine) }));
     return;
   }
 
@@ -394,7 +395,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
     const last = noticeAt.get(key) ?? 0;
     if (Date.now() - last > 60_000) {
       noticeAt.set(key, Date.now());
-      await replyTo(msg, "这台电脑的 OneTHU 未与你绑定：请让机主在 设置 → IM 机器人 生成绑定码，再发送「/bind 码」。");
+      await replyTo(msg, i18n("im.registry.2f3f2a4125cb"));
     }
     return;
   }
@@ -421,7 +422,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       }
     }
     if (!staged.length) {
-      await replyTo(msg, `附件处理失败：\n${errs.join("\n")}`);
+      await replyTo(msg, i18n("im.registry.3f720cf75734", { value: String(errs.join("\n")) }));
       return;
     }
     pendingAtt.set(pkOf(msg.channel, msg.sender), { staged, at: Date.now() });
@@ -497,7 +498,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
             const { getSeafileToken, ensureSeafileLoaded } = await import("../state/seafile.js");
             await ensureSeafileLoaded();
             if (!getSeafileToken()) {
-              await replyTo(msg, "云盘还没连接——回「连云盘」我自动获取（或去电脑端云盘页手动配置）。");
+              await replyTo(msg, i18n("im.registry.87b01a60cde1"));
               return;
             }
           } catch {
@@ -505,7 +506,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
           }
           const repos = await listRepos().catch(() => [] as Array<{ id: string; name: string }>);
           if (!repos.length) {
-            await replyTo(msg, "云盘里没有资料库（先在 cloud.tsinghua.edu.cn 建一个再回「存」）。");
+            await replyTo(msg, i18n("im.registry.b769dc31231a"));
             return;
           }
           const seq = /(?:存|转存|存到|放在|放到|存入|存在|放进)\s*(\d+)\s*$/.exec(t)?.[1];
@@ -517,7 +518,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
           if (!pick) {
             await replyTo(
               msg,
-              `还没指定存到哪个资料库。你的资料库：\n${repos.map((r, i) => `${i + 1}. ${r.name}`).join("\n")}\n回复「存 <序号>」选定并存到建议目录（也可回「存到 <库名>」）。`,
+              i18n("im.registry.16a558ff8f5c", { value: String(repos.map((r, i) => `${i + 1}. ${r.name}`).join("\n")) }),
             );
             return; // pending 保留，等用户选库
           }
@@ -548,12 +549,12 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
         const tail = storedAny
           ? "\n（只存在你自己的资料库里，未生成任何公开链接；需要公开分享链接回「要链接」。）"
           : "";
-        await replyTo(msg, `转存完成：\n${out.join("\n")}${tail}`);
+        await replyTo(msg, i18n("im.registry.7df9b9254e26", { value: String(out.join("\n")), tail: String(tail) }));
         return;
       }
       if (isSkip) {
         pendingAtt.delete(pk);
-        await replyTo(msg, "已忽略，未上传。");
+        await replyTo(msg, i18n("im.registry.0e078145fef7"));
         return;
       }
       // 「问内容」：读文件正文交给 OH 回答（不消费待确认，用户还能继续存）
@@ -565,7 +566,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
         if (!content) {
           await replyTo(
             msg,
-            `《${s0.name}》不是可读文本（二进制/图片等），我读不出文字内容。回「存」转存 /「不」忽略。`,
+            i18n("im.registry.44383fa7e8d3", { name: String(s0.name) }),
           );
           return;
         }
@@ -575,11 +576,11 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
           `用户问：${t}`;
         const r = await askOh(q);
         const ans = r.error ? `读取失败：${r.error}` : r.answer ?? "（没有回答）";
-        await replyTo(msg, `${ans}\n\n（文件仍在待确认：回「存」转存 /「存到 <目录>」/「不」忽略）`);
+        await replyTo(msg, i18n("im.registry.5f78abafdcbe", { ans: String(ans) }));
         return;
       }
       // 其他意图：保留待确认，提示后继续正常流程（可能是在问别的）
-      await replyTo(msg, "（刚才的文件还在待确认：「存」转存 /「不」忽略 /「存到 <目录>」自定义）");
+      await replyTo(msg, i18n("im.registry.276f4647be56"));
     }
   }
 
@@ -596,20 +597,20 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       if (/^(确认执行|确认预约|确认预订|确认取消|确认提交|确认|执行)$/.test(t2)) {
         pendingConfirm.delete(pk2);
         const r = await askOh("确认");
-        await replyTo(msg, r.error ? `⚠ ${r.error}` : r.answer ?? "(无响应)");
+        await replyTo(msg, r.error ? `⚠ ${r.error}` : r.answer ?? i18n("im.registry.428b9163a77c"));
         return;
       }
       if (/^(取消|不|不用|算了|放弃|不了|不要)$/.test(t2)) {
         pendingConfirm.delete(pk2);
         const r = await askOh("取消");
-        await replyTo(msg, r.error ? `⚠ ${r.error}` : r.answer ?? "(已取消)");
+        await replyTo(msg, r.error ? `⚠ ${r.error}` : r.answer ?? i18n("im.registry.db41ffa2dc85"));
         return;
       }
       if (/^(好|好的|好呀|是|是的|ok|OK|同意|确定|行|对|y|Y|yes|嗯)$/.test(t2)) {
         // 不透传：避免 core 的宽匹配直接执行
         await replyTo(
           msg,
-          `这条是省略回复，IM 里不认（防你手快误触执行）。\n待确认操作：${cur2.summary}\n要执行请回「确认执行」；不需要请回「取消」。`,
+          i18n("im.registry.9fc192e6d22e", { summary: String(cur2.summary) }),
         );
         return;
       }
@@ -625,9 +626,9 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       try {
         const { shareLast } = await import("./mediaPipe.js");
         const link = await shareLast(ls.repoId, ls.path);
-        await replyTo(msg, `公开分享链接（7 天有效，拿到链接的人都能访问）：\n${link}\n文件：${ls.path}`);
+        await replyTo(msg, i18n("im.registry.67895eae0abe", { link: String(link), path: String(ls.path) }));
       } catch (e) {
-        await replyTo(msg, `生成分享链接失败：${e instanceof Error ? e.message : String(e)}`);
+        await replyTo(msg, i18n("im.registry.40ff3379e054", { value: String(e instanceof Error ? e.message : String(e)) }));
       }
       return;
     }
@@ -645,7 +646,7 @@ async function handleInbound(msg: InboundMessage): Promise<void> {
       `⚠️ 待确认操作\n${r.confirm.summary}\n回「确认执行」执行，或回「取消」放弃。\n（IM 里不认「好/ok」等省略回复，防误触；10 分钟内有效）`,
     );
   }
-  await replyTo(msg, parts.join("\n\n") || "(空响应)");
+  await replyTo(msg, parts.join("\n\n") || i18n("im.registry.8282ce4afe46"));
 }
 
 /** core 内部回复（命令/引导语/OH 应答统一走适配器出口） */

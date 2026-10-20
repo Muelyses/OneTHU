@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 白板组件宿主：把 BoardItem 画出来。
  *
@@ -34,6 +35,8 @@ export interface WidgetHostProps {
 }
 
 export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): ReactNode {
+  const uiLocale = useUiLocale();
+
   const plan = planForItem(item, defs ?? []);
   const id = item.spec.kind === "custom" ? "custom:" + item.spec.id : item.spec.kind === "card" ? "card:" + item.spec.card : "";
   const custom = id ? renderers?.[id] : undefined;
@@ -41,8 +44,8 @@ export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): 
   if (plan.kind === "empty") {
     return (
       <div className="wg-empty" role="note">
-        <span className="wg-empty-title">该组件已不可用，请从白板移除</span>
-        <span className="wg-empty-hint">它依赖的功能可能已改名或被移除。</span>
+        <span className="wg-empty-title">{i18n("components.widgethost.32f8c1be3eb7")}</span>
+        <span className="wg-empty-hint">{i18n("components.widgethost.15539ef189fb")}</span>
       </div>
     );
   }
@@ -64,7 +67,7 @@ export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): 
     if (missing) {
       return (
         <div className="wg-empty" role="note">
-          <span className="wg-empty-title">这条入口已失效，请从白板移除</span>
+          <span className="wg-empty-title">{i18n("components.widgethost.857e5e59690b")}</span>
         </div>
       );
     }
@@ -86,13 +89,13 @@ export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): 
       {custom ? (
         custom(item.spec.kind === "custom" ? item.spec.props : undefined, plan.size) ?? (
           <div className="wg-card-shell">
-            <span className="wg-card-hint">暂无内容</span>
+            <span className="wg-card-hint">{i18n("components.widgethost.7d77a938e62b")}</span>
           </div>
         )
       ) : (
         <div className="wg-card-shell">
           <span className="wg-card-title">{plan.title}</span>
-          <span className="wg-card-hint">内容由原页面提供</span>
+          <span className="wg-card-hint">{i18n("components.widgethost.b77883b96b72")}</span>
         </div>
       )}
     </div>

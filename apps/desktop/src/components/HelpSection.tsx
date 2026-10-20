@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { replayOnboarding } from "./OnboardingTour.js";
 import { Btn, SettingsRow } from "@onethu/gui";
 /**
@@ -17,55 +18,57 @@ const byId = new Map(NAV_REGISTRY.map((e) => [e.id, e]));
 /** 一件事一行：标题是用户嘴里的话，按钮是注册表里的功能名 */
 const TASKS: Array<{ title: string; desc: string; ids: string[]; settingsTab?: string }> = [
   {
-    title: "我要查成绩、看考试安排",
-    desc: "成绩、考试、课程信息都在「信息」里。",
+    get title() { return i18n("components.helpsection.8b4f5f124179"); },
+    get desc() { return i18n("components.helpsection.5ba6014f3e9c"); },
     ids: ["info-report", "info-exams"],
   },
   {
-    title: "我要交作业",
-    desc: "网络学堂、雨课堂、OJ 的作业都汇总在作业区；雨课堂要先扫码绑一次。",
+    get title() { return i18n("components.helpsection.09e7cf41dd47"); },
+    get desc() { return i18n("components.helpsection.ebaa5fad9de2"); },
     ids: ["learn-assignments", "yuketang-homework", "oj-homework"],
   },
   {
-    title: "我要交宿舍电费、看校园卡",
-    desc: "生活服务都在「生活」分组里。",
+    get title() { return i18n("components.helpsection.0478e4ba85fb"); },
+    get desc() { return i18n("components.helpsection.bd78a657da8a"); },
     ids: ["life-electricity", "life-card"],
   },
   {
-    title: "我要预约图书馆座位、研讨间、体育",
-    desc: "预约类的几项都归在「预约」分组。",
+    get title() { return i18n("components.helpsection.f96e2a787c76"); },
+    get desc() { return i18n("components.helpsection.cfab57dc28e1"); },
     ids: ["reserve-lib", "reserve-room", "reserve-sports"],
   },
   {
-    title: "我要连校园网、查网费",
-    desc: "校园网在「生活」里，进去按提示登录一次。",
+    get title() { return i18n("components.helpsection.abd9b1221963"); },
+    get desc() { return i18n("components.helpsection.7e5d9d2915e9"); },
     ids: ["life-network"],
   },
   {
-    title: "我要把课表、日程同步到手机",
-    desc: "绑定一次清华邮箱，日程就能多设备同步；iPhone 上也能看。",
+    get title() { return i18n("components.helpsection.0a9dea0904bb"); },
+    get desc() { return i18n("components.helpsection.b8c8d955a2a8"); },
     ids: ["schedule", "mail"],
   },
   {
-    title: "我要改通知、外观",
-    desc: "这些都在设置里，下面直接带你到对应的栏目。",
+    get title() { return i18n("components.helpsection.31689de9b7b3"); },
+    get desc() { return i18n("components.helpsection.faf8fc496688"); },
     ids: [],
     settingsTab: "通知与提醒",
   },
   {
     /* 2026-10-11 设置重构：桌面小组件从「通知与提醒」独立成栏，直达目标跟着换 */
-    title: "我要改桌面小组件的内容",
-    desc: "组件显示什么、刷新频率都在设置里；下面直接带你到那一栏。",
+    get title() { return i18n("components.helpsection.7a25374f5630"); },
+    get desc() { return i18n("components.helpsection.9889374af97c"); },
     ids: [],
     settingsTab: "桌面小组件",
   },
 ];
 
 export function HelpSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      <SettingsRow title="白板、暂存箱与组织怎么用？" sub="按模式查看导览，学习整理白板、暂存内容、分享短口令和 NFC 碰一碰，以及管理组织。" control={<Btn variant="outline" onClick={replayOnboarding}>打开导览</Btn>}/>
+      <SettingsRow title={i18n("components.helpsection.5dadf7093a8f")} sub={i18n("components.helpsection.e4699249f613")} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.helpsection.eea78fdb74ce")}</Btn>}/>
       {TASKS.map((task) => {
         const entries = task.ids
           .map((id) => byId.get(id))

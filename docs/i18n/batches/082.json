@@ -1,0 +1,1392 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "state.atoms.c6460a02e85e",
+      "source": "时钟 · 程序坞 · 自由画布",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 199,
+          "context": "return i18n(\"state.atoms.c6460a02e85e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.c730a0bada79",
+      "source": "日程与提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 308,
+          "context": "return i18n(\"state.atoms.c730a0bada79\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.c7811f3d9d70",
+      "source": "图书馆 · 座位与签到",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 553,
+          "context": "sub: i18n(\"state.atoms.c7811f3d9d70\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.c94cd3fab151",
+      "source": " · Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 601,
+          "context": "(cat || i18n(\"state.atoms.d4f7864690bb\")) + i18n(\"state.atoms.c94cd3fab151\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 726,
+          "context": "a.cat + i18n(\"state.atoms.c94cd3fab151\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 245,
+          "context": "return i18n(\"state.atoms.caf1f095b108\");"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.cce40ddbb7b9",
+      "source": "信息页 · 体质测试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 233,
+          "context": "return i18n(\"state.atoms.cce40ddbb7b9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.ce3b386bd714",
+      "source": "楼层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 561,
+          "context": "fName || i18n(\"state.atoms.ce3b386bd714\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.cf05dea41f42",
+      "source": "生活页 · 宿舍卫生检查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 244,
+          "context": "return i18n(\"state.atoms.cf05dea41f42\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.d25aafa6ed3f",
+      "source": "云端共 {total} 个日程（新增 {added}、更新 {updated}、移除 {removed}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "total",
+          "expression": "String(r.total)"
+        },
+        {
+          "name": "added",
+          "expression": "String(r.added)"
+        },
+        {
+          "name": "updated",
+          "expression": "String(r.updated)"
+        },
+        {
+          "name": "removed",
+          "expression": "String(r.removed)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 176,
+          "context": "return i18n(\"state.atoms.d25aafa6ed3f\", { total: String(r.total), added: String(r.added), updated: String(r.updated), removed: String(r.removed) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 492,
+          "context": "title || i18n(\"state.atoms.d39567b2b9f1\")"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.atoms.d4f7864690bb",
+      "source": "Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 601,
+          "context": "cat || i18n(\"state.atoms.d4f7864690bb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.d5a374a5b103",
+      "source": "旧收藏夹（folderId 定位）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 210,
+          "context": "return i18n(\"state.atoms.d5a374a5b103\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.d648ae3059c3",
+      "source": " · 座位区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 569,
+          "context": "(libName || \"\") + (fName ? \" · \" + fName : \"\") + i18n(\"state.atoms.d648ae3059c3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.d66273bca391",
+      "source": "收藏夹（改内/改名/删除 → 收藏夹页编辑模式）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 657,
+          "context": "(path.length > 0 ? path.join(\" / \") + \" · \" : \"\") + i18n(\"state.atoms.d66273bca391\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.d8e3dfbe5f8a",
+      "source": "门户原始应用导航",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 202,
+          "context": "return i18n(\"state.atoms.d8e3dfbe5f8a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.dcd2bf114535",
+      "source": "生活聚合页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 212,
+          "context": "return i18n(\"state.atoms.dcd2bf114535\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.dd42589239f7",
+      "source": "合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 478,
+          "context": "isIssue ? \"Issue\" : i18n(\"state.atoms.dd42589239f7\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 479,
+          "context": "isIssue ? \"Issue\" : i18n(\"state.atoms.dd42589239f7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.dd94488f5269",
+      "source": "校园网",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 249,
+          "context": "return i18n(\"state.atoms.dd94488f5269\");"
+        }
+      ],
+      "translation": "Campus network",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.e00b99270be7",
+      "source": "体育场馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 537,
+          "context": "name || i18n(\"state.atoms.e00b99270be7\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 716,
+          "context": "sub: i18n(\"state.atoms.e00b99270be7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 251,
+          "context": "return i18n(\"state.atoms.e4d40b4d6759\");"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 545,
+          "context": "name || i18n(\"state.atoms.e4d40b4d6759\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 718,
+          "context": "sub: i18n(\"state.atoms.e4d40b4d6759\")"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.e642c7fc3df2",
+      "source": "GitLab 合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 731,
+          "context": "sub: i18n(\"state.atoms.e642c7fc3df2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.e7028601e7da",
+      "source": "信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 211,
+          "context": "return i18n(\"state.atoms.e7028601e7da\");"
+        }
+      ],
+      "translation": "Info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.e703d13e3468",
+      "source": "生活页 · 财务 · 发票列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 246,
+          "context": "return i18n(\"state.atoms.e703d13e3468\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 254,
+          "context": "return i18n(\"state.atoms.e81059e1a712\");"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 721,
+          "context": "sub: i18n(\"state.atoms.e81059e1a712\")"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.ec309ab207ef",
+      "source": "服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 204,
+          "context": "return i18n(\"state.atoms.ec309ab207ef\");"
+        }
+      ],
+      "translation": "Services",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.ecc11c8afea8",
+      "source": "空教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 252,
+          "context": "return i18n(\"state.atoms.ecc11c8afea8\");"
+        }
+      ],
+      "translation": "Empty classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.ed80f9723a5a",
+      "source": "写信",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 217,
+          "context": "return i18n(\"state.atoms.ed80f9723a5a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.ede028d7ec64",
+      "source": "全部成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 232,
+          "context": "return i18n(\"state.atoms.ede028d7ec64\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.ee6388006cb5",
+      "source": "预约页 · 体育场馆时段预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 253,
+          "context": "return i18n(\"state.atoms.ee6388006cb5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.f37a13fc55b3",
+      "source": "课程通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 711,
+          "context": "sub: i18n(\"state.atoms.f37a13fc55b3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.f3849df7f168",
+      "source": "同步作业 DDL 到云日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 164,
+          "context": "return i18n(\"state.atoms.f3849df7f168\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.f75562426e77",
+      "source": "云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 218,
+          "context": "return i18n(\"state.atoms.f75562426e77\");"
+        }
+      ],
+      "translation": "Cloud",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.f951111a412f",
+      "source": "清华 GitLab · 项目 · Issue · 合并请求 · 流水线",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 219,
+          "context": "return i18n(\"state.atoms.f951111a412f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.fa8fe752727c",
+      "source": "全部课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 228,
+          "context": "return i18n(\"state.atoms.fa8fe752727c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.fc7c1ff5f380",
+      "source": "信息页 · 学期安排图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 236,
+          "context": "return i18n(\"state.atoms.fc7c1ff5f380\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.fd17d86dd268",
+      "source": "选课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 220,
+          "context": "return i18n(\"state.atoms.fd17d86dd268\");"
+        }
+      ],
+      "translation": "Course selection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.fe7dbfcadf51",
+      "source": "生活页 · 余额与流水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 245,
+          "context": "return i18n(\"state.atoms.fe7dbfcadf51\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardcore.4e6ff6dda14d",
+      "source": "把今天，安排好。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardCore.ts",
+          "line": 330,
+          "context": "text: i18n(\"state.boardcore.4e6ff6dda14d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.0a6fddad6b91",
+      "source": "全部作业、通知与课程文件，适合考试周盯着进度。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 51,
+          "context": "return i18n(\"state.boardtemplates.0a6fddad6b91\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.2545760589cb",
+      "source": "今日速览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 38,
+          "context": "return i18n(\"state.boardtemplates.2545760589cb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.2e67474d8dad",
+      "source": "极简",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 61,
+          "context": "return i18n(\"state.boardtemplates.2e67474d8dad\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.353b51755790",
+      "source": "一个标题、一张课表、一条余额，先跑起来再慢慢加。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 62,
+          "context": "return i18n(\"state.boardtemplates.353b51755790\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.3d0b47c6e59c",
+      "source": "时钟、问候语、一级功能区与今日四件套。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 35,
+          "context": "return i18n(\"state.boardtemplates.3d0b47c6e59c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.811d02529318",
+      "source": "课表与待办并排，下面接通知、下一节课和余额。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 39,
+          "context": "return i18n(\"state.boardtemplates.811d02529318\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.c11531ab33d2",
+      "source": "今天，从容一点。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 64,
+          "context": "return i18n(\"state.boardtemplates.c11531ab33d2\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.d5e8c95c5448",
+      "source": "学习为主",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 50,
+          "context": "return i18n(\"state.boardtemplates.d5e8c95c5448\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.boardtemplates.e8ada398d92a",
+      "source": "默认首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/boardTemplates.ts",
+          "line": 35,
+          "context": "return i18n(\"state.boardtemplates.e8ada398d92a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.0ca2f1aa431e",
+      "source": "应用未打包运行，系统通知不可用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 317,
+          "context": "return i18n(\"state.cardwarn.0ca2f1aa431e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.304901f669bd",
+      "source": "当前余额 ¥{value}，高于预警线 ¥{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(balance.toFixed(2))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(settings.threshold.toFixed(2))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 336,
+          "context": "return i18n(\"state.cardwarn.304901f669bd\", { value: String(balance.toFixed(2)), value2: String(settings.threshold.toFixed(2)) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.3770554318c1",
+      "source": "{min} 分钟前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "min",
+          "expression": "String(min)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 341,
+          "context": "min < 60 ? i18n(\"state.cardwarn.3770554318c1\", { min: String(min) }) : i18n(\"state.cardwarn.690c01945f17\", { value: String(Math.floor(min / 60)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.3d2f25974036",
+      "source": "投递时刻已过",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 318,
+          "context": "return i18n(\"state.cardwarn.3d2f25974036\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.441543d6afc0",
+      "source": "系统通知未授权，请在系统设置里允许本应用通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 315,
+          "context": "return i18n(\"state.cardwarn.441543d6afc0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.690c01945f17",
+      "source": "{value} 小时前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(min / 60))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 341,
+          "context": "min < 60 ? i18n(\"state.cardwarn.3770554318c1\", { min: String(min) }) : i18n(\"state.cardwarn.690c01945f17\", { value: String(Math.floor(min / 60)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.6c61f7700756",
+      "source": "系统通知不可用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 323,
+          "context": "key || i18n(\"state.cardwarn.6c61f7700756\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.a2d31fa4bf47",
+      "source": "提醒未送达：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(cardWarnReasonText(state.reason))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 339,
+          "context": "return i18n(\"state.cardwarn.a2d31fa4bf47\", { value: String(cardWarnReasonText(state.reason)) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.ad508635dc98",
+      "source": "OneTHU 余额预警",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 147,
+          "context": "title: i18n(\"state.cardwarn.ad508635dc98\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.cardwarn.bf2868f8d201",
+      "source": "当前余额 ¥{value}，已低于预警线",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(balance.toFixed(2))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 344,
+          "context": "return i18n(\"state.cardwarn.bf2868f8d201\", { value: String(balance.toFixed(2)) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.cc0ee8d6a882",
+      "source": "本平台暂不支持系统通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 316,
+          "context": "return i18n(\"state.cardwarn.cc0ee8d6a882\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.de6785d99e02",
+      "source": "刚刚",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 341,
+          "context": "min < 1 ? i18n(\"state.cardwarn.de6785d99e02\") : min < 60 ? i18n(\"state.cardwarn.3770554318c1\", { min: String(min) }) : i18n(\"state.cardwarn.690c01945f17\", { value: String(Math.floor(min / 60)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.f5fc812e10d4",
+      "source": "未开启：余额低于预警线时不会提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 334,
+          "context": "return i18n(\"state.cardwarn.f5fc812e10d4\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.f817a3ab0c4e",
+      "source": "已提醒{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(ago ? `（${ago}）` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 342,
+          "context": "return i18n(\"state.cardwarn.f817a3ab0c4e\", { value: String(ago ? `（${ago}）` : \"\") });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cardwarn.fef9dc03d14d",
+      "source": "余额低于 ¥{value} 时提醒",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(settings.threshold.toFixed(2))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cardWarn.ts",
+          "line": 345,
+          "context": "return i18n(\"state.cardwarn.fef9dc03d14d\", { value: String(settings.threshold.toFixed(2)) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.253f54401fa7",
+      "source": "未配置云同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 302,
+          "context": "new Error(i18n(\"state.cloudcal.253f54401fa7\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 317,
+          "context": "new Error(i18n(\"state.cloudcal.253f54401fa7\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 334,
+          "context": "new Error(i18n(\"state.cloudcal.253f54401fa7\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 513,
+          "context": "new Error(i18n(\"state.cloudcal.253f54401fa7\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.33de4f649f2f",
+      "source": "本地日程存档损坏，未覆盖已有日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 147,
+          "context": "new Error(i18n(\"state.cloudcal.33de4f649f2f\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.5a6208164ba7",
+      "source": "云同步账号已变更，请重试当前操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 55,
+          "context": "new Error(i18n(\"state.cloudcal.5a6208164ba7\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.5b53abc907c9",
+      "source": "邮箱连接配置无法读取，请重新配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 124,
+          "context": "new Error(i18n(\"state.cloudcal.5b53abc907c9\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.5e7a239fbc21",
+      "source": "请填写邮箱和授权码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 233,
+          "context": "new Error(i18n(\"state.cloudcal.5e7a239fbc21\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.6600b7092f4c",
+      "source": "重复日程请先导出完整系列，不能只移动单个实例",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 374,
+          "context": "new Error(i18n(\"state.cloudcal.6600b7092f4c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.6b8367664e76",
+      "source": "日历存档读取失败，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 160,
+          "context": "lastError = i18n(\"state.cloudcal.6b8367664e76\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.6d9090d5290b",
+      "source": "邮箱连接配置损坏，请重新配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 122,
+          "context": "new Error(i18n(\"state.cloudcal.6d9090d5290b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.72574f41faea",
+      "source": "服务器返回了无效日历，已保留本地镜像",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 281,
+          "context": "new Error(i18n(\"state.cloudcal.72574f41faea\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.8120a4a0177c",
+      "source": "课表含无法识别的场次，未修改云日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 516,
+          "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 583,
+          "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.812d9e62ba2d",
+      "source": "日程版本信息缺失，请先同步再编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 320,
+          "context": "new Error(i18n(\"state.cloudcal.812d9e62ba2d\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.892291a664b5",
+      "source": "新位置已保存，原位置清理失败，两侧日程均保留；请同步后再清理重复项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 382,
+          "context": "new Error(i18n(\"state.cloudcal.892291a664b5\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.bd5ff99826df",
+      "source": "未找到日程，请先同步后再删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 336,
+          "context": "new Error(i18n(\"state.cloudcal.bd5ff99826df\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.e2f9152c9203",
+      "source": "学期信息无效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 458,
+          "context": "new Error(i18n(\"state.cloudcal.e2f9152c9203\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.f3f8e2d173eb",
+      "source": "云同步配置已变更，本次验证结果未应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 247,
+          "context": "new Error(i18n(\"state.cloudcal.f3f8e2d173eb\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.fc42ba627dce",
+      "source": "日程版本信息缺失，请先同步再删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 337,
+          "context": "new Error(i18n(\"state.cloudcal.fc42ba627dce\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.fe20ed20d492",
+      "source": "云日历缓存损坏，未覆盖已有日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 146,
+          "context": "new Error(i18n(\"state.cloudcal.fe20ed20d492\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudexchange.388fc6c63ebe",
+      "source": "分享内容超过支持的大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudExchange.ts",
+          "line": 157,
+          "context": "new Error(i18n(\"state.cloudexchange.388fc6c63ebe\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

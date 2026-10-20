@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale, msg as i18nMsg } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * OnePage 列表页（P2，方案 §7.9；2026-10-13 起话语从「收藏夹」切换为 OnePage）：多块白板的入口。
@@ -20,6 +21,8 @@ import { openFormModal } from "../lib/formModal.js";
 import { openFolderIconPicker } from "../components/explorer/FolderIconPicker.js";
 
 export function BoardListPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const menu = useContextMenu();
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
@@ -32,7 +35,7 @@ export function BoardListPage(): ReactNode {
   }, []);
   /* 系统板（「首页」）不是一块 OnePage：首页有自己的入口（顶栏 Logo / 程序坞）。列在这里的话，
      点「首页」会被当成"把首页当白板打开"（用户实测原话：「点击首页回首页，你回的还是旧的一套」）。 */
-  const rows = useMemo(() => boardSummary(doc).filter((b) => b.kind !== "system"), [doc]);
+  const rows = useMemo(() => boardSummary(doc).filter((b) => b.kind !== "system"), [uiLocale, doc]);
 
   const say = (text: string): void => {
     setNote(text);
@@ -40,27 +43,27 @@ export function BoardListPage(): ReactNode {
   };
 
   const rename = async (id: string, name: string): Promise<void> => {
-    const f = await openFormModal("重命名 OnePage", [{ key: "name", label: "名字", required: true, default: name }]);
+    const f = await openFormModal(i18nMsg("pages.boardlistpage.0c898fe25ba6"), [{ key: "name", label: i18nMsg("pages.boardlistpage.6773310492a9"), required: true, default: name }]);
     if (!f) return;
     mutateBoards((d) => renameBoard(d, id, f.name ?? name));
-    say("已重命名：" + (f.name ?? name));
+    say(i18n("pages.boardlistpage.5cb3b8029a6e") + (f.name ?? name));
   };
 
   const openMenu = (id: string, name: string, x: number, y: number): void => {
     const items: CtxItem[] = [
-      { key: "rename", label: "重命名…", onSelect: () => void rename(id, name) },
-      { key: "icon", label: "改图标…", onSelect: () => openFolderIconPicker(id) },
-      { key: "current", label: "设为当前 OnePage", onSelect: () => { mutateBoards((d) => setActiveBoard(d, id)); say("当前 OnePage：" + name); } },
-      { key: "up", label: "上移", onSelect: () => mutateBoards((d) => moveBoard(d, id, "up")) },
-      { key: "down", label: "下移", onSelect: () => mutateBoards((d) => moveBoard(d, id, "down")) },
-      { key: "remove", label: "删除", danger: true, onSelect: () => {
+      { key: "rename", label: i18n("pages.boardlistpage.ec4cd05f5147"), onSelect: () => void rename(id, name) },
+      { key: "icon", label: i18n("pages.boardlistpage.9201642820f0"), onSelect: () => openFolderIconPicker(id) },
+      { key: "current", label: i18n("pages.boardlistpage.3a32f6df621a"), onSelect: () => { mutateBoards((d) => setActiveBoard(d, id)); say(i18n("pages.boardlistpage.3732febb39ac") + name); } },
+      { key: "up", label: i18n("pages.boardlistpage.f853a70b1204"), onSelect: () => mutateBoards((d) => moveBoard(d, id, "up")) },
+      { key: "down", label: i18n("pages.boardlistpage.e75e8b4e5c97"), onSelect: () => mutateBoards((d) => moveBoard(d, id, "down")) },
+      { key: "remove", label: i18n("pages.boardlistpage.2f9daa828907"), danger: true, onSelect: () => {
         const reason = mutateBoards((d) => {
           const r = deleteBoard(d, id);
           if (r.reason) {
-            say(r.reason === "system-board" ? "系统板不能删除" : r.reason === "last-board" ? "至少保留一块 OnePage" : "没有这块 OnePage");
+            say(r.reason === "system-board" ? i18n("pages.boardlistpage.fcd1b76ca897") : r.reason === "last-board" ? i18n("pages.boardlistpage.ef42f401cbad") : i18n("pages.boardlistpage.11de1b40f9d8"));
             return null;
           }
-          say("已删除：" + name);
+          say(i18n("pages.boardlistpage.35ac50715f79") + name);
           return r.doc;
         });
         void reason;
@@ -71,10 +74,10 @@ export function BoardListPage(): ReactNode {
 
   return (
     <>
-      <PageHead title="OnePage" meta="每一块都是一张可随意摆放组件的白板" />
+      <PageHead title="OnePage" meta={i18n("pages.boardlistpage.644bb757108b")} />
       {rows.length === 0 ? (
         <Card>
-          <Empty text="还没有 OnePage。新建一块，把常用的组件摆上去。" />
+          <Empty text={i18n("pages.boardlistpage.88e6da1b7129")} />
         </Card>
       ) : (
         <div className="board-list" data-boards={String(rows.length)}>
@@ -88,9 +91,7 @@ export function BoardListPage(): ReactNode {
               onContextMenu={(e) => { e.preventDefault(); openMenu(b.id, b.name, e.clientX, e.clientY); }}
             >
               <span className="board-list-name">{b.name}</span>
-              <span className="board-list-meta">
-                {b.kind === "system" ? "系统板" : "OnePage"} · {b.count} 个组件{b.active ? " · 当前 OnePage" : ""}
-              </span>
+              <span className="board-list-meta">{i18nRich("pages.boardlistpage.00d53679d665", { value: b.kind === "system" ? i18n("pages.boardlistpage.97778650b3ab") : "OnePage", count: b.count, value2: b.active ? i18n("pages.boardlistpage.a983d701044a") : "" })}</span>
             </button>
           ))}
         </div>
@@ -99,17 +100,16 @@ export function BoardListPage(): ReactNode {
         <Btn variant="outline" onClick={() => {
             let created = "";
             mutateBoards((d) => {
-              const r = createBoard(d, "新 OnePage " + String(rows.length + 1));
+              const r = createBoard(d, i18n("pages.boardlistpage.9b3dcd2cedd1") + String(rows.length + 1));
               created = r.board.id;
               return r.doc;
             });
             if (created) {
-              say("已新建并打开");
+              say(i18n("pages.boardlistpage.3250dd5a9f03"));
               mutateBoards((d) => setActiveBoard(d, created));
               navigate("board");
             }
-          }}>新建 OnePage
-        </Btn>
+          }}>{i18n("pages.boardlistpage.8b9db911f1d9")}</Btn>
       </div>
 
       {note ? <div className="board-note" role="status">{note}</div> : null}

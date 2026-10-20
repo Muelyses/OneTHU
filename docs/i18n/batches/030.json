@@ -1,0 +1,1371 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "enum.label.ef7be5be3c13",
+      "source": "体育",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 48,
+          "context": "return t(\"enum.label.ef7be5be3c13\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.ef94275bd96f",
+      "source": "实验设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 20,
+          "context": "return t(\"enum.label.ef94275bd96f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.f2260568b289",
+      "source": "成绩评定标准",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 43,
+          "context": "return t(\"enum.label.f2260568b289\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.f24ccb00a8ab",
+      "source": "参考书",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 44,
+          "context": "return t(\"enum.label.f24ccb00a8ab\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.fc0c0d12a458",
+      "source": "总学时数",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 31,
+          "context": "return t(\"enum.label.fc0c0d12a458\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "gui.action.back",
+      "source": "返回",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Back",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.action.close",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.action.remove",
+      "source": "移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Remove",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.breadcrumb.label",
+      "source": "面包屑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Breadcrumb",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.code.copied",
+      "source": "已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Copied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.code.copy",
+      "source": "复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Copy",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.navigation.home",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.number.decrease",
+      "source": "减",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Decrease",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.number.increase",
+      "source": "加",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Increase",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.overlay.actionMenu",
+      "source": "操作菜单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Actions menu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.overlay.actions",
+      "source": "操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Actions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.overlay.dialog",
+      "source": "对话框",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Dialog",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.overlay.drawer",
+      "source": "抽屉",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Drawer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.overlay.panel",
+      "source": "面板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Panel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.overlay.popover",
+      "source": "浮层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Popover",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.pagination.next",
+      "source": "下一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Next page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.pagination.previous",
+      "source": "上一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Previous page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.range.lower",
+      "source": "下限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Lower bound",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.range.upper",
+      "source": "上限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Upper bound",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.search.clear",
+      "source": "清空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Clear",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.search.placeholder",
+      "source": "搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.segment.scroll",
+      "source": "滚动选项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Scroll options",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.status.loading",
+      "source": "加载中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Loading",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.tabs.all",
+      "source": "全部标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "All tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.tabs.close",
+      "source": "关闭标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Close tab",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "gui.tabs.label",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.1b07b50af2fc",
+      "source": "飞书应用信息未配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 43,
+          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 83,
+          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.6852f9c70747",
+      "source": "飞书登录失败(code={value})：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(j.code ?? res.status)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(j.msg ?? \"请检查 App ID / App Secret\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 51,
+          "context": "new Error(i18n(\"im.feishu.6852f9c70747\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.checkAppCredentials\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.922f42820916",
+      "source": "飞书发送失败(code={value})：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(j.code ?? res.status)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(j.msg ?? \"未知原因\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 404,
+          "context": "new Error(i18n(\"im.feishu.922f42820916\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.unknownReason\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.ae1ef2c16037",
+      "source": "飞书长连接建立失败(code={code})：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "code",
+          "expression": "String(j.code)"
+        },
+        {
+          "name": "value",
+          "expression": "String(j.msg ?? \"请检查应用信息与长连接权限\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 91,
+          "context": "new Error(i18n(\"im.feishu.ae1ef2c16037\", { code: String(j.code), value: String(j.msg ?? i18n(\"im.feishu.checkConnectionPermissions\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.cd5f46094a61",
+      "source": "飞书长连接无法建立：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String((e as Event)?.type ?? e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 138,
+          "context": "new Error(i18n(\"im.feishu.cd5f46094a61\", { value: String(String((e as Event)?.type ?? e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.channelLabel",
+      "source": "飞书",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 100,
+          "context": "return i18n(\"im.feishu.channelLabel\");"
+        }
+      ],
+      "translation": "Feishu",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "im.feishu.checkAppCredentials",
+      "source": "请检查 App ID / App Secret",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 51,
+          "context": "j.msg ?? i18n(\"im.feishu.checkAppCredentials\")"
+        }
+      ],
+      "translation": "Check the App ID and App Secret.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.checkConnectionPermissions",
+      "source": "请检查应用信息与长连接权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 91,
+          "context": "j.msg ?? i18n(\"im.feishu.checkConnectionPermissions\")"
+        }
+      ],
+      "translation": "Check the app details and long-connection permissions.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.reconnectDelay",
+      "source": "连接断开，{seconds} 秒后重连",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "seconds"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 419,
+          "context": "reportChannelStatus(\"feishu\", \"reconnecting\", i18n(\"im.feishu.reconnectDelay\", { seconds: Math.round(delay / 1000) }))"
+        }
+      ],
+      "translation": "Disconnected. Reconnecting in {seconds} seconds.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.unknownReason",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 404,
+          "context": "j.msg ?? i18n(\"im.feishu.unknownReason\")"
+        }
+      ],
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.34a35aa8ee74",
+      "source": "protobuf: varint 越界",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 84,
+          "context": "new Error(i18n(\"im.feishuproto.34a35aa8ee74\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.566a4335284f",
+      "source": "protobuf: 未知 wire type {wireType}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "wireType",
+          "expression": "String(wireType)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 108,
+          "context": "new Error(i18n(\"im.feishuproto.566a4335284f\", { wireType: String(wireType) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.6c3a6e0bd105",
+      "source": "protobuf: varint 过长",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 89,
+          "context": "new Error(i18n(\"im.feishuproto.6c3a6e0bd105\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishuproto.df3efc2fd559",
+      "source": "protobuf: bytes 越界",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuProto.ts",
+          "line": 96,
+          "context": "new Error(i18n(\"im.feishuproto.df3efc2fd559\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.3e58ad192505",
+      "source": "请求过频，稍后继续…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 115,
+          "context": "note: i18n(\"im.feishureg.3e58ad192505\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.7e5f803b7990",
+      "source": "应用创建成功",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 107,
+          "context": "note: i18n(\"im.feishureg.7e5f803b7990\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.b8a04f9752fe",
+      "source": "等待手机确认创建…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 113,
+          "context": "note: i18n(\"im.feishureg.b8a04f9752fe\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.c383c734a8c7",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 119,
+          "context": "note: i18n(\"im.feishureg.c383c734a8c7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.d170f4a5cb1e",
+      "source": "检测到 Lark（海外）租户，正在切换接入点…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 99,
+          "context": "note: i18n(\"im.feishureg.d170f4a5cb1e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.e5de60029f1b",
+      "source": "begin 未返回二维码地址：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(JSON.stringify(r).slice(0, 160))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 61,
+          "context": "new Error(i18n(\"im.feishureg.e5de60029f1b\", { value: String(JSON.stringify(r).slice(0, 160)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.f9b4efe03903",
+      "source": "你在手机上取消了创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 117,
+          "context": "note: i18n(\"im.feishureg.f9b4efe03903\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishureg.unknownReason",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishuReg.ts",
+          "line": 121,
+          "context": "r.error_description ?? i18n(\"im.feishureg.unknownReason\")"
+        }
+      ],
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.imstorage.15b8b711a27d",
+      "source": "当前环境不支持 WebCrypto",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/imStorage.ts",
+          "line": 117,
+          "context": "new Error(i18n(\"im.imstorage.15b8b711a27d\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/imStorage.ts",
+          "line": 131,
+          "context": "new Error(i18n(\"im.imstorage.15b8b711a27d\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/imStorage.ts",
+          "line": 141,
+          "context": "new Error(i18n(\"im.imstorage.15b8b711a27d\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.mediapipe.734edfaaa263",
+      "source": "云盘未配置：先在应用的「云盘」页连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/mediaPipe.ts",
+          "line": 50,
+          "context": "new Error(i18n(\"im.mediapipe.734edfaaa263\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.mediapipe.da65b434a10b",
+      "source": "尚未指定资料库（请先回复库序号或库名，我来记住）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/mediaPipe.ts",
+          "line": 163,
+          "context": "new Error(i18n(\"im.mediapipe.da65b434a10b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.02e3d60f5728",
+      "source": "通道未启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 68,
+          "context": "new Error(i18n(\"im.registry.02e3d60f5728\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.03e93eccef32",
+      "source": "「{kw}」没有命中（搜了最近 20 条会话的标题与内容）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "kw",
+          "expression": "String(kw)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 338,
+          "context": "hits.length\n          ? i18n(\"im.registry.7b6bcc474a8c\", { kw: String(kw), length: String(hits.length), value: String(hits.join(\"\\n\")) })\n          : i18n(\"im.registry.03e93eccef32\", { kw: String(kw) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.0894809f5000",
+      "source": "· /switch N —— 切换到编号 N 的会话",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 190,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.0e078145fef7",
+      "source": "已忽略，未上传。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 557,
+          "context": "replyTo(msg, i18n(\"im.registry.0e078145fef7\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.103831bac44b",
+      "source": "先回 /list 看编号，再「/switch 编号」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 233,
+          "context": "replyTo(msg, i18n(\"im.registry.103831bac44b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.106ec22a4ae9",
+      "source": "连接失败：{value}。也可在电脑端 OneTHU 的「云盘」页再点一次自动连接。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.error ?? i18n(\"im.registry.a1a9da9ee6ed\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 352,
+          "context": "r.ok\n        ? i18n(\"im.registry.138dbe11a0d8\", { value: String(r.account?.name ? `（${r.account.name}）` : \"\") })\n        : i18n(\"im.registry.106ec22a4ae9\", { value: String(r.error ?? i18n(\"im.registry.a1a9da9ee6ed\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.138dbe11a0d8",
+      "source": "✅ 云盘已自动连接{value}——现在可以转存文件了。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.account?.name ? `（${r.account.name}）` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 351,
+          "context": "r.ok\n        ? i18n(\"im.registry.138dbe11a0d8\", { value: String(r.account?.name ? `（${r.account.name}）` : \"\") })\n        : i18n(\"im.registry.106ec22a4ae9\", { value: String(r.error ?? i18n(\"im.registry.a1a9da9ee6ed\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.16a558ff8f5c",
+      "source": "还没指定存到哪个资料库。你的资料库：\n{value}\n回复「存 <序号>」选定并存到建议目录（也可回「存到 <库名>」）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(repos.map((r, i) => `${i + 1}. ${r.name}`).join(\"\\n\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 521,
+          "context": "replyTo(\n              msg,\n              i18n(\"im.registry.16a558ff8f5c\", { value: String(repos.map((r, i) => `${i + 1}. ${r.name}`).join(\"\\n\")) }),\n            )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.1995eb67cce4",
+      "source": "会话（最近 10 条，1 号为主对话）：\n{value}\n/detail N 看内容 · /switch N 切换 · /delete N 删除",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(lines.join(\"\\n\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 219,
+          "context": "replyTo(msg, i18n(\"im.registry.1995eb67cce4\", { value: String(lines.join(\"\\n\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.1a301117fb34",
+      "source": "通道未注册：{id}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "id",
+          "expression": "String(id)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 66,
+          "context": "new Error(i18n(\"im.registry.1a301117fb34\", { id: String(id) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.1d40e0790123",
+      "source": "· /new —— 新建会话并切换",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 189,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.1e831ff53d8e",
+      "source": "配置不完整：缺 {missing}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "missing",
+          "expression": "String(probe.missing)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 70,
+          "context": "new Error(i18n(\"im.registry.1e831ff53d8e\", { missing: String(probe.missing) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.276f4647be56",
+      "source": "（刚才的文件还在待确认：「存」转存 /「不」忽略 /「存到 <目录>」自定义）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 583,
+          "context": "replyTo(msg, i18n(\"im.registry.276f4647be56\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.2a20bd367600",
+      "source": "已开新会话（1 号主对话仍保留，/switch 1 可回）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 225,
+          "context": "r?.ok ? i18n(\"im.registry.2a20bd367600\") : i18n(\"im.registry.76588d6a5d1a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.2f3f2a4125cb",
+      "source": "这台电脑的 OneTHU 未与你绑定：请让机主在 设置 → IM 机器人 生成绑定码，再发送「/bind 码」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 398,
+          "context": "replyTo(msg, i18n(\"im.registry.2f3f2a4125cb\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.2fb556ba8785",
+      "source": "还没有会话。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 208,
+          "context": "replyTo(msg, i18n(\"im.registry.2fb556ba8785\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.30627e4f5d7b",
+      "source": "已切换。/detail 1 5-8 可直接看第 5-8 轮。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 237,
+          "context": "r?.ok ? i18n(\"im.registry.30627e4f5d7b\") : i18n(\"im.registry.b34bb467f031\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.37cddcf59a45",
+      "source": "用法：/detail 编号 [起始轮-结束轮]，如 /detail 2 或 /detail 1 5-8（默认 1-5）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 244,
+          "context": "replyTo(msg, i18n(\"im.registry.37cddcf59a45\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.3857e11aade6",
+      "source": "该会话没有可显示的对话轮。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 267,
+          "context": "replyTo(msg, i18n(\"im.registry.3857e11aade6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.3f720cf75734",
+      "source": "附件处理失败：\n{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errs.join(\"\\n\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 425,
+          "context": "replyTo(msg, i18n(\"im.registry.3f720cf75734\", { value: String(errs.join(\"\\n\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.40ff3379e054",
+      "source": "生成分享链接失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 631,
+          "context": "replyTo(msg, i18n(\"im.registry.40ff3379e054\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.428b9163a77c",
+      "source": "(无响应)",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 600,
+          "context": "r.answer ?? i18n(\"im.registry.428b9163a77c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.44383fa7e8d3",
+      "source": "《{name}》不是可读文本（二进制/图片等），我读不出文字内容。回「存」转存 /「不」忽略。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(s0.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 569,
+          "context": "replyTo(\n            msg,\n            i18n(\"im.registry.44383fa7e8d3\", { name: String(s0.name) }),\n          )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.5215599023ee",
+      "source": "读取失败。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 256,
+          "context": "replyTo(msg, i18n(\"im.registry.5215599023ee\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

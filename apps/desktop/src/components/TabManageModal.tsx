@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 聚合页栏目管理弹窗：勾选显隐 + ↑↓ 调序 + 恢复默认。
@@ -48,6 +49,8 @@ export function TabManageModal({
   onApply: (layout: TabLayout) => void;
   onReset: () => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const expanded = useExpanded(); // 钩子必须在下方 if (!open) 早返回之前
   /* Esc 关闭（即时生效型弹窗：直接关闭即保存，无需确认步骤） */
   const [closing, requestClose] = useExitPhase(onClose, open);
@@ -88,9 +91,7 @@ export function TabManageModal({
           <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
         <div style={{ padding: "8px 16px 14px", overflowY: "auto", fontSize: 13, lineHeight: 1.7 }}>
-          <div style={{ fontSize: 12, color: "var(--og-content-3)", margin: "6px 0" }}>
-            勾选控制显示；↑↓ 调整顺序（即时生效并保存）。
-          </div>
+          <div style={{ fontSize: 12, color: "var(--og-content-3)", margin: "6px 0" }}>{i18n("components.tabmanagemodal.b36ae796d429")}</div>
           {rows.map((t, i) => {
             const visible = !layout.hidden.includes(t.id);
             return (
@@ -99,14 +100,14 @@ export function TabManageModal({
                   <input type="checkbox" checked={visible} onChange={() => toggle(t.id)} />
                   {t.label}
                 </label>
-                <Btn variant="outline" disabled={i === 0} onClick={() => move(t.id, -1)} titleAttr="上移">↑</Btn>
-                <Btn variant="outline" disabled={i === rows.length - 1} onClick={() => move(t.id, 1)} titleAttr="下移">↓</Btn>
+                <Btn variant="outline" disabled={i === 0} onClick={() => move(t.id, -1)} titleAttr={i18n("components.tabmanagemodal.f853a70b1204")}>↑</Btn>
+                <Btn variant="outline" disabled={i === rows.length - 1} onClick={() => move(t.id, 1)} titleAttr={i18n("components.tabmanagemodal.e75e8b4e5c97")}>↓</Btn>
               </div>
             );
           })}
           <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
-            <Btn variant="outline" onClick={onReset}>恢复默认</Btn>
-            <Btn variant="solid" tone="brand" onClick={requestClose}>完成</Btn>
+            <Btn variant="outline" onClick={onReset}>{i18n("components.tabmanagemodal.ba2e93e73037")}</Btn>
+            <Btn variant="solid" tone="brand" onClick={requestClose}>{i18n("components.tabmanagemodal.c0b3fbff51cc")}</Btn>
           </div>
         </div>
       </div>

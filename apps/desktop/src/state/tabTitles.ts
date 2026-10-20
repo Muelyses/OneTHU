@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 标签页完整路径标题（dev-explorer）：数据感知的实体级面包屑。
  *
@@ -70,44 +71,44 @@ export function resolveTabTitle(page: Page, params: LearnNav | null): TabTitle {
     case "learn-course": {
       const name = courseNameOf(params?.courseId);
       return name
-        ? { label: name, full: `网络学堂 › ${name}` }
-        : { label: "课程详情", full: "网络学堂 › 课程详情" };
+        ? { label: name, full: i18n("state.tabtitles.55203d69afd6", { name: String(name) }) }
+        : { label: i18n("state.tabtitles.22519a88484f"), full: i18n("state.tabtitles.b2c656b0a5a4") };
     }
     case "learn-assignment-detail": {
       const hw = snap?.homework.find((h) => h.id === params?.itemId) ?? null;
       const course = courseNameOf(params?.courseId) ?? hw?.courseId ?? null;
       if (hw?.title) {
-        const head = course ? `${course} › 作业` : "网络学堂 › 作业";
+        const head = course ? i18n("state.tabtitles.f12e9b97b5c4", { course: String(course) }) : i18n("state.tabtitles.7292c38a500b");
         return { label: hw.title, full: `${head} › ${hw.title}` };
       }
-      return { label: "作业详情", full: course ? `${course} › 作业详情` : "网络学堂 › 作业详情" };
+      return { label: i18n("state.tabtitles.d4af30a738c7"), full: course ? i18n("state.tabtitles.0fb5334ea170", { course: String(course) }) : i18n("state.tabtitles.04671516a9d5") };
     }
     case "learn-notice-detail": {
       const ntf = snap?.notifications.find((n) => n.id === params?.itemId) ?? null;
       const course = courseNameOf(params?.courseId);
       if (ntf?.title) {
-        const head = course ? `${course} › 通知` : "网络学堂 › 通知";
+        const head = course ? i18n("state.tabtitles.1bed6f81e9f6", { course: String(course) }) : i18n("state.tabtitles.b543a6b7ca5d");
         return { label: ntf.title, full: `${head} › ${ntf.title}` };
       }
-      return { label: "通知详情", full: course ? `${course} › 通知详情` : "网络学堂 › 通知详情" };
+      return { label: i18n("state.tabtitles.483fe390159f"), full: course ? i18n("state.tabtitles.46034b925dd1", { course: String(course) }) : i18n("state.tabtitles.14827749c5db") };
     }
     case "learn-file-detail": {
       const f = snap?.files.find((x) => x.id === params?.itemId) ?? null;
       const course = courseNameOf(params?.courseId);
       if (f?.title) {
-        const head = course ? `${course} › 文件` : "网络学堂 › 文件";
+        const head = course ? i18n("state.tabtitles.457de67c8142", { course: String(course) }) : i18n("state.tabtitles.57c7c46977b9");
         return { label: f.title, full: `${head} › ${f.title}` };
       }
-      return { label: "文件详情", full: course ? `${course} › 文件详情` : "网络学堂 › 文件详情" };
+      return { label: i18n("state.tabtitles.27b6154b3fd3"), full: course ? i18n("state.tabtitles.c7410c8f179d", { course: String(course) }) : i18n("state.tabtitles.668cfd9074b0") };
     }
     case "learn-forum-thread": {
       const course = courseNameOf(params?.courseId);
-      return { label: "讨论区", full: course ? `${course} › 讨论区` : "网络学堂 › 讨论区" };
+      return { label: i18n("state.tabtitles.9c92c9d08b05"), full: course ? i18n("state.tabtitles.2d5504d2955c", { course: String(course) }) : i18n("state.tabtitles.714d843bb743") };
     }
     case "learn-ykt-detail": {
       const y = params?.ykt;
-      const name = y?.title ?? "雨课堂作业";
-      const course = y?.courseName ?? "雨课堂";
+      const name = y?.title ?? i18n("state.tabtitles.f0cd4338679e");
+      const course = y?.courseName ?? i18n("state.tabtitles.38b9eabcae1b");
       return { label: name, full: `${course} › ${name}` };
     }
     case "board": {
@@ -131,26 +132,26 @@ export function resolveTabTitle(page: Page, params: LearnNav | null): TabTitle {
     }
     case "mail": {
       const head = params?.mailFolder && params?.mailUid ? getMailHead(params.mailFolder, params.mailUid) : null;
-      const folderLabel = params?.mailFolder === "sent" ? "已发送" : "收件箱";
-      if (head?.subject) return { label: head.subject, full: `邮箱 › ${folderLabel} › ${head.subject}` };
-      return { label: "邮箱", full: `邮箱 › ${folderLabel}` };
+      const folderLabel = params?.mailFolder === "sent" ? i18n("state.tabtitles.60823aaec73b") : i18n("state.tabtitles.63a5e7b73911");
+      if (head?.subject) return { label: head.subject, full: i18n("state.tabtitles.9f4769eefab0", { folderLabel: String(folderLabel), subject: String(head.subject) }) };
+      return { label: i18n("state.tabtitles.73075237fd0f"), full: i18n("state.tabtitles.6f1c237908f0", { folderLabel: String(folderLabel) }) };
     }
     case "cloud": {
       const name = params?.cloudRepo ? seafileRepoName(params.cloudRepo) : null;
       return name
-        ? { label: name, full: `云盘 › ${name}` }
-        : { label: "云盘", full: "云盘" };
+        ? { label: name, full: i18n("state.tabtitles.3d03c8dd1593", { name: String(name) }) }
+        : { label: i18n("state.tabtitles.f75562426e77"), full: i18n("state.tabtitles.f75562426e77") };
     }
     case "learn":
-      return { label: "网络学堂", full: "网络学堂" };
+      return { label: i18n("state.tabtitles.aa39cac2b409"), full: i18n("state.tabtitles.aa39cac2b409") };
     case "learn-notices":
-      return { label: "全部通知", full: "网络学堂 › 全部通知" };
+      return { label: i18n("state.tabtitles.bdac834d0ba2"), full: i18n("state.tabtitles.0c15bb46b442") };
     case "learn-files":
-      return { label: "全部文件", full: "网络学堂 › 全部文件" };
+      return { label: i18n("state.tabtitles.be417b530c04"), full: i18n("state.tabtitles.5caea2aaeece") };
     case "learn-assignments":
-      return { label: "全部作业", full: "网络学堂 › 全部作业" };
+      return { label: i18n("state.tabtitles.a1cabc0664cf"), full: i18n("state.tabtitles.859096256da9") };
     case "learn-search":
-      return { label: "搜索", full: "网络学堂 › 搜索" };
+      return { label: i18n("state.tabtitles.44ce7ae909bb"), full: i18n("state.tabtitles.2ac4206ef92a") };
     default:
       break;
   }

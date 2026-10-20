@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /** Secondary management of issued snapshots. Deleting a record never revokes a share. */
 import { useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Btn, Menu, Modal, Segment, Stack, Text } from "@onethu/gui";
@@ -12,15 +13,17 @@ import {
   payloadOfIssuedShare, scopeLabel, subscribeIssuedShares, type IssuedShare,
 } from "../../state/vaultShareLog.js";
 
-const STATE_LABEL: Record<string, string> = { active: "有效", revoked: "已撤销", expired: "已过期" };
-const BUSY_LABEL = { copy: "正在复制…", rename: "正在更新名称…", restrict: "正在更新接收范围…", revoke: "正在撤销…", forget: "正在删除记录…" };
+const STATE_LABEL: Record<string, string> = { get active() { return i18n("components.vault.issuedsharescard.11afd2a53439"); }, get revoked() { return i18n("components.vault.issuedsharescard.fef96e34f77b"); }, get expired() { return i18n("components.vault.issuedsharescard.2fe0e3339ac4"); } };
+const BUSY_LABEL = { get copy() { return i18n("components.vault.issuedsharescard.2b2ad5e6aba9"); }, get rename() { return i18n("components.vault.issuedsharescard.4391437c6fb1"); }, get restrict() { return i18n("components.vault.issuedsharescard.a3308fe758a1"); }, get revoke() { return i18n("components.vault.issuedsharescard.d32f69ae73d3"); }, get forget() { return i18n("components.vault.issuedsharescard.275061511cc8"); } };
 type Action = keyof typeof BUSY_LABEL;
 function timeText(ms: number): string {
   const d = new Date(ms);
-  return `${d.getMonth() + 1}月${d.getDate()}日 ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  return i18n("components.vault.issuedsharescard.b73971671bd8", { value: String(d.getMonth() + 1), value2: String(d.getDate()), value3: String(String(d.getHours()).padStart(2, "0")), value4: String(String(d.getMinutes()).padStart(2, "0")) });
 }
 
 export function IssuedSharesCard({ boxId }: { boxId?: string } = {}): ReactNode {
+  const uiLocale = useUiLocale();
+
   const log = useSyncExternalStore(subscribeIssuedShares, issuedSharesSnapshot, issuedSharesSnapshot);
   const vaults = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
   const [scope, setScope] = useState<"box" | "all">(boxId ? "box" : "all");
@@ -51,80 +54,80 @@ export function IssuedSharesCard({ boxId }: { boxId?: string } = {}): ReactNode 
     finally { pending.current = false; setBusy(null); }
   }
   const revoke = (entry: IssuedShare) => perform(entry, "revoke", async () => {
-    if (!entry.cloud?.shareToken) throw new Error("这条旧口令没有云盘分享，只能删除记录。");
-    if (!await confirmOk(`撤销「${issuedShareTitle(entry)}」？对方将无法再次读取，已经接收的副本会保留。`)) return;
-    if (!await revokeShare(payloadOfIssuedShare(entry))) throw new Error("撤销未完成，请检查云盘连接后重试。");
-    markIssuedShareRevoked(entry.id); showToast("分享已撤销");
+    if (!entry.cloud?.shareToken) throw new Error(i18n("components.vault.issuedsharescard.b4c7fd58d80f"));
+    if (!await confirmOk(i18nMsg("components.vault.issuedsharescard.d96fa2056906", { value: String(issuedShareTitle(entry)) }))) return;
+    if (!await revokeShare(payloadOfIssuedShare(entry))) throw new Error(i18n("components.vault.issuedsharescard.3c8e966d966b"));
+    markIssuedShareRevoked(entry.id); showToast(i18nMsg("components.vault.issuedsharescard.0b7a8ccf5201"));
   });
   const rename = (entry: IssuedShare) => perform(entry, "rename", async () => {
-    const fields = await openFormModal("口令名称", [{ key: "label", label: "名称（留空使用箱子名）", default: entry.label ?? "" }]);
+    const fields = await openFormModal(i18nMsg("components.vault.issuedsharescard.dd6c08640a66"), [{ key: "label", label: i18nMsg("components.vault.issuedsharescard.7aefa357c175"), default: entry.label ?? "" }]);
     if (!fields) return;
     const result = await updateShareMeta(entry.code, { label: fields.label ?? "" });
-    if (!result.ok) throw new Error(result.reason ?? "改名未完成，请重试。");
-    showToast("口令名称已更新");
+    if (!result.ok) throw new Error(result.reason ?? i18n("components.vault.issuedsharescard.9dc46ae316d4"));
+    showToast(i18nMsg("components.vault.issuedsharescard.faf91eef462c"));
   });
   const restrict = (entry: IssuedShare) => perform(entry, "restrict", async () => {
-    const fields = await openFormModal("接收范围", [{ key: "allowEmail", label: "清华云盘邮箱（留空允许持有口令的人接收）", default: entry.allowEmail ?? "" }]);
+    const fields = await openFormModal(i18nMsg("components.vault.issuedsharescard.263480c0d47a"), [{ key: "allowEmail", label: i18nMsg("components.vault.issuedsharescard.3c71ad2b46e2"), default: entry.allowEmail ?? "" }]);
     if (!fields) return;
     const result = await updateShareMeta(entry.code, { allowEmail: (fields.allowEmail ?? "").trim() });
-    if (!result.ok) throw new Error(result.reason ?? "接收范围更新未完成，请重试。");
+    if (!result.ok) throw new Error(result.reason ?? i18n("components.vault.issuedsharescard.263fae90b25b"));
     // A rotation must finish its real revocation before we offer the replacement code.
-    showToast(result.code ? "接收范围已更新，旧口令已撤销。请复制新口令发送。" : "接收范围已更新");
+    showToast(result.code ? i18nMsg("components.vault.issuedsharescard.4371a9b86f89") : i18nMsg("components.vault.issuedsharescard.9d7deae4f40d"));
   });
   const copy = (entry: IssuedShare) => perform(entry, "copy", async () => {
     let code = entry.code;
     if (hasPendingShareRotation(code) || (entry.allowEmail && !entry.cloud?.keyRepoId)) {
       const result = await updateShareMeta(code, entry.allowEmail && !entry.cloud?.keyRepoId ? { allowEmail: entry.allowEmail } : {});
-      if (!result.ok) throw new Error(result.reason ?? "分享升级未完成，请重试。");
+      if (!result.ok) throw new Error(result.reason ?? i18n("components.vault.issuedsharescard.7627cfd1a5fe"));
       code = result.code ?? code;
     }
     try { await navigator.clipboard.writeText(code); }
-    catch { throw new Error("无法写入剪贴板，请从「查看口令」中手动复制。"); }
-    showToast(code === entry.code ? "口令已复制" : "私密分享已升级，新口令已复制");
+    catch { throw new Error(i18n("components.vault.issuedsharescard.26b302e09f03")); }
+    showToast(code === entry.code ? i18nMsg("components.vault.issuedsharescard.ddc1d8107144") : i18nMsg("components.vault.issuedsharescard.f7b132a0b0ed"));
   });
   const forget = (entry: IssuedShare) => perform(entry, "forget", async () => {
-    if (issuedShareState(entry) === "active" && !await confirmOk("这条口令仍有效，删除记录不会撤销分享。确定只删除记录？")) return;
-    forgetIssuedShare(entry.id); showToast("记录已删除");
+    if (issuedShareState(entry) === "active" && !await confirmOk(i18nMsg("components.vault.issuedsharescard.5e43012c5ebe"))) return;
+    forgetIssuedShare(entry.id); showToast(i18nMsg("components.vault.issuedsharescard.36bdc2fdb515"));
   });
   const [revealed, setRevealed] = useState<string | null>(null);
 
   return <>
-    <Btn className="vault-issued-trigger" variant="ghost" onClick={() => { setError(null); setScope(boxId ? "box" : "all"); setOpen(true); }}>已发出口令{currentCount ? ` · ${currentCount}` : ""}</Btn>
-    <Modal open={open} onClose={close} title="已发出口令" size="md" className="vault-issued-modal">
+    <Btn className="vault-issued-trigger" variant="ghost" onClick={() => { setError(null); setScope(boxId ? "box" : "all"); setOpen(true); }}>{i18nRich("components.vault.issuedsharescard.5c07ccfd4b6e", { value: currentCount ? ` · ${currentCount}` : "" })}</Btn>
+    <Modal open={open} onClose={close} title={i18n("components.vault.issuedsharescard.a60259e90289")} size="md" className="vault-issued-modal">
       <Stack gap={4}>
-        {boxId ? <Segment value={scope} onChange={value => { setScope(value as "box" | "all"); setMenu(null); setError(null); }} options={[{ value: "box", label: "当前箱" }, { value: "all", label: "全部口令" }]} /> : null}
-        <Text slot="micro" tone="faint">{allEntries ? "所有箱子" : "当前箱"}的分享快照。清空或删除箱子不会撤销已发口令。</Text>
+        {boxId ? <Segment value={scope} onChange={value => { setScope(value as "box" | "all"); setMenu(null); setError(null); }} options={[{ value: "box", label: i18n("components.vault.issuedsharescard.6d2ce5e21b2a") }, { value: "all", label: i18n("components.vault.issuedsharescard.525bd7fa41f3") }]} /> : null}
+        <Text slot="micro" tone="faint">{i18nRich("components.vault.issuedsharescard.0fc9370bf68e", { value: allEntries ? i18n("components.vault.issuedsharescard.cc7232862b97") : i18n("components.vault.issuedsharescard.6d2ce5e21b2a") })}</Text>
         {entries.length ? <div className="vault-issued-list">
           {entries.map(entry => {
             const state = issuedShareState(entry);
             const working = busy?.id === entry.id;
-            return <section className="vault-issued-entry" key={entry.id} aria-label={`口令：${issuedShareTitle(entry)}`}>
+            return <section className="vault-issued-entry" key={entry.id} aria-label={i18n("components.vault.issuedsharescard.cd10024a604e", { value: String(issuedShareTitle(entry)) })}>
               <div className="vault-issued-heading">
                 <Text slot="label">{issuedShareTitle(entry)}</Text>
                 <Text slot="micro" tone={state === "active" ? "default" : "faint"}>{STATE_LABEL[state]}</Text>
               </div>
-              {allEntries ? <Text slot="micro" tone="faint">来自「{entry.boxName}」{vaults.boxes.some(box=>box.id===entry.boxId) ? "" : " · 箱子已删除"}</Text> : null}
-              <Text slot="micro" tone="faint">{scopeLabel(entry)} · {entry.allowEmail ? `仅 ${entry.allowEmail}` : "持有口令即可接收"}</Text>
-              <Text slot="micro" tone="faint">{timeText(entry.issuedAt)} 发出 · {entry.expiresAt ? `${timeText(entry.expiresAt)} 到期` : "不过期"}</Text>
+              {allEntries ? <Text slot="micro" tone="faint">{i18nRich("components.vault.issuedsharescard.f76d8f310254", { boxName: entry.boxName, value: vaults.boxes.some(box=>box.id===entry.boxId) ? "" : i18n("components.vault.issuedsharescard.d9cb809600c7") })}</Text> : null}
+              <Text slot="micro" tone="faint">{scopeLabel(entry)} · {entry.allowEmail ? i18n("components.vault.issuedsharescard.6d970e8dbefd", { allowEmail: String(entry.allowEmail) }) : i18n("components.vault.issuedsharescard.533f11fea9a2")}</Text>
+              <Text slot="micro" tone="faint">{i18nRich("components.vault.issuedsharescard.f7e8f0f64a0d", { value: timeText(entry.issuedAt), value2: entry.expiresAt ? i18n("components.vault.issuedsharescard.ed74c111755f", { value: String(timeText(entry.expiresAt)) }) : i18n("components.vault.issuedsharescard.8de1bb55709d") })}</Text>
               {revealed === entry.id ? <code className="vault-issued-code">{entry.code}</code> : null}
               {error?.id === entry.id ? <div className="vault-issued-error" role="alert"><Text slot="micro">{error.message}</Text></div> : null}
               <div className="vault-issued-actions">
                 {working ? <span role="status"><Text slot="micro" tone="faint">{BUSY_LABEL[busy.action]}</Text></span> : null}
-                <Btn size="sm" variant="outline" disabled={Boolean(busy) || state !== "active"} loading={working && busy.action === "copy"} onClick={() => void copy(entry)}>{entry.allowEmail && !entry.cloud?.keyRepoId ? "升级并复制" : "复制口令"}</Btn>
-                <Btn size="sm" variant="ghost" disabled={Boolean(busy)} aria-haspopup="menu" aria-expanded={menu?.id === entry.id} aria-label={`管理口令：${issuedShareTitle(entry)}`} onClick={event => setMenu({ id: entry.id, anchor: event.currentTarget })}>更多</Btn>
+                <Btn size="sm" variant="outline" disabled={Boolean(busy) || state !== "active"} loading={working && busy.action === "copy"} onClick={() => void copy(entry)}>{entry.allowEmail && !entry.cloud?.keyRepoId ? i18n("components.vault.issuedsharescard.164caa9ac6c3") : i18n("components.vault.issuedsharescard.7dc5266a2019")}</Btn>
+                <Btn size="sm" variant="ghost" disabled={Boolean(busy)} aria-haspopup="menu" aria-expanded={menu?.id === entry.id} aria-label={i18n("components.vault.issuedsharescard.fd76c2e8321a", { value: String(issuedShareTitle(entry)) })} onClick={event => setMenu({ id: entry.id, anchor: event.currentTarget })}>{i18n("components.vault.issuedsharescard.38844b135cf7")}</Btn>
               </div>
             </section>;
           })}
-        </div> : <div className="vault-issued-empty"><Text slot="label">还没有发出口令</Text><Text slot="micro" tone="faint">{!allEntries && log.entries.length ? "其他箱子发出的分享，可以在「全部口令」中查看。" : "生成暂存箱分享后，会在这里留下记录。"}</Text></div>}
+        </div> : <div className="vault-issued-empty"><Text slot="label">{i18n("components.vault.issuedsharescard.3588b544b50b")}</Text><Text slot="micro" tone="faint">{!allEntries && log.entries.length ? i18n("components.vault.issuedsharescard.bdb38862008b") : i18n("components.vault.issuedsharescard.4aa0b6ffacf1")}</Text></div>}
       </Stack>
     </Modal>
-    <Menu open={Boolean(selected && menu)} anchor={menu?.anchor} onClose={() => setMenu(null)} label="口令管理" title={selected ? issuedShareTitle(selected) : undefined} items={selected ? [
-      { id: "show", label: revealed === selected.id ? "收起口令" : "查看口令", disabled: issuedShareState(selected) !== "active" || hasPendingShareRotation(selected.code) || Boolean(selected.allowEmail && !selected.cloud?.keyRepoId), onSelect: () => setRevealed(revealed === selected.id ? null : selected.id) },
-      { id: "rename", label: "改名", disabled: issuedShareState(selected) !== "active", onSelect: () => void rename(selected) },
-      { id: "recipient", label: "限定邮箱", disabled: issuedShareState(selected) !== "active", onSelect: () => void restrict(selected) },
+    <Menu open={Boolean(selected && menu)} anchor={menu?.anchor} onClose={() => setMenu(null)} label={i18n("components.vault.issuedsharescard.252b9e5745de")} title={selected ? issuedShareTitle(selected) : undefined} items={selected ? [
+      { id: "show", label: revealed === selected.id ? i18n("components.vault.issuedsharescard.32ab30d4f1a4") : i18n("components.vault.issuedsharescard.84168ec6814c"), disabled: issuedShareState(selected) !== "active" || hasPendingShareRotation(selected.code) || Boolean(selected.allowEmail && !selected.cloud?.keyRepoId), onSelect: () => setRevealed(revealed === selected.id ? null : selected.id) },
+      { id: "rename", label: i18n("components.vault.issuedsharescard.83c37e8a4a5f"), disabled: issuedShareState(selected) !== "active", onSelect: () => void rename(selected) },
+      { id: "recipient", label: i18n("components.vault.issuedsharescard.08b88677f8f0"), disabled: issuedShareState(selected) !== "active", onSelect: () => void restrict(selected) },
       "separator",
-      { id: "revoke", label: "撤销分享", danger: true, disabled: issuedShareState(selected) !== "active", onSelect: () => void revoke(selected) },
-      { id: "forget", label: "删除记录", danger: true, onSelect: () => void forget(selected) },
+      { id: "revoke", label: i18n("components.vault.issuedsharescard.b52e35824750"), danger: true, disabled: issuedShareState(selected) !== "active", onSelect: () => void revoke(selected) },
+      { id: "forget", label: i18n("components.vault.issuedsharescard.f2cf9101bb2d"), danger: true, onSelect: () => void forget(selected) },
     ] : []} />
   </>;
 }

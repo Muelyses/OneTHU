@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { isSealed, readSharedJson } from './sealedShare.js';
 import { invoke } from '@tauri-apps/api/core';
 import { assertRepoOwner, ensureSeafileLoaded, getSeafileToken } from './seafile.js';
@@ -73,7 +74,7 @@ export async function publishExchangeCode(
   let embeddedEmail="";
   try{const body=code.split(".")[1];if(body)embeddedEmail=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(body.replace(/-/g,"+").replace(/_/g,"/")),c=>c.charCodeAt(0)))).allowEmail??"";}catch{}
   const allowEmail=(opts.allowEmail??embeddedEmail).trim().toLowerCase();
-  if(allowEmail&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(allowEmail))throw new Error("接收邮箱格式不正确");
+  if(allowEmail&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(allowEmail))throw new Error(i18n("state.cloudexchange.5dec5b6cd859"));
   const slots = readJson<Slot>(SLOT_KEY);
   const slot = slotName ? slots[slotName] : undefined;
   if(slot)await assertRepoOwner(slot.repoId);
@@ -91,15 +92,15 @@ export async function publishExchangeCode(
           if (key) cachePut(key, slot.code);
           return slot.code;
         }
-        throw new Error("原分享暂时无法读回，请重试或选择重新生成");
-      } catch (error) { throw new Error(`原分享更新未完成：${error instanceof Error?error.message:String(error)}`); }
+        throw new Error(i18n("state.cloudexchange.8e54dc8b5387"));
+      } catch (error) { throw new Error(i18n("state.cloudexchange.bcd2da321c5e", { value: String(error instanceof Error?error.message:String(error)) })); }
     }
   } else if (slot && slotName) {
     /* 改有效期/范围：旧分享必须撤掉，否则它按旧有效期继续活着。 */
-    if(!await revokeShareSlot(slotName))throw new Error("旧分享撤销未完成，请重试");
+    if(!await revokeShareSlot(slotName))throw new Error(i18n("state.cloudexchange.ee7944db0bd9"));
   }
   const ref = await uploadExchangeManifest(code, expireDays,allowEmail||undefined);
-  if (!ref.shareUrl) throw new Error('云盘没有返回分享链接');
+  if (!ref.shareUrl) throw new Error(i18n("state.cloudexchange.6e106dfb0757"));
   const short = shortCodeForLink(ref.shareUrl);
   if (slotName) {
     /* /f/ 兜底时 ref.path 是 manifest 文件本身；稳定位要的是目录。 */
@@ -152,13 +153,13 @@ export async function resolveExchangeCode(code: string): Promise<string> {
   const { link, token } = linkForShortCode(code);
   let text: string;
   try { text = await seafileShareRead(link, 'manifest.json'); }
-  catch (e) { throw new Error(`无法读取分享，请检查网络或请对方确认口令未过期/撤销：${e instanceof Error ? e.message : String(e)}`); }
-  if (text.length > 2 * 1024 * 1024) throw new Error('分享内容超过支持的大小');
+  catch (e) { throw new Error(i18n("state.cloudexchange.e1239b54f9b2", { value: String(e instanceof Error ? e.message : String(e)) })); }
+  if (text.length > 2 * 1024 * 1024) throw new Error(i18n("state.cloudexchange.388fc6c63ebe"));
   let payload: Record<string, unknown>;
   const outer=JSON.parse(text);
   payload = await readSharedJson(text) as Record<string,unknown>;
   const keyRepoId=isSealed(outer)?outer.keyRepoId:undefined;
-  if (payload?.v !== 1) throw new Error('分享版本不受支持');
+  if (payload?.v !== 1) throw new Error(i18n("state.cloudexchange.b8e6e9ca4525"));
   if (payload.kind === 'onethu-exchange' && typeof payload.code === 'string' && /^(ONTOUCH1|ONORG1)\./.test(payload.code)) return payload.code;
   if (payload.kind === 'vault-share' && Array.isArray(payload.items)) {
     // 撤销/文件引用仍需分享链接；私有仓库ID、目录路径不用传给接收方。
@@ -174,5 +175,5 @@ export async function resolveExchangeCode(code: string): Promise<string> {
       cloud: { provider: 'seafile', path: '', shareUrl: link, shareToken: token, manifestName: 'manifest.json',keyRepoId },
     } as VaultSharePayload);
   }
-  throw new Error('这份分享不包含可接收的 OneTHU 内容');
+  throw new Error(i18n("state.cloudexchange.46180de6589d"));
 }

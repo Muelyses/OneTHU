@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 尺寸档位选择（霖 2026-10-11 定稿；同日二次改版为**循环卡片流**）。
  *
@@ -44,6 +45,8 @@ export function tierBoxSize(t: SizeTier): { w: number; h: number } {
  * 之前统一塞了个 `128`，结果"大量组件显示 128"（霖 2026-10-11）——示例数据必须像那个组件本身。
  */
 export function SampleSkeleton({ def }: { def: WidgetDef }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const kind = def.spec.kind;
   if (kind === "divider") {
     return (
@@ -96,6 +99,8 @@ export function WidgetPreviewBody({
   renderer?: WidgetRenderer;
   tier: SizeTier;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const out = renderer ? renderer(undefined, tier) : <SampleSkeleton def={def} />;
   return def.spec.kind === "card" || def.spec.kind === "custom" ? <div className="wg-card">{out}</div> : out;
 }
@@ -113,6 +118,8 @@ export function WidgetSizeBox({
   tier: SizeTier;
   renderer?: WidgetRenderer;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const box = tierBoxSize(tier);
   const scale = BOX_UNIT / UNIT;
   return (
@@ -146,6 +153,8 @@ export function WidgetSizeList({
   renderer?: WidgetRenderer;
   onSelect: (index: number) => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const n = Math.max(1, tiers.length);
   const wrap = (k: number): number => ((k % n) + n) % n;
   const [pos, setPos] = useState(index);
@@ -351,16 +360,14 @@ export function WidgetSizeList({
   return (
     <div className="widget-size-picker">
       <div className="widget-size-head">
-        <span className="widget-size-head-title">选择大小</span>
-        <span className="widget-size-head-cur" data-size-current={cur ? sizeKey(cur) : ""}>
-          已选 {cur ? tierLabel(cur) : "—"}
-        </span>
+        <span className="widget-size-head-title">{i18n("components.widgetsizes.07bb9d27fc45")}</span>
+        <span className="widget-size-head-cur" data-size-current={cur ? sizeKey(cur) : ""}>{i18nRich("components.widgetsizes.7d7127517bd7", { value: cur ? tierLabel(cur) : "—" })}</span>
       </div>
       <div
         className={"widget-size-carousel" + (dragging ? " is-dragging" : "")}
         ref={shellRef}
         role="radiogroup"
-        aria-label="选择大小"
+        aria-label={i18n("components.widgetsizes.07bb9d27fc45")}
         data-size-list="1"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -375,7 +382,7 @@ export function WidgetSizeList({
             key={sizeKey(t)}
             type="button"
             className={"widget-size-dot" + (k === index ? " is-cur" : "")}
-            aria-label={"选择 " + tierLabel(t)}
+            aria-label={i18n("components.widgetsizes.beb4816bf802") + tierLabel(t)}
             data-size-dot={k}
             onClick={() => {
               gotoIdx(k);

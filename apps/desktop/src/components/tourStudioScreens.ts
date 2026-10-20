@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /** Bundled captures of the running OneTHU app. Never synthesize a screen here. */
 const bundledUrls = import.meta.glob<string>("../assets/tour/real-ui/*.png", {
   eager: true, query: "?url", import: "default",
@@ -65,7 +66,7 @@ function decodeScreen(url: string): Promise<HTMLImageElement> {
         resolve(image);
       }, (error: unknown) => { image.onload = image.onerror = null; reject(error); });
     };
-    image.onerror = () => { image.onload = image.onerror = null; reject(new Error("无法载入真实界面截图")); };
+    image.onerror = () => { image.onload = image.onerror = null; reject(new Error(i18n("components.tourstudioscreens.18455d8d7822"))); };
     image.src = url;
   }).catch((error: unknown) => { decoded.delete(url); throw error; });
   decoded.set(url, result);
@@ -77,7 +78,7 @@ export function loadStudioScreenAssets(): Promise<StudioScreenAssets> {
   if (pending) return pending;
   pending = Promise.all(STUDIO_SCREEN_KEYS.map(async key => {
     const url = STUDIO_SCREEN_URLS[key];
-    if (!url) throw new Error(`真实界面截图尚未就绪：${key}`);
+    if (!url) throw new Error(i18n("components.tourstudioscreens.fca0380c4f7e", { key: String(key) }));
     return [key, await decodeScreen(url)] as const;
   })).then(entries => Object.fromEntries(entries) as StudioScreenAssets).catch((error: unknown) => {
     pending = undefined;

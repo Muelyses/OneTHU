@@ -1,3 +1,4 @@
+import { t as i18n, getLocale } from "../i18n/index.js";
 /** 雷达、名片、扫码与 NFC 共用的内容交换入口。 */
 import { publishExchangeCode, resolveExchangeCode } from '../state/cloudExchange.js';
 import { importShareCodeAsCurrent, shareCodeForBox } from '../state/vaultShare.js';
@@ -10,7 +11,7 @@ import { fileToBytes, pickFile, type AttachFile } from './attach.js';
 import type { VaultBox } from '../state/vault.js';
 
 export async function personalShareCode(personal: PersonalCard = cardsSnapshot().personal): Promise<string> {
-  if (!personal.name.trim()) throw new Error('请先填写名片上的名字');
+  if (!personal.name.trim()) throw new Error(i18n("lib.contentexchange.67a52d762038"));
   /* 名片走稳定分享位：改了就地道更新同一个目录——口令不变，对方读到的永远是最新名片；
    *  没改则复用旧码，不重复上传。 */
   const contentKey = JSON.stringify([personal.name, personal.avatar, personal.website, personal.social, personal.phone, personal.bio, personal.cloudEmail, personal.cover?.updatedAt ?? 0]);
@@ -35,44 +36,46 @@ export async function receiveExchangeCode(text: string, vaultTarget: 'current' |
   if (code.startsWith('ONTOUCH1.')) {
     await installVaultCloudAdapter();
     const r = await importTouchCode(code, cardsSnapshot().personal.name || '我', vaultTarget);
-    if (!r.ok) throw new Error(r.reason || '碰一碰口令无法导入');
+    if (!r.ok) throw new Error(r.reason || i18n("lib.contentexchange.97ca5653783f"));
     const parts = [
-      r.vault ? (vaultTarget === 'new' ? '新暂存箱' : '当前暂存箱') : '',
-      r.contact ? '个人名片' : '',
-      r.org ? '组织邀请' : '',
+      r.vault ? (vaultTarget === 'new' ? i18n("lib.contentexchange.4dc6d8e7a87a") : i18n("lib.contentexchange.17fa33d72406")) : '',
+      r.contact ? i18n("lib.contentexchange.fd5394f29856") : '',
+      r.org ? i18n("lib.contentexchange.b8fde21bc2ca") : '',
     ].filter(Boolean);
-    if (!parts.length) return r.duplicate ? '本地已有这张名片（未重复添加）' : '这个口令里没有新内容';
-    return `已收到 ${parts.join('、')}${r.duplicate ? '（部分内容本地已有）' : ''}`;
+    if (!parts.length) return r.duplicate ? i18n("lib.contentexchange.290e61e70691") : i18n("lib.contentexchange.045720f46a17");
+    return r.duplicate
+      ? i18n("lib.contentexchange.3bdb847af08f", { contents: new Intl.ListFormat(getLocale(), { style: "long", type: "conjunction" }).format(parts) })
+      : i18n("lib.contentexchange.b3cbed6586bd", { contents: new Intl.ListFormat(getLocale(), { style: "long", type: "conjunction" }).format(parts) });
   }
   if (/^ONV[12]\./.test(code)) {
     await installVaultCloudAdapter();
     const r = await importShareCodeAsCurrent(code, vaultTarget);
-    if (!r.ok) throw new Error(r.reason || '暂存箱口令无法导入');
+    if (!r.ok) throw new Error(r.reason || i18n("lib.contentexchange.354191707f33"));
     return vaultTarget === 'new'
-      ? `已收到 ${r.imported ?? 0} 项内容，已存入新暂存箱`
-      : `已导入 ${r.imported ?? 0} 项，替换为当前暂存箱`;
+      ? i18n("lib.contentexchange.36987ff12d5e", { count: r.imported ?? 0 })
+      : i18n("lib.contentexchange.9111f2690fbb", { count: r.imported ?? 0 });
   }
   if (code.startsWith('ONORG1.')) {
     const r = await acceptOrgInvite(code, cardsSnapshot().personal.name || '我');
-    if (!r.ok) throw new Error(r.reason || '组织邀请无法识别');
-    return '组织已添加到通讯录；成员身份和访问权限由服务器确认。';
+    if (!r.ok) throw new Error(r.reason || i18n("lib.contentexchange.f69fb628aaab"));
+    return i18n("lib.contentexchange.2c608891c3c4");
   }
-  throw new Error('这不是有效的 OneTHU 分享口令');
+  throw new Error(i18n("lib.contentexchange.d1957be29bf9"));
 }
 
 /** 扫码接收：选一张二维码图片 → 识别 → 统一接收入口（整页/雷达/抽屉共用）。 */
 export async function receiveQrImage(file: AttachFile): Promise<string> {
-  if (!file.mime.startsWith('image/')) throw new Error('请选择一张二维码图片');
+  if (!file.mime.startsWith('image/')) throw new Error(i18n("lib.contentexchange.5ccdc18fde7a"));
   const bytes = await fileToBytes(file, 8 * 1024 * 1024);
   const domFile = file.file ?? new File([bytes], file.name, { type: file.mime });
   const text = await decodeQrFile(domFile);
-  if (!text) throw new Error('图片里没有识别到二维码');
+  if (!text) throw new Error(i18n("lib.contentexchange.ed909fbcd134"));
   return receiveExchangeCode(text);
 }
 
 /** 扫码按钮公共流程：用户取消时返回空串（不报错）。 */
 export async function pickAndReceiveQr(): Promise<string> {
-  if (!qrScanSupported()) throw new Error('当前环境不支持二维码识别');
+  if (!qrScanSupported()) throw new Error(i18n("lib.contentexchange.563bc0abe5ef"));
   const f = await pickFile();
   if (!f) return '';
   return receiveQrImage(f);
@@ -81,6 +84,6 @@ export async function pickAndReceiveQr(): Promise<string> {
 /** 粘贴口令按钮公共流程：空内容明确提示。 */
 export async function receivePastedCode(code: string): Promise<string> {
   const text = String(code ?? '').trim();
-  if (!text) throw new Error('先粘贴收到的口令');
+  if (!text) throw new Error(i18n("lib.contentexchange.39815ac69fb6"));
   return receiveExchangeCode(text);
 }

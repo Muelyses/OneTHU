@@ -1,0 +1,1337 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "state.notifydoctor.962a6e0b8f61",
+      "source": "桌面已放 {placed} 个（宿主 {hostPlaced}）{slotInfo}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "placed",
+          "expression": "String(placed)"
+        },
+        {
+          "name": "hostPlaced",
+          "expression": "String(ws.hostPlaced)"
+        },
+        {
+          "name": "slotInfo",
+          "expression": "String(slotInfo)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 114,
+          "context": "placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.a14a16f450ae",
+      "source": "投递测试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 153,
+          "context": "push(\"deliver\", i18n(\"state.notifydoctor.a14a16f450ae\"), sent ? \"ok\" : \"fail\", sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 132,
+          "context": "r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.a7320eda2464",
+      "source": "（当前无插件占用槽位）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 115,
+          "context": "titles || i18n(\"state.notifydoctor.a7320eda2464\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifydoctor.ad16c86b6da1",
+      "source": "已撤销探针",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 148,
+          "context": "probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.b1a8b45ace8b",
+      "source": "探针清理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 148,
+          "context": "push(\"cleanup\", i18n(\"state.notifydoctor.b1a8b45ace8b\"), \"ok\", probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.b28333fd00e3",
+      "source": "排程调用异常：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String(e).slice(0, 100))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 144,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.b28333fd00e3\", { value: String(String(e).slice(0, 100)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.c273c2086a0d",
+      "source": "自检通过：{length} 项{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(steps.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 63,
+          "context": "ok\n      ? i18n(\"state.notifydoctor.c273c2086a0d\", { length: String(steps.length), value: String(warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\") })\n      : i18n(\"state.notifydoctor.7941c9adf8cc\", { failed: String(failed), value: String(warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\") })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.c8b5af17e6d2",
+      "source": "未允许：系统可能延迟几分钟投递（不会丢）。可在系统设置「闹钟与提醒」里允许",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 89,
+          "context": "st.exact ? i18n(\"state.notifydoctor.cafc3774b86b\") : i18n(\"state.notifydoctor.c8b5af17e6d2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.cafc3774b86b",
+      "source": "已允许精确提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 89,
+          "context": "st.exact ? i18n(\"state.notifydoctor.cafc3774b86b\") : i18n(\"state.notifydoctor.c8b5af17e6d2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.d9540c4fcc17",
+      "source": "未授权：提醒发不出去。请在系统设置里为本应用打开通知权限，然后重新自检",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 78,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"fail\", i18n(\"state.notifydoctor.d9540c4fcc17\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.e8898c88f026",
+      "source": "小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 109,
+          "context": "push(\n        \"widget\",\n        i18n(\"state.notifydoctor.e8898c88f026\"),\n        widgetStatus,\n        [\n          providerInfo,\n          ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\"),\n          placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\"),\n          titles || i18n(\"state.notifydoctor.a7320eda2464\"),\n        ].join(\"；\"),\n      )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifydoctor.f088b81ae9c7",
+      "source": "桌面尚未放置任何小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 114,
+          "context": "placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.f1e21a111247",
+      "source": "快照已于 {value} 生成",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(fmtTime(ws.snapshotAt))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 113,
+          "context": "ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.f8cd5feb5360",
+      "source": "系统没有读到任何小组件尺寸（清单合并可能没生效，请把这条反馈给开发者）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 104,
+          "context": "ws.providersRegistered.length === 0\n          ? i18n(\"state.notifydoctor.f8cd5feb5360\")\n          : i18n(\"state.notifydoctor.76e3238d6fee\", { length: String(ws.providersRegistered.length), value: String(ws.providersRegistered.join(\"、\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifyplan.7f9ab29b611d",
+      "source": "课程与日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyPlan.ts",
+          "line": 23,
+          "context": "return i18n(\"state.notifyplan.7f9ab29b611d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifyplan.9b702fb32d62",
+      "source": "作业截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyPlan.ts",
+          "line": 24,
+          "context": "return i18n(\"state.notifyplan.9b702fb32d62\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifyplan.fe593e7c8ef9",
+      "source": "每日早报",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyPlan.ts",
+          "line": 25,
+          "context": "return i18n(\"state.notifyplan.fe593e7c8ef9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.03f0a153cd11",
+      "source": "通知未授权，提醒发不出来。请到系统设置里为本应用打开通知权限。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 44,
+          "context": "text: i18n(\"state.notifystatus.03f0a153cd11\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.13632693e676",
+      "source": "系统通知设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 58,
+          "context": "s.backend === \"android\" ? i18n(\"state.notifystatus.8657a95fc74c\") : i18n(\"state.notifystatus.13632693e676\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.571c1a7180e0",
+      "source": "Android 通知渠道 + 定时闹钟",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 30,
+          "context": "return i18n(\"state.notifystatus.571c1a7180e0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.6fd3264bb821",
+      "source": "允许精确提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 52,
+          "context": "label: i18n(\"state.notifystatus.6fd3264bb821\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifystatus.8533a6995d6d",
+      "source": "本平台暂未接入系统通知，提醒不会发出（应用内仍可看到待办）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 39,
+          "context": "text: i18n(\"state.notifystatus.8533a6995d6d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.8657a95fc74c",
+      "source": "通知渠道设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 58,
+          "context": "s.backend === \"android\" ? i18n(\"state.notifystatus.8657a95fc74c\") : i18n(\"state.notifystatus.13632693e676\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.94b0e03aba0d",
+      "source": "Windows 通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 32,
+          "context": "return i18n(\"state.notifystatus.94b0e03aba0d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.a9c6ad5d54e8",
+      "source": "通知已就绪（{label}）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 57,
+          "context": "text: i18n(\"state.notifystatus.a9c6ad5d54e8\", { label: String(label) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifystatus.b19160883cfe",
+      "source": "去系统设置授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 45,
+          "context": "label: i18n(\"state.notifystatus.b19160883cfe\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifystatus.ca8b58ed4c71",
+      "source": "macOS 通知中心",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 31,
+          "context": "return i18n(\"state.notifystatus.ca8b58ed4c71\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifystatus.cef529305e3b",
+      "source": "通知已可用；「精确提醒」还没允许，系统可能略有延迟（不影响送达）。可在系统设置的「闹钟与提醒」里允许精确提醒。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 51,
+          "context": "text: i18n(\"state.notifystatus.cef529305e3b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.00b2d49ca0de",
+      "source": "信息大师",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 163,
+          "context": "return i18n(\"state.onboarding.00b2d49ca0de\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.088b27d0ed00",
+      "source": "完整",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 139,
+          "context": "return i18n(\"state.onboarding.088b27d0ed00\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.1052251daaf7",
+      "source": "只留首页、网络学堂、信息、生活、在线服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 148,
+          "context": "return i18n(\"state.onboarding.1052251daaf7\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.257c80cc4f44",
+      "source": "预约狂人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 155,
+          "context": "return i18n(\"state.onboarding.257c80cc4f44\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.2e67474d8dad",
+      "source": "极简",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 147,
+          "context": "return i18n(\"state.onboarding.2e67474d8dad\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.42803ef36875",
+      "source": "日程、预约、场馆与宿舍设备为主",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 156,
+          "context": "return i18n(\"state.onboarding.42803ef36875\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.524a5d266a8f",
+      "source": "成绩、考试、学籍、新闻与网络学堂全在",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 164,
+          "context": "return i18n(\"state.onboarding.524a5d266a8f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.onboarding.8c45a98b34de",
+      "source": "所有功能都在侧栏，适合想一次看全的人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/onboarding.ts",
+          "line": 140,
+          "context": "return i18n(\"state.onboarding.8c45a98b34de\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.1e4404a53a1d",
+      "source": "口令版本不受支持",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 390,
+          "context": "reason: i18n(\"state.org.1e4404a53a1d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.1f5874fd9b2a",
+      "source": "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 384,
+          "context": "reason: i18n(\"state.org.1f5874fd9b2a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.22f86a2a8ff2",
+      "source": "当前没有可删除的邀请口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 370,
+          "context": "reason: i18n(\"state.org.22f86a2a8ff2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.3dc0aa93b10c",
+      "source": "口令内容损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 386,
+          "context": "reason: i18n(\"state.org.3dc0aa93b10c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.7aa0c43fe053",
+      "source": "口令内容不是合法 JSON",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 401,
+          "context": "reason: i18n(\"state.org.7aa0c43fe053\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.989f1cde10a3",
+      "source": "口令校验失败（可能复制不完整）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 387,
+          "context": "reason: i18n(\"state.org.989f1cde10a3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.c4591b5b1fe8",
+      "source": "口令无法解析",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 426,
+          "context": "dec.reason ?? i18n(\"state.org.c4591b5b1fe8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.org.c6b6912e4bd5",
+      "source": "本地记录已删除；云盘分享撤销未成功（可能已过期）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 378,
+          "context": "reason: i18n(\"state.org.c6b6912e4bd5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.0ed5ca0bc425",
+      "source": "这个 GitLab 账号已经是组织成员，请使用编辑或角色菜单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 183,
+          "context": "new Error(i18n(\"state.orgsync.0ed5ca0bc425\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.1345eb189bbb",
+      "source": "未完成的权限变更期间只能解除资源关联，请先完成重试再添加资源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 228,
+          "context": "new Error(i18n(\"state.orgsync.1345eb189bbb\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.15f11e1c75da",
+      "source": "至少保留一位服务器上的组织负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 191,
+          "context": "new Error(i18n(\"state.orgsync.15f11e1c75da\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.275a305b9f8b",
+      "source": "这个云盘邮箱已经绑定其他组织成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 195,
+          "context": "new Error(i18n(\"state.orgsync.275a305b9f8b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.2da1ab0ba765",
+      "source": "当前 GitLab 账号不是这个群组的负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 108,
+          "context": "new Error(i18n(\"state.orgsync.2da1ab0ba765\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.43f661af3a74",
+      "source": "核对全部权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 208,
+          "context": "label:i18n(\"state.orgsync.43f661af3a74\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.47b018369530",
+      "source": "上一次权限变更尚未完成，请先重试并完成它",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 67,
+          "context": "new Error(i18n(\"state.orgsync.47b018369530\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.5784fd684c09",
+      "source": "这个组织尚未启用多人协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 55,
+          "context": "new Error(i18n(\"state.orgsync.5784fd684c09\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.66f49a483a9b",
+      "source": "请先给每位组织成员填写云盘邮箱，再关联资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 237,
+          "context": "new Error(i18n(\"state.orgsync.66f49a483a9b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.68b2e1779e6b",
+      "source": "多人协作需要你拥有的独立私有 GitLab 群组，不能使用公开群组或继承权限的子群组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 106,
+          "context": "new Error(i18n(\"state.orgsync.68b2e1779e6b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.6ad659d36005",
+      "source": "组织中存在 GitLab Maintainer 特殊权限，无法保证只有负责人能改管理资料；请先在 GitLab 调整为负责人或普通成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 34,
+          "context": "new Error(i18n(\"state.orgsync.6ad659d36005\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.7bdb46eb7930",
+      "source": "当前 GitLab 账号尚未获得这个组织的访问权限，请让负责人先添加你的 GitLab 账号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 33,
+          "context": "new Error(i18n(\"state.orgsync.7bdb46eb7930\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.839d06db8102",
+      "source": "元数据项目必须是该组织内未向其他群组共享的私有项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 120,
+          "context": "new Error(i18n(\"state.orgsync.839d06db8102\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.8d6293d606a5",
+      "source": "请由另一位负责人执行你的移除或降级",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 192,
+          "context": "new Error(i18n(\"state.orgsync.8d6293d606a5\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.8defedbcd2a0",
+      "source": "组织协作地址不合法",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 18,
+          "context": "new Error(i18n(\"state.orgsync.8defedbcd2a0\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.8f58376b6cc9",
+      "source": "组织元数据项目存在额外直接成员授权，请先在 GitLab 移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 37,
+          "context": "new Error(i18n(\"state.orgsync.8f58376b6cc9\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.9278a31bb0c8",
+      "source": "请先把群组中的 Maintainer 调整为负责人或普通成员，再初始化协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 107,
+          "context": "new Error(i18n(\"state.orgsync.9278a31bb0c8\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.a6cbed9d57aa",
+      "source": "未完成的权限变更期间，只能补充现有成员的云盘邮箱；角色与成员调整请先完成重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 181,
+          "context": "new Error(i18n(\"state.orgsync.a6cbed9d57aa\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.ab3125f51556",
+      "source": "组织元数据项目被共享给其他群组，请先在 GitLab 移除额外群组授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 35,
+          "context": "new Error(i18n(\"state.orgsync.ab3125f51556\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.b4a14ad2c5e3",
+      "source": "组织分支 {name} 的服务器保护不满足要求，请负责人检查 GitLab 分支保护",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 23,
+          "context": "new Error(i18n(\"state.orgsync.b4a14ad2c5e3\", { name: String(name) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.b9043bc090ae",
+      "source": "更换 GitLab 账号请先移除旧成员，再添加新成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 189,
+          "context": "new Error(i18n(\"state.orgsync.b9043bc090ae\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.cannotEdit",
+      "source": "当前账号没有编辑组织内容的权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 66,
+          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.cd3d301c9ac0",
+      "source": "权限变更尚未完成：{value}。修正原因后点击重试，已完成的步骤不会重复授予。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errors.join(\"；\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 221,
+          "context": "new Error(i18n(\"state.orgsync.cd3d301c9ac0\", { value: String(errors.join(\"；\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.d42bb89b365b",
+      "source": "分支保护规则过多，无法完整验证组织配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 21,
+          "context": "new Error(i18n(\"state.orgsync.d42bb89b365b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.e6793d4dc90e",
+      "source": "此协作项目已经属于另一个组织，不能用本机资料覆盖",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 138,
+          "context": "new Error(i18n(\"state.orgsync.e6793d4dc90e\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.f1478672fcff",
+      "source": "请填写准确的 GitLab 用户名和清华云盘邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 170,
+          "context": "new Error(i18n(\"state.orgsync.f1478672fcff\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.f9a3b8011053",
+      "source": "找不到组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 16,
+          "context": "new Error(i18n(\"state.orgsync.f9a3b8011053\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.fa0fdd1e567b",
+      "source": "找不到可用的 GitLab 用户名，请让对方在 GitLab 个人资料中确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 173,
+          "context": "new Error(i18n(\"state.orgsync.fa0fdd1e567b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.fb99a121e507",
+      "source": "同步关联资源权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 231,
+          "context": "label:i18n(\"state.orgsync.fb99a121e507\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.fc4f3897fb63",
+      "source": "组织资料必须位于对应 GitLab 私有群组的私有项目内",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 32,
+          "context": "new Error(i18n(\"state.orgsync.fc4f3897fb63\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.ownerOnly",
+      "source": "只有服务器上的组织负责人可以执行此操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 66,
+          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.permissionsUnverified",
+      "source": "关联资源权限尚未核对，请负责人完成权限核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 50,
+          "context": "config.permissionsVerified !== 1 ? i18n(\"state.orgsync.permissionsUnverified\") : undefined"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.removeMemberLabel",
+      "source": "移除成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 201,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.updateMemberLabel",
+      "source": "更新 {username}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 201,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsynccore.13447b8f6ab6",
+      "source": "降权回读不符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 168,
+          "context": "new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

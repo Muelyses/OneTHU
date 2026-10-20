@@ -1,0 +1,1384 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.info.venuesportstab.83bfd5de6aeb",
+      "source": "未能自动登录（统一身份登录可能已过期），请用登录窗口完成一次认证。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 225,
+          "context": "setAuthMsg(i18n(\"pages.info.venuesportstab.83bfd5de6aeb\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.8df76a301a77",
+      "source": "散客",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 433,
+          "context": "label: i18n(\"pages.info.venuesportstab.8df76a301a77\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.venuesportstab.8e3ccc726bca",
+      "source": "改用系统浏览器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 836,
+          "context": "{i18n(\"pages.info.venuesportstab.8e3ccc726bca\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.9201b42cdfcd",
+      "source": "场次与场地 · {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(venue?.sceneName ?? \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 711,
+          "context": "{i18n(\"pages.info.venuesportstab.9201b42cdfcd\", { value: String(venue?.sceneName ?? \"\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.9287ac799e54",
+      "source": "重新发送",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 637,
+          "context": "twoFASent ? i18n(\"pages.info.venuesportstab.9287ac799e54\") : i18n(\"pages.info.venuesportstab.4656fed515ae\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.964e9962f261",
+      "source": "体育系统预约记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 849,
+          "context": "{i18n(\"pages.info.venuesportstab.964e9962f261\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.96803ba9d008",
+      "source": "该账号需要二次认证，请在下方完成后再打开预约页。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 525,
+          "context": "setAuthMsg(i18n(\"pages.info.venuesportstab.96803ba9d008\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.a383bc93da91",
+      "source": "选择场地…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 720,
+          "context": "{i18n(\"pages.info.venuesportstab.a383bc93da91\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.a4c0233f1d6c",
+      "source": "不可约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 797,
+          "context": "session.reserveStatus?.reserveStatusReason || i18n(\"pages.info.venuesportstab.a4c0233f1d6c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.a73edb9b52b4",
+      "source": "应用内页面打不开时走系统浏览器（需在浏览器里登录一次）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 836,
+          "context": "{i18n(\"pages.info.venuesportstab.a73edb9b52b4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.abc511ca956e",
+      "source": "满",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 803,
+          "context": "remain > 0 ? i18n(\"pages.info.venuesportstab.3c3a89bd47d1\", { remain: String(remain) }) : i18n(\"pages.info.venuesportstab.abc511ca956e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.aea3cf6d9a2c",
+      "source": "官方页面在 OneTHU 内以自己的窗口打开（安卓为全屏页面），登录态与刚才查询场馆时用的 那一份相同，不需要重新登录；预约提交一律由你在官方页面上操作。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 837,
+          "context": "{i18n(\"pages.info.venuesportstab.aea3cf6d9a2c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 708,
+          "context": "{i18n(\"pages.info.venuesportstab.aee887434131\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.b0ba152b68fb",
+      "source": "在应用内打开官方预约页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 835,
+          "context": "{i18n(\"pages.info.venuesportstab.b0ba152b68fb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.b1d841b978fb",
+      "source": "明天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 707,
+          "context": "{i18n(\"pages.info.venuesportstab.b1d841b978fb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.b45bec71911a",
+      "source": "非维护时段出现维护提示（异常），{left}s 后自动重试",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "left",
+          "expression": "left"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 92,
+          "context": "{i18nRich(\"pages.info.venuesportstab.b45bec71911a\", { left: left })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.b4e41afe6828",
+      "source": "授权中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 670,
+          "context": "authBusy ? i18n(\"pages.info.venuesportstab.b4e41afe6828\") : i18n(\"pages.info.venuesportstab.6a84698a4758\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.bb015c60bafc",
+      "source": "验证码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 635,
+          "context": "twoFAType === \"totp\" ? i18n(\"pages.info.venuesportstab.52517b6304de\") : i18n(\"pages.info.venuesportstab.bb015c60bafc\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.bff83f250847",
+      "source": "费用：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "yuan(picked.session.userFeeDetails?.chargingUnitPrice)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 822,
+          "context": "{i18nRich(\"pages.info.venuesportstab.bff83f250847\", { value: yuan(picked.session.userFeeDetails?.chargingUnitPrice) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.c0855d46556b",
+      "source": "统一身份认证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 621,
+          "context": "{i18n(\"pages.info.venuesportstab.c0855d46556b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.c3b180cc0d49",
+      "source": "暂无预约记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 856,
+          "context": "{i18n(\"pages.info.venuesportstab.c3b180cc0d49\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.d342ec4e45d3",
+      "source": "场地：{siteName}{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "siteName",
+          "expression": "picked.site.siteName"
+        },
+        {
+          "name": "value",
+          "expression": "picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 822,
+          "context": "{i18nRich(\"pages.info.venuesportstab.d342ec4e45d3\", { siteName: picked.site.siteName, value: picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : \"\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 706,
+          "context": "{i18n(\"pages.info.venuesportstab.d5f5a7a01073\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.de1b90c59aa7",
+      "source": "上午（{value} 场）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "countIn((h) => h < 12)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 764,
+          "context": "{i18nRich(\"pages.info.venuesportstab.de1b90c59aa7\", { value: countIn((h) => h < 12) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.de907d10df98",
+      "source": "普通",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 431,
+          "context": "label: i18n(\"pages.info.venuesportstab.de907d10df98\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.venuesportstab.df9e299b2c47",
+      "source": "根据清华大学体育部场馆中心 2025 年 12 月 3 日发布的公告 七、12、如有用户通过脚本软件或插件等非正常途径预定场地，一经发现并核实，对该用户封禁预订权限 6 个月，并函告相关院系或单位。OneTHU 仅提供场馆情况查询，请点击按钮前往官网预约；如果不当使用源码进行预约，违反本项目开源准则，后果自负。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 834,
+          "context": "{i18n(\"pages.info.venuesportstab.df9e299b2c47\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.e1d28b717f1e",
+      "source": "场地",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 867,
+          "context": "r.siteName ?? i18n(\"pages.info.venuesportstab.e1d28b717f1e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.e1f6f0bd3708",
+      "source": "选择场馆…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 685,
+          "context": "{i18n(\"pages.info.venuesportstab.e1f6f0bd3708\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.e8c10d60c170",
+      "source": "该场馆当日暂无可预约场次（可能未开放、已约满或不在开放时段）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 760,
+          "context": "{i18n(\"pages.info.venuesportstab.e8c10d60c170\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.ed8263515e2f",
+      "source": "场馆与日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 668,
+          "context": "{i18n(\"pages.info.venuesportstab.ed8263515e2f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.f116677ed089",
+      "source": "每日 01:00 - 02:00 例行维护，窗口结束后自动恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 91,
+          "context": "inWindow\n          ? i18n(\"pages.info.venuesportstab.f116677ed089\")\n          : <>{i18nRich(\"pages.info.venuesportstab.b45bec71911a\", { left: left })}</>"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.f4cb60e95c82",
+      "source": "每日 01:00 - 02:00 例行维护。当前处于维护窗口，场馆查询与预约均不可用；窗口结束后本页自动恢复，无需手动重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 610,
+          "context": "{i18n(\"pages.info.venuesportstab.f4cb60e95c82\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.fec5d257ab36",
+      "source": "授权失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(tabErrorText(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 235,
+          "context": "setAuthMsg(i18n(\"pages.info.venuesportstab.fec5d257ab36\", { value: String(tabErrorText(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.082be97daf88",
+      "source": "选择事由",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 248,
+          "context": "{i18n(\"pages.info.visittab.082be97daf88\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.085419250804",
+      "source": "[VISIT-TAB] 读取失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 134,
+          "context": "logLine(i18n(\"pages.info.visittab.085419250804\", { value: String(String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.095b00fc092b",
+      "source": "选择类别",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 239,
+          "context": "{i18n(\"pages.info.visittab.095b00fc092b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.0a2bc74c4275",
+      "source": "本页要用统一身份登录一次；本机记住过密码就会自动完成，不会再问密码。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 31,
+          "context": "() => i18n(\"pages.info.visittab.0a2bc74c4275\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.178375c36ece",
+      "source": "来访人姓名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 293,
+          "context": "{i18n(\"pages.info.visittab.178375c36ece\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.1ecea7d51b20",
+      "source": "打开官方页面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 191,
+          "context": "{i18n(\"pages.info.visittab.1ecea7d51b20\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 215,
+          "context": "{i18n(\"pages.info.visittab.1ecea7d51b20\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 330,
+          "context": "{i18n(\"pages.info.visittab.1ecea7d51b20\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.1fe96980cdde",
+      "source": "提交时间 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(prettyTime(r.createdAt))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 351,
+          "context": "{i18n(\"pages.info.visittab.1fe96980cdde\", { value: String(prettyTime(r.createdAt)) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.247ae62767cc",
+      "source": "亲友来访报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 232,
+          "context": "model?.formName ?? i18n(\"pages.info.visittab.247ae62767cc\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.2a4c86ea2def",
+      "source": "限定人数",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 273,
+          "context": "{i18n(\"pages.info.visittab.2a4c86ea2def\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.35ad08711b68",
+      "source": "亲友来访报备与「我的报备」都在这里完成，数据直接送往学校来访报备系统。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 30,
+          "context": "() => i18n(\"pages.info.visittab.35ad08711b68\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.370f63b02317",
+      "source": "来访报备需要先登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 183,
+          "context": "{i18n(\"pages.info.visittab.370f63b02317\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.4018b809d4b2",
+      "source": "车牌",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 304,
+          "context": "{i18n(\"pages.info.visittab.4018b809d4b2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.421d678098ad",
+      "source": "加一位来访人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 287,
+          "context": "{i18n(\"pages.info.visittab.421d678098ad\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.50b5b1d2abef",
+      "source": "姓名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 262,
+          "context": "{i18n(\"pages.info.visittab.50b5b1d2abef\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.50d72b73d567",
+      "source": "还没有报备记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 344,
+          "context": "{i18n(\"pages.info.visittab.50d72b73d567\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.50fcc24a609a",
+      "source": "邀请人信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 260,
+          "context": "{i18n(\"pages.info.visittab.50fcc24a609a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.609175d34db8",
+      "source": "上面填好并提交后，这里会出现记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 344,
+          "context": "{i18n(\"pages.info.visittab.609175d34db8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.65f83437c9a8",
+      "source": "来访类别",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 238,
+          "context": "{i18n(\"pages.info.visittab.65f83437c9a8\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 239,
+          "context": "{i18n(\"pages.info.visittab.65f83437c9a8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.67f6b1d5a484",
+      "source": "来访日期：{visitDate}，来访人 {length} 位。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "visitDate",
+          "expression": "String(form.visitDate)"
+        },
+        {
+          "name": "length",
+          "expression": "String(form.visitors.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 372,
+          "context": "{i18n(\"pages.info.visittab.67f6b1d5a484\", { visitDate: String(form.visitDate), length: String(form.visitors.length) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.6a4658f8a7e1",
+      "source": "来访日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 235,
+          "context": "{i18n(\"pages.info.visittab.6a4658f8a7e1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.6ab2a47b49be",
+      "source": "正在读取报备信息…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 203,
+          "context": "{i18n(\"pages.info.visittab.6ab2a47b49be\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.6f52cc94db65",
+      "source": "手机号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 265,
+          "context": "{i18n(\"pages.info.visittab.6f52cc94db65\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 301,
+          "context": "{i18n(\"pages.info.visittab.6f52cc94db65\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.70db7ae136ad",
+      "source": "移除这一位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 318,
+          "context": "{i18n(\"pages.info.visittab.70db7ae136ad\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.727f5033a84b",
+      "source": "「我的报备」暂时读不到：{value}。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : i18n(\"pages.info.visittab.cc06059ac1bf\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 119,
+          "context": "setMineNote(i18n(\"pages.info.visittab.727f5033a84b\", { value: String(e instanceof Error ? e.message : i18n(\"pages.info.visittab.cc06059ac1bf\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.7a8f9a9b056c",
+      "source": "亲友临时来访不提供机动车报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 304,
+          "context": "{i18n(\"pages.info.visittab.7a8f9a9b056c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.7b5d518d3cfe",
+      "source": "入校校门",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 309,
+          "context": "{i18n(\"pages.info.visittab.7b5d518d3cfe\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 310,
+          "context": "{i18n(\"pages.info.visittab.7b5d518d3cfe\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.7bdd5ce1e298",
+      "source": "重新加载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 214,
+          "context": "{i18n(\"pages.info.visittab.7bdd5ce1e298\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.7ca7f03d80cd",
+      "source": "状态 {status}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "status",
+          "expression": "r.status"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 352,
+          "context": "{i18nRich(\"pages.info.visittab.7ca7f03d80cd\", { status: r.status })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.7cde84399a2c",
+      "source": "证件号码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 270,
+          "context": "{i18n(\"pages.info.visittab.7cde84399a2c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.83a23e30465b",
+      "source": "我的报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 339,
+          "context": "{i18n(\"pages.info.visittab.83a23e30465b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.861a76f9d065",
+      "source": "没记住密码时，也可以先到官方页面登录一次，再回到这里刷新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 32,
+          "context": "() => i18n(\"pages.info.visittab.861a76f9d065\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.86b6d0d63062",
+      "source": "正在读取…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 342,
+          "context": "{i18n(\"pages.info.visittab.86b6d0d63062\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.8b34c0fd32be",
+      "source": "选择区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 245,
+          "context": "{i18n(\"pages.info.visittab.8b34c0fd32be\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.94b9ec80f3bb",
+      "source": "学校系统随机口令可留空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 277,
+          "context": "{i18n(\"pages.info.visittab.94b9ec80f3bb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.99f047c591bb",
+      "source": "临时来访人员报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 227,
+          "context": "{i18n(\"pages.info.visittab.99f047c591bb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.9b68dcff364d",
+      "source": "选择校门",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 310,
+          "context": "{i18n(\"pages.info.visittab.9b68dcff364d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.9ebe36f8cf23",
+      "source": "确认提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 367,
+          "context": "{i18n(\"pages.info.visittab.9ebe36f8cf23\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.a8f4cf665a0d",
+      "source": "事由说明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 252,
+          "context": "{i18n(\"pages.info.visittab.a8f4cf665a0d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.a90002b0961c",
+      "source": "来访人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 286,
+          "context": "{i18n(\"pages.info.visittab.a90002b0961c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.af29f087cc77",
+      "source": "来访事由",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 247,
+          "context": "{i18n(\"pages.info.visittab.af29f087cc77\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 248,
+          "context": "{i18n(\"pages.info.visittab.af29f087cc77\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.af72f5d45ca1",
+      "source": "工作单位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 312,
+          "context": "{i18n(\"pages.info.visittab.af72f5d45ca1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.b0861c591f25",
+      "source": "来访区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 244,
+          "context": "{i18n(\"pages.info.visittab.b0861c591f25\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 245,
+          "context": "{i18n(\"pages.info.visittab.b0861c591f25\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.b35fb6eff43f",
+      "source": "一句话说明来访目的",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 253,
+          "context": "{i18n(\"pages.info.visittab.b35fb6eff43f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.b72e3073880e",
+      "source": "提交后学校系统会生成报备记录，来访亲友凭身份证件从所选校门入校。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 33,
+          "context": "() => i18n(\"pages.info.visittab.b72e3073880e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.c425e1cfd31d",
+      "source": "身份证号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 296,
+          "context": "{i18n(\"pages.info.visittab.c425e1cfd31d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.cc06059ac1bf",
+      "source": "稍后再试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 119,
+          "context": "e instanceof Error ? e.message : i18n(\"pages.info.visittab.cc06059ac1bf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.d8bd7eda6680",
+      "source": "再看看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 366,
+          "context": "{i18n(\"pages.info.visittab.d8bd7eda6680\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

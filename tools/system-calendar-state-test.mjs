@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
+import "./ts-resolve-register.mjs";
+const i18n = await import("../apps/desktop/src/i18n/index.ts");
 import * as caldav from "../packages/core/src/caldav/ics.ts";
 import { parseLearnTime } from "../packages/core/src/learn/time.ts";
 
@@ -37,6 +39,7 @@ function fixture(options = {}) {
   const exports = {};
   const register = (key) => (fn) => { subscriptions[key] = fn; return () => {}; };
   const imports = {
+    "../i18n/index.js": i18n,
     react: { useState: (init) => [init(), (s) => snapshots.push(s)], useEffect: (fn) => fn() },
     "@onethu/core": { caldav, parseLearnTime },
     "../lib/clients.js": { fileRead: async (_name, opts) => { assert.equal(opts?.strict, true); readCount++; if (state.readGate) await state.readGate.promise; if (state.readError) throw state.readError; return persisted ? JSON.stringify(persisted) : null; }, fileWrite: async (_f, v, opts) => { assert.equal(opts?.strict, true); if (state.writeError) throw state.writeError; persisted = JSON.parse(v); writes.push(persisted); }, info: { getSchedule: (...args) => state.schedule(...args) }, http: {}, logLine: async () => {} },

@@ -7,7 +7,7 @@
  *  ② 守实现：必须用原生 details（键盘可达、无脚本能开）、技术串要能选中复制；
  *  ③ 守覆盖面：错误态总闸 ErrorNote 走拆分渲染；页面里不许再把裸 HTTP 状态码直接抛给用户。
  */
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 import assert from "node:assert/strict";
 
 const src = readFileSync("apps/desktop/src/components/Details.tsx", "utf8");

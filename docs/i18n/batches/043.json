@@ -1,0 +1,1437 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.cloudpage.9ab296886086",
+      "source": "批量选择",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 454,
+          "context": "{i18n(\"pages.cloudpage.9ab296886086\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.9e07e3c0532d",
+      "source": "上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 425,
+          "context": "{i18n(\"pages.cloudpage.9e07e3c0532d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.a111035ab3cc",
+      "source": "云盘为必需组件，本版本起不再提供断开入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 614,
+          "context": "{i18n(\"pages.cloudpage.a111035ab3cc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.a3ea3c17b401",
+      "source": "确认删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 97,
+          "context": "confirmText: i18nMsg(\"pages.cloudpage.a3ea3c17b401\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 335,
+          "context": "confirmText: i18nMsg(\"pages.cloudpage.a3ea3c17b401\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.aca7d4470108",
+      "source": "连接云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 370,
+          "context": "{i18n(\"pages.cloudpage.aca7d4470108\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.ada099dd389a",
+      "source": "下载到 Downloads",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 550,
+          "context": "{i18n(\"pages.cloudpage.ada099dd389a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 613,
+          "context": "{i18n(\"pages.cloudpage.aee887434131\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.b16f02c3e4d9",
+      "source": "\n… 等共 {length} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(names.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 332,
+          "context": "names.length > 6 ? i18n(\"pages.cloudpage.b16f02c3e4d9\", { length: String(names.length) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.b221697cb461",
+      "source": "「{name}」删除失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(e.name)"
+        },
+        {
+          "name": "value",
+          "expression": "String(String(err).slice(0, 60))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 348,
+          "context": "showToast(i18nMsg(\"pages.cloudpage.b221697cb461\", { name: String(e.name), value: String(String(err).slice(0, 60)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.b59fece6e715",
+      "source": "进入子文件夹（当前层 {length} 个）▸",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(dirs.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 193,
+          "context": "dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.b5f224115dae",
+      "source": "云盘文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 517,
+          "context": "{i18n(\"pages.cloudpage.b5f224115dae\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.b92d3082a65a",
+      "source": "{value}年{value2}月{value3}日",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(d.getFullYear())"
+        },
+        {
+          "name": "value2",
+          "expression": "String(d.getMonth() + 1)"
+        },
+        {
+          "name": "value3",
+          "expression": "String(d.getDate())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 60,
+          "context": "return i18n(\"pages.cloudpage.b92d3082a65a\", { value: String(d.getFullYear()), value2: String(d.getMonth() + 1), value3: String(d.getDate()) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.bacf701908d8",
+      "source": "文件夹名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 400,
+          "context": "placeholder: i18nMsg(\"pages.cloudpage.bacf701908d8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.baf5b6f85f76",
+      "source": "删除文件夹「{name}」？\n\n该文件夹及其全部内容将从云盘永久删除，此操作不可撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(e.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 95,
+          "context": "isDir\n      ? i18nMsg(\"pages.cloudpage.baf5b6f85f76\", { name: String(e.name) })\n      : i18nMsg(\"pages.cloudpage.5f7afa5a8570\", { name: String(e.name), value: String(fmtSize(e.size)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.bf7d41f4829b",
+      "source": "（已在原位）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 167,
+          "context": "isSamePlace ? i18n(\"pages.cloudpage.bf7d41f4829b\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.c89a8d7ca4a0",
+      "source": "[CLOUD-MOVE] 目录列表失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String(e).slice(0, 90))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 146,
+          "context": "logLine(i18n(\"pages.cloudpage.c89a8d7ca4a0\", { value: String(String(e).slice(0, 90)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.cb7707463c16",
+      "source": "批量",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 415,
+          "context": "selMode ? i18n(\"pages.cloudpage.571e8b9e66f2\") : i18n(\"pages.cloudpage.cb7707463c16\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.cc50237edca2",
+      "source": "搜索中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 446,
+          "context": "{i18n(\"pages.cloudpage.cc50237edca2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.cda6fdc5607b",
+      "source": "已上传 {length} 个文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(r.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 421,
+          "context": "r.length > 1 ? i18nMsg(\"pages.cloudpage.cda6fdc5607b\", { length: String(r.length) }) : (r[0] ?? i18n(\"pages.cloudpage.f2f02049468d\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.d0948549f71a",
+      "source": "生成分享链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 551,
+          "context": "{i18n(\"pages.cloudpage.d0948549f71a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.d1403c75a692",
+      "source": "已创建「{name}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 404,
+          "context": "showToast(i18nMsg(\"pages.cloudpage.d1403c75a692\", { name: String(name) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.d3d21191f32e",
+      "source": "处理中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 480,
+          "context": "batchBusy ? i18n(\"pages.cloudpage.d3d21191f32e\") : i18n(\"pages.cloudpage.14909c3a7b16\", { size: String(selSet.size) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.d7b6a5ec5201",
+      "source": "新建资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 602,
+          "context": "{i18n(\"pages.cloudpage.d7b6a5ec5201\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 603,
+          "context": "promptText(i18nMsg(\"pages.cloudpage.d7b6a5ec5201\"), { placeholder: i18nMsg(\"pages.cloudpage.08008fa506a0\") })"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 612,
+          "context": "{i18n(\"pages.cloudpage.d7b6a5ec5201\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.db7deecb6f3f",
+      "source": "当前层没有子文件夹——可直接点「移动到这里」",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 194,
+          "context": "dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.dc342d1bfbd2",
+      "source": "没有匹配「{q}」的文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "q",
+          "expression": "String(searchMeta.q)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 499,
+          "context": "{i18n(\"pages.cloudpage.dc342d1bfbd2\", { q: String(searchMeta.q) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.dcd9bc5583f5",
+      "source": "删除以下 {length} 项？\n\n{shown}\n\n所选文件与文件夹（含内容）将从云盘永久删除，此操作不可撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(items.length)"
+        },
+        {
+          "name": "shown",
+          "expression": "String(shown)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 334,
+          "context": "confirmDanger(\n      i18nMsg(\"pages.cloudpage.dcd9bc5583f5\", { length: String(items.length), shown: String(shown) }),\n      { title: i18nMsg(\"pages.cloudpage.8c74b8fa706e\", { length: String(items.length) }), confirmText: i18nMsg(\"pages.cloudpage.a3ea3c17b401\") },\n    )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.cloudpage.ecb80d06607e",
+      "source": "（文件夹）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 331,
+          "context": "x.kind === \"dir\" ? i18n(\"pages.cloudpage.ecb80d06607e\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.ee9ebe523d42",
+      "source": "连接中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 598,
+          "context": "{i18n(\"pages.cloudpage.ee9ebe523d42\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.f2f02049468d",
+      "source": "已上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 421,
+          "context": "r[0] ?? i18n(\"pages.cloudpage.f2f02049468d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.f369bd636d02",
+      "source": "加载资料库…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 621,
+          "context": "{i18n(\"pages.cloudpage.f369bd636d02\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.f4d4bae588c4",
+      "source": "取消全选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 477,
+          "context": "allSelected ? i18n(\"pages.cloudpage.f4d4bae588c4\") : i18n(\"pages.cloudpage.3a5040b68abf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.f72a6bc6a957",
+      "source": "移动到其他位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 539,
+          "context": "{i18n(\"pages.cloudpage.f72a6bc6a957\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.f77b9b7075b8",
+      "source": "连接后可浏览与下载清华云盘文件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 366,
+          "context": "{i18n(\"pages.cloudpage.f77b9b7075b8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.fc6bb436b8ca",
+      "source": "移动",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 539,
+          "context": "{i18n(\"pages.cloudpage.fc6bb436b8ca\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.contacts.06657c279571",
+      "source": "通讯录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 28,
+          "context": "{i18n(\"pages.contacts.06657c279571\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 30,
+          "context": "{i18n(\"pages.contacts.06657c279571\")}"
+        }
+      ],
+      "translation": "Contacts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.contacts.1ad56c152731",
+      "source": "名片夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 37,
+          "context": "label: i18n(\"pages.contacts.1ad56c152731\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.contacts.51cc2efa3e8d",
+      "source": "我的组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 38,
+          "context": "label: i18n(\"pages.contacts.51cc2efa3e8d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.contacts.b62dac5fc7e9",
+      "source": "交换一张名片，让联结留在这里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 29,
+          "context": "{i18n(\"pages.contacts.b62dac5fc7e9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.contacts.d3548ea24212",
+      "source": "成员按邮箱加入，资料库共享到邮箱，GitLab 仓库挂到组织上；组织自带名片。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 48,
+          "context": "{i18n(\"pages.contacts.d3548ea24212\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.contacts.ea0abe91fe00",
+      "source": "回到名片夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Contacts.tsx",
+          "line": 52,
+          "context": "{i18n(\"pages.contacts.ea0abe91fe00\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.favshomepage.60a53514eb92",
+      "source": "收藏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 23,
+          "context": "{i18n(\"pages.favshomepage.60a53514eb92\")}"
+        }
+      ],
+      "translation": "Favorites",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.favshomepage.681e227b4cc6",
+      "source": "常用的功能与实体入口，长按任意页面页头星标即可收录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 23,
+          "context": "{i18n(\"pages.favshomepage.681e227b4cc6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.favshomepage.8b07fc93b7c4",
+      "source": "还没有收藏夹。新建一个，把常用的功能收进来。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 26,
+          "context": "{i18n(\"pages.favshomepage.8b07fc93b7c4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.favshomepage.fdf0b569d820",
+      "source": "新建收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 29,
+          "context": "favs.create(i18n(\"pages.favshomepage.fdf0b569d820\"), null)"
+        },
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 31,
+          "context": "{i18n(\"pages.favshomepage.fdf0b569d820\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 55,
+          "context": "favs.create(i18n(\"pages.favshomepage.fdf0b569d820\"), null)"
+        },
+        {
+          "file": "apps/desktop/src/pages/FavsHomePage.tsx",
+          "line": 60,
+          "context": "{i18n(\"pages.favshomepage.fdf0b569d820\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.0089819a6f6e",
+      "source": "删除子收藏夹「",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 226,
+          "context": "i18n(\"pages.folderpage.0089819a6f6e\") + f.title"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.051836569928",
+      "source": "编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 111,
+          "context": "{i18n(\"pages.folderpage.051836569928\")}"
+        }
+      ],
+      "translation": "Edit",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.081f065eda63",
+      "source": "该收藏夹不存在或已被删除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 55,
+          "context": "{i18n(\"pages.folderpage.081f065eda63\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.085a2e26f1a4",
+      "source": "收藏夹栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 241,
+          "context": "{i18n(\"pages.folderpage.085a2e26f1a4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.0d0cbac2eee5",
+      "source": "重命名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 104,
+          "context": "{i18n(\"pages.folderpage.0d0cbac2eee5\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 268,
+          "context": "{i18n(\"pages.folderpage.0d0cbac2eee5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.0d720eeea264",
+      "source": "图标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 261,
+          "context": "{i18n(\"pages.folderpage.0d720eeea264\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.12526376d387",
+      "source": "管理栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 254,
+          "context": "{i18n(\"pages.folderpage.12526376d387\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.1911d1c0d6a4",
+      "source": "把本收藏夹放上桌面小组件（图标组）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 147,
+          "context": "on ? i18n(\"pages.folderpage.a04eea31ee47\") : i18n(\"pages.folderpage.1911d1c0d6a4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.26e0a9e64fed",
+      "source": "删除收藏夹「",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 64,
+          "context": "i18n(\"pages.folderpage.26e0a9e64fed\") + folder.title"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.27dd348dd737",
+      "source": "」？\n其子层与收录的收藏项入口将一并删除（原功能不受影响）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 226,
+          "context": "i18n(\"pages.folderpage.0089819a6f6e\") + f.title + i18n(\"pages.folderpage.27dd348dd737\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 305,
+          "context": "{i18n(\"pages.folderpage.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.3164dc27697e",
+      "source": "图标应用于左侧栏与收藏夹页头；根收藏夹与子收藏夹都可各选各的。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 566,
+          "context": "{i18n(\"pages.folderpage.3164dc27697e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 563,
+          "context": "{i18n(\"pages.folderpage.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.40ba45e6d266",
+      "source": "桌",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 172,
+          "context": "{i18n(\"pages.folderpage.40ba45e6d266\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.4a5ff677e1db",
+      "source": "方",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 441,
+          "context": "{i18n(\"pages.folderpage.4a5ff677e1db\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 491,
+          "context": "{i18n(\"pages.folderpage.4a5ff677e1db\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.4f9c7d13e1bc",
+      "source": "已在桌面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 150,
+          "context": "on ? i18n(\"pages.folderpage.4f9c7d13e1bc\") : i18n(\"pages.folderpage.de0b42d48b30\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.53b5e083df0f",
+      "source": "打开来源页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 455,
+          "context": "{i18n(\"pages.folderpage.53b5e083df0f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.5622577925ed",
+      "source": "选择收藏夹图标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 560,
+          "context": "{i18n(\"pages.folderpage.5622577925ed\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.588e87dec444",
+      "source": "左侧栏顺序下移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 106,
+          "context": "{i18n(\"pages.folderpage.588e87dec444\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.58b3437bdc94",
+      "source": " 子收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 100,
+          "context": "\" · \" + subCount + i18n(\"pages.folderpage.58b3437bdc94\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.597ae23d84d4",
+      "source": "长",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 533,
+          "context": "{i18n(\"pages.folderpage.597ae23d84d4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.5e54189643b0",
+      "source": "改为长卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 533,
+          "context": "{i18n(\"pages.folderpage.5e54189643b0\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 533,
+          "context": "{i18n(\"pages.folderpage.5e54189643b0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.6135d4159e89",
+      "source": "移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 444,
+          "context": "{i18n(\"pages.folderpage.6135d4159e89\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 493,
+          "context": "{i18n(\"pages.folderpage.6135d4159e89\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 535,
+          "context": "{i18n(\"pages.folderpage.6135d4159e89\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.6cf018741f53",
+      "source": "」栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 334,
+          "context": "i18n(\"pages.folderpage.d1049242f41b\") + f.title + i18n(\"pages.folderpage.6cf018741f53\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.73daf2085ecd",
+      "source": "此栏暂无收藏项——「编辑」→「添加收藏项」搜索添加，或在任意页面点星标收藏。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 317,
+          "context": "{i18n(\"pages.folderpage.73daf2085ecd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.796d20e91588",
+      "source": "收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 53,
+          "context": "{i18n(\"pages.folderpage.796d20e91588\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 209,
+          "context": "favs.data.folders[id]?.title ?? i18n(\"pages.folderpage.796d20e91588\")"
+        }
+      ],
+      "translation": "Favorites",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.7ca45b9c8d65",
+      "source": "所有栏目已隐藏，点「管理栏目」恢复。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 234,
+          "context": "{i18n(\"pages.folderpage.7ca45b9c8d65\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.7d8622e414eb",
+      "source": "打开「",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 476,
+          "context": "i18n(\"pages.folderpage.7d8622e414eb\") + view.title"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 523,
+          "context": "i18n(\"pages.folderpage.7d8622e414eb\") + view.title"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.8165f5e454e8",
+      "source": " 收藏项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 100,
+          "context": "i18n(\"pages.folderpage.8aee3fda5a89\") + atomCount + i18n(\"pages.folderpage.8165f5e454e8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.844b8cc8dff7",
+      "source": "默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 209,
+          "context": "id === ROOT_TAB ? i18n(\"pages.folderpage.844b8cc8dff7\") : favs.data.folders[id]?.title ?? i18n(\"pages.folderpage.796d20e91588\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 568,
+          "context": "{i18n(\"pages.folderpage.844b8cc8dff7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.86620776ee32",
+      "source": "根收藏夹的重命名/删除在页头；收藏项排序点各项 ↑↓。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 293,
+          "context": "isRoot ? i18n(\"pages.folderpage.86620776ee32\") : i18n(\"pages.folderpage.e3c22b9870e1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.87a05c76c0bf",
+      "source": "从此收藏夹移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 444,
+          "context": "{i18n(\"pages.folderpage.87a05c76c0bf\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 493,
+          "context": "{i18n(\"pages.folderpage.87a05c76c0bf\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 535,
+          "context": "{i18n(\"pages.folderpage.87a05c76c0bf\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.8aee3fda5a89",
+      "source": "收藏夹 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 100,
+          "context": "i18n(\"pages.folderpage.8aee3fda5a89\") + atomCount"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.8c07aaf9e12a",
+      "source": "新建子收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 265,
+          "context": "{i18n(\"pages.folderpage.8c07aaf9e12a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.8ed04e5fa4f6",
+      "source": "收藏夹图标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 562,
+          "context": "{i18n(\"pages.folderpage.8ed04e5fa4f6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.920fe6ef0593",
+      "source": "删除收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 107,
+          "context": "{i18n(\"pages.folderpage.920fe6ef0593\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

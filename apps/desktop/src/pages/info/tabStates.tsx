@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 新移植 tab 通用三态件与错误分类（电子发票 / 银行代发 / 研究生收入 / 卫生成绩 /
  * 体测成绩 / 教学评估 / 校历 / 空教室 / 校园网 共用）。
@@ -29,7 +30,7 @@ export function logTabErr(tag: string, err: unknown, retry?: () => void): void {
     void softRecover(tag)
       .then((ok) => {
         if (ok && retry) {
-          logLine("TAB-HEAL " + tag + " 会话重建成功→自动重拉").catch(() => undefined); // ui-copy-lint-ok: 排障日志，TAB-HEAL 前缀即诊断标记
+          logLine("TAB-HEAL " + tag + i18n("pages.info.tabstates.434c664d445f")).catch(() => undefined); // ui-copy-lint-ok: 排障日志，TAB-HEAL 前缀即诊断标记
           retry();
         }
       })
@@ -71,13 +72,15 @@ export function isAuthExpired(err: unknown): boolean {
 
 /** 错误 → 页内文案（静态，可重试；绝无自动刷新） */
 export function tabErrorText(err: unknown): string {
-  if (isAuthExpired(err)) return "登录状态已过期，请重新登录后重试。";
+  if (isAuthExpired(err)) return i18n("pages.info.tabstates.8536d6a0add0");
   return explainNetworkError(err);
 }
 
 /** 上游维护静态提示（ErrorNote 样式，文案固定 + 手动重试按钮） */
 export function UnavailableNote({ onRetry }: { onRetry?: () => void }) {
-  return <ErrorNote text="该服务暂不可用（正在维护），请稍后再试" onRetry={onRetry} />;
+  const uiLocale = useUiLocale();
+
+  return <ErrorNote text={i18n("pages.info.tabstates.7267860d1d4d")} onRetry={onRetry} />;
 }
 
 /**
@@ -95,12 +98,16 @@ export function TabError({
   text: string | null;
   onRetry: () => void;
 }) {
+  const uiLocale = useUiLocale();
+
   if (unavailable) return <UnavailableNote onRetry={onRetry} />;
   return <ErrorNote text={text ?? ""} onRetry={onRetry} />;
 }
 
 /** 友好空态（非错误条） */
 export function TabEmpty({ text }: { text: string }) {
+  const uiLocale = useUiLocale();
+
   return (
     <Card>
       <Empty text={text} />

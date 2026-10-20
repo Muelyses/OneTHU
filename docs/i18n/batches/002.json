@@ -1,0 +1,1412 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.attachactionssheet.e09351dc86df",
+      "source": "去云盘页选一个资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 270,
+          "context": "message: i18n(\"components.attachactionssheet.e09351dc86df\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.e52143ca5a0c",
+      "source": "从讨论区页面复制；也可以直接粘贴话题链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 598,
+          "context": "{i18n(\"components.attachactionssheet.e52143ca5a0c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.e6d471687c59",
+      "source": "交作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 62,
+          "context": "return i18n(\"components.attachactionssheet.e6d471687c59\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.e6da48ce861d",
+      "source": "作业（网络学堂在线提交的）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 507,
+          "context": "{i18n(\"components.attachactionssheet.e6da48ce861d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.e90e91bacf59",
+      "source": "话题 id（tltid）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 597,
+          "context": "{i18n(\"components.attachactionssheet.e90e91bacf59\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.e9b24be2fd7b",
+      "source": "资料库（不替你猜库）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 430,
+          "context": "{i18n(\"components.attachactionssheet.e9b24be2fd7b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.ea9d483cc8f5",
+      "source": "作业详情页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 72,
+          "context": "return i18n(\"components.attachactionssheet.ea9d483cc8f5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.ed4280dd94a7",
+      "source": "附件：{name}（{value}）· 发布前会再确认一次，发出去全班可见。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "first.name"
+        },
+        {
+          "name": "value",
+          "expression": "formatSize(first.size)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 605,
+          "context": "{i18nRich(\"components.attachactionssheet.ed4280dd94a7\", { name: first.name, value: formatSize(first.size) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.f05f4f3ff349",
+      "source": "去「全部作业」里选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 290,
+          "context": "message: i18n(\"components.attachactionssheet.f05f4f3ff349\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.f0cd4338679e",
+      "source": "雨课堂作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 543,
+          "context": "{i18n(\"components.attachactionssheet.f0cd4338679e\")}"
+        }
+      ],
+      "translation": "Yuketang assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.f25f21290de1",
+      "source": "雨课堂没有附件提交通道：本面板不会替你提交，只会打开官方作答页。的截止/次数校验）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 529,
+          "context": "{i18n(\"components.attachactionssheet.f25f21290de1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.f28461bb49c8",
+      "source": "已完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 631,
+          "context": "r.path ? i18n(\"components.attachactionssheet.22c0ce22d91d\", { path: String(r.path) }) : i18n(\"components.attachactionssheet.f28461bb49c8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.fdef3f8a92ec",
+      "source": "去官方页提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 553,
+          "context": "busy ? i18n(\"components.attachactionssheet.d3d21191f32e\") : i18n(\"components.attachactionssheet.fdef3f8a92ec\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.fe8d3d70ab66",
+      "source": "图片会随消息带上：开了「多模态」开关时按图像模态直接喂给模型（图片文字都能读）；没开时只发送文字说明与预览。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 617,
+          "context": "files.some((f) => f.mime.startsWith(\"image/\"))\n                ? i18n(\"components.attachactionssheet.fe8d3d70ab66\")\n                : i18n(\"components.attachactionssheet.10bc60b1fba1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.10d48a747e83",
+      "source": "已交给 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 103,
+          "context": "onPicked ? \"\" : i18n(\"components.attachtray.10d48a747e83\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.350e5e3d21b9",
+      "source": "从相册选图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 38,
+          "context": "return i18n(\"components.attachtray.350e5e3d21b9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.38793c1c1c23",
+      "source": "相册",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 38,
+          "context": "return i18n(\"components.attachtray.38793c1c1c23\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.67d676d9a46e",
+      "source": "打开中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 150,
+          "context": "busy === src.id ? i18n(\"components.attachtray.67d676d9a46e\") : src.label"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.attachtray.6e3a10ade7c7",
+      "source": "拍照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 37,
+          "context": "return i18n(\"components.attachtray.6e3a10ade7c7\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.754ee51e025b",
+      "source": "没取到文件，请重试或换一个入口。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 48,
+          "context": "e instanceof Error && e.message ? e.message : i18n(\"components.attachtray.754ee51e025b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.821ffb8cd6a2",
+      "source": "正在打开…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 75,
+          "context": "setNote(i18n(\"components.attachtray.821ffb8cd6a2\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.89afb0385380",
+      "source": "调起相机拍一张",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 37,
+          "context": "return i18n(\"components.attachtray.89afb0385380\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.9290540bb472",
+      "source": "[附件] 取件失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(msgOf(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 106,
+          "context": "logLine(i18n(\"components.attachtray.9290540bb472\", { value: String(msgOf(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.9e07e3c0532d",
+      "source": "上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 39,
+          "context": "return i18n(\"components.attachtray.9e07e3c0532d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.a37778f17c5f",
+      "source": "已取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 88,
+          "context": "setNote(i18n(\"components.attachtray.a37778f17c5f\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 128,
+          "context": "setNote(i18n(\"components.attachtray.a37778f17c5f\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.c8a47d001848",
+      "source": "添加附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 141,
+          "context": "{i18n(\"components.attachtray.c8a47d001848\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachtray.d450f913c03a",
+      "source": "选任意文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachTray.tsx",
+          "line": 39,
+          "context": "return i18n(\"components.attachtray.d450f913c03a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.12e0be622c36",
+      "source": "改变大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 385,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 410,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        }
+      ],
+      "translation": "Resize",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 461,
+          "context": "{i18n(\"components.boardadddrawer.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.4563c57b5143",
+      "source": "常用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 467,
+          "context": "{i18n(\"components.boardadddrawer.4563c57b5143\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.744bb8debb2c",
+      "source": "全部组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 485,
+          "context": "{i18n(\"components.boardadddrawer.744bb8debb2c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.7a8a11ead507",
+      "source": "添加",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 454,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.d10e6141036b\") : i18n(\"components.boardadddrawer.7a8a11ead507\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.97dcf4348652",
+      "source": "添加组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 385,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 410,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 460,
+          "context": "{i18n(\"components.boardadddrawer.97dcf4348652\")}"
+        }
+      ],
+      "translation": "Add widget",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.ccf130e68402",
+      "source": "OnePage 与组合",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 473,
+          "context": "{i18n(\"components.boardadddrawer.ccf130e68402\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.cee892960fc7",
+      "source": "没有找到组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 489,
+          "context": "{i18n(\"components.boardadddrawer.cee892960fc7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.d10e6141036b",
+      "source": "修改大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 454,
+          "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.d10e6141036b\") : i18n(\"components.boardadddrawer.7a8a11ead507\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.f2cd55057df5",
+      "source": "搜索组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 463,
+          "context": "{i18n(\"components.boardadddrawer.f2cd55057df5\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 463,
+          "context": "{i18n(\"components.boardadddrawer.f2cd55057df5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardadddrawer.f558fcad438d",
+      "source": "这个组件保留自由调整大小；添加后选中它，拖动角点调整。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
+          "line": 428,
+          "context": "{i18n(\"components.boardadddrawer.f558fcad438d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.013b6c8962c7",
+      "source": "已修学分合计",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 98,
+          "context": "{i18n(\"components.boardcards.013b6c8962c7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.01696c596c47",
+      "source": "正在同步待办…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 561,
+          "context": "{i18n(\"components.boardcards.01696c596c47\")}"
+        }
+      ],
+      "translation": "Syncing to-dos…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.075d17f68192",
+      "source": "今天没有预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 267,
+          "context": "{i18n(\"components.boardcards.075d17f68192\")}"
+        }
+      ],
+      "translation": "No reservations today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.10d6105303f8",
+      "source": "订阅新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 249,
+          "context": "{i18n(\"components.boardcards.10d6105303f8\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.2d8dbb13bbab",
+      "source": "点按刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 692,
+          "context": "{i18n(\"components.boardcards.2d8dbb13bbab\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.32dc1156c53a",
+      "source": "暂无课程通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 439,
+          "context": "{i18n(\"components.boardcards.32dc1156c53a\")}"
+        }
+      ],
+      "translation": "No course notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.38c1262f3fc9",
+      "source": "宿舍电费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 211,
+          "context": "{i18n(\"components.boardcards.38c1262f3fc9\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 225,
+          "context": "{i18n(\"components.boardcards.38c1262f3fc9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.39e3a897845c",
+      "source": "{y} 年",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "y",
+          "expression": "y"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 656,
+          "context": "{i18nRich(\"components.boardcards.39e3a897845c\", { y: y })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.3bed8edfe5ba",
+      "source": "暂无课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 385,
+          "context": "{i18n(\"components.boardcards.3bed8edfe5ba\")}"
+        }
+      ],
+      "translation": "No course files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.3fdd06e0d301",
+      "source": "课表加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 349,
+          "context": "{i18n(\"components.boardcards.3fdd06e0d301\")}"
+        }
+      ],
+      "translation": "Loading schedule…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.44a03dfd58ea",
+      "source": "今天的课都结束了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 350,
+          "context": "today.length > 0 ? i18n(\"components.boardcards.44a03dfd58ea\") : i18n(\"components.boardcards.cfb9b8b7e028\")"
+        }
+      ],
+      "translation": "Classes are over for today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.457c60b23654",
+      "source": "双击便笺写内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 529,
+          "context": "typeof props?.text === \"string\" && props.text.trim() ? props.text : i18n(\"components.boardcards.457c60b23654\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.5c553ec3f6db",
+      "source": "周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 639,
+          "context": "i18n(\"components.boardcards.5c553ec3f6db\") + c"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.5d9561097ac4",
+      "source": "实际均绩 / 4.0",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.boardcards.5d9561097ac4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.5fe0bab87973",
+      "source": "暂无待办作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 413,
+          "context": "{i18n(\"components.boardcards.5fe0bab87973\")}"
+        }
+      ],
+      "translation": "No pending assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 558,
+          "context": "data?.courses.find((c) => c.id === courseId)?.name ?? i18n(\"components.boardcards.60db1afb4022\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.6374c187518d",
+      "source": "便笺",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 535,
+          "context": "{i18n(\"components.boardcards.6374c187518d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.64267c0c238c",
+      "source": "生活页 · 流水与充值",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 80,
+          "context": "{i18n(\"components.boardcards.64267c0c238c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 304,
+          "context": "{i18n(\"components.boardcards.64267c0c238c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.652c2053fde0",
+      "source": "暂无订阅新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 243,
+          "context": "{i18n(\"components.boardcards.652c2053fde0\")}"
+        }
+      ],
+      "translation": "No subscribed news yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.6bb63f66bb86",
+      "source": "{value} · {value2} 月 {value3} 日",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "weekdayCn(now.getDay())"
+        },
+        {
+          "name": "value2",
+          "expression": "now.getMonth() + 1"
+        },
+        {
+          "name": "value3",
+          "expression": "now.getDate()"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 632,
+          "context": "{i18nRich(\"components.boardcards.6bb63f66bb86\", { value: weekdayCn(now.getDay()), value2: now.getMonth() + 1, value3: now.getDate() })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.7cdec8c79c4c",
+      "source": "天气加载中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 678,
+          "context": "snap.reason ? i18n(\"components.boardcards.dfaa7ebc48d1\") : i18n(\"components.boardcards.7cdec8c79c4c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.8697c0ec8f02",
+      "source": "暂时没有待完成的作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 565,
+          "context": "{i18n(\"components.boardcards.8697c0ec8f02\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.8bb09e7ef375",
+      "source": "学号 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "studentId || i18n(\"components.boardcards.c9c37a1ebaf2\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 140,
+          "context": "{i18nRich(\"components.boardcards.8bb09e7ef375\", { value: studentId || i18n(\"components.boardcards.c9c37a1ebaf2\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.95330373d23a",
+      "source": "该文件已不在本学期数据里",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 469,
+          "context": "props?.title ?? i18n(\"components.boardcards.95330373d23a\")"
+        }
+      ],
+      "translation": "This file is no longer in this semester's data",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.boardcards.9e6a260920fb",
+      "source": "今日预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.boardcards.9e6a260920fb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.a63a9dc60e00",
+      "source": " 分钟后",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 351,
+          "context": "next.left + i18n(\"components.boardcards.a63a9dc60e00\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.ad0a23e63dc0",
+      "source": "查看全部待办 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 567,
+          "context": "{i18n(\"components.boardcards.ad0a23e63dc0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.b8784c8dd563",
+      "source": "重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 679,
+          "context": "{i18n(\"components.boardcards.b8784c8dd563\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.baafc6242af5",
+      "source": "{m} 月 {d} 日",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "m",
+          "expression": "m"
+        },
+        {
+          "name": "d",
+          "expression": "d"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 653,
+          "context": "{i18nRich(\"components.boardcards.baafc6242af5\", { m: m, d: d })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c068eb4bd007",
+      "source": "今天，轻一点。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 565,
+          "context": "{i18n(\"components.boardcards.c068eb4bd007\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c0c6bb8b8618",
+      "source": "校园卡余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 80,
+          "context": "{i18n(\"components.boardcards.c0c6bb8b8618\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 299,
+          "context": "{i18n(\"components.boardcards.c0c6bb8b8618\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 302,
+          "context": "{i18n(\"components.boardcards.c0c6bb8b8618\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c0f31a102088",
+      "source": " 门",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 99,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length + i18n(\"components.boardcards.c0f31a102088\")"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 118,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length + i18n(\"components.boardcards.c0f31a102088\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.c9c37a1ebaf2",
+      "source": "未获取",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 138,
+          "context": "user?.name ?? i18n(\"components.boardcards.c9c37a1ebaf2\")"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 140,
+          "context": "studentId || i18n(\"components.boardcards.c9c37a1ebaf2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 206,
+          "context": "{i18n(\"components.boardcards.caf1f095b108\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 220,
+          "context": "{i18n(\"components.boardcards.caf1f095b108\")}"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.cfb9b8b7e028",
+      "source": "今天没有课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 350,
+          "context": "today.length > 0 ? i18n(\"components.boardcards.44a03dfd58ea\") : i18n(\"components.boardcards.cfb9b8b7e028\")"
+        }
+      ],
+      "translation": "No classes today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.db42463235ff",
+      "source": "已修 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 99,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 118,
+          "context": "i18n(\"components.boardcards.db42463235ff\") + rows.length"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.dc9591e56d50",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 351,
+          "context": "next.left > 0 ? next.left + i18n(\"components.boardcards.a63a9dc60e00\") : i18n(\"components.boardcards.dc9591e56d50\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.dfaa7ebc48d1",
+      "source": "天气拉取失败，可重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 678,
+          "context": "snap.reason ? i18n(\"components.boardcards.dfaa7ebc48d1\") : i18n(\"components.boardcards.7cdec8c79c4c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.e4f817e61d06",
+      "source": "去查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 212,
+          "context": "{i18n(\"components.boardcards.e4f817e61d06\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 226,
+          "context": "{i18n(\"components.boardcards.e4f817e61d06\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.e515eff89f07",
+      "source": "体感 {value}°",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "Math.round(w.now.feels)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 690,
+          "context": "{i18nRich(\"components.boardcards.e515eff89f07\", { value: Math.round(w.now.feels) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.f11e888a9be4",
+      "source": "湿度 {value}%",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "Math.round(w.now.humidity)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 691,
+          "context": "{i18nRich(\"components.boardcards.f11e888a9be4\", { value: Math.round(w.now.humidity) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.f88182fcd575",
+      "source": "进入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 180,
+          "context": "return i18n(\"components.boardcards.f88182fcd575\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

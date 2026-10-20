@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 图像滤镜（需求 8）：拍照/相册进来的手写照片，上传前给你几个「一眼有用」的处理。
  *
@@ -33,11 +34,11 @@ export interface FilterPresetInfo {
 
 /** 横排缩略图的数据源（顺序即 UI 顺序） */
 export const FILTER_PRESETS: readonly FilterPresetInfo[] = [
-  { id: "original", label: "原图", hint: "不做处理" },
-  { id: "scan", label: "扫描", hint: "提亮去阴影" },
-  { id: "bw", label: "黑白", hint: "黑白文档" },
-  { id: "sharpen", label: "锐化", hint: "字迹更利落" },
-  { id: "warm", label: "暖色", hint: "偏暖色调" },
+  { id: "original", get label() { return i18n("lib.imagefilters.4b1db520af46"); }, get hint() { return i18n("lib.imagefilters.1073267e70f3"); } },
+  { id: "scan", get label() { return i18n("lib.imagefilters.c2a291b64f6b"); }, get hint() { return i18n("lib.imagefilters.6403563723c7"); } },
+  { id: "bw", get label() { return i18n("lib.imagefilters.47d88357c5ea"); }, get hint() { return i18n("lib.imagefilters.d4040b81cd67"); } },
+  { id: "sharpen", get label() { return i18n("lib.imagefilters.fc538f246da7"); }, get hint() { return i18n("lib.imagefilters.b9c153f4ea21"); } },
+  { id: "warm", get label() { return i18n("lib.imagefilters.1a407ccbb6dc"); }, get hint() { return i18n("lib.imagefilters.e0cebe6ab1c6"); } },
 ] as const;
 
 /** 最终成图的长边上限（降采样阈值） */
@@ -84,12 +85,12 @@ function dims(img: ImageSource): { w: number; h: number } {
 }
 
 function newCtx(w: number, h: number): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } {
-  if (typeof document === "undefined") throw new Error("当前环境没有画布，无法处理图片");
+  if (typeof document === "undefined") throw new Error(i18n("lib.imagefilters.6dfabd848137"));
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("当前环境没有画布，无法处理图片");
+  if (!ctx) throw new Error(i18n("lib.imagefilters.6dfabd848137"));
   return { canvas, ctx };
 }
 
@@ -401,7 +402,7 @@ function loadViaImgElement(url: string, revoke: boolean): Promise<HTMLImageEleme
     };
     el.onerror = () => {
       if (revoke) URL.revokeObjectURL(url);
-      reject(new Error("这张图打不开，请重新选择"));
+      reject(new Error(i18n("lib.imagefilters.18b8640fe01c")));
     };
     el.src = url;
   });

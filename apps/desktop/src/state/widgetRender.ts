@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 渲染规划（P1 纯核心）：把白板条目换算成「渲染层该画什么」。
  *
@@ -32,7 +33,7 @@ function titleOf(spec: WidgetSpec, def: WidgetDef | null): string {
   if (spec.kind === "card") return spec.card;
   if (spec.kind === "custom") return spec.id;
   if (spec.kind === "atom-link") return spec.ref;
-  return "组件";
+  return i18n("state.widgetrender.783d638053ea");
 }
 
 /** 条目 → 渲染计划。目录里查不到的 spec 一律落 empty（渲染层显示「该组件已不可用」）。 */

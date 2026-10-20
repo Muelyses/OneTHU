@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 /**
@@ -36,44 +37,46 @@ const PREVIEW_TEXT = "你好，我是 OH。现在用的就是这个音色、这�
 function engineCopy(st: TtsStatus | null, busy: boolean): { title: string; desc: string } {
   if (st === null) {
     return busy
-      ? { title: "正在准备朗读引擎…", desc: "系统引擎首次初始化需要一两秒。" }
-      : { title: "正在读取引擎状态…", desc: "" };
+      ? { title: i18n("components.voicesettingssection.5e4df038f43b"), desc: i18n("components.voicesettingssection.7603ae8c852e") }
+      : { title: i18n("components.voicesettingssection.dd73594225ff"), desc: "" };
   }
   switch (st.state) {
     case "unsupported":
       return {
-        title: "当前平台不支持语音合成",
-        desc: "语音合成走 Android 系统自带的文字转语音引擎（华为/荣耀小艺、小爱、Google TTS 等），桌面端没有这条通道。",
+        title: i18n("components.voicesettingssection.99f2b52319a6"),
+        desc: i18n("components.voicesettingssection.e54687f4ae5c"),
       };
     case "initializing":
-      return { title: "引擎正在初始化…", desc: "稍等一下，初始化完成后试听与朗读才会出声。" };
+      return { title: i18n("components.voicesettingssection.993d7857beb9"), desc: i18n("components.voicesettingssection.1aa0e6cae35c") };
     case "ready":
       return {
-        title: "引擎就绪",
-        desc: (st.engine ? `本机使用的引擎：${st.engine}` : "本机系统引擎可用。") + (st.note ? `（${st.note}）` : ""),
+        title: i18n("components.voicesettingssection.8c286c301431"),
+        desc: (st.engine ? i18n("components.voicesettingssection.8f463b50e0cb", { engine: String(st.engine) }) : i18n("components.voicesettingssection.bd3bac24c982")) + (st.note ? `（${st.note}）` : ""),
       };
     case "speaking":
-      return { title: "正在朗读", desc: st.engine ? `本机使用的引擎：${st.engine}` : "说完会自动停下。" };
+      return { title: i18n("components.voicesettingssection.1ead396a0d02"), desc: st.engine ? i18n("components.voicesettingssection.8f463b50e0cb", { engine: String(st.engine) }) : i18n("components.voicesettingssection.892033f846ab") };
     case "error":
       return {
-        title: "引擎不可用",
-        desc: `${st.reason ?? "系统没有可用的文字转语音引擎"}。可在系统设置 → 无障碍/语言 → 文字转语音 里安装或启用引擎与中文语音数据，再回来点「重新检查」。`,
+        title: i18n("components.voicesettingssection.6e5d0cde3be6"),
+        desc: i18n("components.voicesettingssection.03e731b6fbf6", { value: String(st.reason ?? i18n("components.voicesettingssection.08ceb2822aa1")) }),
       };
     default:
-      return { title: "引擎尚未初始化", desc: "点「重新检查」触发一次初始化。" };
+      return { title: i18n("components.voicesettingssection.0c278a68af8a"), desc: i18n("components.voicesettingssection.82ee2ef744bf") };
   }
 }
 
 
-/* task-19/22：语音合成设置行注册。go 走 goOhRow（切基础档 + 行滚动高亮；引擎行标题是动态的 → 已在 JSX 里钉 data-set-id="row-引擎状态"） */
+/* task-19/22：语音合成设置行注册。go 走 goOhRow（切基础档 + 行滚动高亮；引擎行标题是动态的 → 已在 JSX 里钉 data-set-id="row-voice-engine"） */
 defineSearchRows([
-  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", title: "引擎状态", aliases: ["语音引擎", "重新检查", "试听"], desc: "当前平台是否支持语音合成 / 重新检查" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "引擎状态"], displayRoot: "设置", go: () => goOhRow("引擎状态", "basic") },
-  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", title: "音色", aliases: ["嗓音", "普通话"], desc: "系统引擎报出的可选嗓音" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音色"], displayRoot: "设置", go: () => goOhRow("音色", "basic") },
-  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", title: "语速", aliases: ["速度"], desc: "朗读快慢" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "语速"], displayRoot: "设置", go: () => goOhRow("语速", "basic") },
-  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", title: "音高", aliases: ["音调"], desc: "朗读高低" , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音高"], displayRoot: "设置", go: () => goOhRow("音高", "basic") },
+  { id: "voice-engine", tab: "OneTHU Harness", section: "语音", get title() { return i18n("components.voicesettingssection.3e3b45ef84ac"); }, aliases: ["语音引擎", "重新检查", "试听"], get desc() { return i18n("components.voicesettingssection.20e403134d07"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "引擎状态"], displayRoot: "设置", go: () => goOhRow("voice-engine", "basic") },
+  { id: "voice-tone", tab: "OneTHU Harness", section: "语音", get title() { return i18n("components.voicesettingssection.6ab9d2bde92c"); }, aliases: ["嗓音", "普通话"], get desc() { return i18n("components.voicesettingssection.a26073d57821"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音色"], displayRoot: "设置", go: () => goOhRow("voice-tone", "basic") },
+  { id: "voice-rate", tab: "OneTHU Harness", section: "语音", get title() { return i18n("components.voicesettingssection.cd97a36868f3"); }, aliases: ["速度"], get desc() { return i18n("components.voicesettingssection.bd80a69f212e"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "语速"], displayRoot: "设置", go: () => goOhRow("voice-rate", "basic") },
+  { id: "voice-pitch", tab: "OneTHU Harness", section: "语音", get title() { return i18n("components.voicesettingssection.8fb65b97b8dc"); }, aliases: ["音调"], get desc() { return i18n("components.voicesettingssection.f4feaf735d87"); } , breadcrumb: ["插件", "OneTHU Harness", "基础设置", "语音", "音高"], displayRoot: "设置", go: () => goOhRow("voice-pitch", "basic") },
 ]);
 
 export function VoiceSettingsSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const prefs = useVoicePrefs();
   const [status, setStatus] = useState<TtsStatus | null>(null);
   const [voices, setVoices] = useState<string[]>([]);
@@ -119,7 +122,7 @@ export function VoiceSettingsSection(): ReactNode {
     void onTtsDone((reason) => {
       setSpeaking(false);
       if (reason.startsWith("error")) {
-        setMsg(`朗读出错（${reason}）`);
+        setMsg(i18n("components.voicesettingssection.a930fa97ad36", { reason: String(reason) }));
         void ttsStatus().then(setStatus);
       }
     }).then((f) => {
@@ -150,7 +153,7 @@ export function VoiceSettingsSection(): ReactNode {
     }
     const ok = await previewSpeak(PREVIEW_TEXT);
     if (ok) setSpeaking(true);
-    else setMsg(`试听失败：${lastTtsError() ?? "引擎未就绪"}`);
+    else setMsg(i18n("components.voicesettingssection.5ffbeb114a74", { value: String(lastTtsError() ?? i18n("components.voicesettingssection.f4b29bf393be")) }));
   };
 
   const copy = engineCopy(status, busy);
@@ -161,30 +164,30 @@ export function VoiceSettingsSection(): ReactNode {
           自动朗读只在对话面板/悬浮窗顶部的「朗读 开/关」按钮上管，设置里不再出现第二处开关。 */}
       {/* ② 引擎状态：长说明行按「正常设置行」排版（is-copy：文字列吃满宽、按钮与首行同基线） */}
       {/* task-22 检索直达：这行标题是动态的（配音面状态文案），注册表按「引擎状态」检索——显式钉 id，保证落点唯一 */}
-      <div className="setting-row is-copy" data-set-id="row-引擎状态">
+      <div className="setting-row is-copy" data-set-id="row-voice-engine">
         <div>
           <div className="setting-title">{copy.title}</div>
           <div className="setting-desc">
             {copy.desc}
             {ready && voices.length > 0 ? (
-              <span style={{ color: "var(--text-3)" }}>　可选音色 {voices.length} 个。</span>
+              <span style={{ color: "var(--text-3)" }}>{i18nRich("components.voicesettingssection.06c47ff40845", { length: voices.length })}</span>
             ) : null}
           </div>
         </div>
-        <Btn variant="ghost" disabled={busy} onClick={() => void refresh()}>{busy ? "检查中…" : "重新检查"}</Btn>
+        <Btn variant="ghost" disabled={busy} onClick={() => void refresh()}>{busy ? i18n("components.voicesettingssection.fb11aa6f2982") : i18n("components.voicesettingssection.c25fb86b1e96")}</Btn>
       </div>
 
       {/* ③ 音色 */}
-      <div className="setting-row">
+      <div data-set-id="row-voice-tone" className="setting-row">
         <div>
-          <div className="setting-title">音色</div>
+          <div className="setting-title">{i18n("components.voicesettingssection.6ab9d2bde92c")}</div>
           <div className="setting-desc">
             {voices.length === 0
-              ? "系统引擎没有报出可选的普通话嗓音，用引擎默认音色朗读。"
-              : "不同 ROM 自带的嗓音不同（如小艺、小爱、Google 的普通话嗓音）。"}
+              ? i18n("components.voicesettingssection.853dd990730b")
+              : i18n("components.voicesettingssection.87e2903f67f2")}
           </div>
         </div>
-        <Select aria-label="音色" disabled={voices.length === 0 || !usable} value={prefs.voiceName} onChange={(value) => setVoicePrefs({ voiceName: value })}><option value="">引擎默认音色</option>{voices.map((v) => (
+        <Select aria-label={i18n("components.voicesettingssection.6ab9d2bde92c")} disabled={voices.length === 0 || !usable} value={prefs.voiceName} onChange={(value) => setVoicePrefs({ voiceName: value })}><option value="">{i18n("components.voicesettingssection.9138d2ecd64e")}</option>{voices.map((v) => (
             <option key={v} value={v}>
               {prettyVoiceName(v)}
             </option>
@@ -192,10 +195,10 @@ export function VoiceSettingsSection(): ReactNode {
       </div>
 
       {/* ④ 语速 */}
-      <div className="setting-row">
+      <div data-set-id="row-voice-rate" className="setting-row">
         <div>
-          <div className="setting-title">语速</div>
-          <div className="setting-desc">0.5×（慢一半）到 2.0×（快一倍），松手即生效。</div>
+          <div className="setting-title">{i18n("components.voicesettingssection.cd97a36868f3")}</div>
+          <div className="setting-desc">{i18n("components.voicesettingssection.a1849a34d66f")}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>
           <span style={{ fontSize: "var(--text-sm)", color: "var(--text-3)", minWidth: 44, textAlign: "right" }}>
@@ -203,7 +206,7 @@ export function VoiceSettingsSection(): ReactNode {
           </span>
           <input
             type="range"
-            aria-label="语速"
+            aria-label={i18n("components.voicesettingssection.cd97a36868f3")}
             min={RATE_MIN}
             max={RATE_MAX}
             step={0.05}
@@ -221,16 +224,15 @@ export function VoiceSettingsSection(): ReactNode {
             onKeyUp={commitSlider}
             onBlur={commitSlider}
           />
-          <Btn variant="ghost" disabled={prefs.rate === 1} onClick={() => setVoicePrefs({ rate: 1 })}>复位
-          </Btn>
+          <Btn variant="ghost" disabled={prefs.rate === 1} onClick={() => setVoicePrefs({ rate: 1 })}>{i18n("components.voicesettingssection.95ac0ce3b08b")}</Btn>
         </div>
       </div>
 
       {/* ⑤ 音高 */}
-      <div className="setting-row">
+      <div data-set-id="row-voice-pitch" className="setting-row">
         <div>
-          <div className="setting-title">音高</div>
-          <div className="setting-desc">1.00 是原声；调低更沉稳，调高更清亮。</div>
+          <div className="setting-title">{i18n("components.voicesettingssection.8fb65b97b8dc")}</div>
+          <div className="setting-desc">{i18n("components.voicesettingssection.c6d7dc8d5c1d")}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "none" }}>
           <span style={{ fontSize: "var(--text-sm)", color: "var(--text-3)", minWidth: 44, textAlign: "right" }}>
@@ -238,7 +240,7 @@ export function VoiceSettingsSection(): ReactNode {
           </span>
           <input
             type="range"
-            aria-label="音高"
+            aria-label={i18n("components.voicesettingssection.8fb65b97b8dc")}
             min={PITCH_MIN}
             max={PITCH_MAX}
             step={0.05}
@@ -256,29 +258,25 @@ export function VoiceSettingsSection(): ReactNode {
             onKeyUp={commitSlider}
             onBlur={commitSlider}
           />
-          <Btn variant="ghost" disabled={prefs.pitch === 1} onClick={() => setVoicePrefs({ pitch: 1 })}>复位
-          </Btn>
+          <Btn variant="ghost" disabled={prefs.pitch === 1} onClick={() => setVoicePrefs({ pitch: 1 })}>{i18n("components.voicesettingssection.95ac0ce3b08b")}</Btn>
         </div>
       </div>
 
       {/* ⑥ 试听 / 停止 */}
       <div className="setting-row">
         <div>
-          <div className="setting-title">试听</div>
-          <div className="setting-desc">
-            用当前的音色、语速、音高念一句，确认听着顺耳。
-            <span style={{ color: "var(--text-3)" }}>　试听不看「自动朗读」开关，随时可以点。</span>
+          <div className="setting-title">{i18n("components.voicesettingssection.7f0a0fda741c")}</div>
+          <div className="setting-desc">{i18n("components.voicesettingssection.36aaad1be5c9")}<span style={{ color: "var(--text-3)" }}>{i18n("components.voicesettingssection.cbe095bfb926")}</span>
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, flex: "none" }}>
-          <Btn variant="outline" disabled={!usable} onClick={() => void preview()}>{speaking ? "停止" : "试听"}</Btn>
-          <Btn variant="ghost" titleAttr="音色、语速、音高全部回到原声，并关闭自动朗读" onClick={() => {
+          <Btn variant="outline" disabled={!usable} onClick={() => void preview()}>{speaking ? i18n("components.voicesettingssection.ca4d973c0b00") : i18n("components.voicesettingssection.7f0a0fda741c")}</Btn>
+          <Btn variant="ghost" titleAttr={i18n("components.voicesettingssection.2a015c420014")} onClick={() => {
               void ttsStop();
               setSpeaking(false);
               resetVoicePrefs();
-              setMsg("已恢复默认（静音 · 原声原速 · 引擎默认音色）");
-            }}>全部恢复默认
-          </Btn>
+              setMsg(i18n("components.voicesettingssection.c4b08459fe2e"));
+            }}>{i18n("components.voicesettingssection.3b6c48ce496b")}</Btn>
         </div>
       </div>
 

@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 导览压轴步的「OH 自我进化」粒子舞台：纯 canvas，无 UI 依赖。
@@ -52,12 +53,12 @@ function tokenColor(el: HTMLElement | null, names: string[]): RGB | null {
 
 /** 分裂后的词云席位：半径/角速/字号按槽位错开，散开又咬合 */
 const NODE_SLOT = [
-  { label: "工具", rMul: 0.34, w: 0.16, size: 13 },
-  { label: "流程", rMul: 0.52, w: 0.1, size: 12 },
-  { label: "组件", rMul: 0.66, w: 0.07, size: 12 },
-  { label: "主题", rMul: 0.78, w: 0.05, size: 11 },
-  { label: "小组件", rMul: 0.88, w: 0.04, size: 11 },
-  { label: "插件", rMul: 0.97, w: 0.03, size: 12 },
+  { get label() { return i18n("components.onboardingtourparticles.5ca6730d4415"); }, rMul: 0.34, w: 0.16, size: 13 },
+  { get label() { return i18n("components.onboardingtourparticles.bdd207e8c6e3"); }, rMul: 0.52, w: 0.1, size: 12 },
+  { get label() { return i18n("components.onboardingtourparticles.783d638053ea"); }, rMul: 0.66, w: 0.07, size: 12 },
+  { get label() { return i18n("components.onboardingtourparticles.788db1cfec2a"); }, rMul: 0.78, w: 0.05, size: 11 },
+  { get label() { return i18n("components.onboardingtourparticles.e8898c88f026"); }, rMul: 0.88, w: 0.04, size: 11 },
+  { get label() { return i18n("components.onboardingtourparticles.e806fbbe8ec6"); }, rMul: 0.97, w: 0.03, size: 12 },
 ] as const;
 
 const CONVERGE_MS = 2400;
@@ -79,6 +80,8 @@ interface Core {
 }
 
 export function TourParticles(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number>(0);
@@ -269,10 +272,9 @@ export function TourParticles(): ReactNode {
         ref={canvasRef}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
         role="img"
-        aria-label="粒子汇聚成才的示意动画：四散的微尘凝成一颗，再裂开成工具、流程、组件"
+        aria-label={i18n("components.onboardingtourparticles.934e7ed8a02c")}
       />
-      <Btn variant="outline" onClick={() => setReplay((n) => n + 1)}>再来一轮
-      </Btn>
+      <Btn variant="outline" onClick={() => setReplay((n) => n + 1)}>{i18n("components.onboardingtourparticles.1f73e4c619b0")}</Btn>
     </div>
   );
 }

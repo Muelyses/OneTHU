@@ -1,3 +1,5 @@
+import { courseDisplayName } from "../../lib/learnLanguage.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchAttachment } from "../../lib/vaultCatch.js";
 import { Btn } from "@onethu/gui";
 /**
@@ -34,6 +36,8 @@ import { YktContentBody } from "../../components/exthw/YktContentBody.js";
 import type { LearnAttachment } from "@onethu/core";
 
 export function NoticeDetailPage() {
+  const uiLocale = useUiLocale();
+
   useLearnNavSemester();
   const { navParams, navigate } = useApp();
 
@@ -67,13 +71,13 @@ export function NoticeDetailPage() {
       isExt
         ? (extNotices.find((x) => x.id === itemId) ?? null)
         : (data?.notifications.find((x) => x.courseId === courseId && x.id === itemId) ?? null),
-    [data, extNotices, isExt, courseId, itemId],
+    [uiLocale, data, extNotices, isExt, courseId, itemId],
   );
-  const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [data, courseId]);
+  const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [uiLocale, data, courseId]);
   /* 外部公告的课程名：导航参数可能是网络学堂课程 id（合并课程页进入），也可能是雨课堂课堂 id */
   const extCourseName = useMemo(
     () => ext.courses.find((c) => c.id === courseId)?.name ?? "",
-    [ext.courses, courseId],
+    [uiLocale, ext.courses, courseId],
   );
 
   // R23：打开通知即置读（本地覆盖立即生效；服务端 sfyd 要等下次拉列表，且此前只有
@@ -92,7 +96,7 @@ export function NoticeDetailPage() {
       setExtBody({
         id: n.id,
         state: "error",
-        error: "这条公告没有取到可用的内容标识，暂时无法显示正文（已记录到运行日志）。",
+        error: i18n("pages.learn.noticedetailpage.0b1f80e0a761"),
       });
       return;
     }
@@ -105,7 +109,7 @@ export function NoticeDetailPage() {
       .then((d) => {
         if (cancelled) return;
         if (!d.bodyHtml && !d.images?.length) {
-          setExtBody({ id: n.id, state: "error", error: "没取到这条公告的正文，请稍后重试。" });
+          setExtBody({ id: n.id, state: "error", error: i18n("pages.learn.noticedetailpage.ddbd641e1d5c") });
           return;
         }
         setExtBody({
@@ -121,7 +125,7 @@ export function NoticeDetailPage() {
         setExtBody({
           id: n.id,
           state: "error",
-          error: err instanceof Error ? err.message : "公告加载失败，请稍后重试。",
+          error: err instanceof Error ? err.message : i18n("pages.learn.noticedetailpage.41c25a38d92f"),
         });
       });
     return () => {
@@ -157,9 +161,9 @@ export function NoticeDetailPage() {
     setDlHint(null);
     try {
       const path = await downloadLearnUrl(a.downloadUrl, a.name || `learn-attachment-${a.id}`);
-      setDlHint({ text: `已下载到：${path}`, path });
+      setDlHint({ text: i18n("pages.learn.noticedetailpage.2d2ab24375ce", { path: String(path) }), path });
     } catch (err) {
-      setDlHint({ text: "下载失败：" + explainNetworkError(err) });
+      setDlHint({ text: i18n("pages.learn.noticedetailpage.90f9253844e7") + explainNetworkError(err) });
     } finally {
       setDownloading(false);
     }
@@ -173,15 +177,15 @@ export function NoticeDetailPage() {
   if (!n) {
     return (
       <>
-        <PageHead title="通知详情" actions={<BackButton to={navParams?.from ?? "learn-notices"} courseId={navParams?.courseId} courseTab="notices" />} />
+        <PageHead title={i18n("pages.learn.noticedetailpage.483fe390159f")} actions={<BackButton to={navParams?.from ?? "learn-notices"} courseId={navParams?.courseId} courseTab="notices" />} />
         {state === "loading" ? (
           <SkeletonRows rows={4} />
         ) : state === "error" ? (
           <ErrorNote text={error ?? ""} onRetry={() => void reload()} />
         ) : (
           <Card><Empty
-            text="未找到该通知，可能数据已刷新，请返回列表重试。"
-            action={<Btn variant="ghost" onClick={() => navigate(navParams?.from ?? "learn-notices")}>返回列表</Btn>}
+            text={i18n("pages.learn.noticedetailpage.14d6bc26a4f0")}
+            action={<Btn variant="ghost" onClick={() => navigate(navParams?.from ?? "learn-notices")}>{i18n("pages.learn.noticedetailpage.e9d5ca6c1406")}</Btn>}
           /></Card>
         )}
       </>
@@ -192,8 +196,8 @@ export function NoticeDetailPage() {
      雨课堂 =「课程 · 雨课堂 发布于 时间」（发布者只有来源名，公告没有发布人字段） */
   const publishedAt = fmtDateTime(n.publishTime);
   const metaText = isExt
-    ? `${course?.name ?? extCourseName ?? "雨课堂课程"} · 雨课堂${publishedAt ? ` 发布于 ${publishedAt}` : ""}`
-    : `${course?.name ?? "课程"} · ${n.publisher} 发布于 ${publishedAt}`;
+    ? i18n("pages.learn.noticedetailpage.7182c4b99b54", { value: String(courseDisplayName(course) ?? extCourseName ?? i18n("pages.learn.noticedetailpage.261255a76c11")), value2: String(publishedAt ? i18n("pages.learn.noticedetailpage.81b4e2f43a29", { publishedAt: String(publishedAt) }) : "") })
+    : i18n("pages.learn.noticedetailpage.18bb69cac446", { value: String(courseDisplayName(course) ?? i18n("pages.learn.noticedetailpage.60db1afb4022")), publisher: String(n.publisher), publishedAt: String(publishedAt) });
 
   return (
     <>
@@ -209,8 +213,7 @@ export function NoticeDetailPage() {
             />
             {/* 外源公告的官方链接可能缺（源侧没给 id），没有链接就不放一个点了没反应的按钮 */}
             {n.url ? (
-              <Btn variant="outline" onClick={() => void openExternal(n.url)} titleAttr="在系统浏览器打开">网页端打开
-              </Btn>
+              <Btn variant="outline" onClick={() => void openExternal(n.url)} titleAttr={i18n("pages.learn.noticedetailpage.81ce4f7cb8ae")}>{i18n("pages.learn.noticedetailpage.16f19a676cae")}</Btn>
             ) : null}
           </>
         }
@@ -219,40 +222,39 @@ export function NoticeDetailPage() {
       <Card className="detail-head">
         <div className="chips">
           {n.important ? (
-            <span className="chip chip-red"><span className="dot" />重要</span>
+            <span className="chip chip-red"><span className="dot" />{i18n("pages.learn.noticedetailpage.a8cd9642aa48")}</span>
           ) : null}
           {!noticeHasRead(n.hasRead, n.courseId, n.id) ? (
-            <span className="chip chip-blue"><span className="dot" />未读</span>
+            <span className="chip chip-blue"><span className="dot" />{i18n("pages.learn.noticedetailpage.4d0680f9efae")}</span>
           ) : null}
         </div>
         {n.expireTime ? (
-          <div className="detail-meta">过期时间 {fmtDateTime(n.expireTime)}</div>
+          <div className="detail-meta">{i18nRich("pages.learn.noticedetailpage.23f691e9bb15", { value: fmtDateTime(n.expireTime) })}</div>
         ) : null}
       </Card>
 
       {n.attachmentName || att ? (
         <Card className="detail-sec">
-          <div className="detail-sec-head">附件</div>
-          {attState === "loading" ? <div className="detail-meta">正在解析附件…</div> : null}
+          <div className="detail-sec-head">{i18n("pages.learn.noticedetailpage.c7225dbf105e")}</div>
+          {attState === "loading" ? <div className="detail-meta">{i18n("pages.learn.noticedetailpage.39d0d9a70496")}</div> : null}
           {attState === "error" ? (
             <div className="kv kv-wide">
-              <span>附件</span>
+              <span>{i18n("pages.learn.noticedetailpage.c7225dbf105e")}</span>
               <span className="t-red">{attErr}</span>
-              <Btn variant="ghost" onClick={retryAtt}>重试</Btn>
+              <Btn variant="ghost" onClick={retryAtt}>{i18n("pages.learn.noticedetailpage.b8784c8dd563")}</Btn>
             </div>
           ) : null}
           {attState === "ok" ? (
             att ? (
-              <div className="kv kv-wide" data-vault-catch={vaultCatchAttachment({ kind: "learn", name: att.name || n.attachmentName || "通知附件", url: att.downloadUrl, label: "通知附件" })}>
+              <div className="kv kv-wide" data-vault-catch={vaultCatchAttachment({ kind: "learn", name: att.name || n.attachmentName || i18n("pages.learn.noticedetailpage.5f1b405cf06f"), url: att.downloadUrl, label: i18n("pages.learn.noticedetailpage.5f1b405cf06f") })}>
                 <span>{att.name || n.attachmentName}{att.size ? `（${att.size}）` : ""}</span>
-                <Btn variant="ghost" onClick={() => openFilePreview({ name: att.name || n.attachmentName || "通知附件", url: att.downloadUrl })}>预览
-                </Btn>
-                <Btn variant="ghost" disabled={downloading} onClick={() => void doDownload(att)}><IconDownload width={14} height={14} />{downloading ? "下载中…" : "下载"}</Btn>
+                <Btn variant="ghost" onClick={() => openFilePreview({ name: att.name || n.attachmentName || i18n("pages.learn.noticedetailpage.5f1b405cf06f"), url: att.downloadUrl })}>{i18n("pages.learn.noticedetailpage.13d61fea9f17")}</Btn>
+                <Btn variant="ghost" disabled={downloading} onClick={() => void doDownload(att)}><IconDownload width={14} height={14} />{downloading ? i18n("pages.learn.noticedetailpage.bcc2333dc631") : i18n("pages.learn.noticedetailpage.4673a2306165")}</Btn>
               </div>
             ) : (
               <div className="kv kv-wide">
                 <span>{n.attachmentName}</span>
-                <span className="chip chip-gray">网页端下载</span>
+                <span className="chip chip-gray">{i18n("pages.learn.noticedetailpage.bf44c9de16e4")}</span>
               </div>
             )
           ) : null}
@@ -268,11 +270,11 @@ export function NoticeDetailPage() {
       ) : null}
 
       <Card className="detail-sec">
-        <div className="detail-sec-head">正文</div>
+        <div className="detail-sec-head">{i18n("pages.learn.noticedetailpage.d661c3d96d53")}</div>
         {isExt ? (
           /* R32：雨课堂公告正文就地渲染（图片/字体走既有代理），不做静默空白 */
           !extBody || extBody.state === "loading" ? (
-            <div className="detail-meta">正在加载公告正文…</div>
+            <div className="detail-meta">{i18n("pages.learn.noticedetailpage.558ea95af4a2")}</div>
           ) : extBody.state === "error" ? (
             <div className="detail-meta t-red">{extBody.error}</div>
           ) : (
@@ -285,7 +287,7 @@ export function NoticeDetailPage() {
             />
           )
         ) : (
-          <RichContent html={n.content} fallback="暂无通知正文。" />
+          <RichContent html={n.content} fallback={i18n("pages.learn.noticedetailpage.03025a45ae40")} />
         )}
       </Card>
     </>

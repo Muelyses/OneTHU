@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { readDataFile } from './i18n/dictionary.mjs';
+const messages = readDataFile('apps/desktop/src/i18n/locales/zh-CN.ts').messages;
 const compiled = ts.transpileModule(readFileSync(new URL('../apps/desktop/src/state/mail.ts', import.meta.url), 'utf8'), {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
@@ -22,6 +24,10 @@ function fixture(options = {}) {
   const calls = [], writes = [], configListeners = new Set(), effects = [];
   const exports = {};
   const imports = {
+    '../i18n/index.js': { t: (key, params = {}) => {
+      assert.equal(typeof messages[key], 'string', `Registered mail message ${key}`);
+      return messages[key].replace(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g, (slot, name) => Object.hasOwn(params, name) ? String(params[name]) : slot);
+    } },
     react: { useState: (value) => [typeof value === 'function' ? value() : value, () => {}], useEffect: (fn) => effects.push(fn), useCallback: (fn) => fn },
     '@tauri-apps/api/core': { invoke: (cmd, args) => { calls.push({ cmd, args }); return handler(cmd, args); } },
     '../lib/clients.js': {

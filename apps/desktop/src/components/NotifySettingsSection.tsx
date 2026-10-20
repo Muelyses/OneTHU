@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 设置页「通知」区块：提醒开关、提前量、静默时段、权限状态与「试一下」。
  *
@@ -49,10 +50,12 @@ function fmtAt(ms: number): string {
   const p = (n: number) => String(n).padStart(2, "0");
   const today = new Date();
   const sameDay = d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
-  return `${sameDay ? "今天" : `${d.getMonth() + 1}/${d.getDate()}`} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  return `${sameDay ? i18n("components.notifysettingssection.d5f5a7a01073") : `${d.getMonth() + 1}/${d.getDate()}`} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 export function NotifySettingsSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [s, setS] = useState<NotifySettings>(() => loadNotifySettings());
   const [status, setStatus] = useState<NativeNotifyStatus | null>(null);
   const [plan, setPlan] = useState<NotifyPlanItem[]>([]);
@@ -72,7 +75,7 @@ export function NotifySettingsSection(): ReactNode {
       const rt = await ensureNotifyRuntime();
       const r = await rt.syncNow();
       setPlan(rt.plan());
-      setMsg(r.error ? `重排失败：${r.error}` : `已更新（排程 ${r.scheduled} 条 / 撤销 ${r.cancelled} 条）`);
+      setMsg(r.error ? i18n("components.notifysettingssection.62a0cf48abea", { error: String(r.error) }) : i18n("components.notifysettingssection.20684a2b9005", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) }));
     })();
   };
 
@@ -102,9 +105,9 @@ export function NotifySettingsSection(): ReactNode {
       const st = await fetchNotifyStatus(true);
       setStatus(st);
       const sent = await sendTestNotification();
-      setMsg(sent ? "测试通知已发送；未收到请检查系统通知设置" : `测试失败：${st.granted ? "投递失败，请运行诊断查看原因" : "通知权限未开启，请在系统设置中打开"}`);
+      setMsg(sent ? i18n("components.notifysettingssection.711abc74c394") : i18n("components.notifysettingssection.4a6d7abd964b", { value: String(st.granted ? i18n("components.notifysettingssection.44f704a819d7") : i18n("components.notifysettingssection.e8b6b0ba7d86")) }));
     } catch (e) {
-      setMsg(`测试失败：${String(e).slice(0, 80)}`);
+      setMsg(i18n("components.notifysettingssection.4a6d7abd964b", { value: String(String(e).slice(0, 80)) }));
     } finally {
       setBusy(false);
     }
@@ -141,16 +144,16 @@ export function NotifySettingsSection(): ReactNode {
   return (
     <>
       <SettingsRow
-        title="提醒"
-        sub="课程、日程与作业 DDL 推到系统通知，可细调提前量与静默时段。"
-        control={<OGSwitch checked={s.enabled} onChange={(v) => patch({ enabled: v })} aria-label="提醒总开关" />}
+        title={i18n("components.notifysettingssection.8f29b3132ccf")}
+        sub={i18n("components.notifysettingssection.5d932bda6083")}
+        control={<OGSwitch checked={s.enabled} onChange={(v) => patch({ enabled: v })} aria-label={i18n("components.notifysettingssection.98790a2b6ade")} />}
       />
 
       {s.enabled ? (
       <>
       <SettingsRow
-        title="课程与日程提前量"
-        sub="按课表、考试与自定义日程提前提醒。"
+        title={i18n("components.notifysettingssection.f6ecd7571f77")}
+        sub={i18n("components.notifysettingssection.75d999ba8224")}
         control={
           <OGSelect
             size="sm"
@@ -162,14 +165,14 @@ export function NotifySettingsSection(): ReactNode {
       />
 
       <SettingsRow
-        title="作业 DDL 提醒"
-        sub="沿用网络学堂的「DDL 提醒」设置；静默时段内会提前到静默开始前发出。"
-        control={<OGSwitch checked={s.ddl} onChange={(v) => patch({ ddl: v })} aria-label="作业 DDL 提醒" />}
+        title={i18n("components.notifysettingssection.3df7b5791ab9")}
+        sub={i18n("components.notifysettingssection.601739d6d696")}
+        control={<OGSwitch checked={s.ddl} onChange={(v) => patch({ ddl: v })} aria-label={i18n("components.notifysettingssection.3df7b5791ab9")} />}
       />
 
       <SettingsRow
-        title="每日早报"
-        sub="当天有课、有日程或有截止时才发。"
+        title={i18n("components.notifysettingssection.fe593e7c8ef9")}
+        sub={i18n("components.notifysettingssection.3ebea03d50ba")}
         control={
           <OGSelect
             size="sm"
@@ -182,8 +185,8 @@ export function NotifySettingsSection(): ReactNode {
 
       <div className="setting-row">
         <div>
-          <div className="setting-title">静默时段</div>
-          <div className="setting-desc">该时段内不发送提醒，落在其中的提醒顺延至时段结束。</div>
+          <div className="setting-title">{i18n("components.notifysettingssection.8749b8afaa46")}</div>
+          <div className="setting-desc">{i18n("components.notifysettingssection.96ded56015c2")}</div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <OGSelect size="sm" value={s.quietFrom} onChange={(v) => patch({ quietFrom: v })} options={QUIET_FROM.map((v) => ({ value: v, label: v }))} />
@@ -196,30 +199,28 @@ export function NotifySettingsSection(): ReactNode {
       ) : null}
 
       <SettingsRow
-        title="通知权限"
+        title={i18n("components.notifysettingssection.c159d4097131")}
         sub={
           status === null
-            ? "检测中…"
+            ? i18n("components.notifysettingssection.3a1abf3422d2")
             : hint.level === "error"
               ? <Text slot="label" tone="error">{hint.text}</Text>
               : hint.text
         }
         control={
           <>
-            <Btn variant="outline" size="sm" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>
-              发送测试通知
-            </Btn>
-            <Btn variant="ghost" size="sm" disabled={busy} titleAttr="逐项检查授权、提醒排程与真实投递" onClick={() => void onDiagnose()}>
-              {busy ? "检查中…" : "诊断"}
+            <Btn variant="outline" size="sm" disabled={busy || status?.backend === "none"} onClick={() => void onTest()}>{i18n("components.notifysettingssection.5e0022a1e907")}</Btn>
+            <Btn variant="ghost" size="sm" disabled={busy} titleAttr={i18n("components.notifysettingssection.161e7274c791")} onClick={() => void onDiagnose()}>
+              {busy ? i18n("components.notifysettingssection.fb11aa6f2982") : i18n("components.notifysettingssection.40ff6300f981")}
             </Btn>
             {hint.action ? (
               <Btn
                 variant="ghost"
                 size="sm"
-                titleAttr={`打开：${hint.action.label}`}
+                titleAttr={i18n("components.notifysettingssection.78c085c9614b", { label: String(hint.action.label) })}
                 onClick={() => {
                   void openNotifySettings(hint.action!.kind).then((okOpen) => {
-                    if (!okOpen) setMsg("未能打开系统设置，请手动前往本应用的通知设置");
+                    if (!okOpen) setMsg(i18n("components.notifysettingssection.35211f5bd0b3"));
                   });
                 }}
               >
@@ -232,16 +233,16 @@ export function NotifySettingsSection(): ReactNode {
 
       {pluginNotifs.length > 0 ? (
       <SettingsRow
-        title="插件通知"
+        title={i18n("components.notifysettingssection.7c9860a87f42")}
         sub={
           <>
-            {pluginNotifs.map((g) => `${g.pluginId}（${g.ids.length} 条）`).join("；")}
-            <Text slot="label" tone="faint">　以上通知由插件自行管理，不受总开关影响。</Text>
+            {pluginNotifs.map((g) => i18n("components.notifysettingssection.175f2b8dd07a", { pluginId: String(g.pluginId), length: String(g.ids.length) })).join("；")}
+            <Text slot="label" tone="faint">{i18n("components.notifysettingssection.e402488b7e96")}</Text>
           </>
         }
         control={
           <>
-            <Btn variant="ghost" size="sm" onClick={() => void refreshPluginNotifs()}>刷新</Btn>
+            <Btn variant="ghost" size="sm" onClick={() => void refreshPluginNotifs()}>{i18n("components.notifysettingssection.aee887434131")}</Btn>
             <Btn
               variant="ghost"
               tone="error"
@@ -249,13 +250,11 @@ export function NotifySettingsSection(): ReactNode {
               onClick={() => {
                 const all = pluginNotifs.flatMap((g) => g.ids);
                 void cancelNotifications(all).then(() => {
-                  setMsg(`已撤销 ${all.length} 条插件通知`);
+                  setMsg(i18n("components.notifysettingssection.76bc5a31c67a", { length: String(all.length) }));
                   return refreshPluginNotifs();
                 });
               }}
-            >
-              全部撤销
-            </Btn>
+            >{i18n("components.notifysettingssection.4eb2834cf11f")}</Btn>
           </>
         }
       />
@@ -263,12 +262,12 @@ export function NotifySettingsSection(): ReactNode {
 
       {s.enabled ? (
       <SettingsRow
-        title="近期提醒"
+        title={i18n("components.notifysettingssection.dcf38337ab96")}
         sub={
           plan.length === 0
-            ? "近期没有需要提醒的事项。"
+            ? i18n("components.notifysettingssection.43726fd0c89d")
             : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join("；") +
-              (plan.length > 3 ? ` …共 ${plan.length} 条` : "")
+              (plan.length > 3 ? i18n("components.notifysettingssection.2d0bc5924351", { length: String(plan.length) }) : "")
         }
         control={
           <Btn
@@ -279,12 +278,10 @@ export function NotifySettingsSection(): ReactNode {
                 const rt = await ensureNotifyRuntime();
                 const r = await rt.syncNow();
                 setPlan(rt.plan());
-                setMsg(r.error ? `重排失败：${r.error}` : `已重排（排程 ${r.scheduled} 条 / 撤销 ${r.cancelled} 条）`);
+                setMsg(r.error ? i18n("components.notifysettingssection.62a0cf48abea", { error: String(r.error) }) : i18n("components.notifysettingssection.ff1625eb34eb", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) }));
               })();
             }}
-          >
-            立即应用
-          </Btn>
+          >{i18n("components.notifysettingssection.6160bb36e036")}</Btn>
         }
       />
       ) : null}
@@ -297,15 +294,13 @@ export function NotifySettingsSection(): ReactNode {
           {report.steps.map((st) => (
             <div key={st.id} style={{ display: "flex", gap: 8, fontSize: "var(--text-xs)", lineHeight: "18px", marginTop: 3 }}>
               <span style={{ flex: "none", width: 54, color: st.status === "fail" ? "var(--red)" : st.status === "warn" ? "var(--amber)" : "var(--green)" }}>
-                {st.status === "fail" ? "不通过" : st.status === "warn" ? "提示" : "通过"}
+                {st.status === "fail" ? i18n("components.notifysettingssection.2caa51eaf305") : st.status === "warn" ? i18n("components.notifysettingssection.f56c6c82203b") : i18n("components.notifysettingssection.1e9f2561b7cf")}
               </span>
               <span style={{ flex: "none", width: 76, color: "var(--text-2)" }}>{st.label}</span>
               <span style={{ color: "var(--text-3)", minWidth: 0 }}>{st.detail}</span>
             </div>
           ))}
-          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 6 }}>
-            自检会把这段结果贴给我即可定位（含「探针清理」说明自检没有留下垃圾通知）。
-          </div>
+          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-3)", marginTop: 6 }}>{i18n("components.notifysettingssection.bfd7f2d9791f")}</div>
         </div>
       ) : null}
 

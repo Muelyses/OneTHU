@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 首页一次性引导（§4.6）：改版后首次进新首页，最多 3 处、可跳过、看过不再打扰。
@@ -19,9 +20,9 @@ const KEY = "onethu.home.coach.v1";
  * 一起消失了 —— 导览会指空气。这里按新画布的实际交互重写，并在 FreeBoard / HomeSpheres 上补锚点。
  */
 const TIPS: Array<{ target: string; text: string }> = [
-  { target: '[data-coach="home-canvas"]', text: "直接拖动卡片摆放，选中后拉角点调整大小；底部工具栏可随时添加与缩放。" },
-  { target: '[data-coach="home-add"]', text: "从这儿添加组件：内置组件、你的收藏、其它 OnePage 都在这。" },
-  { target: '[data-coach="home-dock"]', text: "一级功能坞在这里；找不到的功能都在「服务」页，也能直接搜。" },
+  { target: '[data-coach="home-canvas"]', get text() { return i18n("components.homecoachmarks.a698c6f322d5"); } },
+  { target: '[data-coach="home-add"]', get text() { return i18n("components.homecoachmarks.fe031a3ba2eb"); } },
+  { target: '[data-coach="home-dock"]', get text() { return i18n("components.homecoachmarks.3f1467fc681a"); } },
 ];
 
 const GAP = 10;
@@ -49,6 +50,8 @@ function place(target: Rect, card: { w: number; h: number }): { top: number; lef
 }
 
 export function HomeCoachMarks(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [done, setDone] = useState<boolean>(() => {
     try {
       return localStorage.getItem(KEY) === "done";
@@ -172,14 +175,10 @@ export function HomeCoachMarks(): ReactNode {
     >
       <div style={{ fontSize: "var(--text-sm)", lineHeight: 1.5 }}>{tip.text}</div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span className="dim" style={{ fontSize: "var(--text-xs)" }}>
-          第 {idx + 1} 条，共 {avail.length} 条
-        </span>
+        <span className="dim" style={{ fontSize: "var(--text-xs)" }}>{i18nRich("components.homecoachmarks.626caf19ebdb", { value: idx + 1, length: avail.length })}</span>
         <span style={{ flex: 1 }} />
-        <Btn variant="ghost" onClick={finish}>
-          不再提示
-        </Btn>
-        <Btn variant="solid" tone="brand" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>{last ? "知道了" : "下一条"}</Btn>
+        <Btn variant="ghost" onClick={finish}>{i18n("components.homecoachmarks.a54a0add5447")}</Btn>
+        <Btn variant="solid" tone="brand" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>{last ? i18n("components.homecoachmarks.de32e20193ad") : i18n("components.homecoachmarks.df119e585ece")}</Btn>
       </div>
     </div>,
     document.body,

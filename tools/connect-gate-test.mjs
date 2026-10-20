@@ -7,7 +7,7 @@
  *  ③ 绑定流程复用现成的（雨课堂面板、TUOJ 零输入漫游、accountSetup 的邮箱/云盘组合动作），不另造真源；
  *  ④ 成功后回调 onDone 回原任务，且邮箱页 / 云盘页 / 作业区真的接上了。
  */
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 import assert from "node:assert/strict";
 
 const gate = readFileSync("apps/desktop/src/components/ConnectGate.tsx", "utf8");

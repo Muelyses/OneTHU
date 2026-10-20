@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * R18 24.2：雨课堂「官方网页登录」通道（应用内 WebView）前端桥。
  *
@@ -18,7 +19,7 @@ import { isTauri } from "./transport.js";
 
 /** 读取失败时的统一回退提示（桌面端读不到 / Android 未取到会话均适用） */
 export const YKT_WEB_FALLBACK_HINT =
-  "读取失败。请在电脑浏览器登录 pro.yuketang.cn 后，用下方「高级：手动粘贴 Cookie」粘贴会话（浏览器 F12 → Application → Cookies）。";
+  () => i18n("lib.yktwebview.745473448800");
 
 /**
  * 当前是否 Android 宿主（应用内全屏 WebView 的移动端实现）。
@@ -50,7 +51,7 @@ export const YKT_WEB_LOGIN_AVAILABLE = isTauri && isAndroidHost;
  *  - 桌面端：独立窗口，返回 `null`（读取由面板按钮 / `ykt-cookie` 事件触发）。
  */
 export async function openYuketangWebLogin(): Promise<string | null> {
-  if (!isTauri) throw new Error("官方网页登录需在 OneTHU App 内使用（浏览器预览不可用）。");
+  if (!isTauri) throw new Error(i18n("lib.yktwebview.9df0abd7d05e"));
   const r = await invoke<string>("open_ykt_window");
   if (r && /sessionid=/i.test(r)) return yuketangCookieFromHeader(r);
   return null;
@@ -82,10 +83,10 @@ export async function onYuketangWebCookie(cb: (cookie: string) => void): Promise
  * 未取到会话（空 / 无 sessionid）时抛错——调用方展示 {@link YKT_WEB_FALLBACK_HINT}。
  */
 export async function readYuketangWebCookies(): Promise<string> {
-  if (!isTauri) throw new Error("官方网页登录需在 OneTHU App 内使用（浏览器预览不可用）。");
+  if (!isTauri) throw new Error(i18n("lib.yktwebview.9df0abd7d05e"));
   const raw = await invoke<string>("read_ykt_cookies");
   if (!raw || !/sessionid=/i.test(raw)) {
-    throw new Error("尚未检测到雨课堂登录会话（请先在窗口内完成扫码或短信登录）。");
+    throw new Error(i18n("lib.yktwebview.4aa36272b60e"));
   }
   return yuketangCookieFromHeader(raw);
 }

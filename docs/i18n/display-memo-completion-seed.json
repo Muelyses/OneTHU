@@ -1,0 +1,76 @@
+{
+  "messages": {
+    "state.data.6f0c2bbab1f6": {
+      "key": "state.data.6f0c2bbab1f6",
+      "source": "{startYear}-{endYear} 秋",
+      "zh": "{startYear}-{endYear} 秋",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "startYear",
+          "expression": "y"
+        },
+        {
+          "name": "endYear",
+          "expression": "y + 1"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1988,
+          "context": "semesterOptions display only; select value remains YYYY-YYYY-number"
+        }
+      ]
+    },
+    "state.data.606fee690bb1": {
+      "key": "state.data.606fee690bb1",
+      "source": "{startYear}-{endYear} 春",
+      "zh": "{startYear}-{endYear} 春",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "startYear",
+          "expression": "y"
+        },
+        {
+          "name": "endYear",
+          "expression": "y + 1"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1988,
+          "context": "semesterOptions display only; select value remains YYYY-YYYY-number"
+        }
+      ]
+    },
+    "state.data.99541445f961": {
+      "key": "state.data.99541445f961",
+      "source": "{startYear}-{endYear} 夏",
+      "zh": "{startYear}-{endYear} 夏",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "startYear",
+          "expression": "y"
+        },
+        {
+          "name": "endYear",
+          "expression": "y + 1"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1988,
+          "context": "semesterOptions display only; select value remains YYYY-YYYY-number"
+        }
+      ]
+    }
+  }
+}

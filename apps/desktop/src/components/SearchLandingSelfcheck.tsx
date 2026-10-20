@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 检索落点自查路由（**仅 dev 构建**；release 里整块被 rollup 剥离，不进导航）。
@@ -48,11 +49,13 @@ function classifyDom(row: SearchRow): string {
   const txt = (focused.textContent ?? "").trim();
   if (tag === main || tag === `sec-${row.section}` || bc.includes(row.section)) return tag || txt.slice(0, 16);
   if (txt.includes(row.title) && focused.classList.contains("setting-row")) return tag || txt.slice(0, 16);
-  if (txt.trim() === row.title.trim()) return (tag || "btn") + "首匹配";
+  if (txt.trim() === row.title.trim()) return (tag || "btn") + i18n("components.searchlandingselfcheck.8d0704658339");
   return "";
 }
 
 function SearchLandingSelfcheck(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [running, setRunning] = useState(false);
   const [report, setReport] = useState<SelfcheckReport | null>(null);
   const reportRef = useRef<SelfcheckReport | null>(null);
@@ -90,7 +93,7 @@ function SearchLandingSelfcheck(): ReactNode {
         note = res.note ?? "";
         bc = res.breadcrumb;
       } catch (e) {
-        note = `goSearchRow 异常：${String(e instanceof Error ? e.message : e).slice(0, 60)}`;
+        note = i18n("components.searchlandingselfcheck.0489a71d8f26", { value: String(String(e instanceof Error ? e.message : e).slice(0, 60)) });
       }
       // ② DOM 级：等待 React 挂载/滚动/焦点 — 各行有小幅重试
       let domFocus = "";
@@ -108,7 +111,7 @@ function SearchLandingSelfcheck(): ReactNode {
         domFocus,
         note: domFocus || landedOn === "section-root"
           ? [note, bc.length ? bc.join("→") : ""].filter(Boolean).join(" ·")
-          : `落点失焦（.row-focus 不见）：${note}`,
+          : i18n("components.searchlandingselfcheck.c01cf39f0cb1", { note: String(note) }),
       });
           }
     const rep: SelfcheckReport = { rows: out, startedAt: new Date(t0).toLocaleTimeString("zh-CN", { hour12: false }), durMs: Date.now() - t0 };
@@ -135,7 +138,7 @@ function SearchLandingSelfcheck(): ReactNode {
     const rep = reportRef.current;
     if (!rep) return;
     const md = [
-      `# 检索落点自查（${rep.startedAt}，${rep.durMs}ms）`,
+      i18n("components.searchlandingselfcheck.6c3a8b71f844", { startedAt: String(rep.startedAt), durMs: String(rep.durMs) }),
       "",
       "| id | query | family | hit | landedOn | domFocus | note |",
       "|---|---|---|---|---|---|---|",
@@ -143,9 +146,9 @@ function SearchLandingSelfcheck(): ReactNode {
     ].join("\n");
     try {
       await navigator.clipboard.writeText(md);
-      showToast("自查报告已复制（Markdown 表）");
+      showToast(i18nMsg("components.searchlandingselfcheck.45a7e2e27035"));
     } catch {
-      showToast("剪贴板不可用——报告已在 console，请自 devtools 复制");
+      showToast(i18nMsg("components.searchlandingselfcheck.777b2a8e431a"));
     }
   };
 
@@ -153,31 +156,29 @@ function SearchLandingSelfcheck(): ReactNode {
     // 幽灵卡片：给 user 手感的进度卡片（Touching test with running 状态）。
     if (!running) return null;
     return (
-      <div className="selfcheck-card" role="status" aria-live="polite">
-        检索落点自查中（45 行逐条点击）… 结果会打印在 console 并出现在这张卡里。
-      </div>
+      <div className="selfcheck-card" role="status" aria-live="polite">{i18n("components.searchlandingselfcheck.33c5797b2af7")}</div>
     );
   }
   const miss = report.rows.filter((x) => x.hit !== "hit" || (!x.domFocus && x.landedOn !== "section-root"));
   return (
-    <div className="selfcheck-card" role="region" aria-label="检索落点自查报告">
+    <div className="selfcheck-card" role="region" aria-label={i18n("components.searchlandingselfcheck.a41bc68312fb")}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <b>检索落点自查</b>
-        <span style={{ color: "var(--text-3)" }}>hit {report.rows.filter((x) => x.hit === "hit").length}/45 · 分节根 {report.rows.filter((x) => x.landedOn === "section-root").length}</span>
+        <b>{i18n("components.searchlandingselfcheck.5458a0b89b08")}</b>
+        <span style={{ color: "var(--text-3)" }}>{i18nRich("components.searchlandingselfcheck.f544d6d22616", { length: report.rows.filter((x) => x.hit === "hit").length, length2: report.rows.filter((x) => x.landedOn === "section-root").length })}</span>
         <span style={{ flex: 1 }} />
-        <Btn variant="solid" tone="brand" onClick={() => void copyReport()}>复制报告</Btn>
-        <Btn variant="ghost" aria-label="关闭" onClick={() => setReport(null)}><IconX width={14} height={14} /></Btn>
+        <Btn variant="solid" tone="brand" onClick={() => void copyReport()}>{i18n("components.searchlandingselfcheck.9da1918cdc89")}</Btn>
+        <Btn variant="ghost" aria-label={i18n("components.searchlandingselfcheck.3fd47edce45b")} onClick={() => setReport(null)}><IconX width={14} height={14} /></Btn>
       </div>
       {miss.length ? (
         <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
           {miss.slice(0, 8).map((x) => (
             <li key={x.id} style={{ fontSize: 12, color: "var(--text-2)" }}>
-              {x.id}：{x.hit !== "hit" ? "行级首位不是自己" : "DOM 未落"}（{x.note}）
+              {x.id}：{x.hit !== "hit" ? i18n("components.searchlandingselfcheck.0a14c8794160") : i18n("components.searchlandingselfcheck.5fd19b4a8cd3")}（{x.note}）
             </li>
           ))}
         </ul>
       ) : null}
-      <div style={{ marginTop: 6, fontSize: 12, color: "var(--text-3)" }}>逐行原表已打在 console（console.table）；「复制报告」给 Markdown 全表。</div>
+      <div style={{ marginTop: 6, fontSize: 12, color: "var(--text-3)" }}>{i18n("components.searchlandingselfcheck.e255143f7db4")}</div>
     </div>
   );
 }

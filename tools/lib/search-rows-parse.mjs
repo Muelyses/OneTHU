@@ -7,6 +7,8 @@
  * 额外携带 breadcrumb/visible/fallbackNote/root/landOn（gen-oh-routes 用它们生成子字段）。
  */
 import { readFileSync } from "node:fs";
+import ts from "typescript";
+import { readDataFile } from "../i18n/dictionary.mjs";
 
 /** 全部注册了定域检索行的文件（改这行清单 = 同步 coverage / landing / gen） */
 export const SEARCH_ROW_FILES = [
@@ -23,108 +25,48 @@ export const SEARCH_ROW_FILES = [
 
 const REPO_ROOT = new URL("../../", import.meta.url).pathname;
 
-/** 从「defineSearchRows 的块体」里剥掉函数型字段（go: () => {…} / go: () => xxx / visible: () => …）：
- *  行注册对象里**函数字段带着对象花括号**（go 闭包），朴素的花括号正则
-
- *  `\{([^{}]*)\}` 会被它切成碎片 —— 并因此把同一行数出两次、把插件行数没。行扫描前删除函数字段。 */
-function stripFnFields(body, landOnOut) {
-  let out = "";
-  let i = 0;
-  const n = body.length;
-  while (i < n) {
-    const g = nextKey(body, i);
-    if (g === null) {
-      out += body.slice(i);
-      break;
-    }
-    out += body.slice(i, g);
-    if (body.startsWith("landOn:", g)) {
-      /* landOn: { section, note } —— 剥掉嵌套对象（字符串取值回传给消费方，按出现顺序贴合行） */
-      const braceOpen = body.indexOf("{", g);
-      let depth = 0;
-      let k = braceOpen;
-      for (; k < n; k++) {
-        if (body[k] === "{") depth++;
-        else if (body[k] === "}") { depth--; if (depth === 0) { k++; break; } }
-      }
-      const blk = body.slice(braceOpen, Math.min(k, n));
-      const secM = blk.match(/section:\s*"([^"]*)"/);
-      const noteM = blk.match(/note:\s*"([^"]*)"/);
-      landOnOut.push({ at: out.length, section: secM ? secM[1] : "", note: noteM ? noteM[1] : "" });
-      i = k;
-      while (i < n && /[,\s]/.test(body[i])) i++;
-      continue;
-    }
-    /* go / visible：箭头函数字段，一律剥掉（消费方只看声明字段） */
-    let j = body.indexOf("=>", g);
-    if (j < 0) {
-      out += body.slice(g);
-      break;
-    }
-    j += 2;
-    while (j < n && /\s/.test(body[j])) j++;
-    if (body[j] === "{") {
-      let depth = 0;
-      let k = j;
-      for (; k < n; k++) {
-        if (body[k] === "{") depth++;
-        else if (body[k] === "}") { depth--; if (depth === 0) { k++; break; } }
-      }
-      i = k;
-    } else {
-      let k = body.indexOf(",", j);
-      let q = body.indexOf("}", j);
-      if (k < 0) k = q < 0 ? n : q;
-      if (q >= 0 && q < k) k = q;
-      i = k;
-    }
-    while (i < n && /[,\s]/.test(body[i])) i++;
-  }
-  return out;
-}
-
-/** 找下一个「函数对象字段」的起点（go:/visible:/landOn:），没有则 null */
-function nextKey(body, from) {
-  let best = null;
-  for (const k of ["go:", "visible:", "landOn:"]) {
-    const i = body.indexOf(k, from);
-    if (i >= 0 && (best === null || i < best)) best = i;
-  }
-  return best;
-}
-
-/** 单行对象字面量宽松解析：field 最初值（字符串数组/字符串/布尔），供四种消费方统一。 */
+/** Parse declarations without executing application code, getters, or translation modules. */
 export function parseSearchRows() {
+  const messages = readDataFile(REPO_ROOT + "apps/desktop/src/i18n/locales/zh-CN.ts").messages;
   const rows = [];
   for (const rel of SEARCH_ROW_FILES) {
     const src = readFileSync(REPO_ROOT + rel, "utf8");
-    for (const m of src.matchAll(/defineSearchRows\(\s*\[([\s\S]*?)\]\s*\)\s*;/g)) {
-      const landOns = [];
-      const body = stripFnFields(m[1], landOns);
-      for (const r of body.matchAll(/\{([^{}]*)\}/g)) {
-        const obj = r[1];
-        const str = (k) => {
-          const hit = obj.match(new RegExp(`${k}:\\s*"([^"]*)"`)) ?? [];
-          return hit[1] ? hit[1] : "";
-        };
-        const aliasesM = obj.match(/aliases:\s*\[([^\]]*)\]/);
-        const aliases = aliasesM
-          ? aliasesM[1].split(",").map((x) => x.trim().replace(/^"|"$/g, "")).filter(Boolean)
-          : [];
-        const bcM = obj.match(/breadcrumb:\s*\[([^\]]*)\]/);
-        const breadcrumb = bcM
-          ? bcM[1].split(",").map((x) => x.trim().replace(/^"|"$/g, "")).filter(Boolean)
-          : [];
-        /* visible/fallbackNote/root/landOn：够 sync 护栏识别该行**期望落点形态**
-           （go 表达式/箭头函数不去动字面量化——只在 fn 与 note 断言齐了） */
-        /* landOn 贴行：记录剥离时的 out 位置，落在哪个行字面量开区间内就归谁 */
-        const li = landOns.find((l) => l.at >= r.index && l.at <= r.index + r[0].length) ?? null;
-        rows.push({ file: rel.split("/").pop(), id: str("id"), tab: str("tab"), section: str("section"),
-                    title: str("title"), desc: str("desc"), aliases, breadcrumb,
-                    displayRoot: str("displayRoot"), note: str("fallbackNote"),
-                    landOn: li ? { section: li.section, note: li.note } : null });
+    const file = ts.createSourceFile(rel, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+    const value = node => {
+      if (!node) return "";
+      if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+      if (ts.isArrayLiteralExpression(node)) return node.elements.map(value);
+      if (ts.isObjectLiteralExpression(node)) return properties(node);
+      if (ts.isCallExpression(node) && ["i18n", "t"].includes(node.expression.getText(file)) && ts.isStringLiteral(node.arguments[0])) {
+        const key = node.arguments[0].text;
+        if (!Object.hasOwn(messages, key)) throw new Error(`${rel}: unknown translation key ${key}`);
+        return messages[key];
       }
+      throw new Error(`${rel}: unsupported search label expression ${node.getText(file)}`);
+    };
+    const properties = object => Object.fromEntries(object.properties.filter(p => p.name).map(p => {
+      const key = p.name.getText(file).replace(/^['"]|['"]$/g, "");
+      if (["go", "visible"].includes(key)) return [key, true];
+      if (ts.isGetAccessor(p)) {
+        if (p.body?.statements.length !== 1 || !ts.isReturnStatement(p.body.statements[0])) throw new Error(`${rel}: search getter must directly return a message`);
+        return [key, value(p.body.statements[0].expression)];
+      }
+      return [key, value(p.initializer)];
+    }));
+    function visit(node) {
+      if (ts.isCallExpression(node) && ["defineSearchRows", "defineSearchRow"].includes(node.expression.getText(file))) {
+        const first = node.arguments[0];
+        for (const entry of ts.isArrayLiteralExpression(first) ? first.elements : [first]) {
+          if (!ts.isObjectLiteralExpression(entry)) throw new Error(`${rel}: search registration must be an object`);
+          const p = properties(entry);
+          rows.push({ file: rel.split("/").pop(), id: p.id ?? "", tab: p.tab ?? "", section: p.section ?? "",
+            title: p.title ?? "", desc: p.desc ?? "", aliases: p.aliases ?? [], breadcrumb: p.breadcrumb ?? [],
+            displayRoot: p.displayRoot ?? "", root: p.root ?? "", note: p.fallbackNote ?? "", landOn: p.landOn ?? null });
+        }
+      }
+      ts.forEachChild(node, visit);
     }
+    visit(file);
   }
   return rows;
 }

@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 标签页内容渲染开关（dev-explorer）：从 App.tsx 原样抽出的一级/二级页 → 组件映射。
  * TabHost 给每个标签页一个常驻容器，页内导航时 key=page 重新挂载（保留原转场语义），
@@ -54,6 +55,8 @@ export function isSubPage(p: string): boolean {
 /** 插件动态 tab 宿主：挂容器登记进 tabs.ts，插件经 ui.onTabReady/getTabRoot 拿 DOM 全权渲染。
  *  容器常驻（React 不销毁），仅切页时 display 切换——插件内部状态保留。 */
 function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const plugins = useSyncExternalStore(subscribe, installedPlugins);
   const tab = getPluginTab(pageKey);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -65,7 +68,7 @@ function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
     const pluginId = tab?.pluginId ?? "";
     const rec = plugins.find((x) => x.manifest.id === pluginId);
     if (!tab || !rec) {
-      setFailed("该插件 tab 所属插件未安装或已停用");
+      setFailed(i18n("components.explorer.renderpage.c2c0a88238ce"));
       setTabRoot(pageKey, null);
       return;
     }
@@ -73,7 +76,7 @@ function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
     setTabRoot(pageKey, el);
     // 渲染回调异常时把错误显示在页面（插件回调被 tabs.ts 捕获，这里取最近错误）
     const t = window.setTimeout(() => {
-      if (lastTabError.key === pageKey) setFailed(`插件渲染异常：${lastTabError.message}`);
+      if (lastTabError.key === pageKey) setFailed(i18n("components.explorer.renderpage.23789dcd311a", { message: String(lastTabError.message) }));
     }, 50);
     return () => {
       window.clearTimeout(t);
@@ -85,8 +88,8 @@ function PluginTabHost({ pageKey }: { pageKey: Page }): ReactNode {
     <div className="page-body plg-tab-page">
       <div className="plg-tab-head">
         <span className="plg-svg-icon" dangerouslySetInnerHTML={{ __html: icon ?? "" }} />
-        <b>{tab?.title ?? "插件页"}</b>
-        {tab ? <span className="plg-tab-src">来自插件 {tab.pluginId}</span> : null}
+        <b>{tab?.title ?? i18n("components.explorer.renderpage.419b9be906c8")}</b>
+        {tab ? <span className="plg-tab-src">{i18nRich("components.explorer.renderpage.3892d4ae326b", { pluginId: tab.pluginId })}</span> : null}
       </div>
       {failed ? <div className="plg-hint">{failed}</div> : null}
       <div ref={ref} className="plg-tab-root" data-pagekey={pageKey} />

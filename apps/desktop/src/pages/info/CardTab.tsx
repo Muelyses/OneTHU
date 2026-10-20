@@ -1,3 +1,5 @@
+import { getLocale as getUiLocale } from "../../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -42,11 +44,11 @@ const isAndroid = isAndroidNavigator(typeof navigator !== "undefined" ? navigato
 /** 「x 前」相对时间（数据新鲜度展示用；与提醒文案无关，粒度够粗即可） */
 function fmtAgo(at: number): string {
   const min = Math.floor((Date.now() - at) / 60000);
-  if (min < 1) return "刚刚";
-  if (min < 60) return `${min} 分钟前`;
+  if (min < 1) return i18n("pages.info.cardtab.de6785d99e02");
+  if (min < 60) return i18n("pages.info.cardtab.3770554318c1", { min: String(min) });
   const h = Math.floor(min / 60);
-  if (h < 24) return `${h} 小时前`;
-  return `${Math.floor(h / 24)} 天前`;
+  if (h < 24) return i18n("pages.info.cardtab.67878eea0149", { h: String(h) });
+  return i18n("pages.info.cardtab.d262a8a8360c", { value: String(Math.floor(h / 24)) });
 }
 /** 硬过期：超过 6 小时未更新即提示（与 state/data.ts 的 CARD_HARD_STALE 同口径） */
 const isStale = (at: number | null): boolean => at !== null && Date.now() - at > 6 * 60 * 60 * 1000;
@@ -86,15 +88,17 @@ type RchChannel = "alipay" | "wechat" | "bank";
 type RchStep = "form" | "confirm" | "qr" | "bankDone";
 
 const RCH_CHANNELS: Array<{ key: RchChannel; label: string; hint: string }> = [
-  { key: "alipay", label: "支付宝", hint: "生成官方收款码，手机支付宝扫码支付" },
-  { key: "wechat", label: "微信", hint: "生成微信收银台二维码，手机微信扫码支付" },
-  { key: "bank", label: "银行卡圈存", hint: "从卡系统绑定的银行卡直接划转（限 6:00~20:40）" },
+  { key: "alipay", get label() { return i18n("pages.info.cardtab.276a8bc45803"); }, get hint() { return i18n("pages.info.cardtab.4928ef569f17"); } },
+  { key: "wechat", get label() { return i18n("pages.info.cardtab.81b430b69643"); }, get hint() { return i18n("pages.info.cardtab.780317fc7e6f"); } },
+  { key: "bank", get label() { return i18n("pages.info.cardtab.bd29d329c11f"); }, get hint() { return i18n("pages.info.cardtab.65d92e05c524"); } },
 ];
 
 const maskStyle: React.CSSProperties = { position: "fixed", inset: 0, background: "var(--og-scrim)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
 const panelStyle: React.CSSProperties = { width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", boxShadow: "var(--og-elev-menu)", padding: "16px 18px" };
 
 function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () => void; onPaid: () => void }) {
+  const uiLocale = useUiLocale();
+
   const [step, setStep] = useState<RchStep>("form");
   const [amount, setAmount] = useState("50");
   const [channel, setChannel] = useState<RchChannel>("alipay");
@@ -140,7 +144,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
     if (channel === "bank") {
       const h = new Date().getHours() + new Date().getMinutes() / 60;
       if (h < 6 || h >= 20 + 40 / 60) {
-        setErr("银行卡圈存限 6:00~20:40：请改用扫码充值，或明天再试。");
+        setErr(i18n("pages.info.cardtab.37fb16db16bc"));
         setBusy(false);
         return;
       }
@@ -165,7 +169,7 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
     <div className={"rch-mask" + (closing ? " is-closing" : "")} style={maskStyle} onClick={requestClose}>
       <div className={"rch-panel" + (closing ? " is-closing" : "")} style={panelStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-          <b>校园卡充值</b>
+          <b>{i18n("pages.info.cardtab.710a42081cbe")}</b>
           <span style={{ flex: 1 }} />
           <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
@@ -177,11 +181,9 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
                 <button key={v} className={`btn${amount === String(v) ? " btn-primary" : ""}`} style={{ flex: 1 }} onClick={() => setAmount(String(v))}>¥{v}</button>
               ))}
             </div>
-            <Input inputMode="decimal" placeholder="自定义金额（10 ~ 1000 元）" value={amount} onChange={(value) => setAmount(value)} />
+            <Input inputMode="decimal" placeholder={i18n("pages.info.cardtab.97309bac3008")} value={amount} onChange={(value) => setAmount(value)} />
             {!valid ? (
-              <div style={{ fontSize: 12, color: "var(--red, #c04848)", marginBottom: 8 }}>
-                充值金额需在 10 ~ 1000 元之间（全渠道下限统一 10 元，官方收银台同样起步 10 元）
-              </div>
+              <div style={{ fontSize: 12, color: "var(--red, #c04848)", marginBottom: 8 }}>{i18n("pages.info.cardtab.de7d16d37942")}</div>
             ) : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>
               {RCH_CHANNELS.map((c) => (
@@ -198,26 +200,24 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
               ))}
             </div>
             {err ? <div style={{ color: "#d33", fontSize: 12, marginBottom: 8 }}>{err}</div> : null}
-            <Btn variant="solid" tone="brand" disabled={!valid || busy} onClick={() => setStep("confirm")}>下一步
-            </Btn>
-            {!valid ? <div style={{ fontSize: 11, opacity: 0.55, marginTop: 6 }}>{channel === "bank" ? "银行卡圈存最低 10 元；金额需 1 ~ 1000 元（最多两位小数）" : "金额需为 1 ~ 1000 元（最多两位小数）"}</div> : null}
+            <Btn variant="solid" tone="brand" disabled={!valid || busy} onClick={() => setStep("confirm")}>{i18n("pages.info.cardtab.acfc4e74a650")}</Btn>
+            {!valid ? <div style={{ fontSize: 11, opacity: 0.55, marginTop: 6 }}>{channel === "bank" ? i18n("pages.info.cardtab.ef4019825558") : i18n("pages.info.cardtab.648616c62275")}</div> : null}
           </>
         ) : null}
 
         {step === "confirm" ? (
           <>
-            <div style={{ fontSize: 14, lineHeight: 1.8, marginBottom: 10 }}>
-              确认为校园卡充值 <b style={{ color: "var(--accent)" }}>¥{amt.toFixed(2)}</b>（{RCH_CHANNELS.find((c) => c.key === channel)?.label}）？
+            <div style={{ fontSize: 14, lineHeight: 1.8, marginBottom: 10 }}>{i18n("pages.info.cardtab.3b8384d13bcf")}<b style={{ color: "var(--accent)" }}>¥{amt.toFixed(2)}</b>（{RCH_CHANNELS.find((c) => c.key === channel)?.label}）？
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
                 {channel === "bank"
-                  ? "圈存资金从卡系统绑定的银行卡直接划转，仅限 6:00~20:40。"
-                  : "下一步将生成官方收款码，支付在支付宝/微信 App 内完成，本应用不经手资金。"}
+                  ? i18n("pages.info.cardtab.260c906a7ab8")
+                  : i18n("pages.info.cardtab.44e6d88239d0")}
               </div>
             </div>
             {err ? <div style={{ color: "#d33", fontSize: 12, marginBottom: 8 }}>{err}</div> : null}
             <div style={{ display: "flex", gap: 8 }}>
-              <Btn variant="outline" disabled={busy} onClick={() => setStep("form")}>返回</Btn>
-              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void submit()}>{busy ? "下单中…" : "确认"}</Btn>
+              <Btn variant="outline" disabled={busy} onClick={() => setStep("form")}>{i18n("pages.info.cardtab.572cf45ba436")}</Btn>
+              <Btn variant="solid" tone="brand" disabled={busy} onClick={() => void submit()}>{busy ? i18n("pages.info.cardtab.bc1beaa93a7d") : i18n("pages.info.cardtab.36f33adaf094")}</Btn>
             </div>
           </>
         ) : null}
@@ -228,35 +228,29 @@ function RechargeDialog({ open, onClose, onPaid }: { open: boolean; onClose: () 
               <div style={{ background: "#fff", display: "inline-block", padding: 10, borderRadius: 10 }}>
                 <QRCodeSVG value={webUrl} size={176} level="M" />
               </div>
-              <div style={{ fontSize: 13, marginTop: 8 }}>
-                请用<b>{channel === "alipay" ? "支付宝" : "微信"}</b>扫码支付 ¥{amt.toFixed(2)}
-              </div>
-              <div style={{ fontSize: 11, opacity: 0.55, wordBreak: "break-all", marginTop: 4 }}>到账通常实时，请以校园卡余额为准</div>
+              <div style={{ fontSize: 13, marginTop: 8 }}>{i18n("pages.info.cardtab.0213a92a6d36")}<b>{channel === "alipay" ? i18n("pages.info.cardtab.276a8bc45803") : i18n("pages.info.cardtab.81b430b69643")}</b>{i18nRich("pages.info.cardtab.4b4bf9600de4", { value: amt.toFixed(2) })}</div>
+              <div style={{ fontSize: 11, opacity: 0.55, wordBreak: "break-all", marginTop: 4 }}>{i18n("pages.info.cardtab.958112166ebf")}</div>
             </div>
             {err ? <div style={{ color: "#d33", fontSize: 12, marginBottom: 8 }}>{err}</div> : null}
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {channel === "alipay" && isAndroid ? (
                 <Btn variant="solid" tone="brand" onClick={async () => {
                     const ok = await openAlipayDeepLink(webUrl);
-                    if (!ok) setErr("未检测到支付宝 App，请用另一台手机扫码支付");
-                  }}>调起支付宝 App 支付
-                </Btn>
+                    if (!ok) setErr(i18n("pages.info.cardtab.02defd2c3032"));
+                  }}>{i18n("pages.info.cardtab.6fe44db82dfb")}</Btn>
               ) : null}
               {webUrl.startsWith("http") ? (
-                <Btn variant="outline" onClick={() => void openExternal(webUrl)}>{channel === "wechat" && isAndroid ? "在浏览器打开（微信支付）" : "在浏览器打开收款页"}</Btn>
+                <Btn variant="outline" onClick={() => void openExternal(webUrl)}>{channel === "wechat" && isAndroid ? i18n("pages.info.cardtab.4c6443bdcde7") : i18n("pages.info.cardtab.d4507373a0ce")}</Btn>
               ) : null}
-              <Btn variant="outline" onClick={() => { onPaid(); close(); }}>我已完成支付，刷新余额
-              </Btn>
+              <Btn variant="outline" onClick={() => { onPaid(); close(); }}>{i18n("pages.info.cardtab.02b9568dd9b0")}</Btn>
             </div>
           </>
         ) : null}
 
         {step === "bankDone" ? (
           <>
-            <div style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 10 }}>
-              圈存请求已提交。资金到账以校园卡<b>余额 / 流水</b>为准；若未到账请稍后在「最近消费」中查看圈存记录。
-            </div>
-            <Btn variant="solid" tone="brand" onClick={requestClose}>好的</Btn>
+            <div style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 10 }}>{i18n("pages.info.cardtab.0291cf54db5a")}<b>{i18n("pages.info.cardtab.e84d5394f0a6")}</b>{i18n("pages.info.cardtab.bf806b71ea83")}</div>
+            <Btn variant="solid" tone="brand" onClick={requestClose}>{i18n("pages.info.cardtab.536edaf7cdd1")}</Btn>
           </>
         ) : null}
       </div>
@@ -289,6 +283,8 @@ function useNumberDraft(initial: number, commit: (v: number) => void) {
  * 外加一行当前状态。判定与投递都在 state/cardWarn.ts，这里只负责取值与展示。
  */
 function BalanceWarnCard({ balance }: { balance: number | null }) {
+  const uiLocale = useUiLocale();
+
   const [s, setS] = useState<CardWarnSettings>(() => loadCardWarnSettings());
   const [st, setSt] = useState(() => loadCardWarnState());
 
@@ -315,40 +311,40 @@ function BalanceWarnCard({ balance }: { balance: number | null }) {
     <Card className="card-warn">
       <div className="card-warn-head">
         <div>
-          <div className="setting-title">余额预警</div>
-          <div className="setting-desc">余额刷新后低于预警线时发系统通知，恢复后自动撤回。</div>
+          <div className="setting-title">{i18n("pages.info.cardtab.db0a5f3fe6c3")}</div>
+          <div className="setting-desc">{i18n("pages.info.cardtab.27dba4bb4c34")}</div>
         </div>
-        <Switch on={s.enabled} onChange={(v) => patch({ enabled: v })} label="余额预警" />
+        <Switch on={s.enabled} onChange={(v) => patch({ enabled: v })} label={i18n("pages.info.cardtab.db0a5f3fe6c3")} />
       </div>
 
       {s.enabled ? (
         <div className="card-warn-body">
           <div className="card-warn-field">
-            <span className="card-warn-label">预警线</span>
+            <span className="card-warn-label">{i18n("pages.info.cardtab.aedf4e856541")}</span>
             <span className="card-warn-ctl">
               <span className="card-warn-prefix">¥</span>
               <input
                 className="input card-warn-num"
                 inputMode="decimal"
-                aria-label="余额预警线（元）"
+                aria-label={i18n("pages.info.cardtab.99660d2a2c11")}
                 value={threshold.draft}
                 onChange={(e) => threshold.setDraft(e.target.value)}
                 onBlur={() => threshold.submit(0, CARD_WARN_MAX_THRESHOLD)}
                 onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
               />
             </span>
-            <span className="card-warn-unit">元</span>
+            <span className="card-warn-unit">{i18n("pages.info.cardtab.7f77f23af7b0")}</span>
           </div>
 
           {/* 冷却只在「定时重复」模式下有意义：开着「不重复提醒」时余额一变就立刻提醒，
               冷却设了也不会生效，故直接置灰并说明原因（避免出现「设了没用」的字段） */}
           <div className={"card-warn-field" + (s.skipUnchanged ? " is-off" : "")}>
-            <span className="card-warn-label">提醒冷却</span>
+            <span className="card-warn-label">{i18n("pages.info.cardtab.bc9202e87177")}</span>
             <span className="card-warn-ctl">
               <input
                 className="input card-warn-num"
                 inputMode="numeric"
-                aria-label="提醒冷却（分钟）"
+                aria-label={i18n("pages.info.cardtab.085227aa1146")}
                 disabled={s.skipUnchanged}
                 value={cooldown.draft}
                 onChange={(e) => cooldown.setDraft(e.target.value)}
@@ -356,17 +352,17 @@ function BalanceWarnCard({ balance }: { balance: number | null }) {
                 onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
               />
             </span>
-            <span className="card-warn-unit">分钟</span>
+            <span className="card-warn-unit">{i18n("pages.info.cardtab.bd957bc497aa")}</span>
           </div>
 
           <div className="card-warn-field">
-            <span className="card-warn-label">不重复提醒</span>
+            <span className="card-warn-label">{i18n("pages.info.cardtab.44899ee92191")}</span>
             <Switch
               on={s.skipUnchanged}
               onChange={(v) => patch({ skipUnchanged: v })}
-              label="不重复提醒（当余额未变化）"
+              label={i18n("pages.info.cardtab.8b4b20eb5e5d")}
             />
-            <span className="card-warn-unit">当余额未变化</span>
+            <span className="card-warn-unit">{i18n("pages.info.cardtab.4a70afd5e446")}</span>
           </div>
         </div>
       ) : null}
@@ -379,6 +375,8 @@ function BalanceWarnCard({ balance }: { balance: number | null }) {
 /* --------------------------------- 主组件 --------------------------------- */
 
 export function CardTab({ active = true }: { active?: boolean }) {
+  const uiLocale = useUiLocale();
+
   const { data, state, error, reload, updatedAt, refreshError } = useCard(30);
   const [rchOpen, setRchOpen] = useState(false);
   // 切回本栏时若上次报错（如会话过期）则自动重试一次，不再让用户手动点刷新
@@ -389,7 +387,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
       (data?.transactions ?? [])
         .filter((t) => !isIncome(t))
         .reduce((sum, t) => sum + Math.abs(t.amount), 0),
-    [data],
+    [uiLocale, data],
   );
 
   return (
@@ -404,28 +402,22 @@ export function CardTab({ active = true }: { active?: boolean }) {
               <div className="card-hero-amount">
                 {state === "loading" && !data ? "–" : `¥${money(data?.info?.balance)}`}
               </div>
-              <div className="stat-label">
-                校园卡余额 · {data?.info.userName || "–"}
-                {data?.info.cardStatus ? ` · ${data.info.cardStatus}` : ""}
-              </div>
+              <div className="stat-label">{i18nRich("pages.info.cardtab.4a9c308b7038", { value: data?.info.userName || "–", value2: data?.info.cardStatus ? ` · ${data.info.cardStatus}` : "" })}</div>
             </div>
-            <Btn variant="outline" disabled={state === "loading"} titleAttr="重新拉取余额与流水" onClick={() => void reload()}>{state === "loading" ? "刷新中…" : "刷新"}</Btn>
-            <Btn variant="solid" tone="brand" onClick={() => setRchOpen(true)}>充值
-            </Btn>
+            <Btn variant="outline" disabled={state === "loading"} titleAttr={i18n("pages.info.cardtab.802b027b4fe5")} onClick={() => void reload()}>{state === "loading" ? i18n("pages.info.cardtab.7f3c8312816f") : i18n("pages.info.cardtab.aee887434131")}</Btn>
+            <Btn variant="solid" tone="brand" onClick={() => setRchOpen(true)}>{i18n("pages.info.cardtab.2c363db2eabc")}</Btn>
           </div>
           <div className="card-hero-meta">
-            <span>卡号 {data?.info.cardId || "–"}</span>
+            <span>{i18nRich("pages.info.cardtab.f629fc7ac825", { value: data?.info.cardId || "–" })}</span>
             {/* R21c：数据时间必须可见——此前用户被旧缓存压着 1–6 天却无从察觉 */}
-            {updatedAt ? <span title={new Date(updatedAt).toLocaleString()}>更新于 {fmtAgo(updatedAt)}</span> : null}
+            {updatedAt ? <span title={new Date(updatedAt).toLocaleString(getUiLocale())}>{i18nRich("pages.info.cardtab.e22e82c70130", { value: fmtAgo(updatedAt) })}</span> : null}
             {data?.info.departmentName ? <span>{data.info.departmentName}</span> : null}
             {data?.info?.maxOneTimeTransactionAmount != null ? (
-              <span>单笔上限 ¥{intText(data.info.maxOneTimeTransactionAmount)}</span>
+              <span>{i18nRich("pages.info.cardtab.40cbac045f27", { value: intText(data.info.maxOneTimeTransactionAmount) })}</span>
             ) : null}
             {/* 字段级透明：缺关键字段时明说，而不是让用户以为「卡就是这样」 */}
             {data && (!data.info?.cardId || !data.info?.userName || data.info?.balance == null) ? (
-              <span title="接口/缓存未给出这些字段（可能是新卡未激活，或本地缓存偏旧——可点刷新重取）">
-                · 部分字段缺失
-              </span>
+              <span title={i18n("pages.info.cardtab.475d19aa3f64")}>{i18n("pages.info.cardtab.964044a7cb90")}</span>
             ) : null}
           </div>
         </Card>
@@ -435,7 +427,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
           </span>
           <div>
             <div className="stat-num">¥{money(spent)}</div>
-            <div className="stat-label">近 30 天消费</div>
+            <div className="stat-label">{i18n("pages.info.cardtab.4c932ab03746")}</div>
           </div>
         </Card>
         <Card className="stat-card">
@@ -444,7 +436,7 @@ export function CardTab({ active = true }: { active?: boolean }) {
           </span>
           <div>
             <div className="stat-num">{(data?.transactions ?? []).length}</div>
-            <div className="stat-label">流水笔数</div>
+            <div className="stat-label">{i18n("pages.info.cardtab.eb095f18e602")}</div>
           </div>
         </Card>
       </div>
@@ -455,23 +447,22 @@ export function CardTab({ active = true }: { active?: boolean }) {
           <div className="exthw-note is-warn" style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <span>
               {refreshError
-                ? `刷新失败，当前显示 ${updatedAt ? fmtAgo(updatedAt) : "上次"}的数据（${refreshError}）`
-                : `数据已超过 6 小时未更新（${updatedAt ? fmtAgo(updatedAt) : "未知时间"}），可能不是最新`}
+                ? i18n("pages.info.cardtab.7c250813afe4", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n("pages.info.cardtab.f664edd9036b")), refreshError: String(refreshError) })
+                : i18n("pages.info.cardtab.705ff9657d5d", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n("pages.info.cardtab.65c9b80829a8")) })}
             </span>
-            <Btn variant="outline" onClick={() => void reload()}>重新拉取
-            </Btn>
+            <Btn variant="outline" onClick={() => void reload()}>{i18n("pages.info.cardtab.20e06ae156b3")}</Btn>
           </div>
         </Card>
       ) : null}
 
       <BalanceWarnCard balance={data?.info.balance ?? null} />
 
-      <SectionHead title="最近消费" aside="最近 30 天（数据源：card.tsinghua.edu.cn）" />
+      <SectionHead title={i18n("pages.info.cardtab.0be1be30c585")} aside={i18n("pages.info.cardtab.25275633ae3c")} />
       {state === "loading" && !data ? (
         <SkeletonRows rows={6} />
       ) : (data?.transactions.length ?? 0) === 0 ? (
         <Card>
-          <Empty text="近 30 天没有消费记录。" />
+          <Empty text={i18n("pages.info.cardtab.e8adeabba93d")} />
         </Card>
       ) : (
         <Card className="list">
@@ -482,9 +473,9 @@ export function CardTab({ active = true }: { active?: boolean }) {
                 <span>{fmtTime(t.timestamp).slice(6)}</span>
               </div>
               <div className="row-main">
-                <div className="row-title">{t.name || t.summary || t.txName || "交易"}</div>
+                <div className="row-title">{t.name || t.summary || t.txName || i18n("pages.info.cardtab.919ddbbd91c0")}</div>
                 <div className="row-sub">
-                  {t.txName ?? "交易"}
+                  {t.txName ?? i18n("pages.info.cardtab.919ddbbd91c0")}
                   {t.address ? ` · ${t.address}` : ""}
                 </div>
               </div>

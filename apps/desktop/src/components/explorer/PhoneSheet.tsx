@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 手机底部抽屉的拖动把手 + 惯性吸附（seeking 两档：0.6vh / 0.94vh）。
  *
@@ -110,6 +111,8 @@ export function PhoneSheetGrip({
   label: string;
   gripProps: SheetGripProps;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <div className="ex-sheet-grip" role="separator" aria-label={label} tabIndex={0} {...gripProps}>
       <i className="ex-sheet-grip-pill" aria-hidden="true" />

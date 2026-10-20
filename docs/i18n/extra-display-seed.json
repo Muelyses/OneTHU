@@ -1,0 +1,6 @@
+{
+  "components.livetiles.teachingWeek": {
+    "zh": "第 {week} 教学周 · ",
+    "en": "Week {week} · "
+  }
+}

@@ -1,3 +1,4 @@
+import { getLocale, subscribeLocale, t as i18n } from "../i18n/index.js";
 /**
  * 小组件运行时：数据变化 → 按「每一块」重算内容 → 推给原生重画。
  *
@@ -27,6 +28,7 @@ import {
 } from "./widgetInstances.js";
 import type { ResolvedInstance } from "./widgetSource.js";
 import { createSyncer } from "./displaySyncer.js";
+import { buildWidgetLocale } from "./widgetText.js";
 
 /** 桌面上的一块小组件（原生 AppWidgetManager 报回） */
 export interface WidgetInstanceInfo {
@@ -79,6 +81,9 @@ export function gridCapacity(w: number, h: number): number {
 }
 
 export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
+  let stopped = false;
+  let localeGeneration = 0;
+  let queue = Promise.resolve();
   let last: WidgetSnapshot | null = null;
   let lastContents: Record<string, WidgetInstanceContent> = {};
   const icon = deps.iconPng ?? atomIconPng;
@@ -88,7 +93,7 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     if (binding.kind === "today" || !resolved) return today;
     if (resolved.kind === "detail") {
       return buildDetailSnapshot({
-        title: resolved.title, rows: resolved.rows, footer: resolved.footer,
+        language: today, title: resolved.title, rows: resolved.rows, footer: resolved.footer,
         target: resolved.target, now,
         // 候选行给足：原生 fitRows(h) 按真实高度铺满——矮的只显示一两行，拉长的全铺上
         // （校园卡流水这类「越长越有用」的内容靠这个生效）
@@ -100,10 +105,10 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
       for (const it of resolved.items) {
         items.push({ label: it.label, icon: (await icon(it.ref, 72)) ?? undefined, target: it.target });
       }
-      return buildGridSnapshot({ title: resolved.title, items, target: resolved.target, now });
+      return buildGridSnapshot({ language: today, title: resolved.title, items, target: resolved.target, now });
     }
     return buildShortcutSnapshot({
-      label: resolved.label, sub: resolved.sub, icon: (await icon(resolved.ref, 96)) ?? undefined,
+      language: today, label: resolved.label, sub: resolved.sub, icon: (await icon(resolved.ref, 96)) ?? undefined,
       target: resolved.target, now,
     });
   }
@@ -112,8 +117,11 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     inputs: { schedule: PlanScheduleEntry[]; homework: PlanHomework[]; events?: PlanEventEntry[] | null },
     now: number,
   ): Promise<boolean> {
-    if (!deps.backendAvailable) return false;
+    if (stopped || !deps.backendAvailable) return false;
+    const generation = localeGeneration;
+    const language = buildWidgetLocale();
     const today = buildWidgetSnapshot({
+      language,
       schedule: inputs.schedule,
       homework: inputs.homework,
       events: inputs.events,
@@ -158,7 +166,7 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     for (const s of collectWidgetSlots()) {
       if (!s?.slot) continue;
       slots[String(s.slot)] = {
-        title: String(s.title ?? "插件小组件"),
+        title: String(s.title ?? i18n("state.widgetruntime.10243e85ea3c")),
         rows: (s.rows ?? []).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
         footer: String(s.footer ?? ""),
         target: String(s.target ?? ""),
@@ -171,20 +179,23 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
       const used = Object.keys(slots).length;
       if (used < 3) {
         slots[String(used + 1)] = {
-          title: String(pw.title || "自定义"),
+          title: String(pw.title || i18n("state.widgetruntime.4eafa9e925b3")),
           rows: pw.rows.map((r) => ({ text: String(r.text), sub: r.sub ? String(r.sub) : undefined })),
-          footer: "自定义",
+          footer: i18n("state.widgetruntime.4eafa9e925b3"),
           target: "today",
         };
       }
     }
 
+    if (stopped || generation !== localeGeneration || language.locale !== getLocale()) return false;
+    // Slots retain user/plugin-authored text; only native time recomputation uses this dictionary.
+    const localizedSlots = Object.fromEntries(Object.entries(slots).map(([key, value]) => [key, { ...value, ...language }]));
     try {
       const raw = (await deps.invoke("widget_push", {
-        snapshot: serializeWidgetPush({ instances: contents, slots, prune: insts !== null }),
+        snapshot: serializeWidgetPush({ ...language, instances: contents, slots: localizedSlots, prune: insts !== null }),
       })) as Record<string, unknown> | null;
       const ok = raw?.ok === true;
-      if (ok) {
+      if (ok && !stopped && generation === localeGeneration) {
         last = today;
         lastContents = contents;
       }
@@ -201,11 +212,19 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     collect: deps.collect,
     subscribe: deps.subscribe,
     run: async (inputs, now) => {
-      lastOk = await apply(inputs, now);
+      // Serialize native writes: an older in-flight push must finish before the new locale push.
+      const next = queue.then(async () => { lastOk = await apply(inputs, now); });
+      queue = next.catch(() => undefined);
+      await next;
     },
     debounceMs: deps.debounceMs,
     tickMs: deps.tickMs,
     onError: deps.onError,
+  });
+
+  const offLocale = subscribeLocale(() => {
+    localeGeneration++;
+    void syncer.syncNow().catch(e => deps.onError?.(String(e).slice(0, 160)));
   });
 
   return {
@@ -215,6 +234,6 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     },
     snapshot: () => last,
     contents: () => lastContents,
-    stop: () => syncer.stop(),
+    stop: () => { stopped = true; localeGeneration++; offLocale(); syncer.stop(); },
   };
 }

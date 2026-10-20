@@ -1,0 +1,750 @@
+{
+  "messages": {
+    "lib.pptxrender.5547406e74d1": {
+      "key": "lib.pptxrender.5547406e74d1",
+      "source": "图片过大未渲染",
+      "zh": "图片过大未渲染",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 580,
+          "context": "known ? \"图片过大未渲染\" : \"图片（格式不支持）\""
+        }
+      ]
+    },
+    "lib.pptxrender.e957a1c1958c": {
+      "key": "lib.pptxrender.e957a1c1958c",
+      "source": "图片（格式不支持）",
+      "zh": "图片（格式不支持）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 580,
+          "context": "known ? \"图片过大未渲染\" : \"图片（格式不支持）\""
+        }
+      ]
+    },
+    "lib.pptxrender.8cb443ab8379": {
+      "key": "lib.pptxrender.8cb443ab8379",
+      "source": "图表",
+      "zh": "图表",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 604,
+          "context": "isChart ? \"图表\" : isDgm ? \"SmartArt\" : \"对象\""
+        }
+      ]
+    },
+    "lib.pptxrender.53f92c063963": {
+      "key": "lib.pptxrender.53f92c063963",
+      "source": "对象",
+      "zh": "对象",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 604,
+          "context": "isDgm ? \"SmartArt\" : \"对象\""
+        }
+      ]
+    },
+    "lib.tts.56b01b7faa9d": {
+      "key": "lib.tts.56b01b7faa9d",
+      "source": " （代码略） ",
+      "zh": " （代码略） ",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 242,
+          "context": "s.replace(/```[\\s\\S]*?```/g, \" （代码略） \")"
+        }
+      ]
+    },
+    "lib.tts.305378ddd2b8": {
+      "key": "lib.tts.305378ddd2b8",
+      "source": "链接",
+      "zh": "链接",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 246,
+          "context": "s.replace(/https?:\\/\\/[^\\s，。；）)]+/g, \"链接\")"
+        }
+      ]
+    },
+    "lib.tts.c031b065a3a3": {
+      "key": "lib.tts.c031b065a3a3",
+      "source": "……（内容较长，剩下的看屏幕吧）",
+      "zh": "……（内容较长，剩下的看屏幕吧）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 258,
+          "context": "(cut > max * 0.5 ? head.slice(0, cut + 1) : head) + \"……（内容较长，剩下的看屏幕吧）\""
+        }
+      ]
+    },
+    "lib.tts.9138d2ecd64e": {
+      "key": "lib.tts.9138d2ecd64e",
+      "source": "引擎默认音色",
+      "zh": "引擎默认音色",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 266,
+          "context": "return \"引擎默认音色\";"
+        }
+      ]
+    },
+    "plugins.loader.66e63df3fb0a": {
+      "key": "plugins.loader.66e63df3fb0a",
+      "source": "主题插件须导出 theme: ThemeDef（或另加 default(ctx) 提供命令）",
+      "zh": "主题插件须导出 theme: ThemeDef（或另加 default(ctx) 提供命令）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/loader.ts",
+          "line": 85,
+          "context": "isTheme\n      ? \"主题插件须导出 theme: ThemeDef（或另加 default(ctx) 提供命令）\"\n      : \"插件须导出 default(ctx) 激活函数\""
+        }
+      ]
+    },
+    "plugins.loader.d87b3e6576de": {
+      "key": "plugins.loader.d87b3e6576de",
+      "source": "插件须导出 default(ctx) 激活函数",
+      "zh": "插件须导出 default(ctx) 激活函数",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/loader.ts",
+          "line": 86,
+          "context": "isTheme\n      ? \"主题插件须导出 theme: ThemeDef（或另加 default(ctx) 提供命令）\"\n      : \"插件须导出 default(ctx) 激活函数\""
+        }
+      ]
+    },
+    "plugins.pluginwidgets.10243e85ea3c": {
+      "key": "plugins.pluginwidgets.10243e85ea3c",
+      "source": "插件小组件",
+      "zh": "插件小组件",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/pluginWidgets.ts",
+          "line": 134,
+          "context": "def.title ?? def.pluginName ?? \"插件小组件\""
+        },
+        {
+          "file": "apps/desktop/src/plugins/pluginWidgets.ts",
+          "line": 134,
+          "context": "String(def.title ?? def.pluginName ?? \"插件小组件\").trim() || \"插件小组件\""
+        }
+      ]
+    },
+    "pages.plugins.1b568ba90ae3": {
+      "key": "pages.plugins.1b568ba90ae3",
+      "source": "选择插件文件夹内的 manifest.json",
+      "zh": "选择插件文件夹内的 manifest.json",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1414,
+          "context": "title: \"选择插件文件夹内的 manifest.json\""
+        }
+      ]
+    },
+    "lib.usevaultreceive.52099bc955e2": {
+      "key": "lib.usevaultreceive.52099bc955e2",
+      "source": "接收分享口令",
+      "zh": "接收分享口令",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/useVaultReceive.ts",
+          "line": 14,
+          "context": "openFormModal('接收分享口令', [{ key: 'code', label: i18n(\"lib.usevaultreceive.2d15367c7b10\"), kind: 'textarea', required: true }])"
+        }
+      ]
+    },
+    "lib.usevaultreceive.f4fdedae07d4": {
+      "key": "lib.usevaultreceive.f4fdedae07d4",
+      "source": "接收失败，请重试",
+      "zh": "接收失败，请重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/useVaultReceive.ts",
+          "line": 18,
+          "context": "e instanceof Error ? e.message : '接收失败，请重试'"
+        }
+      ]
+    },
+    "lib.usevaultreceive.669e25e96db0": {
+      "key": "lib.usevaultreceive.669e25e96db0",
+      "source": "扫码失败，请换一张清晰的二维码图片",
+      "zh": "扫码失败，请换一张清晰的二维码图片",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/useVaultReceive.ts",
+          "line": 24,
+          "context": "e instanceof Error ? e.message : '扫码失败，请换一张清晰的二维码图片'"
+        }
+      ]
+    },
+    "lib.vaultremote.0e41e88fae37": {
+      "key": "lib.vaultremote.0e41e88fae37",
+      "source": "已缓存到暂存箱云盘：{title}",
+      "zh": "已缓存到暂存箱云盘：{title}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "title"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/vaultRemote.ts",
+          "line": 53,
+          "context": "cached.ok ? `已缓存到暂存箱云盘：${title}` : `已缓存到暂存箱；云盘备份失败：${cached.reason ?? \"稍后重试\"}`"
+        }
+      ]
+    },
+    "lib.vaultremote.7b0fe85cc2ee": {
+      "key": "lib.vaultremote.7b0fe85cc2ee",
+      "source": "稍后重试",
+      "zh": "稍后重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/vaultRemote.ts",
+          "line": 53,
+          "context": "cache failure reason fallback"
+        }
+      ]
+    },
+    "lib.vaultremote.c2ffc377da9f": {
+      "key": "lib.vaultremote.c2ffc377da9f",
+      "source": "已缓存到暂存箱；云盘备份失败：{error}",
+      "zh": "已缓存到暂存箱；云盘备份失败：{error}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "cached.reason ?? i18n(\"lib.vaultremote.7b0fe85cc2ee\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/vaultRemote.ts",
+          "line": 53,
+          "context": "cached.ok ? `已缓存到暂存箱云盘：${title}` : `已缓存到暂存箱；云盘备份失败：${cached.reason ?? \"稍后重试\"}`"
+        }
+      ]
+    },
+    "components.vault.vaultdrag.6789a190a816": {
+      "key": "components.vault.vaultdrag.6789a190a816",
+      "source": "内容交接失败，请重试",
+      "zh": "内容交接失败，请重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 137,
+          "context": "error instanceof Error ? error.message : \"内容交接失败，请重试\""
+        }
+      ]
+    },
+    "lib.yktbody.d24c10d37db0": {
+      "key": "lib.yktbody.d24c10d37db0",
+      "source": "图片",
+      "zh": "图片",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktBody.ts",
+          "line": 282,
+          "context": "return \"图片\";"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktBody.ts",
+          "line": 296,
+          "context": "return \"图片\";"
+        }
+      ]
+    },
+    "lib.xklogic.8a480b042260": {
+      "key": "lib.xklogic.8a480b042260",
+      "source": "(已有体育课)",
+      "zh": "(已有体育课)",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/xklogic.ts",
+          "line": 514,
+          "context": "coveredBy = \"(已有体育课)\""
+        },
+        {
+          "file": "apps/desktop/src/lib/xklogic.ts",
+          "line": 515,
+          "context": "coveredBy = \"(已有体育课)\""
+        }
+      ]
+    },
+    "lib.xklogic.d78be007f184": {
+      "key": "lib.xklogic.d78be007f184",
+      "source": "(英语进阶读写)",
+      "zh": "(英语进阶读写)",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/xklogic.ts",
+          "line": 518,
+          "context": "coveredBy = \"(英语进阶读写)\""
+        }
+      ]
+    },
+    "lib.xklogic.2b7a88e2d1e1": {
+      "key": "lib.xklogic.2b7a88e2d1e1",
+      "source": "(第二外国语替代)",
+      "zh": "(第二外国语替代)",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/xklogic.ts",
+          "line": 519,
+          "context": "coveredBy = \"(第二外国语替代)\""
+        }
+      ]
+    },
+    "lib.xklogic.bf81401ed39e": {
+      "key": "lib.xklogic.bf81401ed39e",
+      "source": "(英语阅读写作/听说交流)",
+      "zh": "(英语阅读写作/听说交流)",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/xklogic.ts",
+          "line": 522,
+          "context": "coveredBy = \"(英语阅读写作/听说交流)\""
+        }
+      ]
+    },
+    "memory.format.7ba456c0f242": {
+      "key": "memory.format.7ba456c0f242",
+      "source": "疑似 LLM API Key（sk-…）",
+      "zh": "疑似 LLM API Key（sk-…）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 248,
+          "context": "what: \"疑似 LLM API Key（sk-…）\""
+        }
+      ]
+    },
+    "memory.format.6b1a70ac9eb1": {
+      "key": "memory.format.6b1a70ac9eb1",
+      "source": "疑似 GitHub Token",
+      "zh": "疑似 GitHub Token",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 249,
+          "context": "what: \"疑似 GitHub Token\""
+        }
+      ]
+    },
+    "memory.format.9ba2145bd66a": {
+      "key": "memory.format.9ba2145bd66a",
+      "source": "疑似 HTTP Bearer Token",
+      "zh": "疑似 HTTP Bearer Token",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 250,
+          "context": "what: \"疑似 HTTP Bearer Token\""
+        }
+      ]
+    },
+    "memory.format.22ac782381ea": {
+      "key": "memory.format.22ac782381ea",
+      "source": "连续 15+ 位数字（疑似证件号/卡号）",
+      "zh": "连续 15+ 位数字（疑似证件号/卡号）",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 251,
+          "context": "what: \"连续 15+ 位数字（疑似证件号/卡号）\""
+        }
+      ]
+    },
+    "memory.format.d79be29d7fb5": {
+      "key": "memory.format.d79be29d7fb5",
+      "source": "疑似验证码",
+      "zh": "疑似验证码",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 252,
+          "context": "what: \"疑似验证码\""
+        }
+      ]
+    },
+    "memory.format.ce72f2106e4f": {
+      "key": "memory.format.ce72f2106e4f",
+      "source": "疑似明文密码",
+      "zh": "疑似明文密码",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 253,
+          "context": "what: \"疑似明文密码\""
+        }
+      ]
+    },
+    "state.cloudcal.6b8367664e76": {
+      "key": "state.cloudcal.6b8367664e76",
+      "source": "日历存档读取失败，请重试",
+      "zh": "日历存档读取失败，请重试",
+      "en": "",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 160,
+          "context": "lastError = \"日历存档读取失败，请重试\""
+        }
+      ]
+    },
+    "plugins.types.0a267e07b231": {
+      "key": "plugins.types.0a267e07b231",
+      "source": "插件未获授权「{permission}」，无法执行：{action}",
+      "zh": "插件未获授权「{permission}」，无法执行：{action}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "permission",
+          "expression": "permission"
+        },
+        {
+          "name": "action",
+          "expression": "what"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 792,
+          "context": "super(`插件未获授权「${permission}」，无法执行：${what}`)"
+        }
+      ]
+    },
+    "state.wallpaper.8bd1eebd6969": {
+      "key": "state.wallpaper.8bd1eebd6969",
+      "source": "壁纸库满员（{limit} 张），删一张再入库",
+      "zh": "壁纸库满员（{limit} 张），删一张再入库",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "limit",
+          "expression": "LIBRARY_MAX"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 307,
+          "context": "return `壁纸库满员（${LIBRARY_MAX} 张），删一张再入库`;"
+        }
+      ]
+    },
+    "state.hwremind.8d2f9af2212a": {
+      "key": "state.hwremind.8d2f9af2212a",
+      "source": "{count} 分钟",
+      "zh": "{count} 分钟",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "m"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/hwRemind.ts",
+          "line": 132,
+          "context": "return `${m} 分钟`;"
+        }
+      ]
+    },
+    "state.hwremind.1a009fb8a332": {
+      "key": "state.hwremind.1a009fb8a332",
+      "source": "{count} 天",
+      "zh": "{count} 天",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "m / 1440"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/hwRemind.ts",
+          "line": 133,
+          "context": "return `${m / 1440} 天`;"
+        }
+      ]
+    },
+    "state.hwremind.1789166f275b": {
+      "key": "state.hwremind.1789166f275b",
+      "source": "{count} 小时",
+      "zh": "{count} 小时",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "Math.round(m / 60)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/hwRemind.ts",
+          "line": 134,
+          "context": "return `${Math.round(m / 60)} 小时`;"
+        }
+      ]
+    },
+    "lib.update.c459fb3f09e6": {
+      "key": "lib.update.c459fb3f09e6",
+      "source": "新版本 {version} 可用：设置 → 关于 查看详情",
+      "zh": "新版本 {version} 可用：设置 → 关于 查看详情",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "version",
+          "expression": "rel.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/update.ts",
+          "line": 102,
+          "context": "onToast(`新版本 ${rel.name} 可用：设置 → 关于 查看详情`)"
+        }
+      ]
+    },
+    "state.data.3361c2cc7a9e": {
+      "key": "state.data.3361c2cc7a9e",
+      "source": "保留 {count} 门（两边的交集，不动）",
+      "zh": "保留 {count} 门（两边的交集，不动）",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "kept"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1857,
+          "context": "[\n      `保留 ${kept} 门（两边的交集，不动）`,\n      toAdd.length ? `新选 ${toAdd.length} 门：${toAdd.map((c) => c.name).join(\"、\")}` : null,\n      toDrop.length ? `退掉 ${toDrop.length} 门：${toDrop.map((c) => c.name).join(\"、\")}` : null,\n    ]"
+        }
+      ]
+    },
+    "state.data.9d6825c38899": {
+      "key": "state.data.9d6825c38899",
+      "source": "新选 {count} 门：{courses}",
+      "zh": "新选 {count} 门：{courses}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "toAdd.length"
+        },
+        {
+          "name": "courses",
+          "expression": "toAdd.map((c) => c.name).join(\"、\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1858,
+          "context": "toAdd.length ? `新选 ${toAdd.length} 门：${toAdd.map((c) => c.name).join(\"、\")}` : null"
+        }
+      ]
+    },
+    "state.data.661a5ba1d0ca": {
+      "key": "state.data.661a5ba1d0ca",
+      "source": "退掉 {count} 门：{courses}",
+      "zh": "退掉 {count} 门：{courses}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "toDrop.length"
+        },
+        {
+          "name": "courses",
+          "expression": "toDrop.map((c) => c.name).join(\"、\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1859,
+          "context": "toDrop.length ? `退掉 ${toDrop.length} 门：${toDrop.map((c) => c.name).join(\"、\")}` : null"
+        }
+      ]
+    },
+    "state.vaultsharelog.7aec0d4e2435": {
+      "key": "state.vaultsharelog.7aec0d4e2435",
+      "source": "{count} 项",
+      "zh": "{count} 项",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "e.scope.total"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShareLog.ts",
+          "line": 94,
+          "context": "scopeLabel total"
+        }
+      ]
+    },
+    "state.vaultsharelog.f9aa135776f2": {
+      "key": "state.vaultsharelog.f9aa135776f2",
+      "source": "{count} 项 · {contents}",
+      "zh": "{count} 项 · {contents}",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "e.scope.total"
+        },
+        {
+          "name": "contents",
+          "expression": "parts"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShareLog.ts",
+          "line": 94,
+          "context": "scopeLabel count with type details"
+        }
+      ]
+    },
+    "lib.yktbody.e4eb68f7fdd0": {
+      "key": "lib.yktbody.e4eb68f7fdd0",
+      "source": "{name}（图片加载失败）",
+      "zh": "{name}（图片加载失败）",
+      "en": "",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "\"__YKT_IMAGE_NAME__\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktBody.ts",
+          "line": 664,
+          "context": "safe JSON string -> iframe textContent image fallback"
+        }
+      ]
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 云盘自动连接（爬 profile 页的 Web API Token，自动填充，无需手动粘贴）。
  *
@@ -28,8 +29,8 @@ const CAS_LOGIN_RE = /id="sm2publicKey"|name="sm2publicKey"|name="i_pass"/;
 /** 统一认证要求二次认证（id 端 2FA） */
 const TWO_FACTOR_RE = /二次认证|双因素|二次验证|双因子|twoFactorAuthView|FIND_APPROACHES/;
 
-const TWO_FACTOR_MSG =
-  "清华统一认证要求二次认证：请在 OneTHU 里重新登录清华账号并勾选「信任此设备」，之后云盘会自动连接。";
+const twoFactorMessage = () =>
+  i18n("state.seafileauto.twoFactorRequired");
 
 /** profile HTML → 40 位访问口令（形态 A 模板/B SPA 都兼容）；WebView 回退通道共用 */
 export function extractToken(html: string): string | null {
@@ -89,13 +90,13 @@ export async function silentConnectSeafile(): Promise<AutoConnectResult> {
       log(`落确认页 → confirmIdCheckSingle（finalUrl=${r.finalUrl.slice(0, 80)}）`);
       const ok = await info.confirmIdCheckSingle(r.finalUrl).catch(() => false);
       log(`确认=${ok ? "ok" : "fail"} → 重爬 profile`);
-      if (!ok) return { ok: false, error: "统一认证确认续用失败：请稍后重试" };
+      if (!ok) return { ok: false, error: i18n("state.seafileauto.d236f74b57c1") };
       r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile");
     }
     const token = (r.plainToken && /^[0-9a-f]{40}$/i.test(r.plainToken) ? r.plainToken : "") || extractToken(r.body) || "";
     if (!token) {
       log(`页面无口令（finalUrl=${r.finalUrl.slice(0, 80)} len=${r.body.length}）`);
-      return { ok: false, error: "云盘上还没有访问口令：请先在云盘设置页生成一次，或在 OneTHU 里用窗口方式连接" };
+      return { ok: false, error: i18n("state.seafileauto.64be8fcebc0a") };
     }
     const account = await setSeafileToken(token);
     log(`云盘已静默连接：${account.name}（${account.email}）`);
@@ -190,13 +191,13 @@ async function autoConnectViaHttp(retried = false, allowRelogin = true): Promise
     // ② 真登录表单：id 会话不在 → 账密直登 id 后重走一次（零用户输入，仅已登录过时有凭据）
     if (CAS_LOGIN_RE.test(body)) {
       if (!allowRelogin) {
-        return { ok: false, error: "统一认证会话已过期：请在设置里重新登录清华账号后再连云盘" };
+        return { ok: false, error: i18n("state.seafileauto.ab0d7338c8dd") };
       }
       if (retried) {
-        return { ok: false, error: "统一认证直登后仍未通过：请在设置里重新登录清华账号" };
+        return { ok: false, error: i18n("state.seafileauto.6064f0dbf06e") };
       }
       if (!info.hasIdCredentials()) {
-        return { ok: false, error: "统一认证会话已过期（内存中没有清华密码）：请在设置里重新登录清华账号" };
+        return { ok: false, error: i18n("state.seafileauto.b096dd8cc73e") };
       }
       let direct = false;
       try {
@@ -205,26 +206,26 @@ async function autoConnectViaHttp(retried = false, allowRelogin = true): Promise
         const msg = e instanceof Error ? e.message : String(e);
         if (/二次认证|双因素|二次验证|双因子/.test(msg)) {
           log("直登 id 触发二次认证 → 请用户重新登录并信任设备");
-          return { ok: false, error: TWO_FACTOR_MSG };
+          return { ok: false, error: twoFactorMessage() };
         }
         throw e;
       }
       log(`直登 id=${direct ? "ok" : "fail"} diag=${info.lastDebug.slice(0, 160)}`);
-      if (!direct) return { ok: false, error: "统一认证直登失败：请在设置里重新登录清华账号" };
+      if (!direct) return { ok: false, error: i18n("state.seafileauto.789c9d831ceb") };
       return autoConnectViaHttp(true, allowRelogin);
     }
 
     // ③ 二次认证页（id 端 2FA，checkSingle 回包里 JS 跳转的目标）
     if (TWO_FACTOR_RE.test(body)) {
       log(`统一认证要求二次认证（len=${body.length}）`);
-      return { ok: false, error: TWO_FACTOR_MSG };
+      return { ok: false, error: twoFactorMessage() };
     }
 
     // ④ OAuth 授权确认页（云盘 thu-oauth 授权码流，首次需用户同意一次）
     if (/oauth\.tsinghua\.edu\.cn/.test(finalUrl) || /同意|授权|allow|approve/i.test(body.slice(0, 3000))) {
       return {
         ok: false,
-        error: "需要首次授权：云盘登录走清华 OAuth，请先在浏览器/App 里打开一次 cloud.tsinghua.edu.cn 并点「同意授权」（之后即静默）",
+        error: i18n("state.seafileauto.c82a95d8733d"),
       };
     }
 
@@ -232,20 +233,9 @@ async function autoConnectViaHttp(retried = false, allowRelogin = true): Promise
     const token = extractToken(body);
     if (!token) {
       log(`profile 页未找到 token（finalUrl=${finalUrl.slice(0, 80)} len=${body.length}）`);
-      // 诊断（只读，不含 token 值）：掩码 token 区域的按钮/表单/脚本接口，供定位「生成」动作
-      const i = body.search(/Auth Token|get-auth-token/i);
-      if (i >= 0) log(`token 区域片段：${body.slice(Math.max(0, i - 200), i + 900).replace(/\s+/g, " ")}`);
-      const ajax = [...body.matchAll(/["'](\/[^"'\s]*(?:ajax|api2?|token)[^"'\s]*)["']/gi)].map((m) => m[1]);
-      log(`页面接口候选：${[...new Set(ajax)].slice(0, 20).join(" ")}`);
-      // eye 按钮的处理逻辑：脚本里涉及 eye / token 的片段（40 位 hex 打码，不落真值）
-      for (const m of body.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)) {
-        const code = m[1] ?? "";
-        const k = code.search(/eye-icon|apiToken|api_token|get-auth-token|web-api/i);
-        if (k < 0) continue;
-        const snip = code.slice(Math.max(0, k - 150), k + 500).replace(/[0-9a-f]{40}/gi, "<hex40>").replace(/\s+/g, " ");
-        log(`脚本片段：${snip}`);
-      }
-      return { ok: false, error: "profile 页未找到 token（页面形态未知，请在云盘页手动粘贴一次）" };
+      // Unknown page layouts may carry credentials outside the known 40-hex token.
+      // Keep only route/length metadata; never dump profile HTML or inline scripts.
+      return { ok: false, error: i18n("state.seafileauto.0b66b052d51d") };
     }
     const account = await setSeafileToken(token);
     log(`云盘已自动连接：${account.name}（${account.email}）`);

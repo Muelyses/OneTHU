@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 好友通道（Phase 3.2 地基）：给已建共享云盘的联系人留言/传文件。
  * 通道内容先落本地消息账本；有共享云盘时同时把文字/文件写进共享文件夹，
@@ -64,10 +65,10 @@ function record(m: Omit<FriendMessage, "id" | "at">): FriendMessage {
 async function uploadText(path: string, name: string, text: string): Promise<void> {
   await ensureSeafileLoaded();
   const token = getSeafileToken();
-  if (!token) throw new Error("清华云盘未连接");
+  if (!token) throw new Error(i18n("state.friendchannel.a6e7bedde538"));
   const contact = cardsSnapshot().contacts.find((c) => c.id === path);
   const shared = contact?.shared;
-  if (!contact || !shared) throw new Error("还没有共享云盘：先在联系人上创建共享云盘");
+  if (!contact || !shared) throw new Error(i18n("state.friendchannel.b0267114fbda"));
   await invoke("seafile_mkdir", { token, repoId: shared.repoId, path: `${shared.path}/messages` });
   const b64 = bytesToBase64(new TextEncoder().encode(text));
   const local = await invoke<string>("write_temp_file", { name, dataBase64: b64 });
@@ -76,9 +77,9 @@ async function uploadText(path: string, name: string, text: string): Promise<voi
 
 async function ensureShared(contactId: string): Promise<{ repoId: string; path: string }> {
   await ensureSeafileLoaded();
-  if (!getSeafileToken()) throw new Error("清华云盘未连接：先到云盘页粘贴 token");
+  if (!getSeafileToken()) throw new Error(i18n("state.friendchannel.0507dadfda6a"));
   const contact = cardsSnapshot().contacts.find((c) => c.id === contactId);
-  if (!contact?.shared) throw new Error("还没有共享云盘：先在联系人上创建共享云盘");
+  if (!contact?.shared) throw new Error(i18n("state.friendchannel.b0267114fbda"));
   return { repoId: contact.shared.repoId, path: contact.shared.path };
 }
 
@@ -89,11 +90,11 @@ async function ensureShared(contactId: string): Promise<{ repoId: string; path: 
 export async function openBidirectionalShare(contactId: string): Promise<{ ok: boolean; reason?: string }> {
   try {
     await ensureSeafileLoaded();
-    if (!getSeafileToken()) throw new Error("清华云盘未连接");
+    if (!getSeafileToken()) throw new Error(i18n("state.friendchannel.a6e7bedde538"));
     const contact = cardsSnapshot().contacts.find((c) => c.id === contactId);
-    if (!contact?.shared) throw new Error("先创建好友共享云盘");
+    if (!contact?.shared) throw new Error(i18n("state.friendchannel.c9a7838f815d"));
     const email = ((contact.card as { cloudEmail?: string }).cloudEmail ?? "").trim();
-    if (!email || !email.includes("@")) throw new Error("对方名片没有云盘邮箱：请对方编辑名片填写后再试");
+    if (!email || !email.includes("@")) throw new Error(i18n("state.friendchannel.6c6de71e6e09"));
     if (contact.shared.sharedWith?.email === email) return { ok: true };
     await seafileShareFolderToUser(contact.shared.repoId, contact.shared.path, email, "rw");
     setContactShare(contactId, { ...contact.shared, sharedWith: { email, permission: "rw", at: Date.now() } });
@@ -106,7 +107,7 @@ export async function openBidirectionalShare(contactId: string): Promise<{ ok: b
 /** 留言：本地记账；有共享云盘时同步写一份 txt，对方通过共享链接可读。 */
 export async function sendFriendText(contactId: string, text: string): Promise<{ ok: boolean; reason?: string }> {
   const t = String(text ?? "").trim().slice(0, 2000);
-  if (!t) return { ok: false, reason: "留言不能为空" };
+  if (!t) return { ok: false, reason: i18n("state.friendchannel.596d6dbf6630") };
   let cloudPath: string | undefined;
   try {
     const shared = await ensureShared(contactId);
@@ -126,7 +127,7 @@ export async function sendFriendText(contactId: string, text: string): Promise<{
 export async function sendFriendFile(contactId: string, staged: { name: string; localPath: string; size?: number }): Promise<{ ok: boolean; reason?: string; cloudPath?: string }> {
   try {
     const shared = await ensureShared(contactId);
-    if (!staged.localPath) throw new Error("文件没有本地暂存路径（浏览器环境请先下载/选择可读文件）");
+    if (!staged.localPath) throw new Error(i18n("state.friendchannel.e6e1b1bf2d70"));
     await invoke("seafile_mkdir", { token: getSeafileToken(), repoId: shared.repoId, path: `${shared.path}/messages` });
     const safe = staged.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 120);
     await invoke("seafile_upload", { token: getSeafileToken(), repoId: shared.repoId, parentDir: `${shared.path}/messages`, localPath: staged.localPath, replace: true });

@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Badge, Grow, Input } from "@onethu/gui";
 /**
  * OH 胶囊条（dev-explorer 二轮定稿）：**白色长条**，横在底栏中央、两端快贴住标签页与 OneGO。
@@ -41,9 +42,11 @@ import "./ohCapsuleScope.js"; // OH 专属档位登记进 OneGUI 管线（scope:
 const HOLD_MS = 450;
 /** 上划取消位移（与 ChatDock 的 CANCEL_PULL_PX 同口径） */
 const CANCEL_PULL_PX = 110;
-const PLACEHOLDER = "搜索或问小OH";
+const placeholderText = (): string => i18n("components.explorer.ohcapsule.searchPlaceholder");
 
 export function OhCapsule(): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const prefs = useExplorerPrefs();
   const badge = useDockBadge();
   const ui = useDockUi();
@@ -54,7 +57,7 @@ export function OhCapsule(): React.ReactNode {
      无任务时回落静态占位。黑色显眼（--text-1），是内容不是灰暗示。 */
   const islandText = useIslandText();
   const smartText = islandText && islandText !== ISLAND_DEFAULT_TEXT ? islandText : null;
-  const idleText = smartText ?? PLACEHOLDER;
+  const idleText = smartText ?? placeholderText();
   const [pressing, setPressing] = useState(false);
   const [rebounding, setRebounding] = useState(false);
   const reboundTimer = useRef<number | null>(null);
@@ -172,8 +175,8 @@ export function OhCapsule(): React.ReactNode {
         (held || voiceOn ? " is-hold is-voice" : "") +
         (isOpen ? " is-open" : "")
       }
-      aria-label={voiceOn ? (ui.hint || "松开直发，上划取消") : isOpen ? "搜索或问小OH" : "搜索与 OH（点击打开，长按说话）"}
-      title={isOpen ? undefined : "点击打开搜索 / OH；长按说话"}
+      aria-label={voiceOn ? (ui.hint || i18n("components.explorer.ohcapsule.81f0f45f7ad2")) : isOpen ? i18n("components.explorer.ohcapsule.3e11141c195b") : i18n("components.explorer.ohcapsule.d134f5438ae2")}
+      title={isOpen ? undefined : i18n("components.explorer.ohcapsule.245c82d696b4")}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -193,7 +196,7 @@ export function OhCapsule(): React.ReactNode {
         /* 展开态：真输入框——搜索态=检索词、对话态=消息草稿，与上方窗一个连续交互体。
            className="ohx-input" 挂回 OG Input 的壳上：Explorer-ui 契约的 .ohx-input 规则
            （去壳框/满宽）重新生效，同时 pointerDown 的 closest(".ohx-input") 守卫恢复可判 */
-        <Input className="ohx-input" autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={ui.mode === "search" ? PLACEHOLDER : ui.mode === "xiaoda" ? "问清小搭…" : "问小OH…"} aria-label={ui.mode === "xiaoda" ? "问清小搭" : "搜索或问小OH"} />
+        <Input className="ohx-input" autoFocus value={draft} onChange={(value) => setDockInputValue(value)} onKeyDown={onInputKeyDown} placeholder={ui.mode === "search" ? placeholderText() : ui.mode === "xiaoda" ? i18n("components.explorer.ohcapsule.c9ec33563d39") : i18n("components.explorer.ohcapsule.afa493184dbe")} aria-label={ui.mode === "xiaoda" ? i18n("components.explorer.ohcapsule.4d403cab80e6") : i18n("components.explorer.ohcapsule.3e11141c195b")} />
       ) : (
         <span className="ohx-capsule-ph">{idleText}</span>
       )}
@@ -205,6 +208,8 @@ export function OhCapsule(): React.ReactNode {
 
 /** 胶囊里常驻的一星（像浏览器地址栏的星）：跟随当前激活标签；搜索展开时隐藏。状态机同 OnePage 一星 */
 function CapsuleStar(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { activeId } = useExplorerState();
   const tab = getTab(activeId);
   const isPage = !!tab && tab.kind === "page";
@@ -221,9 +226,9 @@ function CapsuleStar(): ReactNode {
       role="button"
       tabIndex={0}
       className={"ohx-star" + (lit ? " is-lit" : "")}
-      aria-label={lit ? "取消星标" : "收藏为 OnePage"}
+      aria-label={lit ? i18n("components.explorer.ohcapsule.825750d712cc") : i18n("components.explorer.ohcapsule.009a73342eab")}
       aria-pressed={lit}
-      title={lit ? "取消星标：删除该 OnePage" : "一星：把当前页面收藏成 OnePage"}
+      title={lit ? i18n("components.explorer.ohcapsule.cb013b74bfc3") : i18n("components.explorer.ohcapsule.82ae0981093e")}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => {
         stop(e);

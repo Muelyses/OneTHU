@@ -4,9 +4,10 @@
  *   429 不要原文气泡 / 删掉 OH 自己的输入框）
  */
 import fs from "node:fs";
+import { readUiSource } from "./i18n/source-view.mjs";
 import assert from "node:assert/strict";
 
-const read = (p) => fs.readFileSync(new URL("../" + p, import.meta.url), "utf8");
+const read = (p) => readUiSource(new URL("../" + p, import.meta.url), "utf8");
 const gui = read("packages/gui/src/gui.css");
 const phone = read("packages/gui/src/styles/phone.css");
 const wbCss = read("packages/gui/src/recipes/workbench.css");
@@ -33,7 +34,7 @@ assert.ok(/notice\?: "rate-limit"/.test(chat), "429 动作卡消息类型缺失"
 assert.ok(/重试这条消息/.test(chat) && /设置自己的 API/.test(chat), "429 动作卡按钮缺失");
 assert.ok(!/ensureMadModelToken/.test(chat), "429 不能通过续签登录凭证来恢复额度");
 assert.ok(/查看服务响应/.test(chat), "限流卡必须保留服务端真实原因");
-assert.ok(/goOhRow\("模型 \/ MCP \/ 日志", "advanced"\)/.test(chat), "「设置自己的 API」没有跳到 OH 高级配置");
+assert.ok(/goOhRow\("模型MCP日志", "advanced"\)/.test(chat), "「设置自己的 API」没有跳到 OH 高级配置的稳定锚点");
 assert.ok(!/aria-label="给小OH发消息"/.test(chat), "OH 面板内不应再有独立输入框（胶囊是唯一输入口）");
 assert.ok(/\.dock-notice \{/.test(wbCss), "429 动作卡共享样式缺失");
 assert.ok(!/\.dock-notice \{/.test(ohCss), "429 动作卡不应回流到旧应用样式表");

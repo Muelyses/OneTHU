@@ -1,3 +1,5 @@
+import { courseDisplayName } from "../../lib/learnLanguage.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchAttachment } from "../../lib/vaultCatch.js";
 import { Input } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -25,6 +27,8 @@ import type { HomeworkPageDetail, LearnAttachment } from "@onethu/core";
 type DescState = "idle" | "skip" | "loading" | "ok" | "error";
 
 export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdProp }: { courseId?: string; itemId?: string } = {}) {
+  const uiLocale = useUiLocale();
+
   useLearnNavSemester();
   const { navParams, navigate } = useApp();
 
@@ -45,7 +49,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
   const cameraRef = useRef<HTMLInputElement>(null);
   /** 该作业是否已被服务端判定为必须带附件（附件区显示提示；提交前预检） */
   const [needFileHint, setNeedFileHint] = useState(false);
-  const isAndroid = useMemo(() => isAndroidNavigator(navigator), []);
+  const isAndroid = useMemo(() => isAndroidNavigator(navigator), [uiLocale]);
   const subTouched = useRef(false); // 用户改过输入框后不再用上次提交内容预填
   /* 动作分离（用户语义）：提交恒走 isDeleted=0（正文+所选新附件一次覆盖）；
      撤回附件是附件区里的独立按钮、独立请求（isDeleted=1），与提交互不掺和 */
@@ -60,13 +64,13 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
 
   const h = useMemo(
     () => data?.homework.find((x) => x.courseId === courseId && x.id === itemId) ?? null,
-    [data, courseId, itemId],
+    [uiLocale, data, courseId, itemId],
   );
   // 该作业是否被服务端判定过「必须带附件」：进页时按本地记忆回填
   useEffect(() => {
     setNeedFileHint(isNeedFile(h?.id ?? ""));
   }, [h?.id]);
-  const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [data, courseId]);
+  const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [uiLocale, data, courseId]);
 
   // 说明懒加载：列表 content 为空时经 learn.getHomeworkDetail(baseId) 兜底（thu-learn-lib 同款接口）
   useEffect(() => {
@@ -110,9 +114,9 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
     setDlHint(null);
     try {
       const path = await downloadLearnUrl(a.downloadUrl, a.name || `learn-attachment-${a.id}`);
-      setDlHint({ text: `已下载到：${path}`, path });
+      setDlHint({ text: i18n("pages.learn.assignmentdetailpage.2d2ab24375ce", { path: String(path) }), path });
     } catch (err) {
-      setDlHint({ text: "下载失败：" + explainNetworkError(err) });
+      setDlHint({ text: i18n("pages.learn.assignmentdetailpage.90f9253844e7") + explainNetworkError(err) });
     } finally {
       setDlBusy("");
     }
@@ -141,15 +145,15 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
   if (!h) {
     return (
       <>
-        <PageHead title="作业详情" actions={<BackButton to={navParams?.from ?? "learn-assignments"} courseId={navParams?.courseId} courseTab="assignments" />} />
+        <PageHead title={i18n("pages.learn.assignmentdetailpage.d4af30a738c7")} actions={<BackButton to={navParams?.from ?? "learn-assignments"} courseId={navParams?.courseId} courseTab="assignments" />} />
         {state === "loading" ? (
           <SkeletonRows rows={4} />
         ) : state === "error" ? (
           <ErrorNote text={error ?? ""} onRetry={() => void reload()} />
         ) : (
           <Card><Empty
-            text="未找到该作业，可能数据已刷新，请返回列表重试。"
-            action={<Btn variant="ghost" onClick={() => navigate("learn")}>回网络学堂</Btn>}
+            text={i18n("pages.learn.assignmentdetailpage.2cf55742e084")}
+            action={<Btn variant="ghost" onClick={() => navigate("learn")}>{i18n("pages.learn.assignmentdetailpage.c9521a639f12")}</Btn>}
           /></Card>
         )}
       </>
@@ -164,17 +168,17 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
   })();
   const chips: Array<{ text: string; cls: string }> = [];
   if (h.completionType !== undefined) {
-    chips.push({ text: h.completionType === 2 ? "小组完成" : "个人完成", cls: "chip-gray" });
+    chips.push({ text: h.completionType === 2 ? i18n("pages.learn.assignmentdetailpage.a51ed50447a4") : i18n("pages.learn.assignmentdetailpage.2299fee95921"), cls: "chip-gray" });
   }
   // 注意：没有「提交方式」字段（学生端列表接口不存在该字段），不做线上/线下断言。
 
   // 四类附件（thu-learn-lib parseHomeworkAtUrl 文档序）：作业/答案/我的提交/批改
   const attGroups: Array<{ label: string; a?: LearnAttachment }> = page
     ? [
-        { label: "作业附件", a: page.attachment },
-        { label: "答案附件", a: page.answerAttachment },
-        { label: "我的提交", a: page.submittedAttachment },
-        { label: "批改附件", a: page.gradeAttachment },
+        { label: i18n("pages.learn.assignmentdetailpage.d262ea7dc366"), a: page.attachment },
+        { label: i18n("pages.learn.assignmentdetailpage.dd6352fd16c7"), a: page.answerAttachment },
+        { label: i18n("pages.learn.assignmentdetailpage.1ebfdb88cf58"), a: page.submittedAttachment },
+        { label: i18n("pages.learn.assignmentdetailpage.13a5b5219771"), a: page.gradeAttachment },
       ]
     : [];
   const attFound = attGroups.filter((g) => g.a);
@@ -200,7 +204,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
     const dbg = (learn.lastDebug ?? "").trim();
     if (dbg) {
       void import("../../lib/clients.js")
-        .then((m) => m.logLine(`LEARN-OPFAIL ${msg} | 现场：${dbg.slice(0, 400)}`))
+        .then((m) => m.logLine(i18n("pages.learn.assignmentdetailpage.f6343b8cf8f0", { msg: String(msg), value: String(dbg.slice(0, 400)) })))
         .catch(() => undefined);
     }
     setSubMsg(msg);
@@ -209,12 +213,12 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
   /** 提交（独立动作，恒走 isDeleted=0）：正文 + 所选新附件（若有）一次覆盖提交 */
   const doSubmit = async (): Promise<void> => {
     if (subBusy) return;
-    if (!subFile && richEmpty(subContent)) { setSubOk(false); setSubMsg("请填写提交内容或选择附件"); return; }
+    if (!subFile && richEmpty(subContent)) { setSubOk(false); setSubMsg(i18n("pages.learn.assignmentdetailpage.ffaca36e997c")); return; }
     // R21c 预检：该作业曾被服务端以「请上传附件」拒绝 → 无附件提交必再被拒，
     // 本地直接拦下（不发请求），并把原因说清楚。
     if (!subFile && isNeedFile(h.id)) {
       setSubOk(false);
-      setSubMsg("本作业要求必须带附件：请选择文件或拍照上传后再提交");
+      setSubMsg(i18n("pages.learn.assignmentdetailpage.b7d31b81f628"));
       return;
     }
     setSubBusy(true);
@@ -233,13 +237,13 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
         if (/请上传附件/.test(why)) {
           markNeedFile(h.id); // 服务端权威判定：记下来，之后本地预检拦下
           setNeedFileHint(true);
-          throw new Error("本作业要求必须带附件：请选择文件或拍照上传后再提交");
+          throw new Error(i18n("pages.learn.assignmentdetailpage.b7d31b81f628"));
         }
-        throw new Error(why || "提交未成功，请稍后重试");
+        throw new Error(why || i18n("pages.learn.assignmentdetailpage.272f3e83a699"));
       }
       clearNeedFile(h.id); // 本次带附件提交成功 → 要求以最新为准
       setSubOk(true);
-      setSubMsg("提交成功");
+      setSubMsg(i18n("pages.learn.assignmentdetailpage.205dfc7ce8cd"));
       setSubContent("");
       setSubFile(null);
       setCustomName("");
@@ -264,12 +268,12 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
         const why = r.msg ?? "";
         throw new Error(
           /请上传附件/.test(why)
-            ? "该作业要求必须带附件，网络学堂不允许只删不传——请直接选新附件提交替换"
-            : why || "撤回未成功，请稍后重试",
+            ? i18n("pages.learn.assignmentdetailpage.deeb0897ac4a")
+            : why || i18n("pages.learn.assignmentdetailpage.b45762984aa4"),
         );
       }
       setSubOk(true);
-      setSubMsg("已撤回附件");
+      setSubMsg(i18n("pages.learn.assignmentdetailpage.df26c6e8713c"));
       refreshAfterOp();
     } catch (e) {
       opFail(e);
@@ -282,7 +286,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
     <>
       <PageHead
         title={h.title}
-        meta={`${course?.name ?? "课程"} · ${fmtDateTime(h.deadline)} 截止`}
+        meta={i18n("pages.learn.assignmentdetailpage.e17b3089f7be", { value: String(courseDisplayName(course) ?? i18n("pages.learn.assignmentdetailpage.60db1afb4022")), value2: String(fmtDateTime(h.deadline)) })}
         actions={
           <>
             <BackButton to={navParams?.from ?? "learn-assignments"} courseId={navParams?.courseId} courseTab="assignments" />
@@ -290,8 +294,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               atom={{ kind: "assignment", key: enc(h.courseId, h.id, h.title, course?.name ?? "", data?.semester.id ?? "") }}
               title={h.title}
             />
-            <Btn variant="outline" onClick={() => void openExternal(h.url)} titleAttr="在系统浏览器打开">网页端打开
-            </Btn>
+            <Btn variant="outline" onClick={() => void openExternal(h.url)} titleAttr={i18n("pages.learn.assignmentdetailpage.81ce4f7cb8ae")}>{i18n("pages.learn.assignmentdetailpage.16f19a676cae")}</Btn>
           </>
         }
       />
@@ -306,21 +309,18 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
             <span key={c.text} className={`chip ${c.cls}`}>{c.text}</span>
           ))}
         </div>
-        <div className="detail-meta">
-          发布于 {fmtDateTime(h.publishTime)}
-          {h.lateDeadline ? ` · 补交截止 ${fmtDateTime(h.lateDeadline)}` : ""}
-        </div>
+        <div className="detail-meta">{i18nRich("pages.learn.assignmentdetailpage.9f7f10c2207d", { value: fmtDateTime(h.publishTime), value2: h.lateDeadline ? i18n("pages.learn.assignmentdetailpage.b05aa8be7054", { value: String(fmtDateTime(h.lateDeadline)) }) : "" })}</div>
       </Card>
 
       <Card className="detail-sec">
-        <div className="detail-sec-head">提交情况</div>
+        <div className="detail-sec-head">{i18n("pages.learn.assignmentdetailpage.c35e5710ecdb")}</div>
         <div className="kv">
-          <span>状态</span>
-          <b className={h.submitted ? "" : "t-red"}>{h.submitted ? "已提交" : "未提交"}</b>
+          <span>{i18n("pages.learn.assignmentdetailpage.6320b4a8722a")}</span>
+          <b className={h.submitted ? "" : "t-red"}>{h.submitted ? i18n("pages.learn.assignmentdetailpage.bc37a6110a07") : i18n("pages.learn.assignmentdetailpage.8032af4a590f")}</b>
         </div>
         {h.submitted && h.submitTime ? (
           <div className="kv">
-            <span>{h.lateSubmission ? "补交时间" : "提交时间"}</span>
+            <span>{h.lateSubmission ? i18n("pages.learn.assignmentdetailpage.3aaa13c526ef") : i18n("pages.learn.assignmentdetailpage.6bc352ca0ce0")}</span>
             <b>{fmtDateTime(h.submitTime)}</b>
           </div>
         ) : null}
@@ -328,29 +328,29 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
 
       {h.graded ? (
         <Card className="detail-sec">
-          <div className="detail-sec-head">批改情况</div>
-          <div className="kv"><span>成绩</span><b>{gradeLabel(h.grade) || "已批改"}</b></div>
+          <div className="detail-sec-head">{i18n("pages.learn.assignmentdetailpage.cf532be09add")}</div>
+          <div className="kv"><span>{i18n("pages.learn.assignmentdetailpage.fdcd1bd074c9")}</span><b>{gradeLabel(h.grade) || i18n("pages.learn.assignmentdetailpage.d42baf1647c8")}</b></div>
           {h.graderName ? (
-            <div className="kv"><span>批改人</span><b>{h.graderName}</b></div>
+            <div className="kv"><span>{i18n("pages.learn.assignmentdetailpage.aef634f6b580")}</span><b>{h.graderName}</b></div>
           ) : null}
           {h.gradeTime ? (
-            <div className="kv"><span>批改时间</span><b>{fmtDateTime(h.gradeTime)}</b></div>
+            <div className="kv"><span>{i18n("pages.learn.assignmentdetailpage.9bc9d4470d81")}</span><b>{fmtDateTime(h.gradeTime)}</b></div>
           ) : null}
           {h.gradeContent ? (
-            <div className="kv kv-wide"><span>批语</span><b>{h.gradeContent}</b></div>
+            <div className="kv kv-wide"><span>{i18n("pages.learn.assignmentdetailpage.6a250414e278")}</span><b>{h.gradeContent}</b></div>
           ) : null}
         </Card>
       ) : null}
 
       {(pageState !== "idle") || attFound.length ? (
         <Card className="detail-sec">
-          <div className="detail-sec-head">附件</div>
-          {pageState === "loading" ? <div className="detail-meta">正在解析附件…</div> : null}
+          <div className="detail-sec-head">{i18n("pages.learn.assignmentdetailpage.c7225dbf105e")}</div>
+          {pageState === "loading" ? <div className="detail-meta">{i18n("pages.learn.assignmentdetailpage.39d0d9a70496")}</div> : null}
           {pageState === "error" ? (
             <div className="kv kv-wide">
-              <span>附件</span>
+              <span>{i18n("pages.learn.assignmentdetailpage.c7225dbf105e")}</span>
               <span className="t-red">{pageError}</span>
-              <Btn variant="ghost" onClick={retryPage}>重试</Btn>
+              <Btn variant="ghost" onClick={retryPage}>{i18n("pages.learn.assignmentdetailpage.b8784c8dd563")}</Btn>
             </div>
           ) : null}
           {(() => {
@@ -360,7 +360,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
               return (
                 /* detail-sec 卡片左右 padding 为 0，行距由 .kv 自带——预览块须自带同样的 16px 边距 */
                 <div style={{ padding: "4px 16px 0", marginBottom: 6 }}>
-                  <div className="detail-meta" style={{ fontWeight: 600, marginBottom: 4 }}>我的提交正文</div>
+                  <div className="detail-meta" style={{ fontWeight: 600, marginBottom: 4 }}>{i18n("pages.learn.assignmentdetailpage.b18ae752b8e6")}</div>
                   <RichContent html={c} />
                 </div>
               );
@@ -371,12 +371,11 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
           {attFound.map(({ label, a }) => {
             const key = a!.id || a!.downloadUrl;
             return (
-              <div className="kv kv-wide" key={label} data-vault-catch={vaultCatchAttachment({ kind: "learn", name: a!.name || `附件 ${key}`, url: a!.downloadUrl, label })}>
+              <div className="kv kv-wide" key={label} data-vault-catch={vaultCatchAttachment({ kind: "learn", name: a!.name || i18n("pages.learn.assignmentdetailpage.4010ecf7cd09", { key: String(key) }), url: a!.downloadUrl, label })}>
                 <span>{label}</span>
-                <b>{a!.name || `附件 ${key}`}{a!.size ? `（${a!.size}）` : ""}</b>
-                <Btn variant="ghost" onClick={() => openFilePreview({ name: a!.name || `附件 ${key}`, url: a!.downloadUrl })}>预览
-                </Btn>
-                <Btn variant="ghost" disabled={dlBusy === key} onClick={() => void downloadAtt(a!)}><IconDownload width={14} height={14} />{dlBusy === key ? "下载中…" : "下载"}</Btn>
+                <b>{a!.name || i18n("pages.learn.assignmentdetailpage.4010ecf7cd09", { key: String(key) })}{a!.size ? `（${a!.size}）` : ""}</b>
+                <Btn variant="ghost" onClick={() => openFilePreview({ name: a!.name || i18n("pages.learn.assignmentdetailpage.4010ecf7cd09", { key: String(key) }), url: a!.downloadUrl })}>{i18n("pages.learn.assignmentdetailpage.13d61fea9f17")}</Btn>
+                <Btn variant="ghost" disabled={dlBusy === key} onClick={() => void downloadAtt(a!)}><IconDownload width={14} height={14} />{dlBusy === key ? i18n("pages.learn.assignmentdetailpage.bcc2333dc631") : i18n("pages.learn.assignmentdetailpage.4673a2306165")}</Btn>
               </div>
             );
           })}
@@ -392,7 +391,7 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
       ) : null}
 
       <Card className="detail-sec">
-        <div className="detail-sec-head">作业说明</div>
+        <div className="detail-sec-head">{i18n("pages.learn.assignmentdetailpage.f3be30c77097")}</div>
         {descState === "loading" ? (
           <div style={{ padding: "6px 16px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
             <div className="skeleton" style={{ height: 12, width: "78%" }} />
@@ -400,12 +399,12 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
           </div>
         ) : descState === "error" ? (
           <div className="kv kv-wide">
-            <span>说明</span>
+            <span>{i18n("pages.learn.assignmentdetailpage.4262c45dc797")}</span>
             <span className="t-red">{descError}</span>
-            <Btn variant="ghost" onClick={retryDesc}>重试</Btn>
+            <Btn variant="ghost" onClick={retryDesc}>{i18n("pages.learn.assignmentdetailpage.b8784c8dd563")}</Btn>
           </div>
         ) : (
-          <RichContent html={h.content || desc || undefined} fallback="暂无作业说明。" />
+          <RichContent html={h.content || desc || undefined} fallback={i18n("pages.learn.assignmentdetailpage.f2b212ab6bd2")} />
         )}
       </Card>
 
@@ -415,13 +414,13 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
           （如已提交后变为可再次提交/撤回附件）随重取结果即时反映。 */}
       {page?.hasSubmitForm ? (
         <Card className="detail-sec">
-          <div className="detail-sec-head">{h.submitted ? "再次提交 / 修改附件" : "提交作业"}</div>
+          <div className="detail-sec-head">{h.submitted ? i18n("pages.learn.assignmentdetailpage.bd33e412694b") : i18n("pages.learn.assignmentdetailpage.dfb054a0aec6")}</div>
           <div style={{ padding: "8px 16px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
             {/* 正文：讨论区同款 Quill 富文本编辑器（zynr 产物即 HTML，与站点提交语义一致） */}
             <RichEditor
               value={subContent}
               onChange={(html) => { subTouched.current = true; setSubContent(html); }}
-              placeholder="提交内容（可留空，附件可选）…支持格式与图片"
+              placeholder={i18n("pages.learn.assignmentdetailpage.eb587d998b72")}
               maxHeight={220}
             />
             {/* 附件区自成一体：选择/清除/自定义名/撤回（独立请求），与提交按钮无关 */}
@@ -447,43 +446,38 @@ export function AssignmentDetailPage({ courseId: courseIdProp, itemId: itemIdPro
                       e.target.value = "";
                     }}
                   />
-                  <Btn variant="outline" disabled={subBusy} titleAttr="调起后置相机拍照，拍完与选文件一样先预览再提交" onClick={() => cameraRef.current?.click()}>📷 拍照上传
-                  </Btn>
+                  <Btn variant="outline" disabled={subBusy} titleAttr={i18n("pages.learn.assignmentdetailpage.af1ceaee5c87")} onClick={() => cameraRef.current?.click()}>{i18n("pages.learn.assignmentdetailpage.1edb50ac35be")}</Btn>
                 </>
               ) : null}
               {subFile ? (
-                <span style={{ display: "inline-flex", gap: 6, alignItems: "center", color: "var(--accent)" }}>
-                  将上传：{subFile.name}
-                  <Btn variant="ghost" disabled={subBusy} onClick={() => { setSubFile(null); setCustomName(""); if (fileRef.current) fileRef.current.value = ""; }}>清除
-                  </Btn>
+                <span style={{ display: "inline-flex", gap: 6, alignItems: "center", color: "var(--accent)" }}>{i18nRich("pages.learn.assignmentdetailpage.4a01c31b199b", { name: subFile.name })}<Btn variant="ghost" disabled={subBusy} onClick={() => { setSubFile(null); setCustomName(""); if (fileRef.current) fileRef.current.value = ""; }}>{i18n("pages.learn.assignmentdetailpage.bce2377283c2")}</Btn>
                 </span>
               ) : null}
               {page?.submittedAttachment ? (
                 <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ color: "var(--og-content-disabled)" }}>已上传：{page.submittedAttachment.name}</span>
-                  <Btn variant="ghost" disabled={subBusy} titleAttr="直接向网络学堂发撤回请求；必交附件的作业会被拒绝并提示" onClick={() => void doRemove()}>撤回附件
-                  </Btn>
+                  <span style={{ color: "var(--og-content-disabled)" }}>{i18nRich("pages.learn.assignmentdetailpage.36a5f279113f", { name: page.submittedAttachment.name })}</span>
+                  <Btn variant="ghost" disabled={subBusy} titleAttr={i18n("pages.learn.assignmentdetailpage.7da05f7e2250")} onClick={() => void doRemove()}>{i18n("pages.learn.assignmentdetailpage.c44cbffc601a")}</Btn>
                 </span>
               ) : null}
               {page?.submittedAttachment && subFile ? (
-                <span style={{ color: "var(--og-content-disabled)", fontSize: 12 }}>提交后新附件将替换已上传附件</span>
+                <span style={{ color: "var(--og-content-disabled)", fontSize: 12 }}>{i18n("pages.learn.assignmentdetailpage.fa9362087d80")}</span>
               ) : null}
             </div>
             {needFileHint ? (
-              <div className="exthw-note is-warn">本作业要求必须带附件：请选择文件或拍照上传后再提交。</div>
+              <div className="exthw-note is-warn">{i18n("pages.learn.assignmentdetailpage.1faef135bf90")}</div>
             ) : null}
             {subFile ? (
-              <Input placeholder={`自定义附件名（保留扩展名 ${subFile.name.includes(".") ? subFile.name.slice(subFile.name.lastIndexOf(".")) : ""}，可留空）`} value={customName} onChange={(value) => setCustomName(value.replaceAll(".", ""))} disabled={subBusy} />
+              <Input placeholder={i18n("pages.learn.assignmentdetailpage.3023aaec3376", { value: String(subFile.name.includes(".") ? subFile.name.slice(subFile.name.lastIndexOf(".")) : "") })} value={customName} onChange={(value) => setCustomName(value.replaceAll(".", ""))} disabled={subBusy} />
             ) : null}
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span style={{ flex: 1 }} />
-              <Btn variant="solid" tone="brand" disabled={subBusy || pastDeadline || (!subFile && richEmpty(subContent))} titleAttr={pastDeadline ? "已过截止时间（mobile 同款禁用提交）" : undefined} onClick={() => void doSubmit()}>{subBusy ? "提交中…" : "提交"}</Btn>
+              <Btn variant="solid" tone="brand" disabled={subBusy || pastDeadline || (!subFile && richEmpty(subContent))} titleAttr={pastDeadline ? i18n("pages.learn.assignmentdetailpage.c118a2400f5a") : undefined} onClick={() => void doSubmit()}>{subBusy ? i18n("pages.learn.assignmentdetailpage.18931020ad52") : i18n("pages.learn.assignmentdetailpage.08a85f4ab4ba")}</Btn>
             </div>
             {pastDeadline ? (
-              <div style={{ fontSize: 12, color: "var(--red)" }}>已过截止时间，提交入口已停用（撤回附件仍可用）。</div>
+              <div style={{ fontSize: 12, color: "var(--red)" }}>{i18n("pages.learn.assignmentdetailpage.5e883449e2fa")}</div>
             ) : null}
             {h.submitted && h.submitTime ? (
-              <div style={{ fontSize: 12, color: "var(--og-content-disabled)" }}>上次提交于 {fmtDateTime(h.submitTime)}</div>
+              <div style={{ fontSize: 12, color: "var(--og-content-disabled)" }}>{i18nRich("pages.learn.assignmentdetailpage.c514d7c4f9f2", { value: fmtDateTime(h.submitTime) })}</div>
             ) : null}
             {subMsg ? <div style={{ fontSize: 12, color: subOk ? "var(--green)" : "var(--red)", wordBreak: "break-all" }}>{subMsg}</div> : null}
           </div>

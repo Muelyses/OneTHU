@@ -1,3 +1,5 @@
+import { formatDate } from "../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 收藏夹方卡的实时状态件（万物原子化：实体原子 live 化）。
  * - WasherTileStatus：收藏的洗衣机设备 → 空闲 / 使用中·剩 N 分钟；
@@ -49,9 +51,11 @@ const fmt = (mins: number): string =>
   String(Math.floor(mins / 60)).padStart(2, "0") + ":" + String(mins % 60).padStart(2, "0");
 
 function StatusLine({ live, loading }: { live: Live | null; loading: boolean }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   if (!loading && !live) return null;
   const tone: Tone = loading ? "muted" : (live as Live).tone;
-  const text = loading ? "状态查询中…" : (live as Live).text;
+  const text = loading ? i18n("components.livetiles.1a1df0978d14") : (live as Live).text;
   return (
     <span className="live-line">
       <span className={"live-dot live-" + tone} aria-hidden />
@@ -63,6 +67,8 @@ function StatusLine({ live, loading }: { live: Live | null; loading: boolean }):
 /* ══════════ 洗衣机设备（方卡实时状态） ══════════ */
 
 export function WasherTileStatus({ atomKey }: { atomKey: string }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [bId, bName, hlsh, dev] = splitKey(atomKey);
   const provider = washerProviderOf(hlsh);
@@ -84,19 +90,19 @@ export function WasherTileStatus({ atomKey }: { atomKey: string }): React.ReactN
         const w = floors
           .flatMap((f) => f.washers)
           .find((x) => (x.name || x.location || x.type || "设备") === dev);
-        if (!w) setLive({ text: "未找到该设备", tone: "muted" });
-        else if (w.status === "idle") setLive({ text: "空闲", tone: "ok" });
+        if (!w) setLive({ text: i18n("components.livetiles.1f6921b97987"), tone: "muted" });
+        else if (w.status === "idle") setLive({ text: i18n("components.livetiles.dae661d17c2d"), tone: "ok" });
         else if (w.status === "working")
-          setLive({ text: w.eta > 0 ? "使用中 · 剩 " + w.eta + " 分钟" : "使用中", tone: "busy" });
-        else if (w.status === "standby") setLive({ text: "待机", tone: "muted" });
-        else if (w.status === "offline") setLive({ text: "离线", tone: "muted" });
-        else if (w.status === "error") setLive({ text: "故障", tone: "bad" });
-        else setLive({ text: "状态未知", tone: "muted" });
+          setLive({ text: w.eta > 0 ? i18n("components.livetiles.5cf755c0a421") + w.eta + i18n("components.livetiles.40de54344d22") : i18n("components.livetiles.fa48e8938940"), tone: "busy" });
+        else if (w.status === "standby") setLive({ text: i18n("components.livetiles.bed4c87f1838"), tone: "muted" });
+        else if (w.status === "offline") setLive({ text: i18n("components.livetiles.be1b4f3c6c1c"), tone: "muted" });
+        else if (w.status === "error") setLive({ text: i18n("components.livetiles.5a0cc6c04776"), tone: "bad" });
+        else setLive({ text: i18n("components.livetiles.93e474c68ed5"), tone: "muted" });
         setLoading(false);
       })
       .catch(() => {
         if (!alive) return;
-        setLive({ text: "状态未知", tone: "muted" });
+        setLive({ text: i18n("components.livetiles.93e474c68ed5"), tone: "muted" });
         setLoading(false);
       });
     return () => {
@@ -135,6 +141,8 @@ function todayColumn(grid: number[] | null): number[] | null {
 }
 
 export function ClassroomTileStatus({ atomKey }: { atomKey: string }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [searchName, , room] = splitKey(atomKey);
   const [live, setLive] = useState<Live | null>(null);
@@ -152,23 +160,23 @@ export function ClassroomTileStatus({ atomKey }: { atomKey: string }): React.Rea
         if (!alive) return;
         const day = todayColumn(grid);
         if (!day) {
-          setLive({ text: "未找到该教室", tone: "muted" });
+          setLive({ text: i18n("components.livetiles.64c2c95bc26f"), tone: "muted" });
           return;
         }
         const mins = new Date().getHours() * 60 + new Date().getMinutes();
         const cur = SLOT_TIMES.findIndex(([s, e]) => mins >= s && mins < e);
         const free = (si: number) => day[si] === AVAILABLE;
-        if (cur >= 0) setLive({ text: "本节" + (free(cur) ? "空闲" : "占用"), tone: free(cur) ? "ok" : "bad" });
+        if (cur >= 0) setLive({ text: i18n("components.livetiles.eacbe16713ec") + (free(cur) ? i18n("components.livetiles.dae661d17c2d") : i18n("components.livetiles.c0aa76aebce6")), tone: free(cur) ? "ok" : "bad" });
         else {
           const next = SLOT_TIMES.findIndex(([s]) => mins < s);
-          if (next < 0) setLive({ text: "今日课程已结束", tone: "muted" });
-          else setLive({ text: "第 " + (next + 1) + " 节起" + (free(next) ? "空闲" : "占用"), tone: free(next) ? "ok" : "bad" });
+          if (next < 0) setLive({ text: i18n("components.livetiles.d1adf68fb7c1"), tone: "muted" });
+          else setLive({ text: i18n("components.livetiles.9552fe3bd366") + (next + 1) + i18n("components.livetiles.86eba7d9469d") + (free(next) ? i18n("components.livetiles.dae661d17c2d") : i18n("components.livetiles.c0aa76aebce6")), tone: free(next) ? "ok" : "bad" });
         }
         setLoading(false);
       })
       .catch(() => {
         if (!alive) return;
-        setLive({ text: "状态未知", tone: "muted" });
+        setLive({ text: i18n("components.livetiles.93e474c68ed5"), tone: "muted" });
         setLoading(false);
       });
     return () => {
@@ -180,6 +188,8 @@ export function ClassroomTileStatus({ atomKey }: { atomKey: string }): React.Rea
 
 /** 教室长卡体：今日 6 大节占用总览（chips + 当前节提示） */
 export function ClassroomRoomToday({ atomKey }: { atomKey: string }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [searchName, , room] = splitKey(atomKey);
   const [day, setDay] = useState<number[] | null>(null);
@@ -212,8 +222,8 @@ export function ClassroomRoomToday({ atomKey }: { atomKey: string }): React.Reac
       alive = false;
     };
   }, [status, searchName, room]);
-  if (loading) return <div className="live-note">今日情况查询中…</div>;
-  if (err) return <div className="live-note">今日情况获取失败，可下拉重进刷新。</div>;
+  if (loading) return <div className="live-note">{i18n("components.livetiles.bfb7cec90cc9")}</div>;
+  if (err) return <div className="live-note">{i18n("components.livetiles.f0aac199731c")}</div>;
   if (!day) return null;
   const now = new Date();
   const mins = now.getHours() * 60 + now.getMinutes();
@@ -221,9 +231,7 @@ export function ClassroomRoomToday({ atomKey }: { atomKey: string }): React.Reac
   const freeCnt = SLOT_TIMES.filter((_, si) => day[si] === AVAILABLE).length;
   return (
     <div className="live-today">
-      <div className="live-today-head">
-        {week ? "第 " + week + " 教学周 · " : ""}周{"日一二三四五六"[now.getDay()]} · 空闲 {freeCnt}/6 节
-      </div>
+      <div className="live-today-head">{i18nRich("components.livetiles.3b5c96c7ffbd", { value: week ? i18n("components.livetiles.teachingWeek", { week }) : "", value2: formatDate(now, { weekday: "short" }), freeCnt: freeCnt })}</div>
       <div className="live-chip-row">
         {SLOT_TIMES.map(([s, e], si) => {
           const free = day[si] === AVAILABLE;
@@ -231,7 +239,7 @@ export function ClassroomRoomToday({ atomKey }: { atomKey: string }): React.Reac
             <span
               key={si}
               className={"live-chip " + (free ? "is-free" : "is-busy") + (si === cur ? " is-now" : "")}
-              title={"第" + (si + 1) + "节 " + fmt(s) + "–" + fmt(e) + (free ? " · 空闲" : " · 占用")}
+              title={i18n("components.livetiles.af50a0fe2a50") + (si + 1) + i18n("components.livetiles.546b7ed920d9") + fmt(s) + "–" + fmt(e) + (free ? i18n("components.livetiles.0fea828373b2") : i18n("components.livetiles.89a5bb504b96"))}
             >
               {si + 1}
             </span>
@@ -239,7 +247,7 @@ export function ClassroomRoomToday({ atomKey }: { atomKey: string }): React.Reac
         })}
       </div>
       <div className="live-note">
-        {cur >= 0 ? "当前第 " + (cur + 1) + " 节" + (day[cur] === AVAILABLE ? "空闲" : "有课") : "当前无课"}
+        {cur >= 0 ? i18n("components.livetiles.6fd6014dd2cc") + (cur + 1) + i18n("components.livetiles.23f4f0e21d61") + (day[cur] === AVAILABLE ? i18n("components.livetiles.dae661d17c2d") : i18n("components.livetiles.e48e9c51687a")) : i18n("components.livetiles.f174226b9387")}
       </div>
     </div>
   );

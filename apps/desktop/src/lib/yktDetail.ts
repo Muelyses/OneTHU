@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * R20-B2：雨课堂原生作业详情页的纯判定 / 展示函数（零依赖，无 JSX / 无 React /
  * 无 Tauri —— tools/ykt-detail-ui-test.mjs 用 Node 直引做回归测试，约定同
@@ -75,11 +76,11 @@ export function homeworkEntryScoreText(h: { submitted?: boolean; score?: number;
 export function yktStatusChip(p: { myStatus: YkMyStatus; myScore?: number }): { text: string; cls: string } {
   if (p.myStatus === "graded") {
     return p.myScore !== undefined
-      ? { text: `已批 ${yktScoreText(p.myScore)} 分`, cls: "chip-blue" }
-      : { text: "已批改", cls: "chip-blue" };
+      ? { text: i18n("lib.yktdetail.9b2367542d68", { value: String(yktScoreText(p.myScore)) }), cls: "chip-blue" }
+      : { text: i18n("lib.yktdetail.d42baf1647c8"), cls: "chip-blue" };
   }
-  if (p.myStatus === "submitted") return { text: "已交未批", cls: "chip-green" };
-  return { text: "未作答", cls: "chip-gray" };
+  if (p.myStatus === "submitted") return { text: i18n("lib.yktdetail.3865ba32b6b5"), cls: "chip-green" };
+  return { text: i18n("lib.yktdetail.b5f241af1539"), cls: "chip-gray" };
 }
 
 /** 整卷批改/得分汇总（详情页头部用） */
@@ -109,16 +110,16 @@ export function yktExerciseSummary(problems: ReadonlyArray<YkProblem>): YktExerc
     }
   }
   const chip = (() => {
-    if (total === 0) return { text: "无题目", cls: "chip-gray" };
-    if (answered === 0) return { text: "未作答", cls: "chip-gray" };
-    if (graded >= total) return { text: "已批改", cls: "chip-blue" };
-    if (graded > 0) return { text: `已批 ${graded}/${total} 题`, cls: "chip-blue" };
+    if (total === 0) return { text: i18n("lib.yktdetail.41bb47e4b848"), cls: "chip-gray" };
+    if (answered === 0) return { text: i18n("lib.yktdetail.b5f241af1539"), cls: "chip-gray" };
+    if (graded >= total) return { text: i18n("lib.yktdetail.d42baf1647c8"), cls: "chip-blue" };
+    if (graded > 0) return { text: i18n("lib.yktdetail.ef020c5a8603", { graded: String(graded), total: String(total) }), cls: "chip-blue" };
     // R33：只答了一部分时不能说「已交未批」——那是「整卷已交、只是还没批」的说法，
     // 会把「16 题只答了 3 题」的进行中作业说成已完成（霖真机反馈的原话就是
     // 「应该是未提交而不是已交未批」）。用词与作业列表的 chip 对齐（未提交），
     // 具体进度由下方「作答进度 x/y 题」一行给。
-    if (answered < total) return { text: "未提交", cls: "chip-amber" };
-    return { text: "已交未批", cls: "chip-green" };
+    if (answered < total) return { text: i18n("lib.yktdetail.8032af4a590f"), cls: "chip-amber" };
+    return { text: i18n("lib.yktdetail.3865ba32b6b5"), cls: "chip-green" };
   })();
   return { total, answered, graded, ...(scoreSum !== undefined ? { scoreSum } : {}), chip };
 }

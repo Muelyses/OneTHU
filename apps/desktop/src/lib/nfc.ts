@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 碰一碰 NFC 桥（Android）：能力探测 / 读取一张标签或对方 HCE 的 NDEF 文本。
  * 桌面端命令恒返回不可用；Android 发送端使用 HCE 模拟 NDEF 标签。
@@ -27,6 +28,6 @@ export async function nfcReadText(): Promise<string> {
 /** 把一段文本放进 HCE 发送端；对方手机用 NFC 接收端贴近读取。 */
 export async function nfcShareText(text: string): Promise<void> {
   // HCE 的 NDEF 文件上限约 32 KiB，禁止大头像/内联箱子被原生端截断成坏口令。
-  if (new TextEncoder().encode(text).length > 30_000) throw new Error("内容太大，无法通过 NFC 完整传送；请复制口令分享，或缩小名片头像后重试");
+  if (new TextEncoder().encode(text).length > 30_000) throw new Error(i18n("lib.nfc.e83e7558d05b"));
   await invoke("nfc_share_text", { text });
 }

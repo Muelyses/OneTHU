@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * `data-vault-catch` 的统一构造器（暂存箱长按拖入）。
  *
@@ -58,7 +59,7 @@ export function vaultCatchTab(t: { title: string; page: string; params?: Record<
   return vaultCatchAttr({
     type: "payload",
     title: t.title,
-    sub: "标签页",
+    sub: i18n("lib.vaultcatch.a626aad412b7"),
     payload: { kind: "tab", page: t.page, params: t.params ?? null },
     source: "标签页",
   });
@@ -69,7 +70,7 @@ export function vaultCatchWorkspace(w: { id: string; name: string; count: number
   return vaultCatchAttr({
     type: "payload",
     title: w.name,
-    sub: `工作区 · ${w.count} 个标签`,
+    sub: i18n("lib.vaultcatch.8c9b6c3487d6", { count: String(w.count) }),
     payload: { kind: "workspace", workspaceId: w.id },
     source: "工作区",
   });
@@ -92,7 +93,7 @@ export function vaultCatchLearnNotice(n: { courseId?: string; itemId: string; ti
   return vaultCatchAttr({
     type: "payload",
     title: n.title,
-    sub: "课程通知",
+    sub: i18n("lib.vaultcatch.f37a13fc55b3"),
     payload: { kind: "learn-notice", courseId: n.courseId, itemId: n.itemId },
     source: "课程",
   });

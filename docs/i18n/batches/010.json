@@ -1,0 +1,1577 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.exthwloginmodal.dc98136ba1e9",
+      "source": "； 本机扫码会切走 App，可能被系统冻结导致登录失败。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.exthwloginmodal.dc98136ba1e9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.e84563c59584",
+      "source": "登录成功后回到本页，点击「我已登录，读取会话」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 298,
+          "context": "{i18n(\"components.exthwloginmodal.e84563c59584\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.eb13f4204eea",
+      "source": "请用微信或雨豆APP 扫描二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 146,
+          "context": "status === \"error\"\n          ? null\n          : i18n(\"components.exthwloginmodal.eb13f4204eea\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.f28740ebbaec",
+      "source": "打开微信或雨豆APP 扫描二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 47,
+          "context": "return i18n(\"components.exthwloginmodal.f28740ebbaec\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.fe5af3dd75ff",
+      "source": "手机验证码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 53,
+          "context": "return i18n(\"components.exthwloginmodal.fe5af3dd75ff\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.0046b5364303",
+      "source": "{value} 已通过清华统一认证登录，已保存。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(SOURCE_NAMES[source])"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 323,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.0046b5364303\", { value: String(SOURCE_NAMES[source]) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.04bc193e4244",
+      "source": "在应用内打开雨课堂官方登录页，支持扫码或手机号+图形验证码+短信登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 495,
+          "context": "{i18n(\"components.exthwsettingssection.04bc193e4244\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.07a0f114d30b",
+      "source": "OJ 平台登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 580,
+          "context": "{i18n(\"components.exthwsettingssection.07a0f114d30b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.0a01eee1cd37",
+      "source": "已登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 481,
+          "context": "configured.yuketang ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 779,
+          "context": "logged ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.0a5f3151f8a9",
+      "source": "官方网页登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 498,
+          "context": "yktWebOpen ? i18n(\"components.exthwsettingssection.f3553abadd4a\") : i18n(\"components.exthwsettingssection.0a5f3151f8a9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.0cfeab7fbfd6",
+      "source": "刷新完成。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 222,
+          "context": "notify(\"range\", i18n(\"components.exthwsettingssection.0cfeab7fbfd6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.103d97629702",
+      "source": "导入登录状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 533,
+          "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.11968ab19a8b",
+      "source": "导出登录状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 532,
+          "context": "busy === \"ykt-export\" ? i18n(\"components.exthwsettingssection.dce6e572314e\") : i18n(\"components.exthwsettingssection.11968ab19a8b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.130123e01753",
+      "source": "立即刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 755,
+          "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.164c7afc6158",
+      "source": "账号密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 605,
+          "context": "tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 639,
+          "context": "classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.177a41a28139",
+      "source": "导出失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 268,
+          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.177a41a28139\", { value: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.1a3f0617d6de",
+      "source": "用户名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 623,
+          "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 657,
+          "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 692,
+          "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.1c907131183c",
+      "source": "雨课堂登录状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 282,
+          "context": "name: i18n(\"components.exthwsettingssection.1c907131183c\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 763,
+          "context": "{i18n(\"components.exthwsettingssection.1c907131183c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.1e2df9c3075a",
+      "source": "登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 625,
+          "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 659,
+          "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 673,
+          "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 694,
+          "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 715,
+          "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 730,
+          "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.1f2ada659e8f",
+      "source": "会话已失效（{value}）——可扫码重登，或导入其他设备导出的 Cookie。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 241,
+          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.1f2ada659e8f\", { value: String(st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.27e7d6344316",
+      "source": "登录状态：尚未检查（应用启动后会自动检查，约每 6 小时一次，也可手动检查）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 523,
+          "context": "ext.yktSession.checkedAt === null\n                  ? i18n(\"components.exthwsettingssection.27e7d6344316\")\n                  : ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.e"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.2f58b6eddc08",
+      "source": "导入中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 533,
+          "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.30060dffb676",
+      "source": "Tyche 登录成功，已保存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 377,
+          "context": "tycheRemember ? i18n(\"components.exthwsettingssection.e9da66a5f095\") : i18n(\"components.exthwsettingssection.30060dffb676\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.32eed2adc456",
+      "source": "已登录{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(via ? `·${via}` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 64,
+          "context": "logged ? i18n(\"components.exthwsettingssection.32eed2adc456\", { value: String(via ? `·${via}` : \"\") }) : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.38b9eabcae1b",
+      "source": "雨课堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 479,
+          "context": "{i18n(\"components.exthwsettingssection.38b9eabcae1b\")}"
+        }
+      ],
+      "translation": "Yuketang",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.3afccd0197f6",
+      "source": "点击收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 590,
+          "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.3e7440664c75",
+      "source": "点击展开登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 590,
+          "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.3f06ed8f8c38",
+      "source": "登录中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 612,
+          "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 625,
+          "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 646,
+          "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 659,
+          "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 694,
+          "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 730,
+          "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.40c00674621e",
+      "source": "不勾选则只保存本次登录状态，失效后需手动重新登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 701,
+          "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.434a1a95686a",
+      "source": "刷新失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 223,
+          "context": "notify(\"range\", i18n(\"components.exthwsettingssection.434a1a95686a\", { value: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.44ff02182964",
+      "source": "按个人情况登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 576,
+          "context": "{i18n(\"components.exthwsettingssection.44ff02182964\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.4803e2da0873",
+      "source": "退出中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 485,
+          "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 610,
+          "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 644,
+          "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 671,
+          "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 713,
+          "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.498e1d59b4d7",
+      "source": "退出",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 485,
+          "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 610,
+          "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 644,
+          "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 671,
+          "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 713,
+          "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.498e524101ad",
+      "source": "粘贴后点击上方「保存」生效。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 768,
+          "context": "{i18n(\"components.exthwsettingssection.498e524101ad\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.4acec185ba86",
+      "source": "登录状态：未知（上次检查时网络异常，不判定为失效）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 528,
+          "context": "ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.4ba279389d5a",
+      "source": "导入其他已登录设备导出的登录状态文件，免扫码直接恢复登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 533,
+          "context": "{i18n(\"components.exthwsettingssection.4ba279389d5a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.52ca90b5c7ad",
+      "source": "检查未成功：网络异常，登录状态未知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 242,
+          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.52ca90b5c7ad\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.5492e8498b9c",
+      "source": "雨课堂已开启图形验证码：请用微信扫码，或选「官方网页登录」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 511,
+          "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.5510d7040d50",
+      "source": "记住密码（登录状态失效后自动登录）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 697,
+          "context": "{i18n(\"components.exthwsettingssection.5510d7040d50\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.58d2b2a8dc03",
+      "source": "只保留未来",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 748,
+          "context": "{i18n(\"components.exthwsettingssection.58d2b2a8dc03\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.59e30b592976",
+      "source": "已导出到 {path}。⚠️ 该文件等同账号凭据：勿放同步盘 / 群聊 / 仓库，导入完成后请删除。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "path",
+          "expression": "String(path)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 265,
+          "context": "return i18n(\"components.exthwsettingssection.59e30b592976\", { path: String(path) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.5fd4a0702e98",
+      "source": "已退出{label}登录。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 432,
+          "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.5fd4a0702e98\", { label: String(label) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.exthwsettingssection.65493396ab5b",
+      "source": "自动登录未成功{value}——可点「统一认证登录」重试。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "st.message ? `（${st.message.slice(0, 160)}）` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 457,
+          "context": "{i18nRich(\"components.exthwsettingssection.65493396ab5b\", { value: st.message ? `（${st.message.slice(0, 160)}）` : \"\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.6ac888d9d8a4",
+      "source": "已导入雨课堂登录状态，正在刷新外部作业。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 298,
+          "context": "return i18n(\"components.exthwsettingssection.6ac888d9d8a4\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.6c0cdf48d1b3",
+      "source": "TUOJ（AI 版）登录状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 764,
+          "context": "{i18n(\"components.exthwsettingssection.6c0cdf48d1b3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.73075237fd0f",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 728,
+          "context": "{i18n(\"components.exthwsettingssection.73075237fd0f\")}"
+        }
+      ],
+      "translation": "Mail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.738b37dc7cba",
+      "source": "未配置雨课堂登录状态——请先登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 237,
+          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.738b37dc7cba\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.7a334a5f33f2",
+      "source": "导入失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 301,
+          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.7a334a5f33f2\", { value: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.7c1c6d7e68c6",
+      "source": "统一认证登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 612,
+          "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 646,
+          "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.7cf1f3f97fff",
+      "source": "浏览器预览不支持导出，请在桌面端操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 253,
+          "context": "new Error(i18n(\"components.exthwsettingssection.7cf1f3f97fff\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.7f3c8312816f",
+      "source": "刷新中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 755,
+          "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.81c77d061430",
+      "source": "{value} 登录成功，已保存。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(SOURCE_NAMES[source])"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 354,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.81c77d061430\", { value: String(SOURCE_NAMES[source]) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.8230bba29c97",
+      "source": "短信验证码（暂不可用）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 502,
+          "context": "{i18n(\"components.exthwsettingssection.8230bba29c97\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.84880323c334",
+      "source": "已取消导出。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 264,
+          "context": "return i18n(\"components.exthwsettingssection.84880323c334\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.8a21d7219a96",
+      "source": "检查登录状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 531,
+          "context": "busy === \"ykt-check\" ? i18n(\"components.exthwsettingssection.fb11aa6f2982\") : i18n(\"components.exthwsettingssection.8a21d7219a96\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.8aee3f656a95",
+      "source": "需重新登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 780,
+          "context": "{i18n(\"components.exthwsettingssection.8aee3f656a95\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.8b512420e036",
+      "source": "会话健康：有效{value} · 检查于 {value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\")"
+        },
+        {
+          "name": "value2",
+          "expression": "String(new Date(ext.yktSession.checkedAt).toLocaleTimeString())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 525,
+          "context": "ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.8da916259f48",
+      "source": "DSA OJ 登录失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 397,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.8da916259f48\", { value: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.9249fcc53449",
+      "source": "雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 512,
+          "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.92559c8f277f",
+      "source": "{count} 条",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "String(count)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 780,
+          "context": "err ? <OGText tone=\"error\">{i18n(\"components.exthwsettingssection.8aee3f656a95\")}</OGText> : i18n(\"components.exthwsettingssection.92559c8f277f\", { count: String(count) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.9332d0724ed2",
+      "source": "确定退出{label}登录？将清除本机保存的{label2}凭据，不影响其他源。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        },
+        {
+          "name": "label2",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 404,
+          "context": "confirmOk(i18nMsg(\"components.exthwsettingssection.9332d0724ed2\", { label: String(label), label2: String(label) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.exthwsettingssection.94cd45f219ce",
+      "source": "Tyche 登录失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 380,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.94cd45f219ce\", { value: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.97434a01ddf6",
+      "source": "{value}重新登录",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "tycheFormOpen ? \"▾\" : \"▸\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 678,
+          "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: tycheFormOpen ? \"▾\" : \"▸\" })}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 720,
+          "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: dsaFormOpen ? \"▾\" : \"▸\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.99e398c6de5c",
+      "source": "统一认证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 603,
+          "context": "tuojVia === \"cas\" || ext.tuojAuto.tuoj.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 637,
+          "context": "classicVia === \"cas\" || ext.tuojAuto.tuojClassic.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.9e0181f35fc5",
+      "source": "微信扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 491,
+          "context": "yktQrOpen ? i18n(\"components.exthwsettingssection.dd647f03c880\") : i18n(\"components.exthwsettingssection.9e0181f35fc5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 241,
+          "context": "st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.a3030bf8f16d",
+      "source": "保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 754,
+          "context": "{i18n(\"components.exthwsettingssection.a3030bf8f16d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.a33c8a6739b3",
+      "source": "{value} 登录失败：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(SOURCE_NAMES[source])"
+        },
+        {
+          "name": "value2",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 326,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) }))"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 357,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.a61cd4faa5ed",
+      "source": "雨课堂扫码登录成功，已保存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 553,
+          "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.a61cd4faa5ed\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.a621ab606db2",
+      "source": "密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 624,
+          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 658,
+          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 693,
+          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 729,
+          "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.aaa8da9598f1",
+      "source": "密码以密文存在本机，不上传、不进日志；退出登录即清除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 700,
+          "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.abf483faf3b6",
+      "source": "{value}高级：手动粘贴浏览器登录信息",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "advanced ? \"▾\" : \"▸\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 760,
+          "context": "{i18nRich(\"components.exthwsettingssection.abf483faf3b6\", { value: advanced ? \"▾\" : \"▸\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.ae79f5df3c38",
+      "source": "已取消导入。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 283,
+          "context": "return i18n(\"components.exthwsettingssection.ae79f5df3c38\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.afd4b783536b",
+      "source": "收起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 673,
+          "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 715,
+          "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.b666588e7bed",
+      "source": "退出{label}登录失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(errMsg(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 435,
+          "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.b666588e7bed\", { label: String(label), value: String(errMsg(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.exthwsettingssection.b9e0b1e6f221",
+      "source": "{value}账号密码",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "tuojPwdOpen ? \"▾\" : \"▸\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 616,
+          "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: tuojPwdOpen ? \"▾\" : \"▸\" })}"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 650,
+          "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: classicPwdOpen ? \"▾\" : \"▸\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.c0102ddf9ffc",
+      "source": "会话已失效：作业页将拉不到雨课堂数据。可「一键重登（扫码）」，或在其他已登录设备「导出 Cookie」后在此「导入 Cookie」恢复。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 536,
+          "context": "{i18n(\"components.exthwsettingssection.c0102ddf9ffc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.c1547f6ba316",
+      "source": "抓取范围与刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 743,
+          "context": "{i18n(\"components.exthwsettingssection.c1547f6ba316\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.c1f658373079",
+      "source": "未登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 64,
+          "context": "logged ? i18n(\"components.exthwsettingssection.32eed2adc456\", { value: String(via ? `·${via}` : \"\") }) : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 481,
+          "context": "configured.yuketang ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 587,
+          "context": "configured[id] ? \"✅\" : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 779,
+          "context": "logged ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwsettingssection.c5f1befc6cc9",
+      "source": "DSA OJ 登录成功，已保存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
+          "line": 394,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.c5f1befc6cc9\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

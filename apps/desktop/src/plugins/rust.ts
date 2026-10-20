@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * Rust 骨干插件运行时（桌面 sidecar + 移动内嵌双形态）：
  * - 桌面端：二进制 spawn + JSON-RPC over stdio（activate/run/dispose/interrupt）；
@@ -32,7 +33,7 @@ export function isEmbeddedRust(id: string): boolean {
 /** 内嵌：起 App 内 agent 线程 + 门面桥，返回 activate 应答（commands 清单） */
 export async function startHarnessEmbedded(id: string): Promise<unknown> {
   const rec = getPlugin(id);
-  if (!rec) throw new Error(`插件不存在：${id}`);
+  if (!rec) throw new Error(i18n("plugins.rust.e8ce81d059b5", { id: String(id) }));
   embeddedIds.add(id);
   try {
     await ensureRpcListener();
@@ -48,7 +49,7 @@ export async function startHarnessEmbedded(id: string): Promise<unknown> {
 /** 拉起一个 rust 插件进程并完成 activate 握手（返回 activate 应答：约定含 commands 清单） */
 export async function spawnRustPlugin(id: string, binPath: string, args: string[] = []): Promise<unknown> {
   const rec = getPlugin(id);
-  if (!rec) throw new Error(`插件不存在：${id}`);
+  if (!rec) throw new Error(i18n("plugins.rust.e8ce81d059b5", { id: String(id) }));
   embeddedIds.delete(id);
   await ensureRpcListener();
   const { ensurePluginEventListener } = await import("./events.js");
@@ -140,7 +141,7 @@ export function bindRustApi(id: string, perms: Set<string>): OnethuApi {
   rpcHandlers.set(id, async (ns, method, args) => {
     const target = (api as any)[ns];
     if (!target || typeof target[method] !== "function") {
-      throw new Error(`未知接口：onethu.${ns}.${method}`);
+      throw new Error(i18n("plugins.rust.d10deb8d0c0e", { ns: String(ns), method: String(method) }));
     }
     return target[method](...args);
   });

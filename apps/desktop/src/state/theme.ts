@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 主题插件系统 v1（2026-09-13 立项：「神秘的主题插件系统」）
  *
@@ -60,19 +61,19 @@ export interface ThemeSnapshot {
 const BUILTIN_THEMES: ThemeDef[] = [
   {
     id: "onethu.theme.ivory",
-    name: "石墨 · 默认",
+    get name() { return i18n("state.theme.78c3900fe08f"); },
     version: "2.0.0",
     author: "OneTHU",
-    description: "OneGUI 默认外观：中性面阶、黑白主要动作与清晰文字层级。",
+    get description() { return i18n("state.theme.07befe8d2563"); },
     vars: {},
     source: "builtin",
   },
   {
     id: "onethu.theme.violet",
-    name: "紫水晶",
+    get name() { return i18n("state.theme.cfb4093a1ef4"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "紫罗兰纸面、深紫文字与紫色强调。",
+    get description() { return i18n("state.theme.e2d5803563ce"); },
     vars: {
       "--primary": "#6d28d9",
       "--primary-hover": "#5b21b6",
@@ -96,10 +97,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
     // 清华紫：校色主题。全部取值由 tonal palette 派生（种子 #660874，见 packages/ui/src/palette.css
     // 与 docs/tokens-map.md 的亮色 scheme），不是手调色——种子一改、重跑 tools/gen-tokens.mjs，这里照抄即可。
     id: "onethu.theme.tsinghua",
-    name: "清华紫",
+    get name() { return i18n("state.theme.4e7abf4896fc"); },
     version: "1.0.0",
     author: "OneTHU",
-    description: "清华紫强调、淡紫面阶与清晰墨色。",
+    get description() { return i18n("state.theme.2d0d99e06fa2"); },
     vars: {
       // 品牌族：primary tone 40 / 悬停 tone 30（加深一档，紫底白字变浅会掉对比度）
       "--primary": "#90399c",
@@ -132,10 +133,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.celadon",
-    name: "青瓷",
+    get name() { return i18n("state.theme.c4ef3664d417"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "青绿强调与清凉的浅绿纸面。",
+    get description() { return i18n("state.theme.76069b8f9d9f"); },
     vars: {
       "--primary": "#0f766e",
       "--primary-hover": "#115e59",
@@ -157,10 +158,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.warmsand",
-    name: "暖沙",
+    get name() { return i18n("state.theme.4d63c47d6588"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "温暖米色纸面、棕色文字与沙金强调。",
+    get description() { return i18n("state.theme.e4adc0b697bb"); },
     vars: {
       "--accent": "#c2740a",
       "--accent-soft": "#fbf1e0",
@@ -176,10 +177,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.midnight",
-    name: "墨蓝夜航",
+    get name() { return i18n("state.theme.cb163d15eaea"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "海军蓝强调与冷调浅蓝面阶。",
+    get description() { return i18n("state.theme.49b95f5dd079"); },
     vars: {
       "--primary": "#1e3a8a",
       "--primary-hover": "#1e40af",
@@ -201,11 +202,11 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.night",
-    name: "凝夜",
+    get name() { return i18n("state.theme.f4d017b4c6b8"); },
     version: "1.0.1",
     author: "OneTHU",
     dark: true,
-    description: "深色工作台与钢蓝强调色，可用于昼夜调度。",
+    get description() { return i18n("state.theme.7a440ac6411e"); },
     vars: {
       "--bg": "#0e1117",
       "--bg-soft": "#12161f",
@@ -677,7 +678,7 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
     source,
     owner: source === "plugin" ? (owner ?? def.owner) : undefined,
   };
-  if (!clean.id) throw new Error("主题 id 不能为空");
+  if (!clean.id) throw new Error(i18n("state.theme.9a8ab964d522"));
   const i = state.installed.findIndex((t) => t.id === clean.id);
   if (i >= 0) state.installed[i] = clean;
   else state.installed.push(clean);

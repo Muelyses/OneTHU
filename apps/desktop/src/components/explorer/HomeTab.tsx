@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../../i18n/index.js";
 /** Home is the persisted system canvas, including clock, greeting and primary services. */
 import { type ReactNode } from "react";
 import { FreeBoard } from "../FreeBoard.js";
@@ -5,6 +6,8 @@ import { HOME_BOARD_ID, HOME_ORIENTATION } from "../../state/freeBoard.js";
 import { HomeCoachMarks } from "../HomeCoachMarks.js";
 
 export function HomeTab(): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <div className="home-tab home-free">
       {/* 首次进入的首页导览标记（原先只挂在旧「今日页」上；白板接管首页后它一度整个丢了，

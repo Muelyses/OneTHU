@@ -1,0 +1,1465 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.info.libroomtab.0addd7784578",
+      "source": "取消中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 959,
+          "context": "busyCancel !== null ? i18n(\"pages.info.libroomtab.0addd7784578\") : i18n(\"pages.info.libroomtab.b741efb628be\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.0afc4fe3d305",
+      "source": "取消预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 964,
+          "context": "{i18n(\"pages.info.libroomtab.0afc4fe3d305\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.0eb7acb104e7",
+      "source": "暂无研讨间预约记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 939,
+          "context": "{i18n(\"pages.info.libroomtab.0eb7acb104e7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.17d2ede12828",
+      "source": " · {filterBeg}~{filterEnd} 连续空闲 {value} 间",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "filterBeg",
+          "expression": "String(filterBeg)"
+        },
+        {
+          "name": "filterEnd",
+          "expression": "String(filterEnd)"
+        },
+        {
+          "name": "value",
+          "expression": "String(visibleResources?.length ?? 0)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 779,
+          "context": "filterValid ? i18n(\"pages.info.libroomtab.17d2ede12828\", { filterBeg: String(filterBeg), filterEnd: String(filterEnd), value: String(visibleResources?.length ?? 0) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.18931020ad52",
+      "source": "提交中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 868,
+          "context": "busy ? i18n(\"pages.info.libroomtab.18931020ad52\") : i18n(\"pages.info.libroomtab.598f9049c774\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.1a558735ea57",
+      "source": "我的预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 916,
+          "context": "{i18n(\"pages.info.libroomtab.1a558735ea57\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.22e2feab7d3e",
+      "source": "没有研讨间在 {filterBeg}~{filterEnd} 整段可约，请调整时间或清除筛选。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "filterBeg",
+          "expression": "String(filterBeg)"
+        },
+        {
+          "name": "filterEnd",
+          "expression": "String(filterEnd)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 808,
+          "context": "{i18n(\"pages.info.libroomtab.22e2feab7d3e\", { filterBeg: String(filterBeg), filterEnd: String(filterEnd) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.2607c5f4717f",
+      "source": "选择房型…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 724,
+          "context": "{i18n(\"pages.info.libroomtab.2607c5f4717f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.28b482943de6",
+      "source": "{minUser}~{maxUser} 人",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "minUser",
+          "expression": "target.res.minUser"
+        },
+        {
+          "name": "maxUser",
+          "expression": "target.res.maxUser"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 877,
+          "context": "{i18nRich(\"pages.info.libroomtab.28b482943de6\", { minUser: target.res.minUser, maxUser: target.res.maxUser })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.28f3de61dcf6",
+      "source": "空闲时段",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 746,
+          "context": "{i18n(\"pages.info.libroomtab.28f3de61dcf6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.2961168962be",
+      "source": "周三",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 865,
+          "context": "{i18n(\"pages.info.libroomtab.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.30f8a1537ef9",
+      "source": "已选择 {label} {value}~{value2}。确认后提交，可在下方微调时间。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "target.day.label"
+        },
+        {
+          "name": "value",
+          "expression": "beg || \"–\""
+        },
+        {
+          "name": "value2",
+          "expression": "end || \"–\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 881,
+          "context": "{i18nRich(\"pages.info.libroomtab.30f8a1537ef9\", { label: target.day.label, value: beg || \"–\", value2: end || \"–\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.libroomtab.336f1ae10407",
+      "source": "已被占",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 322,
+          "context": "return i18n(\"pages.info.libroomtab.336f1ae10407\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 836,
+          "context": "{i18n(\"pages.info.libroomtab.352cdc807892\")}"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.383229129c45",
+      "source": " · 刷新中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 779,
+          "context": "resState === \"loading\" && resources !== null ? i18n(\"pages.info.libroomtab.383229129c45\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.447c95b50fda",
+      "source": "当日不开放",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 829,
+          "context": "r.openStart && r.openEnd\n                      ? i18n(\"pages.info.libroomtab.7f2e89deee04\", { openStart: String(r.openStart), openEnd: String(r.openEnd), minMinute: String(r.minMinute), maxMinute: String(r.maxMinute) })\n                      : i18n(\"pages.info.libroomtab.447c95b50fda\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.4b1f669230a0",
+      "source": "首次预约需绑定邮箱地址，请确认下方邮箱后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 625,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.4b1f669230a0\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.4c3802fbc5ba",
+      "source": " · 已约 {length} 段",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(r.usage.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 829,
+          "context": "r.usage.length > 0 ? i18n(\"pages.info.libroomtab.4c3802fbc5ba\", { length: String(r.usage.length) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.54dfc521d801",
+      "source": "该房型当日暂无可约房间。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 803,
+          "context": "{i18n(\"pages.info.libroomtab.54dfc521d801\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.572388f3b096",
+      "source": "周五",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.598f9049c774",
+      "source": "提交预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 868,
+          "context": "busy ? i18n(\"pages.info.libroomtab.18931020ad52\") : i18n(\"pages.info.libroomtab.598f9049c774\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.6087d10e5aec",
+      "source": "不可选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 323,
+          "context": "return i18n(\"pages.info.libroomtab.6087d10e5aec\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.6475e95b06ba",
+      "source": "结束时间需晚于开始时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 747,
+          "context": "filterComplete && !filterValid ? i18n(\"pages.info.libroomtab.6475e95b06ba\") : undefined"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.64d9036b1805",
+      "source": " 单次可约 {minMinute}~{maxMinute} 分钟，5 分钟粒度。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "minMinute",
+          "expression": "String(target.res.minMinute)"
+        },
+        {
+          "name": "maxMinute",
+          "expression": "String(target.res.maxMinute)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 905,
+          "context": "target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.65edbf9f1c67",
+      "source": "至",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 756,
+          "context": "{i18n(\"pages.info.libroomtab.65edbf9f1c67\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.6b7589029582",
+      "source": "算了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 961,
+          "context": "{i18n(\"pages.info.libroomtab.6b7589029582\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.70cb2ebbf5ed",
+      "source": "绑定邮箱 {pendingEmail} 并重试预约？",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "pendingEmail",
+          "expression": "pendingEmail"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 908,
+          "context": "{i18nRich(\"pages.info.libroomtab.70cb2ebbf5ed\", { pendingEmail: pendingEmail })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.70d0c1b33626",
+      "source": "日期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 737,
+          "context": "{i18n(\"pages.info.libroomtab.70d0c1b33626\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.7402f19c127c",
+      "source": "{explained}（本应用仅以本人提交；该房间要求 {minUser}~{maxUser} 人成组，请到图书馆研讨间系统网页端添加成员后预约）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "explained",
+          "expression": "String(explained)"
+        },
+        {
+          "name": "minUser",
+          "expression": "String(t.res.minUser)"
+        },
+        {
+          "name": "maxUser",
+          "expression": "String(t.res.maxUser)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 638,
+          "context": "/人数|成员|成组/.test(explained) && t.res.minUser > 1\n            ? i18n(\"pages.info.libroomtab.7402f19c127c\", { explained: String(explained), minUser: String(t.res.minUser), maxUser: String(t.res.maxUser) })\n            : explained"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.7f2e89deee04",
+      "source": "开放 {openStart}~{openEnd} · 单次 {minMinute}~{maxMinute} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "openStart",
+          "expression": "String(r.openStart)"
+        },
+        {
+          "name": "openEnd",
+          "expression": "String(r.openEnd)"
+        },
+        {
+          "name": "minMinute",
+          "expression": "String(r.minMinute)"
+        },
+        {
+          "name": "maxMinute",
+          "expression": "String(r.maxMinute)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 828,
+          "context": "r.openStart && r.openEnd\n                      ? i18n(\"pages.info.libroomtab.7f2e89deee04\", { openStart: String(r.openStart), openEnd: String(r.openEnd), minMinute: String(r.minMinute), maxMinute: String(r.maxMinute) })\n                      : i18n(\"pages.info.libroomtab.447c95b50fda\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.85247a78ead3",
+      "source": "打开研讨间网站",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 82,
+          "context": "{i18n(\"pages.info.libroomtab.85247a78ead3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.8733d2e2c8bb",
+      "source": "（{minUser}~{maxUser} 人）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "minUser",
+          "expression": "String(r.minUser)"
+        },
+        {
+          "name": "maxUser",
+          "expression": "String(r.maxUser)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 822,
+          "context": "r.maxUser > 1 ? i18n(\"pages.info.libroomtab.8733d2e2c8bb\", { minUser: String(r.minUser), maxUser: String(r.maxUser) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.8a0bfbb5427c",
+      "source": "{label}{value} · 时段格 绿=可约 红=已被占 灰=不可选{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(day.label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(filterValid ? i18n(\"pages.info.libroomtab.17d2ede12828\", { filterBeg: String(filterBeg), filterEnd: String(filterEnd), value: String(visibleResources?.length ?? 0) }) : \"\")"
+        },
+        {
+          "name": "value2",
+          "expression": "String(resState === \"loading\" && resources !== null ? i18n(\"pages.info.libroomtab.383229129c45\") : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 779,
+          "context": "{i18n(\"pages.info.libroomtab.8a0bfbb5427c\", { label: String(day.label), value: String(filterValid ? i18n(\"pages.info.libroomtab.17d2ede12828\", { filterBeg: String(filterBeg), filterEnd: String(filterEnd), value: String(visibleResources?.length ?? 0) }) : \"\"), value2: String(resState === \"loading\" && resources !== null ? i18n(\"pages.info.libroomtab.383229129c45\") : \"\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.libroomtab.8f0adfe5e873",
+      "source": "已取消该预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 669,
+          "context": "text: i18n(\"pages.info.libroomtab.8f0adfe5e873\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.90bd6800e5b6",
+      "source": "需要先登录（未读取到学号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 593,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.90bd6800e5b6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.91a1c26035d5",
+      "source": "开始…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 753,
+          "context": "{i18n(\"pages.info.libroomtab.91a1c26035d5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.98c9b122a6cf",
+      "source": "暂未开放",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 824,
+          "context": "{i18n(\"pages.info.libroomtab.98c9b122a6cf\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.9ea0b476aafe",
+      "source": " 该房间标称需 {minUser}~{maxUser} 人成组：应用会先以仅本人提交，馆方若拒绝会给出原话，届时请到研讨间系统网页端添加成员。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "minUser",
+          "expression": "String(target.res.minUser)"
+        },
+        {
+          "name": "maxUser",
+          "expression": "String(target.res.maxUser)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 904,
+          "context": "target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.9fa1db46b010",
+      "source": "研讨间账号信息缺失（accNo），请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 597,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.9fa1db46b010\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.a88520a9ca6c",
+      "source": "研讨间预约记录（未来 6 天）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 916,
+          "context": "{i18n(\"pages.info.libroomtab.a88520a9ca6c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.a89e82b07621",
+      "source": "房型列表为空（ic-web 未返回数据，请稍后重试）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 434,
+          "context": "new Error(i18n(\"pages.info.libroomtab.a89e82b07621\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b120e1334a3f",
+      "source": "成员：本人。{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) })"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 903,
+          "context": "{i18nRich(\"pages.info.libroomtab.b120e1334a3f\", { value: target.res.minUser > 1\n                ? i18n(\"pages.info.libroomtab.9ea0b476aafe\", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })\n                : i18n(\"pages.info.libroomtab.64d9036b1805\", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) }) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b3935f1363ac",
+      "source": "确认并重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 908,
+          "context": "{i18n(\"pages.info.libroomtab.b3935f1363ac\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b477db89f407",
+      "source": "可约房间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 778,
+          "context": "{i18n(\"pages.info.libroomtab.b477db89f407\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b741efb628be",
+      "source": "确认取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 959,
+          "context": "busyCancel !== null ? i18n(\"pages.info.libroomtab.0addd7784578\") : i18n(\"pages.info.libroomtab.b741efb628be\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.b8784c8dd563",
+      "source": "重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 704,
+          "context": "{i18n(\"pages.info.libroomtab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 794,
+          "context": "{i18n(\"pages.info.libroomtab.b8784c8dd563\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 930,
+          "context": "{i18n(\"pages.info.libroomtab.b8784c8dd563\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.bce2377283c2",
+      "source": "清除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 771,
+          "context": "{i18n(\"pages.info.libroomtab.bce2377283c2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.bee1f96066cd",
+      "source": "研讨间房型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 731,
+          "context": "kinds?.find((k) => k.kindId === kindId)?.kindName ?? i18n(\"pages.info.libroomtab.bee1f96066cd\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c2de2822c57e",
+      "source": "无可约时段",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 888,
+          "context": "begins.length === 0 ? i18n(\"pages.info.libroomtab.c2de2822c57e\") : i18n(\"pages.info.libroomtab.d2bb025a2e51\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c31c70fef156",
+      "source": " · 点击选此开始时刻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 353,
+          "context": "interactive ? i18n(\"pages.info.libroomtab.c31c70fef156\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c430f4c12eaa",
+      "source": "周一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c73899395698",
+      "source": "确认取消？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 957,
+          "context": "{i18n(\"pages.info.libroomtab.c73899395698\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.c7b24e7997e9",
+      "source": "结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 893,
+          "context": "{i18n(\"pages.info.libroomtab.c7b24e7997e9\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 897,
+          "context": "ends.length === 0 ? \"–\" : i18n(\"pages.info.libroomtab.c7b24e7997e9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.cc3c388dfc29",
+      "source": "首次使用研讨间？需要先绑定邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 80,
+          "context": "{i18n(\"pages.info.libroomtab.cc3c388dfc29\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.cd970b5c7fd4",
+      "source": "首次预约需绑定邮箱地址（未能自动获取邮箱），请先在图书馆研讨间系统网页端绑定后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 631,
+          "context": "setBookError(i18n(\"pages.info.libroomtab.cd970b5c7fd4\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d074b567fa9a",
+      "source": "预约 {roomName}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "roomName",
+          "expression": "String(target.res.roomName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 860,
+          "context": "{i18n(\"pages.info.libroomtab.d074b567fa9a\", { roomName: String(target.res.roomName) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d1378a68e620",
+      "source": "周二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d191869abcc3",
+      "source": "结束…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 760,
+          "context": "{i18n(\"pages.info.libroomtab.d191869abcc3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d1d50368fefe",
+      "source": "可约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 321,
+          "context": "return i18n(\"pages.info.libroomtab.d1d50368fefe\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d2bb025a2e51",
+      "source": "开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 884,
+          "context": "{i18n(\"pages.info.libroomtab.d2bb025a2e51\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 888,
+          "context": "begins.length === 0 ? i18n(\"pages.info.libroomtab.c2de2822c57e\") : i18n(\"pages.info.libroomtab.d2bb025a2e51\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 131,
+          "context": "k === 0 ? i18n(\"pages.info.libroomtab.d5f5a7a01073\") : `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} ${WEEKDAYS[d.getDay()]}`"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.d90dc196c21b",
+      "source": " · 成员 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.members.map((m) => m.name).join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 951,
+          "context": "r.members.length > 0 ? i18n(\"pages.info.libroomtab.d90dc196c21b\", { value: String(r.members.map((m) => m.name).join(\"、\")) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.dbeb70190aef",
+      "source": "房型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 718,
+          "context": "{i18n(\"pages.info.libroomtab.dbeb70190aef\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 691,
+          "context": "{i18n(\"pages.info.libroomtab.e4d40b4d6759\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 949,
+          "context": "r.devName || i18n(\"pages.info.libroomtab.e4d40b4d6759\")"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.e9d3b01a5a00",
+      "source": "周四",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.ee239f394329",
+      "source": "周日",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.f37e39e9300f",
+      "source": "研讨间系统要求先在原网站（cab.lib.tsinghua.edu.cn）登录并绑定邮箱后才能预约，新生未绑定时会一直报「会话未能建立」。 请在原网站绑定邮箱后，回到这里点「重试」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 84,
+          "context": "{i18n(\"pages.info.libroomtab.f37e39e9300f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.f9aa11dbb15c",
+      "source": "周六",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.fa437861d75f",
+      "source": "{roomName} {iso} {begin}~{finish} 预约成功，请留意图书馆邮件通知",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "roomName",
+          "expression": "String(t.res.roomName)"
+        },
+        {
+          "name": "iso",
+          "expression": "String(t.day.iso)"
+        },
+        {
+          "name": "begin",
+          "expression": "String(begin)"
+        },
+        {
+          "name": "finish",
+          "expression": "String(finish)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 610,
+          "context": "message = i18n(\"pages.info.libroomtab.fa437861d75f\", { roomName: String(t.res.roomName), iso: String(t.day.iso), begin: String(begin), finish: String(finish) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.12526376d387",
+      "source": "管理栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 99,
+          "context": "{i18n(\"pages.info.lifepage.12526376d387\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 95,
+          "context": "{i18n(\"pages.info.lifepage.15d208d1b4c9\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 98,
+          "context": "{i18n(\"pages.info.lifepage.15d208d1b4c9\")}"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.24be2018df29",
+      "source": "银行代发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 45,
+          "context": "return i18n(\"pages.info.lifepage.24be2018df29\");"
+        }
+      ],
+      "translation": "Payroll",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.336dbe5fd82f",
+      "source": "研究生收入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 46,
+          "context": "return i18n(\"pages.info.lifepage.336dbe5fd82f\");"
+        }
+      ],
+      "translation": "Graduate stipend",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.3a74de9a9014",
+      "source": "宿舍",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 40,
+          "context": "return i18n(\"pages.info.lifepage.3a74de9a9014\");"
+        }
+      ],
+      "translation": "Dorm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.41d497d6e07e",
+      "source": "卫生成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 42,
+          "context": "return i18n(\"pages.info.lifepage.41d497d6e07e\");"
+        }
+      ],
+      "translation": "Hygiene score",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.420754341ee2",
+      "source": "生活功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 103,
+          "context": "{i18n(\"pages.info.lifepage.420754341ee2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.info.lifepage.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.92341cf02c56",
+      "source": "电子发票",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 44,
+          "context": "return i18n(\"pages.info.lifepage.92341cf02c56\");"
+        }
+      ],
+      "translation": "Invoices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.b735bde6b0d7",
+      "source": "管理生活栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 136,
+          "context": "{i18n(\"pages.info.lifepage.b735bde6b0d7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

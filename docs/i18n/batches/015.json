@@ -1,0 +1,1412 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.imagefiltersheet.5217984b59e5",
+      "source": "正在生成，请稍候…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 166,
+          "context": "busy\n        ? i18n(\"components.imagefiltersheet.5217984b59e5\")\n        : `${info?.hint ?? \"\"}${rotate ? i18n(\"components.imagefiltersheet.fc1f2c7428d8\", { rotate: String(rotate) }) : \"\"}${dirty ? \"\" : i18n(\"components.imagefiltersheet.e6a608674c0f\")}`"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.63c73c4730f4",
+      "source": "应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 211,
+          "context": "busy ? i18n(\"components.imagefiltersheet.d3d21191f32e\") : i18n(\"components.imagefiltersheet.63c73c4730f4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.90a4851cb62d",
+      "source": "这一步没做完，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 54,
+          "context": "e instanceof Error && e.message ? e.message : i18n(\"components.imagefiltersheet.90a4851cb62d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.9393fa8872d2",
+      "source": "编辑图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 69,
+          "context": "title = i18n(\"components.imagefiltersheet.9393fa8872d2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.imagefiltersheet.d24c10d37db0",
+      "source": "图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 58,
+          "context": "base || i18n(\"components.imagefiltersheet.d24c10d37db0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.d3d21191f32e",
+      "source": "处理中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 211,
+          "context": "busy ? i18n(\"components.imagefiltersheet.d3d21191f32e\") : i18n(\"components.imagefiltersheet.63c73c4730f4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.e4fe3a04ff89",
+      "source": "滤镜预设",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 185,
+          "context": "{i18n(\"components.imagefiltersheet.e4fe3a04ff89\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.e6a608674c0f",
+      "source": " · 未改动",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 167,
+          "context": "dirty ? \"\" : i18n(\"components.imagefiltersheet.e6a608674c0f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.fc1f2c7428d8",
+      "source": " · 已旋转 {rotate}°",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "rotate",
+          "expression": "String(rotate)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 167,
+          "context": "rotate ? i18n(\"components.imagefiltersheet.fc1f2c7428d8\", { rotate: String(rotate) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imageviewer.850de13a01d9",
+      "source": "保存图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 495,
+          "context": "saving ? i18n(\"components.imageviewer.a1a1720d3eb5\") : i18n(\"components.imageviewer.850de13a01d9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imageviewer.8a4c192efb6b",
+      "source": "已保存到相册",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 478,
+          "context": "showToast(i18nMsg(\"components.imageviewer.8a4c192efb6b\"), 3000)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imageviewer.a1a1720d3eb5",
+      "source": "保存中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 495,
+          "context": "saving ? i18n(\"components.imageviewer.a1a1720d3eb5\") : i18n(\"components.imageviewer.850de13a01d9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imageviewer.a9769c635970",
+      "source": "查看图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 487,
+          "context": "{i18n(\"components.imageviewer.a9769c635970\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imageviewer.f1326e4568dd",
+      "source": "保存失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "msg",
+          "expression": "String(msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageViewer.tsx",
+          "line": 481,
+          "context": "showToast(i18nMsg(\"components.imageviewer.f1326e4568dd\", { msg: String(msg) }), 9000)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.020a11d70b94",
+      "source": "发起飞书扫码失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 163,
+          "context": "flash(i18n(\"components.imsettingssection.020a11d70b94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.021f76bfa953",
+      "source": "在本机？直接打开确认页（免扫码）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 230,
+          "context": "{i18n(\"components.imsettingssection.021f76bfa953\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.0f8c1b732b2c",
+      "source": "未绑定。生成绑定码后在飞书里给 bot 发送「/bind 绑定码」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 242,
+          "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.107fecedccba",
+      "source": "保存并连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 326,
+          "context": "{i18n(\"components.imsettingssection.107fecedccba\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.14087a9867d2",
+      "source": "微信扫码授权后即可对话（无需任何 App ID/Secret）：消息经官方 iLink 通道长轮询到达本机， OH 回复原路发回。当前状态：{value}{value2}{value3}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase"
+        },
+        {
+          "name": "value2",
+          "expression": "wechatStatus.note ? `：${wechatStatus.note}` : \"\""
+        },
+        {
+          "name": "value3",
+          "expression": "cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 265,
+          "context": "{i18nRich(\"components.imsettingssection.14087a9867d2\", { value: PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase, value2: wechatStatus.note ? `：${wechatStatus.note}` : \"\", value3: cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.1c925e27fa1d",
+      "source": "扫码创建",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 220,
+          "context": "{i18n(\"components.imsettingssection.1c925e27fa1d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.2217f7c35158",
+      "source": "已绑定：{value}…（单主人模型：仅此人消息进入 OH）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(bound.slice(0, 12))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 241,
+          "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.28690afd1ecd",
+      "source": "飞书开放平台 → 自建应用 → 凭证与基础信息。仅存本机（密文）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 314,
+          "context": "{i18n(\"components.imsettingssection.28690afd1ecd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 232,
+          "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 286,
+          "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.378eaca774bb",
+      "source": "扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 268,
+          "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.390c8b791bcd",
+      "source": "手机飞书扫码 → 打开页确认创建 → 自动拿回 App ID/Secret 并连接（应用所有者自动绑为主人）。 不想扫码时用「高级配置」里的手工填入。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 218,
+          "context": "{i18n(\"components.imsettingssection.390c8b791bcd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.394ee5935d8c",
+      "source": "通道连接状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 59,
+          "context": "return i18n(\"components.imsettingssection.394ee5935d8c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.3becaa3847a1",
+      "source": "长连接事件订阅",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 60,
+          "context": "return i18n(\"components.imsettingssection.3becaa3847a1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.3cbb7d58f5e4",
+      "source": "发起扫码失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 199,
+          "context": "flash(i18n(\"components.imsettingssection.3cbb7d58f5e4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.4a151de9633d",
+      "source": "桌面 App 常驻时 bot 在线：飞书开放平台自建应用（长连接事件订阅，免公网入口）。 收到的消息直达 OH，回复原路发回；附件后续经云盘归档。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 306,
+          "context": "{i18n(\"components.imsettingssection.4a151de9633d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.516b7af343ed",
+      "source": "等待扫码…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 197,
+          "context": "setWxNote(i18n(\"components.imsettingssection.516b7af343ed\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 229,
+          "context": "fsNote || i18n(\"components.imsettingssection.516b7af343ed\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 284,
+          "context": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.54821806e300",
+      "source": "飞书凭据已保存（密文落盘）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 101,
+          "context": "flash(i18n(\"components.imsettingssection.54821806e300\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.550c7a151569",
+      "source": "已启用，正在连接…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 120,
+          "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.57afe4560634",
+      "source": "绑定码 10 分钟内有效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 205,
+          "context": "flash(i18n(\"components.imsettingssection.57afe4560634\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.5f2af850764a",
+      "source": "生成绑定码 / 解除绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 57,
+          "context": "return i18n(\"components.imsettingssection.5f2af850764a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.6ec82af7b630",
+      "source": "在飞书私聊里发送：/bind {code}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "code",
+          "expression": "code"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 256,
+          "context": "{i18nRich(\"components.imsettingssection.6ec82af7b630\", { code: code })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.7c546888c169",
+      "source": "手工填飞书应用凭据",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 61,
+          "context": "return i18n(\"components.imsettingssection.7c546888c169\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.8615725de235",
+      "source": "应用凭据（手工）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 61,
+          "context": "return i18n(\"components.imsettingssection.8615725de235\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 313,
+          "context": "{i18n(\"components.imsettingssection.8615725de235\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.86b11345bf97",
+      "source": "微信扫码绑定 / 重新扫码 / 解除绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 58,
+          "context": "return i18n(\"components.imsettingssection.86b11345bf97\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.89c4766afc85",
+      "source": "连接失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 44,
+          "context": "return i18n(\"components.imsettingssection.89c4766afc85\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.8c9a5097d028",
+      "source": "微信（iLink 官方 Bot · 扫码即用）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 58,
+          "context": "return i18n(\"components.imsettingssection.8c9a5097d028\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 264,
+          "context": "{i18n(\"components.imsettingssection.8c9a5097d028\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a379593b5b75",
+      "source": "重新扫码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 268,
+          "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a445a63759f6",
+      "source": "已解除绑定：之后的消息不再进入 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 111,
+          "context": "flash(i18n(\"components.imsettingssection.a445a63759f6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a84a8e151194",
+      "source": "飞书通道开关",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 308,
+          "context": "{i18n(\"components.imsettingssection.a84a8e151194\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.a8c3698b5b8c",
+      "source": "已停用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 120,
+          "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.b35839220413",
+      "source": "App ID（cli_ 开头）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 319,
+          "context": "{i18n(\"components.imsettingssection.b35839220413\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.b8f945ea49ff",
+      "source": "连接状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 59,
+          "context": "return i18n(\"components.imsettingssection.b8f945ea49ff\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 295,
+          "context": "{i18n(\"components.imsettingssection.b8f945ea49ff\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.c432e0322b39",
+      "source": "飞书 bot（P0 通道）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 60,
+          "context": "return i18n(\"components.imsettingssection.c432e0322b39\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 305,
+          "context": "{i18n(\"components.imsettingssection.c432e0322b39\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.d49461b1f610",
+      "source": "微信通道已启用（扫码登录成功）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 181,
+          "context": "flash(i18n(\"components.imsettingssection.d49461b1f610\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.d5679a030605",
+      "source": "扫码创建飞书应用并自动绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 56,
+          "context": "return i18n(\"components.imsettingssection.d5679a030605\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.e869014f4368",
+      "source": "飞书应用已创建并连接（扫码建应用成功）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 143,
+          "context": "flash(i18n(\"components.imsettingssection.e869014f4368\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.ecf1cf831460",
+      "source": "扫码创建应用（推荐，免手工配置）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 56,
+          "context": "return i18n(\"components.imsettingssection.ecf1cf831460\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 217,
+          "context": "{i18n(\"components.imsettingssection.ecf1cf831460\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.ee91e7a6f98f",
+      "source": "{value}（用微信扫一扫；手机上的 OneTHU 无法自扫，可先用飞书通道）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 284,
+          "context": "{i18nRich(\"components.imsettingssection.ee91e7a6f98f\", { value: wxNote || i18n(\"components.imsettingssection.516b7af343ed\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.f48f46f71775",
+      "source": "绑定主人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 57,
+          "context": "return i18n(\"components.imsettingssection.f48f46f71775\");"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 238,
+          "context": "{i18n(\"components.imsettingssection.f48f46f71775\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.f69e6a2f5669",
+      "source": "生成绑定码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 246,
+          "context": "{i18n(\"components.imsettingssection.f69e6a2f5669\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.f779d8072854",
+      "source": "{value}{value2}（最近入站 {value3}）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "PHASE_TEXT[fs.phase] ?? fs.phase"
+        },
+        {
+          "name": "value2",
+          "expression": "fs.note ? `：${fs.note}` : \"\""
+        },
+        {
+          "name": "value3",
+          "expression": "fmtAt(fs.lastInboundAt)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 296,
+          "context": "{i18nRich(\"components.imsettingssection.f779d8072854\", { value: PHASE_TEXT[fs.phase] ?? fs.phase, value2: fs.note ? `：${fs.note}` : \"\", value3: fmtAt(fs.lastInboundAt) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.fb3f6cc3047d",
+      "source": "解除绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 248,
+          "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 273,
+          "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imsettingssection.fea96ff7ab72",
+      "source": "请用手机飞书扫码，并在打开页确认创建智能体应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImSettingsSection.tsx",
+          "line": 161,
+          "context": "setFsNote(i18n(\"components.imsettingssection.fea96ff7ab72\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.06657c279571",
+      "source": "通讯录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 104,
+          "context": "return i18n(\"components.layout.06657c279571\");"
+        }
+      ],
+      "translation": "Contacts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.0be1eb29d29d",
+      "source": "侧栏：完整 → 切换为窄（悬停展开）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 156,
+          "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 114,
+          "context": "return i18n(\"components.layout.15d208d1b4c9\");"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.1760b98532ec",
+      "source": "在线服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 117,
+          "context": "return i18n(\"components.layout.1760b98532ec\");"
+        }
+      ],
+      "translation": "Online services",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 227,
+          "context": "{i18n(\"components.layout.203c08e0d44a\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 227,
+          "context": "{i18n(\"components.layout.203c08e0d44a\")}"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 115,
+          "context": "return i18n(\"components.layout.352cdc807892\");"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.487e926379fe",
+      "source": "我的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 772,
+          "context": "label: i18n(\"components.layout.487e926379fe\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.layout.4ebe692f5dbb",
+      "source": "其他 Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 118,
+          "context": "return i18n(\"components.layout.4ebe692f5dbb\");"
+        }
+      ],
+      "translation": "Other Info apps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.52fdbbaeda4c",
+      "source": "待办",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 98,
+          "context": "return i18n(\"components.layout.52fdbbaeda4c\");"
+        }
+      ],
+      "translation": "To-dos",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.56043fcf0aa1",
+      "source": "竖屏取景框（dev）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 833,
+          "context": "label: i18n(\"components.layout.56043fcf0aa1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.layout.60458dfb4c14",
+      "source": "寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 103,
+          "context": "return i18n(\"components.layout.60458dfb4c14\");"
+        }
+      ],
+      "translation": "Trace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 101,
+          "context": "return i18n(\"components.layout.60db1afb4022\");"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.61156d427af0",
+      "source": "回到顶层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 609,
+          "context": "{i18n(\"components.layout.61156d427af0\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 610,
+          "context": "{i18n(\"components.layout.61156d427af0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.6ac6519ea0d3",
+      "source": "切换为窄模式（缩略图，悬停展开）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 157,
+          "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.73075237fd0f",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 105,
+          "context": "return i18n(\"components.layout.73075237fd0f\");"
+        }
+      ],
+      "translation": "Mail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.76fb5d2b725f",
+      "source": "切换为完整显示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 157,
+          "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.7a007b29bf56",
+      "source": "硬刷新（整页重载）· 按住可拖动位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 620,
+          "context": "{i18n(\"components.layout.7a007b29bf56\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.7f1d9dd04cd1",
+      "source": "我的",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 151,
+          "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 237,
+          "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.9f07d2ce4115",
+      "source": "更多操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 845,
+          "context": "{i18n(\"components.layout.9f07d2ce4115\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 102,
+          "context": "return i18n(\"components.layout.a14f23af7016\");"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 194,
+          "context": "{i18n(\"components.layout.a626aad412b7\")}"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.b1abb3dc2271",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 112,
+          "context": "return i18n(\"components.layout.b1abb3dc2271\");"
+        }
+      ],
+      "translation": "Xiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.b5c07fc4f827",
+      "source": "侧栏：窄（悬停展开）→ 切换为完整",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 156,
+          "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

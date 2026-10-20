@@ -7,7 +7,7 @@
  *  ② 首页引导不许变成甩不掉的狗皮膏药——≤3 条、有"不再提示"、看过就落盘不再弹，
  *     目标找不到（卡片被隐藏或内容为空）要自动跳过，而不是指着一个不存在的地方。
  */
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 import assert from "node:assert/strict";
 
 const help = readFileSync("apps/desktop/src/components/HelpSection.tsx", "utf8");
@@ -37,8 +37,8 @@ assert.ok(
   /SETTINGS_TAB_ORDER = \[[^\]]*"帮助"[^\]]*\]/.test(mode),
   "设置页签少了「帮助」（清单已挪到 state/settingsMode.ts，设置页与命令面板共用这一份）",
 );
-assert.ok(/<SectionHead title="帮助"/.test(settings), "设置页少了「帮助」分节（explorer 版结构是 SectionHead JSX，旧 SETTINGS_GROUPS 数组已退役）");
-assert.ok(/<SectionHead title="帮助" \/>[\s\S]{0,120}<HelpSection \/>/.test(settings), "「帮助」分节没有渲染 HelpSection");
+assert.ok(/<SettingsGroup tab="帮助" active=\{tab\} section="帮助">/.test(settings), "设置页少了稳定的「帮助」分组");
+assert.ok(/<SectionHead id="row-set-help" title="帮助" \/>[\s\S]{0,120}<HelpSection \/>/.test(settings), "「帮助」分节没有稳定锚点或没有渲染 HelpSection");
 assert.ok(/import \{ HelpSection \}/.test(settings), "设置页没导入 HelpSection");
 
 // ③ 首页引导：≤3 条、可关、看过落盘、目标找不到就跳过

@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
 /** 插件门面：把应用原子操作按权限包装成 onethu.* 公共接口 */
 import { info, learn, http, loadRemembered, currentFingerprint } from "../lib/clients.js";
 import { InfoClient, caldav } from "@onethu/core";
@@ -254,8 +255,8 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     }): Promise<{ uid: string; where: "cloud" | "local" }> {
       gate(perms, "cal:write", "cal.add");
       return (async () => {
-        if (!title?.trim()) throw new Error("标题不能为空");
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateYmd ?? "")) throw new Error("dateYmd 需要 YYYY-MM-DD");
+        if (!title?.trim()) throw new Error(i18n("plugins.facade.015edb6a8f1a"));
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateYmd ?? "")) throw new Error(i18n("plugins.facade.9ab26357bd06"));
         const d = new Date(Number(dateYmd.slice(0, 4)), Number(dateYmd.slice(5, 7)) - 1, Number(dateYmd.slice(8, 10)));
         const [sh, sm] = (startHm ?? "08:00").split(":").map(Number);
         const [eh, em] = (endHm ?? "09:35").split(":").map(Number);
@@ -281,7 +282,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       return (async () => {
         if (getCloudEvents().some((e) => e.uid === uid)) await deleteCloudEvent(uid);
         else if (getLocalEvents().some((e) => e.uid === uid)) await deleteLocalEvent(uid);
-        else throw new Error(`日程不存在：${uid}`);
+        else throw new Error(i18n("plugins.facade.f6746a5629b0", { uid: String(uid) }));
         return { removed: true as const };
       })();
     },
@@ -293,7 +294,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       return (async () => {
         const cloudEv = getCloudEvents().find((e) => e.uid === uid);
         const src = cloudEv ?? getLocalEvents().find((e) => e.uid === uid);
-        if (!src) throw new Error(`日程不存在：${uid}（先用 cal.agenda 拿最近日程的 uid）`);
+        if (!src) throw new Error(i18n("plugins.facade.4c822bdd81d6", { uid: String(uid) }));
         const originalCloud = !!cloudEv;
         const allDay = ch.allDay ?? src.allDay;
         // 日期：ch.date（YYYY-MM-DD）否则沿用原事件日期
@@ -347,7 +348,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   const cloudToken = async (): Promise<string> => {
     await ensureSeafileLoaded();
     const t = getSeafileToken();
-    if (!t) throw new Error("云盘未配置：请先在应用的「云盘」页连接（Seafile API Token）");
+    if (!t) throw new Error(i18n("plugins.facade.d669b31a853f"));
     return t;
   };
   const cloudRead = wrap({
@@ -530,7 +531,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (semesterId) {
           const courses = await learn.getCourseList(semesterId);
           if (!courses.some((c) => c.id === courseId)) {
-            throw new Error(`课程 ${courseId} 不在学期 ${semesterId} 的课程列表中（跨学期请确认 semesterId）`);
+            throw new Error(i18n("plugins.facade.532d892a16b6", { courseId: String(courseId), semesterId: String(semesterId) }));
           }
         }
         return learn.getFileList(courseId);
@@ -615,7 +616,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const { getCourseXDetailPublic } = await import("@onethu/core");
         try {
           const d = await withExternalTimeout(getCourseXDetailPublic(universalFetch, id));
-          if (!d) return { id, error: "详情页无可解析卡片（页面结构变更?）" };
+          if (!d) return { id, error: i18n("plugins.facade.c50a68203b6c") };
           return d;
         } catch (e) {
           return { id, error: explainNetworkError(e) };
@@ -683,7 +684,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
             return await info.bookLibrarySeat(seat, sectionId, dateChoice, appSession.username);
           } catch (e2) {
             const m2 = e2 instanceof Error ? e2.message : String(e2);
-            throw new Error(`${m2}（重试前会话重建: ${ensured}；座位系统 uid=${InfoClient.libUserid || "?"}）`);
+            throw new Error(i18n("plugins.facade.b415f4b7d98e", { m2: String(m2), ensured: String(ensured), value: String(InfoClient.libUserid || "?") }));
           }
         }
       },
@@ -727,12 +728,12 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const bid = String(pageId ?? "") === "board" ? String(want.boardId ?? want.id ?? "") : "";
         if (bid) {
           const hit = allOnePages().find((b) => b.id === bid);
-          if (!hit) throw new Error(`没有这块白板：${bid}（先用 ext.onepage_list 拿板 id；列表页用 page=\"boards\"）`);
+          if (!hit) throw new Error(i18n("plugins.facade.265965114fef", { bid: String(bid) }));
           openOnePage(bid);
           openTab("board", null, { title: hit.name });
           return true;
         }
-        if (!navGo(pageId, want)) throw new Error("导航桥未就绪（应用启动中）");
+        if (!navGo(pageId, want)) throw new Error(i18n("plugins.facade.536acdd7d116"));
         return true;
       },
       /** 原子检索：静态注册表（功能页/今日组件/操作）+ 本机缓存（课程/作业/通知/在线服务…）。
@@ -862,7 +863,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
        *  调用方应 catch 后降级 onethu.nav 外链或系统浏览器）。需 webview 权限。 */
       webModal: async (url: string): Promise<void> => {
         gate(perms, "webview", "ui.webModal");
-        if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
+        if (!/^https:\/\//.test(url)) throw new Error(i18n("plugins.facade.6082f18ce536"));
         await invoke("open_web_modal", { url, dark: currentThemeIsDark() });
       },
       /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式；
@@ -884,7 +885,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       form: async (title: string, fields: FormField[]): Promise<Record<string, string> | null> => {
         gate(perms, "ui", "ui.form");
         const { openFormModal } = await import("../lib/formModal.js");
-        return openFormModal(String(title ?? "请填写"), Array.isArray(fields) ? fields : []);
+        return openFormModal(title == null ? i18nMsg("plugins.facade.formFallback") : String(title), Array.isArray(fields) ? fields : []);
       },
       /** 剪贴板：写无需确认；read 需 clipboard:read 权限（敏感，可读密码管理器内容）。 */
       clipboard: {
@@ -901,14 +902,14 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       getTabRoot: (pageKey: string): HTMLElement | null => {
         gate(perms, "ui", "ui.getTabRoot");
         const key = String(pageKey ?? "");
-        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("getTabRoot 仅限本插件注册的 tab");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error(i18n("plugins.facade.d12b86e33757"));
         return getTabRoot(key);
       },
       /** 订阅 tab 容器就绪（已就绪立即回调；返回退订函数） */
       onTabReady: (pageKey: string, cb: (root: HTMLElement) => void): (() => void) => {
         gate(perms, "ui", "ui.onTabReady");
         const key = String(pageKey ?? "");
-        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("onTabReady 仅限本插件注册的 tab");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error(i18n("plugins.facade.777811e6adc7"));
         if (typeof cb !== "function") return () => undefined;
         return onTabReady(key, cb);
       },
@@ -934,10 +935,10 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "ui", "ext.flowCreate");
         const trg = trigger as import("../state/userext.js").FlowTrigger;
         if (!trg || (trg.kind !== "manual" && trg.kind !== "cron" && trg.kind !== "event")) {
-          throw new Error("trigger 必须是 {kind:manual} / {kind:cron,everyMinutes} / {kind:event,event}");
+          throw new Error(i18n("plugins.facade.d9e18ccca62c"));
         }
         const list = Array.isArray(steps) ? (steps as ExtStep[]) : [];
-        if (!list.length) throw new Error("OneFlow 至少要有 1 个步骤");
+        if (!list.length) throw new Error(i18n("plugins.facade.995c7a402a02"));
         const id = "fl." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
         upsertFlow({ id, name: String(name), trigger: trg, steps: list });
         return { id };
@@ -956,18 +957,18 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (Array.isArray(patch?.steps)) p.steps = patch.steps as ExtStep[];
         if (typeof patch?.enabled === "boolean") p.enabled = patch.enabled;
         const ok = updateFlow(String(id), p);
-        if (!ok) throw new Error("没有这个 OneFlow");
+        if (!ok) throw new Error(i18n("plugins.facade.30c5627d3abc"));
         return { ok };
       },
       flowSetEnabled: (id: string, on: boolean): { ok: boolean } => {
         gate(perms, "ui", "ext.flowSetEnabled");
         const ok = setFlowEnabled(String(id), Boolean(on));
-        if (!ok) throw new Error("没有这个 OneFlow");
+        if (!ok) throw new Error(i18n("plugins.facade.30c5627d3abc"));
         return { ok };
       },
       flowDelete: (id: string): void => {
         gate(perms, "ui", "ext.flowDelete");
-        if (!userExtSnapshot().flows.some((f) => f.id === String(id))) throw new Error("没有这个 OneFlow（id 来自 ext_flow_list）");
+        if (!userExtSnapshot().flows.some((f) => f.id === String(id))) throw new Error(i18n("plugins.facade.7437bebe3a97"));
         deleteFlow(String(id));
       },
       widgetCreate: (name: string, html: string, x?: number, y?: number): { id: string } => {
@@ -1013,7 +1014,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       onePageAddItem: async (boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }> => {
         gate(perms, "ui", "ext.onePageAdd");
         const spec = await buildSpec(kind, payload);
-        if (!spec) throw new Error("不认识的组件类型或引用无效，可用：text / atom-link / custom");
+        if (!spec) throw new Error(i18n("plugins.facade.a80c49c4e2cd"));
         const iid = "it." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
         let placed = false;
         mutateBoards((doc) => {
@@ -1031,7 +1032,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           });
           return placed ? { ...doc, boards } : null;
         });
-        if (!placed) throw new Error("找不到这块 OnePage（id 不对或已删除）");
+        if (!placed) throw new Error(i18n("plugins.facade.ef62cd3182c8"));
         return { id: iid };
       },
       themeApply: (name: string, vars: unknown): { id: string } => {
@@ -1064,15 +1065,15 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       },
       onePageRename: (id: string, name: string): void => {
         gate(perms, "ui", "ext.onePageRename");
-        if (!String(name ?? "").trim()) throw new Error("需要一个新名字");
+        if (!String(name ?? "").trim()) throw new Error(i18n("plugins.facade.e17b179b14d7"));
         renameOnePage(String(id), String(name));
       },
       /** 换 OnePage 图标（TabStrip/OneGO/列表页都读 Board.icon；图标键来自 FOLDER_ICONS） */
       onePageSetIcon: (id: string, icon: string): { ok: boolean } => {
         gate(perms, "ui", "ext.onePageSetIcon");
         const b = allOnePages().find((x) => x.id === String(id));
-        if (!b) throw new Error("没找到这块 OnePage");
-        if (!String(icon ?? "").trim()) throw new Error("需要一个图标键");
+        if (!b) throw new Error(i18n("plugins.facade.fba969e122d2"));
+        if (!String(icon ?? "").trim()) throw new Error(i18n("plugins.facade.9649f0743b7b"));
         mutateBoards((doc) => renameBoard(doc, b.id, b.name, String(icon)));
         return { ok: true };
       },
@@ -1111,7 +1112,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           }
           return found ? { ...doc, boards: doc.boards.map((b) => (b.id === board.id ? { ...b, cells } : b)) } : null;
         });
-        if (!moved || !found) throw new Error("没找到这块板或这个组件（id 对照 ext_onepage_list 的板与组件 id）");
+        if (!moved || !found) throw new Error(i18n("plugins.facade.fba49ea39197"));
       },
       onePageRemoveItem: (boardId: string, itemId: string): void => {
         gate(perms, "ui", "ext.onePageRemoveItem");
@@ -1125,13 +1126,13 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           });
           return boards === doc.boards ? null : { ...doc, boards };
         });
-        if (!gone) throw new Error("没找到这块板或这个组件");
+        if (!gone) throw new Error(i18n("plugins.facade.f4466b045d5f"));
       },
       /** 某块 OnePage 的组件清单（OH 调位/删除前按图索骥） */
       onePageItems: (boardId: string): Array<{ id: string; kind: string; text?: string; x: number; y: number; w: number; h: number }> => {
         gate(perms, "ui", "ext.onePageItems");
         const b = allOnePages().find((x) => x.id === String(boardId));
-        if (!b) throw new Error("没找到这块 OnePage");
+        if (!b) throw new Error(i18n("plugins.facade.fba969e122d2"));
         return (b.cells.portrait ?? []).map((it) => ({
           id: it.id,
           kind: it.spec.kind,
@@ -1154,13 +1155,13 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         /* 存储格式唯一：kind|key。旧工具文案写 kind:key，OH 会照抄成永久失效的 ref——
            这里把首个 ':' 归一成 '|'，并拒绝解析不了的引用。 */
         let key = String(atomKey ?? "").trim();
-        if (!key) throw new Error("atomKey 不能为空：原子引用形如 kind|key（也接受 kind:key）");
+        if (!key) throw new Error(i18n("plugins.facade.aaf4a5ba16eb"));
         if (!key.includes("|")) {
           const i = key.indexOf(":");
           if (i > 0) key = key.slice(0, i) + "|" + key.slice(i + 1);
         }
         const ref = atomRefFromKey(key);
-        if (!ref || !ref.kind || !ref.key) throw new Error("atomKey 形如 kind|key（如 course|123）；可从 list_favorite_kinds 或 nav.searchAtoms 拿");
+        if (!ref || !ref.kind || !ref.key) throw new Error(i18n("plugins.facade.976be8e8ac76"));
         const want = String(target?.boardId ?? "").trim();
         /* 不带 boardId = 落首页（首页画的就是系统板）；带 boardId = 落那块 OnePage */
         const r = want ? addAtomToBoard(want, key) : addAtomToHome(key);
@@ -1196,7 +1197,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           }
           const entry = sphereEntry(id);
           if (!entry) {
-            throw new Error(`不认识这个页面：${id}（可停靠的只有首页一级页与本机插件功能页；当前可停靠：${dockable.slice(0, 40).join(" / ")}）`);
+            throw new Error(i18n("plugins.facade.98c18b06340b", { id: String(id), value: String(dockable.slice(0, 40).join(" / ")) }));
           }
           if (on === true) dockSphere(id);
           else undockSphere(id);
@@ -1257,7 +1258,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       },
       /* ── 标签页 ── */
       tabList: (): Array<{ id: string; title: string; page: string }> => [
-        { id: "home", title: "首页", page: "homepage" },
+        { id: "home", title: i18n("plugins.facade.203c08e0d44a"), page: "homepage" },
         ...explorerSnapshot().tabs.map((t) => ({ id: t.id, title: t.title, page: String(t.page) })),
       ],
       tabOpen: (page: string): { id: string } => {
@@ -1274,7 +1275,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       tabDuplicate: (id: string): { id: string } => {
         gate(perms, "ui", "ext.tabDuplicate");
         const id2 = duplicateTab(String(id));
-        if (!id2) throw new Error("这个标签不能复制（首页或标签不存在）");
+        if (!id2) throw new Error(i18n("plugins.facade.5a9154403950"));
         return { id: id2 };
       },
       tabFocus: (id: string): boolean => {
@@ -1285,10 +1286,10 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       /* 壁纸只剩全屏一档（2026-10-14 定案）：scope 只认 "global"，其它值报错说清 */
       wallpaperSet: (scope: string, ref: string | null): void => {
         gate(perms, "ui", "ext.wallpaperSet");
-        if (scope !== "global") throw new Error("壁纸只有全屏一档（scope=\"global\"）；原来的「本页」档已删除");
+        if (scope !== "global") throw new Error(i18n("plugins.facade.81accc7a976c"));
         const val = String(ref ?? "");
         if (val) {
-          if (!val.startsWith("builtin:")) throw new Error("目前只接受内置壁纸（builtin:aurora/dusk/matcha/ink），本地图请从设置→壁纸上传");
+          if (!val.startsWith("builtin:")) throw new Error(i18n("plugins.facade.7241d265bd8c"));
           if (!BUILTIN_WALLPAPERS.some((b) => "builtin:" + b.id === val)) throw new Error("没有这块内置壁纸，可选：" + BUILTIN_WALLPAPERS.map((b) => "builtin:" + b.id).join("、"));
         }
         setGlobalWallpaper(val || null);
@@ -1354,17 +1355,17 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "ui", "ext.eventAdd");
         const e = (ev ?? {}) as { summary?: unknown; start?: unknown; end?: unknown; location?: unknown; allDay?: unknown; alarmMinutes?: unknown; onethuWidget?: unknown };
         const summary = String(e.summary ?? "").trim();
-        if (!summary) throw new Error("日程需要标题 summary");
+        if (!summary) throw new Error(i18n("plugins.facade.33db9bfbf0a0"));
         const toMs = (v: unknown): number => {
           if (typeof v === "number" && Number.isFinite(v)) return v;
           const s = String(v ?? "").trim().replace(" ", "T");
           const t = new Date(s).getTime();
-          if (!Number.isFinite(t)) throw new Error("时间得是「2026-10-14 09:00」格式或毫秒数");
+          if (!Number.isFinite(t)) throw new Error(i18n("plugins.facade.f6d1ef56c2ca"));
           return t;
         };
         const start = toMs(e.start);
         const end = toMs(e.end ?? e.start);
-        if (end < start) throw new Error("结束时间早于开始时间");
+        if (end < start) throw new Error(i18n("plugins.facade.cb7be7f22ff6"));
         const uid = "evt." + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         await putLocalEvent({
           uid,
@@ -1403,7 +1404,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "plugins:call", "ext.pluginInstallFromRepo");
         const m = await import("../lib/market.js");
         const ref = m.parseRepoInput(String(repo ?? ""));
-        if (!ref.owner) throw new Error("仓库地址不认识（支持 user/repo、user/repo@dev、完整 URL）");
+        if (!ref.owner) throw new Error(i18n("plugins.facade.d0deef545297"));
         const code = await m.fetchEntryFromRepo(ref, entry ? String(entry) : undefined);
         const { installPlugin } = await import("./loader.js");
         const man = await installPlugin(code, { repo: m.normalizeRepoUrl(String(repo ?? "")) });
@@ -1426,19 +1427,19 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       add: (key: string, folderId?: string): void => {
         gate(perms, "ui", "favorites.add");
         const k = String(key ?? "");
-        if (!k) throw new Error("favorites.add 需要 key");
+        if (!k) throw new Error(i18n("plugins.facade.776c5600bcab"));
         let d = loadFavs();
         let fid: string | undefined = folderId ? String(folderId) : d.order[0];
         if (!fid || !d.folders[fid]) {
           const next = createFolder(d, "我的收藏", null);
           fid = next.order.find((x) => !d.order.includes(x));
-          if (!fid) throw new Error("创建收藏夹失败");
+          if (!fid) throw new Error(i18n("plugins.facade.74881d8fa852"));
           saveFavs(next);
           window.dispatchEvent(new Event("onethu.favs.changed"));
           d = loadFavs();
         }
         const f = d.folders[fid];
-        if (!f) throw new Error("收藏夹不存在");
+        if (!f) throw new Error(i18n("plugins.facade.aa0117c0a684"));
         const atomKey = atomKeyOf({ kind: pluginAtomKindOf(pluginId), key: k });
         if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
           f.items.push({ t: "a" as const, atom: { kind: pluginAtomKindOf(pluginId), key: k } });
@@ -1453,7 +1454,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const kind = String(ref?.kind ?? "");
         const key = String(ref?.key ?? "");
         if (!kind.startsWith("plugin:") || !kind.slice("plugin:".length) || !key) {
-          throw new Error("addAtom 需要 { kind: \"plugin:<插件id>\", key }");
+          throw new Error(i18n("plugins.facade.667f8382b324"));
         }
         if (meta && typeof meta.title === "string" && meta.title && !getPluginAtom(kind)) {
           registerStaticAtomItem(kind, key, meta);
@@ -1461,7 +1462,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const d = loadFavs();
         const fid = folderId ? String(folderId) : d.order[0];
         const f = fid ? d.folders[fid] : undefined;
-        if (!f) throw new Error("收藏夹不存在（先在收藏夹页创建）");
+        if (!f) throw new Error(i18n("plugins.facade.168f93bc690d"));
         const atomKey = atomKeyOf({ kind, key });
         if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
           f.items.push({ t: "a" as const, atom: { kind, key } });
@@ -1586,14 +1587,14 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       launch: async (mode: string): Promise<unknown> => {
         gate(perms, "ui", "browser.launch");
         if (typeof navigator !== "undefined" && /android/i.test(navigator.userAgent)) {
-          throw new Error("手机端不开放浏览器探索（桌面端专属）。");
+          throw new Error(i18n("plugins.facade.3f6e4c3f9ebd"));
         }
         return geek.launchGeek(String(mode ?? "system"));
       },
       navigate: async (url: string): Promise<void> => {
         gate(perms, "ui", "browser.navigate");
         const u = String(url ?? "");
-        if (!/^https?:\/\//.test(u)) throw new Error("url 要以 http(s):// 开头");
+        if (!/^https?:\/\//.test(u)) throw new Error(i18n("plugins.facade.0a9a214b2734"));
         await geek.geekNavigate(u);
       },
       eval: async (js: string): Promise<unknown> => {
@@ -1622,7 +1623,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "tsinghua:sdk", "ts.ensure");
         const ok = await campusLearn.resume().catch(() => false);
         if (!ok) {
-          throw new AuthRequiredError("清华登录状态未能建立：请在 OneTHU 中重新登录后再试。");
+          throw new AuthRequiredError(i18n("plugins.facade.a31a8e09b143"));
         }
       },
       username: async (): Promise<string | null> => {
@@ -1681,7 +1682,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       send: async (opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{ ok: boolean; id: string; reason?: string }> => {
         gate(perms, "notify", "notify.send");
         const title = String(opts?.title ?? "").trim();
-        if (!title) throw new Error("notify.send 需要 title");
+        if (!title) throw new Error(i18n("plugins.facade.b7177e760cc6"));
         const key = String(opts?.key ?? "").trim() || `n${Date.now().toString(36)}`;
         const { sendPluginNotification } = await import("../state/pluginNotify.js");
         return sendPluginNotification({
@@ -1862,7 +1863,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   /** 用户扩展执行器：步骤里 "ns.method" 调用插件门面自身（单对象参数） */
   const execTool = (tool: string, args: Record<string, unknown> | unknown[]): Promise<unknown> => {
     const dot = tool.indexOf(".");
-    if (dot <= 0) return Promise.reject(new Error("工具名需要 ns.method 形式（如 nav.go / ext.onePageAddAtom）"));
+    if (dot <= 0) return Promise.reject(new Error(i18n("plugins.facade.807f0c9d0b04")));
     const nsObj = (api as unknown as Record<string, Record<string, ((...a: unknown[]) => unknown) | undefined>>)[tool.slice(0, dot)];
     const fn = nsObj?.[tool.slice(dot + 1)];
     if (typeof fn !== "function") return Promise.reject(new Error("没有这个方法：" + tool));
@@ -1912,9 +1913,9 @@ async function jsWsOpen(owner: string, url: string): Promise<string> {
   const sessionRec: JsWsSession = { ws, queue: [], closed: false, waiters: [] };
   _jsWsSessions.set(session, sessionRec);
   await new Promise<void>((resolve, reject) => {
-    const to = setTimeout(() => { ws.close(); reject(new Error("页内 WS 连接超时")); }, 10_000);
+    const to = setTimeout(() => { ws.close(); reject(new Error(i18n("plugins.facade.8794c40bbdb4"))); }, 10_000);
     ws.onopen = () => { clearTimeout(to); resolve(); };
-    ws.onerror = () => { clearTimeout(to); reject(new Error("页内 WS 连接失败")); };
+    ws.onerror = () => { clearTimeout(to); reject(new Error(i18n("plugins.facade.7cc0a2460bf7"))); };
     ws.onclose = () => {
       sessionRec.closed = true;
       sessionRec.queue.push({ kind: "closed" });
@@ -1932,7 +1933,7 @@ async function jsWsOpen(owner: string, url: string): Promise<string> {
 
 function jsWsSend(session: string, data: string, encoding: "text" | "b64"): Promise<void> {
   const s = _jsWsSessions.get(session);
-  if (!s) return Promise.reject(new Error("会话不存在"));
+  if (!s) return Promise.reject(new Error(i18n("plugins.facade.2d98325ea8eb")));
   if (encoding === "b64") {
     const bin = atob(data);
     const u8 = new Uint8Array(bin.length);
@@ -1946,7 +1947,7 @@ function jsWsSend(session: string, data: string, encoding: "text" | "b64"): Prom
 
 async function jsWsRecv(session: string, timeoutMs: number): Promise<WsFrameLike | null> {
   const s = _jsWsSessions.get(session);
-  if (!s) throw new Error("会话不存在");
+  if (!s) throw new Error(i18n("plugins.facade.2d98325ea8eb"));
   if (s.queue.length) return s.queue.shift() ?? null;
   return await new Promise<WsFrameLike | null>((resolve) => {
     let timer = 0;
@@ -1981,7 +1982,7 @@ function jsWsCloseOwner(owner: string): Promise<void> {
 let _xkSession: import("@onethu/core").ZhjwxkSession | null = null;
 async function xkSession(): Promise<import("@onethu/core").ZhjwxkSession> {
   const cred = await loadRemembered();
-  if (!cred) throw new Error("本机无记住的密码：请开启「记住密码」并重新登录一次后使用选课功能");
+  if (!cred) throw new Error(i18n("plugins.facade.38273097f67a"));
   if (_xkSession && _xkSession.username === cred.username && _xkSession.password === cred.password) {
     return _xkSession;
   }
@@ -1993,7 +1994,7 @@ async function xkSession(): Promise<import("@onethu/core").ZhjwxkSession> {
 async function withExternalTimeout<T>(p: Promise<T>, ms = 8000, label = "CourseX"): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, rej) => {
-    timer = setTimeout(() => rej(new Error(`${label} 响应超时（${ms / 1000} 秒），站点可能限流，稍后再试`)), ms);
+    timer = setTimeout(() => rej(new Error(i18n("plugins.facade.449acaed3d6f", { label: String(label), value: String(ms / 1000) }))), ms);
   });
   try {
     return await Promise.race([p, timeout]);
@@ -2017,11 +2018,11 @@ async function nethGuard<T>(op: () => Promise<T>): Promise<T> {
     if (now - nethCaptchaNavTs > 10_000) {
       nethCaptchaNavTs = now;
       if (navGo("life", { lifeTab: "network" })) {
-        showToast("校园网需要验证码登录，请输入图中验证码");
+        showToast(i18n("plugins.facade.ebf705292119"));
       }
     }
     throw new Error(
-      "校园网需要验证码登录：已自动打开校园网页面并展示验证码，请让用户在验证码面板输入图中字符完成登录，登录成功后重试本查询",
+      i18n("plugins.facade.d9ce17418be4"),
     );
   }
 }

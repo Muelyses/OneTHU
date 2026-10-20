@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { useApp } from "../state/context.js";
 /**
  * 通讯录：一级功能区页面（名片夹 + 我的组织）。
@@ -17,22 +18,24 @@ import { OrganizationSection } from "../components/OrganizationSection.js";
 type ContactsTab = "cards" | "orgs";
 
 export function ContactsPage() {
+  const uiLocale = useUiLocale();
+
   const { navParams } = useApp();
   const [tab, setTab] = useState<ContactsTab>((navParams as {section?:string}|null)?.section==="orgs"?"orgs":"cards");
   return (
     <div className="contacts-page">
       <PageHead
-        title="通讯录"
-        meta="交换一张名片，让联结留在这里。"
-        actions={<PageAtomStar atomKey="contacts" title="通讯录" />}
+        title={i18n("pages.contacts.06657c279571")}
+        meta={i18n("pages.contacts.b62dac5fc7e9")}
+        actions={<PageAtomStar atomKey="contacts" title={i18n("pages.contacts.06657c279571")} />}
       />
       <div className="contacts-tabs">
         <Segment
           value={tab}
           onChange={(v) => setTab(v as ContactsTab)}
           options={[
-            { value: "cards", label: "名片夹" },
-            { value: "orgs", label: "我的组织" },
+            { value: "cards", label: i18n("pages.contacts.1ad56c152731") },
+            { value: "orgs", label: i18n("pages.contacts.51cc2efa3e8d") },
           ]}
         />
       </div>
@@ -42,15 +45,11 @@ export function ContactsPage() {
         <Stack gap={6}>
 
           <div className="contacts-orgs">
-            <Text slot="label" tone="faint">
-              成员按邮箱加入，资料库共享到邮箱，GitLab 仓库挂到组织上；组织自带名片。
-            </Text>
+            <Text slot="label" tone="faint">{i18n("pages.contacts.d3548ea24212")}</Text>
             <OrganizationSection />
           </div>
           <Inline gap={2} wrap>
-            <Btn variant="ghost" onClick={() => setTab("cards")}>
-              回到名片夹
-            </Btn>
+            <Btn variant="ghost" onClick={() => setTab("cards")}>{i18n("pages.contacts.ea0abe91fe00")}</Btn>
           </Inline>
         </Stack>
       )}

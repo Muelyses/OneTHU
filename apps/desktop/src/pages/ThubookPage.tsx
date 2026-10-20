@@ -1,6 +1,8 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Input } from "@onethu/gui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { stripInlineColors } from "../lib/htmlTheme.js";
+import { sanitizeDisplayHtml } from "../lib/safeHtml.js";
 import type { ReactNode } from "react";
 import { Card, PageHead } from "../components/Layout.js";
 import { universalFetch } from "../lib/transport.js";
@@ -34,7 +36,7 @@ function extractMain(html: string): { title: string; html: string } {
   const title = doc.querySelector("title")?.textContent?.trim() ?? "";
   // 源站正文带行内颜色会压过主题令牌（深色主题下正文仍是黑字，用户实录 2026-09-20）
   // → 出解析时就去色，正文颜色一律由 .thubook-body 继承主题令牌
-  return { title, html: stripInlineColors(main?.innerHTML ?? "") };
+  return { title, html: sanitizeDisplayHtml(stripInlineColors(main?.innerHTML ?? "")) };
 }
 
 const BODY_STYLE = `
@@ -70,6 +72,8 @@ const BODY_STYLE = `
 `;
 
 export default function ThubookPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [tocPages, setTocPages] = useState<ThubookPageLink[]>([]);
   const [tocGroups, setTocGroups] = useState<ThubookGroup[]>([]);
   const [current, setCurrent] = useState<string>("/thubook/");
@@ -86,7 +90,7 @@ export default function ThubookPage(): ReactNode {
     void (async () => {
       try {
         const home = await universalFetch(`${BASE}/thubook/`);
-        if (!home.ok) throw new Error(`手册页暂时打不开，请稍后再试：HTTP ${home.status}`);
+        if (!home.ok) throw new Error(i18n("pages.thubookpage.5bdcbd092642", { status: String(home.status) }));
         const homeText = await home.text();
         const toc = parseThubookToc(homeText);
         setTocPages(toc.pages);
@@ -95,7 +99,7 @@ export default function ThubookPage(): ReactNode {
         CACHE.set("/thubook/", ext);
         setPage(ext);
       } catch (e) {
-        setErr(`目录加载失败：${e instanceof Error ? e.message : String(e)}（检查网络）`);
+        setErr(i18n("pages.thubookpage.2958a7f94d7e", { value: String(e instanceof Error ? e.message : String(e)) }));
       } finally {
         setTocLoading(false);
       }
@@ -116,13 +120,13 @@ export default function ThubookPage(): ReactNode {
     setErr("");
     try {
       const res = await universalFetch(new URL(path, BASE).href);
-      if (!res.ok) throw new Error(`手册页暂时打不开，请稍后再试：HTTP ${res.status}`);
+      if (!res.ok) throw new Error(i18n("pages.thubookpage.5bdcbd092642", { status: String(res.status) }));
       const ext = extractMain(await res.text());
       CACHE.set(path, ext);
       setCurrent(path);
       setPage(ext);
     } catch (e) {
-      setErr(`页面加载失败：${e instanceof Error ? e.message : String(e)}`);
+      setErr(i18n("pages.thubookpage.e8540f108cac", { value: String(e instanceof Error ? e.message : String(e)) }));
     } finally {
       setLoading(false);
     }
@@ -161,17 +165,17 @@ export default function ThubookPage(): ReactNode {
       })
       .filter((g) => g.keep);
     return { pages, groups };
-  }, [tocPages, tocGroups, qLower]);
+  }, [uiLocale, tocPages, tocGroups, qLower]);
   const total = tocPages.length + tocGroups.reduce((n, g) => n + g.items.length, 0);
 
   return (
     <>
-      <PageHead title="THUBook" meta={"清华手册 · thubook.help" + (total ? " · " + String(total) + " 篇" : "")} />
+      <PageHead title="THUBook" meta={i18n("pages.thubookpage.c982f207f09f") + (total ? " · " + String(total) + i18n("pages.thubookpage.78548675f31a") : "")} />
       <style>{BODY_STYLE}</style>
       <div className="thubook-shell" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 10, height: "calc(100vh - 150px)" }}>
         <Card className="thubook-toc" style={{ overflowY: "auto", padding: 10 }}>
-          <div style={{ width: "100%", marginBottom: 8, fontSize: 12.5 }}>{<Input placeholder="搜索手册…" value={q} onChange={(value) => setQ(value)} />}</div>
-          {tocLoading ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>目录加载中…</div> : null}
+          <div style={{ width: "100%", marginBottom: 8, fontSize: 12.5 }}>{<Input placeholder={i18n("pages.thubookpage.49505a8ee266")} value={q} onChange={(value) => setQ(value)} />}</div>
+          {tocLoading ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.c6d508cdf07d")}</div> : null}
           <div className="thubook-toc-list">
             {visible.pages.map((p) => (
               <button
@@ -196,17 +200,17 @@ export default function ThubookPage(): ReactNode {
                 ))}
               </div>
             ))}
-            {!tocLoading && !visible.pages.length && !visible.groups.length ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>无匹配</div> : null}
+            {!tocLoading && !visible.pages.length && !visible.groups.length ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.7a54f3fc4716")}</div> : null}
           </div>
         </Card>
         <Card style={{ overflowY: "auto", padding: "16px 22px" }}>
           {err ? (
             <ErrorLine text={err} style={{ fontSize: 13, marginBottom: 10 }} />
           ) : null}
-          {loading ? <div style={{ fontSize: 12.5, color: "var(--text-3, #999)" }}>加载中…</div> : null}
+          {loading ? <div style={{ fontSize: 12.5, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.4927a53bcc88")}</div> : null}
           {/* 正文：站点预渲染 HTML 注入（script/icon/svg 已剔除，图片补全域名+限高） */}
           <div className="thubook-body" ref={bodyRef} dangerouslySetInnerHTML={{ __html: page?.html ?? "" }} />
-          {!page && !loading && !err ? <div style={{ fontSize: 13, color: "var(--text-3, #999)" }}>左侧选择一页开始阅读</div> : null}
+          {!page && !loading && !err ? <div style={{ fontSize: 13, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.281cf61ea21e")}</div> : null}
         </Card>
       </div>
     </>

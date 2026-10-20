@@ -1,0 +1,1331 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.vault.vaultexchangeactions.90af63ce1115",
+      "source": "仅 {allowEmail} 的云盘账号可读取",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "allowEmail",
+          "expression": "String(payload.allowEmail)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 122,
+          "context": "payload?.allowEmail ? i18n(\"components.vault.vaultexchangeactions.90af63ce1115\", { allowEmail: String(payload.allowEmail) }) : i18n(\"components.vault.vaultexchangeactions.c8176173ee4c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.a5ffbae552f7",
+      "source": "复制未完成，请长按或选中上方口令手动复制。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 98,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.a5ffbae552f7\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.a840e8381cf3",
+      "source": "分享内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 111,
+          "context": "view === \"send\" ? i18n(\"components.vault.vaultexchangeactions.a840e8381cf3\") : i18n(\"components.vault.vaultexchangeactions.3580f829b532\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.aae2b6b66901",
+      "source": "这个组织已不在列表中，请重新选择。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 66,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.aae2b6b66901\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.ad0b66c6915d",
+      "source": "剪贴板里还没有口令，请复制后再试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 90,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.ad0b66c6915d\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.b1bd19b13336",
+      "source": "组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 141,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.b1bd19b13336\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.b22a92ecd85c",
+      "source": "继续接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 151,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.b22a92ecd85c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.b52e35824750",
+      "source": "撤销分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 127,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.b52e35824750\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.bd3dfaa014dc",
+      "source": "名片随组合口令发送；箱内内容与组织仍按各自权限读取。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 122,
+          "context": "combination ? i18n(\"components.vault.vaultexchangeactions.bd3dfaa014dc\") : payload?.allowEmail ? i18n(\"components.vault.vaultexchangeactions.90af63ce1115\", { allowEmail: String(payload.allowEmail) }) : i18n(\"components.vault.vaultexchangeactions.c8176173ee4c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.c0b3fbff51cc",
+      "source": "完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 150,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.c0b3fbff51cc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.c4070317e698",
+      "source": "{length} 项内容 · 生成时保存一份快照",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(target.items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 134,
+          "context": "target.items.length ? i18n(\"components.vault.vaultexchangeactions.c4070317e698\", { length: String(target.items.length) }) : i18n(\"components.vault.vaultexchangeactions.74acec2e689a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.c8176173ee4c",
+      "source": "持有这条口令的人可以接收，请只发给希望分享的人。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 122,
+          "context": "payload?.allowEmail ? i18n(\"components.vault.vaultexchangeactions.90af63ce1115\", { allowEmail: String(payload.allowEmail) }) : i18n(\"components.vault.vaultexchangeactions.c8176173ee4c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.cfe420a86519",
+      "source": "粘贴剪贴板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 158,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.cfe420a86519\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.d351c99d90dc",
+      "source": "个人名片还没有姓名，请先在「我的」中填写。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 65,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.d351c99d90dc\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.d8af406df93e",
+      "source": "箱子会另存为新暂存箱，原来的内容继续保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 153,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.d8af406df93e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.ddc1d8107144",
+      "source": "口令已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 97,
+          "context": "showToast(i18nMsg(\"components.vault.vaultexchangeactions.ddc1d8107144\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.df6746028850",
+      "source": "带上我的个人名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 140,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.df6746028850\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.e6de5478dcda",
+      "source": "组织邀请可在组织中管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 129,
+          "context": "withOrgId && i18n(\"components.vault.vaultexchangeactions.e6de5478dcda\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.edc68923b734",
+      "source": "先选择要分享的内容：暂存箱、个人名片或组织名片。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 64,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.edc68923b734\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.f730d0ac1001",
+      "source": "正在准备口令…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 146,
+          "context": "work === \"generate\" ? i18n(\"components.vault.vaultexchangeactions.f730d0ac1001\") : error ? i18n(\"components.vault.vaultexchangeactions.626483b777ae\") : i18n(\"components.vault.vaultexchangeactions.645b0bbba87e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.0cffe0f50c72",
+      "source": "插件内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 103,
+          "context": "[i18n(\"components.vault.vaultitempresentation.0cffe0f50c72\"), \"plugin\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.12bf9e7490d3",
+      "source": "课程附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 33,
+          "context": "[i18n(\"components.vault.vaultitempresentation.12bf9e7490d3\"), \"file\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.14b69bd6eeb0",
+      "source": "文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 94,
+          "context": "[i18n(\"components.vault.vaultitempresentation.14b69bd6eeb0\"), \"text\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.1fd167c6ae13",
+      "source": "应用对象",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 103,
+          "context": "[i18n(\"components.vault.vaultitempresentation.1fd167c6ae13\"), \"link\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.206359b4b54d",
+      "source": "白板组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 97,
+          "context": "[i18n(\"components.vault.vaultitempresentation.206359b4b54d\"), \"board\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.218e2d1b3853",
+      "source": "洗衣楼栋",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 25,
+          "context": "[i18n(\"components.vault.vaultitempresentation.218e2d1b3853\"), \"location\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.22d9e7c54b88",
+      "source": "表格",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 65,
+          "context": "[i18n(\"components.vault.vaultitempresentation.22d9e7c54b88\"), \"table\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.266e6cb77079",
+      "source": "图书馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 22,
+          "context": "[i18n(\"components.vault.vaultitempresentation.266e6cb77079\"), \"book\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.2687ccdbb1d2",
+      "source": "文档",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 69,
+          "context": "[i18n(\"components.vault.vaultitempresentation.2687ccdbb1d2\"), \"file\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.296c632ec857",
+      "source": "音频",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 64,
+          "context": "[i18n(\"components.vault.vaultitempresentation.296c632ec857\"), \"audio\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.2bb745fb2e6f",
+      "source": "课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 18,
+          "context": "[i18n(\"components.vault.vaultitempresentation.2bb745fb2e6f\"), \"file\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.2dd2abd8ce5c",
+      "source": "版面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 20,
+          "context": "[i18n(\"components.vault.vaultitempresentation.2dd2abd8ce5c\"), \"text\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.360ffb101c98",
+      "source": "图书馆区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 22,
+          "context": "[i18n(\"components.vault.vaultitempresentation.360ffb101c98\"), \"book\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.37979829426b",
+      "source": "工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 30,
+          "context": "[i18n(\"components.vault.vaultitempresentation.37979829426b\"), \"workspace\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 113,
+          "context": "[i18n(\"components.vault.vaultitempresentation.37979829426b\"), \"workspace\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.39932f24fe11",
+      "source": "文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 70,
+          "context": "[i18n(\"components.vault.vaultitempresentation.39932f24fe11\"), \"file\"]"
+        }
+      ],
+      "translation": "Files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.3d708e8e8b1f",
+      "source": "邮件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 18,
+          "context": "[i18n(\"components.vault.vaultitempresentation.3d708e8e8b1f\"), \"mail\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.44bc7ccc3677",
+      "source": "设置项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 106,
+          "context": "[i18n(\"components.vault.vaultitempresentation.44bc7ccc3677\"), \"theme\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.510e6ec15a9e",
+      "source": "校内服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 26,
+          "context": "[i18n(\"components.vault.vaultitempresentation.510e6ec15a9e\"), \"link\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.51aca5c2a97e",
+      "source": "已存内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 82,
+          "context": "[i18n(\"components.vault.vaultitempresentation.51aca5c2a97e\"), \"inbox\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.54f982631040",
+      "source": "演示文稿",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 66,
+          "context": "[i18n(\"components.vault.vaultitempresentation.54f982631040\"), \"slides\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.5c8d010fd9a3",
+      "source": "教学楼",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 23,
+          "context": "[i18n(\"components.vault.vaultitempresentation.5c8d010fd9a3\"), \"location\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.5f2cfbfecf9f",
+      "source": "快捷入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 102,
+          "context": "atomKind === \"tab\" ? i18n(\"components.vault.vaultitempresentation.a626aad412b7\") : i18n(\"components.vault.vaultitempresentation.5f2cfbfecf9f\")"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 113,
+          "context": "[i18n(\"components.vault.vaultitempresentation.5f2cfbfecf9f\"), pageIcon(text(entry.page))]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 17,
+          "context": "[i18n(\"components.vault.vaultitempresentation.60db1afb4022\"), \"book\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 17,
+          "context": "[i18n(\"components.vault.vaultitempresentation.60db1afb4022\"), \"book\"]"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.6955d2975471",
+      "source": "GitLab 议题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 21,
+          "context": "[i18n(\"components.vault.vaultitempresentation.6955d2975471\"), \"gitlab\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.6aa71ddd8364",
+      "source": "GitLab 项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 21,
+          "context": "[i18n(\"components.vault.vaultitempresentation.6aa71ddd8364\"), \"gitlab\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 31,
+          "context": "[i18n(\"components.vault.vaultitempresentation.6aa71ddd8364\"), \"gitlab\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 25,
+          "context": "[i18n(\"components.vault.vaultitempresentation.6acfa1db6a62\"), \"inbox\"]"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.783d638053ea",
+      "source": "组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 20,
+          "context": "[i18n(\"components.vault.vaultitempresentation.783d638053ea\"), \"board\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.788db1cfec2a",
+      "source": "主题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 31,
+          "context": "[i18n(\"components.vault.vaultitempresentation.788db1cfec2a\"), \"theme\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.796d20e91588",
+      "source": "收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 19,
+          "context": "[i18n(\"components.vault.vaultitempresentation.796d20e91588\"), \"folder\"]"
+        }
+      ],
+      "translation": "Favorites",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.80dc57894c8c",
+      "source": "图书馆楼层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 22,
+          "context": "[i18n(\"components.vault.vaultitempresentation.80dc57894c8c\"), \"book\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.8b512613643a",
+      "source": "压缩文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 67,
+          "context": "[i18n(\"components.vault.vaultitempresentation.8b512613643a\"), \"archive\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.909f281e0537",
+      "source": "论坛",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 20,
+          "context": "[i18n(\"components.vault.vaultitempresentation.909f281e0537\"), \"text\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.96b2d406041b",
+      "source": "房间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 24,
+          "context": "[i18n(\"components.vault.vaultitempresentation.96b2d406041b\"), \"location\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.9eb3f2fa22ec",
+      "source": "新闻附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 33,
+          "context": "[i18n(\"components.vault.vaultitempresentation.9eb3f2fa22ec\"), \"file\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 30,
+          "context": "[i18n(\"components.vault.vaultitempresentation.a14f23af7016\"), \"calendar\"]"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 102,
+          "context": "atomKind === \"tab\" ? i18n(\"components.vault.vaultitempresentation.a626aad412b7\") : i18n(\"components.vault.vaultitempresentation.5f2cfbfecf9f\")"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 115,
+          "context": "[i18n(\"components.vault.vaultitempresentation.a626aad412b7\"), pageIcon(text(payload.page))]"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.a8f2a0de5fdf",
+      "source": "代码文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 68,
+          "context": "[i18n(\"components.vault.vaultitempresentation.a8f2a0de5fdf\"), \"code\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.b0dff016ff17",
+      "source": "作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 17,
+          "context": "[i18n(\"components.vault.vaultitempresentation.b0dff016ff17\"), \"check\"]"
+        }
+      ],
+      "translation": "Assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.b1bd19b13336",
+      "source": "组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 108,
+          "context": "[i18n(\"components.vault.vaultitempresentation.b1bd19b13336\"), \"organization\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.b5f224115dae",
+      "source": "云盘文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 29,
+          "context": "[i18n(\"components.vault.vaultitempresentation.b5f224115dae\"), \"cloud\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.bbaa9f06378b",
+      "source": "壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 31,
+          "context": "[i18n(\"components.vault.vaultitempresentation.bbaa9f06378b\"), \"image\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.c20f7618d330",
+      "source": "视频",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 63,
+          "context": "[i18n(\"components.vault.vaultitempresentation.c20f7618d330\"), \"video\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.cdda5d2fdd8a",
+      "source": "PDF 文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 61,
+          "context": "[i18n(\"components.vault.vaultitempresentation.cdda5d2fdd8a\"), \"file\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d24c10d37db0",
+      "source": "图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 62,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d24c10d37db0\"), \"image\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 19,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d39567b2b9f1\"), \"text\"]"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d4f7864690bb",
+      "source": "Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 26,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.dd42589239f7",
+      "source": "合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 21,
+          "context": "[i18n(\"components.vault.vaultitempresentation.dd42589239f7\"), \"gitlab\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.df7a65bb1371",
+      "source": "教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 23,
+          "context": "[i18n(\"components.vault.vaultitempresentation.df7a65bb1371\"), \"location\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e00b99270be7",
+      "source": "体育场馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 24,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e00b99270be7\"), \"location\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e26e5de89c0a",
+      "source": "新闻订阅",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 19,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e26e5de89c0a\"), \"text\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 23,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e4d40b4d6759\"), \"location\"]"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e806fbbe8ec6",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 32,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e806fbbe8ec6\"), \"plugin\"]"
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 24,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e81059e1a712\"), \"location\"]"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.ed31fbb483ee",
+      "source": "操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 20,
+          "context": "[i18n(\"components.vault.vaultitempresentation.ed31fbb483ee\"), \"check\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.f37a13fc55b3",
+      "source": "课程通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 18,
+          "context": "[i18n(\"components.vault.vaultitempresentation.f37a13fc55b3\"), \"bell\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 32,
+          "context": "[i18n(\"components.vault.vaultitempresentation.f37a13fc55b3\"), \"bell\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.fc01d82d7556",
+      "source": "云盘文件夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 29,
+          "context": "[i18n(\"components.vault.vaultitempresentation.fc01d82d7556\"), \"folder\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.fd5394f29856",
+      "source": "个人名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 30,
+          "context": "[i18n(\"components.vault.vaultitempresentation.fd5394f29856\"), \"card\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 108,
+          "context": "[i18n(\"components.vault.vaultitempresentation.fd5394f29856\"), \"card\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultpage.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultPage.tsx",
+          "line": 10,
+          "context": "{i18n(\"components.vault.vaultpage.804002a9c49a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultpage.ee747d4c47e2",
+      "source": "先收好，再打开、分享，或交给小OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultPage.tsx",
+          "line": 10,
+          "context": "{i18n(\"components.vault.vaultpage.ee747d4c47e2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultsheet.52f5d2fe6d3c",
+      "source": "在标签页打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultSheet.tsx",
+          "line": 35,
+          "context": "{i18n(\"components.vault.vaultsheet.52f5d2fe6d3c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

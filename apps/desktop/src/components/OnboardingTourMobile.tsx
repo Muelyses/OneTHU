@@ -1,3 +1,5 @@
+import { localizedList as i18nList } from "../i18n/index.js";
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, IconBtn, Inline, Progress, Sheet, Spacer, Stack, Text } from "@onethu/gui";
 /**
  * 首启导览 · 手机简版（dev-explorer 二轮 A8，2026-10-13）：
@@ -63,53 +65,39 @@ interface Doc {
 
 const DOCS: Doc[] = [
   {
-    title: "标签页抽屉",
-    lead: "底栏「标签页」一按，全在抽屉里。",
-    bullets: [
-      "手机横竖都没有标签条：换标签、开新页都走这个抽屉。",
-      "按住一个标签拖一拖，就换了顺序。",
-      "拖到另一个标签上停一停（0.6 秒灰框），松手合并成工作区。",
-      "按住 0.5 秒不动出菜单：聚焦、复制、关闭、解散工作区。",
-    ],
-    foot: "抽屉可从半屏拉到全屏；顶栏那颗圆形房子钮随时回首页。",
+    get title() { return i18n("components.onboardingtourmobile.1ef4be486cc7"); },
+    get lead() { return i18n("components.onboardingtourmobile.37533b435eb5"); },
+    get bullets() { return i18nList(["components.onboardingtourmobile.2a93d6c21509","components.onboardingtourmobile.60a2e62fe82d","components.onboardingtourmobile.7599c8d0f2fd","components.onboardingtourmobile.70bec8e88b2c"]); },
+    get foot() { return i18n("components.onboardingtourmobile.98af2b06c2d8"); },
   },
   {
-    title: "添加组件：白板随你摆",
-    lead: "首页右下角开始。",
-    bullets: [
-      "点「编」进编辑，再点「＋」选组件放到白板上。",
-      "组件长按出菜单，可调尺寸、固定与删除。",
-    ],
-    foot: "「添加组件」抽屉从底部长出来，也不挡白板。",
+    get title() { return i18n("components.onboardingtourmobile.c765edddbdf2"); },
+    get lead() { return i18n("components.onboardingtourmobile.c5c41a9591a1"); },
+    get bullets() { return i18nList(["components.onboardingtourmobile.55a3f02850c2","components.onboardingtourmobile.854174121d0a"]); },
+    get foot() { return i18n("components.onboardingtourmobile.ef3094385769"); },
   },
   {
-    title: "OnePage：你的一页",
-    lead: "OneGO! 里管它们。",
-    bullets: [
-      "底栏右侧「OneGO!」→ 我的 OnePage：起名后「新建」。",
-      "新建即得一块白板，跟首页同一套手势。",
-      "抽屉里还有工作区面板，手机同样能解散与建组。",
-    ],
+    get title() { return i18n("components.onboardingtourmobile.0195603ee49e"); },
+    get lead() { return i18n("components.onboardingtourmobile.76a3f832bbfa"); },
+    get bullets() { return i18nList(["components.onboardingtourmobile.59acb966c21f","components.onboardingtourmobile.6aebf4025ba6","components.onboardingtourmobile.28bf4e9d8cc7"]); },
   },
   {
-    title: "搜索胶囊",
-    lead: "底栏中央那颗胶囊，不只是输入框。",
-    bullets: [
-      "点一下：从底部长出半屏搜索窗，可拉满全屏。",
-      "能搜页面、面板与插件；结果直接点开。",
-      "长按 0.45 秒开始说话；松手直发，上划取消。",
-    ],
-    foot: "OH 的对话窗也长在同一个胶囊上。",
+    get title() { return i18n("components.onboardingtourmobile.8a900694ff18"); },
+    get lead() { return i18n("components.onboardingtourmobile.21d113f5a8e8"); },
+    get bullets() { return i18nList(["components.onboardingtourmobile.6957eb34bc44","components.onboardingtourmobile.8201fca38b06","components.onboardingtourmobile.70297c6559a9"]); },
+    get foot() { return i18n("components.onboardingtourmobile.7c100b50261d"); },
   },
   {
-    title: "OH：说一句，长一样本领",
-    lead: "在对话里说，它就动手。",
+    get title() { return i18n("components.onboardingtourmobile.7c2809268e55"); },
+    get lead() { return i18n("components.onboardingtourmobile.514adbf12726"); },
     bullets: [],
-    foot: "工具箱自己会长：说到哪，就长到哪。",
+    get foot() { return i18n("components.onboardingtourmobile.67ab2cc6012c"); },
   },
 ];
 
 export function OnboardingTourMobile(): ReactNode {
+  const uiLocale = useUiLocale();
+
   /* 手机专列：非手机一律不渲染（App 的挂载点负责在两端分流，见同文件 OnboardingTourGate） */
   const phone = useIsPhone();
   const [open, setOpen] = useState<boolean>(() => isPhoneNow() && !hasOnboardedPhone());
@@ -145,21 +133,17 @@ export function OnboardingTourMobile(): ReactNode {
       onClose={() => setOpen(false)}
       maskClose={false}
       closeButton={false}
-      aria-label="OneTHU 手机导览"
+      aria-label={i18n("components.onboardingtourmobile.29b54acdd26a")}
       scope={TOUR_CARD_SCOPE}
       foot={
         <Inline gap={2} vAlign="center" wrap>
-          <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>上一步
-          </Btn>
+          <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>{i18n("components.onboardingtourmobile.da336fdc0dbd")}</Btn>
           <Spacer />
-          <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
-            不再显示
-          </Btn>
+          <Btn variant="ghost" titleAttr={i18n("components.onboardingtourmobile.1f5a2b96e178")} onClick={closeForever}>{i18n("components.onboardingtourmobile.a2d3a4eeefd7")}</Btn>
           {isLast ? (
-            <Btn variant="solid" tone="brand" onClick={closeForever}>开始使用</Btn>
+            <Btn variant="solid" tone="brand" onClick={closeForever}>{i18n("components.onboardingtourmobile.715ee9dc842f")}</Btn>
           ) : (
-            <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>下一步
-            </Btn>
+            <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>{i18n("components.onboardingtourmobile.acfc4e74a650")}</Btn>
           )}
         </Inline>
       }
@@ -167,11 +151,11 @@ export function OnboardingTourMobile(): ReactNode {
       <Stack gap={2}>
         {/* 头：步进度 + 关闭本次（不写偏好） */}
         <Inline gap={2} vAlign="center">
-          <div aria-label={"第 " + (step + 1) + " 步，共 " + STEPS + " 步"}>
+          <div aria-label={i18n("components.onboardingtourmobile.9552fe3bd366") + (step + 1) + i18n("components.onboardingtourmobile.fd73c2773154") + STEPS + i18n("components.onboardingtourmobile.e010e3f578cc")}>
             <Progress value={(step + 1) / STEPS} size="sm" />
           </div>
           <Spacer />
-          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
+          <IconBtn label={i18n("components.onboardingtourmobile.285daf1ff2f1")} icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
         </Inline>
 
         {isLast ? <TourParticles /> : null}
@@ -190,6 +174,8 @@ export function OnboardingTourMobile(): ReactNode {
 
 /** App.tsx 挂载点分流：手机 → 简版五步；桌面 → 桌面 V3 七步 */
 export function OnboardingTourGate(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const phone = useIsPhone();
   if (phone) return <OnboardingTourMobile />;
   return <OnboardingTourV3 />;

@@ -1,3 +1,4 @@
+import { msg as i18nMsg, t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { vaultCatchWorkspace } from "../../lib/vaultCatch.js";
 import { Input, Row } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -90,6 +91,8 @@ export function useOneGoSheetOpen(): boolean {
 /* ══════════ 我的收藏（OnePage）分段 ══════════ */
 
 function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const [name, setName] = useState("");
   const [tick, setTick] = useState(0);
@@ -124,14 +127,14 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
   };
 
   const remove = (b: Board): void => {
-    void confirmOk(`确定删除 OnePage「${b.name}」？\n这块白板和其中的内容都会永久消失！`).then((ok) => {
+    void confirmOk(i18nMsg("components.explorer.onegosheet.3c09b64b68ca", { name: String(b.name) })).then((ok) => {
       if (ok) removeOnePage(b.id);
     });
   };
 
   const rename = async (b: Board): Promise<void> => {
-    const f = await openFormModal("重命名 OnePage", [
-      { key: "name", label: "名字", required: true, default: b.name },
+    const f = await openFormModal(i18nMsg("components.explorer.onegosheet.0c898fe25ba6"), [
+      { key: "name", label: i18nMsg("components.explorer.onegosheet.6773310492a9"), required: true, default: b.name },
     ]);
     if (!f) return;
     renameOnePage(b.id, f.name ?? b.name);
@@ -139,37 +142,37 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
 
   const rowMenu = (b: Board, x: number, y: number): void => {
     openContextMenu(x, y, [
-      { label: "重命名…", onSelect: () => void rename(b) },
-      { label: "改图标…", onSelect: () => openFolderIconPicker(b.id) },
-      { label: "设为当前 OnePage", onSelect: () => { openOnePage(b.id); showToast(`当前 OnePage：${b.name}`); } },
-      { label: "删除…", danger: true, sepBefore: true, onSelect: () => remove(b) },
+      { label: i18n("components.explorer.onegosheet.ec4cd05f5147"), onSelect: () => void rename(b) },
+      { label: i18n("components.explorer.onegosheet.9201642820f0"), onSelect: () => openFolderIconPicker(b.id) },
+      { label: i18n("components.explorer.onegosheet.3a32f6df621a"), onSelect: () => { openOnePage(b.id); showToast(i18nMsg("components.explorer.onegosheet.54b5026aad0d", { name: String(b.name) })); } },
+      { label: i18n("components.explorer.onegosheet.0552e329ccf8"), danger: true, sepBefore: true, onSelect: () => remove(b) },
     ]);
   };
 
   return (
-    <section aria-label="我的 OnePage">
+    <section aria-label={i18n("components.explorer.onegosheet.eb597c54b6b0")}>
       <div className="ex-sec-head">
-        <b>我的 OnePage</b>
+        <b>{i18n("components.explorer.onegosheet.eb597c54b6b0")}</b>
       </div>
       {/* 「首页」入口（2026-10-15 用户点名「点击首页回首页」）：系统板不是 OnePage，不能列成一块板，
           但"回首页"这件事必须在这个列表里点得到 —— 它聚焦首页标签（与顶栏 Logo 同一条路）。
           用 GUI 的 Row（可点）而不是自写的裸按钮元素：仓库的裸控件棘轮只许降不许涨（R4）。 */}
       <Row
-        title="首页"
-        sub="时钟 · 一级程序坞 · 自由画布"
+        title={i18n("components.explorer.onegosheet.203c08e0d44a")}
+        sub={i18n("components.explorer.onegosheet.1e8cdaa51b97")}
         onClick={() => {
           focusTab(HOME_TAB_ID);
           onDone();
         }}
       />
       <div className="ex-newrow">
-        <Input placeholder="新 OnePage 名称" value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
+        <Input placeholder={i18n("components.explorer.onegosheet.b666a22dbc56")} value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
             if (e.key === "Enter") create();
           }} />
-        <Btn variant="outline" onClick={create} disabled={!name.trim()}>新建</Btn>
+        <Btn variant="outline" onClick={create} disabled={!name.trim()}>{i18n("components.explorer.onegosheet.50ef2f4cf6a4")}</Btn>
       </div>
       {boards.length === 0 ? (
-        <div className="ex-empty-hint">还没有 OnePage。新建一块，它就是一张可以随意摆组件的白板。</div>
+        <div className="ex-empty-hint">{i18n("components.explorer.onegosheet.b7c9f326f03e")}</div>
       ) : (
         <div className="ex-row-list">
           {boards.map((b) => (
@@ -182,7 +185,7 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
                 <span className="ex-row-icon"><FolderIcon name={b.icon ?? "fist"} /></span>
                 <span className="ex-row-main">
                   <span className="ex-row-title">{b.name}</span>
-                  <span className="ex-row-sub">{b.kind === "system" ? "系统板" : "OnePage"}</span>
+                  <span className="ex-row-sub">{b.kind === "system" ? i18n("components.explorer.onegosheet.97778650b3ab") : "OnePage"}</span>
                 </span>
               </button>
               {b.kind === "system" ? null : (
@@ -193,16 +196,16 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
         </div>
       )}
       <Row
-        title="所有 OnePage"
-        sub="列表里改名 / 换图标 / 排序 / 删除"
+        title={i18n("components.explorer.onegosheet.0f591af87c35")}
+        sub={i18n("components.explorer.onegosheet.2fffc7ba053b")}
         onClick={() => { navigate("boards"); onDone(); }}
       />
       <Row
-        title="暂存箱"
-        sub="先把任意元素收进来，再整理或生成分享口令"
+        title={i18n("components.explorer.onegosheet.804002a9c49a")}
+        sub={i18n("components.explorer.onegosheet.2ea06cb193ec")}
         onClick={() => { navigate("vault"); onDone(); }}
       />
-      <div className="ex-hint-line">OnePage 是一张白板：长按组件换位，右下角进编辑与添加。</div>
+      <div className="ex-hint-line">{i18n("components.explorer.onegosheet.940e1639d05d")}</div>
     </section>
   );
 }
@@ -210,6 +213,8 @@ function FavsSection({ onDone }: { onDone: () => void }): ReactNode {
 /* ══════════ OneFlow（工作区+自动化+技能结合体）══════════ */
 
 function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [, setTick] = useState(0);
   useEffect(() => {
     const off = subscribeUserExt(() => setTick((t) => t + 1));
@@ -219,10 +224,10 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
   const themes = userExtSnapshot().themes;
   const activeTheme = userExtSnapshot().activeThemeId;
   const run = (id: string, name: string): void => {
-    showToast(`正在运行「${name}」…`);
+    showToast(i18nMsg("components.explorer.onegosheet.73e756dbfa1a", { name: String(name) }));
     void runFlowNow(id).then((r) => {
-      if (r.ok) showToast(`「${name}」运行完成`);
-      else showToast(`「${name}」失败：${r.error ?? "未知错误"}`);
+      if (r.ok) showToast(i18nMsg("components.explorer.onegosheet.dd85b3f9c981", { name: String(name) }));
+      else showToast(i18nMsg("components.explorer.onegosheet.30344364115f", { name: String(name), value: String(r.error ?? i18n("components.explorer.onegosheet.13a46616e16f")) }));
       setTick((t) => t + 1);
     });
   };
@@ -232,7 +237,7 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
         <b>OneFlow</b>
       </div>
       {flows.length === 0 ? (
-        <div className="ex-empty-hint">还没有 OneFlow，去 OH 对话说「创建一个流程」即可。</div>
+        <div className="ex-empty-hint">{i18n("components.explorer.onegosheet.a41b60d0727e")}</div>
       ) : (
         <div className="ex-row-list">
           {flows.map((f) => (
@@ -242,18 +247,18 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
                 <span className="ex-row-main">
                   <span className="ex-row-title">{f.name}</span>
                   <span className="ex-row-sub">
-                    {f.enabled === false ? "已停用 · " : ""}
-                    {f.trigger.kind === "manual" ? "手动" : f.trigger.kind === "cron" ? "每 " + f.trigger.everyMinutes + " 分钟" : "事件"} ·{" "}
-                    {f.lastRun ? (f.lastOk ? "上次正常" : "上次失败，点这一行重试" + (f.lastError ? "：" + f.lastError : "")) : "未运行过"}
+                    {f.enabled === false ? i18n("components.explorer.onegosheet.191605f81453") : ""}
+                    {f.trigger.kind === "manual" ? i18n("components.explorer.onegosheet.962f41ef825b") : f.trigger.kind === "cron" ? i18n("components.explorer.onegosheet.0a97ef128fc4") + f.trigger.everyMinutes + i18n("components.explorer.onegosheet.40de54344d22") : i18n("components.explorer.onegosheet.c560201b331c")} ·{" "}
+                    {f.lastRun ? (f.lastOk ? i18n("components.explorer.onegosheet.ef6db76ef5a8") : i18n("components.explorer.onegosheet.4c4b273d507f") + (f.lastError ? "：" + f.lastError : "")) : i18n("components.explorer.onegosheet.8d812d3abb5a")}
                   </span>
                 </span>
               </button>
-              <Btn variant="ghost" onClick={() => { setFlowEnabled(f.id, f.enabled === false); }}>{f.enabled === false ? "启用" : "停用"}</Btn>
+              <Btn variant="ghost" onClick={() => { setFlowEnabled(f.id, f.enabled === false); }}>{f.enabled === false ? i18n("components.explorer.onegosheet.f4f0ead1116b") : i18n("components.explorer.onegosheet.4e6fd0e28c55")}</Btn>
               <Btn variant="ghost" onClick={() => {
-                void confirmOk(`删除 OneFlow「${f.name}」？步骤与运行记录会一起删除。`).then((ok) => {
-                  if (ok) { deleteFlow(f.id); showToast(`已删除「${f.name}」`); }
+                void confirmOk(i18nMsg("components.explorer.onegosheet.512385d31c57", { name: String(f.name) })).then((ok) => {
+                  if (ok) { deleteFlow(f.id); showToast(i18nMsg("components.explorer.onegosheet.e6d7b9ff838f", { name: String(f.name) })); }
                 });
-              }}>删除</Btn>
+              }}>{i18n("components.explorer.onegosheet.2f9daa828907")}</Btn>
             </div>
           ))}
         </div>
@@ -261,7 +266,7 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
       {themes.length > 0 ? (
         <>
           <div className="ex-sec-head" style={{ marginTop: 10 }}>
-            <b>用户主题</b>
+            <b>{i18n("components.explorer.onegosheet.6afc8b735d6d")}</b>
           </div>
           <div className="ex-row-list">
             {themes.map((t) => (
@@ -273,10 +278,10 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
                   <span className="ex-row-icon"><FolderIcon name="star" /></span>
                   <span className="ex-row-main">
                     <span className="ex-row-title">{t.name}</span>
-                    <span className="ex-row-sub">{activeTheme === t.id ? "生效中（再点恢复默认）" : "点击应用"}</span>
+                    <span className="ex-row-sub">{activeTheme === t.id ? i18n("components.explorer.onegosheet.2ce3ff19d6ac") : i18n("components.explorer.onegosheet.6630af4e3a3e")}</span>
                   </span>
                 </button>
-                <Btn variant="ghost" onClick={() => deleteTheme(t.id)}>删除</Btn>
+                <Btn variant="ghost" onClick={() => deleteTheme(t.id)}>{i18n("components.explorer.onegosheet.2f9daa828907")}</Btn>
               </div>
             ))}
           </div>
@@ -289,15 +294,17 @@ function FlowSection({ onDone }: { onDone: () => void }): ReactNode {
 /* ══════════ ⑦ 小窗内搜索：OnePage 按 title、工作区按 name（大小写不敏感） ══════════ */
 
 function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const hits = userOnePages().filter((b) => b.name.toLowerCase().includes(q));
   const wsSnap = useSyncExternalStore(subscribeExplorer, explorerSnapshot, explorerSnapshot);
   const wsHits = wsSnap.workspaces.filter((w) => w.name.toLowerCase().includes(q));
-  if (hits.length === 0 && wsHits.length === 0) return <div className="ex-empty-hint">没有匹配的 OnePage 或工作区。</div>;
+  if (hits.length === 0 && wsHits.length === 0) return <div className="ex-empty-hint">{i18n("components.explorer.onegosheet.7825abf8e9da")}</div>;
   return (
     <>
       {hits.length > 0 ? (
-        <section aria-label="OnePage 搜索结果">
+        <section aria-label={i18n("components.explorer.onegosheet.1b1e801f448e")}>
           <div className="ex-group-head">
             <span className="ex-group-name">OnePage</span>
             <span className="ex-group-count">{hits.length}</span>
@@ -316,7 +323,7 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
                   <span className="ex-row-icon"><FolderIcon name={b.icon ?? "fist"} /></span>
                   <span className="ex-row-main">
                     <span className="ex-row-title">{b.name}</span>
-                    <span className="ex-row-sub">{b.kind === "system" ? "系统板（今日）" : "白板"}</span>
+                    <span className="ex-row-sub">{b.kind === "system" ? i18n("components.explorer.onegosheet.08c9a0baa828") : i18n("components.explorer.onegosheet.55add4b94983")}</span>
                   </span>
                 </button>
                 </div>
@@ -325,9 +332,9 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
         </section>
       ) : null}
       {wsHits.length > 0 ? (
-        <section aria-label="工作区搜索结果">
+        <section aria-label={i18n("components.explorer.onegosheet.fbf2cea571ab")}>
           <div className="ex-group-head">
-            <span className="ex-group-name">工作区</span>
+            <span className="ex-group-name">{i18n("components.explorer.onegosheet.37979829426b")}</span>
             <span className="ex-group-count">{wsHits.length}</span>
           </div>
           <div className="ex-row-list">
@@ -335,20 +342,19 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
               <div className="ex-row" key={w.id} data-vault-catch={vaultCatchWorkspace({ id: w.id, name: w.name, count: w.tabs.length })}>
                 <div className="ex-row-main">
                   <span className="ex-row-title">{w.name}</span>
-                  <span className="ex-row-sub">{w.tabs.length} 个标签页</span>
+                  <span className="ex-row-sub">{i18nRich("components.explorer.onegosheet.ff83dbf31107", { length: w.tabs.length })}</span>
                 </div>
                 <div className="ex-row-actions">
-                  <Btn variant="ghost" onClick={() => { openWorkspace(w.id); onDone(); }}>打开</Btn>
-                  <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>编辑</Btn>
+                  <Btn variant="ghost" onClick={() => { openWorkspace(w.id); onDone(); }}>{i18n("components.explorer.onegosheet.c771248e511f")}</Btn>
+                  <Btn variant="ghost" onClick={() => openWorkspaceEditor(w.id)}>{i18n("components.explorer.onegosheet.051836569928")}</Btn>
                   {w.live ? (
-                    <Btn variant="ghost" titleAttr="解散：只退组，标签页保留" onClick={() => dissolveWorkspace(w.id)}>解散</Btn>
+                    <Btn variant="ghost" titleAttr={i18n("components.explorer.onegosheet.dc04bd26995b")} onClick={() => dissolveWorkspace(w.id)}>{i18n("components.explorer.onegosheet.5c551062c8a5")}</Btn>
                   ) : null}
-                  <Btn variant="ghost" titleAttr="彻底删除：连同其中的标签页一起关闭" onClick={() =>
-                      void confirmOk(`彻底删除工作区「${w.name}」及其中的标签页？`).then((ok) => {
+                  <Btn variant="ghost" titleAttr={i18n("components.explorer.onegosheet.d4b82994b06a")} onClick={() =>
+                      void confirmOk(i18nMsg("components.explorer.onegosheet.68070021bd6a", { name: String(w.name) })).then((ok) => {
                         if (ok) closeLiveWorkspace(w.id);
                       })
-                    }>彻底删除
-                  </Btn>
+                    }>{i18n("components.explorer.onegosheet.7aa6d0ef5feb")}</Btn>
                 </div>
               </div>
             ))}
@@ -362,6 +368,8 @@ function OneGoSearchResults({ q, onDone }: { q: string; onDone: () => void }): R
 /* ══════════ 抽屉本体 ══════════ */
 
 function OneGoSheetInner(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const open = useOneGoSheetOpen();
   /* 手机端（A4 同手柄）：seeking 抽屉（0.6vh ⟷ 0.94vh 两档） */
   const phoneUi = useIsPhone();
@@ -378,13 +386,13 @@ function OneGoSheetInner(): ReactNode {
     if (!ws) return;
     const count = explorerSnapshot().tabs.filter((t) => t.workspaceId === wsId).length;
     const items: MenuItem[] = [
-      { label: "打开工作区", onSelect: () => openWorkspace(wsId) },
-      { label: "编辑工作区…", onSelect: () => openWorkspaceEditor(wsId) },
-      { label: "解散工作区（保留标签页）", onSelect: () => dissolveWorkspace(wsId), danger: true, sepBefore: true },
+      { label: i18n("components.explorer.onegosheet.05cc68bdf7ae"), onSelect: () => openWorkspace(wsId) },
+      { label: i18n("components.explorer.onegosheet.c6d80849d9f5"), onSelect: () => openWorkspaceEditor(wsId) },
+      { label: i18n("components.explorer.onegosheet.40561d059752"), onSelect: () => dissolveWorkspace(wsId), danger: true, sepBefore: true },
       {
-        label: "彻底删除（连同标签页）",
+        label: i18n("components.explorer.onegosheet.e9a95effb2f5"),
         onSelect: () =>
-          void confirmOk(`彻底删除工作区「${ws.name}」及其中的 ${count} 个标签页？`).then((ok) => {
+          void confirmOk(i18nMsg("components.explorer.onegosheet.9e76a0089e2c", { name: String(ws.name), count: String(count) })).then((ok) => {
             if (ok) closeLiveWorkspace(wsId);
           }),
         danger: true,
@@ -432,21 +440,21 @@ function OneGoSheetInner(): ReactNode {
         onContextMenu={sheetCtl.onContextMenu}
         onClickCapture={sheetCtl.onClickCapture}
       >
-        {phoneUi ? <PhoneSheetGrip label="拖住改高度（半屏或全屏）" gripProps={sheet.gripProps} /> : null}
+        {phoneUi ? <PhoneSheetGrip label={i18n("components.explorer.onegosheet.1f5c44171ba4")} gripProps={sheet.gripProps} /> : null}
         <header className="ex-sheet-head">
           <b>OneGO!</b>
-          <span className="ex-sec-head-note">组织你的工作</span>
-          <Btn variant="ghost" onClick={requestClose}>完成</Btn>
+          <span className="ex-sec-head-note">{i18n("components.explorer.onegosheet.0a02de34e600")}</span>
+          <Btn variant="ghost" onClick={requestClose}>{i18n("components.explorer.onegosheet.c0b3fbff51cc")}</Btn>
         </header>
         <div className="ex-seg-row">
-          <div className="segmented ex-seg" role="tablist" aria-label="OneGO! 分段">
-            <button className={seg === "favs" ? "is-active" : ""} role="tab" aria-selected={seg === "favs"} onClick={() => setSeg("favs")}>我的收藏</button>
-            <button className={seg === "ws" ? "is-active" : ""} role="tab" aria-selected={seg === "ws"} onClick={() => setSeg("ws")}>工作区</button>
+          <div className="segmented ex-seg" role="tablist" aria-label={i18n("components.explorer.onegosheet.51c73468645c")}>
+            <button className={seg === "favs" ? "is-active" : ""} role="tab" aria-selected={seg === "favs"} onClick={() => setSeg("favs")}>{i18n("components.explorer.onegosheet.9385bfefca58")}</button>
+            <button className={seg === "ws" ? "is-active" : ""} role="tab" aria-selected={seg === "ws"} onClick={() => setSeg("ws")}>{i18n("components.explorer.onegosheet.37979829426b")}</button>
           </div>
         </div>
         <div className="ex-sheet-body">
           <div className="ex-sheet-search">
-            <Input placeholder="搜索 OnePage / 工作区…" value={query} onChange={(value) => setQuery(value)} />
+            <Input placeholder={i18n("components.explorer.onegosheet.588a734ec8a5")} value={query} onChange={(value) => setQuery(value)} />
           </div>
           {q ? (
             <OneGoSearchResults q={q} onDone={requestClose} />
@@ -460,8 +468,7 @@ function OneGoSheetInner(): ReactNode {
           )}
         </div>
         <footer className="ex-sheet-foot">
-          <Btn variant="ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>功能目录在首页 ↓
-          </Btn>
+          <Btn variant="ghost" onClick={() => { focusTab(HOME_TAB_ID); requestClose(); }}>{i18n("components.explorer.onegosheet.24fc53052dd6")}</Btn>
         </footer>
       </aside>
     </>,
@@ -470,5 +477,7 @@ function OneGoSheetInner(): ReactNode {
 }
 
 export function OneGoSheet(): ReactNode {
+  const uiLocale = useUiLocale();
+
   return <OneGoSheetInner />;
 }

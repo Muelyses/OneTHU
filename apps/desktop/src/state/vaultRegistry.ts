@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 暂存箱对象类型注册表（Phase 1.5）：kind → 打开方式/展示口径。
  *
@@ -20,7 +21,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
   if (it.atom) {
     const view = resolveAtom(it.atom);
     if (!view) {
-      env.toast("这个对象已失效（可能没有权限或已被删除），可移除后重新收录");
+      env.toast(i18n("state.vaultregistry.a56851062d27"));
       return false;
     }
     view.open((page, params) => env.navigate(String(page), params as Record<string, unknown> | undefined));
@@ -33,11 +34,11 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
   if (it.text) {
     void import("../components/vault/VaultTextPreview.js")
       .then(({ openVaultTextPreview }) => openVaultTextPreview(it.title, it.text!))
-      .catch(() => env.toast("文字预览暂时无法打开，请重试"));
+      .catch(() => env.toast(i18n("state.vaultregistry.18fb3a6dfa2c")));
     return true;
   }
   if (it.type === "file") {
-    if (!it.file) { env.toast("文件引用缺失，请重新添加"); return false; }
+    if (!it.file) { env.toast(i18n("state.vaultregistry.24ec304b41bb")); return false; }
     const file = it.file;
     const local = async (): Promise<string> => {
       if (file.stagedPath) return file.stagedPath;
@@ -45,7 +46,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
         const { materializeSharedFile } = await import("./vaultCloud.js");
         return materializeSharedFile({provider:"seafile",path:"",shareUrl:file.shareUrl,keyRepoId:file.shareKeyRepoId},file.cloudPath,file.name);
       }
-      throw new Error("文件尚未保存，请从来源重新加入");
+      throw new Error(i18n("state.vaultregistry.191e4869147e"));
     };
     void import("../components/FilePreview.js").then(({openFilePreview}) => openFilePreview({
       name:file.name, url:"",
@@ -72,14 +73,14 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
     }
     if (p?.kind === "namecard" && p.card) {
       const r = addContact(p.org ? "organization" : "personal", p.card as never, it.sub ?? "");
-      if (r.ok) env.toast("名片已加入通讯录");
-      else env.toast(r.reason === "duplicate" ? "通讯录里已经有这张名片了" : "这是你自己的名片，已在「我的名片」里");
+      if (r.ok) env.toast(i18n("state.vaultregistry.c5d06fdd2936"));
+      else env.toast(r.reason === "duplicate" ? i18n("state.vaultregistry.dcd9b29df966") : i18n("state.vaultregistry.75aa9163a82e"));
       return true;
     }
     const pmeta = it.payload as { routeId?: string; settingTitle?: string; kind?: string; themeId?: string; ref?: string; pluginId?: string } | undefined;
     if (pmeta?.kind === "plugin") {
       env.navigate("plugins");
-      env.toast("已打开插件页；插件引用保留在暂存箱");
+      env.toast(i18n("state.vaultregistry.94220dc7197e"));
       return true;
     }
     if (pmeta?.kind === "theme") {
@@ -88,7 +89,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
         if (pmeta.themeId) m.activateTheme(pmeta.themeId);
         else m.deactivateTheme();
       })();
-      env.toast("主题已应用");
+      env.toast(i18n("state.vaultregistry.14947083ab6d"));
       return true;
     }
     if (pmeta?.kind === "wallpaper" && pmeta.ref) {
@@ -96,7 +97,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
         const m = await import("./wallpaper.js");
         m.setGlobalWallpaper(pmeta.ref ?? null);
       })();
-      env.toast("壁纸已应用");
+      env.toast(i18n("state.vaultregistry.666f4160f861"));
       return true;
     }
     /* ── 长按拖入的页面对象（日程/云盘/课程/新闻/GitLab/标签页/工作区）── */
@@ -111,7 +112,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
     }
     if (kind === "cloud-file" || kind === "cloud-folder") {
       env.navigate("cloud", pageMeta?.repoId ? { cloudRepo: pageMeta.repoId } : undefined);
-      env.toast("已打开云盘资料库，文件位置见条目说明");
+      env.toast(i18n("state.vaultregistry.fe7d0003cf59"));
       return true;
     }
     if (kind === "learn-notice") {
@@ -119,7 +120,7 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
       return true;
     }
     if (kind === "learn-attachment" || kind === "news-file") {
-      if (!pageMeta?.url) { env.toast("附件地址已失效；可到原页面重新下载"); return false; }
+      if (!pageMeta?.url) { env.toast(i18n("state.vaultregistry.7b3408d0e018")); return false; }
       void import("../pages/info/openExternal.js").then((m) => m.openExternal(pageMeta.url!));
       return true;
     }
@@ -141,11 +142,11 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
         const { allSearchRows, goSearchRow } = await import("./searchRows.js");
         const row = allSearchRows().find((r) => r.id === routeId || r.title === routeId);
         if (row) goSearchRow(row);
-        else env.toast("这条设置项在当前版本里找不到了");
+        else env.toast(i18n("state.vaultregistry.ab9c4ba06c08"));
       })();
       return true;
     }
   }
-  env.toast("这个对象暂不支持直接打开；可以先留在暂存箱里");
+  env.toast(i18n("state.vaultregistry.2808a4f9d0f0"));
   return false;
 }

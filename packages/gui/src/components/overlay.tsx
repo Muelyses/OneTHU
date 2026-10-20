@@ -1,3 +1,4 @@
+import { useOneGUILocale } from "../locale.js";
 /* ════════════════════════════════════════════════════════════════════════════
  * OneGUI · 浮层族（Overlay）—— 全站唯一的弹层模型
  *
@@ -366,6 +367,7 @@ interface ShellProps {
 }
 
 function Shell(p: ShellProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const { mounted, closing } = useExitPhase(p.open, EXIT_MODAL_MS);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const layerId = useId();
@@ -413,7 +415,7 @@ function Shell(p: ShellProps): ReactNode {
               </div>
             ) : null}
             {p.closeButton !== false ? (
-              <IconBtn className="og-panel-close" label="关闭" size="sm" icon={<IconX size="sm" />} onClick={p.onClose} />
+              <IconBtn className="og-panel-close" label={guiText("gui.action.close")} size="sm" icon={<IconX size="sm" />} onClick={p.onClose} />
             ) : null}
           </div>
         ) : null}
@@ -444,6 +446,7 @@ export interface ModalProps extends OneBase {
 export function Modal({
   open, onClose, title, foot, size = "md", maskClose = true, closeButton = true, scope, className, children, ...rest
 }: ModalProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
     <Shell
       open={open}
@@ -454,7 +457,7 @@ export function Modal({
       foot={foot}
       closeButton={closeButton}
       maskClose={maskClose}
-      label={rest["aria-label"] ?? "对话框"}
+      label={rest["aria-label"] ?? guiText("gui.overlay.dialog")}
       scope={scope}
       className={className}
       id={rest.id}
@@ -482,6 +485,7 @@ export interface SheetProps extends OneBase {
 export function Sheet({
   open, onClose, title, foot, size = "md", maskClose = true, closeButton = true, scope, className, children, ...rest
 }: SheetProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const mobile = useAxes().platform === "mobile";
   return (
     <Shell
@@ -496,7 +500,7 @@ export function Sheet({
       foot={foot}
       closeButton={closeButton}
       maskClose={maskClose}
-      label={rest["aria-label"] ?? "面板"}
+      label={rest["aria-label"] ?? guiText("gui.overlay.panel")}
       scope={scope}
       className={className}
       id={rest.id}
@@ -524,6 +528,7 @@ export interface DrawerProps extends Omit<OneBase, "size"> {
 export function Drawer({
   open, onClose, side = "right", title, foot, maskClose = true, closeButton = true, scope, className, children, ...rest
 }: DrawerProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
     <Shell
       open={open}
@@ -535,7 +540,7 @@ export function Drawer({
       foot={foot}
       closeButton={closeButton}
       maskClose={maskClose}
-      label={rest["aria-label"] ?? "抽屉"}
+      label={rest["aria-label"] ?? guiText("gui.overlay.drawer")}
       scope={scope}
       className={className}
       id={rest.id}
@@ -761,6 +766,7 @@ export interface MenuProps extends Omit<OneBase, "size"> {
 
 /** 锚定菜单：贴着触发元素开，放不下自己翻转并夹进视口，点外面 / Esc / Tab 关闭 */
 export function Menu({ open, onClose, anchor, items, title, label, scope, className, ...rest }: MenuProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
     <AnchoredMenu
       open={open}
@@ -768,7 +774,7 @@ export function Menu({ open, onClose, anchor, items, title, label, scope, classN
       anchor={anchor}
       items={items}
       title={title}
-      label={label ?? (typeof title === "string" ? title : "操作菜单")}
+      label={label ?? (typeof title === "string" ? title : guiText("gui.overlay.actionMenu"))}
       scope={scope}
       className={className}
       id={rest.id}
@@ -790,6 +796,7 @@ export interface ContextMenuProps extends Omit<OneBase, "size"> {
 
 /** 右键 / 长按菜单：与 Menu 同一个本体，只是锚点是一对坐标（零尺寸矩形） */
 export function ContextMenu({ open, onClose, x, y, items, title, label, scope, className, ...rest }: ContextMenuProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const anchor = useMemo<RectLike>(() => ({ top: y, left: x, right: x, bottom: y, width: 0, height: 0 }), [x, y]);
   return (
     <AnchoredMenu
@@ -798,7 +805,7 @@ export function ContextMenu({ open, onClose, x, y, items, title, label, scope, c
       anchor={anchor}
       items={items}
       title={title}
-      label={label ?? "操作菜单"}
+      label={label ?? guiText("gui.overlay.actionMenu")}
       scope={scope}
       className={className}
       id={rest.id}
@@ -823,6 +830,7 @@ export interface ActionSheetProps extends Omit<OneBase, "size"> {
 export function ActionSheet({
   open, onClose, items, title, cancelLabel, maskClose = true, scope, className, ...rest
 }: ActionSheetProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const mobile = useAxes().platform === "mobile";
   const listId = useId();
   const [active, setActive] = useState<number | null>(null);
@@ -851,14 +859,14 @@ export function ActionSheet({
       title={title}
       closeButton={!mobile}
       maskClose={maskClose}
-      label={rest["aria-label"] ?? "操作"}
+      label={rest["aria-label"] ?? guiText("gui.overlay.actions")}
       scope={scope}
       className={className}
       bodyClassName="og-action-body"
       id={rest.id}
       testId={rest["data-testid"]}
     >
-      <MenuItemList items={items} listId={listId} active={active} onHover={setActive} onPick={pick} role="menu" label={typeof title === "string" ? undefined : "操作"} />
+      <MenuItemList items={items} listId={listId} active={active} onHover={setActive} onPick={pick} role="menu" label={typeof title === "string" ? undefined : guiText("gui.overlay.actions")} />
       {cancelLabel ? (
         <>
           <div className="og-menu-sep" role="separator" />
@@ -965,6 +973,7 @@ export interface PopoverProps extends Omit<OneBase, "size"> {
 export function Popover({
   open, onClose, anchor, children, side = "bottom", align = "start", label, scope, className, ...rest
 }: PopoverProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const { mounted, closing } = useExitPhase(open, EXIT_FLOAT_MS);
   const layerId = useId();
   const { ref, placement } = useFloating({ open, anchor, side, align });
@@ -986,7 +995,7 @@ export function Popover({
         className,
       )}
       role="dialog"
-      aria-label={rest["aria-label"] ?? label ?? "浮层"}
+      aria-label={rest["aria-label"] ?? label ?? guiText("gui.overlay.popover")}
       tabIndex={-1}
       data-testid={rest["data-testid"]}
       data-og-dynamic="overlay"

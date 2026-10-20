@@ -1,3 +1,4 @@
+import { msg as i18nMsg, t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import {useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent} from "react";
 import {useExperienceMode} from "../../state/experienceMode.js";
 import {DEFAULT_ONESHOT,MORE_FEATURES_SLOT,setPracticalOneShot,usePracticalEntries,useQuickEntries,openQuickEntry,setOneShot,type QuickEntry} from '../../state/quickAccess.js';
@@ -8,7 +9,9 @@ import {IconMore} from '../Icons.js';
 import {PracticalFeaturesPanel} from './PracticalFeatures.js';
 import {PRACTICAL_FEATURES_EVENT} from "../../state/practicalFeatures.js";
 import {showToast} from '../../state/toast.js';
-export function QuickIcon({entry}:{entry?:QuickEntry}){const Icon=NAV.find(n=>n.page===entry?.page)?.icon;return Icon?<Icon/>:<FolderIcon name={entry?.kind==='workspace'?'folder':'star'} width={18} height={18}/>;}
+export function QuickIcon({entry}:{entry?:QuickEntry}){
+  const uiLocale = useUiLocale();
+const Icon=NAV.find(n=>n.page===entry?.page)?.icon;return Icon?<Icon/>:<FolderIcon name={entry?.kind==='workspace'?'folder':'star'} width={18} height={18}/>;}
 
 /** 课表页「快捷」小按钮的拖动位置（离默认位往上拖了多少 px）；跨会话记住，按设备存。 */
 const SCHEDULE_OFFSET_KEY = "onethu.quickbar.schedule-offset.v1";
@@ -24,6 +27,8 @@ function readScheduleOffset(): number {
  *  课表页（scheduleMode）：默认收成一枚小按钮浮在「日程设置」上方，不压住底部日程；
  *  按钮可上下拖动（位置记忆），点开/收起带展开动效。 */
 export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
+  const uiLocale = useUiLocale();
+
   const {entries,slots:saved}=useQuickEntries();
   const {slots:practical}=usePracticalEntries();
   const mode=useExperienceMode();
@@ -66,17 +71,17 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
     window.addEventListener("resize",onResize);
     return()=>window.removeEventListener("resize",onResize);
   },[scheduleMode]);
-  const place=(i:number)=>{if(!placing)return;setPracticalOneShot(i,placing.id);showToast(`已放进入口 ${i+1}（${placing.title}）`);setPlacing(null);};
+  const place=(i:number)=>{if(!placing)return;setPracticalOneShot(i,placing.id);showToast(i18nMsg("components.explorer.oneshot.4e4edc728921", { value: String(i+1), title: String(placing.title) }));setPlacing(null);};
   const slots=mode==="simple"?DEFAULT_ONESHOT:practicalMode?[...practical,MORE_FEATURES_SLOT]:saved;
   const collapsed=scheduleMode&&!scheduleOpen&&!placing;
   const slotNodes=slots.map((id,i)=>{
-    if(practicalMode&&id===MORE_FEATURES_SLOT)return <Btn key={i} className="oneshot-button" icon={<IconMore width={18} height={18}/>} aria-expanded={moreOpen} onClick={()=>setMoreOpen(true)} titleAttr="展开全部功能；也可把常用功能换进左边四个入口">更多功能</Btn>;
-    if(placing&&i<4)return <Btn key={i} className="oneshot-button is-place-target" onClick={()=>place(i)} titleAttr={`用「${placing.title}」替换「${entries.find(e=>e.id===id)?.title??"此入口"}」`} aria-label={`入口 ${i+1}：放${placing.title}`}><span className="oneshot-place-badge" aria-hidden="true">{i+1}</span>{entries.find(e=>e.id===id)?.title??"此入口"}</Btn>;
+    if(practicalMode&&id===MORE_FEATURES_SLOT)return <Btn key={i} className="oneshot-button" icon={<IconMore width={18} height={18}/>} aria-expanded={moreOpen} onClick={()=>setMoreOpen(true)} titleAttr={i18n("components.explorer.oneshot.a2ef8a3a11b2")}>{i18n("components.explorer.oneshot.9c7a9fcee92f")}</Btn>;
+    if(placing&&i<4)return <Btn key={i} className="oneshot-button is-place-target" onClick={()=>place(i)} titleAttr={i18n("components.explorer.oneshot.2ecfbc3b523e", { title: String(placing.title), value: String(entries.find(e=>e.id===id)?.title??i18n("components.explorer.oneshot.822020149c34")) })} aria-label={i18n("components.explorer.oneshot.1a54c560b1aa", { value: String(i+1), title: String(placing.title) })}><span className="oneshot-place-badge" aria-hidden="true">{i+1}</span>{entries.find(e=>e.id===id)?.title??i18n("components.explorer.oneshot.822020149c34")}</Btn>;
     const e=entries.find(x=>x.id===id);
-    return <Btn key={i} className="oneshot-button" icon={<QuickIcon entry={e}/>} onClick={()=>e&&openQuickEntry(e)} disabled={!e} titleAttr={e?.title??'此快捷入口已删除，请在「更多功能」里重新选择'}>{e?.title??'入口已删除'}</Btn>;
+    return <Btn key={i} className="oneshot-button" icon={<QuickIcon entry={e}/>} onClick={()=>e&&openQuickEntry(e)} disabled={!e} titleAttr={e?.title??i18n("components.explorer.oneshot.b5a39a6494bc")}>{e?.title??i18n("components.explorer.oneshot.03c9fecbdd66")}</Btn>;
   });
   const featuresPanel=practicalMode?<PracticalFeaturesPanel open={moreOpen} onClose={()=>setMoreOpen(false)} slots={practical} onPlace={(f)=>{setMoreOpen(false);setPlacing(f);}}/>:null;
-  const placementBar=placing?<div className="oneshot-placement" role="status"><span>把 <strong>{placing.title}</strong> 放在哪个位置？</span><Btn variant="ghost" size="sm" onClick={()=>setPlacing(null)}>取消</Btn></div>:null;
+  const placementBar=placing?<div className="oneshot-placement" role="status"><span>{i18n("components.explorer.oneshot.1d7e5eb9476d")}<strong>{placing.title}</strong>{i18n("components.explorer.oneshot.4a0d6803186f")}</span><Btn variant="ghost" size="sm" onClick={()=>setPlacing(null)}>{i18n("components.explorer.oneshot.2cd0f3be8738")}</Btn></div>:null;
 
   /* ── 课表页：小按钮可上下拖动（记住位置），点按展开/收起 ── */
   const onTogglePointerDown=(e:ReactPointerEvent<HTMLSpanElement>)=>{
@@ -112,7 +117,7 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
 
   if(scheduleMode)return <nav
     className={"oneshot is-schedule"+(collapsed?" is-collapsed":"")+(placing?" is-placing":"")+(dragging?" is-dragging":"")}
-    aria-label="OneShot 超级快捷"
+    aria-label={i18n("components.explorer.oneshot.1446be782b50")}
     style={{"--oneshot-drag":`${dragOffset}px`} as CSSProperties}
   >
     {placementBar}
@@ -132,17 +137,19 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
         variant="solid" tone="brand" size="sm"
         icon={<IconSpark width={16} height={16}/>}
         aria-expanded={!collapsed}
-        aria-label={collapsed?"展开快捷入口":"收起快捷入口"}
-        titleAttr={collapsed?"快捷入口：点开展开；按住可上下拖动位置":"收起快捷入口；按住可上下拖动位置"}
-      >快捷</Btn>
+        aria-label={collapsed?i18n("components.explorer.oneshot.6880a01dd52e"):i18n("components.explorer.oneshot.c01deadeb2db")}
+        titleAttr={collapsed?i18n("components.explorer.oneshot.56c29685416d"):i18n("components.explorer.oneshot.67b14a8bf539")}
+      >{i18n("components.explorer.oneshot.d9a8514e981d")}</Btn>
     </span>
     {featuresPanel}
   </nav>;
 
-  return <nav className={"oneshot"+(placing?" is-placing":"")} aria-label="OneShot 超级快捷">
+  return <nav className={"oneshot"+(placing?" is-placing":"")} aria-label={i18n("components.explorer.oneshot.1446be782b50")}>
     {placementBar}
     {slotNodes}
     {featuresPanel}
   </nav>;
 }
-export function OneShotSettings(){const {entries,slots}=useQuickEntries();return <div className="oneshot-settings">{slots.map((id,i)=><SettingsRow key={i} title={`快捷按钮 ${i+1}`} control={<Select aria-label={`OneShot 快捷按钮 ${i+1}`} value={id} onChange={v=>setOneShot(i,v)}>{!entries.some(e=>e.id===id)?<option value={id}>入口已删除</option>:null}{(['page','board','workspace'] as const).map(kind=><optgroup key={kind} label={kind==='page'?'功能与服务':kind==='board'?'OnePage':'工作区'}>{entries.filter(e=>e.kind===kind).map(e=><option key={e.id} value={e.id}>{e.title}</option>)}</optgroup>)}</Select>}/> )}</div>;}
+export function OneShotSettings(){
+  const uiLocale = useUiLocale();
+const {entries,slots}=useQuickEntries();return <div className="oneshot-settings">{slots.map((id,i)=><SettingsRow key={i} title={i18n("components.explorer.oneshot.a20ba95091a1", { value: String(i+1) })} control={<Select aria-label={i18n("components.explorer.oneshot.4aac551ec544", { value: String(i+1) })} value={id} onChange={v=>setOneShot(i,v)}>{!entries.some(e=>e.id===id)?<option value={id}>{i18n("components.explorer.oneshot.03c9fecbdd66")}</option>:null}{(['page','board','workspace'] as const).map(kind=><optgroup key={kind} label={kind==='page'?i18n("components.explorer.oneshot.ad25cadf8d13"):kind==='board'?'OnePage':i18n("components.explorer.oneshot.37979829426b")}>{entries.filter(e=>e.kind===kind).map(e=><option key={e.id} value={e.id}>{e.title}</option>)}</optgroup>)}</Select>}/> )}</div>;}

@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
+import { LanguageControl } from "../components/LanguageControl.js";
 import { ExperienceModeControl } from "../components/SimpleExperience.js";
 import { Btn, Inline, Input, List, Row, Segment, Select, SettingsList, SettingsRow, Stack, Tag, Text as OGText, TextArea } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
@@ -32,7 +34,7 @@ import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useT
 import { focusSettingsTarget } from "../components/Layout.js";
 import { ExplorerPrefsSection } from "../components/ExplorerPrefsSection.js";
 import { ThemeChoice } from "../components/ThemePickerModal.js";
-import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, subscribeSettingsConsume } from "../state/settingsMode.js";
+import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, settingsLabel, subscribeSettingsConsume } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
 import { requestPluginsView } from "./Plugins.js";
 import { isThemeEntry } from "../lib/market.js";
@@ -70,71 +72,55 @@ import type { ExtHwCreds, ExtHwSourceId, TuojSourceId } from "@onethu/core";
 import { ErrorLine } from "../components/Details.js";
 import { resetActiveOnboarding } from "../state/onboarding.js";
 
-/** 按分节标题滚动定位（不改各分节标记本身，避免动到千行 JSX） */
-function jumpToSection(titles: string[]): void {
-  const nodes = Array.from(document.querySelectorAll(".section-head, .sec-title, h2, h3"));
-  for (const t of titles) {
-    const hit = nodes.find((el) => (el.textContent ?? "").trim().startsWith(t));
-    if (hit) {
-      hit.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-  }
+/** Stable route metadata controls visibility; translated DOM text never selects a tab.
+ * Keep every section mounted so switching categories or language preserves drafts. */
+function SettingsGroup({ tab, active, section, children }: {
+  tab: string; active: string; section: string; children: ReactNode;
+}) {
+  return <section data-settings-section={section} data-settings-tab={tab} data-set-id={`sec-${section}`} hidden={active !== tab}>
+    {children}
+  </section>;
 }
-
-/** 设置页的二级页签（与信息页 / 生活页同形态）：标题 → 页签分组 */
-const SETTINGS_TAB_OF: Record<string, string> = {
-  关于: "关于", 账户: "账号", 账号与绑定: "账号", 安全: "账号",
-  云同步: "数据与同步", 外部作业源: "数据与同步",
-  "OneShot 快捷入口": "外观与布局", 首页布局: "外观与布局", 收藏夹: "外观与布局", 外观: "外观与布局",
-  工作空间: "外观与布局", /* dev-explorer：缺键会让工作空间分节在所有页签恒显（用户实测「其他 设置多了个不动的分节/触发不一致」） */
-  /* OneGUI Section 的 textContent 可能含 hint，匹配按最长前缀（见下方 SETTINGS_TAB_OF[prefix] 兜底） */
-  极客模式: "桌面小组件",
-  通知: "通知与提醒",
-  /* 2026-10-11 重构：桌面小组件独立成栏；语音合成/悬浮球迁到 OH 页；插件改成独立入口 */
-  桌面小组件: "桌面小组件",
-  下载: "下载与存储", 帮助: "帮助",
-};
-/* 页签清单与高级页签定义已挪到 state/settingsMode.ts（命令面板与护栏共用同一份，见该文件注释） */
-
 
 /* ── task-19：设置页各分节的设置行注册（声明式；与页签一一对应）── */
 defineSearchRows([
-  { id: "set-theme-board", tab: "外观与布局", section: "主题", title: "主题", aliases: ["换主题", "配色", "主题板", "暗色", "夜间"], desc: "只列已启用主题，点「应用」切换" , breadcrumb: ["设置", "外观与布局", "主题", "主题"] },
-  { id: "set-theme-install", tab: "外观与布局", section: "主题", title: "安装主题", aliases: ["主题市场", "装主题"], desc: "打开插件市场的主题筛选" , breadcrumb: ["设置", "外观与布局", "主题", "安装主题"], go: () => requestPluginsView({ view: "market", category: "theme" }) },
-  { id: "set-theme-manage", tab: "外观与布局", section: "主题", title: "管理主题", aliases: ["启用主题", "停用主题"], desc: "主题插件的启用 / 停用" , breadcrumb: ["设置", "外观与布局", "主题", "管理主题"], go: () => requestPluginsView({ view: "mine", category: "theme" }) },
-  { id: "set-theme-follow", tab: "外观与布局", section: "主题", title: "跟随系统昼夜", aliases: ["昼夜", "白天主题", "黑夜主题", "自动切换"], desc: "亮色用白天主题，深色用黑夜主题" , breadcrumb: ["设置", "外观与布局", "主题", "跟随系统昼夜"] },
-  { id: "set-appearance", tab: "外观与布局", section: "外观", title: "外观", aliases: ["密度", "字号", "圆角", "主题色"], desc: "主题、标签栏、玻璃程度、取色等外观项" , breadcrumb: ["设置", "外观与布局", "外观", "外观"] },
-  { id: "set-wallpaper", tab: "外观与布局", section: "外观", title: "壁纸", aliases: ["墙纸", "背景", "背景图", "动态壁纸", "上传壁纸", "壁纸库"], desc: "全窗壁纸库、上传与动态壁纸声音" , breadcrumb: ["设置", "外观与布局", "外观", "壁纸"] },
-  { id: "set-wallpaper-sound", tab: "外观与布局", section: "外观", title: "动态壁纸声音", aliases: ["视频壁纸声音", "壁纸静音"], desc: "视频壁纸有声时是否放开声音" , breadcrumb: ["设置", "外观与布局", "外观", "动态壁纸声音"] },
-  { id: "set-tabbar-style", tab: "外观与布局", section: "外观", title: "标签栏样式", aliases: ["标签栏", "竖栏", "横栏", "标签栏默认"], desc: "横版顶部标签 / 竖版左侧标签" , breadcrumb: ["设置", "外观与布局", "外观", "标签栏样式"] },
-  { id: "set-glass-level", tab: "外观与布局", section: "外观", title: "玻璃程度", aliases: ["玻璃", "材质", "毛玻璃", "透明", "透彻", "玻璃质感"], desc: "全站玻璃面材浓度四档" , breadcrumb: ["设置", "外观与布局", "外观", "玻璃程度"] },
-  { id: "set-dyn-color", tab: "外观与布局", section: "外观", title: "跟随系统取色", aliases: ["动态取色", "壁纸取色", "系统取色", "动态颜色"], desc: "用壁纸颜色重算全站配色" , breadcrumb: ["设置", "外观与布局", "外观", "跟随系统取色"] },
-  { id: "set-capsule-tap", tab: "外观与布局", section: "工作空间", title: "点击胶囊默认打开", aliases: ["胶囊", "胶囊默认动作", "搜索与胶囊", "底栏胶囊"], desc: "点胶囊默认进搜索还是 OH 对话" , breadcrumb: ["设置", "外观与布局", "工作空间", "点击胶囊默认打开"] },
-  { id: "set-search-history", tab: "外观与布局", section: "工作空间", title: "最近搜索记录", aliases: ["搜索历史", "清空搜索记录"], desc: "保留最近 10 条搜索记录，可清空" , breadcrumb: ["设置", "外观与布局", "工作空间", "最近搜索记录"] },
-  { id: "set-geek", tab: "桌面小组件", section: "极客模式", title: "极客模式（浏览器探索）", aliases: ["极客", "探索浏览器", "playwright", "浏览器自动化"], desc: "浏览器探索开关、环境下载与启动方式" , breadcrumb: ["设置", "桌面小组件", "极客模式", "极客模式（浏览器探索）"] },
-  { id: "set-geek-download", tab: "桌面小组件", section: "极客模式", title: "探索浏览器环境", aliases: ["playwright 下载", "下载浏览器", "浏览器环境"], desc: "一键下载/检查 Playwright 浏览器与独立 profile" , breadcrumb: ["设置", "桌面小组件", "极客模式", "探索浏览器环境"], landOn: { section: "极客模式", note: "下载/检查在「极客模式（浏览器探索）」行下方的环境卡里；已带到「极客模式」分节。" } },
-  { id: "set-home-layout", tab: "外观与布局", section: "首页布局", title: "首页布局", aliases: ["首页", "卡片顺序"], desc: "首页卡片显隐与排序" , breadcrumb: ["设置", "外观与布局", "首页布局", "首页布局"] },
-  { id: "set-favs", tab: "外观与布局", section: "收藏夹", title: "收藏夹", aliases: ["收藏", "导入收藏", "导出收藏"], desc: "收藏夹管理与导入导出" , breadcrumb: ["设置", "外观与布局", "收藏夹", "收藏夹"] },
-  { id: "set-cloud", tab: "数据与同步", section: "云同步", title: "云同步", aliases: ["同步", "云盘同步", "备份"], desc: "云盘同步与恢复" , breadcrumb: ["设置", "数据与同步", "云同步", "云同步"] },
-  { id: "set-exthw", tab: "数据与同步", section: "外部作业源", title: "外部作业源", aliases: ["作业源", "OJ", "课件"], desc: "外部作业源登录与刷新" , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源"] },
-  { id: "set-download", tab: "下载与存储", section: "下载", title: "下载", aliases: ["存储", "缓存", "清理"], desc: "下载目录与缓存清理" , breadcrumb: ["设置", "下载与存储", "下载", "下载"] },
-  { id: "set-notify", tab: "通知与提醒", section: "通知", title: "通知", aliases: ["提醒", "推送"], desc: "通知与提醒设置" , breadcrumb: ["设置", "通知与提醒", "通知", "通知"] },
-  { id: "set-account", tab: "账号", section: "账号与绑定", title: "账号与绑定", aliases: ["登录", "学号", "绑定"], desc: "清华账号登录与绑定" , breadcrumb: ["设置", "账号", "账号与绑定", "账号与绑定"] },
-  { id: "set-security", tab: "账号", section: "安全", title: "安全", aliases: ["密码", "记住密码"], desc: "记住的密码与安全项" , breadcrumb: ["设置", "账号", "安全", "安全"] },
-  { id: "set-about", tab: "关于", section: "关于", title: "关于", aliases: ["版本", "更新", "开源"], desc: "版本、更新与开源信息" , breadcrumb: ["设置", "关于", "关于", "关于"] },
-  { id: "set-account-row", tab: "账号", section: "账户", title: "账户", aliases: ["已登录", "退出登录"], desc: "当前登录状态与退出" , breadcrumb: ["设置", "账号", "账户", "账户"] },
-  { id: "set-saved-pwd", tab: "账号", section: "安全", title: "记住的密码", aliases: ["保存密码", "清除密码"], desc: "本机保存的登录密码（可清除）" , breadcrumb: ["设置", "账号", "安全", "记住的密码"] },
-  { id: "set-tab-manage", tab: "关于", section: "关于", title: "管理栏目", aliases: ["栏目显隐", "页签排序"], desc: "设置栏目的显隐与排序" , breadcrumb: ["设置", "关于", "关于", "管理栏目"] },
-  { id: "set-tour", tab: "关于", section: "关于", title: "导览", aliases: ["重新运行引导", "新手引导"], desc: "重新运行首次使用引导" , breadcrumb: ["设置", "关于", "关于", "导览"] },
-  { id: "set-update", tab: "关于", section: "关于", title: "检查 OneTHU 更新", aliases: ["本体更新", "版本更新"], desc: "检查应用本体更新" , breadcrumb: ["设置", "关于", "关于", "检查 OneTHU 更新"] },
-  { id: "set-cloud-reconnect", tab: "数据与同步", section: "云同步", title: "云盘重连", aliases: ["重新连接云盘", "token"], desc: "云盘连接失效时一键重连" , breadcrumb: ["设置", "数据与同步", "云同步", "云盘重连"], landOn: { section: "云同步", note: "云盘连接出问题在「日程云同步」那张卡上重试/重新授权；当前没有独立的「云盘重连」按钮（连接正常时用不上），已带到「云同步」分节。" } },
-  { id: "set-exthw-creds", tab: "数据与同步", section: "外部作业源", title: "外部作业源登录", aliases: ["作业源凭据", "OJ 登录"], desc: "外部作业源账号登录与刷新" , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源登录"], landOn: { section: "外部作业源", note: "登录入口按作业源分卡：OJ 类收在「OJ 平台登录」折叠卡里，雨课堂等各卡有自己的登录入口；已带到「外部作业源」分节。" } },
-  { id: "set-dl-dir", tab: "下载与存储", section: "下载", title: "下载目录 / 缓存清理", aliases: ["缓存", "存储占用", "清理"], desc: "下载目录位置与缓存清理" , breadcrumb: ["设置", "下载与存储", "下载", "下载目录 / 缓存清理"], landOn: { section: "下载", note: "下载目录=「下载位置」一行；缓存/诊断在「运行日志」「诊断摘要」行——已带到「下载」分节。" } },
-  { id: "set-help", tab: "帮助", section: "帮助", title: "帮助", aliases: ["教程", "导览"], desc: "常用任务与引导" , breadcrumb: ["设置", "帮助", "帮助", "帮助"] },
+  { id: "set-theme-board", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.788db1cfec2a"); }, aliases: ["换主题", "配色", "主题板", "暗色", "夜间"], get desc() { return i18n("pages.settings.4a944ac462b1"); } , breadcrumb: ["设置", "外观与布局", "主题", "主题"] },
+  { id: "set-theme-install", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.c3abbc2eb455"); }, aliases: ["主题市场", "装主题"], get desc() { return i18n("pages.settings.0240f8fe7f39"); } , breadcrumb: ["设置", "外观与布局", "主题", "安装主题"], go: () => requestPluginsView({ view: "market", category: "theme" }) },
+  { id: "set-theme-manage", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.5aeb7a87addf"); }, aliases: ["启用主题", "停用主题"], get desc() { return i18n("pages.settings.47a5ccceaeca"); } , breadcrumb: ["设置", "外观与布局", "主题", "管理主题"], go: () => requestPluginsView({ view: "mine", category: "theme" }) },
+  { id: "set-theme-follow", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.b073567bc2e0"); }, aliases: ["昼夜", "白天主题", "黑夜主题", "自动切换"], get desc() { return i18n("pages.settings.590151cbdb54"); } , breadcrumb: ["设置", "外观与布局", "主题", "跟随系统昼夜"] },
+  { id: "set-appearance", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.86a63f23a076"); }, aliases: ["密度", "字号", "圆角", "主题色"], get desc() { return i18n("pages.settings.1cb7f269cc24"); } , breadcrumb: ["设置", "外观与布局", "外观", "外观"] },
+  { id: "set-wallpaper", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.bbaa9f06378b"); }, aliases: ["墙纸", "背景", "背景图", "动态壁纸", "上传壁纸", "壁纸库"], get desc() { return i18n("pages.settings.46ec3a81bd34"); } , breadcrumb: ["设置", "外观与布局", "外观", "壁纸"] },
+  { id: "set-wallpaper-sound", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.b34bc798190c"); }, aliases: ["视频壁纸声音", "壁纸静音"], get desc() { return i18n("pages.settings.4e66e6c598d5"); } , breadcrumb: ["设置", "外观与布局", "外观", "动态壁纸声音"] },
+  { id: "set-tabbar-style", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.1d08854948f4"); }, aliases: ["标签栏", "竖栏", "横栏", "标签栏默认"], get desc() { return i18n("pages.settings.a6514da1828c"); } , breadcrumb: ["设置", "外观与布局", "外观", "标签栏样式"] },
+  { id: "set-glass-level", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.865d7ae4c9e6"); }, aliases: ["玻璃", "材质", "毛玻璃", "透明", "透彻", "玻璃质感"], get desc() { return i18n("pages.settings.c85fea7bf89f"); } , breadcrumb: ["设置", "外观与布局", "外观", "玻璃程度"] },
+  { id: "set-dyn-color", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.3d5af6644ab2"); }, aliases: ["动态取色", "壁纸取色", "系统取色", "动态颜色"], get desc() { return i18n("pages.settings.3c23082caeac"); } , breadcrumb: ["设置", "外观与布局", "外观", "跟随系统取色"] },
+  { id: "set-capsule-tap", tab: "外观与布局", section: "工作空间", get title() { return i18n("pages.settings.464f0207d4ff"); }, aliases: ["胶囊", "胶囊默认动作", "搜索与胶囊", "底栏胶囊"], get desc() { return i18n("pages.settings.1354e42a5f65"); } , breadcrumb: ["设置", "外观与布局", "工作空间", "点击胶囊默认打开"] },
+  { id: "set-search-history", tab: "外观与布局", section: "工作空间", get title() { return i18n("pages.settings.461301d93770"); }, aliases: ["搜索历史", "清空搜索记录"], get desc() { return i18n("pages.settings.b953890db0b9"); } , breadcrumb: ["设置", "外观与布局", "工作空间", "最近搜索记录"] },
+  { id: "set-geek", tab: "桌面小组件", section: "极客模式", get title() { return i18n("pages.settings.53b5c5c16016"); }, aliases: ["极客", "探索浏览器", "playwright", "浏览器自动化"], get desc() { return i18n("pages.settings.931d5e245827"); } , breadcrumb: ["设置", "桌面小组件", "极客模式", "极客模式（浏览器探索）"] },
+  { id: "set-geek-download", tab: "桌面小组件", section: "极客模式", get title() { return i18n("pages.settings.46195ccac72d"); }, aliases: ["playwright 下载", "下载浏览器", "浏览器环境"], get desc() { return i18n("pages.settings.4c2f3a5e0a01"); } , breadcrumb: ["设置", "桌面小组件", "极客模式", "探索浏览器环境"], landOn: { section: "极客模式", get note() { return i18n("pages.settings.52af44747494"); } } },
+  { id: "set-home-layout", tab: "外观与布局", section: "首页布局", get title() { return i18n("pages.settings.e7fd632d4dec"); }, aliases: ["首页", "卡片顺序"], get desc() { return i18n("pages.settings.853b03f039d3"); } , breadcrumb: ["设置", "外观与布局", "首页布局", "首页布局"] },
+  { id: "set-favs", tab: "外观与布局", section: "收藏夹", get title() { return i18n("pages.settings.796d20e91588"); }, aliases: ["收藏", "导入收藏", "导出收藏"], get desc() { return i18n("pages.settings.da4f90828ea3"); } , breadcrumb: ["设置", "外观与布局", "收藏夹", "收藏夹"] },
+  { id: "set-cloud", tab: "数据与同步", section: "云同步", get title() { return i18n("pages.settings.888977c201d1"); }, aliases: ["同步", "云盘同步", "备份"], get desc() { return i18n("pages.settings.02bd4c1bfaf2"); } , breadcrumb: ["设置", "数据与同步", "云同步", "云同步"] },
+  { id: "set-exthw", tab: "数据与同步", section: "外部作业源", get title() { return i18n("pages.settings.d4d78d3b38d0"); }, aliases: ["作业源", "OJ", "课件"], get desc() { return i18n("pages.settings.ec7b5bd71b2c"); } , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源"] },
+  { id: "set-download", tab: "下载与存储", section: "下载", get title() { return i18n("pages.settings.4673a2306165"); }, aliases: ["存储", "缓存", "清理"], get desc() { return i18n("pages.settings.44e3feed902f"); } , breadcrumb: ["设置", "下载与存储", "下载", "下载"] },
+  { id: "set-notify", tab: "通知与提醒", section: "通知", get title() { return i18n("pages.settings.4b6ded8a7f18"); }, aliases: ["提醒", "推送"], get desc() { return i18n("pages.settings.15047c91eb6c"); } , breadcrumb: ["设置", "通知与提醒", "通知", "通知"] },
+  { id: "set-account", tab: "账号", section: "账号与绑定", get title() { return i18n("pages.settings.07812d003706"); }, aliases: ["登录", "学号", "绑定"], get desc() { return i18n("pages.settings.ee17e69edae5"); } , breadcrumb: ["设置", "账号", "账号与绑定", "账号与绑定"] },
+  { id: "set-security", tab: "账号", section: "安全", get title() { return i18n("pages.settings.afb63a620bdc"); }, aliases: ["密码", "记住密码"], get desc() { return i18n("pages.settings.372fbc07354b"); } , breadcrumb: ["设置", "账号", "安全", "安全"] },
+  { id: "set-about", tab: "关于", section: "关于", get title() { return i18n("pages.settings.52d25a9e30ba"); }, aliases: ["版本", "更新", "开源"], get desc() { return i18n("pages.settings.ccdb042ac3e2"); } , breadcrumb: ["设置", "关于", "关于", "关于"] },
+  { id: "set-account-row", tab: "账号", section: "账户", get title() { return i18n("pages.settings.061246bd31e0"); }, aliases: ["已登录", "退出登录"], get desc() { return i18n("pages.settings.1ffc3a676204"); } , breadcrumb: ["设置", "账号", "账户", "账户"] },
+  { id: "set-saved-pwd", tab: "账号", section: "安全", get title() { return i18n("pages.settings.b7d8cb31eeb8"); }, aliases: ["保存密码", "清除密码"], get desc() { return i18n("pages.settings.8f655a35cb99"); } , breadcrumb: ["设置", "账号", "安全", "记住的密码"] },
+  { id: "set-tab-manage", tab: "关于", section: "关于", get title() { return i18n("pages.settings.12526376d387"); }, aliases: ["栏目显隐", "页签排序"], get desc() { return i18n("pages.settings.ba9385e7fd13"); } , breadcrumb: ["设置", "关于", "关于", "管理栏目"] },
+  { id: "set-tour", tab: "关于", section: "关于", get title() { return i18n("pages.settings.c8877a829fab"); }, aliases: ["重新运行引导", "新手引导"], get desc() { return i18n("pages.settings.06f03258229a"); } , breadcrumb: ["设置", "关于", "关于", "导览"] },
+  { id: "set-update", tab: "关于", section: "关于", get title() { return i18n("pages.settings.b34d6b6c1193"); }, aliases: ["本体更新", "版本更新"], get desc() { return i18n("pages.settings.b07a37146f79"); } , breadcrumb: ["设置", "关于", "关于", "检查 OneTHU 更新"] },
+  { id: "set-cloud-reconnect", tab: "数据与同步", section: "云同步", get title() { return i18n("pages.settings.752d61201dda"); }, aliases: ["重新连接云盘", "token"], get desc() { return i18n("pages.settings.48b3252fa3bf"); } , breadcrumb: ["设置", "数据与同步", "云同步", "云盘重连"], landOn: { section: "云同步", get note() { return i18n("pages.settings.4b7a59bc4d83"); } } },
+  { id: "set-exthw-creds", tab: "数据与同步", section: "外部作业源", get title() { return i18n("pages.settings.0d8ce603b616"); }, aliases: ["作业源凭据", "OJ 登录"], get desc() { return i18n("pages.settings.63c3e2b4bea1"); } , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源登录"], landOn: { section: "外部作业源", get note() { return i18n("pages.settings.a52019e2a526"); } } },
+  { id: "set-dl-dir", tab: "下载与存储", section: "下载", get title() { return i18n("pages.settings.807f19bf853b"); }, aliases: ["缓存", "存储占用", "清理"], get desc() { return i18n("pages.settings.2cc0a2c950df"); } , breadcrumb: ["设置", "下载与存储", "下载", "下载目录 / 缓存清理"], landOn: { section: "下载", get note() { return i18n("pages.settings.08a2cb9cf64f"); } } },
+  { id: "set-help", tab: "帮助", section: "帮助", get title() { return i18n("pages.settings.a57cfcb8428d"); }, aliases: ["教程", "导览"], get desc() { return i18n("pages.settings.2e7fa452ef24"); } , breadcrumb: ["设置", "帮助", "帮助", "帮助"] },
 ]);
 
 export function SettingsPage() {
+  const uiLocale = useUiLocale();
+
   /** 当前二级页签（默认第一个栏目） */
   const [tab, setTab] = useState<string>(SETTINGS_TAB_ORDER[0] ?? "账号");
   /** 手机端判定：插件入口在「我的」页里也要有一份（与桌面侧栏同款框） */
@@ -147,95 +133,30 @@ export function SettingsPage() {
     saveTabLayout("settings", l);
   };
 
-  // R23（霖实测：跳过来还得自己找分区在哪）：引导横幅「去设置」→ **先切到外部作业源
-  // 所在页签再滚动**。此前只在子组件里 scrollIntoView——分区在 display:none 的页签里，
-  // 滚动无效，用户落在设置页顶部还要自己找。
-  // task-22（检索收尾）：consume 逻辑抽成**稳定函数**，两个入口同吃——
-  //   ① 挂载（跨页进设置的那一次，R23 的原始路径）② 订阅（命令面板/底栏检索在设置页
-  // 内点行时**就地**消费——mount-only 的 consume 永远等不到那时落下的请求）。
-  const consumePendingRequests = useCallback((): (() => void) | undefined => {
+  const settingsRef = useRef<HTMLDivElement>(null);
+  const focusTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const consumePendingRequests = useCallback((): void => {
     const wantTab = consumeSettingsTabRequest();
     if (wantTab) setTab(wantTab);
-    /* 分区子请求：等页签显隐 effect 跑完再滚动，并**短暂高亮**该分节（用户一眼看到） */
-    const wantSec = consumeSettingsSectionRequest();
-    if (wantSec) {
-      const t = setTimeout(() => {
-        if (focusSettingsTarget(wantSec)) return; // 行级直达优先（搜索落到"哪一行"）
-        jumpToSection([wantSec]);
-        /* 两族一起认：OneGUI 迁移后分节头是 .og-section（未迁页仍是 .section-head） */
-        const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
-        const hit = heads.find((el) => (el.textContent ?? "").trim().startsWith(wantSec));
-        const card = hit?.nextElementSibling as HTMLElement | null;
-        for (const el of [hit, card]) {
-          if (!el) continue;
-          el.classList.add("sec-focus");
-          setTimeout(() => el.classList.remove("sec-focus"), 1800);
-        }
-      }, 160);
-      return () => clearTimeout(t);
-    }
-    if (!consumeExtHwScrollRequest()) return;
-    setTab(SETTINGS_TAB_OF["外部作业源"] ?? "数据与同步");
-    const t2 = setTimeout(() => {
-      document.getElementById("settings-exthw")?.scrollIntoView({ block: "center", behavior: "smooth" });
-    }, 120); // 等页签显隐 effect（按 tab 切 display）先跑完
-    return () => clearTimeout(t2);
+    const wantSection = consumeSettingsSectionRequest();
+    const externalHomework = consumeExtHwScrollRequest();
+    if (externalHomework) setTab("数据与同步");
+    const target = wantSection ?? (externalHomework ? "外部作业源" : null);
+    if (!target) return;
+    if (focusTimer.current !== null) clearTimeout(focusTimer.current);
+    focusTimer.current = setTimeout(() => {
+      focusTimer.current = null;
+      focusSettingsTarget(target, settingsRef.current ?? undefined);
+    }, 160);
   }, []);
   useEffect(() => {
-    const off = consumePendingRequests();
-    return () => off?.();
-  }, [consumePendingRequests]);
-  /* 页内新落下的请求（检索条 / 插件页 / OH 门面）就地消费 */
-  useEffect(() => {
-    const off = subscribeSettingsConsume(() => {
-      const cleanup = consumePendingRequests();
-      if (cleanup) window.setTimeout(cleanup, 0);
-    });
-    return off;
-  }, [consumePendingRequests]);
-
-  /**
-   * 页签显隐。三个坑（2026-09-20 实测；③ 2026-10-14 补）：
-   *  ① `hidden` 属性会被 app 里的 display 规则压过去 → 必须用行内 style.display；
-   *  ② 各分节并非同一父节点的兄弟：外部作业源 / 下载 / 外观等分节渲染在子组件内部，
-   *     因此必须逐个分节头在**各自父节点内**向后收拢其内容，不能只遍历首层兄弟。
-   *  ③ 分节头现在是**两族**：OneGUI 迁移后是 .og-section（children 装在头节点内），
-   *     未迁页面仍是 .section-head（内容是头后面的兄弟节点）——只认旧族会让
-   *     显隐 effect 空转（querySelectorAll 找到 0 个），所有分节在**每个页签**下都可见
-   *     （网格在 2026-10-14 用户实测「设置栏各自不对应了」——即为它）。 */
-  useEffect(() => {
-    /* 分节头 → 页签分组。精确优先；OneGUI 的 .og-section textContent = 标题 + hint，
-       按最长已注册前缀兜底；未登记的一律 null。 */
-    const groupOf = (head: HTMLElement): string | null => {
-      const title = (head.textContent ?? "").trim();
-      const prefix = Object.keys(SETTINGS_TAB_OF)
-        .filter((k) => title.startsWith(k))
-        .sort((a, b) => b.length - a.length)[0];
-      return SETTINGS_TAB_OF[title] ?? (prefix ? SETTINGS_TAB_OF[prefix] : null) ?? (/课件|OJ/.test(title) ? "数据与同步" : null);
+    consumePendingRequests();
+    const unsubscribe = subscribeSettingsConsume(consumePendingRequests);
+    return () => {
+      unsubscribe();
+      if (focusTimer.current !== null) clearTimeout(focusTimer.current);
     };
-    const isHead = (el: Element): boolean => el.classList.contains("section-head") || el.classList.contains("og-section");
-    const heads = Array.from(document.querySelectorAll<HTMLElement>(".section-head, .og-section"));
-    for (const head of heads) {
-      const group = groupOf(head);
-      if (!group) continue;
-      const show = group === tab;
-      /* show/hide 两支都必须走兄弟收拢：只收拢 hide 支时，先前隐藏轮留下的
-         display:none 永远洗不掉（2026-10-14 实测：切成页签后外观/壁纸两卡消失）。 */
-      const apply = (el: HTMLElement): void => {
-        el.style.display = show ? "" : "none";
-      };
-      apply(head);
-      let sib = head.nextElementSibling as HTMLElement | null;
-      /* 收拢到「下一个已登记页签的分节头」为止。未登记的分节头（如 ExplorerPrefsSection
-         里的「搜索与胶囊」，它是 .og-section 且 children 装在头节点内）属于上一节的正文，
-         必须跟着一起收 —— 否则父级「工作空间」一收就停在它身上，它会漏在所有页签下
-         （2026-10-19 用户实测：账号页签也冒出「搜索与胶囊」）。 */
-      while (sib && !(isHead(sib) && groupOf(sib))) {
-        apply(sib);
-        sib = sib.nextElementSibling as HTMLElement | null;
-      }
-    }
-  }, [tab, tabLayout.hidden.join(",")]);
+  }, [consumePendingRequests]);
 
   // Keep the selected category fully visible in the horizontal phone strip.
   useEffect(() => {
@@ -280,38 +201,36 @@ export function SettingsPage() {
   const visibleSettingTabs = settingsTabLayout.order.filter((t) => SETTINGS_TAB_ORDER.includes(t) && !tabLayout.hidden.includes(t));
 
   return (
-    <div className="workbench-settings">
+    <div className="workbench-settings" ref={settingsRef}>
       <PageHead
-        title="设置"
+        title={i18n("pages.settings.df3d58c7d84b")}
         actions={
           <>
-            <Btn variant="outline" onClick={() => {
+            <Btn data-set-id="row-set-tour" variant="outline" onClick={() => {
                 resetActiveOnboarding();
                 location.reload();
-              }} titleAttr="重新运行首次使用引导">导览
-            </Btn>
-            <Btn variant="outline" onClick={() => setManageOpen(true)} titleAttr="栏目显隐与排序">管理栏目
-            </Btn>
+              }} titleAttr={i18n("pages.settings.06f03258229a")}>{i18n("pages.settings.c8877a829fab")}</Btn>
+            <Btn data-set-id="row-set-tab-manage" variant="outline" onClick={() => setManageOpen(true)} titleAttr={i18n("pages.settings.fa0124c14866")}>{i18n("pages.settings.12526376d387")}</Btn>
           </>
         }
       />
 
 
-      <div className="workbench-settings-mode"><ExperienceModeControl/></div>
+      <div className="workbench-settings-mode"><ExperienceModeControl/><LanguageControl/></div>
       {/* 完整模式的续签/模型源都在 OH 高级配置里调，这里不再放模型源条（用户 2026-10-19 拍板） */}
       {isPhone ? (
         <div className="workbench-settings-phone-nav">
           <Select
-            aria-label="设置栏目"
+            aria-label={i18n("pages.settings.92dd1d1f77db")}
             value={tab}
-            options={visibleSettingTabs.map((t) => ({ value: t, label: t }))}
+            options={visibleSettingTabs.map((t) => ({ value: t, label: settingsLabel(t) }))}
             onChange={setTab}
           />
         </div>
       ) : null}
       <div className="workbench-settings-layout">
-      {isPhone ? null : <nav className="workbench-settings-nav" aria-label="设置栏目">
-      <div className="workbench-settings-tabs" role="tablist" aria-label="设置栏目" onKeyDown={event => {
+      {isPhone ? null : <nav className="workbench-settings-nav" aria-label={i18n("pages.settings.92dd1d1f77db")}>
+      <div className="workbench-settings-tabs" role="tablist" aria-label={i18n("pages.settings.92dd1d1f77db")} onKeyDown={event => {
         if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
         const tabs = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]"));
         const index = tabs.indexOf(event.target as HTMLButtonElement);
@@ -332,25 +251,28 @@ export function SettingsPage() {
               className={tab === t ? "is-active" : ""}
               onClick={() => setTab(t)}
             >
-              {t}
+              {settingsLabel(t)}
             </Btn>
           ))}
       </div>
       </nav>}
-      <div className="workbench-settings-content" id="workbench-settings-panel" role="tabpanel" aria-label={tab}>
-      <div className="workbench-settings-title"><h2>{tab}</h2><p>按你的习惯，调整 OneTHU。</p></div>
-      <SectionHead title="帮助" />
+      <div className="workbench-settings-content" id="workbench-settings-panel" role="tabpanel" aria-label={settingsLabel(tab)}>
+      <div className="workbench-settings-title"><h2>{settingsLabel(tab)}</h2><p>{i18n("pages.settings.fc49d72df446")}</p></div>
+      <SettingsGroup tab="帮助" active={tab} section="帮助">
+      <SectionHead id="row-set-help" title={i18n("pages.settings.a57cfcb8428d")} />
       <Card>
         <HelpSection />
       </Card>
 
-      <SectionHead title="关于" />
-      <SoftwareUpdateSection />
+      </SettingsGroup>
+      <SettingsGroup tab="关于" active={tab} section="关于">
+      <SectionHead id="row-set-about" title={i18n("pages.settings.52d25a9e30ba")} />
+      <div data-set-id="row-set-update"><SoftwareUpdateSection /></div>
       <Card>
         <SettingsRow
           title={<>OneTHU {APP_VERSION_LABEL} “{APP_CODENAME}”</>}
-          sub="清华园随身工具箱 · 开源于 GitHub"
-          control={<Btn variant="outline" size="sm" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>GitHub 项目页</Btn>}
+          sub={i18n("pages.settings.05662029b925")}
+          control={<Btn variant="outline" size="sm" onClick={() => void openUrl("https://github.com/smartThise/OneTHU")}>{i18n("pages.settings.8502353c15ac")}</Btn>}
         />
         {/* 运行日志导出属开发者功能：正式版不显示（真机取证走 adb logcat -s onethu:V，
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
@@ -360,44 +282,43 @@ export function SettingsPage() {
             「导览」按钮（页头）清 flow4 完成标记，回到三模式选择。 */}
       </Card>
 
-      <SectionHead title="账户" />
+      </SettingsGroup>
+      <SettingsGroup tab="账号" active={tab} section="账户">
+      <SectionHead id="row-set-account-row" title={i18n("pages.settings.061246bd31e0")} />
       <Card>
         <SettingsRow
-          title="统一认证"
-          sub={user?.displayName || displayStudentId(user?.username) || "未登录"}
-          control={<Btn variant="outline" size="sm" onClick={() => void logout()}>退出登录</Btn>}
+          title={i18n("pages.settings.99e398c6de5c")}
+          sub={user?.displayName || displayStudentId(user?.username) || i18n("pages.settings.c1f658373079")}
+          control={<Btn variant="outline" size="sm" onClick={() => void logout()}>{i18n("pages.settings.3ab8cc15939f")}</Btn>}
         />
       </Card>
 
 
-      <SectionHead title="账号与绑定" />
+      </SettingsGroup>
+      <SettingsGroup tab="账号" active={tab} section="账号与绑定">
+      <SectionHead id="row-set-account" title={i18n("pages.settings.07812d003706")} />
       <SettingsList>
         <SettingsRow
-          title="清华电子身份（账号密码管理）"
+          title={i18n("pages.settings.c38372ef73d3")}
           sub={
-            <>
-              在应用内的窗口打开清华统一身份认证，自动填入账号密码（有图形验证码时需手动输入）。
-              <b>删除已保存的登录信息或修改密码，可能导致 OneTHU 退出登录</b>，需重新登录一次。
-              {eidMsg ? <ErrorLine text={eidMsg} tone="quiet" /> : null}
-            </>
+            <>{i18n("pages.settings.05b2d326099e")}<b>{i18n("pages.settings.79a6fb7736ce")}</b>{i18nRich("pages.settings.c820e3820a04", { value: eidMsg ? <ErrorLine text={eidMsg} tone="quiet" /> : null })}</>
           }
           control={<Btn variant="outline" size="sm" onClick={() => {
               const creds = session.getIdCredentials();
               if (!creds) {
                 void openUrl("https://id.tsinghua.edu.cn/do/outoflogin/login/mainUi/login")
-                  .then(() => setEidMsg("已在系统浏览器打开，请手动输入账号密码"))
-                  .catch((e: unknown) => setEidMsg(`打开失败：${e instanceof Error ? e.message : String(e)}`));
+                  .then(() => setEidMsg(i18n("pages.settings.3dc0bb7cf271")))
+                  .catch((e: unknown) => setEidMsg(i18n("pages.settings.f2e2b5ad5926", { value: String(e instanceof Error ? e.message : String(e)) })));
                 return;
               }
               const openInBrowser = () =>
                 openUrl("https://id.tsinghua.edu.cn/do/outoflogin/login/mainUi/login")
-                  .then(() => setEidMsg("已在系统浏览器打开（自动填入仅在桌面端可用）"))
-                  .catch((e: unknown) => setEidMsg(`打开失败：${e instanceof Error ? e.message : String(e)}`));
+                  .then(() => setEidMsg(i18n("pages.settings.7b994af5120a")))
+                  .catch((e: unknown) => setEidMsg(i18n("pages.settings.f2e2b5ad5926", { value: String(e instanceof Error ? e.message : String(e)) })));
               void invoke("open_eid_window", { username: creds.username, password: creds.password })
-                .then(() => setEidMsg("电子身份窗口已打开，账号密码已自动填入"))
+                .then(() => setEidMsg(i18n("pages.settings.56a9e30d6963")))
                 .catch(() => void openInBrowser());
-            }}>打开电子身份
-          </Btn>
+            }}>{i18n("pages.settings.50efca8dcb36")}</Btn>
           }
         />
       </SettingsList>
@@ -406,35 +327,43 @@ export function SettingsPage() {
 
 
 
-      <SectionHead title="云同步" />
+      </SettingsGroup>
+      <SettingsGroup tab="数据与同步" active={tab} section="云同步">
+      <SectionHead id="row-set-cloud" title={i18n("pages.settings.888977c201d1")} />
       <CalendarSyncSettings />
-      <SectionHead title="外部作业源" />
+      </SettingsGroup>
+      <SettingsGroup tab="数据与同步" active={tab} section="外部作业源">
+      <SectionHead id="row-set-exthw" title={i18n("pages.settings.d4d78d3b38d0")} />
       <ExtHwSettingsSection />
 
+      </SettingsGroup>
+      <SettingsGroup tab="下载与存储" active={tab} section="下载">
       <DownloadSettings />
 
-      <SectionHead title="首页布局" />
+      </SettingsGroup>
+      <SettingsGroup tab="外观与布局" active={tab} section="首页布局">
+      <SectionHead id="row-set-home-layout" title={i18n("pages.settings.e7fd632d4dec")} />
       <SettingsList>
         <SettingsRow
-          title="恢复默认首页布局"
-          sub="将首页组件、排列和缩放恢复为默认版式，其他 OnePage 保留。"
-          control={<Btn variant="outline" size="sm" onClick={() => { resetHomeBoard(); setHomeResetAt(Date.now()); }}>{homeResetAt ? "已恢复默认" : "恢复默认布局"}</Btn>}
+          title={i18n("pages.settings.188df41c178b")}
+          sub={i18n("pages.settings.1d360021dfc2")}
+          control={<Btn variant="outline" size="sm" onClick={() => { resetHomeBoard(); setHomeResetAt(Date.now()); }}>{homeResetAt ? i18n("pages.settings.b047bf296ada") : i18n("pages.settings.77ef57e1d1d3")}</Btn>}
         />
       </SettingsList>
 
-      <SectionHead title="工作空间" />
+      </SettingsGroup>
+      <SettingsGroup tab="外观与布局" active={tab} section="工作空间">
+      <SectionHead title={i18n("pages.settings.6fed7e860168")} />
       <ExplorerPrefsSection />
 
-      <SectionHead title="收藏夹" />
+      </SettingsGroup>
+      <SettingsGroup tab="外观与布局" active={tab} section="收藏夹">
+      <SectionHead id="row-set-favs" title={i18n("pages.settings.796d20e91588")} />
       <SettingsList>
         <SettingsRow
-          title="恢复默认收藏夹"
+          title={i18n("pages.settings.7ea56ac4a13f")}
           sub={
-            <>
-              删除全部用户收藏夹与折叠记录（默认一级入口不受影响，永远在左侧栏）。
-              各功能仍在原来的页面，收藏夹只是跳转入口。
-              {favMsg ? <>　{favMsg}</> : null}
-            </>
+            <>{i18nRich("pages.settings.c2c3d838b52c", { value: favMsg ? <>　{favMsg}</> : null })}</>
           }
           control={
             <Inline gap={2} wrap>
@@ -442,94 +371,103 @@ export function SettingsPage() {
                   const json = JSON.stringify(favs.data);
                   const clip = navigator.clipboard;
                   if (!clip?.writeText) {
-                    setFavMsg("剪贴板不可用，请改用导入框核对");
+                    setFavMsg(i18n("pages.settings.8c01e1c26f88"));
                     return;
                   }
                   void clip
                     .writeText(json)
-                    .then(() => setFavMsg("收藏夹已复制到剪贴板（" + favs.data.order.length + " 个根收藏夹）"))
-                    .catch(() => setFavMsg("复制未成功，请改用下方的导入框核对"));
-                }}>导出（复制 JSON）
-              </Btn>
-              <Btn variant="outline" onClick={() => { setImportOpen((o) => !o); setImportText(""); setFavMsg(null); }}>导入
-              </Btn>
+                    .then(() => setFavMsg(i18n("pages.settings.fa7ee5600601") + favs.data.order.length + i18n("pages.settings.0e6d36a185c2")))
+                    .catch(() => setFavMsg(i18n("pages.settings.376c845be416")));
+                }}>{i18n("pages.settings.f9ee669dc9d6")}</Btn>
+              <Btn variant="outline" onClick={() => { setImportOpen((o) => !o); setImportText(""); setFavMsg(null); }}>{i18n("pages.settings.576d81bb0631")}</Btn>
               <Btn variant="outline" onClick={() =>
-                  void confirmOk("删除全部用户收藏夹并复位折叠记录？默认一级入口不受影响。").then((ok) => {
+                  void confirmOk(i18nMsg("pages.settings.636849c8095c")).then((ok) => {
                     if (!ok) return;
                     favs.replaceAll(resetFavs());
-                    setFavMsg("已恢复默认。");
+                    setFavMsg(i18n("pages.settings.7ec009b7a942"));
                   })
-                }>恢复默认
-              </Btn>
+                }>{i18n("pages.settings.ba2e93e73037")}</Btn>
             </Inline>
           }
         />
         {importOpen ? (
           <div className="og-settings-row" style={{ alignItems: "stretch" }}>
             <span className="og-settings-row-main">
-              <TextArea placeholder={"粘贴收藏夹内容（另一台设备导出的）…"} value={importText} onChange={(value) => setImportText(value)} />
+              <TextArea placeholder={i18n("pages.settings.d26529fe64b3")} value={importText} onChange={(value) => setImportText(value)} />
               <Inline gap={2}>
                 <Btn variant="solid" tone="brand" disabled={!importText.trim()} onClick={() => {
                     const parsed = parseFavs(importText);
                     if (!parsed) {
-                      setFavMsg("导入失败：格式不正确，请粘贴本应用导出的内容");
+                      setFavMsg(i18n("pages.settings.47fcb97b9b6b"));
                       return;
                     }
                     favs.replaceAll(parsed);
                     setImportOpen(false);
                     setImportText("");
-                    setFavMsg("已导入 " + parsed.order.length + " 个根收藏夹。");
-                  }}>导入并覆盖
-                </Btn>
-                <Btn variant="ghost" onClick={() => setImportOpen(false)}>取消</Btn>
+                    setFavMsg(i18n("pages.settings.2a9010137d7b") + parsed.order.length + i18n("pages.settings.1f0f8de12177"));
+                  }}>{i18n("pages.settings.d8ff71d6c093")}</Btn>
+                <Btn variant="ghost" onClick={() => setImportOpen(false)}>{i18n("pages.settings.2cd0f3be8738")}</Btn>
               </Inline>
             </span>
           </div>
         ) : null}
       </SettingsList>
 
-      <SectionHead title="外观" />
+      </SettingsGroup>
+      <SettingsGroup tab="外观与布局" active={tab} section="外观">
+      <SectionHead id="row-set-appearance" title={i18n("pages.settings.86a63f23a076")} />
       <SettingsList>
         <AppearanceSection />
       </SettingsList>
       <Card>
         <WallpaperSection />
       </Card>
-      <SectionHead title="OneShot 快捷入口" />
+      </SettingsGroup>
+      <SettingsGroup tab="外观与布局" active={tab} section="OneShot 快捷入口">
+      <SectionHead title={i18n("pages.settings.ac32447aadc3")} />
       <SettingsList>
         <OneShotSettings />
       </SettingsList>
-      <SectionHead title="通知" />
+      </SettingsGroup>
+      <SettingsGroup tab="通知与提醒" active={tab} section="通知">
+      <SectionHead id="row-set-notify" title={i18n("pages.settings.4b6ded8a7f18")} />
       <Card>
         <NotifySettingsSection />
       </Card>
-      <SectionHead title="桌面小组件" />
+      </SettingsGroup>
+      <SettingsGroup tab="桌面小组件" active={tab} section="桌面小组件">
+      <SectionHead id="row-widget-main" title={i18n("pages.settings.28b0433b1b95")} />
       <Card>
         <WidgetSettingsSection />
       </Card>
-      <SectionHead title="极客模式" />
+      </SettingsGroup>
+      <SettingsGroup tab="桌面小组件" active={tab} section="极客模式">
+      <SectionHead title={i18n("pages.settings.ef5a51b132b3")} />
       <GeekSection />
       {/* 2026-10-11（用户纠正）：OH **不是设置页的二级**，而是**插件页的二级子页面**
           （基础设置 / 高级配置）——分节与页签都已从这里移除，见 pages/Plugins.tsx 的 OH 入口。 */}
-      <SectionHead title="安全" />
+      </SettingsGroup>
+      <SettingsGroup tab="账号" active={tab} section="安全">
+      <SectionHead id="row-set-security" title={i18n("pages.settings.afb63a620bdc")} />
       <Card>
-        <SettingsRow
-          title="记住的密码"
-          sub={hasSaved ? "已在本机保存，重启后自动登录" : "未保存；登录时勾选「记住密码」即可启用"}
+        <SettingsRow id="row-set-saved-pwd"
+          title={i18n("pages.settings.b7d8cb31eeb8")}
+          sub={hasSaved ? i18n("pages.settings.f5f631c6c63e") : i18n("pages.settings.92094cd0c4c7")}
           control={
             hasSaved ? (
-              <Btn variant="outline" size="sm" disabled={clearing} onClick={() => void onClear()}>{clearing ? "清除中…" : "清除"}</Btn>
+              <Btn variant="outline" size="sm" disabled={clearing} onClick={() => void onClear()}>{clearing ? i18n("pages.settings.cd23a528a4cd") : i18n("pages.settings.bce2377283c2")}</Btn>
             ) : null
           }
         />
       </Card>
+      </SettingsGroup>
       </div>
       </div>
       <TabManageModal
         open={manageOpen}
         onClose={() => setManageOpen(false)}
-        title="管理设置栏目"
-        tabs={SETTINGS_TAB_ORDER.map((id) => ({ id, label: id }))}
+        title={i18n("pages.settings.e60a5d5f84bc")}
+        tabs={SETTINGS_TAB_ORDER.map((id) => ({ id, label: settingsLabel(id) }))}
         layout={tabLayout}
         onApply={applyTabLayout}
         onReset={() => applyTabLayout({ order: SETTINGS_TAB_ORDER, hidden: [] })}
@@ -545,6 +483,8 @@ export function SettingsPage() {
 type DownloadDirectory = { path: string; isDefault: boolean };
 
 function DownloadSettings() {
+  const uiLocale = useUiLocale();
+
   const [available, setAvailable] = useState(isTauri);
   const [directory, setDirectory] = useState<DownloadDirectory | null>(null);
   const [loading, setLoading] = useState(true);
@@ -561,7 +501,7 @@ function DownloadSettings() {
         if (!value) setAvailable(false);   // 该平台不支持（如未接入的形态）：不显示这一块
       })
       .catch((e: unknown) => {
-        if (active) setMessage(`读取下载位置失败：${e instanceof Error ? e.message : String(e)}`);
+        if (active) setMessage(i18n("pages.settings.b5e1a19b3c87", { value: String(e instanceof Error ? e.message : String(e)) }));
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -580,10 +520,10 @@ function DownloadSettings() {
       );
       if (value) {
         setDirectory(value);
-        setMessage(reset ? "已恢复默认下载位置。" : "下载位置已保存，下次下载时生效。");
+        setMessage(reset ? i18n("pages.settings.9c5584655501") : i18n("pages.settings.52de8e2d0c2c"));
       }
     } catch (e) {
-      setMessage(`修改失败：${e instanceof Error ? e.message : String(e)}`);
+      setMessage(i18n("pages.settings.2e2f517b4d18", { value: String(e instanceof Error ? e.message : String(e)) }));
     } finally {
       setBusy(false);
     }
@@ -592,21 +532,21 @@ function DownloadSettings() {
   if (!available) return null;
   return (
     <>
-      <SectionHead title="下载" />
+      <SectionHead id="row-set-download" title={i18n("pages.settings.4673a2306165")} />
       <Card>
         <SettingsRow
-          title="下载位置"
+          title={i18n("pages.settings.12e704c78ced")}
           sub={
             <>
-              {loading ? "正在读取…" : directory?.path || "下载位置读取失败，请重新选择文件夹或恢复默认。"}
-              <OGText slot="label" tone="faint">网络学堂附件与云盘文件存到这里；「另存为」可临时换地方。</OGText>
+              {loading ? i18n("pages.settings.86b6d0d63062") : directory?.path || i18n("pages.settings.646c8247d71f")}
+              <OGText slot="label" tone="faint">{i18n("pages.settings.66097d01fcac")}</OGText>
               {message ? <OGText slot="label" tone="quiet" as="span">{message}</OGText> : null}
             </>
           }
           control={
             <>
-              <Btn variant="outline" size="sm" disabled={loading || busy} onClick={() => void changeDirectory(false)}>选择文件夹</Btn>
-              <Btn variant="outline" size="sm" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>恢复默认</Btn>
+              <Btn variant="outline" size="sm" disabled={loading || busy} onClick={() => void changeDirectory(false)}>{i18n("pages.settings.0d6fad8138e7")}</Btn>
+              <Btn variant="outline" size="sm" disabled={loading || busy || directory?.isDefault} onClick={() => void changeDirectory(true)}>{i18n("pages.settings.ba2e93e73037")}</Btn>
             </>
           }
         />
@@ -617,6 +557,8 @@ function DownloadSettings() {
 
 /* ── 运行日志导出（真机问题取证：安卓日志落应用数据目录，一键转存系统下载）── */
 function DebugLogRow() {
+  const uiLocale = useUiLocale();
+
   const [busy, setBusy] = useState(false);
   const [where, setWhere] = useState<string | null>(null);
   const run = async (): Promise<void> => {
@@ -624,7 +566,7 @@ function DebugLogRow() {
     try {
       const path = await invoke<string>("debug_log_export");
       setWhere(path);
-      showToast("日志已导出到系统下载");
+      showToast(i18nMsg("pages.settings.e11c7e0889b4"));
     } catch (err) {
       showToast(String(err instanceof Error ? err.message : err).slice(0, 60));
     } finally {
@@ -633,22 +575,24 @@ function DebugLogRow() {
   };
   return (
     <SettingsRow
-      title="运行日志"
-      sub={where ? `已导出：${where}` : "用于问题排查，导出到系统下载"}
-      control={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void run()}>{busy ? "导出中…" : "导出日志"}</Btn>}
+      title={i18n("pages.settings.fc08fa260979")}
+      sub={where ? i18n("pages.settings.212735f5be92", { where: String(where) }) : i18n("pages.settings.ce93302dab64")}
+      control={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void run()}>{busy ? i18n("pages.settings.dce6e572314e") : i18n("pages.settings.b8f32d284848")}</Btn>}
     />
   );
 }
 
 /* ── 诊断摘要（2026-09-23）：反馈问题时一键复制，用户不必交出运行日志 ── */
 function DiagnosticsRow() {
+  const uiLocale = useUiLocale();
+
   const [busy, setBusy] = useState(false);
   const run = async (): Promise<void> => {
     setBusy(true);
     try {
       const { buildDiagnostics } = await import("../lib/diagnostics.js");
       await navigator.clipboard.writeText(await buildDiagnostics());
-      showToast("诊断摘要已复制，可直接粘贴到反馈里");
+      showToast(i18nMsg("pages.settings.7f10cbe7fe17"));
     } catch (err) {
       showToast(String(err instanceof Error ? err.message : err).slice(0, 60));
     } finally {
@@ -657,9 +601,9 @@ function DiagnosticsRow() {
   };
   return (
     <SettingsRow
-      title="诊断摘要"
-      sub="反馈问题时粘贴这段文字，不含学号等个人信息"
-      control={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void run()}>{busy ? "复制中…" : "复制摘要"}</Btn>}
+      title={i18n("pages.settings.1cb15b820a0a")}
+      sub={i18n("pages.settings.c1be461c4aa2")}
+      control={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void run()}>{busy ? i18n("pages.settings.43312083da55") : i18n("pages.settings.dfcf6a05ab29")}</Btn>}
     />
   );
 }
@@ -674,24 +618,28 @@ function DiagnosticsRow() {
    库网格（内置渐变 + 自收录）、点图=设为全屏、上传入库、删除、云盘同步/恢复
    （wallpsync）；「本页」档已随功能删除，壁纸只画在壳层、全窗共用。 */
 function WallpaperSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const sound = useSyncExternalStore(subscribeWallpaper, videoSoundSnapshot, videoSoundSnapshot);
   return (
-    <div className="wall-section" data-set-id="row-壁纸">
-      <div className="setting-title">壁纸</div>
-      <div className="setting-desc">全窗共用一张：画在壳层底，面板与栏体透出它。</div>
+    <div className="wall-section" data-set-id="row-set-wallpaper">
+      <div className="setting-title">{i18n("pages.settings.bbaa9f06378b")}</div>
+      <div className="setting-desc">{i18n("pages.settings.1fa08e82bab2")}</div>
       <WallpaperLibrary variant="panel" />
-      <div className="wall-sound-row" data-set-id="row-动态壁纸声音">
+      <div className="wall-sound-row" data-set-id="row-set-wallpaper-sound">
         <div>
-          <div className="setting-title">动态壁纸声音</div>
-          <div className="setting-desc">默认静音；视频壁纸有声时才需手势放开（浏览器自动播放策略）。</div>
+          <div className="setting-title">{i18n("pages.settings.b34bc798190c")}</div>
+          <div className="setting-desc">{i18n("pages.settings.a94d4e09776c")}</div>
         </div>
-        <Switch on={sound} onChange={(v) => setVideoSound(v)} label="动态壁纸声音" />
+        <Switch on={sound} onChange={(v) => setVideoSound(v)} label={i18n("pages.settings.b34bc798190c")} />
       </div>
     </div>
   );
 }
 
 function AppearanceSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const snap = useThemes();
   const glass = useSyncExternalStore(subscribeGlassLevel, getGlassLevel, getGlassLevel);
   /* 手机端（dev-explorer 二轮 A1）：手机只有横标签页——横/竖栏选项不渲染（TabDrawer 分段同款） */
@@ -736,32 +684,32 @@ function AppearanceSection(): ReactNode {
   const visibleThemeDefs = snap.themes.filter(
     (t) => !t.owner || enabledThemeOwners.has(t.owner) || enabledThemeOwners.has(t.id),
   );
-  const themes = [{ id: "", name: "石墨 · 默认" }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? `${t.name}（暗色）` : t.name }))];
+  const themes = [{ id: "", name: i18n("pages.settings.78c3900fe08f") }, ...visibleThemeDefs.map((t) => ({ id: t.id, name: t.dark ? i18n("pages.settings.b3aa4945927f", { name: String(t.name) }) : t.name }))];
   return (
     <Stack gap={4}>
       {/* 标签栏默认样式：横版（顶部一排）｜竖版（左侧栏）；标签栏上的切换钮可随时改，这里定的是默认值。
           手机（A1）：手机只能横标签页（竖栏永不出现），这一行整块不渲染。 */}
       {isPhone ? null : (
-        <SettingsRow
-          title="标签栏样式"
-          sub="横版：标签在顶部一排；竖版：标签在左侧栏。标签栏上的切换钮可随时改，这里设的是默认值。"
+        <SettingsRow id="row-set-tabbar-style"
+          title={i18n("pages.settings.1d08854948f4")}
+          sub={i18n("pages.settings.a614894c6a8c")}
           control={
             <Segment
               size="sm"
               value={tabLayoutDefault}
               onChange={(v) => setTabLayoutDefault(v as "h" | "v")}
               options={[
-                { value: "h", label: "横版" },
-                { value: "v", label: "竖版" },
+                { value: "h", label: i18n("pages.settings.f807a7b72a2c") },
+                { value: "v", label: i18n("pages.settings.f3683b41fe52") },
               ]}
             />
           }
         />
       )}
       {/* 玻璃程度：全站玻璃面材浓度四档（clear/balanced/rich/deep → data-glass 覆盖块） */}
-      <SettingsRow
-        title="玻璃程度"
-        sub="默认档是无玻璃的中性面；其余三档是三种玻璃取向。"
+      <SettingsRow id="row-set-glass-level"
+        title={i18n("pages.settings.865d7ae4c9e6")}
+        sub={i18n("pages.settings.bc5c3d6b77d8")}
         control={
           <Segment
             size="sm"
@@ -773,27 +721,21 @@ function AppearanceSection(): ReactNode {
       />
       {/* 主题（① 2026-10-11 用户拍板）：这里**只做切换**，且**只列已启用**的主题（未启用插件的不出现）；
           启用/停用在「插件」里，安装主题走右边那个按钮（跳市场 + 自动筛「主题」）。 */}
-      <SettingsRow
-        title="主题"
+      <SettingsRow id="row-set-theme-board"
+        title={i18n("pages.settings.788db1cfec2a")}
         sub={
-          <>
-            当前：{themes.find((th) => (snap.effectiveId ?? "") === th.id)?.name ?? "默认外观"}
-            {dyn ? " · 系统取色生效中，换主题后会自动关闭" : ""}
-            {"　启用 / 停用主题在「插件」页里。"}
-          </>
+          <>{i18nRich("pages.settings.45ef9193979e", { value: themes.find((th) => (snap.effectiveId ?? "") === th.id)?.name ?? i18n("pages.settings.693f87cd2777"), value2: dyn ? i18n("pages.settings.2579560d6e3d") : "", value3: i18n("pages.settings.2457458b07b5") })}</>
         }
         control={
           <Inline gap={2}>
             {/* ③ 两个按钮并列、同一套胶囊口径：安装（市场 + 主题筛选）｜管理（主题插件的启用/停用） */}
-            <Btn variant="solid" tone="brand" titleAttr="到插件市场安装主题（自动筛选「主题」类别）" onClick={() => {
+            <Btn data-set-id="row-set-theme-install" variant="solid" tone="brand" titleAttr={i18n("pages.settings.ccea37f61ff9")} onClick={() => {
                 requestPluginsView({ view: "market", category: "theme" });
-              }}>安装主题
-            </Btn>
-            <Btn variant="solid" tone="brand" titleAttr="管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）" onClick={() => {
+              }}>{i18n("pages.settings.c3abbc2eb455")}</Btn>
+            <Btn data-set-id="row-set-theme-manage" variant="solid" tone="brand" titleAttr={i18n("pages.settings.6b91ee3ad1f4")} onClick={() => {
                 /* 启用/停用界面＝插件页「我的插件 + 主题筛选」：那里每张主题卡都有开关语义 */
                 requestPluginsView({ view: "mine", category: "theme" });
-              }}>管理主题
-            </Btn>
+              }}>{i18n("pages.settings.5aeb7a87addf")}</Btn>
           </Inline>
         }
       />
@@ -801,35 +743,32 @@ function AppearanceSection(): ReactNode {
           只按新规范过滤掉未启用的主题；排版与 ThemePickerModal 里的板子保持一致。
           2026-10-14：手写选中框（内联边框+底色）→ List/Row 的 selected 状态层 + Tag 胶囊。 */}
       <div className="theme-choice-grid">
-        <ThemeChoice name="石墨 · 默认" description="中性面阶、黑白主要动作与清晰文字层级" selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} themeId="onethu.theme.ivory" />
-        {visibleThemeDefs.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); showToast("已应用「" + t.name + "」"); }} themeId={t.id} />)}
+        <ThemeChoice name={i18n("pages.settings.78c3900fe08f")} description={i18n("pages.settings.e0ad632058d7")} selected={!snap.effectiveId || snap.effectiveId === "onethu.theme.ivory"} onSelect={() => deactivateTheme()} themeId="onethu.theme.ivory" />
+        {visibleThemeDefs.filter(t => t.id !== "onethu.theme.ivory").map(t => <ThemeChoice key={t.id} name={t.name} description={t.description} vars={t.vars} selected={snap.effectiveId === t.id} onSelect={() => { activateTheme(t.id); showToast(i18n("pages.settings.e9b593117599") + t.name + "」"); }} themeId={t.id} />)}
       </div>
-      <SettingsRow
-        title="跟随系统昼夜"
+      <SettingsRow id="row-set-theme-follow"
+        title={i18n("pages.settings.b073567bc2e0")}
         sub={
-          <>
-            开启后按系统的深色模式自动切换：亮色用「白天主题」，深色用「黑夜主题」。
-            {snap.followSystem ? <>（当前系统：{snap.systemDark ? "深色" : "浅色"}）</> : null}
-          </>
+          <>{i18nRich("pages.settings.1d6e1d3ecceb", { value: snap.followSystem ? <>{i18nRich("pages.settings.f5d889222af1", { value: snap.systemDark ? i18n("pages.settings.a6b75d068032") : i18n("pages.settings.aa0819dfc4d8") })}</> : null })}</>
         }
-        control={<Switch on={snap.followSystem} onChange={() => setFollowSystem(!snap.followSystem)} label="跟随系统昼夜" />}
+        control={<Switch on={snap.followSystem} onChange={() => setFollowSystem(!snap.followSystem)} label={i18n("pages.settings.b073567bc2e0")} />}
       />
       {snap.followSystem ? (
         <>
-          <SettingsRow title="白天主题" control={<Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
-          <SettingsRow title="黑夜主题" control={<Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
+          <SettingsRow title={i18n("pages.settings.1eacd04cef79")} control={<Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
+          <SettingsRow title={i18n("pages.settings.061d30212032")} control={<Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
         </>
       ) : null}
-      <SettingsRow
-        title="跟随系统取色"
+      <SettingsRow id="row-set-dyn-color"
+        title={i18n("pages.settings.3d5af6644ab2")}
         sub={
           dynOk === false ? (
-            dyn ? "系统取色暂不可用，已自动改用「清华紫」主题，稍后可在外观里手动更换。" : "当前系统不支持，开启后改用「清华紫」主题。"
-          ) : "用壁纸的颜色重新计算全站配色，品牌色与背景色一起变。"
+            dyn ? i18n("pages.settings.dfb8c7f65098") : i18n("pages.settings.25bd968a4ec3")
+          ) : i18n("pages.settings.41efcb0b8b84")
         }
-        control={<Switch on={dyn} onChange={() => void toggleDyn()} label="跟随系统取色" />}
+        control={<Switch on={dyn} onChange={() => void toggleDyn()} label={i18n("pages.settings.3d5af6644ab2")} />}
       />
-      {dyn ? <OGText slot="label" tone="faint">生效中：关掉开关即恢复所选主题。</OGText> : null}
+      {dyn ? <OGText slot="label" tone="faint">{i18n("pages.settings.d0a6f0c08b1a")}</OGText> : null}
       <ThemePickerModal open={pickerOpen} onClose={() => setPickerOpen(false)} />
     </Stack>
   );
@@ -841,6 +780,8 @@ function AppearanceSection(): ReactNode {
    由 OH 的 geek_* 工具承载，本节只管「模式开关 + 环境就绪 + 风险提示」。 */
 
 function GeekSection(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const st = useExplorerState();
   const at = allTabs().find((t) => t.id === st.activeId) ?? null;
   void at;
@@ -875,7 +816,7 @@ function GeekSection(): ReactNode {
       /* 存不进就本次有效 */
     }
     setOn(next);
-    if (next) showToast("极客模式已开启：设置里可下载探索浏览器（桌面端专属）");
+    if (next) showToast(i18nMsg("pages.settings.16ca6dbf3de4"));
   };
   const download = async (): Promise<void> => {
     setBusy("dl");
@@ -883,7 +824,7 @@ function GeekSection(): ReactNode {
     try {
       const { invoke } = await import("@tauri-apps/api/core");
       const r = await invoke<string>("geek_playwright_install");
-      setMsg(r || "下载完成");
+      setMsg(r || i18n("pages.settings.c1c79b63f418"));
     } catch (e) {
       setMsg(String(e));
     } finally {
@@ -897,7 +838,7 @@ function GeekSection(): ReactNode {
     try {
       const { invoke } = await import("@tauri-apps/api/core");
       const r = await invoke<{ port?: number }>("geek_browser_launch", { mode });
-      setMsg(r.port ? `探索浏览器已就绪（调试口 ${r.port}）；登录态在独立 profile` : "已启动");
+      setMsg(r.port ? i18n("pages.settings.e389a150e32e", { port: String(r.port) }) : i18n("pages.settings.4ef6221d6213"));
     } catch (e) {
       setMsg(String(e));
     } finally {
@@ -907,46 +848,42 @@ function GeekSection(): ReactNode {
   };
   return (
     <SettingsList>
-      <SettingsRow
-        title="极客模式（浏览器探索）"
+      <SettingsRow id="row-set-geek"
+        title={i18n("pages.settings.53b5c5c16016")}
         sub={
-          <>
-            高级选项，默认关闭；把不在 OneTHU 里的站点功能用登录态爬回来自己做插件。用独立登录态，和自己浏览器互不干扰。
-            <OGText as="div" slot="label" tone="error">
-              风险自负：探索动作可能被站点风控计入本人账号；不喜欢冒险可通过 OH 建议官方收录。
-            </OGText>
+          <>{i18n("pages.settings.6f3d8aba2f3c")}<OGText as="div" slot="label" tone="error">{i18n("pages.settings.862754facf23")}</OGText>
           </>
         }
-        control={<Switch on={on} onChange={toggle} label="极客模式" />}
+        control={<Switch on={on} onChange={toggle} label={i18n("pages.settings.ef5a51b132b3")} />}
       />
       {on ? (
         <SettingsRow
-          title="探索浏览器"
+          title={i18n("pages.settings.3268a6b55d67")}
           sub={
             probe
               ? probe.browsers.length > 0
-                ? `本机可用浏览器 ${probe.browsers.length} 个；playwright 版${probe.playwrightReady ? "已下载" : "未下载"}`
-                : "本机没有可直接用的浏览器，可一键下载专用版"
-              : "探测中…"
+                ? i18n("pages.settings.1e4072e67ba7", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n("pages.settings.e2f12da7faa6") : i18n("pages.settings.dccec95b65e1")) })
+                : i18n("pages.settings.4d85ccc9814b")
+              : i18n("pages.settings.339da995c389")
           }
           control={
             <Inline gap={2}>
-              <Btn variant="ghost" disabled={busy !== null} onClick={() => void download()}>{busy === "dl" ? "下载中…" : "下载专用版"}</Btn>
-              <Btn variant="outline" disabled={busy !== null || !probe} onClick={() => void launch()}>{busy === "launch" ? "启动中…" : "启动探索"}</Btn>
+              <Btn variant="ghost" disabled={busy !== null} onClick={() => void download()}>{busy === "dl" ? i18n("pages.settings.bcc2333dc631") : i18n("pages.settings.c1fc27cebdd4")}</Btn>
+              <Btn variant="outline" disabled={busy !== null || !probe} onClick={() => void launch()}>{busy === "launch" ? i18n("pages.settings.fc89857ef917") : i18n("pages.settings.f3b9d4390ccf")}</Btn>
             </Inline>
           }
         />
       ) : null}
       {on ? (
         <SettingsRow
-          title="启动方式"
-          sub="系统浏览器（复用本机 Chrome/Edge）或探索专用浏览器。"
+          title={i18n("pages.settings.6afd0ae3a811")}
+          sub={i18n("pages.settings.61bf6fa12002")}
           control={
             <Segment
               size="sm"
               value={mode}
               onChange={(v) => setMode(v as "system" | "playwright")}
-              options={[{ value: "system", label: "系统浏览器" }, { value: "playwright", label: "专用版" }]}
+              options={[{ value: "system", label: i18n("pages.settings.96f1584f9196") }, { value: "playwright", label: i18n("pages.settings.a770b8f58676") }]}
             />
           }
         />

@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 拟物名片卡：真实银行卡比例（1.586 : 1）的纸卡。
  *
@@ -24,11 +25,13 @@ export function IdentityCard({
   organization?: boolean;
   variant?: IdentityCardVariant;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const person = card as PersonalCard;
   const org = card as OrgCard;
-  const name = (card.name || "").trim() || (organization ? "未命名组织" : "我的名片");
+  const name = (card.name || "").trim() || (organization ? i18n("components.identitycard.d203a5652f03") : i18n("components.identitycard.487e926379fe"));
   const cover = organization ? undefined : person.cover;
-  const headline = organization ? org.brief || "组织邀请" : person.bio || "在清华，与你相遇。";
+  const headline = organization ? org.brief || i18n("components.identitycard.b8fde21bc2ca") : person.bio || i18n("components.identitycard.f83c8237fcf6");
   const details = (organization ? [org.joinUrl] : [person.website, person.social, person.phone])
     .filter((s): s is string => Boolean(s && s.trim()));
   return (
@@ -69,7 +72,7 @@ export function IdentityCard({
       </div>
       <div className="identity-card-bottom">
         <span className="identity-card-details">
-          {details.length ? details.join(" · ") : "点击编辑，写下你的介绍"}
+          {details.length ? details.join(" · ") : i18n("components.identitycard.3fa24b555e9d")}
         </span>
       </div>
     </article>

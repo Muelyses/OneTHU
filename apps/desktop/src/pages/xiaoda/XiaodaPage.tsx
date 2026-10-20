@@ -1,3 +1,5 @@
+import { getLocale as getUiLocale } from "../../i18n/index.js";
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 清小搭（xiaoda.tsinghua.edu.cn 校园 AI 学伴）一级功能页 —— 正式版（2026-10-15）。
  *
@@ -36,16 +38,16 @@ const DEFAULT_AGENT_ID = "9999";
 const DEFAULT_AGENT_NAME = "清小搭";
 /** 页面脚注（用户指定口径 + 来源标注）：实验定位与能力边界必须写在对话框里。
  *  拆两行是护栏要求（单条说明 ≤42 字），语义完整未删减。 */
-const PAGE_NOTE = "清小搭功能仅供实验与参考，无法取代 OneTHU Harness。";
-const PAGE_NOTE_2 = "它也无法调度 OH 功能；本页是 OneTHU 的接入界面。";
+const PAGE_NOTE = () => i18n("pages.xiaoda.xiaodapage.0d46455d92d1");
+const PAGE_NOTE_2 = () => i18n("pages.xiaoda.xiaodapage.49d451178263");
 
 const errText = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 function fmtTime(v: string | number | undefined): string {
   if (v === undefined || v === null || v === "") return "";
   const n = typeof v === "number" ? v : Number(v);
-  if (Number.isFinite(n) && n > 1e12) return new Date(n).toLocaleString("zh-CN", { hour12: false });
-  if (Number.isFinite(n) && n > 1e9) return new Date(n * 1000).toLocaleString("zh-CN", { hour12: false });
+  if (Number.isFinite(n) && n > 1e12) return new Date(n).toLocaleString(getUiLocale(), { hour12: false });
+  if (Number.isFinite(n) && n > 1e9) return new Date(n * 1000).toLocaleString(getUiLocale(), { hour12: false });
   return String(v);
 }
 
@@ -67,13 +69,15 @@ function useAgentDirectory(): { agents: AgentInfo[]; infoOf: (id: string) => Age
   }, [groups]);
   const infoOf = useCallback(
     (id: string): AgentInfo =>
-      agents.find((a) => a.id === id) ?? { id, name: id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME : "智能体" },
+      agents.find((a) => a.id === id) ?? { id, name: id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME : i18n("pages.xiaoda.xiaodapage.2df7697dbb61") },
     [agents],
   );
   return { agents, infoOf };
 }
 
 export function XiaodaPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [phase, setPhase] = useState<"boot" | "logging" | "ready" | "error">("boot");
   const [bootErr, setBootErr] = useState("");
   const [me, setMe] = useState<XiaodaUser | null>(null);
@@ -112,26 +116,24 @@ export function XiaodaPage(): ReactNode {
     setTab("chat");
   }, []);
 
-  const who = me ? (me.zjh ? `${me.name} · ${me.zjh}` : me.name) : "校园 AI 学伴";
+  const who = me ? (me.zjh ? `${me.name} · ${me.zjh}` : me.name) : i18n("pages.xiaoda.xiaodapage.cbc3933d7f0a");
 
   return (
     <Page
-      title="清小搭"
+      title={i18n("pages.xiaoda.xiaodapage.b1abb3dc2271")}
       sub={who}
       actions={
-        <Btn size="sm" variant="outline" onClick={boot}>
-          重新登录
-        </Btn>
+        <Btn size="sm" variant="outline" onClick={boot}>{i18n("pages.xiaoda.xiaodapage.957244cdb9f2")}</Btn>
       }
       tabs={
         <Tabs
           value={tab}
           onChange={(v) => setTab(v as Tab)}
           items={[
-            { id: "chat", label: "对话" },
-            { id: "history", label: "历史" },
-            { id: "agents", label: "智能体" },
-            { id: "skills", label: "技能" },
+            { id: "chat", label: i18n("pages.xiaoda.xiaodapage.6bf6d3f3d626") },
+            { id: "history", label: i18n("pages.xiaoda.xiaodapage.b0385cfe4b42") },
+            { id: "agents", label: i18n("pages.xiaoda.xiaodapage.2df7697dbb61") },
+            { id: "skills", label: i18n("pages.xiaoda.xiaodapage.99aea2f9131a") },
           ]}
         />
       }
@@ -139,12 +141,10 @@ export function XiaodaPage(): ReactNode {
       {phase === "boot" || phase === "logging" ? <LoadingBlock rows={4} /> : null}
       {phase === "error" ? (
         <EmptyState
-          title="登录失败，请点下方重试"
+          title={i18n("pages.xiaoda.xiaodapage.350d0be1b4e7")}
           hint={bootErr}
           action={
-            <Btn variant="outline" onClick={boot}>
-              重试
-            </Btn>
+            <Btn variant="outline" onClick={boot}>{i18n("pages.xiaoda.xiaodapage.b8784c8dd563")}</Btn>
           }
         />
       ) : null}
@@ -186,6 +186,8 @@ function ChatTab({
   onActive: (a: ActiveChat) => void;
   onNew: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [msgs, setMsgs] = useState<XiaodaChatMessage[]>([]);
   const [loadingMsgs, setLoadingMsgs] = useState(false);
   const [input, setInput] = useState("");
@@ -254,7 +256,7 @@ function ChatTab({
       ...prev,
       /* 我这条必须带正文：早先只塞了空壳，靠服务端历史重载兜住（顺序又被它改乱），
          关掉重载后就会显示成空气泡——两处一起修。 */
-      { ...blank, role: "user", content: q, agentName: me?.name ?? "我", agentIcon: "" },
+      { ...blank, role: "user", content: q, agentName: me?.name ?? i18n("pages.xiaoda.xiaodapage.b70bb4acc048"), agentIcon: "" },
       blank,
     ]);
     setInput("");
@@ -266,7 +268,7 @@ function ChatTab({
     try {
       if (!convIdRef.current) {
         const cid = await xiaodaClient.createConversation();
-        if (!cid) throw new Error("新建对话失败，请点发送重试");
+        if (!cid) throw new Error(i18n("pages.xiaoda.xiaodapage.6d4fec35ccbe"));
         convIdRef.current = cid;
         localConvRef.current = cid; // 本挂载内新建：本地消息即最新，别让服务端顺序打乱它
         onActive({ convId: cid, agentId });
@@ -320,14 +322,12 @@ function ChatTab({
   return (
     <Stack gap={5}>
       <SectionCard
-        title={active ? "继续对话" : "新对话"}
-        sub={active ? `已接上此前的内容 · ${who.name}` : `${who.name}${modelName ? ` · ${modelName}` : ""}`}
+        title={active ? i18n("pages.xiaoda.xiaodapage.5d44af892c1b") : i18n("pages.xiaoda.xiaodapage.ea4b29f58f87")}
+        sub={active ? i18n("pages.xiaoda.xiaodapage.6beb452a379a", { name: String(who.name) }) : `${who.name}${modelName ? ` · ${modelName}` : ""}`}
         aside={
           <Inline gap={2}>
             {active ? (
-              <Btn size="sm" variant="outline" onClick={onNew}>
-                新对话
-              </Btn>
+              <Btn size="sm" variant="outline" onClick={onNew}>{i18n("pages.xiaoda.xiaodapage.ea4b29f58f87")}</Btn>
             ) : null}
           </Inline>
         }
@@ -335,11 +335,11 @@ function ChatTab({
         <Stack gap={5}>
           {loadingMsgs ? <LoadingBlock rows={3} /> : null}
           {!loadingMsgs && msgs.length === 0 ? (
-            <EmptyState title="说点什么吧" hint="直接输入问题即可；换智能体请到「智能体」页挑一个" />
+            <EmptyState title={i18n("pages.xiaoda.xiaodapage.21fbaf3a4f57")} hint={i18n("pages.xiaoda.xiaodapage.115f8a99ff8d")} />
           ) : null}
           {msgs.map((m, i) => {
             const isUser = m.role === "user";
-            const name = isUser ? (me?.name ?? "我") : (m.agentName || who.name);
+            const name = isUser ? (me?.name ?? i18n("pages.xiaoda.xiaodapage.b70bb4acc048")) : (m.agentName || who.name);
             const waiting = !isUser && !m.content && sending && i === msgs.length - 1;
             return (
               <Inline key={m.id || `m${i}`} gap={3} vAlign="start" justify={isUser ? "end" : "start"}>
@@ -355,9 +355,7 @@ function ChatTab({
                       {waiting ? (
                         <Inline gap={2}>
                           <Spinner size="sm" />
-                          <Text slot="label" tone="faint">
-                            正在输入…
-                          </Text>
+                          <Text slot="label" tone="faint">{i18n("pages.xiaoda.xiaodapage.d4bdd78f6bb0")}</Text>
                         </Inline>
                       ) : null}
                     </Stack>
@@ -372,12 +370,12 @@ function ChatTab({
       </SectionCard>
 
       {chatErr ? (
-        <Banner tone="error" title="对话失败，可重发消息或换智能体重试">
+        <Banner tone="error" title={i18n("pages.xiaoda.xiaodapage.de9e3ada6a80")}>
           {chatErr}
         </Banner>
       ) : null}
 
-      <Card title="发送">
+      <Card title={i18n("pages.xiaoda.xiaodapage.edecf0ae6e51")}>
         <Stack gap={3}>
           <Inline gap={2} wrap>
             <Select
@@ -385,38 +383,32 @@ function ChatTab({
               onChange={onAgentId}
               options={agentOptions}
               disabled={!!active}
-              aria-label="对话智能体"
+              aria-label={i18n("pages.xiaoda.xiaodapage.09829d304017")}
             />
             {models.length > 0 ? (
               <Select
                 value={modelId}
                 onChange={setModelId}
                 options={models.map((m) => ({ value: String(m.id), label: m.name }))}
-                aria-label="平台模型"
+                aria-label={i18n("pages.xiaoda.xiaodapage.00376d744fbd")}
               />
             ) : null}
           </Inline>
-          <TextArea rows={2} value={input} onChange={setInput} placeholder="问点什么…" />
+          <TextArea rows={2} value={input} onChange={setInput} placeholder={i18n("pages.xiaoda.xiaodapage.c4084a277493")} />
           <Inline gap={2}>
-            <Btn variant="solid" onClick={() => void send()} disabled={sending || !input.trim()}>
-              发送
-            </Btn>
+            <Btn variant="solid" onClick={() => void send()} disabled={sending || !input.trim()}>{i18n("pages.xiaoda.xiaodapage.edecf0ae6e51")}</Btn>
             {sending ? (
-              <Btn variant="outline" onClick={stop}>
-                停止
-              </Btn>
+              <Btn variant="outline" onClick={stop}>{i18n("pages.xiaoda.xiaodapage.ca4d973c0b00")}</Btn>
             ) : null}
           </Inline>
           {active ? (
-            <Text slot="micro" tone="faint">
-              对话一旦开始就不能再换智能体；要换请先点「新对话」。
-            </Text>
+            <Text slot="micro" tone="faint">{i18n("pages.xiaoda.xiaodapage.4c279d27ac1e")}</Text>
           ) : null}
           <Text slot="micro" tone="faint">
-            {PAGE_NOTE}
+            {PAGE_NOTE()}
           </Text>
           <Text slot="micro" tone="faint">
-            {PAGE_NOTE_2}
+            {PAGE_NOTE_2()}
           </Text>
         </Stack>
       </Card>
@@ -432,6 +424,8 @@ function HistoryTab({
   infoOf: (id: string) => AgentInfo;
   onOpen: (c: XiaodaConversation) => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [items, setItems] = useState<XiaodaConversation[] | null>(null);
   const [err, setErr] = useState("");
   const [pageNum, setPageNum] = useState(1);
@@ -459,21 +453,19 @@ function HistoryTab({
   }, [load]);
 
   return (
-    <SectionCard title="对话历史" sub={total ? `共 ${total} 段，点「接着聊」可继续` : undefined}>
+    <SectionCard title={i18n("pages.xiaoda.xiaodapage.7fbcbca49ec5")} sub={total ? i18n("pages.xiaoda.xiaodapage.84f7f9dfd488", { total: String(total) }) : undefined}>
       {err ? (
         <Stack gap={3}>
-          <Banner tone="error" title="历史加载失败，请点重试">
+          <Banner tone="error" title={i18n("pages.xiaoda.xiaodapage.d883a9b91e85")}>
             {err}
           </Banner>
           <Inline gap={2}>
-            <Btn variant="outline" onClick={() => void load(1)}>
-              重试
-            </Btn>
+            <Btn variant="outline" onClick={() => void load(1)}>{i18n("pages.xiaoda.xiaodapage.b8784c8dd563")}</Btn>
           </Inline>
         </Stack>
       ) : null}
       {items === null && !err ? <LoadingBlock rows={5} /> : null}
-      {items !== null && items.length === 0 && !err ? <EmptyState title="还没有对话记录" /> : null}
+      {items !== null && items.length === 0 && !err ? <EmptyState title={i18n("pages.xiaoda.xiaodapage.47392b6dbaa8")} /> : null}
       {items !== null && items.length > 0 ? (
         <Stack gap={3}>
           <DataList
@@ -485,13 +477,11 @@ function HistoryTab({
                 <Row
                   flush
                   leading={<Avatar name={info.name} src={info.icon} size="sm" />}
-                  title={(c.query.split("\n")[0] ?? "").slice(0, 40) || "（空对话）"}
+                  title={(c.query.split("\n")[0] ?? "").slice(0, 40) || i18n("pages.xiaoda.xiaodapage.1587a76a2d84")}
                   sub={[info.name, fmtTime(c.createTime)].filter(Boolean).join(" · ")}
-                  meta={c.isDeepResearch ? "深度研究" : undefined}
+                  meta={c.isDeepResearch ? i18n("pages.xiaoda.xiaodapage.34d33c5a7a08") : undefined}
                   trailing={
-                    <Btn size="sm" variant="outline" onClick={() => onOpen(c)}>
-                      接着聊
-                    </Btn>
+                    <Btn size="sm" variant="outline" onClick={() => onOpen(c)}>{i18n("pages.xiaoda.xiaodapage.5e2031c13ffa")}</Btn>
                   }
                 />
               );
@@ -500,7 +490,7 @@ function HistoryTab({
           {items.length < total ? (
             <Inline gap={2}>
               <Btn variant="outline" disabled={loadingMore} onClick={() => void load(pageNum + 1)}>
-                {loadingMore ? "加载中…" : "加载更多"}
+                {loadingMore ? i18n("pages.xiaoda.xiaodapage.4927a53bcc88") : i18n("pages.xiaoda.xiaodapage.af90a08fec8e")}
               </Btn>
               <Text slot="label" tone="faint">{`${items.length} / ${total}`}</Text>
             </Inline>
@@ -514,6 +504,8 @@ function HistoryTab({
 /* ══════════ 智能体 ══════════ */
 
 function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [groups, setGroups] = useState<XiaodaAgentGroup[] | null>(null);
   const [err, setErr] = useState("");
   const [reload, setReload] = useState(0);
@@ -533,18 +525,16 @@ function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
     <Stack gap={6}>
       {err ? (
         <Stack gap={3}>
-          <Banner tone="error" title="智能体加载失败，请点重试">
+          <Banner tone="error" title={i18n("pages.xiaoda.xiaodapage.69543fafadb1")}>
             {err}
           </Banner>
           <Inline gap={2}>
-            <Btn variant="outline" onClick={() => setReload((n) => n + 1)}>
-              重试
-            </Btn>
+            <Btn variant="outline" onClick={() => setReload((n) => n + 1)}>{i18n("pages.xiaoda.xiaodapage.b8784c8dd563")}</Btn>
           </Inline>
         </Stack>
       ) : null}
       {groups === null && !err ? <LoadingBlock rows={5} /> : null}
-      {groups !== null && groups.length === 0 && !err ? <EmptyState title="暂无智能体分组" /> : null}
+      {groups !== null && groups.length === 0 && !err ? <EmptyState title={i18n("pages.xiaoda.xiaodapage.9577e7464c1f")} /> : null}
       {groups?.map((g) => (
         <SectionCard key={g.uniqueId} title={g.name} sub={g.description}>
           <List divided>
@@ -555,9 +545,7 @@ function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
                 title={m.name}
                 sub={(m.description ?? "").slice(0, 80)}
                 trailing={
-                  <Btn size="sm" variant="outline" onClick={() => onPick(m.uniqueId)}>
-                    找它聊
-                  </Btn>
+                  <Btn size="sm" variant="outline" onClick={() => onPick(m.uniqueId)}>{i18n("pages.xiaoda.xiaodapage.ce5b23a25653")}</Btn>
                 }
               />
             ))}
@@ -571,6 +559,8 @@ function AgentsTab({ onPick }: { onPick: (id: string) => void }): ReactNode {
 /* ══════════ 技能 ══════════ */
 
 function SkillsTab(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [overview, setOverview] = useState<XiaodaSkillOverview | null>(null);
   const [cats, setCats] = useState<XiaodaSkillCategory[]>([]);
   const [items, setItems] = useState<XiaodaSkillItem[]>([]);
@@ -609,13 +599,13 @@ function SkillsTab(): ReactNode {
     <Stack gap={6}>
       {overview ? (
         <Inline gap={3} wrap>
-          <StatTile label="技能" value={overview.skillCount} />
-          <StatTile label="贡献者" value={overview.contributorCount} />
-          <StatTile label="总下载" value={overview.downloadCount} />
+          <StatTile label={i18n("pages.xiaoda.xiaodapage.99aea2f9131a")} value={overview.skillCount} />
+          <StatTile label={i18n("pages.xiaoda.xiaodapage.0dd5ba052d62")} value={overview.contributorCount} />
+          <StatTile label={i18n("pages.xiaoda.xiaodapage.93588c0a42ab")} value={overview.downloadCount} />
         </Inline>
       ) : null}
       {cats.length > 0 ? (
-        <Card title="分类">
+        <Card title={i18n("pages.xiaoda.xiaodapage.515559957fd3")}>
           <Inline gap={2} wrap>
             {cats.map((c) => (
               <Chip key={c.code}>{`${c.name} · ${c.count}`}</Chip>
@@ -623,23 +613,21 @@ function SkillsTab(): ReactNode {
           </Inline>
         </Card>
       ) : null}
-      <Modal open={!!selectedSkill} onClose={() => setSelectedSkill(null)} title={selectedSkill?.name ?? "技能详情"}>
+      <Modal open={!!selectedSkill} onClose={() => setSelectedSkill(null)} title={selectedSkill?.name ?? i18n("pages.xiaoda.xiaodapage.4f79dada892b")}>
         {selectedSkill ? <Stack gap={4}>
-          <Inline gap={3}><Avatar name={selectedSkill.name} src={selectedSkill.icon} /><Text>{selectedSkill.authorName || "清小搭社区"}</Text></Inline>
-          <Text>{selectedSkill.description || "暂时没有介绍"}</Text>
-          <Text tone="faint">{`${selectedSkill.categoryName || "未分类"} · ${selectedSkill.downloadCount ?? 0} 次下载`}</Text>
+          <Inline gap={3}><Avatar name={selectedSkill.name} src={selectedSkill.icon} /><Text>{selectedSkill.authorName || i18n("pages.xiaoda.xiaodapage.fa137f21519d")}</Text></Inline>
+          <Text>{selectedSkill.description || i18n("pages.xiaoda.xiaodapage.a21b64510d88")}</Text>
+          <Text tone="faint">{i18n("pages.xiaoda.xiaodapage.6610f0b69218", { value: String(selectedSkill.categoryName || i18n("pages.xiaoda.xiaodapage.54b89f901274")), value2: String(selectedSkill.downloadCount ?? 0) })}</Text>
         </Stack> : null}
       </Modal>
-      <SectionCard title="技能广场" sub={total ? `共 ${total} 个` : undefined}>
+      <SectionCard title={i18n("pages.xiaoda.xiaodapage.c599990d6fb9")} sub={total ? i18n("pages.xiaoda.xiaodapage.bf8875666acb", { total: String(total) }) : undefined}>
         {err ? (
           <Stack gap={3}>
-            <Banner tone="error" title="技能加载失败，请点重试">
+            <Banner tone="error" title={i18n("pages.xiaoda.xiaodapage.56fb269924d9")}>
               {err}
             </Banner>
             <Inline gap={2}>
-              <Btn variant="outline" onClick={() => void load(1)}>
-                重试
-              </Btn>
+              <Btn variant="outline" onClick={() => void load(1)}>{i18n("pages.xiaoda.xiaodapage.b8784c8dd563")}</Btn>
             </Inline>
           </Stack>
         ) : null}
@@ -656,14 +644,14 @@ function SkillsTab(): ReactNode {
                   title={s.name}
                   onClick={() => setSelectedSkill(s)}
                   sub={(s.description ?? "").slice(0, 64)}
-                  meta={`${s.downloadCount ?? 0} 次下载 · ${s.authorName ?? ""}`}
+                  meta={i18n("pages.xiaoda.xiaodapage.5aa03810e659", { value: String(s.downloadCount ?? 0), value2: String(s.authorName ?? "") })}
                 />
               )}
             />
             {items.length < total ? (
               <Inline gap={2}>
                 <Btn variant="outline" disabled={loadingMore} onClick={() => void load(pageNum + 1)}>
-                  {loadingMore ? "加载中…" : "加载更多"}
+                  {loadingMore ? i18n("pages.xiaoda.xiaodapage.4927a53bcc88") : i18n("pages.xiaoda.xiaodapage.af90a08fec8e")}
                 </Btn>
                 <Text slot="label" tone="faint">{`${items.length} / ${total}`}</Text>
               </Inline>

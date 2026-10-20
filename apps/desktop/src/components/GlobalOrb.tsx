@@ -1,3 +1,5 @@
+import { labelForId } from "../i18n/staticLabels.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 全局悬浮球前端（需求 5）——桌面悬浮窗 / 安卓悬浮层共用的 UI 面。
  *
@@ -74,9 +76,9 @@ async function applyPanelHeight(h: number): Promise<void> {
     // → 退到一定注册过的 overlay_set_mode("panel:<高>")，把手在旧包上也能用。
     try {
       await invoke("overlay_set_mode", { mode: `panel:${Math.round(h)}` });
-      logOrb(`handle → panel_h=${Math.round(h)}（走 set_mode 兼容路径；建议补注册 overlay_set_panel_height）`);
+      logOrb(i18n("components.globalorb.52ee41a798f4", { value: String(Math.round(h)) }));
     } catch (e2) {
-      logOrb(`改高度两条路径都失败：${String(e)} / ${String(e2)}`);
+      logOrb(i18n("components.globalorb.04cda3e1158f", { value: String(String(e)), value2: String(String(e2)) }));
     }
   }
 }
@@ -126,6 +128,8 @@ function isDarkUi(): boolean {
  *  没有主窗口那套本地路径读取通道（ChatDock 里有 dataUrlForPath），所以本地路径图**不渲染**，
  *  附件走的是 data:/blob:（AttachTray 给的就是 previewUrl）——这是两端渲染范围的已知差异。 */
 function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
+  const uiLocale = useUiLocale();
+
   if (typeof src !== "string" || !/^(data:|blob:|https?:)/i.test(src)) return null;
   return <img {...rest} className="dock-md-img" src={src} alt={alt ?? ""} />;
 }
@@ -133,6 +137,8 @@ function MdImage({ src, alt, ...rest }: ComponentProps<"img">): ReactNode {
 /** markdown 里的链接：桌面 webview 里 window.open/<a target=_blank> 都无效（仓库既有结论），
  *  统一交给 openExternal（系统浏览器）——与本体同一条通道。 */
 function MdLink({ href, children, ...rest }: ComponentProps<"a">): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <a
       {...rest}
@@ -297,16 +303,16 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
       // 主窗口的 ChatDock 用的是同一个 askOh/回答字段，所以 app 内正常、浮窗不正常。
       const answer = String(r?.answer ?? r?.text ?? "").trim();
       if (!answer) {
-        logOrb(`askOh 返回空答案：keys=[${Object.keys(r ?? {}).join(",")}] err=${String(r?.error ?? "")}`);
+        logOrb(i18n("components.globalorb.0bf8950b7ddb", { value: String(Object.keys(r ?? {}).join(",")), value2: String(String(r?.error ?? "")) }));
       }
       setMsgs((m) => [...m, {
         role: "oh",
-        text: answer || `（没有拿到回复${typeof r?.error === "string" ? `：${r.error}` : ""}；调试日志 /tmp/onethu-debug.log 有 [orb] 行）`,
+        text: answer || i18n("components.globalorb.dd377fa5341b", { value: String(typeof r?.error === "string" ? `：${r.error}` : "") }),
       }]);
       // 需求 4：默认静音；顶栏「自动朗读」开了才念（偏好存 state/voicePrefs）
       if (answer && readVoicePrefs().autoSpeak) void speakReply(answer);
     } catch (e) {
-      setMsgs((m) => [...m, { role: "oh", text: `（出错了：${e instanceof Error ? e.message : String(e)}）` }]);
+      setMsgs((m) => [...m, { role: "oh", text: i18n("components.globalorb.c638cd4dde22", { value: String(e instanceof Error ? e.message : String(e)) }) }]);
     } finally {
       setTyping(false);
       scrollToEnd();
@@ -355,7 +361,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
       <div
         role="button"
         data-oh-ball="1"
-        aria-label="OH 悬浮球：单击打开对话，按住可拖动"
+        aria-label={i18n("components.globalorb.cb46971d81ea")}
         style={{
           position: "fixed", inset: 0, zIndex: 9999,
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -370,7 +376,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           if (!st || draggedRef.current) return;
           if (Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > DRAG_PX) {
             draggedRef.current = true;
-            logOrb(`位移 > ${DRAG_PX}px → 判定拖动（松手不再开面板）`);
+            logOrb(i18n("components.globalorb.e526f04d40e1", { DRAG_PX: String(DRAG_PX) }));
           }
         }}
         onPointerUp={() => {
@@ -454,7 +460,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             把手自己的按压被 stopPropagation + 手势桥闸门挡住，不会误触发拖窗。 */}
         <div
           role="separator"
-          aria-label="上下拖动调整悬浮窗高度"
+          aria-label={i18n("components.globalorb.4670c2e7bb80")}
           onPointerDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -464,7 +470,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
               : Math.max(120, (typeof window !== "undefined" ? window.innerHeight : 0) - PANEL_PAD * 2);
             handleDrag.current = { id: e.pointerId, screenY0: e.screenY, h0: realH };
             lastPanelH.current = realH;
-            logOrb(`handle down：h0=${Math.round(realH)}（来源 ${winHRef.current > 0 ? "geometry.h" : "innerHeight"}）screenY0=${Math.round(e.screenY)}`);
+            logOrb(i18n("components.globalorb.8e23c7e1cfcc", { value: String(Math.round(realH)), value2: String(winHRef.current > 0 ? "geometry.h" : "innerHeight"), value3: String(Math.round(e.screenY)) }));
             try {
               (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
             } catch {
@@ -491,7 +497,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             void applyPanelHeight(next);
           }}
           onPointerUp={() => {
-            if (handleDrag.current) logOrb(`handle up：panel_h=${Math.round(lastPanelH.current)}（Rust 已落盘）`);
+            if (handleDrag.current) logOrb(i18n("components.globalorb.217e86ac14d6", { value: String(Math.round(lastPanelH.current)) }));
             handleDrag.current = null;
             setHandleDown(false);
           }}
@@ -526,18 +532,18 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
           <Segment
             size="sm"
             options={[
-              { value: "search", label: "搜索" },
+              { value: "search", label: i18n("components.globalorb.44ce7ae909bb") },
               { value: "oh", label: "OH" },
             ]}
             value={omode}
             onChange={(v) => setOmode(v as "search" | "oh")}
           />
           <div style={{ display: "flex", flex: "none", alignItems: "center", gap: "var(--og-space-1)" }}>
-            <Btn size="sm" variant="outline" tone="quiet" onClick={backToApp}>回到 OneTHU</Btn>
+            <Btn size="sm" variant="outline" tone="quiet" onClick={backToApp}>{i18n("components.globalorb.f60ae5f5abad")}</Btn>
             <Btn size="sm" variant="outline" tone="quiet" selected={prefs.autoSpeak} onClick={() => setVoicePrefs({ autoSpeak: !prefs.autoSpeak })}>
-              {prefs.autoSpeak ? "自动朗读 · 开" : "自动朗读"}
+              {prefs.autoSpeak ? i18n("components.globalorb.2cf01f9ef0c9") : i18n("components.globalorb.213b81f4850f")}
             </Btn>
-            <Btn size="sm" variant="outline" tone="quiet" onClick={collapseToBall}>收起</Btn>
+            <Btn size="sm" variant="outline" tone="quiet" onClick={collapseToBall}>{i18n("components.globalorb.afd4b783536b")}</Btn>
           </div>
         </div>
 
@@ -553,18 +559,18 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
                 size="sm"
                 value={oquery}
                 onChange={setOquery}
-                placeholder="搜功能、作业、文件、设置…"
-                aria-label="搜索"
+                placeholder={i18n("components.globalorb.2ab7bee583b2")}
+                aria-label={i18n("components.globalorb.44ce7ae909bb")}
               />
             </div>
             {oquery ? (
-              <Btn size="sm" variant="ghost" tone="quiet" onClick={() => setOquery("")}>清空</Btn>
+              <Btn size="sm" variant="ghost" tone="quiet" onClick={() => setOquery("")}>{i18n("components.globalorb.1ef3de06b32e")}</Btn>
             ) : null}
           </div>
           {!oquery.trim() ? (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--og-space-2)", overflowY: "auto" }}>
               {ohist.length === 0 ? (
-                <Text slot="label" tone="faint" as="span">还没有搜索记录；搜一次功能或实体就会留在这里</Text>
+                <Text slot="label" tone="faint" as="span">{i18n("components.globalorb.1c5fc047a7ba")}</Text>
               ) : ohist.map((h: SearchJump, i: number) => (
                 <span
                   key={`${h.at}-${i}`}
@@ -582,7 +588,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
               ))}
             </div>
           ) : !oresult ? (
-            <Text slot="label" tone="faint" as="p">搜索中…</Text>
+            <Text slot="label" tone="faint" as="p">{i18n("components.globalorb.cc50237edca2")}</Text>
           ) : ototal === 0 ? (
             <Btn
               block
@@ -594,9 +600,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
                 setOquery("");
                 if (q) void send(q);
               }}
-            >
-              没搜到「{oquery.trim()}」？直接问小 (OH)
-            </Btn>
+            >{i18nRich("components.globalorb.8f2fc5ad7ce5", { value: oquery.trim() })}</Btn>
           ) : (
             <div className="ohx-orb-results">
               {oresult.rows.map((x) => (
@@ -615,8 +619,8 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
                   size="sm"
                   compact
                   title={en.name}
-                  sub={en.note ?? en.category}
-                  trailing={<Text slot="micro" tone="faint">功能</Text>}
+                  sub={en.note ?? labelForId(en.category)}
+                  trailing={<Text slot="micro" tone="faint">{i18n("components.globalorb.25f5ce57a190")}</Text>}
                   onClick={() => { jumpEntry(en.id, en.page, en.params ?? null, en.name, oquery.trim()); backToApp(); }}
                 />
               ))}
@@ -627,7 +631,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
                   compact
                   title={a.title}
                   sub={(a.group ? a.group + " · " : "") + (a.sub ?? "")}
-                  trailing={<Text slot="micro" tone="faint">页面</Text>}
+                  trailing={<Text slot="micro" tone="faint">{i18n("components.globalorb.452c7b10d57a")}</Text>}
                   onClick={() => { jumpAtom(a.kind, a.key, a.title, oquery.trim()); backToApp(); }}
                 />
               ))}
@@ -636,8 +640,8 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
                   key={"t:" + t}
                   size="sm"
                   compact
-                  title={"设置 · " + t}
-                  trailing={<Text slot="micro" tone="faint">设置</Text>}
+                  title={i18n("components.globalorb.5214e0bc5dce") + t}
+                  trailing={<Text slot="micro" tone="faint">{i18n("components.globalorb.df3d58c7d84b")}</Text>}
                   onClick={() => { jumpSettingsTab(t); backToApp(); }}
                 />
               ))}
@@ -684,7 +688,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
         <AttachTray
           onPicked={async (files: AttachFile[]) => {
             const summary = files.map((f) => `${f.name}（${formatSize(f.size)}）`).join("、");
-            setMsgs((m) => [...m, { role: "user", text: `［附件］${summary}` }]);
+            setMsgs((m) => [...m, { role: "user", text: i18n("components.globalorb.878d364bd67d", { summary: String(summary) }) }]);
             scrollToEnd();
             setSheetFiles(files); // 需求 7：拿到附件就先给动作选择（转存云盘 / 交作业 / 发讨论区）
           }}
@@ -702,7 +706,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             value={input}
             onChange={setInput}
             onFocusChange={(on) => { if (on) setTyping(false); }}
-            placeholder="点击输入（可直接用系统听写说话）"
+            placeholder={i18n("components.globalorb.bb198f53046f")}
           />
         </div>
       </form>
@@ -716,7 +720,7 @@ export const GlobalOrb = memo(function GlobalOrb({ initialMode = "ball" }: { ini
             const r = (d as { result?: { ok?: boolean; path?: string; error?: string } })?.result;
             setMsgs((m) => [...m, {
               role: "oh",
-              text: r?.ok ? `已处理附件${r.path ? `：${r.path}` : ""}` : `附件动作未完成${r?.error ? `：${r.error}` : ""}`,
+              text: r?.ok ? i18n("components.globalorb.eebaa565cacd", { value: String(r.path ? `：${r.path}` : "") }) : i18n("components.globalorb.044d85b3d264", { value: String(r?.error ? `：${r.error}` : "") }),
             }]);
             setSheetFiles(null);
             scrollToEnd();

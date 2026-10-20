@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Input } from "@onethu/gui";
 import { Select } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
@@ -53,6 +54,8 @@ function inMaintainWindow(): boolean {
 
 /** 维护期友好卡：窗口内（00:55-02:05）不轰炸——单次定时到窗口结束重试一次；窗口外按 60s 自动重试 */
 function VenueNote({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  const uiLocale = useUiLocale();
+
   const maintain = /维护中/.test(text);
   const inWindow = maintain && (() => { const m = beijingMinute(); return m >= 55 && m <= 125; })();
   const [left, setLeft] = useState(60);
@@ -82,11 +85,11 @@ function VenueNote({ text, onRetry }: { text: string; onRetry?: () => void }) {
   if (!maintain) return <ErrorNote text={text} onRetry={onRetry} />;
   return (
     <div className="card" style={{ textAlign: "center", padding: "18px 12px" }}>
-      <div style={{ fontWeight: 600, marginBottom: 6 }}>场馆系统维护中</div>
+      <div style={{ fontWeight: 600, marginBottom: 6 }}>{i18n("pages.info.venuesportstab.38ffbb2aa4b3")}</div>
       <div style={{ fontSize: 12, color: "var(--text-3)" }}>
         {inWindow
-          ? "每日 01:00 - 02:00 例行维护，窗口结束后自动恢复"
-          : <>非维护时段出现维护提示（异常），{left}s 后自动重试</>}
+          ? i18n("pages.info.venuesportstab.f116677ed089")
+          : <>{i18nRich("pages.info.venuesportstab.b45bec71911a", { left: left })}</>}
       </div>
     </div>
   );
@@ -109,7 +112,7 @@ type LoadState = "idle" | "loading" | "error" | "ready";
 
 /** 分 → 元展示（chargingUnitPrice 为分；0/undefined → 免费） */
 function yuan(fen?: number | null): string {
-  if (!fen) return "免费";
+  if (!fen) return i18n("pages.info.venuesportstab.649a0fc7237e");
   const v = fen / 100;
   return `¥${Number.isInteger(v) ? v : v.toFixed(2)}`;
 }
@@ -137,6 +140,8 @@ export function VenueSportsTab({
   /** 深链（实体原子）：自动选中的场馆 scene uuid */
   deepScene?: string;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   /* —— 授权 —— */
@@ -217,7 +222,7 @@ export function VenueSportsTab({
       if (ok && venueHasToken()) {
         setAuthed(true);
       } else if (!twoFA) {
-        setAuthMsg("未能自动登录（统一身份登录可能已过期），请用登录窗口完成一次认证。");
+        setAuthMsg(i18n("pages.info.venuesportstab.83bfd5de6aeb"));
       }
     } catch (err) {
       logTabErr("VENUE-AUTH", err);
@@ -227,7 +232,7 @@ export function VenueSportsTab({
         setTwoFASent(false);
         setAuthMsg(null);
       } else {
-        setAuthMsg(`授权失败：${tabErrorText(err)}`);
+        setAuthMsg(i18n("pages.info.venuesportstab.fec5d257ab36", { value: String(tabErrorText(err)) }));
       }
     } finally {
       setAuthBusy(false);
@@ -423,9 +428,9 @@ export function VenueSportsTab({
     if (maintain || !authed || !venue) return;
     let dead = false;
     const USE_ENUM = [
-      { key: 1, value: "NORMAL", label: "普通" },
-      { key: 2, value: "SPORT_GROUP", label: "包场" },
-      { key: 4, value: "SPORT_PERSON", label: "散客" },
+      { key: 1, value: "NORMAL", label: i18n("pages.info.venuesportstab.de907d10df98") },
+      { key: 2, value: "SPORT_GROUP", label: i18n("pages.info.venuesportstab.4b4aa3b3fd22") },
+      { key: 4, value: "SPORT_PERSON", label: i18n("pages.info.venuesportstab.8df76a301a77") },
     ];
     const apply = (b: VenueBuilding[], k: VenueDevKind[], r: VenueBuilding[], u: { key: number; value: string; label: string }[]) => {
       if (dead) return;
@@ -517,10 +522,10 @@ export function VenueSportsTab({
           setTwoFA({ methods: err.methods });
           setTwoFAType(err.methods[0]?.type ?? null);
           setTwoFASent(false);
-          setAuthMsg("该账号需要二次认证，请在下方完成后再打开预约页。");
+          setAuthMsg(i18n("pages.info.venuesportstab.96803ba9d008"));
           return;
         }
-        setNoticeMsg(`打开官方预约页失败：${tabErrorText(err)}（已改用系统浏览器）`);
+        setNoticeMsg(i18n("pages.info.venuesportstab.82ece08ac1ec", { value: String(tabErrorText(err)) }));
         void openExternal(url);
       }
     })();
@@ -533,13 +538,13 @@ export function VenueSportsTab({
       setNoticeMsg(null);
       try {
         await venueClient.cancelReserve(resvUuid);
-        setNoticeMsg("已退订。");
+        setNoticeMsg(i18n("pages.info.venuesportstab.81ec63d2a4cc"));
         await fetchRecords();
         if (venue) await loadSites(venue.uuid, date);
       } catch (err) {
         logTabErr("VENUE-CANCEL", err);
         setNoticeMsg(
-          err instanceof VenueApiError ? `退订失败：${err.message}` : `退订失败：${tabErrorText(err)}`,
+          err instanceof VenueApiError ? i18n("pages.info.venuesportstab.79905f188b6f", { message: String(err.message) }) : i18n("pages.info.venuesportstab.2759ad2a6b6c", { value: String(tabErrorText(err)) }),
         );
       } finally {
         setUnsubbing(null);
@@ -563,7 +568,7 @@ export function VenueSportsTab({
       return ta.localeCompare(tb, "zh-Hans-CN", { numeric: true });
     });
     return out;
-  }, [sites]);
+  }, [uiLocale, sites]);
 
   const countIn = (pred: (h: number) => boolean) =>
     rows.filter(({ session }) => pred(Number(String(session.beginTime).slice(0, 2)))).length;
@@ -593,18 +598,16 @@ export function VenueSportsTab({
       g.sessions.sort((a, b) => String(a.beginTime).localeCompare(String(b.beginTime), "zh-Hans-CN", { numeric: true }));
     }
     return groups;
-  }, [rows, timeFilter]);
+  }, [uiLocale, rows, timeFilter]);
 
   /* —— 维护窗口：不碰任何网络/登录，直出维护卡（窗口结束自动回到正常流程） —— */
   if (maintain) {
     return (
       <>
-        <SectionHead title="体育场馆预约" aside="维护窗口" />
+        <SectionHead title={i18n("pages.info.venuesportstab.47f7b05a1c5c")} aside={i18n("pages.info.venuesportstab.1e9fa64d9d1e")} />
         <Card style={{ marginBottom: 16, padding: "12px 14px" }}>
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>场馆系统维护中</div>
-          <div style={{ fontSize: 13, opacity: 0.75, lineHeight: 1.7 }}>
-            每日 01:00 - 02:00 例行维护。当前处于维护窗口，场馆查询与预约均不可用；窗口结束后本页自动恢复，无需手动重试。
-          </div>
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>{i18n("pages.info.venuesportstab.38ffbb2aa4b3")}</div>
+          <div style={{ fontSize: 13, opacity: 0.75, lineHeight: 1.7 }}>{i18n("pages.info.venuesportstab.f4cb60e95c82")}</div>
         </Card>
       </>
     );
@@ -615,11 +618,9 @@ export function VenueSportsTab({
     const cur = twoFA.methods.find((m) => m.type === twoFAType);
     return (
       <>
-        <SectionHead title="体育场馆预约 · 二次认证" aside="统一身份认证" />
+        <SectionHead title={i18n("pages.info.venuesportstab.416ac83cc605")} aside={i18n("pages.info.venuesportstab.c0855d46556b")} />
         <Card style={{ marginBottom: 14 }}>
-          <div style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 12 }}>
-            统一身份要求二次认证。选择验证方式并输入验证码，完成后本设备将被信任，之后无需再输。
-          </div>
+          <div style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 12 }}>{i18n("pages.info.venuesportstab.617e6551fdcf")}</div>
           <Select value={twoFAType ?? ""} onChange={(value) => {
               setTwoFAType(value);
               setTwoFASent(false);
@@ -631,11 +632,11 @@ export function VenueSportsTab({
               </option>
             ))}</Select>
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
-            <Input value={twoFACode} onChange={(value) => setTwoFACode(value)} placeholder={twoFAType === "totp" ? "动态口令" : "验证码"} inputMode={twoFAType === "totp" ? "text" : "numeric"} />
+            <Input value={twoFACode} onChange={(value) => setTwoFACode(value)} placeholder={twoFAType === "totp" ? i18n("pages.info.venuesportstab.52517b6304de") : i18n("pages.info.venuesportstab.bb015c60bafc")} inputMode={twoFAType === "totp" ? "text" : "numeric"} />
             {twoFAType && twoFAType !== "totp" ? (
-              <Btn variant="ghost" onClick={() => void send2FA()} disabled={twoFABusy}>{twoFABusy ? "发送中…" : twoFASent ? "重新发送" : "发送验证码"}</Btn>
+              <Btn variant="ghost" onClick={() => void send2FA()} disabled={twoFABusy}>{twoFABusy ? i18n("pages.info.venuesportstab.364970d8168c") : twoFASent ? i18n("pages.info.venuesportstab.9287ac799e54") : i18n("pages.info.venuesportstab.4656fed515ae")}</Btn>
             ) : null}
-            <Btn variant="solid" tone="brand" onClick={() => void submit2FA()} disabled={twoFABusy || !twoFACode.trim()}>{twoFABusy ? "验证中…" : "确认"}</Btn>
+            <Btn variant="solid" tone="brand" onClick={() => void submit2FA()} disabled={twoFABusy || !twoFACode.trim()}>{twoFABusy ? i18n("pages.info.venuesportstab.7f2d0739a240") : i18n("pages.info.venuesportstab.36f33adaf094")}</Btn>
           </div>
           {twoFAErr ? <div style={{ fontSize: 13, color: "#d33" }}>{twoFAErr}</div> : null}
         </Card>
@@ -647,12 +648,10 @@ export function VenueSportsTab({
   if (!authed) {
     return (
       <>
-        <SectionHead title="体育场馆预约" aside="体育系统 · 统一身份认证" />
+        <SectionHead title={i18n("pages.info.venuesportstab.47f7b05a1c5c")} aside={i18n("pages.info.venuesportstab.7265ee41c39a")} />
         <Card style={{ marginBottom: 14 }}>
-          <div style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 12 }}>
-            预约清华体育场馆（气膜馆、综体、游泳馆等 33 个场馆）复用 OneTHU 的统一身份登录，通常无需任何操作。仅当统一会话与本机凭证都不可用时，才需要点下方按钮在弹窗里认证一次。
-          </div>
-          <Btn variant="solid" tone="brand" onClick={() => void doAuth()} disabled={authBusy}>{authBusy ? "登录中…" : "重新登录体育系统"}</Btn>
+          <div style={{ lineHeight: 1.7, fontSize: 13, marginBottom: 12 }}>{i18n("pages.info.venuesportstab.4e14d36e9352")}</div>
+          <Btn variant="solid" tone="brand" onClick={() => void doAuth()} disabled={authBusy}>{authBusy ? i18n("pages.info.venuesportstab.3f06ed8f8c38") : i18n("pages.info.venuesportstab.4bb0dcfbf99a")}</Btn>
           {authMsg ? (
             /维护中/.test(authMsg)
               ? <VenueNote text={authMsg} onRetry={() => void doAuth()} />
@@ -666,9 +665,9 @@ export function VenueSportsTab({
   return (
     <>
       <SectionHead
-        title="场馆与日期"
+        title={i18n("pages.info.venuesportstab.ed8263515e2f")}
         aside={
-          <Btn variant="ghost" onClick={() => void doAuth()} disabled={authBusy}>{authBusy ? "授权中…" : "重新授权"}</Btn>
+          <Btn variant="ghost" onClick={() => void doAuth()} disabled={authBusy}>{authBusy ? i18n("pages.info.venuesportstab.b4e41afe6828") : i18n("pages.info.venuesportstab.6a84698a4758")}</Btn>
         }
       />
       {sceneState === "error" ? <VenueNote text={sceneErr ?? ""} onRetry={() => void loadScenes()} /> : null}
@@ -683,7 +682,7 @@ export function VenueSportsTab({
                 const x = (scenes ?? []).find((y) => y.uuid === v);
                 if (x) setVenue(x);
               }}
-              placeholder="选择场馆…"
+              placeholder={i18n("pages.info.venuesportstab.e1f6f0bd3708")}
               options={(scenes ?? []).map((x) => ({ value: x.uuid, label: x.sceneName }))}
             />
           </div>
@@ -702,17 +701,14 @@ export function VenueSportsTab({
             const d = e.target.value;
             if (d) setDate(d);
           }}
-          aria-label="预约日期"
+          aria-label={i18n("pages.info.venuesportstab.35bc4552c921")}
         />
-        <Btn variant="ghost" onClick={() => setDate(todayStr())}>今天
-        </Btn>
-        <Btn variant="ghost" onClick={() => setDate(todayStr(1))}>明天
-        </Btn>
-        <Btn variant="ghost" disabled={sitesState === "loading" || !venue} onClick={() => venue && void loadSites(venue.uuid, date, classEnum === "ROOM" ? room : building, devKind, classEnum, useType)}>刷新
-        </Btn>
+        <Btn variant="ghost" onClick={() => setDate(todayStr())}>{i18n("pages.info.venuesportstab.d5f5a7a01073")}</Btn>
+        <Btn variant="ghost" onClick={() => setDate(todayStr(1))}>{i18n("pages.info.venuesportstab.b1d841b978fb")}</Btn>
+        <Btn variant="ghost" disabled={sitesState === "loading" || !venue} onClick={() => venue && void loadSites(venue.uuid, date, classEnum === "ROOM" ? room : building, devKind, classEnum, useType)}>{i18n("pages.info.venuesportstab.aee887434131")}</Btn>
       </div>
 
-      <SectionHead title={`场次与场地 · ${venue?.sceneName ?? ""}`} aside={date} />
+      <SectionHead title={i18n("pages.info.venuesportstab.9201b42cdfcd", { value: String(venue?.sceneName ?? "") })} aside={date} />
       {buildings.length > 1 ? (
         <SearchSelect
           value={building}
@@ -721,7 +717,7 @@ export function VenueSportsTab({
             setRoom("");
             setClassEnum("BUILDING");
           }}
-          placeholder="选择场地…"
+          placeholder={i18n("pages.info.venuesportstab.a383bc93da91")}
           options={buildings.map((b) => ({ value: b.uuid, label: b.siteName ?? b.uuid }))}
         />
       ) : null}
@@ -729,7 +725,7 @@ export function VenueSportsTab({
         <SearchSelect
           value={devKind}
           onChange={(v) => setDevKind(v)}
-          placeholder="选择设备类型…"
+          placeholder={i18n("pages.info.venuesportstab.23c0b6f58b3e")}
           options={devKinds.map((k) => ({ value: k.uuid, label: k.devKindName ?? k.uuid }))}
         />
       ) : null}
@@ -737,7 +733,7 @@ export function VenueSportsTab({
         <SearchSelect
           value={useType}
           onChange={(v) => setUseType(v)}
-          placeholder="选择用途…"
+          placeholder={i18n("pages.info.venuesportstab.49671fbf8591")}
           options={useTypes.map((u) => ({ value: u.value, label: u.label }))}
         />
       ) : null}
@@ -748,7 +744,7 @@ export function VenueSportsTab({
             setRoom(v);
             setClassEnum("ROOM");
           }}
-          placeholder="选择房间…"
+          placeholder={i18n("pages.info.venuesportstab.7f90eb99b98a")}
           options={rooms.map((r) => ({ value: r.uuid, label: r.siteName ?? r.uuid }))}
         />
       ) : null}
@@ -761,15 +757,15 @@ export function VenueSportsTab({
       {sitesState === "loading" ? (
         <SkeletonRows rows={5} />
       ) : sitesState === "ready" && rows.length === 0 ? (
-        <TabEmpty text="该场馆当日暂无可预约场次（可能未开放、已约满或不在开放时段）。" />
+        <TabEmpty text={i18n("pages.info.venuesportstab.e8c10d60c170")} />
       ) : sitesState === "ready" ? (
         <>
           {rows.length > 0 ? (
-            <Select value={timeFilter} onChange={(value) => setTimeFilter(value as "all" | "am" | "pm" | "eve")}><option value="all">全部时段（{rows.length} 场）</option><option value="am">上午（{countIn((h) => h < 12)} 场）</option><option value="pm">下午（{countIn((h) => h >= 12 && h < 17)} 场）</option><option value="eve">晚上（{countIn((h) => h >= 17)} 场）</option></Select>
+            <Select value={timeFilter} onChange={(value) => setTimeFilter(value as "all" | "am" | "pm" | "eve")}><option value="all">{i18nRich("pages.info.venuesportstab.835f9c80da28", { length: rows.length })}</option><option value="am">{i18nRich("pages.info.venuesportstab.de1b90c59aa7", { value: countIn((h) => h < 12) })}</option><option value="pm">{i18nRich("pages.info.venuesportstab.6e9f129f81e1", { value: countIn((h) => h >= 12 && h < 17) })}</option><option value="eve">{i18nRich("pages.info.venuesportstab.13a699d81a49", { value: countIn((h) => h >= 17) })}</option></Select>
           ) : null}
           {rows.length > 0 && siteBlocks.length === 0 ? (
             <Card style={{ marginBottom: 16 }}>
-              <div className="empty">该时段暂无场次，试试其他时段或「全部时段」。</div>
+              <div className="empty">{i18n("pages.info.venuesportstab.78db14908514")}</div>
             </Card>
           ) : null}
           {siteBlocks.map(({ site, sessions }) => {
@@ -784,7 +780,7 @@ export function VenueSportsTab({
                     <div style={{ fontSize: 12, opacity: 0.65 }}>{site.siteLocation.location}</div>
                   ) : null}
                   <div style={{ marginLeft: "auto", fontSize: 12, opacity: 0.8 }}>
-                    {anyFree ? "免费" : `${yuan(minPrice)} 起`}
+                    {anyFree ? i18n("pages.info.venuesportstab.649a0fc7237e") : i18n("pages.info.venuesportstab.4b799f59f36a", { value: String(yuan(minPrice)) })}
                   </div>
                 </div>
                 <div className="slot-grid">
@@ -798,15 +794,15 @@ export function VenueSportsTab({
                       <button
                         key={`${site.uuid}-${session.uuid}-${i}`}
                         className={"slot-cell" + (pickedNow ? " picked" : bookable ? "" : " taken")}
-                        title={disabled ? session.reserveStatus?.reserveStatusReason || "不可约" : undefined}
+                        title={disabled ? session.reserveStatus?.reserveStatusReason || i18n("pages.info.venuesportstab.a4c0233f1d6c") : undefined}
                         disabled={disabled}
                         onClick={() => bookable && setPicked({ site, session })}
                       >
                         <b>{session.beginTime}-{session.endTime}</b>
                         <small>
-                          {remain === null ? "" : remain > 0 ? `余${remain}` : "满"}
+                          {remain === null ? "" : remain > 0 ? i18n("pages.info.venuesportstab.3c3a89bd47d1", { remain: String(remain) }) : i18n("pages.info.venuesportstab.abc511ca956e")}
                           {remain === null ? "" : fee > 0 ? " · " : ""}
-                          {fee > 0 ? yuan(fee) : remain === null ? "" : "免费"}
+                          {fee > 0 ? yuan(fee) : remain === null ? "" : i18n("pages.info.venuesportstab.649a0fc7237e")}
                         </small>
                       </button>
                     );
@@ -821,16 +817,9 @@ export function VenueSportsTab({
       {/* 预约卡（选中场次后出现）——应用内不提交，跳官方网页 */}
       {picked && venue ? (
         <>
-          <SectionHead title="预约" aside={`${venue.sceneName} · ${picked.site.siteName}`} />
+          <SectionHead title={i18n("pages.info.venuesportstab.352cdc807892")} aside={`${venue.sceneName} · ${picked.site.siteName}`} />
           <Card style={{ marginBottom: 16, padding: "12px 14px" }}>
-            <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-              时间：{fmtVenueDate(picked.session.beginDate) || date} {picked.session.beginTime}-{picked.session.endTime}
-              <br />
-              场地：{picked.site.siteName}
-              {picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : ""}
-              <br />
-              费用：{yuan(picked.session.userFeeDetails?.chargingUnitPrice)}
-            </div>
+            <div style={{ fontSize: 13, lineHeight: 1.8 }}>{i18nRich("pages.info.venuesportstab.2006a40f080b", { value: fmtVenueDate(picked.session.beginDate) || date, beginTime: picked.session.beginTime, endTime: picked.session.endTime })}<br />{i18nRich("pages.info.venuesportstab.d342ec4e45d3", { siteName: picked.site.siteName, value: picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : "" })}<br />{i18nRich("pages.info.venuesportstab.bff83f250847", { value: yuan(picked.session.userFeeDetails?.chargingUnitPrice) })}</div>
             <div
               style={{
                 fontSize: 12,
@@ -842,18 +831,10 @@ export function VenueSportsTab({
                 border: "1px solid rgba(220, 38, 38, 0.25)",
                 borderRadius: 8,
               }}
-            >
-              根据清华大学体育部场馆中心 2025 年 12 月 3 日发布的公告 七、12、如有用户通过脚本软件或插件等非正常途径预定场地，一经发现并核实，对该用户封禁预订权限 6 个月，并函告相关院系或单位。OneTHU 仅提供场馆情况查询，请点击按钮前往官网预约；如果不当使用源码进行预约，违反本项目开源准则，后果自负。
-            </div>
-            <Btn variant="solid" tone="brand" onClick={goOfficialBooking}>
-              在应用内打开官方预约页
-            </Btn>
-            <Btn variant="ghost" titleAttr="应用内页面打不开时走系统浏览器（需在浏览器里登录一次）" onClick={() => void openExternal(venueWebUrl(venue!.uuid))}>改用系统浏览器
-            </Btn>
-            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8, lineHeight: 1.6 }}>
-              官方页面在 OneTHU 内以自己的窗口打开（安卓为全屏页面），登录态与刚才查询场馆时用的
-              那一份相同，不需要重新登录；预约提交一律由你在官方页面上操作。
-            </div>
+            >{i18n("pages.info.venuesportstab.df9e299b2c47")}</div>
+            <Btn variant="solid" tone="brand" onClick={goOfficialBooking}>{i18n("pages.info.venuesportstab.b0ba152b68fb")}</Btn>
+            <Btn variant="ghost" titleAttr={i18n("pages.info.venuesportstab.a73edb9b52b4")} onClick={() => void openExternal(venueWebUrl(venue!.uuid))}>{i18n("pages.info.venuesportstab.8e3ccc726bca")}</Btn>
+            <div style={{ fontSize: 12, opacity: 0.75, marginTop: 8, lineHeight: 1.6 }}>{i18n("pages.info.venuesportstab.aea3cf6d9a2c")}</div>
           </Card>
 
         </>
@@ -865,25 +846,25 @@ export function VenueSportsTab({
         </Card>
       ) : null}
 
-      <SectionHead title="我的预约" aside="体育系统预约记录" />
+      <SectionHead title={i18n("pages.info.venuesportstab.1a558735ea57")} aside={i18n("pages.info.venuesportstab.964e9962f261")} />
       {recState === "error" ? (
         <VenueNote text={recUnavail ? VENUE_UNAVAILABLE : (recErr ?? "")} onRetry={() => void fetchRecords()} />
       ) : null}
       {recState === "loading" && !records ? (
         <SkeletonRows rows={4} />
       ) : (records?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无预约记录。" />
+        <TabEmpty text={i18n("pages.info.venuesportstab.c3b180cc0d49")} />
       ) : recState === "ready" ? (
         <Card className="list">
           {(records ?? []).map((r, i) => {
             const resvUuid = r.resvUuid ?? r.uuid ?? "";
             return (
               <div className="row" key={resvUuid || i} style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}>
-                <span className="chip chip-green">已预约</span>
+                <span className="chip chip-green">{i18n("pages.info.venuesportstab.82c6a357291a")}</span>
                 <div className="row-main">
                   <div className="row-title">
                     {r.sceneName ? `${r.sceneName} · ` : ""}
-                    {r.siteName ?? "场地"}
+                    {r.siteName ?? i18n("pages.info.venuesportstab.e1d28b717f1e")}
                   </div>
                   <div className="row-sub">
                     {[r.resvDate, r.beginTime && r.endTime ? `${r.beginTime}-${r.endTime}` : r.beginTime, r.orderAmount ? `¥${r.orderAmount}` : ""]
@@ -893,10 +874,10 @@ export function VenueSportsTab({
                 </div>
                 {resvUuid ? (
                   <Btn variant="ghost" disabled={unsubbing !== null} onClick={() => {
-                      if (globalThis.confirm?.(`确定退订「${r.sceneName ?? ""}${r.siteName ?? ""} ${r.resvDate ?? ""}」？`)) {
+                      if (globalThis.confirm?.(i18n("pages.info.venuesportstab.66abacf9ad0f", { value: String(r.sceneName ?? ""), value2: String(r.siteName ?? ""), value3: String(r.resvDate ?? "") }))) {
                         void unsubscribe(resvUuid);
                       }
-                    }}>{unsubbing === resvUuid ? "退订中…" : "退订"}</Btn>
+                    }}>{unsubbing === resvUuid ? i18n("pages.info.venuesportstab.4e3d949d0cda") : i18n("pages.info.venuesportstab.660aa1f65abc")}</Btn>
                 ) : null}
               </div>
             );

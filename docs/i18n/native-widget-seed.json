@@ -1,0 +1,253 @@
+{
+  "description": "Native widget snapshot-only templates. Translate every plural category; placeholders stay named. Android legacy fallback asset is generated from the Chinese entries, never an independent translation source. Keep all event IDs/targets/timestamps untouched.",
+  "messages": {
+    "native.widget.today": {
+      "zh-CN": "今天",
+      "en-US": ""
+    },
+    "native.widget.title": {
+      "zh-CN": "今天 {month}月{day}日",
+      "en-US": ""
+    },
+    "native.widget.date": {
+      "zh-CN": "{month}/{day}",
+      "en-US": ""
+    },
+    "native.widget.ongoing": {
+      "zh-CN": "正在上课",
+      "en-US": ""
+    },
+    "native.widget.completed": {
+      "zh-CN": "今天的课已上完",
+      "en-US": ""
+    },
+    "native.widget.empty": {
+      "zh-CN": "今天没有课与截止",
+      "en-US": ""
+    },
+    "native.widget.course": {
+      "zh-CN": "课程",
+      "en-US": ""
+    },
+    "native.widget.homework": {
+      "zh-CN": "作业",
+      "en-US": ""
+    },
+    "native.widget.event": {
+      "zh-CN": "日程",
+      "en-US": ""
+    },
+    "native.widget.favorites": {
+      "zh-CN": "收藏",
+      "en-US": ""
+    },
+    "native.widget.detail": {
+      "zh-CN": "详情",
+      "en-US": ""
+    },
+    "native.widget.classRow": {
+      "zh-CN": "{time} {title}",
+      "en-US": ""
+    },
+    "native.widget.ddlRow": {
+      "zh-CN": "DDL {title}",
+      "en-US": ""
+    },
+    "native.widget.eventRow": {
+      "zh-CN": "日程 {title}",
+      "en-US": ""
+    },
+    "native.widget.relativeRow": {
+      "zh-CN": "{day} {time} · {remaining}",
+      "en-US": ""
+    },
+    "native.widget.joiner": {
+      "zh-CN": " · ",
+      "en-US": ""
+    },
+    "native.widget.choose": {
+      "zh-CN": "点一下选择",
+      "en-US": ""
+    },
+    "native.widget.chooseContent": {
+      "zh-CN": "点一下选择显示内容",
+      "en-US": ""
+    },
+    "native.widget.pluginTitle": {
+      "zh-CN": "OneTHU 插件小组件 {slot}",
+      "en-US": ""
+    },
+    "native.widget.emptySlot": {
+      "zh-CN": "尚无插件占用此槽位",
+      "en-US": ""
+    },
+    "native.widget.minutes.zero": {
+      "zh-CN": "还有 {count} 分钟",
+      "en-US": ""
+    },
+    "native.widget.minutes.one": {
+      "zh-CN": "还有 {count} 分钟",
+      "en-US": ""
+    },
+    "native.widget.minutes.two": {
+      "zh-CN": "还有 {count} 分钟",
+      "en-US": ""
+    },
+    "native.widget.minutes.few": {
+      "zh-CN": "还有 {count} 分钟",
+      "en-US": ""
+    },
+    "native.widget.minutes.many": {
+      "zh-CN": "还有 {count} 分钟",
+      "en-US": ""
+    },
+    "native.widget.minutes.other": {
+      "zh-CN": "还有 {count} 分钟",
+      "en-US": ""
+    },
+    "native.widget.hours.zero": {
+      "zh-CN": "还有 {count} 小时",
+      "en-US": ""
+    },
+    "native.widget.hours.one": {
+      "zh-CN": "还有 {count} 小时",
+      "en-US": ""
+    },
+    "native.widget.hours.two": {
+      "zh-CN": "还有 {count} 小时",
+      "en-US": ""
+    },
+    "native.widget.hours.few": {
+      "zh-CN": "还有 {count} 小时",
+      "en-US": ""
+    },
+    "native.widget.hours.many": {
+      "zh-CN": "还有 {count} 小时",
+      "en-US": ""
+    },
+    "native.widget.hours.other": {
+      "zh-CN": "还有 {count} 小时",
+      "en-US": ""
+    },
+    "native.widget.days.zero": {
+      "zh-CN": "还有 {count} 天",
+      "en-US": ""
+    },
+    "native.widget.days.one": {
+      "zh-CN": "还有 {count} 天",
+      "en-US": ""
+    },
+    "native.widget.days.two": {
+      "zh-CN": "还有 {count} 天",
+      "en-US": ""
+    },
+    "native.widget.days.few": {
+      "zh-CN": "还有 {count} 天",
+      "en-US": ""
+    },
+    "native.widget.days.many": {
+      "zh-CN": "还有 {count} 天",
+      "en-US": ""
+    },
+    "native.widget.days.other": {
+      "zh-CN": "还有 {count} 天",
+      "en-US": ""
+    },
+    "native.widget.classes.zero": {
+      "zh-CN": "{count} 节课",
+      "en-US": ""
+    },
+    "native.widget.classes.one": {
+      "zh-CN": "{count} 节课",
+      "en-US": ""
+    },
+    "native.widget.classes.two": {
+      "zh-CN": "{count} 节课",
+      "en-US": ""
+    },
+    "native.widget.classes.few": {
+      "zh-CN": "{count} 节课",
+      "en-US": ""
+    },
+    "native.widget.classes.many": {
+      "zh-CN": "{count} 节课",
+      "en-US": ""
+    },
+    "native.widget.classes.other": {
+      "zh-CN": "{count} 节课",
+      "en-US": ""
+    },
+    "native.widget.ddls.zero": {
+      "zh-CN": "{count} 个截止",
+      "en-US": ""
+    },
+    "native.widget.ddls.one": {
+      "zh-CN": "{count} 个截止",
+      "en-US": ""
+    },
+    "native.widget.ddls.two": {
+      "zh-CN": "{count} 个截止",
+      "en-US": ""
+    },
+    "native.widget.ddls.few": {
+      "zh-CN": "{count} 个截止",
+      "en-US": ""
+    },
+    "native.widget.ddls.many": {
+      "zh-CN": "{count} 个截止",
+      "en-US": ""
+    },
+    "native.widget.ddls.other": {
+      "zh-CN": "{count} 个截止",
+      "en-US": ""
+    },
+    "native.widget.events.zero": {
+      "zh-CN": "{count} 项日程",
+      "en-US": ""
+    },
+    "native.widget.events.one": {
+      "zh-CN": "{count} 项日程",
+      "en-US": ""
+    },
+    "native.widget.events.two": {
+      "zh-CN": "{count} 项日程",
+      "en-US": ""
+    },
+    "native.widget.events.few": {
+      "zh-CN": "{count} 项日程",
+      "en-US": ""
+    },
+    "native.widget.events.many": {
+      "zh-CN": "{count} 项日程",
+      "en-US": ""
+    },
+    "native.widget.events.other": {
+      "zh-CN": "{count} 项日程",
+      "en-US": ""
+    },
+    "native.widget.more.zero": {
+      "zh-CN": "还有 {count} 项",
+      "en-US": ""
+    },
+    "native.widget.more.one": {
+      "zh-CN": "还有 {count} 项",
+      "en-US": ""
+    },
+    "native.widget.more.two": {
+      "zh-CN": "还有 {count} 项",
+      "en-US": ""
+    },
+    "native.widget.more.few": {
+      "zh-CN": "还有 {count} 项",
+      "en-US": ""
+    },
+    "native.widget.more.many": {
+      "zh-CN": "还有 {count} 项",
+      "en-US": ""
+    },
+    "native.widget.more.other": {
+      "zh-CN": "还有 {count} 项",
+      "en-US": ""
+    }
+  }
+}

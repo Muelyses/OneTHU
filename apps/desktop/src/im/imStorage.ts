@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 「AES-GCM 信封 + PBKDF2 派生密钥」的通用加密存储器——加解密算法与安全
  * 口径逐行照抄 state/exthw.ts（外部作业源那套），参数化为可复用叶子：
@@ -113,7 +114,7 @@ export class ImStorage<T extends object> {
   }
 
   private async deriveKey(salt: Uint8Array): Promise<CryptoKey> {
-    if (!subtle) throw new Error("当前环境不支持 WebCrypto");
+    if (!subtle) throw new Error(i18n("im.imstorage.15b8b711a27d"));
     const base = await subtle.importKey("raw", new TextEncoder().encode(this.kdfPass), "PBKDF2", false, [
       "deriveKey",
     ]);
@@ -127,7 +128,7 @@ export class ImStorage<T extends object> {
   }
 
   private async encrypt(value: T): Promise<Envelope> {
-    if (!subtle) throw new Error("当前环境不支持 WebCrypto");
+    if (!subtle) throw new Error(i18n("im.imstorage.15b8b711a27d"));
     const key = await this.deriveKey(await this.getOrCreateSalt());
     const iv = new Uint8Array(12);
     crypto.getRandomValues(iv);
@@ -137,7 +138,7 @@ export class ImStorage<T extends object> {
   }
 
   private async decrypt(env: Envelope): Promise<T> {
-    if (!subtle) throw new Error("当前环境不支持 WebCrypto");
+    if (!subtle) throw new Error(i18n("im.imstorage.15b8b711a27d"));
     const key = await this.deriveKey(await this.getOrCreateSalt());
     const pt = await subtle.decrypt(
       { name: "AES-GCM", iv: b64decode(env.iv) as unknown as BufferSource },

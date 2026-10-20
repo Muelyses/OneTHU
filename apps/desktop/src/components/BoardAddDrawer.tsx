@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, SearchField } from "@onethu/gui";
 /**
  * 添加组件抽屉（霖 2026-10-11 重做；尺寸档位版）。
@@ -36,6 +37,8 @@ const QUICK_IDS = ["custom:note", "text-title", "text-label", "divider"] as cons
 
 /** 单张预览（总览卡片与自由控制组件的展开态用它）。 */
 function WidgetPreview({ def, renderer, scale }: { def: WidgetDef; renderer?: WidgetRenderer; scale: number }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <div className="add-preview-box">
       <div
@@ -84,6 +87,8 @@ export function BoardAddDrawer({
   onResize?: (def: WidgetDef, size: WidgetSize) => void;
   onClose: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [shown, setShown] = useState(open);
   const [leaving, setLeaving] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -377,7 +382,7 @@ export function BoardAddDrawer({
     <div
       className={"add-drawer" + (leaving ? " is-out" : "") + (def ? " is-detail" : "") + (tall ? " is-tall" : "")}
       role="dialog"
-      aria-label={mode === "resize" ? "改变大小" : "添加组件"}
+      aria-label={mode === "resize" ? i18n("components.boardadddrawer.12e0be622c36") : i18n("components.boardadddrawer.97dcf4348652")}
       data-add-drawer="1"
       data-add-mode={mode}
       ref={drawerRef}
@@ -402,7 +407,7 @@ export function BoardAddDrawer({
         /* 展开态：标题在左上角、简介在其下、档位列表居中、底部一个「添加」/「修改大小」。 */
         <div className="add-detail" data-add-detail={def.id} ref={detailRef}>
           <div className="add-detail-head" ref={headRef}>
-            <span className="add-detail-kicker">{mode === "resize" ? "改变大小" : "添加组件"}</span>
+            <span className="add-detail-kicker">{mode === "resize" ? i18n("components.boardadddrawer.12e0be622c36") : i18n("components.boardadddrawer.97dcf4348652")}</span>
             <span className="add-detail-name">{def.title}</span>
             <span className="add-detail-desc">{def.description}</span>
           </div>
@@ -420,7 +425,7 @@ export function BoardAddDrawer({
                 <div className="add-detail-preview">
                   <WidgetPreview def={def} renderer={renderers[def.id]} scale={1} />
                 </div>
-                <span className="add-detail-hint">这个组件保留自由调整大小；添加后选中它，拖动角点调整。</span>
+                <span className="add-detail-hint">{i18n("components.boardadddrawer.f558fcad438d")}</span>
               </div>
             )}
           </div>
@@ -446,26 +451,26 @@ export function BoardAddDrawer({
             onPointerCancel={() => { pressRef.current = null; }}
             onClick={() => activate(false)}
           >
-            {mode === "resize" ? "修改大小" : "添加"}
+            {mode === "resize" ? i18n("components.boardadddrawer.d10e6141036b") : i18n("components.boardadddrawer.7a8a11ead507")}
           </button>
         </div>
       ) : (
         <div className="add-overview">
           <div className="add-overview-head">
-            <span className="add-overview-title">添加组件</span>
-            <Btn variant="outline" onClick={onClose}>关闭</Btn>
+            <span className="add-overview-title">{i18n("components.boardadddrawer.97dcf4348652")}</span>
+            <Btn variant="outline" onClick={onClose}>{i18n("components.boardadddrawer.3fd47edce45b")}</Btn>
           </div>
-          <SearchField value={query} onChange={setQuery} placeholder="搜索组件" aria-label="搜索组件" />
+          <SearchField value={query} onChange={setQuery} placeholder={i18n("components.boardadddrawer.f2cd55057df5")} aria-label={i18n("components.boardadddrawer.f2cd55057df5")} />
           <div className="add-scroll" ref={gridRef}>
             {quickDefs.length ? (
               <section className="add-section" data-add-section="quick">
-                <div className="add-section-title">常用</div>
+                <div className="add-section-title">{i18n("components.boardadddrawer.4563c57b5143")}</div>
                 <div className="add-grid">{quickDefs.map(renderCard)}</div>
               </section>
             ) : null}
             {shownExtras.length ? (
               <section className="add-section" data-add-section="onepage">
-                <div className="add-section-title">OnePage 与组合</div>
+                <div className="add-section-title">{i18n("components.boardadddrawer.ccf130e68402")}</div>
                 <div className="free-add-list">
                   {shownExtras.map((x) => (
                     <Btn key={x.id} variant="ghost" size="sm" className="hs-detail-row" data-widget-option={x.id} titleAttr={x.description} onClick={x.pick}>
@@ -477,11 +482,11 @@ export function BoardAddDrawer({
             ) : null}
             {restDefs.length ? (
               <section className="add-section" data-add-section="all">
-                <div className="add-section-title">全部组件</div>
+                <div className="add-section-title">{i18n("components.boardadddrawer.744bb8debb2c")}</div>
                 <div className="add-grid">{restDefs.map(renderCard)}</div>
               </section>
             ) : null}
-            {!shownDefs.length && !shownExtras.length ? <div className="hs-op-hint">没有找到组件</div> : null}
+            {!shownDefs.length && !shownExtras.length ? <div className="hs-op-hint">{i18n("components.boardadddrawer.cee892960fc7")}</div> : null}
           </div>
         </div>
       )}

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { http, logLine, session } from "../lib/clients.js";
 import { webvpnWrap } from "@onethu/core";
 import { getPlugin, updatePlugin } from "../plugins/registry.js";
@@ -233,7 +234,7 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
     const st = getPlugin(HARNESS_ID)?.settings ?? {};
     const nextAt = Number(st.madmodelNextAttemptAt ?? 0);
     if (!force && nextAt && Date.now() < nextAt) {
-      throw new Error(`续签退避中（约 ${Math.max(1, Math.ceil((nextAt - Date.now()) / 60_000))} 分钟后重试）`);
+      throw new Error(i18n("state.madmodel.a3642b461fee", { value: String(Math.max(1, Math.ceil((nextAt - Date.now()) / 60_000))) }));
     }
 
     // 层 1：校内直连签发（站点若恢复免登录时自愈；当前返回 10001 落到层 2）
@@ -291,8 +292,7 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
     // 不覆盖 madmodelReachable：它只表示 IP 探针结果，票据兑换失败不等于网络不可达
     // （否则会让预检误判「直连被门禁 + webvpn 未就绪」，见 2026-10-12 事故）
     throw new Error(
-      "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。" +
-      "请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
+      i18n("state.madmodel.03964a43d8ea"),
     );
   }
 }
@@ -303,7 +303,7 @@ async function acquireMadModelToken(force: boolean): Promise<string> {
 async function exchangeCheck(url: string, opts: { direct?: boolean }): Promise<string | null> {
   try {
     const res = await http.request(url, { redirect: "manual", ...opts });
-    if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(`学校登录服务暂不可用（HTTP ${res.status}），请稍后重试`, retryAt(res));
+    if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(i18n("state.madmodel.6aa588205779", { status: String(res.status) }), retryAt(res));
     const j = (await res.json().catch(() => null)) as { success?: boolean; data?: unknown } | null;
     if (res.status === 200 && j?.success === true && typeof j.data === "string" && j.data) return j.data;
     void logLine(`[MADMODEL] check 未签发凭证：HTTP ${res.status} success=${String(j?.success)}`).catch(() => undefined);
@@ -327,7 +327,7 @@ const TICKET_RE = /[?&]ticket=([^&\s"']+)/;
 async function fetchSsoTicket(): Promise<TicketResult> {
   try {
     const res = await http.request(SSO_FORM, { redirect: "follow" });
-    if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(`统一认证暂不可用（HTTP ${res.status}），请稍后重试`, retryAt(res));
+    if (res.status === 429 || res.status >= 500) throw new TemporaryMadModelError(i18n("state.madmodel.795ecc37977c", { status: String(res.status) }), retryAt(res));
     const finalUrl = res.headers.get("x-onethu-final-url") ?? "";
     const body = await res.text();
     const m = TICKET_RE.exec(finalUrl) ?? TICKET_RE.exec(body);
@@ -526,20 +526,20 @@ async function runPreflight(): Promise<string | null> {
     verdict = await serverAccepts(tok, String(st.madmodelBase ?? ""));
     if (String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "") !== tok || !madmodelActive()) return null;
     // 临时故障不是续签信号；保留旧凭证/成功时间，由本次聊天报告真实网络状态。
-    if (verdict === "temporary") return currentTokenUsable() ? null : freeTierHint("学校登录状态已过期，暂时无法完成校验");
+    if (verdict === "temporary") return currentTokenUsable() ? null : freeTierHint(i18n("state.madmodel.cc4b425932b8"));
     if (verdict === "valid" && !madmodelDue()) return null;
   }
   const nextAt = Number(getPlugin(HARNESS_ID)?.settings?.madmodelNextAttemptAt ?? 0);
   const canReuseCurrent = (): boolean =>
     verdict === "valid" && String(getPlugin(HARNESS_ID)?.settings?.madmodelToken ?? "") === tok && currentTokenUsable();
-  if (Date.now() < nextAt) return canReuseCurrent() ? null : freeTierHint("更新学校登录状态暂缓，请稍后重试");
+  if (Date.now() < nextAt) return canReuseCurrent() ? null : freeTierHint(i18n("state.madmodel.302ca473236a"));
   try {
     await ensureMadModelToken();
-    return currentTokenUsable() ? null : freeTierHint("学校登录状态已过期，请重新登录");
+    return currentTokenUsable() ? null : freeTierHint(i18n("state.madmodel.0e0df04b7d65"));
   } catch (e) {
     // 临近过期的提前续签失败，不应使尚有效的凭证立即停止工作。
     if (canReuseCurrent()) return null;
-    const why = e instanceof Error ? e.message : "更新登录凭证失败";
+    const why = e instanceof Error ? e.message : i18n("state.madmodel.c04cfb0974f5");
     void logLine(`[MADMODEL] 续期未完成：${e instanceof TemporaryMadModelError ? "临时服务故障" : "未取得新凭证"}`).catch(() => undefined);
     return freeTierHint(why);
   }
@@ -547,7 +547,7 @@ async function runPreflight(): Promise<string | null> {
 
 /** 免费档不可用时的用户可读说明：把真实原因说清楚，而不是让人以为「没填 API Key」。 */
 function freeTierHint(why: string): string {
-  return `学校模型暂不可用：${why}。登录状态失效时请重新登录清华账号；网络或限流问题请稍后重试。`;
+  return i18n("state.madmodel.93c04445723a", { reason: why });
 }
 
 /** 用户显式更新登录凭证；IP 门禁改走 refreshMadModelRoute，不触发续签。 */

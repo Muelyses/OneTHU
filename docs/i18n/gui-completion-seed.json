@@ -1,0 +1,89 @@
+{
+  "description": "Manually reviewed display-only omissions. Protocol IDs, logs and outgoing IM content are unchanged.",
+  "messages": {
+    "pages.schedule.exportIcs": {
+      "zh-CN": "导出 .ics",
+      "en-US": "Export .ics"
+    },
+    "components.vault.textPreviewFallback": {
+      "zh-CN": "文字内容",
+      "en-US": "Text content"
+    },
+    "im.wechat.channelLabel": {
+      "zh-CN": "微信（iLink 官方 Bot）",
+      "en-US": "WeChat (official iLink bot)"
+    },
+    "im.wechat.scanRequired": {
+      "zh-CN": "未扫码登录（设置页点「扫码登录」）",
+      "en-US": "Not signed in. Choose Scan to sign in in Settings."
+    },
+    "im.wechat.suspended": {
+      "zh-CN": "微信风控（-14）：暂停 1 小时后自动恢复",
+      "en-US": "WeChat restriction (-14): paused for 1 hour, then resumes automatically."
+    },
+    "im.wechat.qr.wait": {
+      "zh-CN": "等待扫码…",
+      "en-US": "Waiting for scan…"
+    },
+    "im.wechat.qr.scaned": {
+      "zh-CN": "已扫码，请在手机上确认",
+      "en-US": "Scanned. Confirm on your phone."
+    },
+    "im.wechat.qr.needVerifyCode": {
+      "zh-CN": "需要在手机上输入验证码后重试",
+      "en-US": "Enter the verification code on your phone, then retry."
+    },
+    "im.wechat.qr.expired": {
+      "zh-CN": "二维码已过期，请重新发起",
+      "en-US": "QR code expired. Start again."
+    },
+    "im.wechat.qr.verifyBlocked": {
+      "zh-CN": "验证失败次数过多，请重新发起",
+      "en-US": "Too many failed attempts. Start again."
+    },
+    "im.wechat.qr.bound": {
+      "zh-CN": "该 Bot 已绑定到本机",
+      "en-US": "This bot is already linked to this device."
+    },
+    "im.wechat.qr.redirect": {
+      "zh-CN": "已扫码（切换接入点）…",
+      "en-US": "Scanned. Switching connection…"
+    },
+    "im.feishu.channelLabel": {
+      "zh-CN": "飞书",
+      "en-US": "Feishu"
+    },
+    "im.feishu.checkAppCredentials": {
+      "zh-CN": "请检查 App ID / App Secret",
+      "en-US": "Check the App ID and App Secret."
+    },
+    "im.feishu.checkConnectionPermissions": {
+      "zh-CN": "请检查应用信息与长连接权限",
+      "en-US": "Check the app details and long-connection permissions."
+    },
+    "im.feishu.unknownReason": {
+      "zh-CN": "未知原因",
+      "en-US": "Unknown reason"
+    },
+    "im.feishu.reconnectDelay": {
+      "zh-CN": "连接断开，{seconds} 秒后重连",
+      "en-US": "Disconnected. Reconnecting in {seconds} seconds."
+    },
+    "im.feishureg.unknownReason": {
+      "zh-CN": "未知原因",
+      "en-US": "Unknown reason"
+    },
+    "components.explorer.ohcapsule.searchPlaceholder": {
+      "zh-CN": "搜索或问小OH",
+      "en-US": "Search or ask OH"
+    },
+    "plugins.facade.formFallback": {
+      "zh-CN": "请填写",
+      "en-US": "Please fill in"
+    },
+    "pages.gitlabpage.defaultBranchOption": {
+      "zh-CN": "{name}（默认）",
+      "en-US": "{name} (default)"
+    }
+  }
+}

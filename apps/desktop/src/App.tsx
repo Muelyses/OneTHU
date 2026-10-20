@@ -1,3 +1,4 @@
+import { msg as i18nMsg, t as i18n, useLocale as useUiLocale } from "./i18n/index.js";
 import { Shell } from "./components/Layout.js";
 import { isAndroidNavigator } from "./lib/androidHost.js";
 import { NotifyBridge } from "./components/NotifyBridge.js";
@@ -6,6 +7,7 @@ import { FilePreviewHost } from "./components/FilePreview.js";
 import { LoginPage, TwoFactorPage } from "./pages/Login.js";
 import { OnboardingTour as OnboardingTourGate } from "./components/OnboardingTour.js";
 import { useToastHost, hideToast } from "./state/toast.js";
+import { resolveMessage, useLocale } from "./i18n/index.js";
 import type { ReactNode } from "react";
 import { BrandLogo } from "./components/Layout.js";
 import { AppProvider } from "./state/app.js";
@@ -34,6 +36,8 @@ function PluginBridge() {
 }
 
 function Routed() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   // learnX 式后台更新：登录后每 30 分钟静默重拉 learn 数据（作业 DDL/提交状态
@@ -75,7 +79,7 @@ function Routed() {
         const r = await m.silentConnectSeafile();
         if (r.ok) {
           const { showToast } = await import("./state/toast.js");
-          showToast(`云盘已自动连接：${r.account?.name ?? ""}`);
+          showToast(i18nMsg("app.08566a4b57a3", { value: String(r.account?.name ?? "") }));
         }
       })
       .catch(() => undefined);
@@ -106,7 +110,7 @@ function Routed() {
       return (
         <div className="login-wrap">
           <BrandLogo size={40} />
-          <div style={{ color: "var(--text-3)", fontSize: "var(--text-sm)", marginTop: 18 }}>正在恢复登录状态…</div>
+          <div style={{ color: "var(--text-3)", fontSize: "var(--text-sm)", marginTop: 18 }}>{i18n("app.4d6e46fec3d4")}</div>
         </div>
       );
     }
@@ -148,6 +152,9 @@ function Routed() {
 
 /** 全局轻提示（原子操作反馈）：单条覆盖式，点按关闭；center 的是屏幕正中的强调提示。退出时先播淡出再卸载 */
 function ToastHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
+  useLocale();
   const { msg, closing, center } = useToastHost();
   if (!msg) return null;
   return (
@@ -156,7 +163,7 @@ function ToastHost(): ReactNode {
       onClick={hideToast}
       role="status"
     >
-      {msg}
+      {resolveMessage(msg)}
     </div>
   );
 }
@@ -167,6 +174,8 @@ const IS_OVERLAY_WINDOW = typeof window !== "undefined"
   && new URLSearchParams(window.location.search).get("window") === "overlay";
 
 export function App() {
+  const uiLocale = useUiLocale();
+
   return (
     <AppProvider>
       <FavsProvider>

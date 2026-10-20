@@ -1,0 +1,1399 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.gitlabpage.cf945e21ddef",
+      "source": "回复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 953,
+          "context": "replying ? i18n(\"pages.gitlabpage.d346633d3a4e\") : i18n(\"pages.gitlabpage.cf945e21ddef\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.cfcbf4636b9f",
+      "source": "重新打开讨论",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 955,
+          "context": "resolved ? i18n(\"pages.gitlabpage.cfcbf4636b9f\") : i18n(\"pages.gitlabpage.319f50e7c074\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.d1478089db85",
+      "source": "选择回应",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 640,
+          "context": "{i18n(\"pages.gitlabpage.d1478089db85\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.d27b9dee1a76",
+      "source": "下载 ZIP（{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(project.default_branch || i18n(\"pages.gitlabpage.35e9a0c6fbb2\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1575,
+          "context": "busy ? i18n(\"pages.gitlabpage.bcc2333dc631\") : i18n(\"pages.gitlabpage.d27b9dee1a76\", { value: String(project.default_branch || i18n(\"pages.gitlabpage.35e9a0c6fbb2\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.d346633d3a4e",
+      "source": "取消回复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 953,
+          "context": "replying ? i18n(\"pages.gitlabpage.d346633d3a4e\") : i18n(\"pages.gitlabpage.cf945e21ddef\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.d4625c4cf9e6",
+      "source": "流水线列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1489,
+          "context": "{i18n(\"pages.gitlabpage.d4625c4cf9e6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.d5b3705e3c33",
+      "source": "有冲突",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1085,
+          "context": "{i18n(\"pages.gitlabpage.d5b3705e3c33\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.d6f766f2adf5",
+      "source": "排队中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 101,
+          "context": "return i18n(\"pages.gitlabpage.d6f766f2adf5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.da9042ae73fe",
+      "source": " · 默认分支 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 281,
+          "context": "{i18n(\"pages.gitlabpage.da9042ae73fe\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.db840f253c25",
+      "source": "克隆（SSH）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1573,
+          "context": "cloneRow(i18n(\"pages.gitlabpage.db840f253c25\"), project.ssh_url_to_repo)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.dc2ba467fc7a",
+      "source": "描述",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1240,
+          "context": "label: i18nMsg(\"pages.gitlabpage.dc2ba467fc7a\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1272,
+          "context": "label: i18nMsg(\"pages.gitlabpage.dc2ba467fc7a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.gitlabpage.dc9591e56d50",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 130,
+          "context": "state === \"opened\" ? i18n(\"pages.gitlabpage.dc9591e56d50\") : i18n(\"pages.gitlabpage.6744b4c6a9aa\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 514,
+          "context": "[\"opened\", i18n(\"pages.gitlabpage.dc9591e56d50\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.dcddd01ce7c0",
+      "source": "没有文件变更",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 705,
+          "context": "{i18n(\"pages.gitlabpage.dcddd01ce7c0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.dd42589239f7",
+      "source": "合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 832,
+          "context": "kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1042,
+          "context": "kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1043,
+          "context": "kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1598,
+          "context": "[\"mrs\", i18n(\"pages.gitlabpage.dd42589239f7\"), \"\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.defaultBranchOption",
+      "source": "{name}（默认）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1261,
+          "context": "b.default ? i18nMsg(\"pages.gitlabpage.defaultBranchOption\", { name: b.name }) : b.name"
+        }
+      ],
+      "translation": "{name} (default)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.dfb59ea2b7a2",
+      "source": "搜索项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 237,
+          "context": "{i18n(\"pages.gitlabpage.dfb59ea2b7a2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.dff9e5a876ae",
+      "source": "星标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 228,
+          "context": "label: i18n(\"pages.gitlabpage.dff9e5a876ae\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.gitlabpage.e2510f29b40f",
+      "source": "没有匹配的 Issue",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1364,
+          "context": "kind === \"issue\" ? i18n(\"pages.gitlabpage.e2510f29b40f\") : i18n(\"pages.gitlabpage.8c7e7bb7c80f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e54829187e33",
+      "source": "评论已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 804,
+          "context": "showToast(i18nMsg(\"pages.gitlabpage.e54829187e33\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e5a3e02f4392",
+      "source": "差异过大，不在应用内展开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 722,
+          "context": "{i18n(\"pages.gitlabpage.e5a3e02f4392\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e62ef48711b0",
+      "source": "分支 / 标签筛选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1475,
+          "context": "{i18n(\"pages.gitlabpage.e62ef48711b0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e6f04ffbaa42",
+      "source": "代码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1596,
+          "context": "[\"code\", i18n(\"pages.gitlabpage.e6f04ffbaa42\"), \"\"]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e9dde8dd52ad",
+      "source": "即将删除评论，请确认！",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 814,
+          "context": "title: i18nMsg(\"pages.gitlabpage.e9dde8dd52ad\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.gitlabpage.eab2925bb2ba",
+      "source": "分支 / 标签（留空为全部，回车查询）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1476,
+          "context": "{i18n(\"pages.gitlabpage.eab2925bb2ba\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.f33691c66ffb",
+      "source": "读取作业…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1423,
+          "context": "{i18n(\"pages.gitlabpage.f33691c66ffb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.f3d0ff87958d",
+      "source": "目标分支",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1270,
+          "context": "label: i18nMsg(\"pages.gitlabpage.f3d0ff87958d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.gitlabpage.f6bd30d9b881",
+      "source": "{value} 分 {value2} 秒",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(sec / 60))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(sec % 60)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 151,
+          "context": "return i18n(\"pages.gitlabpage.f6bd30d9b881\", { value: String(Math.floor(sec / 60)), value2: String(sec % 60) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.fcd5cc7382e7",
+      "source": "重新打开{value} !{iid}？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\"))"
+        },
+        {
+          "name": "iid",
+          "expression": "String(iid)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1042,
+          "context": "reopen\n      ? i18nMsg(\"pages.gitlabpage.fcd5cc7382e7\", { value: String(kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")), iid: String(iid) })\n      : i18nMsg(\"pages.gitlabpage.09ccc8d4588e\", { value: String(kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")), iid: String(iid) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.fe25f0c4ade6",
+      "source": "没有匹配的表情名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 664,
+          "context": "{i18n(\"pages.gitlabpage.fe25f0c4ade6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.ff509c9ba052",
+      "source": "保存中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 772,
+          "context": "busy ? i18n(\"pages.gitlabpage.ff509c9ba052\") : i18n(\"pages.gitlabpage.a3030bf8f16d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.32618426e9ce",
+      "source": "春季学期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 74,
+          "context": "{i18n(\"pages.info.calendartab.32618426e9ce\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.36a24c379edf",
+      "source": "{year}-{value} {value2}季学期校历",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "year",
+          "expression": "String(year)"
+        },
+        {
+          "name": "value",
+          "expression": "String(year + 1)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(sem === \"autumn\" ? i18n(\"pages.info.calendartab.5a2e5e4b12a4\") : i18n(\"pages.info.calendartab.b3c33b7abaf0\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 94,
+          "context": "{i18n(\"pages.info.calendartab.36a24c379edf\", { year: String(year), value: String(year + 1), value2: String(sem === \"autumn\" ? i18n(\"pages.info.calendartab.5a2e5e4b12a4\") : i18n(\"pages.info.calendartab.b3c33b7abaf0\")) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.46005af48348",
+      "source": "校历图片暂时无法加载（可能尚未发布该学期校历），可稍后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 101,
+          "context": "{i18n(\"pages.info.calendartab.46005af48348\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.4792ab1440aa",
+      "source": "校历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 65,
+          "context": "{i18n(\"pages.info.calendartab.4792ab1440aa\")}"
+        }
+      ],
+      "translation": "Academic calendar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.5a2e5e4b12a4",
+      "source": "秋",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 94,
+          "context": "sem === \"autumn\" ? i18n(\"pages.info.calendartab.5a2e5e4b12a4\") : i18n(\"pages.info.calendartab.b3c33b7abaf0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.61fd2cb63d18",
+      "source": "学年",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 71,
+          "context": "{i18n(\"pages.info.calendartab.61fd2cb63d18\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.72726d8818f6",
+      "source": "中文",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 75,
+          "context": "{i18n(\"pages.info.calendartab.72726d8818f6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.79a4ef019e9c",
+      "source": "学期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 74,
+          "context": "{i18n(\"pages.info.calendartab.79a4ef019e9c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.9f6fee1aba17",
+      "source": "语言",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 75,
+          "context": "{i18n(\"pages.info.calendartab.9f6fee1aba17\")}"
+        }
+      ],
+      "translation": "Language",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.a5e2d45b705a",
+      "source": "{y}-{value} 学年",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "y",
+          "expression": "y"
+        },
+        {
+          "name": "value",
+          "expression": "y + 1"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 72,
+          "context": "{i18nRich(\"pages.info.calendartab.a5e2d45b705a\", { y: y, value: y + 1 })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.af02486a8a9f",
+      "source": "在浏览器打开原图",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 77,
+          "context": "{i18n(\"pages.info.calendartab.af02486a8a9f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.b3c33b7abaf0",
+      "source": "春",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 94,
+          "context": "sem === \"autumn\" ? i18n(\"pages.info.calendartab.5a2e5e4b12a4\") : i18n(\"pages.info.calendartab.b3c33b7abaf0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.c81b126c4f9f",
+      "source": "秋季学期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 74,
+          "context": "{i18n(\"pages.info.calendartab.c81b126c4f9f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.c8c898785e39",
+      "source": "我的清华 · 教学日历图片版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 65,
+          "context": "{i18n(\"pages.info.calendartab.c8c898785e39\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.calendartab.cb5d682bac3d",
+      "source": "重置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CalendarTab.tsx",
+          "line": 89,
+          "context": "{i18n(\"pages.info.calendartab.cb5d682bac3d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.0213a92a6d36",
+      "source": "请用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 231,
+          "context": "{i18n(\"pages.info.cardtab.0213a92a6d36\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.0291cf54db5a",
+      "source": "圈存请求已提交。资金到账以校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 252,
+          "context": "{i18n(\"pages.info.cardtab.0291cf54db5a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.02b9568dd9b0",
+      "source": "我已完成支付，刷新余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 245,
+          "context": "{i18n(\"pages.info.cardtab.02b9568dd9b0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.02defd2c3032",
+      "source": "未检测到支付宝 App，请用另一台手机扫码支付",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 239,
+          "context": "setErr(i18n(\"pages.info.cardtab.02defd2c3032\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.085227aa1146",
+      "source": "提醒冷却（分钟）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 347,
+          "context": "{i18n(\"pages.info.cardtab.085227aa1146\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.0be1be30c585",
+      "source": "最近消费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 460,
+          "context": "{i18n(\"pages.info.cardtab.0be1be30c585\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.20e06ae156b3",
+      "source": "重新拉取",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 453,
+          "context": "{i18n(\"pages.info.cardtab.20e06ae156b3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.25275633ae3c",
+      "source": "最近 30 天（数据源：card.tsinghua.edu.cn）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 460,
+          "context": "{i18n(\"pages.info.cardtab.25275633ae3c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.260c906a7ab8",
+      "source": "圈存资金从卡系统绑定的银行卡直接划转，仅限 6:00~20:40。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 213,
+          "context": "channel === \"bank\"\n                  ? i18n(\"pages.info.cardtab.260c906a7ab8\")\n                  : i18n(\"pages.info.cardtab.44e6d88239d0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.276a8bc45803",
+      "source": "支付宝",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 91,
+          "context": "return i18n(\"pages.info.cardtab.276a8bc45803\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 231,
+          "context": "channel === \"alipay\" ? i18n(\"pages.info.cardtab.276a8bc45803\") : i18n(\"pages.info.cardtab.81b430b69643\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.27dba4bb4c34",
+      "source": "余额刷新后低于预警线时发系统通知，恢复后自动撤回。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 315,
+          "context": "{i18n(\"pages.info.cardtab.27dba4bb4c34\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.2c363db2eabc",
+      "source": "充值",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 408,
+          "context": "{i18n(\"pages.info.cardtab.2c363db2eabc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.36f33adaf094",
+      "source": "确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 220,
+          "context": "busy ? i18n(\"pages.info.cardtab.bc1beaa93a7d\") : i18n(\"pages.info.cardtab.36f33adaf094\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.3770554318c1",
+      "source": "{min} 分钟前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "min",
+          "expression": "String(min)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 48,
+          "context": "return i18n(\"pages.info.cardtab.3770554318c1\", { min: String(min) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.37fb16db16bc",
+      "source": "银行卡圈存限 6:00~20:40：请改用扫码充值，或明天再试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 147,
+          "context": "setErr(i18n(\"pages.info.cardtab.37fb16db16bc\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.3b8384d13bcf",
+      "source": "确认为校园卡充值 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 210,
+          "context": "{i18n(\"pages.info.cardtab.3b8384d13bcf\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.40cbac045f27",
+      "source": "单笔上限 ¥{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "intText(data.info.maxOneTimeTransactionAmount)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 416,
+          "context": "{i18nRich(\"pages.info.cardtab.40cbac045f27\", { value: intText(data.info.maxOneTimeTransactionAmount) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.44899ee92191",
+      "source": "不重复提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 359,
+          "context": "{i18n(\"pages.info.cardtab.44899ee92191\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.44e6d88239d0",
+      "source": "下一步将生成官方收款码，支付在支付宝/微信 App 内完成，本应用不经手资金。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 214,
+          "context": "channel === \"bank\"\n                  ? i18n(\"pages.info.cardtab.260c906a7ab8\")\n                  : i18n(\"pages.info.cardtab.44e6d88239d0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.475d19aa3f64",
+      "source": "接口/缓存未给出这些字段（可能是新卡未激活，或本地缓存偏旧——可点刷新重取）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 420,
+          "context": "{i18n(\"pages.info.cardtab.475d19aa3f64\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.4928ef569f17",
+      "source": "生成官方收款码，手机支付宝扫码支付",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 91,
+          "context": "return i18n(\"pages.info.cardtab.4928ef569f17\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.4a70afd5e446",
+      "source": "当余额未变化",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 365,
+          "context": "{i18n(\"pages.info.cardtab.4a70afd5e446\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.4a9c308b7038",
+      "source": "校园卡余额 · {value}{value2}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "data?.info.userName || \"–\""
+        },
+        {
+          "name": "value2",
+          "expression": "data?.info.cardStatus ? ` · ${data.info.cardStatus}` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 405,
+          "context": "{i18nRich(\"pages.info.cardtab.4a9c308b7038\", { value: data?.info.userName || \"–\", value2: data?.info.cardStatus ? ` · ${data.info.cardStatus}` : \"\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.4b4bf9600de4",
+      "source": "扫码支付 ¥{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "amt.toFixed(2)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 231,
+          "context": "{i18nRich(\"pages.info.cardtab.4b4bf9600de4\", { value: amt.toFixed(2) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.4c6443bdcde7",
+      "source": "在浏览器打开（微信支付）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 243,
+          "context": "channel === \"wechat\" && isAndroid ? i18n(\"pages.info.cardtab.4c6443bdcde7\") : i18n(\"pages.info.cardtab.d4507373a0ce\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.4c932ab03746",
+      "source": "近 30 天消费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 430,
+          "context": "{i18n(\"pages.info.cardtab.4c932ab03746\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.536edaf7cdd1",
+      "source": "好的",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 253,
+          "context": "{i18n(\"pages.info.cardtab.536edaf7cdd1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.572cf45ba436",
+      "source": "返回",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 219,
+          "context": "{i18n(\"pages.info.cardtab.572cf45ba436\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.648616c62275",
+      "source": "金额需为 1 ~ 1000 元（最多两位小数）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 204,
+          "context": "channel === \"bank\" ? i18n(\"pages.info.cardtab.ef4019825558\") : i18n(\"pages.info.cardtab.648616c62275\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.65c9b80829a8",
+      "source": "未知时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 451,
+          "context": "updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.65d92e05c524",
+      "source": "从卡系统绑定的银行卡直接划转（限 6:00~20:40）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 93,
+          "context": "return i18n(\"pages.info.cardtab.65d92e05c524\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.67878eea0149",
+      "source": "{h} 小时前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "h",
+          "expression": "String(h)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 50,
+          "context": "return i18n(\"pages.info.cardtab.67878eea0149\", { h: String(h) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.6fe44db82dfb",
+      "source": "调起支付宝 App 支付",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 240,
+          "context": "{i18n(\"pages.info.cardtab.6fe44db82dfb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.705ff9657d5d",
+      "source": "数据已超过 6 小时未更新（{value}），可能不是最新",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 451,
+          "context": "refreshError\n                ? i18n(\"pages.info.cardtab.7c250813afe4\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")), refreshError: String(refreshError) })\n                : i18n(\"pages.info.cardtab.705ff9657d5d\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.710a42081cbe",
+      "source": "校园卡充值",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 172,
+          "context": "{i18n(\"pages.info.cardtab.710a42081cbe\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

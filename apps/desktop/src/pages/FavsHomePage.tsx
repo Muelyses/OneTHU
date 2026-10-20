@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 收藏首页（UI/UX 改造方案 §2.2，M1 beta）：底部导航「收藏」tab 直达。
@@ -12,21 +13,22 @@ import { useApp } from "../state/context.js";
 import { useFavs } from "../state/favs.js";
 
 export function FavsHomePage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const favs = useFavs();
   const ids = favs.data.order;
   return (
     <>
-      <PageHead title="收藏" meta="常用的功能与实体入口，长按任意页面页头星标即可收录" />
+      <PageHead title={i18n("pages.favshomepage.60a53514eb92")} meta={i18n("pages.favshomepage.681e227b4cc6")} />
       {ids.length === 0 ? (
         <Card>
-          <Empty text="还没有收藏夹。新建一个，把常用的功能收进来。" />
+          <Empty text={i18n("pages.favshomepage.8b07fc93b7c4")} />
           <div className="svc-actions">
             <Btn variant="solid" tone="brand" onClick={() => {
-                const id = favs.create("新建收藏夹", null);
+                const id = favs.create(i18n("pages.favshomepage.fdf0b569d820"), null);
                 if (id) navigate("folder", { folderId: id });
-              }}>新建收藏夹
-            </Btn>
+              }}>{i18n("pages.favshomepage.fdf0b569d820")}</Btn>
           </div>
         </Card>
       ) : (
@@ -50,12 +52,12 @@ export function FavsHomePage(): ReactNode {
           <button
             className="svc-row svc-row-new"
             onClick={() => {
-              const id = favs.create("新建收藏夹", null);
+              const id = favs.create(i18n("pages.favshomepage.fdf0b569d820"), null);
               if (id) navigate("folder", { folderId: id });
             }}
           >
             <span className="svc-row-icon"><IconFolderPlus /></span>
-            <span className="svc-row-main"><span className="svc-row-name">新建收藏夹</span></span>
+            <span className="svc-row-main"><span className="svc-row-name">{i18n("pages.favshomepage.fdf0b569d820")}</span></span>
           </button>
         </Card>
       )}

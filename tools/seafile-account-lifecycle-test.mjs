@@ -1,0 +1,30 @@
+/** Actual Seafile state with deferred native/file mocks; never contacts a cloud account. */
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import ts from 'typescript';
+const source=fs.readFileSync('apps/desktop/src/state/seafile.ts','utf8');
+const code=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
+const defer=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return{promise,resolve,reject}};
+const tick=()=>new Promise(resolve=>setImmediate(resolve));
+function fixture(){
+ const files=new Map(),calls=[],settings={readGate:null,writeGate:null,writeError:null,invoke:async(command,args)=>command==='seafile_account'?{email:args.token+'@fixture.invalid'}:command==='seafile_dir'?[{name:args.token+'-private-file'}]:[]};
+ const imports={react:{useState:()=>[0,()=>{}],useEffect:()=>{}},'../i18n/index.js':{t:key=>key,msg:(key,params)=>({kind:'i18n',key,params})},'@tauri-apps/api/core':{invoke:async(command,args)=>{calls.push({command,args});return settings.invoke(command,args)}},'../lib/clients.js':{
+  fileRead:async(name,opts)=>{assert.equal(opts?.strict,true);calls.push({read:name});const result=files.get(name)??null;if(settings.readGate)await settings.readGate.promise;return result},
+  fileWrite:async(name,body,opts)=>{assert.equal(opts?.strict,true);calls.push({write:name});if(settings.writeGate)await settings.writeGate.promise;if(settings.writeError)throw settings.writeError;files.set(name,body)},
+  fileDelete:async(name,opts)=>{assert.equal(opts?.strict,true);calls.push({delete:name});files.delete(name)},
+  obfuscateSecret:value=>'fixture:'+value,deobfuscateSecret:value=>value.slice(8),
+ },'./toast.js':{showToast:()=>{}}};
+ const exports={};vm.runInNewContext(code,{exports,require:id=>{assert.ok(id in imports,id);return imports[id]},console,Date,TextDecoder,Uint8Array,atob},{filename:'seafile.fixture.cjs'});return{api:exports,files,calls,settings};
+}
+let passed=0;async function test(label,run){await run();passed++;console.log('✓ '+label)}
+await test('Concurrent hydration waits for one complete read',async()=>{const f=fixture(),gate=defer();f.files.set('seafile.cfg',JSON.stringify({secret:'fixture:first'}));f.settings.readGate=gate;const a=f.api.ensureSeafileLoaded(),b=f.api.ensureSeafileLoaded();assert.equal(a,b);assert.equal(f.calls.filter(c=>c.read).length,1);gate.resolve();await a;assert.equal(f.api.getSeafileToken(),'first')});
+await test('Logout clears file listing caches before any later access',async()=>{const f=fixture();await f.api.setSeafileToken('first');await f.api.openDir('repo','/');await f.api.clearSeafileToken();assert.equal((await f.api.openDir('repo','/')).length,0);assert.equal(f.api.getSeafileAccount(),null);assert.equal(f.api.getSeafileToken(),'');assert.equal(f.calls.filter(c=>c.command==='seafile_dir').length,1)});
+await test('Late hydration cannot restore a logged-out token',async()=>{const f=fixture(),gate=defer();f.files.set('seafile.cfg',JSON.stringify({secret:'fixture:old'}));f.settings.readGate=gate;const loading=f.api.ensureSeafileLoaded();await f.api.clearSeafileToken();gate.resolve();await loading;assert.equal(f.api.getSeafileToken(),'');assert.equal(f.files.has('seafile.cfg'),false)});
+await test('New account supersedes an earlier pending connect',async()=>{const f=fixture(),old=defer();f.settings.invoke=async(_command,args)=>args.token==='old'?old.promise:{email:'new@fixture.invalid'};const previous=f.api.setSeafileToken('old');await f.api.setSeafileToken('new');old.resolve({email:'old@fixture.invalid'});await assert.rejects(previous);assert.equal(f.api.getSeafileToken(),'new');assert.equal(f.api.getSeafileAccount().email,'new@fixture.invalid')});
+await test('Old account/repodata/dir replies cannot publish after logout',async()=>{const f=fixture();await f.api.setSeafileToken('old');const gate=defer();f.settings.invoke=async()=>gate.promise;const a=f.api.refreshSeafileAccount(),b=f.api.refreshRepos(),c=f.api.openDir('repo','/');await f.api.clearSeafileToken();gate.resolve([]);await Promise.all([a,b,c]);assert.equal(f.api.getSeafileAccount(),null);assert.equal(f.api.useSeafile().repos.length,0);assert.equal((await c).length,0);assert.equal(f.api.useSeafile().busy,false)});
+await test('Logout is serialized after an already-started credential write',async()=>{const f=fixture(),gate=defer();f.settings.writeGate=gate;const connect=f.api.setSeafileToken('old');await tick();const clear=f.api.clearSeafileToken();gate.resolve();await assert.rejects(connect);await clear;assert.equal(f.files.has('seafile.cfg'),false);assert.equal(f.api.getSeafileToken(),'')});
+await test('A failed later connect cannot skip a queued logout',async()=>{const f=fixture(),gate=defer();f.files.set('seafile.cfg.json',JSON.stringify({secret:'fixture:legacy'}));f.settings.writeGate=gate;const initial=f.api.setSeafileToken('old');await tick();const clear=f.api.clearSeafileToken();f.settings.invoke=async()=>{throw new Error('rejected fixture credential')};await assert.rejects(f.api.setSeafileToken('invalid'));gate.resolve();await assert.rejects(initial);await clear;assert.equal(f.files.size,0)});
+await test('Credential persistence failure is not reported as a successful connection',async()=>{const f=fixture();f.settings.writeError=new Error('mock read-only filesystem');await assert.rejects(f.api.setSeafileToken('new'),/read-only/);assert.equal(f.api.getSeafileToken(),'');assert.equal(f.api.getSeafileAccount(),null)});
+await test('Account switch invalidates old directory cache immediately on commit',async()=>{const f=fixture();await f.api.setSeafileToken('old');await f.api.openDir('repo','/');await f.api.setSeafileToken('new');const entries=await f.api.openDir('repo','/');assert.equal(entries[0].name,'new-private-file');assert.equal(f.calls.filter(c=>c.command==='seafile_dir').length,2)});
+console.log(`Seafile account lifecycle: ${passed} checks passed`);

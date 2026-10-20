@@ -1,0 +1,1341 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.tourillustration.d8aa9757d2b3",
+      "source": "实用模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 34,
+          "context": "return i18n(\"components.tourillustration.d8aa9757d2b3\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.d924d8e8fe20",
+      "source": "换台设备，继续使用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 44,
+          "context": "return i18n(\"components.tourillustration.d924d8e8fe20\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.d9c8475ca6a6",
+      "source": "生成的短口令连接这一组内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.tourillustration.d9c8475ca6a6\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.dd52e4b6a630",
+      "source": "更多功能按目录打开，常用四格可以替换。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 34,
+          "context": "return i18n(\"components.tourillustration.dd52e4b6a630\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.e431c37e9bdc",
+      "source": "这些能力在同一处，按需要选择。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 142,
+          "context": "after:i18n(\"components.tourillustration.e431c37e9bdc\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.e8332f3f0437",
+      "source": "今日待办、课程和五个固定入口。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 33,
+          "context": "return i18n(\"components.tourillustration.e8332f3f0437\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.eb0c326b60ae",
+      "source": "已暂停",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 147,
+          "context": "paused?i18n(\"components.tourillustration.eb0c326b60ae\"):i18n(\"components.tourillustration.3272fe53c0f6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.ee40e75e813e",
+      "source": "白板上的组件可以移动、调整大小。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 24,
+          "context": "return i18n(\"components.tourillustration.ee40e75e813e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.f4ad88248fc0",
+      "source": "按目录找服务，点名称就能进入。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.tourillustration.f4ad88248fc0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.f65def27f883",
+      "source": "成员、资料、项目和公告，围绕同一个组织。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 28,
+          "context": "return i18n(\"components.tourillustration.f65def27f883\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.fa060d19d9cd",
+      "source": "校园服务，一处进入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 43,
+          "context": "return i18n(\"components.tourillustration.fa060d19d9cd\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.fd962d16dac1",
+      "source": "碰一碰",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.tourillustration.fd962d16dac1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.fe0f7b11128c",
+      "source": "从 OneGO! 接着做",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 40,
+          "context": "return i18n(\"components.tourillustration.fe0f7b11128c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.06f8b75c9666",
+      "source": "成员 · 文件 · 项目 · 公告",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 189,
+          "context": "subtitle: i18n(\"components.tourstudiomodels.06f8b75c9666\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.07e577ff8c0d",
+      "source": "项目文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 202,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        },
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 204,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        },
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 216,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.70b7371a692c\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.0a27a98a90c3",
+      "source": "周同学",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 192,
+          "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.1c23243a9085",
+      "source": "同学工作室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 189,
+          "context": "title: i18n(\"components.tourstudiomodels.1c23243a9085\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.21c80015e886",
+      "source": "3 项内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 204,
+          "context": "badge: i18n(\"components.tourstudiomodels.21c80015e886\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.28d76cd105cb",
+      "source": "课程资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 202,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        },
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 204,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        },
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 216,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.70b7371a692c\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.392a69fb2ef7",
+      "source": "查看者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 191,
+          "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.49ef840efe6f",
+      "source": "3 项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 202,
+          "context": "badge: i18n(\"components.tourstudiomodels.49ef840efe6f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.5c05d463d109",
+      "source": "协作者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 191,
+          "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.6885fcbe795c",
+      "source": "陈同学",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 192,
+          "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.6fef00bb252c",
+      "source": "名片与组织绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 189,
+          "context": "eyebrow: i18n(\"components.tourstudiomodels.6fef00bb252c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.70b7371a692c",
+      "source": "一段文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 216,
+          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.70b7371a692c\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.7edb884bee96",
+      "source": "阅读资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 192,
+          "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 212,
+          "context": "title: i18n(\"components.tourstudiomodels.804002a9c49a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.80b6a54ddb31",
+      "source": "共同编辑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 192,
+          "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.90c7cebe15c6",
+      "source": "我的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 202,
+          "context": "eyebrow: i18n(\"components.tourstudiomodels.90c7cebe15c6\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.92f20b9fa474",
+      "source": "已接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 204,
+          "context": "title: i18n(\"components.tourstudiomodels.92f20b9fa474\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.a525346277ed",
+      "source": "负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 191,
+          "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.b0c8602734bb",
+      "source": "演示短口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 203,
+          "context": "eyebrow: i18n(\"components.tourstudiomodels.b0c8602734bb\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.ca0df86f3c7e",
+      "source": "内容留存 · 按需分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 212,
+          "context": "subtitle: i18n(\"components.tourstudiomodels.ca0df86f3c7e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.cba1ec75f4ca",
+      "source": "资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 219,
+          "context": "title: i18n(\"components.tourstudiomodels.cba1ec75f4ca\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.cf4324a5411f",
+      "source": "手机演示缺少真实界面截图",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 147,
+          "context": "new Error(i18n(\"components.tourstudiomodels.cf4324a5411f\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.d38b22e68fc1",
+      "source": "一组内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 202,
+          "context": "title: i18n(\"components.tourstudiomodels.d38b22e68fc1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourstudiomodels.d513aac3caac",
+      "source": "接收方",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 204,
+          "context": "eyebrow: i18n(\"components.tourstudiomodels.d513aac3caac\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.dde28d3ac66c",
+      "source": "组织管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 192,
+          "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.eddeec1a4275",
+      "source": "林同学",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 192,
+          "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudiomodels.fca0380c4f7e",
+      "source": "真实界面截图尚未就绪：{key}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "key",
+          "expression": "String(source.key)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 31,
+          "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(source.key) }))"
+        },
+        {
+          "file": "apps/desktop/src/components/tourStudioModels.ts",
+          "line": 115,
+          "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(key) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudioscene.d689bd368468",
+      "source": "正在载入真实界面…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourStudioScene.tsx",
+          "line": 57,
+          "context": "{i18n(\"components.tourstudioscene.d689bd368468\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudioscreens.18455d8d7822",
+      "source": "无法载入真实界面截图",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioScreens.ts",
+          "line": 69,
+          "context": "new Error(i18n(\"components.tourstudioscreens.18455d8d7822\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourstudioscreens.fca0380c4f7e",
+      "source": "真实界面截图尚未就绪：{key}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "key",
+          "expression": "String(key)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/tourStudioScreens.ts",
+          "line": 81,
+          "context": "new Error(i18n(\"components.tourstudioscreens.fca0380c4f7e\", { key: String(key) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.08b88677f8f0",
+      "source": "限定邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 127,
+          "context": "label: i18n(\"components.vault.issuedsharescard.08b88677f8f0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.0b7a8ccf5201",
+      "source": "分享已撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 60,
+          "context": "showToast(i18nMsg(\"components.vault.issuedsharescard.0b7a8ccf5201\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.0fc9370bf68e",
+      "source": "{value}的分享快照。清空或删除箱子不会撤销已发口令。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "allEntries ? i18n(\"components.vault.issuedsharescard.cc7232862b97\") : i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 99,
+          "context": "{i18nRich(\"components.vault.issuedsharescard.0fc9370bf68e\", { value: allEntries ? i18n(\"components.vault.issuedsharescard.cc7232862b97\") : i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.11afd2a53439",
+      "source": "有效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 16,
+          "context": "return i18n(\"components.vault.issuedsharescard.11afd2a53439\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.164caa9ac6c3",
+      "source": "升级并复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 116,
+          "context": "entry.allowEmail && !entry.cloud?.keyRepoId ? i18n(\"components.vault.issuedsharescard.164caa9ac6c3\") : i18n(\"components.vault.issuedsharescard.7dc5266a2019\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.252b9e5745de",
+      "source": "口令管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 124,
+          "context": "{i18n(\"components.vault.issuedsharescard.252b9e5745de\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.263480c0d47a",
+      "source": "接收范围",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 70,
+          "context": "openFormModal(i18nMsg(\"components.vault.issuedsharescard.263480c0d47a\"), [{ key: \"allowEmail\", label: i18nMsg(\"components.vault.issuedsharescard.3c71ad2b46e2\"), default: entry.allowEmail ?? \"\" }])"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.263fae90b25b",
+      "source": "接收范围更新未完成，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 73,
+          "context": "result.reason ?? i18n(\"components.vault.issuedsharescard.263fae90b25b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.26b302e09f03",
+      "source": "无法写入剪贴板，请从「查看口令」中手动复制。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 85,
+          "context": "new Error(i18n(\"components.vault.issuedsharescard.26b302e09f03\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.275061511cc8",
+      "source": "正在删除记录…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 17,
+          "context": "return i18n(\"components.vault.issuedsharescard.275061511cc8\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.2b2ad5e6aba9",
+      "source": "正在复制…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 17,
+          "context": "return i18n(\"components.vault.issuedsharescard.2b2ad5e6aba9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.2fe0e3339ac4",
+      "source": "已过期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 16,
+          "context": "return i18n(\"components.vault.issuedsharescard.2fe0e3339ac4\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.32ab30d4f1a4",
+      "source": "收起口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 125,
+          "context": "revealed === selected.id ? i18n(\"components.vault.issuedsharescard.32ab30d4f1a4\") : i18n(\"components.vault.issuedsharescard.84168ec6814c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.3588b544b50b",
+      "source": "还没有发出口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 121,
+          "context": "{i18n(\"components.vault.issuedsharescard.3588b544b50b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.36bdc2fdb515",
+      "source": "记录已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 90,
+          "context": "showToast(i18nMsg(\"components.vault.issuedsharescard.36bdc2fdb515\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.38844b135cf7",
+      "source": "更多",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.issuedsharescard.38844b135cf7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.3c71ad2b46e2",
+      "source": "清华云盘邮箱（留空允许持有口令的人接收）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 70,
+          "context": "label: i18nMsg(\"components.vault.issuedsharescard.3c71ad2b46e2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.3c8e966d966b",
+      "source": "撤销未完成，请检查云盘连接后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 59,
+          "context": "new Error(i18n(\"components.vault.issuedsharescard.3c8e966d966b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.4371a9b86f89",
+      "source": "接收范围已更新，旧口令已撤销。请复制新口令发送。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 75,
+          "context": "result.code ? i18nMsg(\"components.vault.issuedsharescard.4371a9b86f89\") : i18nMsg(\"components.vault.issuedsharescard.9d7deae4f40d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.4391437c6fb1",
+      "source": "正在更新名称…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 17,
+          "context": "return i18n(\"components.vault.issuedsharescard.4391437c6fb1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.4aa0b6ffacf1",
+      "source": "生成暂存箱分享后，会在这里留下记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 121,
+          "context": "!allEntries && log.entries.length ? i18n(\"components.vault.issuedsharescard.bdb38862008b\") : i18n(\"components.vault.issuedsharescard.4aa0b6ffacf1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.525bd7fa41f3",
+      "source": "全部口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 98,
+          "context": "label: i18n(\"components.vault.issuedsharescard.525bd7fa41f3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.533f11fea9a2",
+      "source": "持有口令即可接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 110,
+          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.5c07ccfd4b6e",
+      "source": "已发出口令{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "currentCount ? ` · ${currentCount}` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 95,
+          "context": "{i18nRich(\"components.vault.issuedsharescard.5c07ccfd4b6e\", { value: currentCount ? ` · ${currentCount}` : \"\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.5e43012c5ebe",
+      "source": "这条口令仍有效，删除记录不会撤销分享。确定只删除记录？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 89,
+          "context": "confirmOk(i18nMsg(\"components.vault.issuedsharescard.5e43012c5ebe\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.6d2ce5e21b2a",
+      "source": "当前箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 98,
+          "context": "label: i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 99,
+          "context": "allEntries ? i18n(\"components.vault.issuedsharescard.cc7232862b97\") : i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.6d970e8dbefd",
+      "source": "仅 {allowEmail}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "allowEmail",
+          "expression": "String(entry.allowEmail)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 110,
+          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.7627cfd1a5fe",
+      "source": "分享升级未完成，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 81,
+          "context": "result.reason ?? i18n(\"components.vault.issuedsharescard.7627cfd1a5fe\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.7aefa357c175",
+      "source": "名称（留空使用箱子名）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 63,
+          "context": "label: i18nMsg(\"components.vault.issuedsharescard.7aefa357c175\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.7dc5266a2019",
+      "source": "复制口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 116,
+          "context": "entry.allowEmail && !entry.cloud?.keyRepoId ? i18n(\"components.vault.issuedsharescard.164caa9ac6c3\") : i18n(\"components.vault.issuedsharescard.7dc5266a2019\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.83c37e8a4a5f",
+      "source": "改名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 126,
+          "context": "label: i18n(\"components.vault.issuedsharescard.83c37e8a4a5f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.84168ec6814c",
+      "source": "查看口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 125,
+          "context": "revealed === selected.id ? i18n(\"components.vault.issuedsharescard.32ab30d4f1a4\") : i18n(\"components.vault.issuedsharescard.84168ec6814c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.8de1bb55709d",
+      "source": "不过期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 111,
+          "context": "entry.expiresAt ? i18n(\"components.vault.issuedsharescard.ed74c111755f\", { value: String(timeText(entry.expiresAt)) }) : i18n(\"components.vault.issuedsharescard.8de1bb55709d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.9d7deae4f40d",
+      "source": "接收范围已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 75,
+          "context": "result.code ? i18nMsg(\"components.vault.issuedsharescard.4371a9b86f89\") : i18nMsg(\"components.vault.issuedsharescard.9d7deae4f40d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.9dc46ae316d4",
+      "source": "改名未完成，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 66,
+          "context": "result.reason ?? i18n(\"components.vault.issuedsharescard.9dc46ae316d4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.a3308fe758a1",
+      "source": "正在更新接收范围…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 17,
+          "context": "return i18n(\"components.vault.issuedsharescard.a3308fe758a1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.a60259e90289",
+      "source": "已发出口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 96,
+          "context": "{i18n(\"components.vault.issuedsharescard.a60259e90289\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

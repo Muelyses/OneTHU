@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 清华 GitLab（git.tsinghua.edu.cn）状态层。
  *
@@ -123,7 +124,7 @@ async function requireSession(): Promise<void> {
   await restoreGitlabSession();
   await libHydrateCredentials();
   if (!helper.userId) {
-    throw new Error("GitLab 需要统一认证会话：请在登录页重新登录一次（勾选记住密码）");
+    throw new Error(i18n("state.gitlab.114edc146ab3"));
   }
   // 单飞探活：死票在用户看到任何红 Banner 前静默换新一次（并行取数共用一条链）。
   // 失败不打断——真 401 由下层 roamingWrapper 的既有重试阶梯兜底，行为同改造前。

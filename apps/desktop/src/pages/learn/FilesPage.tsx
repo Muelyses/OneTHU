@@ -1,3 +1,5 @@
+import { courseDisplayName, courseSearchNames } from "../../lib/learnLanguage.js";
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /** 全部课程文件（learnX Files）：按上传时间倒序，可按课程筛选 */
 import { useMemo, useState } from "react";
@@ -9,31 +11,32 @@ import { BackButton, FileRow, semesterText } from "./shared.js";
 import { useLearnNavSemester } from "./shared.js";
 
 export function FilesPage() {
+  const uiLocale = useUiLocale();
+
   useLearnNavSemester();
   const { data, state, error, reload } = useLearnData();
   const [courseId, setCourseId] = useState("");
 
   const byCourse = useMemo(
-    () => new Map((data?.courses ?? []).map((c) => [c.id, c.name])),
-    [data],
+    () => new Map((data?.courses ?? []).map((c) => [c.id, c])),
+    [uiLocale, data],
   );
 
   const files = useMemo(() => {
     const fs = [...(data?.files ?? [])].sort((a, b) => b.uploadTime.localeCompare(a.uploadTime));
     return courseId ? fs.filter((f) => f.courseId === courseId) : fs;
-  }, [data, courseId]);
+  }, [uiLocale, data, courseId]);
 
   return (
     <>
       <PageHead
-        title="课程文件"
-        meta={data ? `${semesterText(data.semester.id)} · 共 ${data.files.length} 个文件` : "按上传时间倒序"}
+        title={i18n("pages.learn.filespage.2bb745fb2e6f")}
+        meta={data ? i18n("pages.learn.filespage.9ab43df26f19", { value: String(semesterText(data.semester.id)), length: String(data.files.length) }) : i18n("pages.learn.filespage.a890de7b178d")}
         actions={
           <>
-            <PageAtomStar atomKey="learn-files" title="全部课程文件" />
-            <BackButton to="learn" label="课程列表" />
-            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
-            </Btn>
+            <PageAtomStar atomKey="learn-files" title={i18n("pages.learn.filespage.fa8fe752727c")} />
+            <BackButton to="learn" label={i18n("pages.learn.filespage.e5da2c107242")} />
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.filespage.aee887434131")}</Btn>
           </>
         }
       />
@@ -42,13 +45,13 @@ export function FilesPage() {
 
       {(data?.courses.length ?? 0) > 1 ? (
         <div className="field" style={{ maxWidth: 260 }}>
-          <label htmlFor="file-course-filter">按课程筛选</label>
+          <label htmlFor="file-course-filter">{i18n("pages.learn.filespage.54fc6c3ebb09")}</label>
           <select
             id="file-course-filter"
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
           >
-            <option value="">全部课程</option>
+            <option value="">{i18n("pages.learn.filespage.dc62910bd1d2")}</option>
             {(data?.courses ?? []).map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -59,11 +62,11 @@ export function FilesPage() {
       {state === "loading" && !data ? (
         <SkeletonRows rows={6} />
       ) : state === "error" && !data ? null : files.length === 0 ? (
-        <Card><Empty text={courseId ? "该课程暂无文件。" : "暂无课程文件。"} /></Card>
+        <Card><Empty text={courseId ? i18n("pages.learn.filespage.6b0161276931") : i18n("pages.learn.filespage.0dcb4c625d8b")} /></Card>
       ) : (
         <Card className="list">
           {files.map((f, i) => (
-            <FileRow key={`${f.courseId}-${f.id}`} f={f} courseName={byCourse.get(f.courseId)} sem={data?.semester.id} from="learn-files" style={{ animationDelay: `${i * 25}ms` }} />
+            <FileRow key={`${f.courseId}-${f.id}`} f={f} courseName={courseDisplayName(byCourse.get(f.courseId))} identityCourseName={byCourse.get(f.courseId)?.name} sem={data?.semester.id} from="learn-files" style={{ animationDelay: `${i * 25}ms` }} />
           ))}
         </Card>
       )}

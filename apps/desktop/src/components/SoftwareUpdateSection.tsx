@@ -1,3 +1,6 @@
+import { msg as i18nMsg } from "../i18n/index.js";
+import { getLocale as getUiLocale } from "../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 import { Input } from "@onethu/gui";
 /**
  * 「软件更新」分区（设置 → 关于，2026-10-12 合并版）。
@@ -32,13 +35,15 @@ export interface SoftwareUpdateSectionProps {
 }
 
 export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSectionProps = {}): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [phase, setPhase] = useState<Phase>("idle");
   const [res, setRes] = useState<UpdateCheckResult | null>(null);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [progress, setProgress] = useState<UpdateProgress | null>(null);
   const [localPath, setLocalPath] = useState("");
-  const [checkedAt, setCheckedAt] = useState("");
+  const [checkedAt, setCheckedAt] = useState<number | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [customUrl, setCustomUrl] = useState("");
@@ -54,16 +59,16 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     const r = await checkForUpdate({ customManifestUrl: (customUrl || customManifestUrl || "").trim() || undefined });
     setRes(r);
     setBusy(false);
-    setCheckedAt(new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }));
+    setCheckedAt(Date.now());
     if (!r.ok) {
       setPhase("error");
-      setErr(r.error ?? "检查失败");
+      setErr(r.error ?? i18n("components.softwareupdatesection.4f6f06254d16"));
       return;
     }
     setDismissed(Boolean(r.latest && isDismissed(r.latest)));
     if (r.hasUpdate) {
       setPhase("available");
-      setMsg(`发现新版本 v${r.latest}（当前 v${r.current}）`);
+      setMsg(i18n("components.softwareupdatesection.3b98279a2021", { latest: String(r.latest), current: String(r.current) }));
     } else {
       setPhase("latest");
       setMsg("");
@@ -75,18 +80,15 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     const r = res;
     if (!r?.ok || !r.downloadUrl || !r.downloadName) return;
     const asset = r.asset;
-    const sizeText = asset?.size ? formatSize(asset.size) : "大小未知";
+    const sizeText = asset?.size ? formatSize(asset.size) : i18n("components.softwareupdatesection.f8f5f153c20d");
     const ok = await confirmOk(
-      `将从更新源下载安装包并交给系统安装器：\n\n`
-        + `来源：${r.sourceLabel ?? "未知"}\n版本：v${r.latest}\n平台：${PLATFORM_LABEL[plat]}\n`
-        + `文件：${r.downloadName}（${sizeText}）\n落点：应用缓存目录下的 updates/\n\n`
-        + `点「确定」= 开始下载；下载完成后由系统安装器接手（安卓会在系统页里再确认一次，不会静默安装）。`,
+      i18nMsg("components.softwareupdatesection.f22fe456ba20", { value: String(r.sourceLabel ?? i18n("components.softwareupdatesection.4d8c1c5b4283")), latest: String(r.latest), value2: String(PLATFORM_LABEL[plat]), downloadName: String(r.downloadName), sizeText: String(sizeText) }),
     );
     if (!ok) return;
     setBusy(true);
     setPhase("downloading");
     setErr("");
-    setMsg(`正在下载 ${r.downloadName}…`);
+    setMsg(i18n("components.softwareupdatesection.faa2f14dfa0b", { downloadName: String(r.downloadName) }));
     setProgress({ phase: "probe", received: 0, total: asset?.size ?? 0, percent: 0 });
     const d = await downloadUpdate({
       url: r.downloadUrl,
@@ -98,19 +100,19 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     if (!d.ok) {
       setBusy(false);
       setPhase("error");
-      setErr(d.cancelled ? "已取消下载（没有留下残缺文件）" : `下载失败：${d.error ?? "未知原因"}`);
+      setErr(d.cancelled ? i18n("components.softwareupdatesection.505052ea96fc") : i18n("components.softwareupdatesection.6dd57693b44a", { value: String(d.error ?? i18n("components.softwareupdatesection.a1a9da9ee6ed")) }));
       return;
     }
     setLocalPath(d.path ?? "");
     setPhase("downloaded");
-    setMsg(`下载完成（${d.size ? formatSize(d.size) : "?"}${d.verified ? " · sha256 已校验" : ""}），正在拉起系统安装页…`);
+    setMsg(i18n("components.softwareupdatesection.388289c18d09", { value: String(d.size ? formatSize(d.size) : "?"), value2: String(d.verified ? i18n("components.softwareupdatesection.9957c2dd1877") : "") }));
     const inst = await installDownloaded(d.path ?? "");
     setBusy(false);
     if (inst.ok) {
-      setMsg(`已下载到 ${d.path}\n${inst.hint ?? "已拉起系统安装页。"}`);
+      setMsg(i18n("components.softwareupdatesection.1e178bb2ba4b", { path: String(d.path), value: String(inst.hint ?? i18n("components.softwareupdatesection.78ed0342345e")) }));
     } else {
       setPhase("error");
-      setErr(`已下载到 ${d.path}，但拉起安装页失败：${inst.error ?? "未知原因"}（可手动打开该文件）`);
+      setErr(i18n("components.softwareupdatesection.fe8283074c76", { path: String(d.path), value: String(inst.error ?? i18n("components.softwareupdatesection.a1a9da9ee6ed")) }));
     }
   }, [plat, res]);
 
@@ -121,58 +123,53 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
 
   const pct = progress?.percent ?? 0;
   const showBar = phase === "downloading";
-  const srcLine = res?.sourceLabel ? `来源：${res.sourceLabel}` : "";
+  const srcLine = res?.sourceLabel ? i18n("components.softwareupdatesection.5b6dd039fc20", { sourceLabel: String(res.sourceLabel) }) : "";
   const shaLine = res?.ok && res.hasUpdate
     ? res.hashAvailable
-      ? "sha256：清单已提供，下载时逐段校验（不符即拒绝安装）"
-      : "sha256：该源未提供（按文件大小校验）"
+      ? i18n("components.softwareupdatesection.3c0fc35e4fb6")
+      : i18n("components.softwareupdatesection.e18465dcfa9e")
     : "";
 
   return (
     <div id="row-检查-OneTHU-更新">
       <Stack gap={2}>
       <div>
-        <div className="setting-title">
-          软件更新
-          {res?.ok && res.hasUpdate ? <span className="update-badge">有新版本</span> : null}
-        </div>
-        <div className="setting-desc">
-          官方源 GitHub Releases · 校内源清华云盘镜像；哪条可达走哪条（当前 v{version} · {PLATFORM_LABEL[plat]}）
-        </div>
+        <div className="setting-title">{i18nRich("components.softwareupdatesection.c692dd3f13e4", { value: res?.ok && res.hasUpdate ? <span className="update-badge">{i18n("components.softwareupdatesection.daedea385864")}</span> : null })}</div>
+        <div className="setting-desc">{i18nRich("components.softwareupdatesection.1aec2113851b", { version: version, value: PLATFORM_LABEL[plat] })}</div>
       </div>
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <Btn variant="solid" tone="brand" loading={phase === "checking"} disabled={busy} onClick={() => void check()}>
-          {phase === "checking" ? "检查中…" : "检查更新"}
+          {phase === "checking" ? i18n("components.softwareupdatesection.fb11aa6f2982") : i18n("components.softwareupdatesection.7f68ebad19ba")}
         </Btn>
         {phase === "available" || (phase === "error" && res?.ok && res.hasUpdate) ? (
           <Btn variant="outline" disabled={busy} onClick={() => void downloadAndInstall()}>
-            {phase === "error" ? "重试：下载并安装" : "下载并安装"}
+            {phase === "error" ? i18n("components.softwareupdatesection.ea0add721b8e") : i18n("components.softwareupdatesection.ac69f68b7010")}
           </Btn>
         ) : null}
-        {showBar ? <Btn variant="ghost" onClick={() => void cancelUpdateDownload()}>取消</Btn> : null}
+        {showBar ? <Btn variant="ghost" onClick={() => void cancelUpdateDownload()}>{i18n("components.softwareupdatesection.2cd0f3be8738")}</Btn> : null}
         {phase === "downloaded" && localPath ? (
-          <Btn variant="outline" onClick={() => void installDownloaded(localPath)}>再打开一次安装页</Btn>
+          <Btn variant="outline" onClick={() => void installDownloaded(localPath)}>{i18n("components.softwareupdatesection.20f2c779de7a")}</Btn>
         ) : null}
         {res?.ok && res.hasUpdate && !dismissed ? (
-          <Btn variant="ghost" onClick={onDismiss}>忽略此版本</Btn>
+          <Btn variant="ghost" onClick={onDismiss}>{i18n("components.softwareupdatesection.c748fafe62d1")}</Btn>
         ) : null}
       </div>
 
       {showBar ? (
         <div>
-          <Progress value={Math.max(0, Math.min(100, pct)) / 100} aria-label="下载进度" />
+          <Progress value={Math.max(0, Math.min(100, pct)) / 100} aria-label={i18n("components.softwareupdatesection.fad86bf65f72")} />
           <div className="setting-desc">
             {progress?.total
               ? `${Math.round(pct)}%（${formatSize(progress.received)} / ${formatSize(progress.total)}）`
-              : `已下载 ${progress ? formatSize(progress.received) : "0"}`}
-            {" · 可随时取消"}
+              : i18n("components.softwareupdatesection.165defdf8038", { value: String(progress ? formatSize(progress.received) : "0") })}
+            {i18n("components.softwareupdatesection.8314625c2f52")}
           </div>
         </div>
       ) : null}
 
       {phase === "latest" && res?.ok ? (
-        <div className="setting-desc">已是最新版本（v{res.current}{checkedAt ? ` · 检查时间 ${checkedAt}` : ""}）</div>
+        <div className="setting-desc">{i18nRich("components.softwareupdatesection.1b6ff015b8a8", { current: res.current, value: checkedAt ? i18n("components.softwareupdatesection.71ebab125a66", { checkedAt: new Date(checkedAt).toLocaleTimeString(getUiLocale(), { hour: "2-digit", minute: "2-digit" }) }) : "" })}</div>
       ) : null}
 
       {msg ? <div className="setting-desc" style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{msg}</div> : null}
@@ -180,36 +177,29 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
 
       {res?.ok && res.hasUpdate ? (
         <div className="setting-desc" style={{ whiteSpace: "pre-wrap" }}>
-          {`版本：v${res.latest}${res.releasedAt ? `（${res.releasedAt}）` : ""}`
+          {i18n("components.softwareupdatesection.d54a23c91b8f", { latest: String(res.latest), value: String(res.releasedAt ? `（${res.releasedAt}）` : "") })
             + `${srcLine ? `\n${srcLine}` : ""}`
-            + `${res.fallbackReason ? `\n（已自动换源：${res.fallbackReason}）` : ""}`
-            + `\n安装包：${res.asset?.name ?? res.downloadName}${res.asset?.size ? ` · ${formatSize(res.asset.size)}` : ""}`
+            + `${res.fallbackReason ? i18n("components.softwareupdatesection.18697440c895", { fallbackReason: String(res.fallbackReason) }) : ""}`
+            + i18n("components.softwareupdatesection.43e805b35d14", { value: String(res.asset?.name ?? res.downloadName), value2: String(res.asset?.size ? ` · ${formatSize(res.asset.size)}` : "") })
             + `${shaLine ? `\n${shaLine}` : ""}`
-            + `${res.belowMin ? `\n注意：当前版本低于清单要求的 v${res.manifest?.minVersion}，建议尽快更新。` : ""}`
-            + `${dismissed ? "\n已忽略此版本的提醒（不影响下载与安装）。" : ""}`
-            + `${res.notes ? `\n\n更新说明：\n${res.notes}` : ""}`}
+            + `${res.belowMin ? i18n("components.softwareupdatesection.cffe690b5ead", { minVersion: String(res.manifest?.minVersion) }) : ""}`
+            + `${dismissed ? i18n("components.softwareupdatesection.cbb04a6052b1") : ""}`
+            + `${res.notes ? i18n("components.softwareupdatesection.e5958649985d", { notes: String(res.notes) }) : ""}`}
         </div>
       ) : null}
 
       {plat === "android" && phase !== "idle" ? (
-        <div className="setting-desc">
-          安卓安装说明：下载完成后由系统安装器接手；首次安装需在系统提示里允许本应用「安装未知应用」
-          （该授权只影响这一次安装，OneTHU 不会静默安装任何东西）。
-        </div>
+        <div className="setting-desc">{i18n("components.softwareupdatesection.b7d7aca618eb")}</div>
       ) : null}
 
       <details>
-        <summary className="setting-desc" style={{ cursor: "pointer" }}>高级：自定义更新源</summary>
+        <summary className="setting-desc" style={{ cursor: "pointer" }}>{i18n("components.softwareupdatesection.7e21bf73a0ef")}</summary>
         <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: 200 }}>{<Input placeholder="https://…/latest.json（自建源的清单地址）" value={customUrl} onChange={(value) => setCustomUrl(value)} />}</div>
-          <Btn variant="outline" disabled={busy || !customUrl.trim()} onClick={() => void check()}>用这个源检查
-          </Btn>
-          <Btn variant="outline" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>恢复官方双源
-          </Btn>
+          <div style={{ flex: 1, minWidth: 200 }}>{<Input placeholder={i18n("components.softwareupdatesection.b71ae82b4fba")} value={customUrl} onChange={(value) => setCustomUrl(value)} />}</div>
+          <Btn variant="outline" disabled={busy || !customUrl.trim()} onClick={() => void check()}>{i18n("components.softwareupdatesection.abae77ee2a3f")}</Btn>
+          <Btn variant="outline" disabled={busy || !customUrl} onClick={() => { setCustomUrl(""); }}>{i18n("components.softwareupdatesection.4370d1b15447")}</Btn>
         </div>
-        <div className="setting-desc" style={{ marginTop: 4 }}>
-          默认不填即官方双源（{SOURCE_LABEL.github} → {SOURCE_LABEL.cloud}）。
-        </div>
+        <div className="setting-desc" style={{ marginTop: 4 }}>{i18nRich("components.softwareupdatesection.87c4f699e972", { github: SOURCE_LABEL.github, cloud: SOURCE_LABEL.cloud })}</div>
       </details>
     </Stack>    
     </div>

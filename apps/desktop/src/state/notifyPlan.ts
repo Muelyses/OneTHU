@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 通知计划（纯计算，可测）：日程 + 未交作业 + 两级提醒规则 → 未来 N 天要投递的系统通知。
  *
@@ -19,9 +20,9 @@ export type NotifyKind = "class" | "exam" | "event" | "ddl" | "briefing";
 export type NotifyChannel = "course" | "ddl" | "briefing";
 
 export const NOTIFY_CHANNEL_NAMES: Record<NotifyChannel, string> = {
-  course: "课程与日程",
-  ddl: "作业截止",
-  briefing: "每日早报",
+  get course() { return i18n("state.notifyplan.7f9ab29b611d"); },
+  get ddl() { return i18n("state.notifyplan.9b702fb32d62"); },
+  get briefing() { return i18n("state.notifyplan.fe593e7c8ef9"); },
 };
 
 /** 通知属于哪个渠道（后端据此选 Android 渠道 / 前端据此分组显示）。

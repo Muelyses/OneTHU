@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Input, Text } from "@onethu/gui";
 import { Btn } from "@onethu/gui";
 /**
@@ -33,6 +34,8 @@ export function closeWorkspaceEditor(): void {
 }
 
 export function WorkspaceEditorHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const id = useSyncExternalStore(subscribe, snapshot, snapshot);
   const { workspaces } = useExplorerState();
   const ws = id ? workspaces.find((w) => w.id === id) ?? null : null;
@@ -41,6 +44,8 @@ export function WorkspaceEditorHost(): ReactNode {
 }
 
 function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { workspaces, tabs } = useExplorerState();
   const ws = workspaces.find((w) => w.id === wsId);
   const [name, setName] = useState(ws?.name ?? "");
@@ -74,18 +79,18 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
     >
       <div
         role="dialog"
-        aria-label="编辑工作区"
+        aria-label={i18n("components.explorer.workspaceeditor.8777428f135c")}
         style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", padding: 18, width: 340, maxHeight: "80vh", overflow: "auto", boxShadow: "var(--og-elev-menu)" }}
       >
-        <div style={{ marginBottom: 12 }}><Text as="div" weight="semibold">编辑工作区</Text></div>
-        <Input autoFocus value={name} onChange={(value) => setName(value)} placeholder="工作区名字" />
-        <div style={small}>底板颜色</div>
+        <div style={{ marginBottom: 12 }}><Text as="div" weight="semibold">{i18n("components.explorer.workspaceeditor.8777428f135c")}</Text></div>
+        <Input autoFocus value={name} onChange={(value) => setName(value)} placeholder={i18n("components.explorer.workspaceeditor.b2a947fe366c")} />
+        <div style={small}>{i18n("components.explorer.workspaceeditor.126e112774d5")}</div>
         <div style={{ display: "flex", gap: 8 }}>
           {WORKSPACE_COLORS.map((c) => (
             <button
               key={c}
               type="button"
-              aria-label={"颜色 " + c}
+              aria-label={i18n("components.explorer.workspaceeditor.4b8b25735e9b") + c}
               aria-pressed={color === c}
               onClick={() => setColor(c)}
               style={{ width: 22, height: 22, borderRadius: "50%", border: color === c ? "2px solid var(--og-content-1)" : "1px solid transparent", background: c, cursor: "pointer" }}
@@ -111,25 +116,25 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
           })}
         </div>
 
-        <div style={small}>成员（{memberCount}）</div>
-        {memberCount === 0 ? <Text slot="label" tone="faint">暂无标签页</Text> : null}
+        <div style={small}>{i18nRich("components.explorer.workspaceeditor.95d820310c3e", { memberCount: memberCount })}</div>
+        {memberCount === 0 ? <Text slot="label" tone="faint">{i18n("components.explorer.workspaceeditor.5d8f0c9f8493")}</Text> : null}
         {live
           ? liveMembers.map((t) => (
               <div key={t.id} style={row}>
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveTabTitle(t.page, t.params).label}</span>
-                <Btn variant="outline" onClick={() => setTabWorkspace(t.id, null)}>移出</Btn>
+                <Btn variant="outline" onClick={() => setTabWorkspace(t.id, null)}>{i18n("components.explorer.workspaceeditor.95861c4b5cd6")}</Btn>
               </div>
             ))
           : snapshot.map((e, i) => (
               <div key={i} style={row}>
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{e.title || resolveTabTitle(e.page, e.params).label}</span>
-                <Btn variant="outline" onClick={() => removeSavedWorkspaceTab(ws.id, i)}>移出</Btn>
+                <Btn variant="outline" onClick={() => removeSavedWorkspaceTab(ws.id, i)}>{i18n("components.explorer.workspaceeditor.95861c4b5cd6")}</Btn>
               </div>
             ))}
 
         {free.length > 0 ? (
           <>
-            <div style={small}>可加入的标签页</div>
+            <div style={small}>{i18n("components.explorer.workspaceeditor.7a593e8801f2")}</div>
             {free.map((t) => (
               <div key={t.id} style={row}>
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resolveTabTitle(t.page, t.params).label}</span>
@@ -137,16 +142,15 @@ function WorkspaceEditorDialog({ wsId }: { wsId: string }): ReactNode {
                     live
                       ? setTabWorkspace(t.id, ws.id)
                       : addSavedWorkspaceTab(ws.id, { page: t.page, params: t.params, title: resolveTabTitle(t.page, t.params).label })
-                  }>加入
-                </Btn>
+                  }>{i18n("components.explorer.workspaceeditor.451755e3831f")}</Btn>
               </div>
             ))}
           </>
         ) : null}
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
-          <Btn variant="outline" onClick={closeWorkspaceEditor}>取消</Btn>
-          <Btn variant="outline" onClick={save}>保存</Btn>
+          <Btn variant="outline" onClick={closeWorkspaceEditor}>{i18n("components.explorer.workspaceeditor.2cd0f3be8738")}</Btn>
+          <Btn variant="outline" onClick={save}>{i18n("components.explorer.workspaceeditor.a3030bf8f16d")}</Btn>
         </div>
       </div>
     </div>,

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 组件目录（P1 纯核心）：白板上的「组件」在这里登记元数据。
  *
@@ -60,29 +61,29 @@ export interface WidgetDef {
 export const PRESET_WIDGETS: WidgetDef[] = [
   {
     id: "text-title",
-    spec: { kind: "text", text: "把今天，安排好。", variant: "title" },
-    title: "大标题文字",
-    description: "一段标题文字，用来给自己的白板分区。不需要任何上下文。",
+    spec: { kind: "text", get text() { return i18n("state.widgetmeta.4e6ff6dda14d"); }, variant: "title" },
+    get title() { return i18n("state.widgetmeta.8b686642f7d8"); },
+    get description() { return i18n("state.widgetmeta.10ed14b80e18"); },
     defaultSize: { w: 2, h: 1 },
     sizeRange: { minW: 1, minH: 1, maxW: BOARD_UNITS, maxH: 2 },
     sizeControl: "free",
-    editableProps: [{ key: "text", label: "文字", kind: "text", maxLength: 16, placeholder: "例如：常用" }],
+    editableProps: [{ key: "text", get label() { return i18n("state.widgetmeta.14b69bd6eeb0"); }, kind: "text", maxLength: 16, get placeholder() { return i18n("state.widgetmeta.d9307f3eba25"); } }],
   },
   {
     id: "text-label",
-    spec: { kind: "text", text: "标签", variant: "label" },
-    title: "文字标签",
-    description: "一小段说明文字，可用于备注或提示。不需要任何上下文。",
+    spec: { kind: "text", get text() { return i18n("state.widgetmeta.1d0fd5f9336d"); }, variant: "label" },
+    get title() { return i18n("state.widgetmeta.655d4e9c7591"); },
+    get description() { return i18n("state.widgetmeta.d520acd12d16"); },
     defaultSize: { w: 2, h: 1 },
     sizeRange: { minW: 1, minH: 1, maxW: BOARD_UNITS, maxH: 2 },
     sizeControl: "free",
-    editableProps: [{ key: "text", label: "文字", kind: "text", maxLength: 32, placeholder: "例如：记得交作业" }],
+    editableProps: [{ key: "text", get label() { return i18n("state.widgetmeta.14b69bd6eeb0"); }, kind: "text", maxLength: 32, get placeholder() { return i18n("state.widgetmeta.fcd2119102ef"); } }],
   },
   {
     id: "divider",
     spec: { kind: "divider" },
-    title: "分隔线",
-    description: "一条分隔线，用于在视觉上隔开上下两组组件。不需要任何上下文。",
+    get title() { return i18n("state.widgetmeta.c64dd5eb2135"); },
+    get description() { return i18n("state.widgetmeta.1e2a390bd349"); },
     defaultSize: { w: BOARD_UNITS, h: 1 },
     sizeRange: { minW: 2, minH: 1, maxW: BOARD_UNITS, maxH: 1 },
     sizeControl: "free",

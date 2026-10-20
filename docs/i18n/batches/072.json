@@ -1,0 +1,1394 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.settings.fc89857ef917",
+      "source": "启动中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 872,
+          "context": "busy === \"launch\" ? i18n(\"pages.settings.fc89857ef917\") : i18n(\"pages.settings.f3b9d4390ccf\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.06389c978872",
+      "source": "今天该管的事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 200,
+          "context": "data ? semesterText(data.semester.id) : i18n(\"pages.taskspage.06389c978872\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.091a3375f53e",
+      "source": "返回生活 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 315,
+          "context": "{i18n(\"pages.taskspage.091a3375f53e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.0d1d9183d7d0",
+      "source": "收起 ⤡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 307,
+          "context": "pcFull ? i18n(\"pages.taskspage.0d1d9183d7d0\") : i18n(\"pages.taskspage.d9d9d95f3a25\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 326,
+          "context": "{i18n(\"pages.taskspage.0d1d9183d7d0\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.0d261d034491",
+      "source": "全部通知 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 296,
+          "context": "{i18n(\"pages.taskspage.0d261d034491\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.1281738c7a2b",
+      "source": "按课程筛选作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 229,
+          "context": "{i18n(\"pages.taskspage.1281738c7a2b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.13239e085f0a",
+      "source": "去充值 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 357,
+          "context": "{i18n(\"pages.taskspage.13239e085f0a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.1522cf51a469",
+      "source": "全部作业 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 280,
+          "context": "{i18n(\"pages.taskspage.1522cf51a469\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 211,
+          "context": "{i18n(\"pages.taskspage.15d208d1b4c9\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 348,
+          "context": "{i18n(\"pages.taskspage.15d208d1b4c9\")}"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.2118cbc10988",
+      "source": "学习",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 210,
+          "context": "{i18n(\"pages.taskspage.2118cbc10988\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 217,
+          "context": "{i18n(\"pages.taskspage.2118cbc10988\")}"
+        }
+      ],
+      "translation": "Study",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.2ebabbe9e7d7",
+      "source": "课程通知：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 289,
+          "context": "{i18n(\"pages.taskspage.2ebabbe9e7d7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.2f7e202b64d3",
+      "source": "3 日内截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 276,
+          "context": "{i18n(\"pages.taskspage.2f7e202b64d3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.4706dde1fb19",
+      "source": "新闻还在路上，稍后再来看看。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 368,
+          "context": "{i18n(\"pages.taskspage.4706dde1fb19\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.52fdbbaeda4c",
+      "source": "待办",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 199,
+          "context": "{i18n(\"pages.taskspage.52fdbbaeda4c\")}"
+        }
+      ],
+      "translation": "To-dos",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 68,
+          "context": "courseMap.get(id) ?? i18n(\"pages.taskspage.60db1afb4022\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.625aecb7d77b",
+      "source": "{length} 条未读",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "unread.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 289,
+          "context": "{i18nRich(\"pages.taskspage.625aecb7d77b\", { length: unread.length })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.6f3b6788c68c",
+      "source": "正在取作业…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 254,
+          "context": "{i18n(\"pages.taskspage.6f3b6788c68c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.7bd83a8ffaff",
+      "source": "重要未读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 290,
+          "context": "{i18n(\"pages.taskspage.7bd83a8ffaff\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.873399e71de9",
+      "source": "进入网络学堂 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 281,
+          "context": "{i18n(\"pages.taskspage.873399e71de9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.8c75e6d5e446",
+      "source": "校园卡余额不足",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 354,
+          "context": "{i18n(\"pages.taskspage.8c75e6d5e446\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 233,
+          "context": "{i18n(\"pages.taskspage.aa39cac2b409\")}"
+        }
+      ],
+      "translation": "Learn",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.aed87d6c236b",
+      "source": "课程通知：暂无未读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 293,
+          "context": "{i18n(\"pages.taskspage.aed87d6c236b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 203,
+          "context": "{i18n(\"pages.taskspage.aee887434131\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.b457a3c1c9a1",
+      "source": "全部新闻 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 363,
+          "context": "{i18n(\"pages.taskspage.b457a3c1c9a1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.b6ac37044ccd",
+      "source": "最近新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 362,
+          "context": "{i18n(\"pages.taskspage.b6ac37044ccd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.b8a9cf5d2a77",
+      "source": "当前 ¥{balance}，建议充值",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "balance",
+          "expression": "card.data?.info.balance"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 355,
+          "context": "{i18nRich(\"pages.taskspage.b8a9cf5d2a77\", { balance: card.data?.info.balance })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.bce2377283c2",
+      "source": "清除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 248,
+          "context": "{i18n(\"pages.taskspage.bce2377283c2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.d4af30a738c7",
+      "source": "作业详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 304,
+          "context": "{i18n(\"pages.taskspage.d4af30a738c7\")}"
+        }
+      ],
+      "translation": "Assignment details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.d9a72ce83c42",
+      "source": "全部课程（{length}）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "flowAll.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 231,
+          "context": "{i18nRich(\"pages.taskspage.d9a72ce83c42\", { length: flowAll.length })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.d9d9d95f3a25",
+      "source": "展开 ⤢",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 307,
+          "context": "pcFull ? i18n(\"pages.taskspage.0d1d9183d7d0\") : i18n(\"pages.taskspage.d9d9d95f3a25\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.dd67ab4b0109",
+      "source": "行政类通知（报到、党团活动等）暂无稳定数据源，接入后补充到这里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 370,
+          "context": "{i18n(\"pages.taskspage.dd67ab4b0109\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.taskspage.e7b5dca4c106",
+      "source": "还剩作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 272,
+          "context": "{i18n(\"pages.taskspage.e7b5dca4c106\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.281cf61ea21e",
+      "source": "左侧选择一页开始阅读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 213,
+          "context": "{i18n(\"pages.thubookpage.281cf61ea21e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.2958a7f94d7e",
+      "source": "目录加载失败：{value}（检查网络）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 102,
+          "context": "setErr(i18n(\"pages.thubookpage.2958a7f94d7e\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.4927a53bcc88",
+      "source": "加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 210,
+          "context": "{i18n(\"pages.thubookpage.4927a53bcc88\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.49505a8ee266",
+      "source": "搜索手册…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 177,
+          "context": "{i18n(\"pages.thubookpage.49505a8ee266\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.5bdcbd092642",
+      "source": "手册页暂时打不开，请稍后再试：HTTP {status}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "status",
+          "expression": "String(home.status)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 93,
+          "context": "new Error(i18n(\"pages.thubookpage.5bdcbd092642\", { status: String(home.status) }))"
+        },
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 123,
+          "context": "new Error(i18n(\"pages.thubookpage.5bdcbd092642\", { status: String(res.status) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.78548675f31a",
+      "source": " 篇",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 173,
+          "context": "\" · \" + String(total) + i18n(\"pages.thubookpage.78548675f31a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.7a54f3fc4716",
+      "source": "无匹配",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 203,
+          "context": "{i18n(\"pages.thubookpage.7a54f3fc4716\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.c6d508cdf07d",
+      "source": "目录加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 178,
+          "context": "{i18n(\"pages.thubookpage.c6d508cdf07d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.c982f207f09f",
+      "source": "清华手册 · thubook.help",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 173,
+          "context": "i18n(\"pages.thubookpage.c982f207f09f\") + (total ? \" · \" + String(total) + i18n(\"pages.thubookpage.78548675f31a\") : \"\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.thubookpage.e8540f108cac",
+      "source": "页面加载失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/ThubookPage.tsx",
+          "line": 129,
+          "context": "setErr(i18n(\"pages.thubookpage.e8540f108cac\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.07a6d4925ba8",
+      "source": "清华大学",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 514,
+          "context": "selected.poi.address || i18n(\"pages.trace.07a6d4925ba8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.0806c400fd4e",
+      "source": "常用交通方式（决定标注上的路程时间）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 461,
+          "context": "{i18n(\"pages.trace.0806c400fd4e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.0c06ad91bdc0",
+      "source": "充裕",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.0c06ad91bdc0\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.1495efc7f9ea",
+      "source": "系统未授予定位权限（可能已被拒绝两次，Android 不会再弹窗）。已改用清华园中心计算 ETA。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 482,
+          "context": "{i18n(\"pages.trace.1495efc7f9ea\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.1fa4df1cef8e",
+      "source": " · {length} 处未识别",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(unresolved.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 457,
+          "context": "unresolved.length > 0 ? i18n(\"pages.trace.1fa4df1cef8e\", { length: String(unresolved.length) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.29355e7406dd",
+      "source": "今天没有带地点的日程。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 501,
+          "context": "todayEvents.length === 0 ? i18n(\"pages.trace.29355e7406dd\") : i18n(\"pages.trace.9da67f02d762\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.2e62f22af588",
+      "source": "去系统设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 483,
+          "context": "{i18n(\"pages.trace.2e62f22af588\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.2e663293d4c1",
+      "source": "裕量>30分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"ok\", i18n(\"pages.trace.2e663293d4c1\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.313c224671ff",
+      "source": "紧张",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.313c224671ff\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.3a8b5cef5790",
+      "source": "步行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 450,
+          "context": "TRAVEL_MODES.find((m) => m.id === mode)?.label ?? i18n(\"pages.trace.3a8b5cef5790\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 511,
+          "context": "{i18n(\"pages.trace.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.5b63f4ed45c0",
+      "source": "未在海淀区找到地点：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "unresolved.join(\"、\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 494,
+          "context": "{i18nRich(\"pages.trace.5b63f4ed45c0\", { value: unresolved.join(\"、\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.60458dfb4c14",
+      "source": "寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 456,
+          "context": "{i18n(\"pages.trace.60458dfb4c14\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 460,
+          "context": "{i18n(\"pages.trace.60458dfb4c14\")}"
+        }
+      ],
+      "translation": "Trace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 524,
+          "context": "ev.kind === \"course\" ? i18n(\"pages.trace.60db1afb4022\") : i18n(\"pages.trace.a14f23af7016\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.65fd2f343c63",
+      "source": "≤30分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"warn\", i18n(\"pages.trace.65fd2f343c63\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.670255cd0aa2",
+      "source": "再次请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 482,
+          "context": "{i18n(\"pages.trace.670255cd0aa2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.6ba698180160",
+      "source": "使用最近一次定位的位置计算 ETA。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 491,
+          "context": "{i18n(\"pages.trace.6ba698180160\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.7c25d6aa499e",
+      "source": "高德",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 451,
+          "context": "MAP_APPS.find((a) => a.id === mapApp)?.label ?? i18n(\"pages.trace.7c25d6aa499e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.8139cfa5561e",
+      "source": "未获取到定位（已回退清华园中心），ETA 以此计算。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 487,
+          "context": "{i18n(\"pages.trace.8139cfa5561e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.86f12a62f286",
+      "source": "地点解析失败，请稍后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 314,
+          "context": "setErr(i18n(\"pages.trace.86f12a62f286\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.88363068b601",
+      "source": "重新定位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 491,
+          "context": "{i18n(\"pages.trace.88363068b601\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.8b7769259b36",
+      "source": "今日 {length} 个日程 · {value} 处地点{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(todayEvents.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(markers?.length ?? \"…\")"
+        },
+        {
+          "name": "value2",
+          "expression": "String(unresolved.length > 0 ? i18n(\"pages.trace.1fa4df1cef8e\", { length: String(unresolved.length) }) : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 457,
+          "context": "{i18n(\"pages.trace.8b7769259b36\", { length: String(todayEvents.length), value: String(markers?.length ?? \"…\"), value2: String(unresolved.length > 0 ? i18n(\"pages.trace.1fa4df1cef8e\", { length: String(unresolved.length) }) : \"\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.8e4e3e495ec9",
+      "source": "留意",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.8e4e3e495ec9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.90d38e9ca33b",
+      "source": "重试定位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 487,
+          "context": "{i18n(\"pages.trace.90d38e9ca33b\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.913697098fd5",
+      "source": "前往（{appLabel}地图）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "appLabel",
+          "expression": "appLabel"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 529,
+          "context": "{i18nRich(\"pages.trace.913697098fd5\", { appLabel: appLabel })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.92bd3ef7fe0e",
+      "source": "前往时调起的地图应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 467,
+          "context": "{i18n(\"pages.trace.92bd3ef7fe0e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.9da67f02d762",
+      "source": "今日日程的地点都没能定位到海淀区的 POI。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 501,
+          "context": "todayEvents.length === 0 ? i18n(\"pages.trace.29355e7406dd\") : i18n(\"pages.trace.9da67f02d762\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.a0767a01e52a",
+      "source": "≤10分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"urgent\", i18n(\"pages.trace.a0767a01e52a\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 524,
+          "context": "ev.kind === \"course\" ? i18n(\"pages.trace.60db1afb4022\") : i18n(\"pages.trace.a14f23af7016\")"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.b346ef69dee9",
+      "source": "{modeLabel}时间",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "modeLabel",
+          "expression": "modeLabel"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 465,
+          "context": "{i18nRich(\"pages.trace.b346ef69dee9\", { modeLabel: modeLabel })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.d26ef0190d6c",
+      "source": "考试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 524,
+          "context": "ev.kind === \"exam\" ? i18n(\"pages.trace.d26ef0190d6c\") : ev.kind === \"course\" ? i18n(\"pages.trace.60db1afb4022\") : i18n(\"pages.trace.a14f23af7016\")"
+        }
+      ],
+      "translation": "Exams",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.d407c45a6be7",
+      "source": "用{appLabel}前往",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "appLabel",
+          "expression": "appLabel"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 471,
+          "context": "{i18nRich(\"pages.trace.d407c45a6be7\", { appLabel: appLabel })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.d79b1d0e5c61",
+      "source": "已结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.d79b1d0e5c61\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"done\", i18n(\"pages.trace.d79b1d0e5c61\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.dc07c04f3fc3",
+      "source": "高德 Web 服务 Key 未配置：POI 定位与路程估算不可用（地图与今日日程仍可查看）。将 apps/desktop/src-tauri/.env.example 复制为同目录 .env，填入 TRACE_AMAP_KEY=<你的key> 后重启应用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 478,
+          "context": "{i18n(\"pages.trace.dc07c04f3fc3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.dc9591e56d50",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.dc9591e56d50\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"live\", i18n(\"pages.trace.dc9591e56d50\")]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.e1be450ce158",
+      "source": "{label}地图",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "a.label"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 469,
+          "context": "{i18nRich(\"pages.trace.e1be450ce158\", { label: a.label })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.00376d744fbd",
+      "source": "平台模型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 393,
+          "context": "{i18n(\"pages.xiaoda.xiaodapage.00376d744fbd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.09829d304017",
+      "source": "对话智能体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 386,
+          "context": "{i18n(\"pages.xiaoda.xiaodapage.09829d304017\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

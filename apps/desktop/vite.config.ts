@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
+import { i18nDictionaryGuard } from "../../tools/i18n/vite-guard.mjs";
 
 // 构建时注入版本号（设置页诊断卡显示，确认真机装的是哪个包）
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as { version: string };
@@ -31,7 +32,7 @@ export default defineConfig({
     __ONETHU_COMMIT__: JSON.stringify(gitCommit()),
     __ONETHU_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
-  plugins: [react()],
+  plugins: [i18nDictionaryGuard(), react()],
   optimizeDeps: {
     // @onethu/core 是 workspace 源码包（零运行时依赖）：预打包会被 .vite/deps
     // 钉死在旧快照——外置 exFAT 卷上 deps 再优化不触发（2026-09-14 实锤：

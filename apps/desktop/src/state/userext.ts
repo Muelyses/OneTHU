@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 用户扩展层（2026-10-13 OH 自我进化的 TS 侧基座）。
  *
@@ -13,6 +14,7 @@
  * 安全：只允许调用插件门面白名单内的 ns（见 canCall），写操作走既有 gate。
  */
 import { createPortal } from "react-dom";
+import { sanitizeDisplayHtml } from "../lib/safeHtml.js";
 
 export interface ExtStep {
   tool: string; // "ns.method"（插件门面的方法，不是 OH 工具名）
@@ -149,14 +151,7 @@ export interface WidgetDef {
 /** 白名单净化：去 <script>/<style>/iframe/事件属性/javascript: 链接。
  *  用户生成内容一律过这道再进 DOM（自由白板 innerHTML 渲染）。 */
 export function sanitizeUserHtml(html: string): string {
-  let out = html
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
-    .replace(/<iframe\b[\s\S]*?<\/iframe>/gi, "")
-    .replace(/ on[a-z]+\s*=\s*"[^"]*"/gi, "")
-    .replace(/ on[a-z]+\s*=\s*'[^']*'/gi, "")
-    .replace(/javascript:/gi, "");
-  return out;
+  return sanitizeDisplayHtml(html);
 }
 
 export function upsertWidget(w: WidgetDef): void {
@@ -293,7 +288,7 @@ export function touchFlow(id: string, ok: boolean, error?: string): void {
   if (!f) return;
   f.lastRun = Date.now();
   f.lastOk = ok;
-  f.lastError = ok ? undefined : String(error ?? "未知错误").slice(0, 400);
+  f.lastError = ok ? undefined : String(error ?? i18n("state.userext.13a46616e16f")).slice(0, 400);
   commit();
 }
 
@@ -336,12 +331,12 @@ export async function runSteps(
         (args as Record<string, unknown>)[k] = pick(results, tmpl);
       }
     } else if (st.from && Object.keys(st.from).length > 0) {
-      return { ok: false, done: i, results, error: `第 ${i + 1} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）` };
+      return { ok: false, done: i, results, error: i18n("state.userext.4614c2ea297e", { step: i + 1 }) };
     }
     try {
       results.push(await exec(st.tool, args));
     } catch (e) {
-      return { ok: false, done: i, results, error: `第 ${i + 1} 步失败：${e instanceof Error ? e.message : String(e)}` };
+      return { ok: false, done: i, results, error: i18n("state.userext.1129baf5b637", { step: i + 1, error: e instanceof Error ? e.message : String(e) }) };
     }
   }
   return { ok: true, done: steps.length, results };
@@ -349,14 +344,14 @@ export async function runSteps(
 
 export async function runTool(id: string, exec: ExtExecutor): Promise<{ ok: boolean; error?: string }> {
   const t = doc.tools.find((x) => x.id === id);
-  if (!t) return { ok: false, error: "没有这个工具" };
+  if (!t) return { ok: false, error: i18n("state.userext.1a687dba3c19") };
   const r = await runSteps(t.steps, exec);
   return { ok: r.ok, error: r.error };
 }
 
 export async function runFlow(id: string, exec: ExtExecutor): Promise<{ ok: boolean; error?: string }> {
   const f = doc.flows.find((x) => x.id === id);
-  if (!f) return { ok: false, error: "没有这个 OneFlow" };
+  if (!f) return { ok: false, error: i18n("state.userext.30c5627d3abc") };
   const r = await runSteps(f.steps, exec);
   touchFlow(id, r.ok, r.error);
   return { ok: r.ok, error: r.error };
@@ -370,7 +365,7 @@ export function registerFlowExecutor(exec: ExtExecutor): void {
 
 /** OneGO 手动运行入口：真的执行步骤（不再只弹「去对话里说」）。 */
 export async function runFlowNow(id: string): Promise<{ ok: boolean; error?: string }> {
-  if (!flowExecutor) return { ok: false, error: "执行器还没就绪（等插件加载完成再试）" };
+  if (!flowExecutor) return { ok: false, error: i18n("state.userext.ec5c92fecc0a") };
   return runFlow(id, flowExecutor);
 }
 

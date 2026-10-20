@@ -1,0 +1,213 @@
+{
+  "description": "Remaining UI error/status copy from security-owned modules. Protocol fields, parser comparisons, remote directory paths and diagnostic logs stay stable.",
+  "messages": {
+    "state.touch.invalidPrefix": {
+      "zh-CN": "不是 OneTHU 碰一碰口令（应以 ONTOUCH1. 开头）",
+      "en-US": ""
+    },
+    "state.touch.corrupt": {
+      "zh-CN": "口令内容损坏",
+      "en-US": ""
+    },
+    "state.touch.checksum": {
+      "zh-CN": "口令校验失败（可能复制不完整）",
+      "en-US": ""
+    },
+    "state.touch.version": {
+      "zh-CN": "口令版本不受支持",
+      "en-US": ""
+    },
+    "state.touch.invalidJson": {
+      "zh-CN": "口令内容不是合法 JSON",
+      "en-US": ""
+    },
+    "state.touch.self": {
+      "zh-CN": "我",
+      "en-US": ""
+    },
+    "state.touch.unreadable": {
+      "zh-CN": "口令无法解析",
+      "en-US": ""
+    },
+    "state.touch.vaultImportFailed": {
+      "zh-CN": "暂存箱口令无法导入",
+      "en-US": ""
+    },
+    "state.touch.from": {
+      "zh-CN": "来自 {name}",
+      "en-US": ""
+    },
+    "state.touch.duplicateContact": {
+      "zh-CN": "名片已在通讯录里（重复接收不会重复添加）",
+      "en-US": ""
+    },
+    "state.touch.empty": {
+      "zh-CN": "这个碰一碰口令里没有可导入的内容",
+      "en-US": ""
+    },
+    "state.vaultcloud.notConnected": {
+      "zh-CN": "云盘未连接",
+      "en-US": ""
+    },
+    "state.wallpsync.connectBeforeUpload": {
+      "zh-CN": "云盘还没连接：先到「云盘」页连接后再同步",
+      "en-US": ""
+    },
+    "state.wallpsync.uploaded": {
+      "zh-CN": "壁纸已同步到云盘",
+      "en-US": ""
+    },
+    "state.wallpsync.uploadFailed": {
+      "zh-CN": "同步没成功（{error}），请检查云盘后再试",
+      "en-US": ""
+    },
+    "state.wallpsync.connectBeforeRestore": {
+      "zh-CN": "云盘还没连接：先到「云盘」页连接后再恢复",
+      "en-US": ""
+    },
+    "state.wallpsync.invalidArchive": {
+      "zh-CN": "云盘上的壁纸档案读不出来，请先重新同步一次",
+      "en-US": ""
+    },
+    "state.wallpsync.restored": {
+      "zh-CN": "已恢复云盘壁纸",
+      "en-US": ""
+    },
+    "state.wallpsync.noArchive": {
+      "zh-CN": "云盘上还没有壁纸档案，请先在别的设备同步一次",
+      "en-US": ""
+    },
+    "state.wallpsync.restoreFailed": {
+      "zh-CN": "恢复没成功（{error}），请检查云盘后再试",
+      "en-US": ""
+    },
+    "state.wallpsync.unknownCause": {
+      "zh-CN": "原因不明",
+      "en-US": ""
+    },
+    "state.mail.credentialsReadFailed": {
+      "zh-CN": "邮箱连接信息读取失败，请重试",
+      "en-US": ""
+    },
+    "state.mail.cacheWriteFailed": {
+      "zh-CN": "邮件已更新，但本地缓存未能保存",
+      "en-US": ""
+    },
+    "state.orgsync.permissionsUnverified": {
+      "zh-CN": "关联资源权限尚未核对，请负责人完成权限核对",
+      "en-US": ""
+    },
+    "state.orgsync.ownerOnly": {
+      "zh-CN": "只有服务器上的组织负责人可以执行此操作",
+      "en-US": ""
+    },
+    "state.orgsync.cannotEdit": {
+      "zh-CN": "当前账号没有编辑组织内容的权限",
+      "en-US": ""
+    },
+    "state.orgsync.updateMemberLabel": {
+      "zh-CN": "更新 {username}",
+      "en-US": ""
+    },
+    "state.orgsync.removeMemberLabel": {
+      "zh-CN": "移除成员",
+      "en-US": ""
+    },
+    "state.orgsynccore.conflict": {
+      "zh-CN": "其他成员刚刚更新了这份资料。你的输入已保留，请刷新后比较并重新保存。",
+      "en-US": ""
+    },
+    "state.orgsynccore.gitlabGroup": {
+      "zh-CN": "GitLab 组织",
+      "en-US": ""
+    },
+    "state.orgsynccore.gitlabProject": {
+      "zh-CN": "GitLab 仓库",
+      "en-US": ""
+    },
+    "state.orgsynccore.removeMember": {
+      "zh-CN": "移除组织成员",
+      "en-US": ""
+    },
+    "state.orgsynccore.updateMember": {
+      "zh-CN": "更新组织成员",
+      "en-US": ""
+    },
+    "state.orgsynccore.detachLibrary": {
+      "zh-CN": "解除资料库 {name} / {email}",
+      "en-US": ""
+    },
+    "state.orgsynccore.detachProject": {
+      "zh-CN": "解除仓库 {name} / {username}",
+      "en-US": ""
+    },
+    "state.orgsynccore.revokeCloud": {
+      "zh-CN": "云盘 {name} 撤销 {email}",
+      "en-US": ""
+    },
+    "state.orgsynccore.revokeProject": {
+      "zh-CN": "GitLab {name} 撤权 / 用户 {userId}",
+      "en-US": ""
+    },
+    "state.orgsynccore.reduceCloud": {
+      "zh-CN": "云盘 {name} 降权 {email}",
+      "en-US": ""
+    },
+    "state.orgsynccore.missingEmail": {
+      "zh-CN": "{username} 尚未绑定云盘邮箱",
+      "en-US": ""
+    },
+    "state.orgsynccore.libraryMissingEmail": {
+      "zh-CN": "云盘 {name}：{username} 尚未绑定云盘邮箱",
+      "en-US": ""
+    },
+    "state.orgsynccore.grantCloud": {
+      "zh-CN": "云盘 {name} 授权 {email}",
+      "en-US": ""
+    },
+    "state.orgsynccore.verifyProject": {
+      "zh-CN": "GitLab {name} / 用户 {userId}",
+      "en-US": ""
+    },
+    "lib.transport.cancelled": {
+      "zh-CN": "请求已取消",
+      "en-US": ""
+    },
+    "lib.transport.noReason": {
+      "zh-CN": "操作失败（原生未给出原因，可到「设置 → 诊断」看日志）",
+      "en-US": ""
+    },
+    "lib.transport.fileTooLarge": {
+      "zh-CN": "文件较大（{size}），应用内预览上限 {limit}——请改用「下载」或「另存为」。",
+      "en-US": ""
+    },
+    "lib.transport.reloginAdvice": {
+      "zh-CN": "下拉刷新即可重试；若持续出现，到「设置 → 账户」重新登录。",
+      "en-US": ""
+    },
+    "lib.transport.serverRejected": {
+      "zh-CN": "{error}：服务端拒绝了这次请求（登录态过期或该文件无权限）",
+      "en-US": ""
+    },
+    "lib.transport.browserCors": {
+      "zh-CN": "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev。",
+      "en-US": ""
+    },
+    "lib.transport.timeoutAdvice": {
+      "zh-CN": "网络超时：请确认校园网 / WebVPN 可达。",
+      "en-US": ""
+    },
+    "lib.cloudtokenwebview.pageTimeout": {
+      "zh-CN": "等待云盘页面超时，请确认已登录后重试。",
+      "en-US": ""
+    },
+    "lib.cloudtokenwebview.cancelled": {
+      "zh-CN": "已取消读取云盘访问口令。",
+      "en-US": ""
+    },
+    "state.seafileauto.twoFactorRequired": {
+      "zh-CN": "清华统一认证要求二次认证：请在 OneTHU 里重新登录清华账号并勾选「信任此设备」，之后云盘会自动连接。",
+      "en-US": ""
+    }
+  }
+}

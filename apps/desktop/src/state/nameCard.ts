@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 名片与通讯录（Phase 3 地基）：个人名片 / 组织名片 / 收到的联系人。
  *
@@ -236,9 +237,9 @@ export function setContactShare(id: string, shared: FriendShare): void {
 
 /** 名片进暂存箱的 catch（payload 型；分享口令/碰一碰共用）。 */
 export function personalCardCatch(): VaultCatch {
-  return { type: "payload", title: `名片 · ${doc.personal.name || "我"}`, sub: doc.personal.bio || "我的 OneTHU 名片", payload: { kind: "namecard", card: doc.personal }, source: "我的名片" };
+  return { type: "payload", title: i18n("state.namecard.6344e8e2c076", { value: String(doc.personal.name || "我") }), sub: doc.personal.bio || "我的 OneTHU 名片", payload: { kind: "namecard", card: doc.personal }, source: "我的名片" };
 }
 
 export function orgCardCatch(org: OrgCard): VaultCatch {
-  return { type: "payload", title: `组织名片 · ${org.name}`, sub: org.brief || "组织邀请", payload: { kind: "namecard", card: org, org: true }, source: "组织名片" };
+  return { type: "payload", title: i18n("state.namecard.e769cfbccd53", { name: String(org.name) }), sub: org.brief || "组织邀请", payload: { kind: "namecard", card: org, org: true }, source: "组织名片" };
 }

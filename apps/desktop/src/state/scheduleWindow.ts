@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 课表展示时段（用户可选）。
  *
@@ -21,7 +22,7 @@ const KEY = "onethu.schedule.window.v1";
 export const FULL_DAY: ScheduleWindow = { from: 0, to: 1440 };
 
 export const WINDOW_PRESETS: ReadonlyArray<{ label: string; win: ScheduleWindow }> = [
-  { label: "全天", win: FULL_DAY },
+  { get label() { return i18n("state.schedulewindow.0b97c851e4a7"); }, win: FULL_DAY },
   { label: "06:00 – 24:00", win: { from: 6 * 60, to: 1440 } },
   { label: "08:00 – 22:00", win: { from: 8 * 60, to: 22 * 60 } },
   { label: "08:00 – 20:00", win: { from: 8 * 60, to: 20 * 60 } },

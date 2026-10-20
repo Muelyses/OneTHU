@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 安卓系统级悬浮球适配器（需求 5，ball-overlay-android；task-11 返工版）。
  *
@@ -340,14 +341,14 @@ async function askNative(text: string): Promise<void> {
   void syncNativeUi();
   try {
     const r = (await askOh(t)) as { answer?: string; error?: string };
-    const reply = String(r?.answer ?? r?.error ?? "").trim() || "（没有回复）";
+    const reply = String(r?.answer ?? r?.error ?? "").trim() || i18n("lib.overlayandroid.2e072265be7f");
     nativeMsgs.push({ id: nextMsgId(), role: "oh", text: reply });
     autoSpeakReply(reply);
   } catch (e) {
     nativeMsgs.push({
       id: nextMsgId(),
       role: "oh",
-      text: `（出错了：${e instanceof Error ? e.message : String(e)}）`,
+      text: i18n("lib.overlayandroid.c638cd4dde22", { value: String(e instanceof Error ? e.message : String(e)) }),
     });
   }
   nativeBusy = false;
@@ -359,14 +360,14 @@ async function askNative(text: string): Promise<void> {
  * 不在这里另造一条 OH 链路。 */
 
 const ATTACH_LABEL: Record<string, string> = {
-  camera: "拍照",
-  gallery: "相册",
-  file: "上传",
+  get camera() { return i18n("lib.overlayandroid.6e3a10ade7c7"); },
+  get gallery() { return i18n("lib.overlayandroid.38793c1c1c23"); },
+  get file() { return i18n("lib.overlayandroid.9e07e3c0532d"); },
 };
 
 /** 原生点了附件入口：拉起系统选择器（Tauri 的 activity result 只能经插件命令回传） */
 async function requestAttach(kind: string): Promise<void> {
-  const label = ATTACH_LABEL[kind] ?? "附件";
+  const label = ATTACH_LABEL[kind] ?? i18n("lib.overlayandroid.c7225dbf105e");
   try {
     await invokePlugin<{ ok?: boolean; cancelled?: boolean }>("overlay_pick_attach", { kind });
     // 取消不打扰：什么也不推
@@ -374,7 +375,7 @@ async function requestAttach(kind: string): Promise<void> {
     nativeMsgs.push({
       id: nextMsgId(),
       role: "oh",
-      text: `（打开${label}失败：${e instanceof Error ? e.message : String(e)}）`,
+      text: i18n("lib.overlayandroid.d7111ec9e5c7", { label: String(label), value: String(e instanceof Error ? e.message : String(e)) }),
     });
     void syncNativeUi();
   }
@@ -390,7 +391,7 @@ async function sendNativeAttach(raw: NativeOverlayEvent): Promise<void> {
   const mine: NativeMsg = {
     id: nextMsgId(),
     role: "user",
-    text: `附件：${name ?? "（未命名）"}`,
+    text: i18n("lib.overlayandroid.4d46b1512ea6", { value: String(name ?? i18n("lib.overlayandroid.89a7d926bd0e")) }),
     images: [path],
     status: "sending",
   };
@@ -402,14 +403,14 @@ async function sendNativeAttach(raw: NativeOverlayEvent): Promise<void> {
     const r = await sendToOh([file]);
     mine.status = "";
     const reply = String(r?.answer ?? "").trim();
-    nativeMsgs.push({ id: nextMsgId(), role: "oh", text: reply || "（附件已交给 OH）" });
+    nativeMsgs.push({ id: nextMsgId(), role: "oh", text: reply || i18n("lib.overlayandroid.f11889f79829") });
     if (reply) autoSpeakReply(reply);
   } catch (e) {
     mine.status = "error";
     nativeMsgs.push({
       id: nextMsgId(),
       role: "oh",
-      text: `（附件发送失败：${e instanceof Error ? e.message : String(e)}）`,
+      text: i18n("lib.overlayandroid.d873d782b371", { value: String(e instanceof Error ? e.message : String(e)) }),
     });
   }
   nativeBusy = false;

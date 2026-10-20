@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 标签页 / 工作区的右键就地菜单（浮层，贴着鼠标出现）。
  * 用法：右键时调用 openContextMenu(x, y, items)；由 ContextMenuHost 统一渲染（挂在 Layout）。
@@ -42,6 +43,8 @@ export function closeContextMenu(): void {
 }
 
 export function ContextMenuHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const state = useSyncExternalStore(subscribe, snapshot, snapshot);
   const ref = useRef<HTMLDivElement | null>(null);
 

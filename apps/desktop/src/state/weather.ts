@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 天气数据层（首页/白板的「天气」组件用）。
  *
@@ -40,19 +41,19 @@ const PLACE = "北京 · 清华园";
 
 /** WMO weather code → 中文短语（用户偏好：不上 emoji，文字干净） */
 export function weatherText(code: number): string {
-  if (code === 0) return "晴";
-  if (code === 1) return "基本晴";
-  if (code === 2) return "多云";
-  if (code === 3) return "阴";
-  if (code === 45 || code === 48) return "雾";
-  if (code >= 51 && code <= 57) return "毛毛雨";
-  if (code >= 61 && code <= 65) return "雨";
-  if (code === 66 || code === 67) return "冻雨";
-  if (code >= 71 && code <= 77) return "雪";
-  if (code >= 80 && code <= 82) return "阵雨";
-  if (code === 85 || code === 86) return "阵雪";
-  if (code === 95) return "雷阵雨";
-  if (code === 96 || code === 99) return "雷阵雨伴冰雹";
+  if (code === 0) return i18n("state.weather.6379ede5c239");
+  if (code === 1) return i18n("state.weather.6aec964d8012");
+  if (code === 2) return i18n("state.weather.30c379777e5d");
+  if (code === 3) return i18n("state.weather.78df214e37ef");
+  if (code === 45 || code === 48) return i18n("state.weather.853385be3d5a");
+  if (code >= 51 && code <= 57) return i18n("state.weather.a16db8e97c85");
+  if (code >= 61 && code <= 65) return i18n("state.weather.124d60580dfa");
+  if (code === 66 || code === 67) return i18n("state.weather.86879622e5c9");
+  if (code >= 71 && code <= 77) return i18n("state.weather.53058fe2e03c");
+  if (code >= 80 && code <= 82) return i18n("state.weather.448c8292f481");
+  if (code === 85 || code === 86) return i18n("state.weather.0a9c46115749");
+  if (code === 95) return i18n("state.weather.9ddc77d8932a");
+  if (code === 96 || code === 99) return i18n("state.weather.6ac58535bcad");
   return "—";
 }
 
@@ -120,7 +121,7 @@ export function refreshWeather(force = false): Promise<void> {
       };
       const cur = j.current;
       const daily = j.daily;
-      if (!cur || typeof cur.temperature_2m !== "number" || !daily?.time?.length) throw new Error("响应缺字段");
+      if (!cur || typeof cur.temperature_2m !== "number" || !daily?.time?.length) throw new Error(i18n("state.weather.a53568b517c6"));
       const data: WeatherData = {
         now: {
           temp: cur.temperature_2m,
@@ -153,7 +154,7 @@ export function refreshWeather(force = false): Promise<void> {
 export function weatherAgeText(): string {
   if (!cache.at) return "";
   const mins = Math.max(0, Math.round((Date.now() - cache.at) / 60000));
-  if (mins < 1) return "刚刚";
-  if (mins < 60) return mins + " 分钟前";
-  return Math.round(mins / 60) + " 小时前";
+  if (mins < 1) return i18n("state.weather.de6785d99e02");
+  if (mins < 60) return i18n("state.weather.4ba0128b1216", { mins: String(mins) });
+  return i18n("state.weather.690c01945f17", { value: String(Math.round(mins / 60)) });
 }

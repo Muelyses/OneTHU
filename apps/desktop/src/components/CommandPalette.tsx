@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { isSimpleLike, useExperienceMode } from "../state/experienceMode.js";
 /**
  * 命令面板（§2.8.4）：⌘/Ctrl+K 唤起的居中搜索，输入即搜、回车直达。
@@ -46,6 +47,8 @@ function breadcrumbLine(row: SearchRow): string {
 }
 
 export function CommandPalette(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const mode = useExperienceMode();
   const open = usePaletteOpen();
   const { navigate } = useApp();
@@ -105,7 +108,7 @@ export function CommandPalette(): ReactNode {
       row: x.row,
     }));
     return [...rowHits, ...base];
-  }, [query,mode]);
+  }, [uiLocale, query, mode]);
 
   useEffect(() => {
     setActive((i) => (i >= rows.length ? 0 : i));
@@ -149,7 +152,7 @@ export function CommandPalette(): ReactNode {
         className="pal"
         role="dialog"
         aria-modal="true"
-        aria-label="搜索功能"
+        aria-label={i18n("components.commandpalette.505ea9c9f199")}
         data-palette=""
         onClick={(e) => e.stopPropagation()}
       >
@@ -160,7 +163,7 @@ export function CommandPalette(): ReactNode {
           <input
             ref={inputRef}
             className="pal-input"
-            placeholder="搜功能 / 页面 / 设置，如：电费 洗衣机 成绩"
+            placeholder={i18n("components.commandpalette.eccc7050c50c")}
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -179,20 +182,20 @@ export function CommandPalette(): ReactNode {
                 if (row) runRow(row);
               }
             }}
-            aria-label="搜索功能"
+            aria-label={i18n("components.commandpalette.505ea9c9f199")}
           />
           <kbd className="pal-kbd">{shortcutLabel()}</kbd>
         </div>
-        {!query ? <div className="pal-group">常用</div> : null}
+        {!query ? <div className="pal-group">{i18n("components.commandpalette.4563c57b5143")}</div> : null}
         <div className="pal-list">
           {rows.length === 0 ? (
             <>
-            <div className="pal-empty">没找到。换个说法试试，比如「电费」「成绩」「悬浮球」「多模态」。</div>
+            <div className="pal-empty">{i18n("components.commandpalette.618857afe202")}</div>
             {/* 空态兜底（用户点名）：**真可用**的一条通道——与底部悬浮岛/悬浮球同源走 ohAsk()。
                 先 closePalette() 再调，避免"检索条 + 对话面板"两层浮层叠着。 */}
             <button
               className="pal-ask"
-              title="未登录或应用未就绪时先记下，就绪后第一条消息直接送达"
+              title={i18n("components.commandpalette.38e250de311e")}
               onClick={() => {
                 const q = query.trim();
                 closePalette();
@@ -201,9 +204,9 @@ export function CommandPalette(): ReactNode {
             >
               {query.trim()
                 ? /^(怎么|如何|是什么)/.test(query.trim())
-                  ? `直接问小 (OH) 这个问题：「${query.trim()}」`
-                  : `搜不到「${query.trim()}」？直接问小 (OH)`
-                : "直接问小 (OH)"}
+                  ? i18n("components.commandpalette.30f7c7c3a13f", { value: String(query.trim()) })
+                  : i18n("components.commandpalette.c1acb64eaa4e", { value: String(query.trim()) })
+                : i18n("components.commandpalette.4c32fa9d2ed5")}
             </button>
             </>
           ) : (
@@ -224,7 +227,7 @@ export function CommandPalette(): ReactNode {
               >
                 <span className="pal-row-main">
                   <span className="pal-row-name">
-                    {row.kind === "entry" ? row.entry.name : row.kind === "atom" ? row.title : row.kind === "row" ? row.title : "设置 · " + row.tab}
+                    {row.kind === "entry" ? row.entry.name : row.kind === "atom" ? row.title : row.kind === "row" ? row.title : i18n("components.commandpalette.5214e0bc5dce") + row.tab}
                   </span>
                   {row.kind === "row" ? (
                     /* task-22 面包屑：muted 小字全链（displayRoot 口径；手机档只留最后一段） */
@@ -234,14 +237,14 @@ export function CommandPalette(): ReactNode {
                     {row.kind === "entry"
                       ? row.entry.note ?? row.entry.category
                       : row.kind === "atom"
-                        ? (row.group ? row.group + " · " : "") + (row.sub ?? "相关内容")
+                        ? (row.group ? row.group + " · " : "") + (row.sub ?? i18n("components.commandpalette.3c1917e1c662"))
                         : row.kind === "row"
-                          ? (row.sub ? row.sub : "跳到这一行并高亮")
-                          : "跳到设置的这一栏"}
+                          ? (row.sub ? row.sub : i18n("components.commandpalette.2aedc9c279c5"))
+                          : i18n("components.commandpalette.e205315fe020")}
                   </span>
                 </span>
                 <span className="pal-row-tag">
-                  {row.kind === "entry" ? "功能" : row.kind === "atom" ? "页面" : row.kind === "row" ? (familyOf(row.row) === "plugins" ? "插件" : "设置") : "设置"}
+                  {row.kind === "entry" ? i18n("components.commandpalette.25f5ce57a190") : row.kind === "atom" ? i18n("components.commandpalette.452c7b10d57a") : row.kind === "row" ? (familyOf(row.row) === "plugins" ? i18n("components.commandpalette.e806fbbe8ec6") : i18n("components.commandpalette.df3d58c7d84b")) : i18n("components.commandpalette.df3d58c7d84b")}
                 </span>
               </button>
             ))

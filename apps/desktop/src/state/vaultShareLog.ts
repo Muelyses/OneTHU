@@ -1,3 +1,4 @@
+import { t as i18n, getLocale } from "../i18n/index.js";
 /**
  * 分享口令台账（本地）。
  *
@@ -87,10 +88,10 @@ export function issuedShareState(e: IssuedShare): IssuedShareState {
 
 /** 授权范围一行字：`3 项 · 文件 2、文字 1` */
 export function scopeLabel(e: IssuedShare): string {
-  const parts = Object.entries(e.scope.types)
-    .map(([k, n]) => `${VAULT_TYPE_LABEL[k as VaultItemType] ?? k} ${n}`)
-    .join("、");
-  return `${e.scope.total} 项${parts ? " · " + parts : ""}`;
+  const parts = new Intl.ListFormat(getLocale(), { style: "long", type: "conjunction" }).format(
+    Object.entries(e.scope.types).map(([k, n]) => `${VAULT_TYPE_LABEL[k as VaultItemType] ?? k} ${n}`),
+  );
+  return parts ? i18n("state.vaultsharelog.f9aa135776f2", { count: e.scope.total, contents: parts }) : i18n("state.vaultsharelog.7aec0d4e2435", { count: e.scope.total });
 }
 
 function scopeOf(box: VaultBox): IssuedShare["scope"] {

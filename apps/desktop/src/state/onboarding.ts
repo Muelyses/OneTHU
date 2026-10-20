@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 导览偏好状态（v3，2026-10-13 桌面导览改版）。
  *
@@ -135,32 +136,32 @@ const ALL_TABS = {
 export const PRESETS: Preset[] = [
   {
     id: "complete",
-    label: "完整",
-    hint: "所有功能都在侧栏，适合想一次看全的人",
+    get label() { return i18n("state.onboarding.088b27d0ed00"); },
+    get hint() { return i18n("state.onboarding.8c45a98b34de"); },
     pages: ALL_PAGES,
     tabs: ALL_TABS,
     cards: ["learn", "life", "schedule", "extend"],
   },
   {
     id: "minimal",
-    label: "极简",
-    hint: "只留首页、网络学堂、信息、生活、在线服务",
+    get label() { return i18n("state.onboarding.2e67474d8dad"); },
+    get hint() { return i18n("state.onboarding.1052251daaf7"); },
     pages: ["homepage", "learn", "info", "life", "thos"],
     tabs: { info: ["report", "exams", "profile"], life: ["card", "dorm", "washer"] },
     cards: ["learn"],
   },
   {
     id: "reserve",
-    label: "预约狂人",
-    hint: "日程、预约、场馆与宿舍设备为主",
+    get label() { return i18n("state.onboarding.257c80cc4f44"); },
+    get hint() { return i18n("state.onboarding.42803ef36875"); },
     pages: ["homepage", "schedule", "reserve", "life", "thos"],
     tabs: { info: ["calendar"], life: ["dorm", "washer", "hygiene", "card"] },
     cards: ["schedule", "life"],
   },
   {
     id: "info",
-    label: "信息大师",
-    hint: "成绩、考试、学籍、新闻与网络学堂全在",
+    get label() { return i18n("state.onboarding.00b2d49ca0de"); },
+    get hint() { return i18n("state.onboarding.524a5d266a8f"); },
     pages: ["homepage", "learn", "info", "schedule", "thos", "otherinfo"],
     tabs: { info: ALL_TABS.info, life: ["card", "network"] },
     cards: ["learn", "schedule", "extend"],

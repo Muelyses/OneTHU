@@ -1,3 +1,5 @@
+import { localizedList as i18nList } from "../i18n/index.js";
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, Chip, IconBtn, Inline, Modal, Progress, Spacer, Stack, Surface, Text } from "@onethu/gui";
 /**
  * 桌面端首启导览 v3（2026-10-13）：以桌面现状（dev-explorer 外壳）为基线的全新导览。
@@ -37,6 +39,8 @@ interface Doc {
 
 /** bullet 行：圆点几何走唯一允许的纯几何内联，颜色引用 OG 语义令牌（tour scope 已锁档） */
 export function TourBullet({ children }: { children: ReactNode }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <Inline gap={2} vAlign="baseline">
       <span
@@ -56,69 +60,37 @@ export function TourBullet({ children }: { children: ReactNode }): ReactNode {
 
 const DOCS_BASE: Doc[] = [
   {
-    title: "欢迎使用 OneTHU",
-    lead: "清华园随身工具箱。",
-    bullets: [
-      "七步一分钟，看完桌面端的主干。",
-      "每步都可跳过；想重温，设置页右上角有「导览」。",
-      "右上角 × 只关闭这一次，下次启动还会出现。",
-    ],
+    get title() { return i18n("components.onboardingtourv3.dd3208ca2917"); },
+    get lead() { return i18n("components.onboardingtourv3.2f8345141c89"); },
+    get bullets() { return i18nList(["components.onboardingtourv3.c57439b82df9","components.onboardingtourv3.4ff4a0dbc4ef","components.onboardingtourv3.281c7d16e5bd"]); },
   },
   {
-    title: "标签页与工作区",
-    lead: "页面都住在标签页里；拖一拖，就长成工作区。",
-    bullets: [
-      "顶部一排是标签页；换到竖版时在左侧栏。",
-      "右键标签可复制、关闭，或一星收进 OnePage。",
-      "把一张标签拖到另一张上，停 0.6 秒出灰框，松手合并。",
-      "工作区底板就在标签栏上：右键可解散（标签保留）或删除。",
-      "底栏「标签页」「OneGO!」抽屉里同样能看到工作区面板。",
-    ],
+    get title() { return i18n("components.onboardingtourv3.280832e11f57"); },
+    get lead() { return i18n("components.onboardingtourv3.768ddf66b868"); },
+    get bullets() { return i18nList(["components.onboardingtourv3.b9f53c665e03","components.onboardingtourv3.16db14984ce5","components.onboardingtourv3.c0536a13ccc3","components.onboardingtourv3.d750e7aaed28","components.onboardingtourv3.3313a0968f97"]); },
   },
   {
-    title: "首页是一张自由白板",
-    lead: "大时间与一级功能区是骨架；其余组件随你摆。",
-    bullets: [
-      "骨架不动：右键大时间或功能区可调透明度（四档）。",
-      "组件按住即拖，四角把手缩放，组件之间可以叠盖。",
-      "选中即浮出小工具条：置顶、透明度四档、删除。",
-      "右键空白（落点跟指针）或右侧 ＋：添加组件。",
-      "双击空白就地建便笺；画笔恒在最高层，可撤销清空。",
-    ],
-    foot: "全是常态手势，没有要进出的「编辑模式」。",
+    get title() { return i18n("components.onboardingtourv3.d6a2506f30a7"); },
+    get lead() { return i18n("components.onboardingtourv3.0b3cb95bce97"); },
+    get bullets() { return i18nList(["components.onboardingtourv3.c575f6222266","components.onboardingtourv3.925a3ec4a592","components.onboardingtourv3.99ffd3d1a875","components.onboardingtourv3.290f85ad4f6a","components.onboardingtourv3.1878863a8e7b"]); },
+    get foot() { return i18n("components.onboardingtourv3.e18fe8598d89"); },
   },
   {
-    title: "横竖两副骨架",
-    lead: "标签栏横竖随时切，窄一点也站得住。",
-    bullets: [
-      "横版：标签在顶部一排；竖版：标签在左侧一列。",
-      "底栏「标签页」抽屉里有横版／竖版切换。",
-      "设置里可定默认样式；竖栏底部按钮可切「窄」。",
-      "窄栏悬停在栏上即展开，移开即收。",
-      "底栏常驻：左「标签页」，中「搜索或问小OH」，右「OneGO!」。",
-    ],
+    get title() { return i18n("components.onboardingtourv3.794833cba26d"); },
+    get lead() { return i18n("components.onboardingtourv3.dde91a15ff1f"); },
+    get bullets() { return i18nList(["components.onboardingtourv3.8f2ad7768678","components.onboardingtourv3.a2de4ccdce72","components.onboardingtourv3.23f450edd90e","components.onboardingtourv3.6d3d4feb0c1a","components.onboardingtourv3.0ca382e2edca"]); },
   },
   {
-    title: "OnePage：你的一页",
-    lead: "自带一块可以自由摆组件的白板页。",
-    bullets: [
-      "底栏「OneGO!」→ 我的 OnePage：起名后点「新建」。",
-      "新建即得白板页，与首页同一套手势，摆什么都行。",
-      "标签页右键「一星」：把内容收成一块 OnePage。",
-      "OneGO! 里还有 OneFlow：在 OH 对话里说「创建一个流程」。",
-    ],
-    foot: "命令面板（Ctrl+K）里也能直达你的白板。",
+    get title() { return i18n("components.onboardingtourv3.0195603ee49e"); },
+    get lead() { return i18n("components.onboardingtourv3.06d3cfb40d27"); },
+    get bullets() { return i18nList(["components.onboardingtourv3.dc819c398a78","components.onboardingtourv3.fded5e53272d","components.onboardingtourv3.c071633e0902","components.onboardingtourv3.cb17e22bf3f0"]); },
+    get foot() { return i18n("components.onboardingtourv3.30633ea11f9b"); },
   },
   {
-    title: "装插件、找一切",
-    lead: "两条路就够：去搜索，去市场。",
-    bullets: [
-      "设置 → 插件：「我的插件 / 插件市场」两个视图随时切。",
-      "「安装插件」支持仓库直装与市场一键安装。",
-      "底部中央胶囊「搜索或问小OH」：点开打字即搜。",
-      "任何页面按 Ctrl+K：输入即搜，回车直达。",
-    ],
-    foot: "检索同源：面板搜得到的，页面里也搜得到。",
+    get title() { return i18n("components.onboardingtourv3.8a12026f5cee"); },
+    get lead() { return i18n("components.onboardingtourv3.0afabdd4308c"); },
+    get bullets() { return i18nList(["components.onboardingtourv3.f73a8a19c591","components.onboardingtourv3.2b6332b718e8","components.onboardingtourv3.62a2fe77cea8","components.onboardingtourv3.f3ff6e20abc7"]); },
+    get foot() { return i18n("components.onboardingtourv3.2cbb006447b1"); },
   },
 ];
 
@@ -126,6 +98,8 @@ const DOCS_BASE: Doc[] = [
 const CHIPS = ["工具", "流程", "组件", "主题", "小组件", "插件"] as const;
 
 function OhEvolutionStep(): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <>
       <TourParticles />
@@ -135,9 +109,9 @@ function OhEvolutionStep(): ReactNode {
         ))}
       </Inline>
       <Stack gap={1}>
-        <TourBullet>一句话让 OH 建工具、跑流程、画组件、换主题、加手机小组件。</TourBullet>
-        <TourBullet>插件也有两下：给个仓库地址可当场安装。</TourBullet>
-        <TourBullet>本地插件能发布上 GitHub，并向市场提交收录。</TourBullet>
+        <TourBullet>{i18n("components.onboardingtourv3.5f0c74b96547")}</TourBullet>
+        <TourBullet>{i18n("components.onboardingtourv3.5021907844de")}</TourBullet>
+        <TourBullet>{i18n("components.onboardingtourv3.aa01e1d7252b")}</TourBullet>
       </Stack>
     </>
   );
@@ -147,14 +121,16 @@ function OhEvolutionStep(): ReactNode {
 const DOCS: Doc[] = [
   ...DOCS_BASE,
   {
-    title: "OH：说一句，长一样本领",
-    lead: "在对话里说，它就动手。",
+    get title() { return i18n("components.onboardingtourv3.7c2809268e55"); },
+    get lead() { return i18n("components.onboardingtourv3.514adbf12726"); },
     bullets: [],
-    foot: "工具箱自己会长：说到哪，就长到哪。",
+    get foot() { return i18n("components.onboardingtourv3.67ab2cc6012c"); },
   },
 ];
 
 export function OnboardingTourV3(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState<boolean>(() => !hasOnboardedV3());
   const [step, setStep] = useState(0);
   const [practice, setPractice] = useState(false);
@@ -197,7 +173,7 @@ export function OnboardingTourV3(): ReactNode {
     return (
       <div
         role="dialog"
-        aria-label="拖拽演练"
+        aria-label={i18n("components.onboardingtourv3.edaec615b68d")}
         style={{
           position: "fixed",
           left: 0,
@@ -209,9 +185,8 @@ export function OnboardingTourV3(): ReactNode {
       >
         <Surface overlay radius="2xl" scope={TOUR_CARD_SCOPE} pad="sm">
           <Inline gap={3} vAlign="center">
-            <Text as="span">演练中：把一张标签拖到另一张上，灰框出现就松手</Text>
-            <Btn variant="solid" tone="brand" onClick={() => setPractice(false)}>回到导览
-            </Btn>
+            <Text as="span">{i18n("components.onboardingtourv3.d45c9dc68d4b")}</Text>
+            <Btn variant="solid" tone="brand" onClick={() => setPractice(false)}>{i18n("components.onboardingtourv3.35915ce8d259")}</Btn>
           </Inline>
         </Surface>
       </div>
@@ -229,21 +204,17 @@ export function OnboardingTourV3(): ReactNode {
       maskClose={false}
       closeButton={false}
       size="md"
-      aria-label="OneTHU 桌面导览"
+      aria-label={i18n("components.onboardingtourv3.958b344e82b3")}
       scope={TOUR_CARD_SCOPE}
       foot={
         <Inline gap={2} vAlign="center" wrap>
-          <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>上一步
-          </Btn>
+          <Btn variant="outline" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>{i18n("components.onboardingtourv3.da336fdc0dbd")}</Btn>
           <Spacer />
-          <Btn variant="ghost" titleAttr="完成标记：此后不再自动出现" onClick={closeForever}>
-            不再显示
-          </Btn>
+          <Btn variant="ghost" titleAttr={i18n("components.onboardingtourv3.1f5a2b96e178")} onClick={closeForever}>{i18n("components.onboardingtourv3.a2d3a4eeefd7")}</Btn>
           {isLast ? (
-            <Btn variant="solid" tone="brand" onClick={closeForever}>开始使用</Btn>
+            <Btn variant="solid" tone="brand" onClick={closeForever}>{i18n("components.onboardingtourv3.715ee9dc842f")}</Btn>
           ) : (
-            <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>下一步
-            </Btn>
+            <Btn variant="solid" tone="brand" onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))}>{i18n("components.onboardingtourv3.acfc4e74a650")}</Btn>
           )}
         </Inline>
       }
@@ -251,11 +222,11 @@ export function OnboardingTourV3(): ReactNode {
       <Stack gap={2}>
         {/* 头：步进度 + 关闭本次（不写偏好）——浮动卡骨架的 body 顶部与旧版同位 */}
         <Inline gap={2} vAlign="center">
-          <div aria-label={"第 " + (step + 1) + " 步，共 " + STEPS + " 步"}>
+          <div aria-label={i18n("components.onboardingtourv3.9552fe3bd366") + (step + 1) + i18n("components.onboardingtourv3.fd73c2773154") + STEPS + i18n("components.onboardingtourv3.e010e3f578cc")}>
             <Progress value={(step + 1) / STEPS} size="sm" />
           </div>
           <Spacer />
-          <IconBtn label="关闭本次导览" icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
+          <IconBtn label={i18n("components.onboardingtourv3.285daf1ff2f1")} icon={<IconX width={14} height={14} />} onClick={() => setOpen(false)} />
         </Inline>
 
         <Text slot="title" as="h3">{doc.title}</Text>
@@ -271,8 +242,8 @@ export function OnboardingTourV3(): ReactNode {
         {/* ② 真实拖拽演练：进演练模式，卡片让位，交互透传 */}
         {step === 1 ? (
           <Inline gap={3} vAlign="center" wrap>
-            <Btn variant="solid" tone="brand" onClick={() => setPractice(true)}>自己拖一次</Btn>
-            <Text slot="label" tone="faint">卡片让开，你动手；点胶囊回来继续</Text>
+            <Btn variant="solid" tone="brand" onClick={() => setPractice(true)}>{i18n("components.onboardingtourv3.f8d9c42c331f")}</Btn>
+            <Text slot="label" tone="faint">{i18n("components.onboardingtourv3.bcd7acd491b0")}</Text>
           </Inline>
         ) : null}
 

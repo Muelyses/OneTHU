@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 版本更新检测：GitHub Releases。
  * - 数据源 api.github.com/repos/smartThise/OneTHU/releases/latest（经 Rust
@@ -99,5 +100,5 @@ export async function checkUpdateSilently(onToast: (msg: string) => void): Promi
   if (!rel) return;
   if (!isNewer(rel.tag, currentVersion())) return;
   if (isDismissed(rel.tag)) return;
-  onToast(`新版本 ${rel.name} 可用：设置 → 关于 查看详情`);
+  onToast(i18n("lib.update.c459fb3f09e6", { version: rel.name }));
 }

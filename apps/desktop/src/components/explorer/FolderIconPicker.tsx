@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * OnePage 图标选择弹窗。入口：OneGO / OnePage 列表行的「改图标…」。
@@ -31,6 +32,8 @@ export function closeFolderIconPicker(): void {
 }
 
 export function FolderIconPickerHost(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const id = useSyncExternalStore(subscribe, snapshot, snapshot);
   const board = id ? loadBoard().boards.find((b) => b.id === id) : undefined;
   if (!id || !board) return null;
@@ -44,11 +47,11 @@ export function FolderIconPickerHost(): ReactNode {
     >
       <div
         role="dialog"
-        aria-label="选择图标"
+        aria-label={i18n("components.explorer.foldericonpicker.6d8adad124d0")}
         style={{ background: "var(--dsw-alias-bg-base, #fff)", color: "var(--dsw-alias-label-primary, inherit)", borderRadius: 14, padding: 18, width: 320, boxShadow: "0 12px 40px rgba(0,0,0,.25)" }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 4 }}>「{board.name}」的图标</div>
-        <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 12 }}>OnePage 默认是拳头 logo，可改成下面任一个</div>
+        <div style={{ fontWeight: 600, marginBottom: 4 }}>{i18nRich("components.explorer.foldericonpicker.f45caa2cd437", { name: board.name })}</div>
+        <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 12 }}>{i18n("components.explorer.foldericonpicker.b86fc3eba8dd")}</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
           {Object.keys(FOLDER_ICONS).map((k) => {
             const G = FOLDER_ICONS[k];
@@ -57,7 +60,7 @@ export function FolderIconPickerHost(): ReactNode {
               <button
                 key={k}
                 type="button"
-                aria-label={"图标 " + k}
+                aria-label={i18n("components.explorer.foldericonpicker.ea3db278696e") + k}
                 aria-pressed={current === k}
                 onClick={() => {
                   mutateBoards((doc) => renameBoard(doc, id, board.name, k));
@@ -71,7 +74,7 @@ export function FolderIconPickerHost(): ReactNode {
           })}
         </div>
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 14 }}>
-          <Btn variant="outline" onClick={closeFolderIconPicker}>关闭</Btn>
+          <Btn variant="outline" onClick={closeFolderIconPicker}>{i18n("components.explorer.foldericonpicker.3fd47edce45b")}</Btn>
         </div>
       </div>
     </div>,

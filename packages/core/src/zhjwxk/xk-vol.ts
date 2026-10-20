@@ -177,8 +177,12 @@ export function parseVolSportsRows(html: string): Record<string, XkVolRow> {
 
 /** 分页信息（共 N 页/共 N 条） */
 export function parsePagerInfo(html: string): { pages: number; total: number } {
-  const pages = /共\s*(\d+)\s*页/.exec(html);
-  const total = /共\s*([\d,，]+)\s*条/.exec(html);
+  const text = html.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ");
+  const pages = /共\s*(\d+)\s*页/.exec(text)
+    ?? /\b(?:total\s*[:：]?\s*|of\s+)(\d+)\s*pages?\b/i.exec(text)
+    ?? /\bpage\s+\d+\s+of\s+(\d+)\b/i.exec(text);
+  const total = /共\s*([\d,，]+)\s*条/.exec(text)
+    ?? /\b(?:total\s*[:：]?\s*)?([\d,]+)\s*(?:records|results|entries)\b/i.exec(text);
   return {
     pages: pages ? parseInt(pages[1] ?? "") || 0 : 0,
     total: total ? parseInt((total[1] ?? "").replace(/[,，]/g, "")) || 0 : 0,

@@ -114,7 +114,9 @@ object WidgetStore {
                 }
             }
         }
-        scan(loadSlots(ctx))
+        val storedSlots = loadSlots(ctx)
+        val slots = storedSlots?.optJSONObject("slots") ?: storedSlots // pre-locale releases stored the bare slot map
+        slots?.keys()?.forEach { key -> scan(slots.optJSONObject(key)) }
         for (k in prefs(ctx).all.keys) {
             if (!k.startsWith(PREFIX_INSTANCE)) continue
             val id = k.removePrefix(PREFIX_INSTANCE).toIntOrNull() ?: continue
@@ -214,13 +216,14 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private fun inkOf(ctx: Context): Int = if (isNight(ctx)) INK_NIGHT else INK
         private fun subOf(ctx: Context): Int = if (isNight(ctx)) SUB_COLOR_NIGHT else SUB_COLOR
 
-        /** 「还有 40 分钟」/「还有 3 小时」/「还有 2 天」（口径同 JS widgetNativeRender.leftText） */
-        private fun leftText(ms: Long): String {
-            val m = Math.max(1, Math.round(ms / 60000.0))
-            return when {
-                m < 60 -> "还有 $m 分钟"
-                m < 2880 -> "还有 ${Math.round(m / 60.0)} 小时"
-                else -> "还有 ${Math.round(m / 1440.0)} 天"
+        private var legacyWidgetText: Map<String, String>? = null
+
+        private fun words(ctx: Context, content: JSONObject?): WidgetText {
+            fun strings(value: JSONObject?): Map<String, String> = value?.keys()?.asSequence()
+                ?.mapNotNull { key -> (value.opt(key) as? String)?.let { key to it } }?.toMap() ?: emptyMap()
+            val legacy = legacyWidgetText ?: strings(JSONObject(ctx.assets.open("onethu-widget-zh.json").bufferedReader().use { it.readText() })).also { legacyWidgetText = it }
+            return WidgetText(content?.optString("locale").orEmpty(), strings(content?.optJSONObject("widgetText")), legacy) { locale, count ->
+                android.icu.text.PluralRules.forLocale(java.util.Locale.forLanguageTag(locale)).select(count.toDouble())
             }
         }
 
@@ -380,9 +383,9 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private fun renderFor(ctx: Context, manager: AppWidgetManager, widgetId: Int, slot: String?) {
             val (w, h) = sizeOf(manager, widgetId)
             val snap = WidgetStore.loadSlots(ctx)
-            val content = if (slot == null) WidgetStore.loadInstance(ctx, widgetId) else snap?.optJSONObject("slots")?.optJSONObject(slot)
+            val content = if (slot == null) WidgetStore.loadInstance(ctx, widgetId) else (snap?.optJSONObject("slots") ?: snap)?.optJSONObject(slot)
             if (content == null) {
-                renderPlaceholder(ctx, manager, widgetId, slot)
+                renderPlaceholder(ctx, manager, widgetId, slot, words(ctx, snap))
                 return
             }
             when (content.optString("kind", "list")) {
@@ -393,19 +396,19 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         }
 
         /** 未绑定 / 尚无快照：给一条可读的引导，不留空白 */
-        private fun renderPlaceholder(ctx: Context, manager: AppWidgetManager, widgetId: Int, slot: String?) {
+        private fun renderPlaceholder(ctx: Context, manager: AppWidgetManager, widgetId: Int, slot: String?, text: WidgetText) {
             if (slot == null && isShortcutProvider(manager, widgetId)) {
                 val views = RemoteViews(ctx.packageName, R.layout.onethu_widget_shortcut)
                 // 空框看着像坏了：先用应用图标占位，用户一看就知道「还没选东西」
                 views.setImageViewResource(R.id.onethu_widget_icon, ctx.applicationInfo.icon)
-                views.setTextViewText(R.id.onethu_widget_label, "点一下选择")
+                views.setTextViewText(R.id.onethu_widget_label, text.text("choose"))
                 views.setOnClickPendingIntent(R.id.onethu_widget_root, clickPending(ctx, "widget-config:$widgetId", 0))
                 manager.updateAppWidget(widgetId, views)
                 return
             }
             val views = RemoteViews(ctx.packageName, R.layout.onethu_widget)
-            val title = if (slot == null) "OneTHU" else "OneTHU 插件小组件 $slot"
-            val line = if (slot == null) "点一下选择显示内容" else "尚无插件占用此槽位"
+            val title = if (slot == null) "OneTHU" else text.text("pluginTitle", mapOf("slot" to slot))
+            val line = if (slot == null) text.text("chooseContent") else text.text("emptySlot")
             views.setTextViewText(R.id.onethu_widget_title, title)
             views.setViewVisibility(R.id.onethu_widget_title, View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_row1, line)
@@ -439,6 +442,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private fun renderList(ctx: Context, manager: AppWidgetManager, widgetId: Int, content: JSONObject, h: Int) {
             val views = RemoteViews(ctx.packageName, R.layout.onethu_widget)
             val rows = content.optJSONArray("rows")
+            val language = words(ctx, content)
             val now = System.currentTimeMillis()
             // 矮条（2×1）里标题是冗余的（用户自己知道放的是什么），把这一行让给内容：
             // 隐藏标题、收紧内边距，于是「一条内容 + 脚注」都放得下，而不是被裁掉半行。
@@ -446,7 +450,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             val withSub = h <= 0 || h >= 100
             applyCompactPadding(ctx, views, compact)
             views.setViewVisibility(R.id.onethu_widget_title, if (compact) View.GONE else View.VISIBLE)
-            views.setTextViewText(R.id.onethu_widget_title, titleOf(content, now))
+            views.setTextViewText(R.id.onethu_widget_title, titleOf(content, now, language))
 
             val ink = inkOf(ctx)
             val subC = subOf(ctx)
@@ -462,7 +466,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             if (rows != null) {
                 for (i in 0 until rows.length()) {
                     val row = rows.optJSONObject(i) ?: continue
-                    val (visible, text, rowSub) = nativeRow(row, now)
+                    val (visible, text, rowSub) = nativeRow(row, now, language)
                     if (!visible) continue
                     val sub = if (withSub) rowSub else ""
                     if (text.isEmpty() && sub.isEmpty()) continue
@@ -511,7 +515,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             for (i in packed + 1..SLOT_IDS) views.setViewVisibility(slotId(i), View.GONE)
 
             // 脚注：数卡片上显示出来的行 + 还没显示的条目数（矮条里让位给内容）
-            val footer = if (withSub) footerOf(content, now, shownClasses, shownDdls, shownEvents, visClasses + visDdls + visEvents) else ""
+            val footer = if (withSub) footerOf(content, now, shownClasses, shownDdls, shownEvents, visClasses + visDdls + visEvents, language) else ""
             views.setViewVisibility(R.id.onethu_widget_footer, if (footer.isEmpty()) View.GONE else View.VISIBLE)
             views.setTextViewText(R.id.onethu_widget_footer, footer)
             views.setOnClickPendingIntent(
@@ -522,12 +526,12 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         }
 
         /** 标题：快照有 titleAt 就按当前日期重写「今天 M月d日」（跨午夜不再挂昨天的日期） */
-        private fun titleOf(content: JSONObject, now: Long): String {
+        private fun titleOf(content: JSONObject, now: Long, language: WidgetText): String {
             val base = content.optString("title").takeIf { it.isNotEmpty() } ?: "OneTHU"
-            if (content.optLong("titleAt", 0L) <= 0L) return base
+            if (content.optLong("titleAt", 0L) <= 0L || content.optJSONObject("counts") == null) return base
             val c = java.util.Calendar.getInstance()
             c.timeInMillis = now
-            return "今天 ${c.get(java.util.Calendar.MONTH) + 1}月${c.get(java.util.Calendar.DAY_OF_MONTH)}日"
+            return language.text("title", mapOf("month" to c.get(java.util.Calendar.MONTH) + 1, "day" to c.get(java.util.Calendar.DAY_OF_MONTH)))
         }
 
         /**
@@ -539,7 +543,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
          *  - event：与 ddl 同一分支（同理的过点失效型）。
          *  加粗在 styledRow 内按「正在上课 / 6 小时内的 DDL 或日程」判定，与此处语义互补。
          */
-        private fun nativeRow(row: JSONObject, now: Long): Triple<Boolean, String, String> {
+        private fun nativeRow(row: JSONObject, now: Long, language: WidgetText): Triple<Boolean, String, String> {
             val text = row.optString("text").orEmpty()
             val subSnap = row.optString("sub").orEmpty()
             val at = if (row.has("at")) row.optLong("at", 0L) else 0L
@@ -552,21 +556,21 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 if (until > 0L && until <= now) return Triple(false, "", "")               // 已下课
                 val loc = row.optString("loc").orEmpty()
                 if (until > 0L && at <= now && now < until) {
-                    return Triple(true, text, listOf("正在上课", loc).filter { it.isNotEmpty() }.joinToString(" · "))
+                    return Triple(true, text, language.join(listOf(language.text("ongoing"), loc)))
                 }
                 if (until == 0L && at <= now) return Triple(false, "", "")                 // 无结束时刻，过点当结束
-                return Triple(true, text, listOf(loc, leftText(at - now)).filter { it.isNotEmpty() }.joinToString(" · "))
+                return Triple(true, text, language.join(listOf(loc, language.left(at - now))))
             }
 
             // ddl（及其他过点失效型）
             if (at <= now) return Triple(false, "", "")
             val sameDay = dayKey(at) == dayKey(now)
-            val dayLabel = if (sameDay) "今天" else {
+            val dayLabel = if (sameDay) language.text("today") else {
                 val c = java.util.Calendar.getInstance()
                 c.timeInMillis = at
-                "${c.get(java.util.Calendar.MONTH) + 1}/${c.get(java.util.Calendar.DAY_OF_MONTH)}"
+                language.text("date", mapOf("month" to c.get(java.util.Calendar.MONTH) + 1, "day" to c.get(java.util.Calendar.DAY_OF_MONTH)))
             }
-            return Triple(true, text, "$dayLabel ${hmOf(at)} · ${leftText(at - now)}")
+            return Triple(true, text, language.text("relativeRow", mapOf("day" to dayLabel, "time" to hmOf(at), "remaining" to language.left(at - now))))
         }
 
         /**
@@ -583,21 +587,21 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
          * counts.more；两者之和恒等于仍有效的条目总数。此前「还有」直接用快照里写死的
          * counts.more，与卡片实际显示几条无关——用户实录「空着大半张卡却一直写着还有 2 项」。
          */
-        private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, shownEvents: Int, visibleRel: Int): String {
+        private fun footerOf(content: JSONObject, now: Long, shownClasses: Int, shownDdls: Int, shownEvents: Int, visibleRel: Int, language: WidgetText): String {
             val counts = content.optJSONObject("counts")
                 ?: return content.optString("footer").orEmpty() // 非今日内容：用自带页脚（可能为空=不显示）
             val parts = mutableListOf<String>()
-            if (shownClasses > 0) parts.add("$shownClasses 节课")
-            if (shownDdls > 0) parts.add("$shownDdls 个截止")
-            if (shownEvents > 0) parts.add("$shownEvents 项日程")
+            if (shownClasses > 0) parts.add(language.count("classes", shownClasses.toLong()))
+            if (shownDdls > 0) parts.add(language.count("ddls", shownDdls.toLong()))
+            if (shownEvents > 0) parts.add(language.count("events", shownEvents.toLong()))
             if (parts.isEmpty()) {
                 val hadClass = counts.optBoolean("hadClass", false) == true
                 val titleAt = content.optLong("titleAt", 0L)
-                return if (hadClass && (titleAt <= 0L || dayKey(titleAt) == dayKey(now))) "今天的课已上完"
-                else "今天没有课与截止"
+                return if (hadClass && (titleAt <= 0L || dayKey(titleAt) == dayKey(now))) language.text("completed")
+                else language.text("empty")
             }
             val hidden = (visibleRel - (shownClasses + shownDdls + shownEvents)) + counts.optInt("more", 0)
-            return parts.joinToString(" · ") + if (hidden > 0) " · 还有 $hidden 项" else ""
+            return language.join(parts + if (hidden > 0) listOf(language.count("more", hidden.toLong())) else emptyList())
         }
 
         /**
@@ -661,7 +665,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             val views = RemoteViews(ctx.packageName, R.layout.onethu_widget_grid)
             views.setTextViewText(
                 R.id.onethu_widget_title,
-                content.optString("title").takeIf { it.isNotEmpty() } ?: "收藏",
+                content.optString("title").takeIf { it.isNotEmpty() } ?: words(ctx, content).text("favorites"),
             )
             val items = content.optJSONArray("items")
             val capacity = gridCapacity(w, h)

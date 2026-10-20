@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 飞书通道适配器（自建应用机器人）。
  *
@@ -39,7 +40,7 @@ async function feishuToken(force = false): Promise<string> {
   tokenLoading = (async () => {
     const cfg = await loadImConfig();
     const creds = cfg.channels.feishu;
-    if (!creds?.appId || !creds.appSecret) throw new Error("飞书应用信息未配置");
+    if (!creds?.appId || !creds.appSecret) throw new Error(i18n("im.feishu.1b07b50af2fc"));
     const res = await tauriFetch(`${FEISHU_BASE}/open-apis/auth/v3/tenant_access_token/internal`, {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -47,7 +48,7 @@ async function feishuToken(force = false): Promise<string> {
     });
     const j = (await res.json()) as { code?: number; msg?: string; tenant_access_token?: string; expire?: number };
     if (j.code !== 0 || !j.tenant_access_token) {
-      throw new Error(`飞书登录失败(code=${j.code ?? res.status})：${j.msg ?? "请检查 App ID / App Secret"}`);
+      throw new Error(i18n("im.feishu.6852f9c70747", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n("im.feishu.checkAppCredentials")) }));
     }
     // 官方 expire=7200s；提前 20 分钟视为过期
     const expireMs = Math.max(60, (j.expire ?? 7200) - 1200 / 2 - 0) * 1000 - 0; // ~ (expire-600)s
@@ -79,7 +80,7 @@ interface EndpointResp {
 async function discoverEndpoint(): Promise<{ url: string; config: ClientConfig }> {
   const cfg = await loadImConfig();
   const creds = cfg.channels.feishu;
-  if (!creds?.appId || !creds.appSecret) throw new Error("飞书应用信息未配置");
+  if (!creds?.appId || !creds.appSecret) throw new Error(i18n("im.feishu.1b07b50af2fc"));
   const res = await tauriFetch(`${FEISHU_BASE}${ENDPOINT_URI}`, {
     method: "POST",
     headers: { "Content-Type": "application/json; charset=utf-8", locale: "zh" },
@@ -87,7 +88,7 @@ async function discoverEndpoint(): Promise<{ url: string; config: ClientConfig }
   });
   const j = (await res.json()) as EndpointResp;
   if (j.code !== 0 || !j.data?.URL) {
-    throw new Error(`飞书长连接建立失败(code=${j.code})：${j.msg ?? "请检查应用信息与长连接权限"}`);
+    throw new Error(i18n("im.feishu.ae1ef2c16037", { code: String(j.code), value: String(j.msg ?? i18n("im.feishu.checkConnectionPermissions")) }));
   }
   return { url: j.data.URL, config: j.data.ClientConfig ?? {} };
 }
@@ -96,7 +97,7 @@ async function discoverEndpoint(): Promise<{ url: string; config: ClientConfig }
 
 class FeishuChannel implements ChannelAdapter {
   readonly id = "feishu" as const;
-  readonly label = "飞书";
+  get label(): string { return i18n("im.feishu.channelLabel"); }
 
   private stopped = true;
   private ws: WebSocket | null = null;
@@ -134,7 +135,7 @@ class FeishuChannel implements ChannelAdapter {
       ws.binaryType = "arraybuffer";
       const onFail = (e: unknown): void => {
         cleanup();
-        reject(new Error(`飞书长连接无法建立：${String((e as Event)?.type ?? e)}`));
+        reject(new Error(i18n("im.feishu.cd5f46094a61", { value: String(String((e as Event)?.type ?? e)) })));
       };
       const onOpen = (): void => {
         cleanup();
@@ -400,7 +401,7 @@ class FeishuChannel implements ChannelAdapter {
       j = (await res.json().catch(() => ({}))) as { code?: number; msg?: string };
     }
     if (j.code !== 0) {
-      throw new Error(`飞书发送失败(code=${j.code ?? res.status})：${j.msg ?? "未知原因"}`);
+      throw new Error(i18n("im.feishu.922f42820916", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n("im.feishu.unknownReason")) }));
     }
   }
 
@@ -415,7 +416,7 @@ class FeishuChannel implements ChannelAdapter {
       await new Promise((r) => setTimeout(r, nonceSec * 1000 * Math.random()));
       let delay = 2000;
       while (!this.stopped) {
-        reportChannelStatus("feishu", "reconnecting", `连接断开，${Math.round(delay / 1000)} 秒后重连`);
+        reportChannelStatus("feishu", "reconnecting", i18n("im.feishu.reconnectDelay", { seconds: Math.round(delay / 1000) }));
         await new Promise((r) => setTimeout(r, delay));
         if (this.stopped) return;
         try {

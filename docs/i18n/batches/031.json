@@ -1,0 +1,1464 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "im.registry.5f78abafdcbe",
+      "source": "{ans}\n\n（文件仍在待确认：回「存」转存 /「存到 <目录>」/「不」忽略）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "ans",
+          "expression": "String(ans)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 579,
+          "context": "replyTo(msg, i18n(\"im.registry.5f78abafdcbe\", { ans: String(ans) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.614102b3fb66",
+      "source": "绑定码不正确，请核对后重发「/bind 码」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 364,
+          "context": "replyTo(msg, i18n(\"im.registry.614102b3fb66\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.67895eae0abe",
+      "source": "公开分享链接（7 天有效，拿到链接的人都能访问）：\n{link}\n文件：{path}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "link",
+          "expression": "String(link)"
+        },
+        {
+          "name": "path",
+          "expression": "String(ls.path)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 629,
+          "context": "replyTo(msg, i18n(\"im.registry.67895eae0abe\", { link: String(link), path: String(ls.path) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.68e326aeaae1",
+      "source": "绑定成功，这台电脑的 OneTHU 现在听你指挥。发送 /status 查看状态。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 371,
+          "context": "replyTo(msg, i18n(\"im.registry.68e326aeaae1\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.68eca2ae3b84",
+      "source": "用法：/delete 编号（先 /list 查看）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 287,
+          "context": "replyTo(msg, i18n(\"im.registry.68eca2ae3b84\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.6ab73e995f59",
+      "source": "编号不存在（先 /list）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 249,
+          "context": "replyTo(msg, i18n(\"im.registry.6ab73e995f59\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.76588d6a5d1a",
+      "source": "新建失败。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 225,
+          "context": "r?.ok ? i18n(\"im.registry.2a20bd367600\") : i18n(\"im.registry.76588d6a5d1a\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.7844068377fb",
+      "source": "用法：/search 关键词（搜会话标题与内容）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 309,
+          "context": "replyTo(msg, i18n(\"im.registry.7844068377fb\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.7b6bcc474a8c",
+      "source": "「{kw}」命中 {length} 个会话：\n{value}\n/detail 编号 查看（/list 重取编号）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "kw",
+          "expression": "String(kw)"
+        },
+        {
+          "name": "length",
+          "expression": "String(hits.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(hits.join(\"\\n\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 337,
+          "context": "hits.length\n          ? i18n(\"im.registry.7b6bcc474a8c\", { kw: String(kw), length: String(hits.length), value: String(hits.join(\"\\n\")) })\n          : i18n(\"im.registry.03e93eccef32\", { kw: String(kw) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.7df9b9254e26",
+      "source": "转存完成：\n{value}{tail}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(out.join(\"\\n\"))"
+        },
+        {
+          "name": "tail",
+          "expression": "String(tail)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 552,
+          "context": "replyTo(msg, i18n(\"im.registry.7df9b9254e26\", { value: String(out.join(\"\\n\")), tail: String(tail) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.8282ce4afe46",
+      "source": "(空响应)",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 649,
+          "context": "parts.join(\"\\n\\n\") || i18n(\"im.registry.8282ce4afe46\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.87b01a60cde1",
+      "source": "云盘还没连接——回「连云盘」我自动获取（或去电脑端云盘页手动配置）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 501,
+          "context": "replyTo(msg, i18n(\"im.registry.87b01a60cde1\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.8b9c82d7f5dc",
+      "source": "⚠️ 预约/取消等写操作：出现确认提示后回「确认执行」才执行（省略回复不认，防误触）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 196,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.9fc192e6d22e",
+      "source": "这条是省略回复，IM 里不认（防你手快误触执行）。\n待确认操作：{summary}\n要执行请回「确认执行」；不需要请回「取消」。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "summary",
+          "expression": "String(cur2.summary)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 613,
+          "context": "replyTo(\n          msg,\n          i18n(\"im.registry.9fc192e6d22e\", { summary: String(cur2.summary) }),\n        )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 352,
+          "context": "r.error ?? i18n(\"im.registry.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.a6317abbaa8b",
+      "source": "· /list —— 列出会话（1=主对话，永久保留不可删；←当前）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 188,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.b34bb467f031",
+      "source": "切换失败（编号过期？回 /list 重看）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 237,
+          "context": "r?.ok ? i18n(\"im.registry.30627e4f5d7b\") : i18n(\"im.registry.b34bb467f031\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.b769dc31231a",
+      "source": "云盘里没有资料库（先在 cloud.tsinghua.edu.cn 建一个再回「存」）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 509,
+          "context": "replyTo(msg, i18n(\"im.registry.b769dc31231a\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.c2569c12dd05",
+      "source": "绑定码已过期：请在电脑端重新生成后发送「/bind 码」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 360,
+          "context": "replyTo(msg, i18n(\"im.registry.c2569c12dd05\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.c4b26873708a",
+      "source": "· /delete N —— 删除编号 N 的会话（1 号主对话不可删）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 192,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.c7900a839486",
+      "source": "· /search 关键词 —— 查找关键词出现在哪些会话（含轮次定位）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 193,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.d09bfe8fc388",
+      "source": "1 号主对话永久保留，不可删除（用户定案）。想清空就 /switch 1 后 /new 新开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 291,
+          "context": "replyTo(msg, i18n(\"im.registry.d09bfe8fc388\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.d114e94fa699",
+      "source": "📖 指令清单：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 184,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.db41ffa2dc85",
+      "source": "(已取消)",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 606,
+          "context": "r.answer ?? i18n(\"im.registry.db41ffa2dc85\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.e64bb18a2933",
+      "source": "📎 发文件/图片给我：自动读取内容、建议云盘目录，回「存」确认转存（默认不出公开链接，回「要链接」再生成）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 195,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.ebb6664ef64f",
+      "source": "[OneTHU] {channel} 通道在线，{bound}。电脑保持开机与 OneTHU 运行，我才会回复。{cloudLine}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "channel",
+          "expression": "String(msg.channel)"
+        },
+        {
+          "name": "bound",
+          "expression": "String(bound)"
+        },
+        {
+          "name": "cloudLine",
+          "expression": "String(cloudLine)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 388,
+          "context": "replyTo(msg, i18n(\"im.registry.ebb6664ef64f\", { channel: String(msg.channel), bound: String(bound), cloudLine: String(cloudLine) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.f06e4127fc8b",
+      "source": "删除失败。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 301,
+          "context": "r?.error ?? i18n(\"im.registry.f06e4127fc8b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.f8ce08058aa6",
+      "source": "已删除编号 {arg} 的会话。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "arg",
+          "expression": "String(arg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 299,
+          "context": "replyTo(msg, i18n(\"im.registry.f8ce08058aa6\", { arg: String(arg) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.registry.fe67e76559d3",
+      "source": "· /detail N [x-y] —— 查看编号 N 会话的第 x 到 y 轮（默认 1-5）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 191,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.4c408d3226a4",
+      "source": "未扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 46,
+          "context": "new Error(i18n(\"im.wechat.4c408d3226a4\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.c383c734a8c7",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 149,
+          "context": "note: i18n(\"im.wechat.c383c734a8c7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.channelLabel",
+      "source": "微信（iLink 官方 Bot）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 25,
+          "context": "return i18n(\"im.wechat.channelLabel\");"
+        }
+      ],
+      "translation": "WeChat (official iLink bot)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "im.wechat.e3fe9d7adf2c",
+      "source": "未发起登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 146,
+          "context": "note: i18n(\"im.wechat.e3fe9d7adf2c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.ed04656fa8e1",
+      "source": "登录成功，通道已启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 172,
+          "context": "note: i18n(\"im.wechat.ed04656fa8e1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.f1ffea5c8b09",
+      "source": "微信通道未登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 59,
+          "context": "new Error(i18n(\"im.wechat.f1ffea5c8b09\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.bound",
+      "source": "该 Bot 已绑定到本机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 180,
+          "context": "binded_redirect: i18n(\"im.wechat.qr.bound\")"
+        }
+      ],
+      "translation": "This bot is already linked to this device.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.expired",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 178,
+          "context": "expired: i18n(\"im.wechat.qr.expired\")"
+        }
+      ],
+      "translation": "QR code expired. Start again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.needVerifyCode",
+      "source": "需要在手机上输入验证码后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 177,
+          "context": "need_verifycode: i18n(\"im.wechat.qr.needVerifyCode\")"
+        }
+      ],
+      "translation": "Enter the verification code on your phone, then retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.redirect",
+      "source": "已扫码（切换接入点）…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 181,
+          "context": "scaned_but_redirect: i18n(\"im.wechat.qr.redirect\")"
+        }
+      ],
+      "translation": "Scanned. Switching connection…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.scaned",
+      "source": "已扫码，请在手机上确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 176,
+          "context": "scaned: i18n(\"im.wechat.qr.scaned\")"
+        }
+      ],
+      "translation": "Scanned. Confirm on your phone.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.verifyBlocked",
+      "source": "验证失败次数过多，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 179,
+          "context": "verify_code_blocked: i18n(\"im.wechat.qr.verifyBlocked\")"
+        }
+      ],
+      "translation": "Too many failed attempts. Start again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.qr.wait",
+      "source": "等待扫码…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 175,
+          "context": "wait: i18n(\"im.wechat.qr.wait\")"
+        }
+      ],
+      "translation": "Waiting for scan…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.scanRequired",
+      "source": "未扫码登录（设置页点「扫码登录」）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 41,
+          "context": "missing: i18n(\"im.wechat.scanRequired\")"
+        }
+      ],
+      "translation": "Not signed in. Choose Scan to sign in in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.suspended",
+      "source": "微信风控（-14）：暂停 1 小时后自动恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 73,
+          "context": "reportChannelStatus(this.id, \"suspended\", i18n(\"im.wechat.suspended\"))"
+        }
+      ],
+      "translation": "WeChat restriction (-14): paused for 1 hour, then resumes automatically.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.0e36df52d6f5",
+      "source": "这份附件读不到内容，请重新选择文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 271,
+          "context": "new Error(i18n(\"lib.attach.0e36df52d6f5\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.822fb37dba29",
+      "source": "选择文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 212,
+          "context": "title: i18n(\"lib.attach.822fb37dba29\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 213,
+          "context": "title: i18n(\"lib.attach.822fb37dba29\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.attach.9155bd07598c",
+      "source": "当前环境没有取件界面，请在应用内操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 125,
+          "context": "new Error(i18n(\"lib.attach.9155bd07598c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.d82cecc3a306",
+      "source": "读不到内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 364,
+          "context": "e instanceof Error ? e.message : i18n(\"lib.attach.d82cecc3a306\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attach.f8f5f153c20d",
+      "source": "大小未知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attach.ts",
+          "line": 99,
+          "context": "return i18n(\"lib.attach.f8f5f153c20d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.00b064455e5c",
+      "source": "已取消（没有提交任何内容）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 386,
+          "context": "fail(i18n(\"lib.attachactions.00b064455e5c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.010bbf334fe2",
+      "source": "【发新话题 · 网络学堂】\n课程：{value}\n板块：{value2}\n标题：{title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(ctx.courseName?.trim() || courseId)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(ctx.boardName?.trim() || boardId)"
+        },
+        {
+          "name": "title",
+          "expression": "String(title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 550,
+          "context": "threadId\n      ? i18n(\"lib.attachactions.942ac1d181f7\", { value: String(ctx.courseName?.trim() || courseId), threadId: String(threadId) })\n      : i18n(\"lib.attachactions.010bbf334fe2\", { value: String(ctx.courseName?.trim() || courseId), value2: String(ctx.boardName?.trim() || boardId), title: String(title) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.attachactions.08afcfb429f3",
+      "source": "{head}\n正文：{value}\n附件：{attachNote}\n\n点「确定」= 立刻发布（全班可见，撤不回来）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "head",
+          "expression": "String(head)"
+        },
+        {
+          "name": "value",
+          "expression": "String(clip(plain, 80) || i18n(\"lib.attachactions.ed90d3f61ee5\"))"
+        },
+        {
+          "name": "attachNote",
+          "expression": "String(attachNote)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 552,
+          "context": "(ctx.confirm ?? confirmOk)(\n      i18n(\"lib.attachactions.08afcfb429f3\", { head: String(head), value: String(clip(plain, 80) || i18n(\"lib.attachactions.ed90d3f61ee5\")), attachNote: String(attachNote) }),\n    )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.0cf370f0a1db",
+      "source": "去云盘页重新选资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 203,
+          "context": "message: i18n(\"lib.attachactions.0cf370f0a1db\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.0ef92e23f85c",
+      "source": "附件-{value}.{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Date.now())"
+        },
+        {
+          "name": "value2",
+          "expression": "String(extForMime(mime))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 104,
+          "context": "cleaned || i18n(\"lib.attachactions.0ef92e23f85c\", { value: String(Date.now()), value2: String(extForMime(mime)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.164926abb768",
+      "source": "没有附件可提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 456,
+          "context": "fail(i18n(\"lib.attachactions.164926abb768\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.1c0d77ac8a1b",
+      "source": "打开雨课堂官方作答页，把附件随作答一起提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 444,
+          "context": "message: i18n(\"lib.attachactions.1c0d77ac8a1b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.21d6cd21cd13",
+      "source": "发新话题要写标题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 545,
+          "context": "fail(i18n(\"lib.attachactions.21d6cd21cd13\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.243d52940d1d",
+      "source": "还没选课程——讨论区挂在课程下，请先选课程。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 523,
+          "context": "needUi(i18n(\"lib.attachactions.243d52940d1d\"), {\n        route: \"learn\",\n        message: i18n(\"lib.attachactions.487842092c28\"),\n      })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.272f3e83a699",
+      "source": "提交未成功，请稍后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 394,
+          "context": "why || i18n(\"lib.attachactions.272f3e83a699\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.360ada853a5e",
+      "source": "【交作业 · 网络学堂】\n课程：{value}\n作业：{title}\n提交附件：{name}（{value2}）\n正文：{value22}{wipeWarn}\n\n点「确定」= 立刻提交，会覆盖这份作业此前的提交（正文与附件以本次为准）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(ctx.courseName?.trim() || courseId)"
+        },
+        {
+          "name": "title",
+          "expression": "String(title)"
+        },
+        {
+          "name": "name",
+          "expression": "String(name)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(formatSize(f.size))"
+        },
+        {
+          "name": "value22",
+          "expression": "String(clip(content, 60) || i18n(\"lib.attachactions.fa8bc5e925f9\"))"
+        },
+        {
+          "name": "wipeWarn",
+          "expression": "String(wipeWarn)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 384,
+          "context": "(ctx.confirm ?? confirmOk)(\n    i18n(\"lib.attachactions.360ada853a5e\", { value: String(ctx.courseName?.trim() || courseId), title: String(title), name: String(name), value2: String(formatSize(f.size)), value22: String(clip(content, 60) || i18n(\"lib.attachactions.fa8bc5e925f9\")), wipeWarn: String(wipeWarn) }),\n  )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.attachactions.3943aae1d441",
+      "source": "【转存云盘】\n资料库：{name}\n目录：{dir}\n文件：\n{head}{more}\n\n点「确定」= 逐个上传到你的清华云盘；同名文件会被覆盖。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(target.repo.name)"
+        },
+        {
+          "name": "dir",
+          "expression": "String(target.dir)"
+        },
+        {
+          "name": "head",
+          "expression": "String(head)"
+        },
+        {
+          "name": "more",
+          "expression": "String(more)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 295,
+          "context": "opts.confirm(\n      i18n(\"lib.attachactions.3943aae1d441\", { name: String(target.repo.name), dir: String(target.dir), head: String(head), more: String(more) }),\n    )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.3c82cc86c9c7",
+      "source": "还没选课程和作业——交作业要明确交到哪一份，请先在面板里选。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 358,
+          "context": "needUi(i18n(\"lib.attachactions.3c82cc86c9c7\"), {\n      route: \"learn-assignments\",\n      message: i18n(\"lib.attachactions.54bfd0b14639\"),\n    })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.484d55613910",
+      "source": "无",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 547,
+          "context": "f ? `${safeAttachName(f.name, f.mime)}（${formatSize(f.size)}）` : i18n(\"lib.attachactions.484d55613910\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.487842092c28",
+      "source": "去网络学堂选一门课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 525,
+          "context": "message: i18n(\"lib.attachactions.487842092c28\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.4a9fdb24f293",
+      "source": "去云盘页连接清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 188,
+          "context": "message: i18n(\"lib.attachactions.4a9fdb24f293\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.4bc030ed5628",
+      "source": "\n⚠️ 这份作业此前提交里有正文，本次留空会把它清空。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 382,
+          "context": "prevText && !content.trim() ? i18n(\"lib.attachactions.4bc030ed5628\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.50c4b135b1d8",
+      "source": "云盘还没连接：先到「云盘」页连上清华云盘，再回来转存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 186,
+          "context": "needUi(i18n(\"lib.attachactions.50c4b135b1d8\"), {\n      route: \"cloud\",\n      message: i18n(\"lib.attachactions.4a9fdb24f293\"),\n    })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.5323853f8fb7",
+      "source": "去课程的讨论区选一个板块",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 542,
+          "context": "message: i18n(\"lib.attachactions.5323853f8fb7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.53af5bd6b851",
+      "source": "这份作业的详情页里没有提交表单（可能只需在 OJ 提交、已过提交期，或老师没开在线提交）——请到作业页确认。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 373,
+          "context": "fail(\n      i18n(\"lib.attachactions.53af5bd6b851\"),\n      { ui: detailRoute },\n    )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.54bfd0b14639",
+      "source": "去「全部作业」里选一份作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 360,
+          "context": "message: i18n(\"lib.attachactions.54bfd0b14639\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.6f5260f46713",
+      "source": "没有附件可上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 281,
+          "context": "error: i18n(\"lib.attachactions.6f5260f46713\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.777b5a07612e",
+      "source": "{why}\n另外：这份作业的雨课堂参数不全，请从作业列表重新进入。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "why",
+          "expression": "String(why)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 435,
+          "context": "needUi(i18n(\"lib.attachactions.777b5a07612e\", { why: String(why) }), {\n      route: \"learn-assignments\",\n      message: i18n(\"lib.attachactions.b4537e7f0e93\"),\n    })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.939a8cb7a566",
+      "source": "发新话题要先选板块（每个板块的可见范围不同，不能替你猜）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 539,
+          "context": "needUi(i18n(\"lib.attachactions.939a8cb7a566\"), {\n        route: \"learn-forum-thread\",\n        params: { courseId },\n        message: i18n(\"lib.attachactions.5323853f8fb7\"),\n      })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.942ac1d181f7",
+      "source": "【回复讨论区 · 网络学堂】\n课程：{value}\n话题 id：{threadId}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(ctx.courseName?.trim() || courseId)"
+        },
+        {
+          "name": "threadId",
+          "expression": "String(threadId)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 549,
+          "context": "threadId\n      ? i18n(\"lib.attachactions.942ac1d181f7\", { value: String(ctx.courseName?.trim() || courseId), threadId: String(threadId) })\n      : i18n(\"lib.attachactions.010bbf334fe2\", { value: String(ctx.courseName?.trim() || courseId), value2: String(ctx.boardName?.trim() || boardId), title: String(title) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.attachactions.96b904d0165e",
+      "source": "雨课堂没有可用的附件提交通道（官方接口只收已上传的附件条目，本仓库未接附件上传）——「{value}」需要在雨课堂官方作答页里随作答一起提交。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(safeAttachName(f.name, f.mime))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 433,
+          "context": "why =\n    i18n(\"lib.attachactions.96b904d0165e\", { value: String(safeAttachName(f.name, f.mime)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.970f711d8073",
+      "source": "\n　…等共 {length} 个",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(names.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 293,
+          "context": "names.length > 5 ? i18n(\"lib.attachactions.970f711d8073\", { length: String(names.length) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.a6519d36b6f6",
+      "source": "已取消（没有发布）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 554,
+          "context": "fail(i18n(\"lib.attachactions.a6519d36b6f6\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.a9248626d3ed",
+      "source": "去这份作业的详情页看一眼",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 366,
+          "context": "message: i18n(\"lib.attachactions.a9248626d3ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.ac84cf8affb0",
+      "source": "[附件] 网络学堂提交成功：课程 {courseId} 作业 {assignmentId} 附件 {name}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseId",
+          "expression": "String(courseId)"
+        },
+        {
+          "name": "assignmentId",
+          "expression": "String(assignmentId)"
+        },
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 400,
+          "context": "logLine(i18n(\"lib.attachactions.ac84cf8affb0\", { courseId: String(courseId), assignmentId: String(assignmentId), name: String(name) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.attachactions.b4353b67ac30",
+      "source": "新话题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/attachActions.ts",
+          "line": 561,
+          "context": "threadId ? i18n(\"lib.attachactions.cf945e21ddef\") : i18n(\"lib.attachactions.b4353b67ac30\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

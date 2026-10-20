@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 雨课堂内容的**内嵌正文渲染**（R27）：按内容形态给出可用的内嵌呈现，绝不打开官方页。
@@ -35,6 +36,8 @@ export interface YktContentBodyProps {
 }
 
 export function YktContentBody(props: YktContentBodyProps) {
+  const uiLocale = useUiLocale();
+
   const { title, mediaUrl, fileUrl, images, bodyHtml, fontUrl, cookies, fallbackUrl } = props;
   const [page, setPage] = useState(0);
 
@@ -49,11 +52,8 @@ export function YktContentBody(props: YktContentBodyProps) {
   if (fileUrl) {
     return (
       <div className="ykt-content-body">
-        <Btn variant="solid" tone="brand" onClick={() => openFilePreview({ name: title, url: fileUrl })}>用内置预览打开
-        </Btn>
-        <div className="row-sub" style={{ marginTop: 8 }}>
-          文档在应用内预览（可翻页 / 缩放 / 另存），不跳转官方网页。
-        </div>
+        <Btn variant="solid" tone="brand" onClick={() => openFilePreview({ name: title, url: fileUrl })}>{i18n("components.exthw.yktcontentbody.f79a5a5c204e")}</Btn>
+        <div className="row-sub" style={{ marginTop: 8 }}>{i18n("components.exthw.yktcontentbody.87a7c227bdf5")}</div>
       </div>
     );
   }
@@ -63,17 +63,15 @@ export function YktContentBody(props: YktContentBodyProps) {
     return (
       <div className="ykt-content-body">
         <div className="ykt-slide">
-          <img className="ykt-slide-img" src={images[idx]} alt={`${title} 第 ${idx + 1} 页`} />
+          <img className="ykt-slide-img" src={images[idx]} alt={i18n("components.exthw.yktcontentbody.39c1233830b4", { title: String(title), value: String(idx + 1) })} />
         </div>
         {images.length > 1 ? (
           <div className="ykt-slide-bar">
-            <Btn variant="ghost" disabled={idx <= 0} onClick={() => setPage(idx - 1)}><IconChevron width={14} height={14} style={{ transform: "rotate(180deg)" }} />上一页
-            </Btn>
+            <Btn variant="ghost" disabled={idx <= 0} onClick={() => setPage(idx - 1)}><IconChevron width={14} height={14} style={{ transform: "rotate(180deg)" }} />{i18n("components.exthw.yktcontentbody.c9b9ae7a6144")}</Btn>
             <span className="ykt-slide-count">
               {idx + 1} / {images.length}
             </span>
-            <Btn variant="ghost" disabled={idx >= images.length - 1} onClick={() => setPage(idx + 1)}>下一页
-              <IconChevron width={14} height={14} /></Btn>
+            <Btn variant="ghost" disabled={idx >= images.length - 1} onClick={() => setPage(idx + 1)}>{i18n("components.exthw.yktcontentbody.8a8542f69648")}<IconChevron width={14} height={14} /></Btn>
           </div>
         ) : null}
       </div>
@@ -90,13 +88,9 @@ export function YktContentBody(props: YktContentBodyProps) {
 
   return (
     <div className="ykt-content-body">
-      <div className="ykt-ans-empty">
-        这条内容没有可直接渲染的正文（可能是直播、讨论或需要互动的类型）。
-        {fallbackUrl ? (
-          <Btn variant="ghost" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>复制链接
-          </Btn>
-        ) : null}
-      </div>
+      <div className="ykt-ans-empty">{i18nRich("components.exthw.yktcontentbody.94e6755106d8", { value: fallbackUrl ? (
+          <Btn variant="ghost" onClick={() => void navigator.clipboard?.writeText(fallbackUrl).catch(() => undefined)}>{i18n("components.exthw.yktcontentbody.8e86f9b1d54f")}</Btn>
+        ) : null })}</div>
     </div>
   );
 }

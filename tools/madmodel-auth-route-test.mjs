@@ -6,6 +6,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import ts from "typescript";
+import "./ts-resolve-register.mjs";
+const i18n = await import("../apps/desktop/src/i18n/index.ts");
 
 const source = readFileSync(new URL("../apps/desktop/src/state/madmodel.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source, {
@@ -53,6 +55,7 @@ function fixture(patch = {}, handler = () => response(200, { success: true })) {
   };
   const exports = {};
   const imports = {
+    "../i18n/index.js": i18n,
     "../lib/clients.js": clients,
     "@onethu/core": { webvpnWrap: wrap },
     "../plugins/registry.js": {

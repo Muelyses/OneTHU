@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 技术细节折叠区（§4.5 遗留）：正文只说人话，状态码 / 原始报错 / 链接收进「详情」。
  *
@@ -10,11 +11,13 @@ import type { CSSProperties, ReactNode } from "react";
 
 export function Details({
   children,
-  label = "详情",
+  label = i18n("components.details.979a332955c8"),
 }: {
   children: ReactNode;
   label?: string;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
     <details className="tech-details">
       <summary>{label}</summary>
@@ -30,7 +33,7 @@ const TECH =
 /** 把「人话：原始报错」拆开渲染：人话留着，原始串折进详情 */
 export function ErrorLine({
   text,
-  label = "详情",
+  label = i18n("components.details.979a332955c8"),
   tone,
   style,
 }: {
@@ -40,6 +43,8 @@ export function ErrorLine({
   tone?: "quiet" | "error";
   style?: CSSProperties;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const i = text.search(/[：:]/);
   const head = i > 0 ? text.slice(0, i) : text;
   const tail = i > 0 ? text.slice(i + 1).trim() : "";

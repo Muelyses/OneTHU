@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 组织：成员（真实邮箱）、共享资料库（清华云盘资料库/libraries）、GitLab 仓库、项目、公告。
  *
@@ -366,7 +367,7 @@ export async function orgInviteCode(
 /** 删除组织邀请口令：撤销云盘分享 + 清掉本地记录。 */
 export async function revokeOrgInvite(id: string): Promise<{ ok: boolean; reason?: string }> {
   const org = doc.orgs.find((o) => o.id === id);
-  if (!org?.invite?.code) return { ok: false, reason: "当前没有可删除的邀请口令" };
+  if (!org?.invite?.code) return { ok: false, reason: i18n("state.org.22f86a2a8ff2") };
   const { revokeShareSlot } = await import("./cloudExchange.js");
   const ok = await revokeShareSlot(`org:${id}`);
   doc = {
@@ -374,19 +375,19 @@ export async function revokeOrgInvite(id: string): Promise<{ ok: boolean; reason
     orgs: doc.orgs.map((o) => (o.id === id ? { ...o, invite: undefined, lastInviteCode: undefined, updatedAt: Date.now() } : o)),
   };
   commit();
-  return ok ? { ok: true } : { ok: true, reason: "本地记录已删除；云盘分享撤销未成功（可能已过期）" };
+  return ok ? { ok: true } : { ok: true, reason: i18n("state.org.c6b6912e4bd5") };
 }
 
 export function decodeOrgInvite(code: string): { ok: boolean; payload?: OrgInvitePayload; reason?: string } {
   const raw = String(code ?? "").trim();
   const parts = raw.split(".");
-  if (parts.length !== 3 || parts[0] !== ORG_CODE_PREFIX) return { ok: false, reason: "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）" };
+  if (parts.length !== 3 || parts[0] !== ORG_CODE_PREFIX) return { ok: false, reason: i18n("state.org.1f5874fd9b2a") };
   let json: string;
-  try { json = new TextDecoder().decode(fromB64Url(parts[1]!)); } catch { return { ok: false, reason: "口令内容损坏" }; }
-  if (checksum(json) !== parts[2]) return { ok: false, reason: "口令校验失败（可能复制不完整）" };
+  try { json = new TextDecoder().decode(fromB64Url(parts[1]!)); } catch { return { ok: false, reason: i18n("state.org.3dc0aa93b10c") }; }
+  if (checksum(json) !== parts[2]) return { ok: false, reason: i18n("state.org.989f1cde10a3") };
   try {
     const p = JSON.parse(json) as OrgInvitePayload;
-    if (p?.v !== 1 || p.kind !== "org-invite") return { ok: false, reason: "口令版本不受支持" };
+    if (p?.v !== 1 || p.kind !== "org-invite") return { ok: false, reason: i18n("state.org.1e4404a53a1d") };
     /* 不可信输入：口令名截断，限定邮箱只接受像邮箱的值。 */
     if (p.label !== undefined) {
       const label = typeof p.label === "string" ? p.label.trim().slice(0, 60) : "";
@@ -397,7 +398,7 @@ export function decodeOrgInvite(code: string): { ok: boolean; payload?: OrgInvit
       if (email && EMAIL_RE.test(email)) p.allowEmail = email; else delete p.allowEmail;
     }
     return { ok: true, payload: p };
-  } catch { return { ok: false, reason: "口令内容不是合法 JSON" }; }
+  } catch { return { ok: false, reason: i18n("state.org.7aa0c43fe053") }; }
 }
 
 /** 接受邀请：创建/合并本地组织，加入者为 member（不重复同名成员）。 */
@@ -422,7 +423,7 @@ export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ o
   try { resolved = await (await import("./cloudExchange.js")).resolveExchangeCode(code); }
   catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
   const dec = decodeOrgInvite(resolved);
-  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
+  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.org.c4591b5b1fe8") };
   const p = dec.payload;
   if (p.collaboration) {
     try { return { ok: true, orgId: await (await import("./orgSync.js")).joinRemoteOrg(p.collaboration) }; }

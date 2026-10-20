@@ -38,6 +38,7 @@ globalThis.ResizeObserver = class { observe() {} disconnect() {} unobserve() {} 
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { pathToFileURL, fileURLToPath } from "node:url";
+import { localizedSource } from ${JSON.stringify(new URL("./i18n/source-view.mjs", import.meta.url).href)};
 const REPO = ${JSON.stringify(REPO)};
 const req = createRequire(REPO + "/package.json");
 const bare = (specifier) => !/^(\\.|\\/|file:|data:|node:|#)/.test(specifier);
@@ -63,7 +64,7 @@ function tsxStub(file) {
   const names = namesOf(file);
   const out = stubModule(names.filter((n) => n !== "NAV"));
   try {
-    const src = readFileSync(file, "utf8");
+    const src = localizedSource(readFileSync(file, "utf8"), file);
     const at = src.indexOf("export const NAV");
     if (at < 0) return out;
     const eq = src.indexOf("= [", at); /* 类型注解里可能有 Page[]，认赋值点才稳 */

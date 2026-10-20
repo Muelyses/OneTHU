@@ -8,8 +8,9 @@
  * 本护栏钉：挂载唯一入口、flow4 完成标记与旧标记兼容、三种模式课程齐、
  * 结束/跳过/回退的 affordance、OneGUI Modal 语义、重放/重置链路。
  */
+import "./ts-resolve-register.mjs";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 

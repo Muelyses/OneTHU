@@ -1,0 +1,1478 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "lib.yktwebview.745473448800",
+      "source": "读取失败。请在电脑浏览器登录 pro.yuketang.cn 后，用下方「高级：手动粘贴 Cookie」粘贴会话（浏览器 F12 → Application → Cookies）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 22,
+          "context": "() => i18n(\"lib.yktwebview.745473448800\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktwebview.9df0abd7d05e",
+      "source": "官方网页登录需在 OneTHU App 内使用（浏览器预览不可用）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 54,
+          "context": "new Error(i18n(\"lib.yktwebview.9df0abd7d05e\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 86,
+          "context": "new Error(i18n(\"lib.yktwebview.9df0abd7d05e\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.2c7d571eccc7",
+      "source": "ZIP 局部文件头损坏，无法解压该条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 91,
+          "context": "new Error(i18n(\"lib.ziptree.2c7d571eccc7\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.310739c83167",
+      "source": "不支持的压缩算法（method={method}），请下载查看",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "method",
+          "expression": "String(entry.method)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 105,
+          "context": "new Error(i18n(\"lib.ziptree.310739c83167\", { method: String(entry.method) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.465bf7f89508",
+      "source": "压缩包内未找到 ppt/slides/slideN.xml（可能不是 .pptx）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 230,
+          "context": "new Error(i18n(\"lib.ziptree.465bf7f89508\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.732ef6430c80",
+      "source": "ZIP 数据越界，文件可能损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 97,
+          "context": "new Error(i18n(\"lib.ziptree.732ef6430c80\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.802ee7801233",
+      "source": "未找到 ZIP 目录结尾（EOCD），文件可能损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 47,
+          "context": "new Error(i18n(\"lib.ziptree.802ee7801233\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.8bcdc7156f9f",
+      "source": "暂不支持 ZIP64 格式，请下载查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 50,
+          "context": "new Error(i18n(\"lib.ziptree.8bcdc7156f9f\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.8ec67ebd5d24",
+      "source": "解压后内容超过预览大小限制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 88,
+          "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 102,
+          "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 112,
+          "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.97befa4e485c",
+      "source": "当前环境不支持解压（缺 DecompressionStream），请下载查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 107,
+          "context": "new Error(i18n(\"lib.ziptree.97befa4e485c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.c63d5a292e55",
+      "source": "该条目是目录，无法解压",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 87,
+          "context": "new Error(i18n(\"lib.ziptree.c63d5a292e55\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.ziptree.d9346a6de600",
+      "source": "ZIP 目录为空或解析失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/zipTree.ts",
+          "line": 76,
+          "context": "new Error(i18n(\"lib.ziptree.d9346a6de600\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.22ac782381ea",
+      "source": "连续 15+ 位数字（疑似证件号/卡号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 252,
+          "context": "return i18n(\"memory.format.22ac782381ea\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.6b1a70ac9eb1",
+      "source": "疑似 GitHub Token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 250,
+          "context": "return i18n(\"memory.format.6b1a70ac9eb1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.7ba456c0f242",
+      "source": "疑似 LLM API Key（sk-…）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 249,
+          "context": "return i18n(\"memory.format.7ba456c0f242\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.9ba2145bd66a",
+      "source": "疑似 HTTP Bearer Token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 251,
+          "context": "return i18n(\"memory.format.9ba2145bd66a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.ce72f2106e4f",
+      "source": "疑似明文密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 254,
+          "context": "return i18n(\"memory.format.ce72f2106e4f\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.format.d79be29d7fb5",
+      "source": "疑似验证码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/format.ts",
+          "line": 253,
+          "context": "return i18n(\"memory.format.d79be29d7fb5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.6383fb8dcdcc",
+      "source": "记忆写入被拦截：{bad}——凭据类内容不允许进入长期记忆",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "bad",
+          "expression": "String(bad)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 67,
+          "context": "new Error(i18n(\"memory.operations.6383fb8dcdcc\", { bad: String(bad) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.ccc5a5900f02",
+      "source": "未找到待替换文本（{value}…）——请先 memory_read 核对原文",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(find.slice(0, 30))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 174,
+          "context": "new Error(i18n(\"memory.operations.ccc5a5900f02\", { value: String(find.slice(0, 30)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.e613fe77a194",
+      "source": "已存在同名记忆「{title}」（{permalink}）——用 memory_append 追加观察",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(input.title)"
+        },
+        {
+          "name": "permalink",
+          "expression": "String(existing.permalink)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 130,
+          "context": "new Error(i18n(\"memory.operations.e613fe77a194\", { title: String(input.title), permalink: String(existing.permalink) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "memory.operations.f564f74f2806",
+      "source": "未找到记忆：{permalink}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "permalink",
+          "expression": "String(permalink)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 79,
+          "context": "new Error(i18n(\"memory.operations.f564f74f2806\", { permalink: String(permalink) }))"
+        },
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 160,
+          "context": "new Error(i18n(\"memory.operations.f564f74f2806\", { permalink: String(permalink) }))"
+        },
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 173,
+          "context": "new Error(i18n(\"memory.operations.f564f74f2806\", { permalink: String(permalink) }))"
+        },
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 184,
+          "context": "new Error(i18n(\"memory.operations.f564f74f2806\", { permalink: String(permalink) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.sync.9f1773200fb8",
+      "source": "OH-Memory 资料库建立失败（云盘侧未出现）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/sync.ts",
+          "line": 49,
+          "context": "new Error(i18n(\"memory.sync.9f1773200fb8\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.choose",
+      "source": "点一下选择",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.chooseContent",
+      "source": "点一下选择显示内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.few",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.many",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.one",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.other",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.two",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.zero",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classRow",
+      "source": "{time} {title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "time"
+        },
+        {
+          "name": "title"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.completed",
+      "source": "今天的课已上完",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.course",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.date",
+      "source": "{month}/{day}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "day"
+        },
+        {
+          "name": "month"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.days.few",
+      "source": "还有 {count} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.days.many",
+      "source": "还有 {count} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.days.one",
+      "source": "还有 {count} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.days.other",
+      "source": "还有 {count} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.days.two",
+      "source": "还有 {count} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.days.zero",
+      "source": "还有 {count} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddlRow",
+      "source": "DDL {title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddls.few",
+      "source": "{count} 个截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddls.many",
+      "source": "{count} 个截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddls.one",
+      "source": "{count} 个截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddls.other",
+      "source": "{count} 个截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddls.two",
+      "source": "{count} 个截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.ddls.zero",
+      "source": "{count} 个截止",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.detail",
+      "source": "详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.empty",
+      "source": "今天没有课与截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.emptySlot",
+      "source": "尚无插件占用此槽位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.event",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.eventRow",
+      "source": "日程 {title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.events.few",
+      "source": "{count} 项日程",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.events.many",
+      "source": "{count} 项日程",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.events.one",
+      "source": "{count} 项日程",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.events.other",
+      "source": "{count} 项日程",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.events.two",
+      "source": "{count} 项日程",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.events.zero",
+      "source": "{count} 项日程",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.favorites",
+      "source": "收藏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.homework",
+      "source": "作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.hours.few",
+      "source": "还有 {count} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.hours.many",
+      "source": "还有 {count} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.hours.one",
+      "source": "还有 {count} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.hours.other",
+      "source": "还有 {count} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.hours.two",
+      "source": "还有 {count} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.hours.zero",
+      "source": "还有 {count} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.joiner",
+      "source": " · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.minutes.few",
+      "source": "还有 {count} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.minutes.many",
+      "source": "还有 {count} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.minutes.one",
+      "source": "还有 {count} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.minutes.other",
+      "source": "还有 {count} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.minutes.two",
+      "source": "还有 {count} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.minutes.zero",
+      "source": "还有 {count} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.few",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.many",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.one",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.other",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.two",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.zero",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

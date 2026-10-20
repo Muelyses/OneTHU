@@ -1,3 +1,5 @@
+import { courseDisplayName, courseSearchNames } from "../../lib/learnLanguage.js";
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /** 全部作业（learnX Assignments）：按状态分组（进行中/已逾期/已交/已批改），组内按截止时间排序 */
 import { useMemo, useState } from "react";
@@ -22,13 +24,13 @@ import { useLearnNavSemester } from "./shared.js";
 type Filter = "unfinished" | "overdue" | "submitted" | "graded" | "ignored" | "all";
 
 const FILTERS: Array<{ key: Filter; label: string }> = [
-  { key: "unfinished", label: "进行中" },
-  { key: "overdue", label: "已逾期" },
-  { key: "submitted", label: "已交" },
-  { key: "graded", label: "已批" },
+  { key: "unfinished", get label() { return i18n("pages.learn.assignmentspage.dc9591e56d50"); } },
+  { key: "overdue", get label() { return i18n("pages.learn.assignmentspage.13c68d134847"); } },
+  { key: "submitted", get label() { return i18n("pages.learn.assignmentspage.40c77cac9724"); } },
+  { key: "graded", get label() { return i18n("pages.learn.assignmentspage.85f50675dc34"); } },
   // R21c：忽略的作业从常规分组移出、单独成组——可在此查看与恢复
-  { key: "ignored", label: "已忽略" },
-  { key: "all", label: "全部" },
+  { key: "ignored", get label() { return i18n("pages.learn.assignmentspage.c9bb70bcaaa3"); } },
+  { key: "all", get label() { return i18n("pages.learn.assignmentspage.5c55a67935af"); } },
 ];
 
 /** 逾期未交（12.2）：未提交且截止时间已过。解析统一走 core parseLearnTime（与 shared.tsx
@@ -47,6 +49,8 @@ function isOverdue(h: { submitted: boolean; deadline: string }): boolean {
  *  R13 18.3：文案改两段式——雨课堂人人可用（主按钮仍登录雨课堂）；OJ 平台按个人情况
  *  在设置页登录，不再把三类平台并列平铺。 */
 function ExtHwGuide() {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const ext = useExternalHomework();
   const [dismissed, setDismissed] = useState(() => isExtHwGuideDismissed());
@@ -57,29 +61,22 @@ function ExtHwGuide() {
     <>
       <div className="browser-hint ext-hw-hint">
         <span className="ext-hw-hint-text">
-          <div>雨课堂人人可用；OJ 平台（TUOJ、Tyche 等）按个人情况在设置页登录。</div>
-          <div style={{ opacity: 0.8, marginTop: 2 }}>
-            登录后把各平台作业 DDL 合并到「全部作业」与「今日」。
-          </div>
+          <div>{i18n("pages.learn.assignmentspage.1ee8c573d98e")}</div>
+          <div style={{ opacity: 0.8, marginTop: 2 }}>{i18n("pages.learn.assignmentspage.6ba20a081728")}</div>
           {/* R11 16.2：TUOJ 自动漫游已过统一认证但未返回课程——条幅提示，不算错误 */}
           {ext.tuojAuto.tuoj.kind === "no-courses" ? (
-            <div style={{ opacity: 0.8, marginTop: 2 }}>
-              TUOJ 统一认证已通过，但未返回课程（可能未注册 / 未选课）。
-            </div>
+            <div style={{ opacity: 0.8, marginTop: 2 }}>{i18n("pages.learn.assignmentspage.fcd6b279b349")}</div>
           ) : null}
         </span>
-        <Btn variant="solid" tone="brand" onClick={() => setLoginOpen(true)}>登录雨课堂
-        </Btn>
+        <Btn variant="solid" tone="brand" onClick={() => setLoginOpen(true)}>{i18n("pages.learn.assignmentspage.da697122c040")}</Btn>
         <Btn variant="outline" onClick={() => {
             requestExtHwScroll();
             navigate("settings");
-          }}>去设置
-        </Btn>
+          }}>{i18n("pages.learn.assignmentspage.93112c231d6a")}</Btn>
         <Btn variant="ghost" onClick={() => {
             dismissExtHwGuide();
             setDismissed(true);
-          }}>知道了
-        </Btn>
+          }}>{i18n("pages.learn.assignmentspage.de32e20193ad")}</Btn>
       </div>
       <ConnectGate need="yuketang" open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
@@ -96,6 +93,8 @@ function ExtHwGuide() {
  * R21-B：雨课堂会话失效（无静默重登路径——短信有图形验证码、扫码需人）并入渲染列表，
  * 并给「扫码重登」一键直达登录弹窗，省一趟设置页。 */
 function ExtHwSourceErrorNote() {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const ext = useExternalHomework();
   const [yktLoginOpen, setYktLoginOpen] = useState(false);
@@ -117,18 +116,15 @@ function ExtHwSourceErrorNote() {
           ))}
         </span>
         {yktFailed ? (
-          <Btn variant="solid" tone="brand" onClick={() => setYktLoginOpen(true)}>雨课堂扫码重登
-          </Btn>
+          <Btn variant="solid" tone="brand" onClick={() => setYktLoginOpen(true)}>{i18n("pages.learn.assignmentspage.6466fa8f4cad")}</Btn>
         ) : null}
         {rows.some((r) => r.id === "tuoj" || r.id === "tuojClassic") ? (
-          <Btn variant="solid" tone="brand" onClick={() => setTuojLoginOpen(true)}>TUOJ 重新登录
-          </Btn>
+          <Btn variant="solid" tone="brand" onClick={() => setTuojLoginOpen(true)}>{i18n("pages.learn.assignmentspage.42338b60a3ea")}</Btn>
         ) : null}
         <Btn variant="outline" onClick={() => {
             requestExtHwScroll();
             navigate("settings");
-          }}>去设置重新登录
-        </Btn>
+          }}>{i18n("pages.learn.assignmentspage.1dd9120b2b30")}</Btn>
       </div>
       <ConnectGate need="yuketang" open={yktLoginOpen} onClose={() => setYktLoginOpen(false)} />
       <ConnectGate need="tuoj" open={tuojLoginOpen} onClose={() => setTuojLoginOpen(false)} />
@@ -137,6 +133,8 @@ function ExtHwSourceErrorNote() {
 }
 
 export function AssignmentsPage() {
+  const uiLocale = useUiLocale();
+
   useLearnNavSemester();
   const { data, state, error, reload } = useLearnData();
   const { navigate, navParams } = useApp();
@@ -149,12 +147,12 @@ export function AssignmentsPage() {
   const extCourseName = navParams?.extCourseName;
 
   const byCourse = useMemo(
-    () => new Map((data?.courses ?? []).map((c) => [c.id, c.name])),
-    [data],
+    () => new Map((data?.courses ?? []).map((c) => [c.id, c])),
+    [uiLocale, data],
   );
 
   /** 外部作业（雨课堂/TUOJ/Tyche）归一化；未配置凭据时恒为空数组（零回归） */
-  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const extHw = useMemo(() => ext.items.map(toHomework), [uiLocale, ext.items]);
   // R21c：忽略状态（订阅同一份快照：行内忽略/恢复立刻反映到分组与计数）
   const ignored = useIgnoredHw();
 
@@ -162,7 +160,7 @@ export function AssignmentsPage() {
   const all = useMemo(() => {
     const merged = [...(data?.homework ?? []), ...extHw];
     return extCourseId ? merged.filter((h) => h.externalClassroomId === extCourseId) : merged;
-  }, [data, extHw, extCourseId]);
+  }, [uiLocale, data, extHw, extCourseId]);
 
   // R23（霖需求）：旁听作业（雨课堂 role=6 课堂）**不计入**各分组计数与「全部」，
   // 而是在当前分组下方单列「旁听作业」一节——不与正式课程混排。
@@ -179,12 +177,12 @@ export function AssignmentsPage() {
       ignored: hw.filter((h) => ignored.has(h.id)),
       all: live,
     };
-  }, [all, ignored]);
+  }, [uiLocale, all, ignored]);
 
   /** 旁听作业全集（同样排除已忽略） */
   const auditAll = useMemo(
     () => all.filter((h) => h.audited && !ignored.has(h.id)).sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [all, ignored],
+    [uiLocale, all, ignored],
   );
   /** 旁听节按当前分组同一口径筛选（进行中/已逾期/已交/已批改；「已忽略」组不重复列） */
   const auditList = useMemo(() => {
@@ -194,33 +192,31 @@ export function AssignmentsPage() {
     if (filter === "submitted") return auditAll.filter((h) => h.submitted && !h.graded);
     if (filter === "graded") return auditAll.filter((h) => h.graded);
     return auditAll;
-  }, [auditAll, filter]);
+  }, [uiLocale, auditAll, filter]);
 
   const list = groups[filter];
   // R10 15.4：页头只留学期文本；各分组计数已并入 SegmentedOverflow 各 tab（含「全部」），
   // 「外部 N」删除（已融入各组、无信息量）
   // 从网络学堂页的雨课堂课程卡片进来时，页头改为说明「正在看哪门课」。
   const meta = extCourseId
-    ? `雨课堂 · ${extCourseName || "该课程"}`
+    ? i18n("pages.learn.assignmentspage.f053f24bd333", { value: String(extCourseName || i18n("pages.learn.assignmentspage.67e5d61a802b")) })
     : data
       ? semesterText(data.semester.id)
-      : "按截止时间排序";
+      : i18n("pages.learn.assignmentspage.54209642994c");
 
   return (
     <>
       <PageHead
-        title="全部作业"
+        title={i18n("pages.learn.assignmentspage.a1cabc0664cf")}
         meta={meta}
         actions={
           <>
-            <PageAtomStar atomKey="learn-assignments" title="全部作业" />
-            <BackButton to="learn" label="课程列表" />
+            <PageAtomStar atomKey="learn-assignments" title={i18n("pages.learn.assignmentspage.a1cabc0664cf")} />
+            <BackButton to="learn" label={i18n("pages.learn.assignmentspage.e5da2c107242")} />
             {extCourseId ? (
-              <Btn variant="ghost" onClick={() => navigate("learn-assignments")}>查看全部作业
-              </Btn>
+              <Btn variant="ghost" onClick={() => navigate("learn-assignments")}>{i18n("pages.learn.assignmentspage.d4b1b25d27b2")}</Btn>
             ) : null}
-            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
-            </Btn>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.assignmentspage.aee887434131")}</Btn>
           </>
         }
       />
@@ -253,22 +249,22 @@ export function AssignmentsPage() {
         <>
           {list.length === 0 ? (
             auditList.length === 0 ? (
-              <Card><Empty text={filter === "unfinished" ? "没有进行中的作业。" : filter === "overdue" ? "没有已逾期未交的作业。" : filter === "ignored" ? "没有已忽略的作业。" : "该分组暂无作业。"} /></Card>
+              <Card><Empty text={filter === "unfinished" ? i18n("pages.learn.assignmentspage.4ea07768437b") : filter === "overdue" ? i18n("pages.learn.assignmentspage.f67f9df18e46") : filter === "ignored" ? i18n("pages.learn.assignmentspage.174b6eabff32") : i18n("pages.learn.assignmentspage.5c018f6106a3")} /></Card>
             ) : null
           ) : (
             <Card className="list">
               {list.map((h, i) => (
-                <HomeworkRow key={`${h.courseId}-${h.id}`} h={h} courseName={h.courseName ?? byCourse.get(h.courseId)} sem={data?.semester.id} from="learn-assignments" remind style={{ animationDelay: `${i * 25}ms` }} />
+                <HomeworkRow key={`${h.courseId}-${h.id}`} h={h} courseName={courseDisplayName(byCourse.get(h.courseId)) ?? h.courseName} identityCourseName={byCourse.get(h.courseId)?.name ?? h.courseName} sem={data?.semester.id} from="learn-assignments" remind style={{ animationDelay: `${i * 25}ms` }} />
               ))}
             </Card>
           )}
           {/* R23：旁听作业单列（不计入上方计数与「全部」总数） */}
           {auditList.length > 0 ? (
             <>
-              <SectionHead title="旁听作业" />
+              <SectionHead title={i18n("pages.learn.assignmentspage.fb24bf947275")} />
               <Card className="list">
                 {auditList.map((h, i) => (
-                  <HomeworkRow key={`${h.courseId}-${h.id}`} h={h} courseName={h.courseName ?? byCourse.get(h.courseId)} sem={data?.semester.id} from="learn-assignments" remind style={{ animationDelay: `${i * 25}ms` }} />
+                  <HomeworkRow key={`${h.courseId}-${h.id}`} h={h} courseName={courseDisplayName(byCourse.get(h.courseId)) ?? h.courseName} identityCourseName={byCourse.get(h.courseId)?.name ?? h.courseName} sem={data?.semester.id} from="learn-assignments" remind style={{ animationDelay: `${i * 25}ms` }} />
                 ))}
               </Card>
             </>

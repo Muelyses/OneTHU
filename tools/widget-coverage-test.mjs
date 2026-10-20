@@ -7,7 +7,7 @@
  *
  * 跑法：node tools/widget-coverage-test.mjs ｜ 0 通过 / 1 违规
  */
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 
 const fails = [];
 const ok = (c, m) => { if (!c) fails.push(m); };

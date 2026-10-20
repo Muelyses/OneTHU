@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 清华云盘应用内读取桥：先把统一 HttpClient jar 的允许域 Cookie 显式同步到原生仓；
  * WebView 页面带入会话，成功后再把它的新 Cookie 回灌到 HttpClient 与原生仓。
@@ -36,7 +37,7 @@ let inFlight: Promise<string> | null = null;
 /** 打开应用内云盘 profile 页，读取并返回现有 40 位访问口令。 */
 export function readCloudTokenInWebview(): Promise<string> {
   if (!isTauri) {
-    return Promise.reject(new Error("应用内云盘登录仅能在 OneTHU 中使用。"));
+    return Promise.reject(new Error(i18n("lib.cloudtokenwebview.63c8ea2f536a")));
   }
   if (inFlight) return inFlight;
 
@@ -77,10 +78,10 @@ async function mergeReturnedCookies(seeds: CloudCookieSeed[] | undefined): Promi
 }
 
 async function acceptPayload(payload: CloudTokenPayload): Promise<string> {
-  if (payload.cancelled) throw new Error("已取消读取云盘访问口令。");
+  if (payload.cancelled) throw new Error(i18n("lib.cloudtokenwebview.172f588670fa"));
   const token = typeof payload.token === "string" ? payload.token.trim() : "";
   if (!TOKEN_RE.test(token)) {
-    throw new Error("云盘页面没有返回有效内容，请重试或手动粘贴访问口令。");
+    throw new Error(i18n("lib.cloudtokenwebview.27ac14d14b12"));
   }
   await mergeReturnedCookies(payload.cookieSeeds);
   return token;
@@ -135,11 +136,11 @@ async function runWebviewFlow(): Promise<string> {
     unlistenCancelled = await listen<string>("cloud-token-cancelled", (event) => {
       const reason = typeof event.payload === "string" ? event.payload : "closed";
       finish(undefined, new Error(
-        reason === "timeout" ? "等待云盘页面超时，请确认已登录后重试。" : "已取消读取云盘访问口令。",
+        reason === "timeout" ? i18n("lib.cloudtokenwebview.pageTimeout") : i18n("lib.cloudtokenwebview.cancelled"),
       ));
     });
     timeout = setTimeout(() => {
-      finish(undefined, new Error("等待云盘页面超时，请确认已登录后重试。"));
+      finish(undefined, new Error(i18n("lib.cloudtokenwebview.0359f86c1bb8")));
     }, TIMEOUT_MS);
 
     await invoke<string>("open_cloud_token_window", cred);

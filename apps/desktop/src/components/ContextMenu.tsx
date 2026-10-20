@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * A3 长按菜单（移动端对应 PC 右键）。
  *
@@ -557,6 +558,8 @@ export function useLongPress(onLongPress: (x: number, y: number) => void): LongP
 /* ══════════ 菜单本体 ══════════ */
 
 function CtxMenu({ req, leaving, onClose }: { req: CtxRequest; leaving: boolean; onClose: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const boxRef = useRef<HTMLDivElement | null>(null);
   /** 位置 + 展开原点：都由实测矩形与「向左上」决策一起算出来（见下面的 useLayoutEffect） */
   const [geom, setGeom] = useState<{ left: number; top: number; originX: "left" | "right"; originY: "top" | "bottom" } | null>(null);
@@ -724,7 +727,7 @@ function CtxMenu({ req, leaving, onClose }: { req: CtxRequest; leaving: boolean;
       ref={boxRef}
       className={"ctx-menu" + (still ? " is-still" : "") + (leaving ? " is-out" : "")}
       role="menu"
-      aria-label={req.title ?? "操作菜单"}
+      aria-label={req.title ?? i18n("components.contextmenu.fb44d588be71")}
       tabIndex={-1}
       style={{
         left: geom?.left ?? req.x,
@@ -774,6 +777,8 @@ function CtxMenu({ req, leaving, onClose }: { req: CtxRequest; leaving: boolean;
  *  长按菜单此前只有作业卡片等少数宿主挂了，今日页卡片、汇总卡、通知、页面入口全都没反应。
  *  兜底层让「让某处能长按收藏」退化成加一个属性，判定仍只有 createLongPress 这一份。 */
 export function ContextMenuLayer({ children }: { children: ReactNode }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [req, setReq] = useState<CtxRequest | null>(null);
   const [collect, setCollect] = useState<AtomRef | null>(null);
   /* 霖 2026-10-02 #6：顶栏「···」要知道「现在菜单是不是开着」才能做切换。
@@ -812,7 +817,7 @@ export function ContextMenuLayer({ children }: { children: ReactNode }): ReactNo
         x: r.x,
         y: r.y,
         title: r.title,
-        items: [{ key: PANEL_ITEM_KEY, label: r.title ?? "面板", panel: r.panel }],
+        items: [{ key: PANEL_ITEM_KEY, label: r.title ?? i18n("components.contextmenu.3c8c5939d685"), panel: r.panel }],
         initial: PANEL_ITEM_KEY,
       });
     },
@@ -837,7 +842,7 @@ export function ContextMenuLayer({ children }: { children: ReactNode }): ReactNo
   );
   const api = useMemo<CtxApi>(
     () => ({ open: openMenu, openPanel: openPanelMenu, close: closeMenu, isOpen: () => openRef.current }),
-    [openMenu, openPanelMenu, closeMenu],
+    [uiLocale, openMenu, openPanelMenu, closeMenu],
   );
   useEffect(() => {
     openRef.current = req !== null && !leaving;
@@ -865,7 +870,7 @@ export function ContextMenuLayer({ children }: { children: ReactNode }): ReactNo
         x,
         y,
         title: el.getAttribute("data-ctx-title") ?? undefined,
-        items: [{ key: "collect", label: "收藏", icon: <IconStar width={14} height={14} />, onSelect: () => setCollect(atom) }],
+        items: [{ key: "collect", label: i18n("components.contextmenu.60a53514eb92"), icon: <IconStar width={14} height={14} />, onSelect: () => setCollect(atom) }],
       });
     };
     const ctl = createLongPress((x, y) => {

@@ -12,7 +12,7 @@
  * 「老存档补停靠 / 用户移除不回填 / 新装默认坞」三条路径 —— 只做文本断言证明不了行为。
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 

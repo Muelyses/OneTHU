@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 import type { ReactNode } from "react";
 import { useThemes } from "../state/theme.js";
 
@@ -5,6 +6,8 @@ import { useThemes } from "../state/theme.js";
  *  主题插件可整体替换（theme.logo 提供 inline SVG 时优先渲染）。
  *  卡片、登录页、顶栏共用这一份，避免各处再写一遍品牌字。 */
 export function BrandLogo({ size = 14, className }: { size?: number; className?: string }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const themed = useThemes().logoSvg;
   if (themed) {
     return (

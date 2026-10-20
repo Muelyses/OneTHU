@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 教学评估 —— info.getAssessmentList（thu-info-app evaluation.tsx 移植，只读进度）。
  * 本端只读：展示课程评估完成情况（不代填问卷）。空数据/维护态铁律见 tabStates.tsx。
@@ -13,6 +14,8 @@ type LoadState = "loading" | "error" | "ready";
 type AssessmentRow = Awaited<ReturnType<typeof info.getAssessmentList>>[number];
 
 export function EvaluationTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [rows, setRows] = useState<AssessmentRow[] | null>(null);
   const [state, setState] = useState<LoadState>("loading");
@@ -50,20 +53,20 @@ export function EvaluationTab() {
       {state === "loading" && !rows ? (
         <SkeletonRows rows={5} />
       ) : (rows?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无评估问卷（当前不在评估期，或本学期无需评估课程）。" />
+        <TabEmpty text={i18n("pages.info.evaluationtab.63ec4a3ba307")} />
       ) : (
         <>
           <Card className="stat-card" style={{ marginBottom: 12 }}>
             <div className="row-main">
               <div className="stat-num">{pending}</div>
-              <div className="stat-label">待评估课程（请在信息门户「教学评估」内填写，本页仅展示进度）</div>
+              <div className="stat-label">{i18n("pages.info.evaluationtab.01d95cc9fda4")}</div>
             </div>
           </Card>
           <Card className="list">
             {rows!.map((r, i) => (
               <div className="row" key={`${r[0]}-${i}`} style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}>
                 <span className={r[1] ? "chip chip-green" : "chip chip-amber"}>
-                  {r[1] ? "已评估" : "待评估"}
+                  {r[1] ? i18n("pages.info.evaluationtab.64363cae324a") : i18n("pages.info.evaluationtab.f91dbaf513a7")}
                 </span>
                 <div className="row-main">
                   <div className="row-title">{r[0]}</div>

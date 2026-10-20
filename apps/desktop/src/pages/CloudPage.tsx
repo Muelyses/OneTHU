@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 云盘页 —— 清华云盘（Seafile 定制版，Web API 直连）。
  *
@@ -55,8 +56,8 @@ function fmtMtime(sec: number): string {
   const same = d.getFullYear() === now.getFullYear();
   const hm = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
   if (same && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()) return hm;
-  if (same) return `${d.getMonth() + 1}月${d.getDate()}日`;
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+  if (same) return i18n("pages.cloudpage.1c6fcf296dce", { value: String(d.getMonth() + 1), value2: String(d.getDate()) });
+  return i18n("pages.cloudpage.b92d3082a65a", { value: String(d.getFullYear()), value2: String(d.getMonth() + 1), value3: String(d.getDate()) });
 }
 
 /** 常见格式 → dataURL mime（FilePreview 的 <img>/<embed> 通道用；其余按扩展名分流） */
@@ -91,9 +92,9 @@ async function deleteEntry(repo: SeafileRepo, path: string, e: SeafileEntry): Pr
   const isDir = e.kind === "dir";
   const ok = await confirmDanger(
     isDir
-      ? `删除文件夹「${e.name}」？\n\n该文件夹及其全部内容将从云盘永久删除，此操作不可撤销。`
-      : `删除文件「${e.name}」（${fmtSize(e.size)}）？\n\n此操作不可撤销。`,
-    { title: isDir ? "删除文件夹，请确认！" : "删除文件，请确认！", confirmText: "确认删除" },
+      ? i18nMsg("pages.cloudpage.baf5b6f85f76", { name: String(e.name) })
+      : i18nMsg("pages.cloudpage.5f7afa5a8570", { name: String(e.name), value: String(fmtSize(e.size)) }),
+    { title: isDir ? i18nMsg("pages.cloudpage.8ccac03bbf00") : i18nMsg("pages.cloudpage.7349aa455665"), confirmText: i18nMsg("pages.cloudpage.a3ea3c17b401") },
   );
   if (!ok) return false;
   await invoke("seafile_delete", { token: getSeafileToken(), repoId: repo.id, path, kind: e.kind });
@@ -103,8 +104,8 @@ async function deleteEntry(repo: SeafileRepo, path: string, e: SeafileEntry): Pr
 /** 行首类型图标：内容语义走 OG 语义令牌（目录=accent、文件=content-2，靠库里的字色工具类） */
 function kindIcon(kind: SeafileEntry["kind"]): ReactNode {
   return kind === "dir"
-    ? <IconFolder size="sm" className="og-text--t-brand" title="文件夹" />
-    : <IconFile size="sm" title="文件" />;
+    ? <IconFolder size="sm" className="og-text--t-brand" title={i18n("pages.cloudpage.7c7802d8adae")} />
+    : <IconFile size="sm" title={i18n("pages.cloudpage.39932f24fe11")} />;
 }
 
 /* ── 移动弹层：库下拉 + 目录树逐层展开 ─────────────────────────── */
@@ -121,6 +122,8 @@ function MoveModal({
   onClose: () => void;
   onDone: (dstRepoId: string, dstDir: string) => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [repoId, setRepoId] = useState(srcRepoId);
   // 初始层=发起目录：首屏直接用页面缓存渲染（零网络等待），后台再拉新鲜数据覆盖
   const [path, setPath] = useState(srcDir);
@@ -134,13 +137,13 @@ function MoveModal({
       .then((es) => {
         const onlyDirs = es.filter((x) => x.kind === "dir");
         void import("../lib/clients.js").then(({ logLine }) =>
-          logLine(`[CLOUD-MOVE] 目录列表 ok：共 ${es.length} 项，其中文件夹 ${onlyDirs.length} 个（repo=${repoId.slice(0, 8)}… path=${path}）`).catch(() => undefined),
+          logLine(i18n("pages.cloudpage.88f5cec04e1a", { length: String(es.length), length2: String(onlyDirs.length), value: String(repoId.slice(0, 8)), path: String(path) })).catch(() => undefined),
         );
         setDirs(onlyDirs);
       })
       .catch((e) => {
         void import("../lib/clients.js").then(({ logLine }) =>
-          logLine(`[CLOUD-MOVE] 目录列表失败：${String(e).slice(0, 90)}`).catch(() => undefined),
+          logLine(i18n("pages.cloudpage.c89a8d7ca4a0", { value: String(String(e).slice(0, 90)) })).catch(() => undefined),
         );
         setError(String(e).slice(0, 90));
       })
@@ -157,23 +160,21 @@ function MoveModal({
     <Modal
       open
       onClose={onClose}
-      title={`移动「${entry.name}」到…`}
+      title={i18n("pages.cloudpage.8b9120013f48", { name: String(entry.name) })}
       foot={
         <>
-          <Btn variant="outline" onClick={onClose}>取消</Btn>
-          <Btn variant="outline" disabled={selfNest || isSamePlace} onClick={() => onDone(repoId, path)}>
-            移动到这里{isSamePlace ? "（已在原位）" : ""}
-          </Btn>
+          <Btn variant="outline" onClick={onClose}>{i18n("pages.cloudpage.2cd0f3be8738")}</Btn>
+          <Btn variant="outline" disabled={selfNest || isSamePlace} onClick={() => onDone(repoId, path)}>{i18nRich("pages.cloudpage.4c613b19b695", { value: isSamePlace ? i18n("pages.cloudpage.bf7d41f4829b") : "" })}</Btn>
         </>
       }
     >
       <Stack gap={3}>
-        <Select value={repoId} aria-label="目标资料库" onChange={(value) => { setRepoId(value); setPath("/"); }}>
+        <Select value={repoId} aria-label={i18n("pages.cloudpage.6dd388a191a4")} onChange={(value) => { setRepoId(value); setPath("/"); }}>
           {repos.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
         </Select>
         <Breadcrumb
           items={[
-            { label: "根目录", onClick: () => setPath("/") },
+            { label: i18n("pages.cloudpage.42ee2863b6d7"), onClick: () => setPath("/") },
             ...crumbs.map((c, i) => ({ label: c, onClick: () => setPath("/" + crumbs.slice(0, i + 1).join("/")) })),
           ]}
           separator={<IconChevron size="sm" />}
@@ -181,20 +182,20 @@ function MoveModal({
         {error && <Text as="p" slot="micro" tone="error">{error}</Text>}
         {/* WKWebView 合成层怪病（v4 实录：DOM 正确、字面样式仍全白）——目标文件夹
             改用原生 select（系统绘制）：选中即进入该层，面包屑点返回上级。 */}
-        <Select value="" aria-label="目标层文件夹" onChange={(value) => {
+        <Select value="" aria-label={i18n("pages.cloudpage.8a7c214a2e53")} onChange={(value) => {
             const v = value;
             if (v) setPath(`${path === "/" ? "" : path}/${v}`);
           }}>
           <option value="">
             {loading
-              ? "正在读取文件夹…"
+              ? i18n("pages.cloudpage.494c3b6d6039")
               : dirs.length
-                ? `进入子文件夹（当前层 ${dirs.length} 个）▸`
-                : "当前层没有子文件夹——可直接点「移动到这里」"}
+                ? i18n("pages.cloudpage.b59fece6e715", { length: String(dirs.length) })
+                : i18n("pages.cloudpage.db7deecb6f3f")}
           </option>
           {dirs.map((d) => <option key={d.name} value={d.name}>{d.name}</option>)}
         </Select>
-        {selfNest && <Text as="p" slot="micro" tone="error">不能移动到自身内部的文件夹</Text>}
+        {selfNest && <Text as="p" slot="micro" tone="error">{i18n("pages.cloudpage.5ffbf89ecab8")}</Text>}
       </Stack>
     </Modal>
   );
@@ -203,6 +204,8 @@ function MoveModal({
 /* ── 页面 ─────────────────────────────────────────────────────── */
 
 export default function CloudPage(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navParams } = useApp();
   const { configured, account, repos, busy, lastError } = useSeafile();
   const [bindOpen, setBindOpen] = useState(false); // §4.3：口令输入统一走 ConnectGate
@@ -261,7 +264,7 @@ export default function CloudPage(): ReactNode {
       setSearchMeta({ q, ms: Math.round(performance.now() - t0) });
     } catch (e) {
       if (seq === searchSeqRef.current) {
-        showToast(`搜索失败：${String(e).slice(0, 80)}`);
+        showToast(i18nMsg("pages.cloudpage.7dd967e63384", { value: String(String(e).slice(0, 80)) }));
         setSearchHits(null);
         setSearchMeta(null);
       }
@@ -287,12 +290,12 @@ export default function CloudPage(): ReactNode {
         dstDir,
         newName: "",
       });
-      showToast(`已移动「${entry.name}」`);
+      showToast(i18nMsg("pages.cloudpage.62673d92b525", { name: String(entry.name) }));
       refreshDir(cur.id, src).catch(() => undefined);
       refreshRepos().catch(() => undefined);
       if (dstRepoId !== cur.id) refreshDir(dstRepoId, dstDir).catch(() => undefined);
     } catch (e) {
-      showToast(`移动失败：${String(e).slice(0, 90)}`);
+      showToast(i18nMsg("pages.cloudpage.2597a8d4a801", { value: String(String(e).slice(0, 90)) }));
     }
   };
 
@@ -310,13 +313,13 @@ export default function CloudPage(): ReactNode {
         await seafileDownload(cur.id, `${path === "/" ? "" : path}/${e.name}`);
         ok++;
       } catch (err) {
-        showToast(`「${e.name}」下载失败：${String(err).slice(0, 60)}`);
+        showToast(i18nMsg("pages.cloudpage.4dfba9961d74", { name: String(e.name), value: String(String(err).slice(0, 60)) }));
       }
-      if (i < items.length - 1) showToast(`下载中 ${i + 1}/${items.length}…`, 1200);
+      if (i < items.length - 1) showToast(i18nMsg("pages.cloudpage.714eeef6f823", { value: String(i + 1), length: String(items.length) }), 1200);
     }
     setBatchBusy(false);
     exitSel();
-    showToast(`已下载 ${ok}/${items.length} 个文件`);
+    showToast(i18nMsg("pages.cloudpage.8dba5236dfa7", { ok: String(ok), length: String(items.length) }));
   };
 
   /** 批量删除（alert 级确认） */
@@ -325,11 +328,11 @@ export default function CloudPage(): ReactNode {
     if (!cur || !dir.entries) return;
     const items = dir.entries.filter((e) => selSet.has(e.name));
     if (!items.length) return;
-    const names = items.map((x) => `· ${x.name}${x.kind === "dir" ? "（文件夹）" : ""}`);
-    const shown = names.slice(0, 6).join("\n") + (names.length > 6 ? `\n… 等共 ${names.length} 项` : "");
+    const names = items.map((x) => `· ${x.name}${x.kind === "dir" ? i18n("pages.cloudpage.ecb80d06607e") : ""}`);
+    const shown = names.slice(0, 6).join("\n") + (names.length > 6 ? i18n("pages.cloudpage.b16f02c3e4d9", { length: String(names.length) }) : "");
     const ok = await confirmDanger(
-      `删除以下 ${items.length} 项？\n\n${shown}\n\n所选文件与文件夹（含内容）将从云盘永久删除，此操作不可撤销。`,
-      { title: `删除 ${items.length} 项，请确认！`, confirmText: "确认删除" },
+      i18nMsg("pages.cloudpage.dcd9bc5583f5", { length: String(items.length), shown: String(shown) }),
+      { title: i18nMsg("pages.cloudpage.8c74b8fa706e", { length: String(items.length) }), confirmText: i18nMsg("pages.cloudpage.a3ea3c17b401") },
     );
     if (!ok) return;
     setBatchBusy(true);
@@ -342,12 +345,12 @@ export default function CloudPage(): ReactNode {
         });
         done++;
       } catch (err) {
-        showToast(`「${e.name}」删除失败：${String(err).slice(0, 60)}`);
+        showToast(i18nMsg("pages.cloudpage.b221697cb461", { name: String(e.name), value: String(String(err).slice(0, 60)) }));
       }
     }
     setBatchBusy(false);
     exitSel();
-    showToast(`已删除 ${done}/${items.length} 项`);
+    showToast(i18nMsg("pages.cloudpage.5709c3c3ceb9", { done: String(done), length: String(items.length) }));
     refreshDir(cur.id, path).catch(() => undefined);
     refreshRepos().catch(() => undefined);
   };
@@ -356,18 +359,18 @@ export default function CloudPage(): ReactNode {
   if (!configured) {
     return (
       <Stack gap={3}>
-        <Text slot="title" as="h2">清华云盘</Text>
+        <Text slot="title" as="h2">{i18n("pages.cloudpage.75f7ac5a5cca")}</Text>
         <div style={{ maxWidth: "520px" }}>
           <Card>
             <Stack gap={2}>
-              <Text as="p">连接后可浏览与下载清华云盘文件。</Text>
-              <Text as="p">首次连接会在应用内打开云盘页面。</Text>
-              <Text as="p">登录后读取现有访问口令，不会自动生成或重置。</Text>
+              <Text as="p">{i18n("pages.cloudpage.f77b9b7075b8")}</Text>
+              <Text as="p">{i18n("pages.cloudpage.437d26909512")}</Text>
+              <Text as="p">{i18n("pages.cloudpage.6c50d3cbcf0b")}</Text>
               <Inline gap={2}>
-                <Btn variant="outline" onClick={() => setBindOpen(true)}>连接云盘</Btn>
+                <Btn variant="outline" onClick={() => setBindOpen(true)}>{i18n("pages.cloudpage.aca7d4470108")}</Btn>
               </Inline>
               <ConnectGate need="cloud" open={bindOpen} onClose={() => setBindOpen(false)} />
-              <Text as="p" slot="micro" tone="faint">访问口令仅保存在本机，用于连接清华云盘。</Text>
+              <Text as="p" slot="micro" tone="faint">{i18n("pages.cloudpage.04ab7d823a20")}</Text>
             </Stack>
           </Card>
         </div>
@@ -383,7 +386,7 @@ export default function CloudPage(): ReactNode {
     return (
       <Stack gap={2}>
         <Inline gap={2} wrap>
-          <Btn variant="outline" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>← 资料库</Btn>
+          <Btn variant="outline" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>{i18n("pages.cloudpage.1c7ec14c5804")}</Btn>
           <Grow>
             <Breadcrumb
               items={[
@@ -393,35 +396,33 @@ export default function CloudPage(): ReactNode {
               separator={<IconChevron size="sm" />}
             />
           </Grow>
-          <Btn variant="outline" disabled={batchBusy} icon={<IconFolderPlus size="sm" />} titleAttr="新建文件夹" onClick={async () => {
-              const name = await promptText("新建文件夹", { placeholder: "文件夹名称" });
+          <Btn variant="outline" disabled={batchBusy} icon={<IconFolderPlus size="sm" />} titleAttr={i18n("pages.cloudpage.84244abc71de")} onClick={async () => {
+              const name = await promptText(i18nMsg("pages.cloudpage.84244abc71de"), { placeholder: i18nMsg("pages.cloudpage.bacf701908d8") });
               if (!name) return;
               try {
                 await invoke("seafile_mkdir", { token: getSeafileToken(), repoId: repo.id, path: `${path === "/" ? "" : path}/${name}` });
-                showToast(`已创建「${name}」`);
+                showToast(i18nMsg("pages.cloudpage.d1403c75a692", { name: String(name) }));
                 refreshDir(repo.id, path).catch(() => undefined);
               } catch (e) {
-                showToast(`创建失败：${String(e).slice(0, 80)}`);
+                showToast(i18nMsg("pages.cloudpage.222abf42cbc2", { value: String(String(e).slice(0, 80)) }));
               }
-            }}>新建文件夹
-          </Btn>
+            }}>{i18n("pages.cloudpage.84244abc71de")}</Btn>
           <Btn variant="outline" disabled={busy || batchBusy} onClick={() => {
               if (selMode) { exitSel(); return; }
               setSearchHits(null);
               setSearchText("");
               setSelMode(true);
-            }}>{selMode ? "退出批量" : "批量"}</Btn>
+            }}>{selMode ? i18n("pages.cloudpage.571e8b9e66f2") : i18n("pages.cloudpage.cb7707463c16")}</Btn>
           <Btn variant="outline" disabled={busy || selMode} icon={<IconUpload size="sm" />} onClick={async () => {
               const r = await invoke<string[]>("seafile_pick_upload", {
                 token: getSeafileToken(), repoId: repo.id, parentDir: path,
-              }).catch((e) => { showToast(`上传失败：${String(e).slice(0, 80)}`); return null; });
+              }).catch((e) => { showToast(i18nMsg("pages.cloudpage.08fa97188ed8", { value: String(String(e).slice(0, 80)) })); return null; });
               if (r && r.length) {
-                showToast(r.length > 1 ? `已上传 ${r.length} 个文件` : (r[0] ?? "已上传"));
+                showToast(r.length > 1 ? i18nMsg("pages.cloudpage.cda6fdc5607b", { length: String(r.length) }) : (r[0] ?? i18n("pages.cloudpage.f2f02049468d")));
                 refreshRepos().catch(() => undefined);
                 refreshDir(repo.id, path).catch(() => undefined); // 立刻刷当前目录（缓存失效）
               }
-            }}>上传
-          </Btn>
+            }}>{i18n("pages.cloudpage.9e07e3c0532d")}</Btn>
         </Inline>
 
         {!selMode && (
@@ -431,8 +432,8 @@ export default function CloudPage(): ReactNode {
                 type="search"
                 size="md"
                 icon={searching ? <Spinner size="sm" /> : <IconSearch size="sm" />}
-                placeholder={`在「${repo.name}」内搜文件名（回车搜索）`}
-                aria-label={`在「${repo.name}」内搜文件名`}
+                placeholder={i18n("pages.cloudpage.01cf40e9becd", { name: String(repo.name) })}
+                aria-label={i18n("pages.cloudpage.5c5e2637e7c9", { name: String(repo.name) })}
                 value={searchText}
                 disabled={searching}
                 onChange={setSearchText}
@@ -440,17 +441,17 @@ export default function CloudPage(): ReactNode {
               />
             </div>
             {!searching && (searchHits || searchMeta) && (
-              <Btn variant="outline" onClick={() => { searchSeqRef.current++; setSearchHits(null); setSearchMeta(null); setSearchText(""); }}>退出搜索</Btn>
+              <Btn variant="outline" onClick={() => { searchSeqRef.current++; setSearchHits(null); setSearchMeta(null); setSearchText(""); }}>{i18n("pages.cloudpage.5ee87e65261b")}</Btn>
             )}
-            {searching && <Tag tone="brand">搜索中…</Tag>}
+            {searching && <Tag tone="brand">{i18n("pages.cloudpage.cc50237edca2")}</Tag>}
           </Inline>
         )}
 
-        {dir.loading && <Text as="p" tone="faint">读取中…</Text>}
+        {dir.loading && <Text as="p" tone="faint">{i18n("pages.cloudpage.346ff60e6c7c")}</Text>}
         {dir.error && <Text as="p" slot="micro" tone="error">{dir.error}</Text>}
 
         {selMode ? (
-          <Card flush role="listbox" aria-label="批量选择">
+          <Card flush role="listbox" aria-label={i18n("pages.cloudpage.9ab296886086")}>
             <List divided>
               {entries.map((e) => {
                 const toggle = (): void => setSelSet((s) => { const n = new Set(s); if (n.has(e.name)) n.delete(e.name); else n.add(e.name); return n; });
@@ -464,20 +465,20 @@ export default function CloudPage(): ReactNode {
                     onKeyDown={(ev) => { if (ev.key === "Enter") toggle(); }}
                     leading={<Checkbox checked={selSet.has(e.name)} onChange={() => undefined} />}
                     title={e.name}
-                    trailing={<>{e.kind === "file" ? fmtSize(e.size) : "文件夹"}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}</>}
+                    trailing={<>{e.kind === "file" ? fmtSize(e.size) : i18n("pages.cloudpage.7c7802d8adae")}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}</>}
                   />
                 );
               })}
             </List>
-            {entries.length === 0 && !dir.loading && <EmptyState title="空目录" />}
+            {entries.length === 0 && !dir.loading && <EmptyState title={i18n("pages.cloudpage.3ea0e6e41518")} />}
             <div style={{ position: "sticky", bottom: 0 }}>
               <Surface radius="none">
                 <Inline gap={2} wrap>
-                  <Btn variant="outline" onClick={() => setSelSet(allSelected ? new Set() : new Set(entries.map((x) => x.name)))}>{allSelected ? "取消全选" : "全选"}</Btn>
-                  <Text slot="label" tone="faint">已选 {selSet.size} 项</Text>
+                  <Btn variant="outline" onClick={() => setSelSet(allSelected ? new Set() : new Set(entries.map((x) => x.name)))}>{allSelected ? i18n("pages.cloudpage.f4d4bae588c4") : i18n("pages.cloudpage.3a5040b68abf")}</Btn>
+                  <Text slot="label" tone="faint">{i18nRich("pages.cloudpage.8b66460804e7", { size: selSet.size })}</Text>
                   <Spacer />
-                  <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDownload()}>{batchBusy ? "处理中…" : `下载（${selSet.size}）`}</Btn>
-                  <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDelete()}>删除（{selSet.size}）</Btn>
+                  <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDownload()}>{batchBusy ? i18n("pages.cloudpage.d3d21191f32e") : i18n("pages.cloudpage.14909c3a7b16", { size: String(selSet.size) })}</Btn>
+                  <Btn variant="outline" disabled={!selSet.size || batchBusy} onClick={() => void batchDelete()}>{i18nRich("pages.cloudpage.689231f769fb", { size: selSet.size })}</Btn>
                 </Inline>
               </Surface>
             </div>
@@ -491,11 +492,11 @@ export default function CloudPage(): ReactNode {
             {searchMeta && (
               <Inline vAlign="baseline" gap={2} wrap>
                 <Text slot="subtitle">“{searchMeta.q}”</Text>
-                <Text slot="micro" tone="faint">{searchHits.length} 个结果 · {(searchMeta.ms / 1000).toFixed(1)}s</Text>
+                <Text slot="micro" tone="faint">{i18nRich("pages.cloudpage.5e0fe9a8ad48", { length: searchHits.length, value: (searchMeta.ms / 1000).toFixed(1) })}</Text>
               </Inline>
             )}
             {searchHits.length === 0 && searchMeta ? (
-              <EmptyState title={`没有匹配「${searchMeta.q}」的文件`} />
+              <EmptyState title={i18n("pages.cloudpage.dc342d1bfbd2", { q: String(searchMeta.q) })} />
             ) : (
               <Card flush>
                 <List divided>
@@ -513,7 +514,7 @@ export default function CloudPage(): ReactNode {
             )}
           </Stack>
         ) : (
-          <Card flush role="listbox" aria-label="云盘文件">
+          <Card flush role="listbox" aria-label={i18n("pages.cloudpage.b5f224115dae")}>
             <List divided>
               {entries.map((e) => (
                 <Row
@@ -535,31 +536,30 @@ export default function CloudPage(): ReactNode {
                   trailing={
                     <>
                       {e.kind === "file" ? fmtSize(e.size) : ""}{e.mtime ? ` · ${fmtMtime(e.mtime)}` : ""}
-                      <Btn size="sm" variant="outline" titleAttr="移动到其他位置" onClick={(ev) => { ev.stopPropagation(); setMoving(e); }}>移动</Btn>
-                      <Btn size="sm" variant="outline" titleAttr={e.kind === "dir" ? "删除文件夹（含全部内容）" : "删除文件"} onClick={(ev) => {
+                      <Btn size="sm" variant="outline" titleAttr={i18n("pages.cloudpage.f72a6bc6a957")} onClick={(ev) => { ev.stopPropagation(); setMoving(e); }}>{i18n("pages.cloudpage.fc6bb436b8ca")}</Btn>
+                      <Btn size="sm" variant="outline" titleAttr={e.kind === "dir" ? i18n("pages.cloudpage.39730c55dba6") : i18n("pages.cloudpage.88f47860e77d")} onClick={(ev) => {
                           ev.stopPropagation();
                           void deleteEntry(repo, `${path === "/" ? "" : path}/${e.name}`, e).then((ok) => {
                             if (!ok) return;
                             refreshDir(repo.id, path).catch(() => undefined);
                             refreshRepos().catch(() => undefined);
-                          }).catch((err) => showToast(`删除失败：${String(err).slice(0, 80)}`));
-                        }}>删除
-                      </Btn>
+                          }).catch((err) => showToast(i18nMsg("pages.cloudpage.5e9e9ab95a7b", { value: String(String(err).slice(0, 80)) })));
+                        }}>{i18n("pages.cloudpage.2f9daa828907")}</Btn>
                       {e.kind === "file" && (
                         <>
-                          <Btn size="sm" variant="outline" titleAttr="下载到 Downloads" onClick={(ev) => { ev.stopPropagation(); seafileDownload(repo.id, `${path === "/" ? "" : path}/${e.name}`).catch((err) => showToast(String(err).slice(0, 90))); }}>下载</Btn>
-                          <Btn size="sm" variant="outline" titleAttr="生成分享链接" disabled={sharing === e.name} onClick={(ev) => {
+                          <Btn size="sm" variant="outline" titleAttr={i18n("pages.cloudpage.ada099dd389a")} onClick={(ev) => { ev.stopPropagation(); seafileDownload(repo.id, `${path === "/" ? "" : path}/${e.name}`).catch((err) => showToast(String(err).slice(0, 90))); }}>{i18n("pages.cloudpage.4673a2306165")}</Btn>
+                          <Btn size="sm" variant="outline" titleAttr={i18n("pages.cloudpage.d0948549f71a")} disabled={sharing === e.name} onClick={(ev) => {
                               ev.stopPropagation();
                               setSharing(e.name);
                               seafileShare(repo.id, `${path === "/" ? "" : path}/${e.name}`, 0)
                                 .then(async (link) => {
                                   await navigator.clipboard.writeText(link).catch(() => undefined);
-                                  showToast(`分享链接已复制（7 天内有效设置请用网页端）`);
+                                  showToast(i18nMsg("pages.cloudpage.62ddce2770ae"));
                                   openExternal(link).catch(() => undefined);
                                 })
                                 .catch((err) => showToast(String(err).slice(0, 90)))
                                 .finally(() => setSharing(null));
-                            }}>{sharing === e.name ? "…" : "分享"}</Btn>
+                            }}>{sharing === e.name ? "…" : i18n("pages.cloudpage.7e564575eb7d")}</Btn>
                         </>
                       )}
                     </>
@@ -567,7 +567,7 @@ export default function CloudPage(): ReactNode {
                 />
               ))}
             </List>
-            {entries.length === 0 && !dir.loading && <EmptyState title="空目录" />}
+            {entries.length === 0 && !dir.loading && <EmptyState title={i18n("pages.cloudpage.3ea0e6e41518")} />}
           </Card>
         )}
         {moving && (
@@ -589,40 +589,38 @@ export default function CloudPage(): ReactNode {
   return (
     <Stack gap={3}>
       <Inline gap={2} wrap>
-        <Text slot="title" as="h2">清华云盘</Text>
+        <Text slot="title" as="h2">{i18n("pages.cloudpage.75f7ac5a5cca")}</Text>
         {account ? (
           <Text slot="micro" tone="faint">
             {account.name || account.email} · {fmtSize(account.usage)} / {fmtSize(account.total)}
           </Text>
         ) : busy ? (
-          <Text slot="micro" tone="faint">连接中…</Text>
+          <Text slot="micro" tone="faint">{i18n("pages.cloudpage.ee9ebe523d42")}</Text>
         ) : null}
         <Spacer />
         <Inline gap={2}>
-          <Btn variant="outline" disabled={busy} icon={<IconFolderPlus size="sm" />} titleAttr="新建资料库" onClick={async () => {
-              const name = await promptText("新建资料库", { placeholder: "资料库名称" });
+          <Btn variant="outline" disabled={busy} icon={<IconFolderPlus size="sm" />} titleAttr={i18n("pages.cloudpage.d7b6a5ec5201")} onClick={async () => {
+              const name = await promptText(i18nMsg("pages.cloudpage.d7b6a5ec5201"), { placeholder: i18nMsg("pages.cloudpage.08008fa506a0") });
               if (!name) return;
               try {
                 await invoke("seafile_create_repo", { token: getSeafileToken(), name });
-                showToast(`已创建资料库「${name}」`);
+                showToast(i18nMsg("pages.cloudpage.3defb731c5ab", { name: String(name) }));
                 refreshRepos().catch(() => undefined);
               } catch (e) {
-                showToast(`创建失败：${String(e).slice(0, 80)}`);
+                showToast(i18nMsg("pages.cloudpage.222abf42cbc2", { value: String(String(e).slice(0, 80)) }));
               }
-            }}>新建资料库
-          </Btn>
-          <Btn variant="outline" disabled={busy} icon={<IconRefresh size="sm" />} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}>刷新
-          </Btn>
-          <Text as="span" slot="micro" tone="faint">云盘为必需组件，本版本起不再提供断开入口</Text>
+            }}>{i18n("pages.cloudpage.d7b6a5ec5201")}</Btn>
+          <Btn variant="outline" disabled={busy} icon={<IconRefresh size="sm" />} onClick={() => { refreshSeafileAccount().catch(() => undefined); refreshRepos().catch(() => undefined); }}>{i18n("pages.cloudpage.aee887434131")}</Btn>
+          <Text as="span" slot="micro" tone="faint">{i18n("pages.cloudpage.a111035ab3cc")}</Text>
         </Inline>
       </Inline>
       {account && (
         <Progress value={account.usage / Math.max(account.total, 1)} size="sm" />
       )}
       {lastError && <Text as="p" slot="micro" tone="error">{lastError}</Text>}
-      {busy && <Text as="p" tone="faint">加载资料库…</Text>}
+      {busy && <Text as="p" tone="faint">{i18n("pages.cloudpage.f369bd636d02")}</Text>}
       {repos.length === 0 && !busy ? (
-        <EmptyState title="没有可见的资料库" />
+        <EmptyState title={i18n("pages.cloudpage.99b4882003c8")} />
       ) : (
         <Grid min="md">
           {repos.map((r) => (
@@ -638,7 +636,7 @@ export default function CloudPage(): ReactNode {
             >
               <Row
                 flush
-                leading={<IconFolder size="lg" className="og-text--t-brand" title="资料库" />}
+                leading={<IconFolder size="lg" className="og-text--t-brand" title={i18n("pages.cloudpage.433bdcb25776")} />}
                 title={r.name}
                 sub={`${fmtSize(r.size)}${r.mtime ? ` · ${fmtMtime(r.mtime)}` : ""}`}
               />

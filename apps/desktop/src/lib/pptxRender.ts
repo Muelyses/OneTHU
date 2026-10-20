@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * pptx 本地渲染模型（R26，零第三方依赖）。
  *
@@ -576,7 +577,7 @@ async function readShapes(node: XmlNode, ctx: SlideCtx, group?: { off: Xfrm; ch:
       else {
         ctx.unsupported.n++;
         const known = target ? MIME_BY_EXT[target.slice(target.lastIndexOf(".") + 1).toLowerCase()] : undefined;
-        out.push({ ...place(box), kind: "unsupported", label: known ? "图片过大未渲染" : "图片（格式不支持）" });
+        out.push({ ...place(box), kind: "unsupported", get label() { return known ? i18n("lib.pptxrender.5547406e74d1") : i18n("lib.pptxrender.e957a1c1958c"); } });
       }
       continue;
     }
@@ -600,7 +601,7 @@ async function readShapes(node: XmlNode, ctx: SlideCtx, group?: { off: Xfrm; ch:
         ctx.unsupported.n++;
         const isChart = Boolean(find(c, "chart")) || /chart/i.test(find(c, "graphicData")?.attrs.uri ?? "");
         const isDgm = Boolean(find(c, "relIds"));
-        out.push({ ...place(box), kind: "unsupported", label: isChart ? "图表" : isDgm ? "SmartArt" : "对象" });
+        out.push({ ...place(box), kind: "unsupported", get label() { return isChart ? i18n("lib.pptxrender.8cb443ab8379") : isDgm ? "SmartArt" : i18n("lib.pptxrender.53f92c063963"); } });
       }
       continue;
     }
@@ -620,7 +621,7 @@ async function readShapes(node: XmlNode, ctx: SlideCtx, group?: { off: Xfrm; ch:
       const box = readXfrm(child(c, "spPr"));
       if (box) {
         ctx.unsupported.n++;
-        out.push({ ...place(box), kind: "unsupported", label: "嵌入内容" });
+        out.push({ ...place(box), kind: "unsupported", get label() { return i18n("lib.pptxrender.311456c35da6"); } });
       }
     }
   }
@@ -659,7 +660,7 @@ export async function parsePptxModel(fileBytes: Uint8Array, entries: ZipEntry[])
   const slideEntries = entries
     .filter((e) => !e.isDir && SLIDE_RE.test(e.name))
     .sort((a, b) => num(SLIDE_RE.exec(a.name)?.[1]) - num(SLIDE_RE.exec(b.name)?.[1]));
-  if (!slideEntries.length) throw new Error("压缩包内未找到 ppt/slides/slideN.xml（可能不是 .pptx）");
+  if (!slideEntries.length) throw new Error(i18n("lib.pptxrender.465bf7f89508"));
 
   const baseCtx: SlideCtx = {
     theme: { colors: {} },
@@ -741,6 +742,6 @@ export async function parsePptxModel(fileBytes: Uint8Array, entries: ZipEntry[])
     slides.push({ no, shapes, notes });
   }
 
-  if (!slides.length) throw new Error("未能解析任何幻灯片");
+  if (!slides.length) throw new Error(i18n("lib.pptxrender.b5c59e63ba8f"));
   return { cx, cy, slides, unsupported: baseCtx.unsupported.n };
 }

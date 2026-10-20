@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 飞书「长连接事件订阅」WS 帧编解码——手写 protobuf wire 格式。
  *
@@ -80,19 +81,19 @@ class Reader {
     let result = 0;
     let shift = 0;
     for (;;) {
-      if (this.pos >= this.buf.length) throw new Error("protobuf: varint 越界");
+      if (this.pos >= this.buf.length) throw new Error(i18n("im.feishuproto.34a35aa8ee74"));
       const b = this.buf[this.pos++]!;
       result += (b & 0x7f) * 2 ** shift;
       if ((b & 0x80) === 0) return result;
       shift += 7;
-      if (shift > 63) throw new Error("protobuf: varint 过长");
+      if (shift > 63) throw new Error(i18n("im.feishuproto.6c3a6e0bd105"));
     }
   }
   bytes(): Uint8Array {
     const len = this.varint();
     const start = this.pos;
     const end = start + len;
-    if (end > this.buf.length) throw new Error("protobuf: bytes 越界");
+    if (end > this.buf.length) throw new Error(i18n("im.feishuproto.df3efc2fd559"));
     this.pos = end;
     return this.buf.slice(start, end);
   }
@@ -104,7 +105,7 @@ class Reader {
     else if (wireType === 2) this.bytes();
     else if (wireType === 5) this.pos += 4;
     else if (wireType === 1) this.pos += 8;
-    else throw new Error(`protobuf: 未知 wire type ${wireType}`);
+    else throw new Error(i18n("im.feishuproto.566a4335284f", { wireType: String(wireType) }));
   }
 }
 

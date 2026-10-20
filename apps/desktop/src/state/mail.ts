@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 邮箱状态层 —— 复用云日历的「邮箱 + 授权码」（同一个清华信息门户凭据）。
  *
@@ -32,8 +33,8 @@ export interface MailBody {
 
 /** 服务器实探的文件夹（LIST：\Sent → "Sent Items"） */
 export const MAIL_FOLDERS: Array<{ id: string; label: string }> = [
-  { id: "INBOX", label: "收件箱" },
-  { id: "Sent Items", label: "已发送" },
+  { id: "INBOX", get label() { return i18n("state.mail.63a5e7b73911"); } },
+  { id: "Sent Items", get label() { return i18n("state.mail.60823aaec73b"); } },
 ];
 
 const CACHE_FILE = "mail.cache";
@@ -69,7 +70,7 @@ function current(c: Credential): boolean {
   return c.revision === revision && matchesConfig();
 }
 function assertCurrent(c: Credential): void {
-  if (!current(c)) throw new Error("邮箱账号已改变，请重新打开邮件");
+  if (!current(c)) throw new Error(i18n("state.mail.e9a7b9e11064"));
 }
 
 /** Serialize disk writes so an old account's slow write cannot replace the new
@@ -107,7 +108,7 @@ async function ensureLoaded(): Promise<void> {
     await ensureCloudCalCredentialsLoaded();
     if (initializationError) { initializationError = null; emit(); }
   } catch {
-    const message = "邮箱连接信息读取失败，请重试";
+    const message = i18n("state.mail.credentialsReadFailed");
     if (initializationError !== message) { initializationError = message; emit(); }
     throw new Error(message);
   }
@@ -145,7 +146,7 @@ async function ensureLoaded(): Promise<void> {
 
 async function cred(): Promise<Credential> {
   await ensureLoaded();
-  if (!account || !matchesConfig()) throw new Error("请先绑定邮箱与客户端专用密码");
+  if (!account || !matchesConfig()) throw new Error(i18n("state.mail.c7533b0c0d79"));
   return { ...account, revision };
 }
 
@@ -176,7 +177,7 @@ async function listMail(folder: string, more: boolean): Promise<MailHead[]> {
       minSeqsByFolder[folder] = out.minSeq;
       if (!more) lastRefreshAt[folder] = Date.now();
       await persistCache().catch(() => {
-        if (current(c)) errorsByFolder[folder] = "邮件已更新，但本地缓存未能保存";
+        if (current(c)) errorsByFolder[folder] = i18n("state.mail.cacheWriteFailed");
       });
       assertCurrent(c);
       return out.heads;
@@ -244,7 +245,7 @@ export async function mailSearch(folder: string, query: string): Promise<MailHea
 }
 export async function sendMail(to: string, cc: string, subject: string, body: string): Promise<void> {
   const tos = to.split(/[,;\s]+/).filter(Boolean), ccs = cc.split(/[,;\s]+/).filter(Boolean);
-  if (!tos.length) throw new Error("收件人不能为空");
+  if (!tos.length) throw new Error(i18n("state.mail.e405fef4c8cd"));
   const c = await cred();
   await invoke("mail_send", { args: { email: c.email, auth: c.auth, to: tos, cc: ccs, subject, body } });
   if (current(c)) lastRefreshAt["Sent Items"] = 0;

@@ -53,6 +53,8 @@ export function Text({
 }
 
 export interface SectionProps {
+  /** Stable document anchor independent of the visible title or locale. */
+  id?: string;
   /** 区块标题（subtitle 档） */
   title: ReactNode;
   /** 标题右侧的弱化说明 */
@@ -65,9 +67,9 @@ export interface SectionProps {
 }
 
 /** 页内分区头：一页里所有"小标题 + 右侧动作"都用它，不许各写一套 */
-export function Section({ title, hint, aside, scope, className, children }: SectionProps): ReactNode {
+export function Section({ id, title, hint, aside, scope, className, children }: SectionProps): ReactNode {
   return (
-    <div {...scopeProps(scope)} className={cx("og-section", className)}>
+    <div id={id} {...scopeProps(scope)} className={cx("og-section", className)}>
       <div className="og-section-titles">
         {typeof title === "string" ? <Text slot="subtitle" as="h3">{title}</Text> : title}
         {hint ? (typeof hint === "string" ? <Text slot="label" tone="faint">{hint}</Text> : hint) : null}

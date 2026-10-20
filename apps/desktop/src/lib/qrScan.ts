@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 二维码识别（扫码兜底）：BarcodeDetector + 图片文件。不做实时相机预览，
  * 手机端用系统图片选择器拍照/选截图；桌面端选截图即可。不支持时明确报错。
@@ -13,7 +14,7 @@ export function qrScanSupported(): boolean {
 
 export async function decodeQrFile(file: File): Promise<string | null> {
   const Ctor = (globalThis as { BarcodeDetector?: Ctor }).BarcodeDetector;
-  if (!Ctor) throw new Error("当前环境不支持二维码识别（需要较新的系统 WebView）");
+  if (!Ctor) throw new Error(i18n("lib.qrscan.b3a1f9364b8c"));
   const bitmap = await createImageBitmap(file);
   try {
     const detector = new Ctor({ formats: ["qr_code"] });

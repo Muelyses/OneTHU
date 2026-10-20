@@ -1,3 +1,5 @@
+import { getLocale as getUiLocale } from "../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 开发者面板（仅 dev 构建）：右上角常驻 commit 徽标，点开是构建信息 + 前端日志 + 一键导出。
  *
@@ -54,13 +56,13 @@ function hostName(): string {
   const nav = typeof navigator !== "undefined" ? navigator : undefined;
   if (isAndroidNavigator(nav)) return "Android";
   if (isWindowsNavigator(nav)) return "Windows";
-  return (nav && nav.platform) || "未知";
+  return (nav && nav.platform) || i18n("components.devpanel.4d8c1c5b4283");
 }
 
 function buildTimeText(): string {
-  if (!BUILD_TIME) return "未知";
+  if (!BUILD_TIME) return i18n("components.devpanel.4d8c1c5b4283");
   const d = new Date(BUILD_TIME);
-  return isNaN(d.getTime()) ? BUILD_TIME : d.toLocaleString();
+  return isNaN(d.getTime()) ? BUILD_TIME : d.toLocaleString(getUiLocale());
 }
 
 function levelColor(level: string): string {
@@ -70,6 +72,8 @@ function levelColor(level: string): string {
 }
 
 export default function DevPanel() {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [logs, setLogs] = useState<DevLogEntry[]>([]);
@@ -106,9 +110,9 @@ export default function DevPanel() {
   const copy = async (text: string, what: string): Promise<void> => {
     try {
       await navigator.clipboard.writeText(text);
-      setNote(what + "已复制到剪贴板");
+      setNote(what + i18n("components.devpanel.cce28dd1fcdf"));
     } catch (err) {
-      setNote("复制失败: " + String(err instanceof Error ? err.message : err));
+      setNote(i18n("components.devpanel.7915396dd491") + String(err instanceof Error ? err.message : err));
     }
   };
 
@@ -117,7 +121,7 @@ export default function DevPanel() {
     setNote("");
     try {
       const where = await invoke<string>("debug_log_export");
-      setNote("已导出到 " + where);
+      setNote(i18n("components.devpanel.961ef8b1bc21") + where);
     } catch (err) {
       setNote(String(err instanceof Error ? err.message : err).slice(0, 160));
     } finally {
@@ -128,13 +132,13 @@ export default function DevPanel() {
   const diagnostics = (): string => {
     const nav = typeof navigator !== "undefined" ? navigator : undefined;
     return [
-      "OneTHU dev 构建信息",
-      "版本: " + APP_VERSION,
+      i18n("components.devpanel.0dcbf8e504e3"),
+      i18n("components.devpanel.8b60354a8cb0") + APP_VERSION,
       "commit: " + BUILD_COMMIT,
-      "构建时间: " + buildTimeText(),
-      "宿主: " + hostName(),
-      "视口: " + window.innerWidth + "x" + window.innerHeight + " dpr=" + window.devicePixelRatio,
-      "语言: " + (nav ? nav.language : "?"),
+      i18n("components.devpanel.f1943a24f844") + buildTimeText(),
+      i18n("components.devpanel.1b54c7cbd89e") + hostName(),
+      i18n("components.devpanel.87809c747d7f") + window.innerWidth + "x" + window.innerHeight + " dpr=" + window.devicePixelRatio,
+      i18n("components.devpanel.ff0557f3ef7f") + (nav ? nav.language : "?"),
       "UA: " + (nav ? nav.userAgent : "?"),
     ].join("\n");
   };
@@ -143,7 +147,7 @@ export default function DevPanel() {
 
   return (
     <>
-      <Btn className="og-dev-badge" size="sm" variant="outline" onClick={() => setOpen(!open)} titleAttr={"dev 构建 " + buildTimeText()}>
+      <Btn className="og-dev-badge" size="sm" variant="outline" onClick={() => setOpen(!open)} titleAttr={i18n("components.devpanel.3ae6ad22bb00") + buildTimeText()}>
         dev · {BUILD_COMMIT}
       </Btn>
       {open ? (
@@ -152,29 +156,29 @@ export default function DevPanel() {
             <strong style={{ color: "var(--og-success)" }}>OneTHU dev</strong>
             <span style={{ color: "var(--og-content-3)" }}>v{APP_VERSION}</span>
             <span style={{ flex: "1 1 auto" }} />
-            <Btn variant="outline" size="sm" onClick={hide}>隐藏徽标</Btn>
-            <Btn variant="outline" size="sm" onClick={() => setOpen(false)}>关闭</Btn>
+            <Btn variant="outline" size="sm" onClick={hide}>{i18n("components.devpanel.39cae06ba6b5")}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => setOpen(false)}>{i18n("components.devpanel.3fd47edce45b")}</Btn>
             {/* 竖屏取景框：整页换成一块真手机视口（同源 iframe，登录态照旧）。
                 窗口拖窄 ≠ 手机——比例/DPR/安全区都不对，这个入口才是看真机版式的地方。 */}
-            <Btn variant="outline" size="sm" onClick={() => { window.location.href = window.location.pathname + "?phone-frame=1"; }}>竖屏取景框</Btn>
+            <Btn variant="outline" size="sm" onClick={() => { window.location.href = window.location.pathname + "?phone-frame=1"; }}>{i18n("components.devpanel.ba0230926769")}</Btn>
           </div>
           <div style={S.row}><span style={S.key}>commit</span><span style={S.val}>{BUILD_COMMIT}</span></div>
-          <div style={S.row}><span style={S.key}>构建时间</span><span style={S.val}>{buildTimeText()}</span></div>
-          <div style={S.row}><span style={S.key}>宿主</span><span style={S.val}>{hostName()}</span></div>
+          <div style={S.row}><span style={S.key}>{i18n("components.devpanel.5203112d0597")}</span><span style={S.val}>{buildTimeText()}</span></div>
+          <div style={S.row}><span style={S.key}>{i18n("components.devpanel.d8456739a2ed")}</span><span style={S.val}>{hostName()}</span></div>
           <div style={S.row}>
-            <span style={S.key}>视口</span>
+            <span style={S.key}>{i18n("components.devpanel.56b73ac398f5")}</span>
             <span style={S.val}>{window.innerWidth}x{window.innerHeight} · dpr {window.devicePixelRatio}</span>
           </div>
           <div style={S.bar}>
-            <Btn variant="outline" size="sm" disabled={busy} onClick={() => void exportLog()}>{busy ? "导出中…" : "导出运行日志"}</Btn>
-            <Btn variant="outline" size="sm" onClick={() => void copy(devLogText(), "前端日志")}>复制前端日志</Btn>
-            <Btn variant="outline" size="sm" onClick={() => void copy(diagnostics(), "诊断信息")}>复制诊断信息</Btn>
-            <Btn variant="outline" size="sm" onClick={() => { clearDevLog(); setLogs([]); setNote("已清空前端日志缓冲"); }}>清空</Btn>
+            <Btn variant="outline" size="sm" disabled={busy} onClick={() => void exportLog()}>{busy ? i18n("components.devpanel.dce6e572314e") : i18n("components.devpanel.24eacefddcaf")}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => void copy(devLogText(), i18n("components.devpanel.45eb3fe0c084"))}>{i18n("components.devpanel.ab87bb2473af")}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => void copy(diagnostics(), i18n("components.devpanel.9167ee8b67db"))}>{i18n("components.devpanel.bbce140b7682")}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => { clearDevLog(); setLogs([]); setNote(i18n("components.devpanel.236f6cb7e77e")); }}>{i18n("components.devpanel.1ef3de06b32e")}</Btn>
           </div>
           <div style={S.note}>{note}</div>
-          <div style={{ color: "var(--og-content-3)", margin: "6px 0 4px" }}>前端日志（{logs.length} 条，最新在下；已同步进 onethu-debug.log）</div>
+          <div style={{ color: "var(--og-content-3)", margin: "6px 0 4px" }}>{i18nRich("components.devpanel.954ac65f7b6e", { length: logs.length })}</div>
           <div style={S.log}>
-            {logs.length === 0 ? <div style={{ color: "var(--og-content-disabled)" }}>（暂无）</div> : null}
+            {logs.length === 0 ? <div style={{ color: "var(--og-content-disabled)" }}>{i18n("components.devpanel.3eb1a705053a")}</div> : null}
             {logs.map((e, i) => (
               <div style={S.line} key={String(e.t) + "-" + i}>
                 <span style={{ color: levelColor(e.level), flex: "0 0 44px" }}>{e.level}</span>

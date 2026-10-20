@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 白板画笔层（SVG 覆盖在画布上）。
  *
@@ -30,6 +31,8 @@ export function BoardPenLayer({
   penOn: boolean;
   color: string;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const snap = useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const key = penKeyOf(boardId, orientation);
   const strokes = strokesOf(key);
@@ -161,8 +164,10 @@ export function BoardPenToolbar({
   onClear: () => void;
   canUndo: boolean;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   return (
-    <div className="board-pen-toolbar" role="toolbar" aria-label="画笔">
+    <div className="board-pen-toolbar" role="toolbar" aria-label={i18n("components.boardpenlayer.05731b92ad31")}>
       {PEN_COLORS.map((c) => (
         <button
           key={c}
@@ -170,16 +175,12 @@ export function BoardPenToolbar({
           className={"board-pen-swatch" + (c === color ? " is-on" : "")}
           style={{ background: c }}
           aria-pressed={c === color}
-          aria-label={"画笔颜色 " + c}
+          aria-label={i18n("components.boardpenlayer.82804abae46b") + c}
           onClick={() => onColor(c)}
         />
       ))}
-      <button type="button" className="board-pen-act" onClick={onUndo} disabled={!canUndo}>
-        撤销
-      </button>
-      <button type="button" className="board-pen-act" onClick={onClear}>
-        清空
-      </button>
+      <button type="button" className="board-pen-act" onClick={onUndo} disabled={!canUndo}>{i18n("components.boardpenlayer.926a50b98ece")}</button>
+      <button type="button" className="board-pen-act" onClick={onClear}>{i18n("components.boardpenlayer.1ef3de06b32e")}</button>
     </div>
   );
 }

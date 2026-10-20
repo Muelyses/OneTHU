@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "checks": [
+    "chromium: Course Title: course identity survives reordered headers",
+    "chromium: Course Title: nested teacher table remains one cell",
+    "chromium: Course Title: credits and both capacity groups remain distinct",
+    "chromium: Course Title: English timetable text is preserved",
+    "chromium: 课程名称: course identity survives reordered headers",
+    "chromium: 课程名称: nested teacher table remains one cell",
+    "chromium: 课程名称: credits and both capacity groups remain distinct",
+    "chromium: 课程名称: English timetable text is preserved",
+    "chromium: Actual DOMParser branch executed",
+    "chromium: English selected table keeps exact section and preference",
+    "chromium: Display parser recognizes instructor header",
+    "chromium: 上交作业内容: submitted answer remains readable",
+    "chromium: 上交作业内容: diagnostic contains no answer",
+    "chromium: Submitted Assignment Content: submitted answer remains readable",
+    "chromium: Submitted Assignment Content: diagnostic contains no answer",
+    "chromium: Browser English unknown response never reports submission success",
+    "webkit: Course Title: course identity survives reordered headers",
+    "webkit: Course Title: nested teacher table remains one cell",
+    "webkit: Course Title: credits and both capacity groups remain distinct",
+    "webkit: Course Title: English timetable text is preserved",
+    "webkit: 课程名称: course identity survives reordered headers",
+    "webkit: 课程名称: nested teacher table remains one cell",
+    "webkit: 课程名称: credits and both capacity groups remain distinct",
+    "webkit: 课程名称: English timetable text is preserved",
+    "webkit: Actual DOMParser branch executed",
+    "webkit: English selected table keeps exact section and preference",
+    "webkit: Display parser recognizes instructor header",
+    "webkit: 上交作业内容: submitted answer remains readable",
+    "webkit: 上交作业内容: diagnostic contains no answer",
+    "webkit: Submitted Assignment Content: submitted answer remains readable",
+    "webkit: Submitted Assignment Content: diagnostic contains no answer",
+    "webkit: Browser English unknown response never reports submission success"
+  ],
+  "engines": [
+    "chromium",
+    "webkit"
+  ],
+  "errors": [],
+  "sources": {
+    "packages/core/src/learn/client.ts": "f7624bb8a91e464179ea76bffc27c4e29a521d907dffe1c1df98713a4c1b2ff1",
+    "packages/core/src/zhjwxk/client.ts": "2e22c74ec455784c44b64cd215bd0b60b0b35d710968683c6aa00854a7ddf86f",
+    "packages/core/src/zhjwxk/html-language.ts": "8459a15a0c0449d34192f3ba3e6a786efe2e6521f028c38fc50d48e263df476b",
+    "packages/core/src/zhjwxk/xk-vol.ts": "7f9d3df4d65155d29566b3cc9e2f0995b0cc4734deca818cc9cce1345ff2d288",
+    "packages/core/src/http.ts": "6004e809dff16ab67d995f6e61e7e5050387bce9d798f777697e3d6bac8b15b4"
+  },
+  "boundary": "Actual core module with browser DOMParser; anonymous structural fixtures. Official English course-selection inner page and homework detail page were not provided, so their exact markup remains unverified. No school network or language preference changes."
+}

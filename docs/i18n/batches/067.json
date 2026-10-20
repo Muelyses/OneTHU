@@ -1,0 +1,1460 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.plugins.af8383d6b923",
+      "source": "收起安装",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 315,
+          "context": "instOpen ? i18n(\"pages.plugins.af8383d6b923\") : i18n(\"pages.plugins.edc3f02843ff\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b49395c80847",
+      "source": "经 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 357,
+          "context": "{i18n(\"pages.plugins.b49395c80847\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b588afe533c6",
+      "source": "可更新 ↑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 646,
+          "context": "{i18n(\"pages.plugins.b588afe533c6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b59008384c66",
+      "source": "更新至仓库版 v{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(repoCheck.remote || repoRemote)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 643,
+          "context": "repoCheck.busy ? i18n(\"pages.plugins.a0bacec44f47\") : i18n(\"pages.plugins.b59008384c66\", { value: String(repoCheck.remote || repoRemote) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b5a929dae5ba",
+      "source": "撤销修改",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 991,
+          "context": "{i18n(\"pages.plugins.b5a929dae5ba\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b6b4d7e04dee",
+      "source": " · 主题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1158,
+          "context": "isThemeEntry(detail) ? i18n(\"pages.plugins.b6b4d7e04dee\") : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b6ef24000dbb",
+      "source": "正在从本体仓库更新到 v{remoteVersion}…",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "remoteVersion",
+          "expression": "String(remoteVersion)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 536,
+          "context": "msg: i18n(\"pages.plugins.b6ef24000dbb\", { remoteVersion: String(remoteVersion) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b8784c8dd563",
+      "source": "重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1218,
+          "context": "{i18n(\"pages.plugins.b8784c8dd563\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.b8cdc17d21b0",
+      "source": "分类筛选在插件市场列表上方，已带到市场视图。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 171,
+          "context": "note: i18n(\"pages.plugins.b8cdc17d21b0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.bd2db6941185",
+      "source": "在浏览器打开仓库：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(normalizeRepoUrl(item.repo))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1294,
+          "context": "{i18n(\"pages.plugins.bd2db6941185\", { value: String(normalizeRepoUrl(item.repo)) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.be93cf140b54",
+      "source": " 公共接口扩展 OneTHU——权限门禁、会话自愈、 45s 超时由宿主统一承担",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 357,
+          "context": "{i18n(\"pages.plugins.be93cf140b54\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.c0b3fbff51cc",
+      "source": "完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 555,
+          "context": "setRunMsg(i18n(\"pages.plugins.c0b3fbff51cc\"))"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1523,
+          "context": "{i18n(\"pages.plugins.c0b3fbff51cc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.c3db55f566f3",
+      "source": "manifest.json 缺 id/name",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1416,
+          "context": "new Error(i18n(\"pages.plugins.c3db55f566f3\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.c52661984f93",
+      "source": "添加 MCP 服务器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 841,
+          "context": "idx === -1 ? i18nMsg(\"pages.plugins.c52661984f93\") : i18nMsg(\"pages.plugins.2def3dbabf90\", { value: String(cur?.name ?? \"\") })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.c8279d4cc145",
+      "source": "安装即代表信任该代码并授予其声明的权限。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1520,
+          "context": "{i18n(\"pages.plugins.c8279d4cc145\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.cb115d68fb47",
+      "source": "基础设置 / 高级配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 340,
+          "context": "{i18n(\"pages.plugins.cb115d68fb47\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.cd21f64a56a4",
+      "source": "「检查更新」按钮在每个来自仓库的插件卡上；当前列表没有这类卡，已带到「我的插件」视图。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 139,
+          "context": "note: i18n(\"pages.plugins.cd21f64a56a4\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.cf4c259c0592",
+      "source": "user/repo 或 https://github.com/user/repo（可 @branch 或 /tree/branch）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1501,
+          "context": "{i18n(\"pages.plugins.cf4c259c0592\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d0cfe8bf3a7e",
+      "source": "从 {repo} 检查最新版（本体仓库优先，市场兜底）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "repo",
+          "expression": "String(rec.repo)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 637,
+          "context": "{i18n(\"pages.plugins.d0cfe8bf3a7e\", { repo: String(rec.repo) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d1d044826a45",
+      "source": "加载失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 511,
+          "context": "failed ? i18n(\"pages.plugins.d1d044826a45\") : i18n(\"pages.plugins.a8c3698b5b8c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d261c0fe80e6",
+      "source": "到「外观与布局 → 主题」里切换（会高亮那一节）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 634,
+          "context": "{i18n(\"pages.plugins.d261c0fe80e6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d268b0d673a5",
+      "source": "失败：仓库里是另一个 id 的插件（可能仓库被复用），请检查来源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 522,
+          "context": "msg: i18n(\"pages.plugins.d268b0d673a5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d2ccc4a2731e",
+      "source": "到「外观与布局 → 主题」切换（会高亮那一节）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 142,
+          "context": "return i18n(\"pages.plugins.d2ccc4a2731e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d41b8d846ae4",
+      "source": "设置在插件下一轮运行时生效（每轮实时读取）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 979,
+          "context": "{i18n(\"pages.plugins.d41b8d846ae4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.d6115208d601",
+      "source": "插件市场的「全部 / 主题 / 通用」筛选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 168,
+          "context": "return i18n(\"pages.plugins.d6115208d601\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.da4d9440dea0",
+      "source": "名称（工具前缀 mcp_<name>_）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 842,
+          "context": "label: i18nMsg(\"pages.plugins.da4d9440dea0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.da83088b9429",
+      "source": "粘贴 JS 模块",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1446,
+          "context": "label: i18n(\"pages.plugins.da83088b9429\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.dae661d17c2d",
+      "source": "空闲",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 371,
+          "context": "liveCount > 0 ? i18n(\"pages.plugins.dedd4ea84562\") : i18n(\"pages.plugins.dae661d17c2d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.dd08ecd97ad1",
+      "source": "从插件本体仓库更新到 v{value}（与安装同一管线，覆盖更新并重新激活）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(repoCheck.remote || repoRemote)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 640,
+          "context": "{i18n(\"pages.plugins.dd08ecd97ad1\", { value: String(repoCheck.remote || repoRemote) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.de32e20193ad",
+      "source": "知道了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 680,
+          "context": "{i18n(\"pages.plugins.de32e20193ad\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.dedd4ea84562",
+      "source": "有模块在跑",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 371,
+          "context": "liveCount > 0 ? i18n(\"pages.plugins.dedd4ea84562\") : i18n(\"pages.plugins.dae661d17c2d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.df3d58c7d84b",
+      "source": "设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 648,
+          "context": "{i18n(\"pages.plugins.df3d58c7d84b\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 777,
+          "context": "mode === \"settings\" ? i18n(\"pages.plugins.df3d58c7d84b\") : mode === \"mcp\" ? i18n(\"pages.plugins.a203f86cf6a6\") : i18n(\"pages.plugins.fc08fa260979\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.df66136c7ca9",
+      "source": "确定=选择 .zip 插件包；取消=选择插件文件夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1383,
+          "context": "window.confirm(i18n(\"pages.plugins.df66136c7ca9\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e0d0ddfcb366",
+      "source": "{evtCount} 条事件 · 最多保留 300 条",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "evtCount",
+          "expression": "evtCount"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 786,
+          "context": "{i18nRich(\"pages.plugins.e0d0ddfcb366\", { evtCount: evtCount })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e39742ef4f8c",
+      "source": "小组件 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "widgetSlots.map((x) => x.slot).join(\"/\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 592,
+          "context": "{i18nRich(\"pages.plugins.e39742ef4f8c\", { value: widgetSlots.map((x) => x.slot).join(\"/\") })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e3c1578696ec",
+      "source": "环境变量（KEY=VALUE，空格分隔多个）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 845,
+          "context": "label: i18nMsg(\"pages.plugins.e3c1578696ec\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.e41e77014e1d",
+      "source": "（Streamable-HTTP）即可调用 OneTHU。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 881,
+          "context": "{i18n(\"pages.plugins.e41e77014e1d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e601f799d681",
+      "source": "想上架你的插件？向 OneTHU-Market 仓库提交 Pull Request——流程见 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1329,
+          "context": "{i18n(\"pages.plugins.e601f799d681\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e6a68608da0c",
+      "source": "去切换主题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 142,
+          "context": "return i18n(\"pages.plugins.e6a68608da0c\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 634,
+          "context": "{i18n(\"pages.plugins.e6a68608da0c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e806fbbe8ec6",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 355,
+          "context": "{i18n(\"pages.plugins.e806fbbe8ec6\")}"
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.e8f88f51ccb0",
+      "source": "安装",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1177,
+          "context": "{i18n(\"pages.plugins.e8f88f51ccb0\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1317,
+          "context": "updating ? i18n(\"pages.plugins.3055a035f0eb\") : i18n(\"pages.plugins.e8f88f51ccb0\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1465,
+          "context": "busy ? i18n(\"pages.plugins.19658d9fa9aa\") : i18n(\"pages.plugins.e8f88f51ccb0\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1511,
+          "context": "busy ? i18n(\"pages.plugins.19658d9fa9aa\") : i18n(\"pages.plugins.e8f88f51ccb0\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.ec80eda36409",
+      "source": "全部 {length}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(listPlugins.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 393,
+          "context": "label: i18n(\"pages.plugins.ec80eda36409\", { length: String(listPlugins.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.edc3f02843ff",
+      "source": "安装插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 176,
+          "context": "return i18n(\"pages.plugins.edc3f02843ff\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 315,
+          "context": "instOpen ? i18n(\"pages.plugins.af8383d6b923\") : i18n(\"pages.plugins.edc3f02843ff\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 406,
+          "context": "{i18n(\"pages.plugins.edc3f02843ff\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.ee0b1c901dad",
+      "source": "已关闭：不对外提供本机 MCP",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 815,
+          "context": "on ? i18n(\"pages.plugins.09c7b2e4141f\") : i18n(\"pages.plugins.ee0b1c901dad\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.ee3360ed4f76",
+      "source": "暂无命令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 326,
+          "context": "ohCmds.length > 0 ? ohCmds.map((c) => c.id).join(\" · \") : i18n(\"pages.plugins.ee3360ed4f76\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.eec62fdf53b6",
+      "source": "与插件开发文档 §7。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1329,
+          "context": "{i18n(\"pages.plugins.eec62fdf53b6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.efcccbda5d2b",
+      "source": "外观与布局",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 101,
+          "context": "requestSettingsTab(i18n(\"pages.plugins.efcccbda5d2b\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.f1ae34bf6dad",
+      "source": "打开仓库 {repo}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "repo",
+          "expression": "String(item.repo)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1293,
+          "context": "{i18n(\"pages.plugins.f1ae34bf6dad\", { repo: String(item.repo) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.f4f0ead1116b",
+      "source": "启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 626,
+          "context": "rec.enabled ? i18n(\"pages.plugins.4e6fd0e28c55\") : i18n(\"pages.plugins.f4f0ead1116b\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.f76ad1b3aaac",
+      "source": "从仓库根目录拉取 plugin.js（或 index.js / main.js），与粘贴安装同一校验管线。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1509,
+          "context": "{i18n(\"pages.plugins.f76ad1b3aaac\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.fa01073a720f",
+      "source": "无匹配条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1230,
+          "context": "{i18n(\"pages.plugins.fa01073a720f\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.fa086d830f50",
+      "source": "打断运行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 788,
+          "context": "{i18n(\"pages.plugins.fa086d830f50\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.fa5cae9e9254",
+      "source": "安装失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String(e instanceof Error ? e.message : e).slice(0, 200))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1105,
+          "context": "text: i18n(\"pages.plugins.fa5cae9e9254\", { value: String(String(e instanceof Error ? e.message : e).slice(0, 200)) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1356,
+          "context": "text: i18n(\"pages.plugins.fa5cae9e9254\", { value: String(String(e instanceof Error ? e.message : e).slice(0, 200)) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1429,
+          "context": "text: i18n(\"pages.plugins.fa5cae9e9254\", { value: String(String(e instanceof Error ? e.message : e).slice(0, 200)) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1505,
+          "context": "text: i18n(\"pages.plugins.fa5cae9e9254\", { value: String(String(e2 instanceof Error ? e2.message : e2).slice(0, 200)) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1511,
+          "context": "text: i18n(\"pages.plugins.fa5cae9e9254\", { value: String(String(e2 instanceof Error ? e2.message : e2).slice(0, 200)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.fb11aa6f2982",
+      "source": "检查中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 637,
+          "context": "checkBusy || repoCheck.busy ? i18n(\"pages.plugins.fb11aa6f2982\") : i18n(\"pages.plugins.7f68ebad19ba\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.fc08fa260979",
+      "source": "运行日志",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 777,
+          "context": "mode === \"mcp\" ? i18n(\"pages.plugins.a203f86cf6a6\") : i18n(\"pages.plugins.fc08fa260979\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.feed82f0b110",
+      "source": "插件分类筛选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 168,
+          "context": "return i18n(\"pages.plugins.feed82f0b110\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.ff08afdc6ecc",
+      "source": "安装第一个插件，为 OneTHU 挂上新的能力模块。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 405,
+          "context": "{i18n(\"pages.plugins.ff08afdc6ecc\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.07c9a15ad13f",
+      "source": "同步云日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1172,
+          "context": "cal.syncing ? i18n(\"pages.schedule.4e2238b74ec7\") : i18n(\"pages.schedule.07c9a15ad13f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.09405e6ef9e6",
+      "source": "已写入系统日历「OneTHU 日程」：{added} 条（清理旧 {removed} 条）；此后日程变化会自动同步。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "added",
+          "expression": "String(r.added)"
+        },
+        {
+          "name": "removed",
+          "expression": "String(r.removed)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 705,
+          "context": "setMsg(i18n(\"pages.schedule.09405e6ef9e6\", { added: String(r.added), removed: String(r.removed) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.0b97c851e4a7",
+      "source": "全天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1346,
+          "context": "{i18n(\"pages.schedule.0b97c851e4a7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.0eaedd12dc70",
+      "source": "起始时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1123,
+          "context": "{i18n(\"pages.schedule.0eaedd12dc70\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.0f02af2d5985",
+      "source": "{value} 年 {value2} 月",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(anchor.getFullYear())"
+        },
+        {
+          "name": "value2",
+          "expression": "String(anchor.getMonth() + 1)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 813,
+          "context": "mode === \"timetable\"\n      ? i18n(\"pages.schedule.28ee8c1f603e\", { value: String(weekStart.getMonth() + 1), value2: String(weekStart.getDate()), value3: String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate()) })\n      : i18n(\"pages.schedule.0f02af2d5985\", { value: String(anchor.getFullYear()), value2: String(anchor.getMonth() + 1) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1076,
+          "context": "{i18nRich(\"pages.schedule.0f02af2d5985\", { value: calView.getFullYear(), value2: calView.getMonth() + 1 })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.1258adb63f05",
+      "source": "已导出课表、作业截止时间与日程，系统日历导入窗口应已打开（选择要写入的日历）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 719,
+          "context": "setMsg(i18n(\"pages.schedule.1258adb63f05\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.135b82866399",
+      "source": "{length} 件事",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(members.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 201,
+          "context": "courseName: i18n(\"pages.schedule.135b82866399\", { length: String(members.length) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.1536c81c69be",
+      "source": "跳到教学周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1143,
+          "context": "{i18n(\"pages.schedule.1536c81c69be\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.15f929ce6cd4",
+      "source": "寻迹 · {courseName}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseName",
+          "expression": "String(d.courseName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 830,
+          "context": "newTab(\"trace\", { traceTarget: { title: d.courseName, location: d.location ?? \"\", date: d.date, startTime: d.startTime, endTime: d.endTime } }, i18n(\"pages.schedule.15f929ce6cd4\", { courseName: String(d.courseName) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.schedule.177a41a28139",
+      "source": "导出失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 721,
+          "context": "setMsg(i18n(\"pages.schedule.177a41a28139\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.193f229df3d9",
+      "source": "已保存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 783,
+          "context": "setMsg(i18n(\"pages.schedule.193f229df3d9\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.1c5c06713870",
+      "source": "视图",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1111,
+          "context": "{i18n(\"pages.schedule.1c5c06713870\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.1e1dc2f018da",
+      "source": " · 课程表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1291,
+          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.22519a88484f",
+      "source": "课程详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1213,
+          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.302f7d04d98f\") : i18n(\"pages.schedule.22519a88484f\")"
+        }
+      ],
+      "translation": "Course details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.253ac66fb8e1",
+      "source": "地点",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1289,
+          "context": "k: i18n(\"pages.schedule.253ac66fb8e1\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1362,
+          "context": "{i18n(\"pages.schedule.253ac66fb8e1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2589da741b80",
+      "source": "显示时段 {value}–{value2}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "hhmmWin(win.from)"
+        },
+        {
+          "name": "value2",
+          "expression": "hhmmWin(win.to)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1121,
+          "context": "{i18nRich(\"pages.schedule.2589da741b80\", { value: hhmmWin(win.from), value2: hhmmWin(win.to) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.28ee8c1f603e",
+      "source": "{value}月{value2}日 – {value3}日",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(weekStart.getMonth() + 1)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(weekStart.getDate())"
+        },
+        {
+          "name": "value3",
+          "expression": "String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 812,
+          "context": "mode === \"timetable\"\n      ? i18n(\"pages.schedule.28ee8c1f603e\", { value: String(weekStart.getMonth() + 1), value2: String(weekStart.getDate()), value3: String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate()) })\n      : i18n(\"pages.schedule.0f02af2d5985\", { value: String(anchor.getFullYear()), value2: String(anchor.getMonth() + 1) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2961168962be",
+      "source": "周三",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1321,
+          "context": "{i18n(\"pages.schedule.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2f9daa828907",
+      "source": "删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1324,
+          "context": "{i18n(\"pages.schedule.2f9daa828907\")}"
+        }
+      ],
+      "translation": "Delete",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.302f7d04d98f",
+      "source": "考试详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1213,
+          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.302f7d04d98f\") : i18n(\"pages.schedule.22519a88484f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.30fd49298c03",
+      "source": "下一年",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1078,
+          "context": "{i18n(\"pages.schedule.30fd49298c03\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.310a9aa08211",
+      "source": "本周暂无排课与日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 933,
+          "context": "winLoading ? i18n(\"pages.schedule.48cbf2cb0bd7\") : i18n(\"pages.schedule.310a9aa08211\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

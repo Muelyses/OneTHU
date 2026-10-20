@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 应用更新——清单获取 / 版本比较 / 下载编排 / 拉起安装页。
  *
@@ -41,9 +42,9 @@ export type PlatformKey = "android" | "macos" | "windows" | "linux";
 export type UpdateSource = "github" | "cloud" | "custom";
 
 export const SOURCE_LABEL: Record<UpdateSource, string> = {
-  github: "GitHub Releases（外网）",
-  cloud: "清华云盘（官方镜像 · 校内可达）",
-  custom: "自定义更新源",
+  get github() { return i18n("lib.updater.71c70711a602"); },
+  get cloud() { return i18n("lib.updater.9fa399af02de"); },
+  get custom() { return i18n("lib.updater.d7fb13f125e5"); },
 };
 
 export interface CloudAsset {
@@ -118,7 +119,7 @@ export function platformKey(): PlatformKey {
 }
 
 export const PLATFORM_LABEL: Record<PlatformKey, string> = {
-  android: "安卓", macos: "macOS", windows: "Windows", linux: "Linux",
+  get android() { return i18n("lib.updater.2f939477c47e"); }, macos: "macOS", windows: "Windows", linux: "Linux",
 };
 
 /** 清单 → 当前平台的包（assets[平台] 优先，回落顶层 url/size） */
@@ -135,11 +136,11 @@ export function parseManifest(raw: string): { ok: true; manifest: CloudUpdateMan
   try {
     j = JSON.parse(raw);
   } catch {
-    return { ok: false, error: "清单不是合法 JSON" };
+    return { ok: false, error: i18n("lib.updater.3d383f5a5c29") };
   }
   const o = (j ?? {}) as Record<string, unknown>;
   const version = typeof o.version === "string" ? o.version.trim() : "";
-  if (!version) return { ok: false, error: "清单缺 version 字段" };
+  if (!version) return { ok: false, error: i18n("lib.updater.fab43f07fa2d") };
   const str = (k: string): string | undefined =>
     typeof o[k] === "string" && String(o[k]).trim() ? String(o[k]).trim() : undefined;
   const num = (k: string): number | undefined => (typeof o[k] === "number" && (o[k] as number) > 0 ? (o[k] as number) : undefined);
@@ -207,10 +208,10 @@ async function httpNativeGet(url: string, headers: Record<string, string> = {}, 
 
 /** 分享接口的人话错误（用户没法自查 403/404 的含义） */
 function shareErr(what: string, status: number): string {
-  if (status === 403) return `${what} 不可达（403）——官方端点若变更请检查 share-links API（本模块用的是匿名 dirents 接口）`;
-  if (status === 404) return `${what} 不存在（404）——镜像上还没有这个文件`;
-  if (status >= 500) return `${what} 服务端错误（HTTP ${status}）——云盘侧暂时不可用，稍后重试`;
-  return `${what} 失败（HTTP ${status}）`;
+  if (status === 403) return i18n("lib.updater.01e9ed6e0882", { what: String(what) });
+  if (status === 404) return i18n("lib.updater.361980a5e6ce", { what: String(what) });
+  if (status >= 500) return i18n("lib.updater.072f4658615f", { what: String(what), status: String(status) });
+  return i18n("lib.updater.dae2c06aec63", { what: String(what), status: String(status) });
 }
 
 interface ShareDirent {
@@ -228,16 +229,16 @@ async function shareDirents(path: string): Promise<ShareDirent[]> {
   try {
     r = await httpNativeGet(url, { Accept: "application/json" });
   } catch (e) {
-    throw new Error(`镜像目录不可达：${e instanceof Error ? e.message : String(e)}（校外环境请确认网络；该接口无需登录）`);
+    throw new Error(i18n("lib.updater.bf52642dd8c4", { value: String(e instanceof Error ? e.message : String(e)) }));
   }
-  if (r.status !== 200) throw new Error(shareErr(`镜像目录 ${path}`, r.status));
+  if (r.status !== 200) throw new Error(shareErr(i18n("lib.updater.194b24406399", { path: String(path) }), r.status));
   try {
     const j = JSON.parse(r.text) as unknown;
     // 实测两种形态都出现过：裸数组 与 {dirent_list:[…]}
     const list = Array.isArray(j) ? (j as ShareDirent[]) : ((j as { dirent_list?: ShareDirent[] }).dirent_list ?? []);
     return Array.isArray(list) ? list : [];
   } catch {
-    throw new Error(`镜像目录返回的不是 JSON（${path}）——官方接口形态可能变了`);
+    throw new Error(i18n("lib.updater.cfc1ecb75eaf", { path: String(path) }));
   }
 }
 
@@ -258,7 +259,7 @@ export function shareDownloadUrl(innerPath: string): string {
 /** 分享内文件内容（小文件：清单） */
 async function shareFileText(innerPath: string): Promise<string> {
   const r = await httpNativeGet(shareDownloadUrl(innerPath));
-  if (r.status !== 200) throw new Error(shareErr(`镜像文件 ${innerPath}`, r.status));
+  if (r.status !== 200) throw new Error(shareErr(i18n("lib.updater.fa872c6a802a", { innerPath: String(innerPath) }), r.status));
   return r.text;
 }
 
@@ -339,13 +340,13 @@ async function fromGitHub(key: PlatformKey): Promise<Resolved> {
     headers: { Accept: "application/json, text/plain, */*", "User-Agent": "OneTHU-UpdateCheck" },
   });
   if (!res.ok) {
-    throw new Error(res.status === 404 ? "HTTP 404（Releases 还没挂 latest.json 资产）" : `HTTP ${res.status}`);
+    throw new Error(res.status === 404 ? i18n("lib.updater.2d2cad3f99ea") : `HTTP ${res.status}`);
   }
   const parsed = parseManifest(await res.text());
   if (!parsed.ok) throw new Error(parsed.error);
   const m = parsed.manifest;
   const asset = pickAsset(m, key);
-  if (!asset) throw new Error(`清单 v${m.version} 没有当前平台（${key}）的包`);
+  if (!asset) throw new Error(i18n("lib.updater.b331bcbd6083", { version: String(m.version), key: String(key) }));
   return finish(m, key, asset, (rel) =>
     /^https?:/i.test(rel) ? rel : GITHUB_ASSET_BASE + encodeURIComponent(rel.split("/").pop() ?? rel));
 }
@@ -378,7 +379,7 @@ async function fromCloud(key: PlatformKey): Promise<Resolved> {
   const synth = synthFromDir(dirList, key);
   if (!synth) {
     const ext = key === "android" ? "apk" : key === "windows" ? "exe" : "dmg";
-    throw new Error(`${dir}/ 里没有可识别的安装包（期望 OneTHU_<版本>_<arch>.${ext}；目录里现有 ${dirList.length} 项）`);
+    throw new Error(i18n("lib.updater.4bffec153a88", { dir: String(dir), ext: String(ext), length: String(dirList.length) }));
   }
   return finish(synth.manifest, key, synth.asset, (rel) => shareDownloadUrl(rel));
 }
@@ -400,7 +401,7 @@ export async function checkForUpdate(opts: { customManifestUrl?: string } = {}):
         if (!parsed.ok) throw new Error(parsed.error);
         const m = parsed.manifest;
         const asset = pickAsset(m, key);
-        if (!asset) throw new Error(`清单 v${m.version} 没有当前平台（${key}）的包`);
+        if (!asset) throw new Error(i18n("lib.updater.b331bcbd6083", { version: String(m.version), key: String(key) }));
         return finish(m, key, asset, (rel) => (/^https?:/i.test(rel) ? rel : rel));
       } }]
     : [{ source: "github", run: () => fromGitHub(key) }, { source: "cloud", run: () => fromCloud(key) }];
@@ -410,7 +411,7 @@ export async function checkForUpdate(opts: { customManifestUrl?: string } = {}):
       const r = await step.run();
       attempts.push({ source: step.source, label: SOURCE_LABEL[step.source], ok: true });
       const failed = attempts.find((a) => !a.ok);
-      void logLine(`[更新] 检查完成 · 源=${SOURCE_LABEL[step.source]} · v${r.latest}（当前 v${current}，${r.hasUpdate ? "有新版本" : "已是最新"}）`).catch(
+      void logLine(i18n("lib.updater.ddfe8fdf02cb", { value: String(SOURCE_LABEL[step.source]), latest: String(r.latest), current: String(current), value2: String(r.hasUpdate ? i18n("lib.updater.daedea385864") : i18n("lib.updater.4219a7449e26")) })).catch(
         () => undefined,
       );
       return {
@@ -418,14 +419,14 @@ export async function checkForUpdate(opts: { customManifestUrl?: string } = {}):
         source: step.source,
         sourceLabel: SOURCE_LABEL[step.source],
         attempts,
-        ...(failed ? { fallbackReason: `${failed.label} 不可用：${failed.error ?? "未知原因"}` } : {}),
+        ...(failed ? { fallbackReason: i18n("lib.updater.ab90d58874ee", { label: String(failed.label), value: String(failed.error ?? i18n("lib.updater.a1a9da9ee6ed")) }) } : {}),
       };
     } catch (e) {
       attempts.push({ source: step.source, label: SOURCE_LABEL[step.source], ok: false, error: e instanceof Error ? e.message : String(e) });
     }
   }
-  const detail = attempts.map((a) => `· ${a.label}：${a.error ?? "未知原因"}`).join("\n");
-  return { ok: false, current, attempts, error: `两个更新源都没取到清单：\n${detail}` };
+  const detail = attempts.map((a) => `· ${a.label}：${a.error ?? i18n("lib.updater.a1a9da9ee6ed")}`).join("\n");
+  return { ok: false, current, attempts, error: i18n("lib.updater.2985491184cc", { detail: String(detail) }) };
 }
 
 /* ═══════════ 下载 / 取消 / 拉起安装页 ═══════════ */
@@ -480,21 +481,20 @@ export interface InstallLaunchResult {
  * 把已下载的安装包拉到系统安装页。**只拉起，不静默安装**：
  * - 安卓：`updater_open_installer` → Kotlin FileProvider → `content://` → ACTION_VIEW
  *   （`application/vnd.android.package-archive`）；「安装未知应用」授权由系统弹；
- * - 桌面：`onethu_open_path`（macOS 挂 DMG 弹安装窗 / Windows 进安装向导）。
+ * - 桌面：同一原生入口复核已下载文件后打开系统安装器。
  */
 export async function installDownloaded(path: string): Promise<InstallLaunchResult> {
-  if (!path) return { ok: false, error: "没有可安装的本地路径" };
+  if (!path) return { ok: false, error: i18n("lib.updater.42b98aa3fae8") };
   const key = platformKey();
   try {
+    await invoke("updater_open_installer", { path });
     if (key === "android") {
-      await invoke("updater_open_installer", { path });
-      return { ok: true, hint: "已拉起系统安装页：首次安装需在系统提示里允许「安装未知应用」，之后按系统页确认即可。" };
+      return { ok: true, hint: i18n("lib.updater.2da47c897e30") };
     }
-    await invoke("onethu_open_path", { path });
-    return { ok: true, hint: key === "macos" ? "已用系统默认方式打开：若是 DMG，把应用拖进「应用程序」即完成更新。" : "已用系统默认方式打开安装包。" };
+    return { ok: true, hint: key === "macos" ? i18n("lib.updater.185680ad27cd") : i18n("lib.updater.95bc488982b2") };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    void logLine(`[更新] 拉起安装页失败：${msg}`).catch(() => undefined);
+    void logLine(i18n("lib.updater.c57372e35f51", { msg: String(msg) })).catch(() => undefined);
     return { ok: false, error: msg };
   }
 }

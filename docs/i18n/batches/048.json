@@ -1,0 +1,1364 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "pages.info.dormtab.ab8cff9a597a",
+      "source": "电费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 160,
+          "context": "{i18n(\"pages.info.dormtab.ab8cff9a597a\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.b09dff2cb1cb",
+      "source": "如：紫荆 1 号楼 301A",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 237,
+          "context": "{i18n(\"pages.info.dormtab.b09dff2cb1cb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.bb8c939d0fcd",
+      "source": "订水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 203,
+          "context": "{i18n(\"pages.info.dormtab.bb8c939d0fcd\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.bcd6771e08ec",
+      "source": "查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 210,
+          "context": "{i18n(\"pages.info.dormtab.bcd6771e08ec\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.c3fc6114b55c",
+      "source": "水站发票/标签上的用户编号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 209,
+          "context": "{i18n(\"pages.info.dormtab.c3fc6114b55c\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.c70f03b85ab5",
+      "source": "家园网系统暂时无法获取余额接口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 164,
+          "context": "{i18n(\"pages.info.dormtab.c70f03b85ab5\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.cdf03a9a9579",
+      "source": "订水编号与送达地址必填",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 132,
+          "context": "setWaterMsg(i18n(\"pages.info.dormtab.cdf03a9a9579\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.d189e0a2a1c5",
+      "source": "提交订水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 240,
+          "context": "waterState === \"busy\" ? i18n(\"pages.info.dormtab.18931020ad52\") : i18n(\"pages.info.dormtab.d189e0a2a1c5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.d872b26584ac",
+      "source": "送达地址（楼栋 + 房间号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 236,
+          "context": "{i18n(\"pages.info.dormtab.d872b26584ac\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.d962ed9d270e",
+      "source": "暂无充值记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 198,
+          "context": "{i18n(\"pages.info.dormtab.d962ed9d270e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.dd57d5ccb2f3",
+      "source": "水站未返回该编号信息，可手动填写",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 121,
+          "context": "u.name || u.address ? i18n(\"pages.info.dormtab.3dd6c0cbae44\") : i18n(\"pages.info.dormtab.dd57d5ccb2f3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.e115f82b905e",
+      "source": "请输入订水编号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 111,
+          "context": "setWaterMsg(i18n(\"pages.info.dormtab.e115f82b905e\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.e7d4e116f779",
+      "source": "水票数",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 223,
+          "context": "{i18n(\"pages.info.dormtab.e7d4e116f779\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.f06a3f64f717",
+      "source": "电费充值",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 184,
+          "context": "r.name || i18n(\"pages.info.dormtab.f06a3f64f717\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.fbfad2e4053e",
+      "source": "订水编号（水站用户编号）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 207,
+          "context": "{i18n(\"pages.info.dormtab.fbfad2e4053e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.evaluationtab.01d95cc9fda4",
+      "source": "待评估课程（请在信息门户「教学评估」内填写，本页仅展示进度）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/EvaluationTab.tsx",
+          "line": 62,
+          "context": "{i18n(\"pages.info.evaluationtab.01d95cc9fda4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.evaluationtab.63ec4a3ba307",
+      "source": "暂无评估问卷（当前不在评估期，或本学期无需评估课程）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/EvaluationTab.tsx",
+          "line": 56,
+          "context": "{i18n(\"pages.info.evaluationtab.63ec4a3ba307\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.evaluationtab.64363cae324a",
+      "source": "已评估",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/EvaluationTab.tsx",
+          "line": 69,
+          "context": "r[1] ? i18n(\"pages.info.evaluationtab.64363cae324a\") : i18n(\"pages.info.evaluationtab.f91dbaf513a7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.evaluationtab.f91dbaf513a7",
+      "source": "待评估",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/EvaluationTab.tsx",
+          "line": 69,
+          "context": "r[1] ? i18n(\"pages.info.evaluationtab.64363cae324a\") : i18n(\"pages.info.evaluationtab.f91dbaf513a7\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.084b42f6e95e",
+      "source": "二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.0e5071b93d57",
+      "source": "{month}月{day}日 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "month",
+          "expression": "String(month)"
+        },
+        {
+          "name": "day",
+          "expression": "String(day)"
+        },
+        {
+          "name": "value",
+          "expression": "String(weekdayOf(date))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 35,
+          "context": "return i18n(\"pages.info.examstab.0e5071b93d57\", { month: String(month), day: String(day), value: String(weekdayOf(date)) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.3cdc60a174f2",
+      "source": "本学年",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 63,
+          "context": "state === \"ready\" && data ? i18n(\"pages.info.examstab.9dec2ce0d8fc\", { length: String(data.length), upcoming: String(upcoming) }) : i18n(\"pages.info.examstab.3cdc60a174f2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.51a75f4634df",
+      "source": "一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.754a9d5828d5",
+      "source": "四",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.7736a85c89ff",
+      "source": "至 {value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "e.endTime ?? \"--:--\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 87,
+          "context": "{i18nRich(\"pages.info.examstab.7736a85c89ff\", { value: e.endTime ?? \"--:--\" })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.85217f7aff77",
+      "source": "日",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.88df420f8207",
+      "source": "考试安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 62,
+          "context": "{i18n(\"pages.info.examstab.88df420f8207\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.9491e7091592",
+      "source": "周{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(WEEKDAYS[d.getDay()])"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 16,
+          "context": "Number.isNaN(d.getTime()) ? \"\" : i18n(\"pages.info.examstab.9491e7091592\", { value: String(WEEKDAYS[d.getDay()]) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.9dec2ce0d8fc",
+      "source": "{length} 场 · {upcoming} 场待考 · 本学年",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(data.length)"
+        },
+        {
+          "name": "upcoming",
+          "expression": "String(upcoming)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 63,
+          "context": "state === \"ready\" && data ? i18n(\"pages.info.examstab.9dec2ce0d8fc\", { length: String(data.length), upcoming: String(upcoming) }) : i18n(\"pages.info.examstab.3cdc60a174f2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.a4c3313deb18",
+      "source": "三",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.aa9435b82109",
+      "source": "{days} 天后",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "days",
+          "expression": "String(days)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 26,
+          "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 27,
+          "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 28,
+          "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.b10b29ca43f2",
+      "source": "时间待定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 22,
+          "context": "text: i18n(\"pages.info.examstab.b10b29ca43f2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.c490e6cc45d9",
+      "source": "本学年暂无考试安排。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 70,
+          "context": "{i18n(\"pages.info.examstab.c490e6cc45d9\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.c9b87f516a38",
+      "source": "五",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.d4b794824720",
+      "source": "地点待定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 91,
+          "context": "e.location || i18n(\"pages.info.examstab.d4b794824720\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 25,
+          "context": "text: i18n(\"pages.info.examstab.d5f5a7a01073\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.d79b1d0e5c61",
+      "source": "已结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 24,
+          "context": "text: i18n(\"pages.info.examstab.d79b1d0e5c61\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.dac4254b777c",
+      "source": "{length} 场",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(exams.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 75,
+          "context": "{i18n(\"pages.info.examstab.dac4254b777c\", { length: String(exams.length) })}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.examstab.de07b5383874",
+      "source": "六",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
+          "line": 12
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.fitnesstab.79f326be4409",
+      "source": "项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/FitnessTab.tsx",
+          "line": 61,
+          "context": "{i18n(\"pages.info.fitnesstab.79f326be4409\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.fitnesstab.e460bd4bfafb",
+      "source": "暂无成绩（本学期体测成绩可能尚未发布）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/FitnessTab.tsx",
+          "line": 55,
+          "context": "{i18n(\"pages.info.fitnesstab.e460bd4bfafb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.fitnesstab.fdcd1bd074c9",
+      "source": "成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/FitnessTab.tsx",
+          "line": 62,
+          "context": "{i18n(\"pages.info.fitnesstab.fdcd1bd074c9\")}"
+        }
+      ],
+      "translation": "Grades",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.02dede2858a3",
+      "source": "发放",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 95,
+          "context": "r.name || i18n(\"pages.info.gradincometab.02dede2858a3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.215db61815eb",
+      "source": "财务系统 · 计税后实发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 69,
+          "context": "{i18n(\"pages.info.gradincometab.215db61815eb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.3fcc227e6ab6",
+      "source": "暂无收入记录（助研津贴等发放后才可查询）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 79,
+          "context": "{i18n(\"pages.info.gradincometab.3fcc227e6ab6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.9416e865d2ff",
+      "source": "近 12 个月实发合计",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 85,
+          "context": "{i18n(\"pages.info.gradincometab.9416e865d2ff\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.ac0b8e78172e",
+      "source": "研究生专项目，本科生无此数据。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 77,
+          "context": "{i18n(\"pages.info.gradincometab.ac0b8e78172e\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.e603089879c7",
+      "source": "仅展示近 12 个月记录；更早记录请在财务系统查询。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 109,
+          "context": "{i18n(\"pages.info.gradincometab.e603089879c7\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.fc240ea62ae1",
+      "source": "近 12 个月发放记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 69,
+          "context": "{i18n(\"pages.info.gradincometab.fc240ea62ae1\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.gradincometab.fea0225bbfc4",
+      "source": " · 计税 ¥{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.tax.toFixed(2))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/GradIncomeTab.tsx",
+          "line": 98,
+          "context": "r.tax ? i18n(\"pages.info.gradincometab.fea0225bbfc4\", { value: String(r.tax.toFixed(2)) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.hygienetab.01a1a12a8cc2",
+      "source": "宿舍卫生成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
+          "line": 60,
+          "context": "{i18n(\"pages.info.hygienetab.01a1a12a8cc2\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.hygienetab.07c7e78ab1eb",
+      "source": "暂无卫生检查记录（本学期尚未开始检查）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
+          "line": 68,
+          "context": "{i18n(\"pages.info.hygienetab.07c7e78ab1eb\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.hygienetab.b0c4ef246a16",
+      "source": "家园网 myhome · 卫生检查成绩单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
+          "line": 60,
+          "context": "{i18n(\"pages.info.hygienetab.b0c4ef246a16\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.hygienetab.cb5d682bac3d",
+      "source": "重置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
+          "line": 77,
+          "context": "{i18n(\"pages.info.hygienetab.cb5d682bac3d\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.hygienetab.faaa5c3ec584",
+      "source": "宿舍卫生检查成绩单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
+          "line": 82,
+          "context": "{i18n(\"pages.info.hygienetab.faaa5c3ec584\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.0bdbabde48b3",
+      "source": "管理信息栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 163,
+          "context": "{i18n(\"pages.info.infopage.0bdbabde48b3\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.12526376d387",
+      "source": "管理栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 123,
+          "context": "{i18n(\"pages.info.infopage.12526376d387\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 145,
+          "context": "{i18n(\"pages.info.infopage.12526376d387\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.14384c9d60cc",
+      "source": "教学评估",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 44,
+          "context": "return i18n(\"pages.info.infopage.14384c9d60cc\");"
+        }
+      ],
+      "translation": "Teaching evaluation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.316da6d69b7d",
+      "source": "体测成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 42,
+          "context": "return i18n(\"pages.info.infopage.316da6d69b7d\");"
+        }
+      ],
+      "translation": "Fitness test",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.39e8f1d8cad6",
+      "source": "点下面的按钮可以把它们叫回来。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 144,
+          "context": "{i18n(\"pages.info.infopage.39e8f1d8cad6\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.3ae2b35fabd4",
+      "source": "所有栏目都被藏起来了。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 143,
+          "context": "{i18n(\"pages.info.infopage.3ae2b35fabd4\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.4792ab1440aa",
+      "source": "校历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 45,
+          "context": "return i18n(\"pages.info.infopage.4792ab1440aa\");"
+        }
+      ],
+      "translation": "Academic calendar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.4da04dfef534",
+      "source": "课程信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 48,
+          "context": "return i18n(\"pages.info.infopage.4da04dfef534\");"
+        }
+      ],
+      "translation": "Course info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.4eb6db225088",
+      "source": "信息功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 127,
+          "context": "{i18n(\"pages.info.infopage.4eb6db225088\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.640803d89773",
+      "source": "个人信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.info.infopage.640803d89773\");"
+        }
+      ],
+      "translation": "Personal info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.d26ef0190d6c",
+      "source": "考试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 43,
+          "context": "return i18n(\"pages.info.infopage.d26ef0190d6c\");"
+        }
+      ],
+      "translation": "Exams",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 46,
+          "context": "return i18n(\"pages.info.infopage.d39567b2b9f1\");"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.e7028601e7da",
+      "source": "信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 119,
+          "context": "{i18n(\"pages.info.infopage.e7028601e7da\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 122,
+          "context": "{i18n(\"pages.info.infopage.e7028601e7da\")}"
+        }
+      ],
+      "translation": "Info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.fa0124c14866",
+      "source": "栏目显隐与排序",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 123,
+          "context": "{i18n(\"pages.info.infopage.fa0124c14866\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.infopage.fdcd1bd074c9",
+      "source": "成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.info.infopage.fdcd1bd074c9\");"
+        }
+      ],
+      "translation": "Grades",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.invoicetab.2beeb89ed47a",
+      "source": "共 {total} 张 · 第 {page}/{totalPages} 页",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "total",
+          "expression": "String(total)"
+        },
+        {
+          "name": "page",
+          "expression": "String(page)"
+        },
+        {
+          "name": "totalPages",
+          "expression": "String(totalPages)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 58,
+          "context": "total > 0 ? i18n(\"pages.info.invoicetab.2beeb89ed47a\", { total: String(total), page: String(page), totalPages: String(totalPages) }) : i18n(\"pages.info.invoicetab.6d110ca94c48\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.invoicetab.4008bdf12187",
+      "source": "您目前没有可用电子发票。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 67,
+          "context": "{i18n(\"pages.info.invoicetab.4008bdf12187\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.invoicetab.6d110ca94c48",
+      "source": "财务综合服务 · 发票列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 58,
+          "context": "total > 0 ? i18n(\"pages.info.invoicetab.2beeb89ed47a\", { total: String(total), page: String(page), totalPages: String(totalPages) }) : i18n(\"pages.info.invoicetab.6d110ca94c48\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.invoicetab.8a8542f69648",
+      "source": "下一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 97,
+          "context": "{i18n(\"pages.info.invoicetab.8a8542f69648\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.invoicetab.92341cf02c56",
+      "source": "电子发票",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 57,
+          "context": "{i18n(\"pages.info.invoicetab.92341cf02c56\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 77,
+          "context": "r.financial_item_name || r.inv_typeStr || i18n(\"pages.info.invoicetab.92341cf02c56\")"
+        }
+      ],
+      "translation": "Invoices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.invoicetab.c9b9ae7a6144",
+      "source": "上一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
+          "line": 93,
+          "context": "{i18n(\"pages.info.invoicetab.c9b9ae7a6144\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.0afc4fe3d305",
+      "source": "取消预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 373,
+          "context": "{i18n(\"pages.info.kongjiantab.0afc4fe3d305\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.18931020ad52",
+      "source": "提交中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 348,
+          "context": "busy ? i18n(\"pages.info.kongjiantab.18931020ad52\") : i18n(\"pages.info.kongjiantab.da32887460b5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.1a558735ea57",
+      "source": "我的预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 360,
+          "context": "{i18n(\"pages.info.kongjiantab.1a558735ea57\")}"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.298336ec2c0e",
+      "source": "上午",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 228,
+          "context": "[i18n(\"pages.info.kongjiantab.298336ec2c0e\"), slots.filter((x) => Number(String(x.time).split(\":\")[0]) < 12)]"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

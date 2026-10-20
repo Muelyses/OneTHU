@@ -1,6 +1,8 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { CalendarSyncSettings } from "./CalendarSyncSettings.js";
 import { useState } from "react";
 import { Btn, Card, Input, Stack, Text, SettingsRow } from "@onethu/gui";
+import { LanguageControl } from "./LanguageControl.js";
 import { ExperienceModeControl } from "./SimpleExperience.js";
 import { OhModelSourceCard } from "./OhModelSourceCard.js";
 import { ImSettingsSection } from "./ImSettingsSection.js";
@@ -11,14 +13,18 @@ import { useApp } from "../state/context.js";
 import { replayOnboarding } from "./OnboardingTour.js";
 
 export function OptionalConnections() {
+  const uiLocale = useUiLocale();
+
  const [qr,setQr]=useState(false);
  return <Stack gap={3}>
- <Card><SettingsRow title="雨课堂" sub="扫码同步雨课堂作业；随时可以稍后连接。" control={<Btn variant="outline" onClick={()=>setQr(true)}>扫码连接</Btn>}/>
- {qr?<YktQrPanel onCancel={()=>setQr(false)} onSuccess={cookie=>{void saveYuketang(cookie).then(()=>{setQr(false);showToast("雨课堂已连接");}).catch(e=>showToast(String(e)));}}/>:null}</Card>
+ <Card><SettingsRow title={i18n("components.simplesettings.38b9eabcae1b")} sub={i18n("components.simplesettings.950d624f5068")} control={<Btn variant="outline" onClick={()=>setQr(true)}>{i18n("components.simplesettings.b431a37597fc")}</Btn>}/>
+ {qr?<YktQrPanel onCancel={()=>setQr(false)} onSuccess={cookie=>{void saveYuketang(cookie).then(()=>{setQr(false);showToast(i18nMsg("components.simplesettings.36fe6819580c"));}).catch(e=>showToast(String(e)));}}/>:null}</Card>
  <ImSettingsSection tier="basic"/>
  </Stack>;
 }
 export function SimpleSettings() {
+  const uiLocale = useUiLocale();
+
  const { user, logout }=useApp();
  const [calendarOpen,setCalendarOpen]=useState(false);
  const initial=getPlugin("onethu.harness")?.settings??{};
@@ -27,20 +33,21 @@ export function SimpleSettings() {
  const [model,setModel]=useState(String(initial.model??""));
  return <div className="simple-settings"><Stack gap={4}>
  <ExperienceModeControl/>
+ <LanguageControl/>
  <OhModelSourceCard/>
- <Card><SettingsRow title="使用导览" sub="重新选择模式，或了解当前模式。" control={<Btn variant="outline" onClick={replayOnboarding}>重新查看</Btn>}/>
- <SettingsRow title="统一认证" sub={user?.displayName??"已登录"} control={<Btn variant="ghost" onClick={()=>void logout()}>退出登录</Btn>}/></Card>
- <Card><Stack gap={3}><Text slot="title">小 OH · 自己的 API</Text>
- <Input aria-label="API 地址" placeholder="API 地址（https://…/v1）" value={baseUrl} onChange={setBaseUrl}/>
+ <Card><SettingsRow title={i18n("components.simplesettings.ac794a015ee3")} sub={i18n("components.simplesettings.49454b147354")} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.simplesettings.7c4b06e07cb4")}</Btn>}/>
+ <SettingsRow title={i18n("components.simplesettings.99e398c6de5c")} sub={user?.displayName??i18n("components.simplesettings.0a01eee1cd37")} control={<Btn variant="ghost" onClick={()=>void logout()}>{i18n("components.simplesettings.3ab8cc15939f")}</Btn>}/></Card>
+ <Card><Stack gap={3}><Text slot="title">{i18n("components.simplesettings.230b7d15300f")}</Text>
+ <Input aria-label={i18n("components.simplesettings.d94c3fb87662")} placeholder={i18n("components.simplesettings.f9ae83ae1e0f")} value={baseUrl} onChange={setBaseUrl}/>
  <Input aria-label="API Key" placeholder="API Key" type="password" value={apiKey} onChange={setApiKey}/>
- <Input aria-label="模型名称" placeholder="模型名称" value={model} onChange={setModel}/>
+ <Input aria-label={i18n("components.simplesettings.cb2f1709f983")} placeholder={i18n("components.simplesettings.cb2f1709f983")} value={model} onChange={setModel}/>
  <Btn variant="solid" onClick={()=>{
- const plugin=getPlugin("onethu.harness"); if(!plugin){showToast("小 OH 正在准备，请稍后再试");return;}
- try{const u=new URL(baseUrl);if(!["https:","http:"].includes(u.protocol))throw new Error();}catch{showToast("请输入有效的 API 地址");return;}
- if(!apiKey.trim()||!model.trim()){showToast("请填写 API Key 和模型名称");return;}
- updatePlugin("onethu.harness",{settings:{...plugin.settings,provider:"custom",baseUrl:baseUrl.trim(),apiKey:apiKey.trim(),model:model.trim()}});showToast("API 配置已保存");
- }}>保存 API</Btn></Stack></Card>
- <Card><SettingsRow title="日历同步" sub="连接清华邮箱日历，或同步课表、作业与日程到系统日历。" control={<Btn variant="outline" onClick={()=>setCalendarOpen(v=>!v)}>{calendarOpen?"收起":"管理同步"}</Btn>}/></Card>
+ const plugin=getPlugin("onethu.harness"); if(!plugin){showToast(i18nMsg("components.simplesettings.1fa9a1f5453b"));return;}
+ try{const u=new URL(baseUrl);if(!["https:","http:"].includes(u.protocol))throw new Error();}catch{showToast(i18nMsg("components.simplesettings.b975feac2d32"));return;}
+ if(!apiKey.trim()||!model.trim()){showToast(i18nMsg("components.simplesettings.cde6c2804c9d"));return;}
+ updatePlugin("onethu.harness",{settings:{...plugin.settings,provider:"custom",baseUrl:baseUrl.trim(),apiKey:apiKey.trim(),model:model.trim()}});showToast(i18nMsg("components.simplesettings.7ef3aed84e34"));
+ }}>{i18n("components.simplesettings.a15f3b20eaec")}</Btn></Stack></Card>
+ <Card><SettingsRow title={i18n("components.simplesettings.bccf98c5f9fa")} sub={i18n("components.simplesettings.553df7f47b1a")} control={<Btn variant="outline" onClick={()=>setCalendarOpen(v=>!v)}>{calendarOpen?i18n("components.simplesettings.afd4b783536b"):i18n("components.simplesettings.d7d18c1f3213")}</Btn>}/></Card>
  {calendarOpen?<CalendarSyncSettings/>:null}
  <OptionalConnections/>
  </Stack></div>;

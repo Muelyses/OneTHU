@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 import { ensureNoOverlap } from "./boardReflow.js";
 import { FIT_DEAD_ZONE } from "./boardFit.js";
 /**
@@ -326,7 +327,7 @@ export function defaultBoardDoc(deps: BoardDeps): BoardDoc {
 export function homeStarterItems(): BoardItem[] {
   return [
     pxBoardItem("home.clock", {kind: "custom", id: "clock"}, {x: 0, y: 0, w: 280, h: 132}),
-    pxBoardItem("home.greeting", {kind: "text", text: "把今天，安排好。", variant: "title"}, {x: 304, y: 0, w: 800, h: 132}),
+    pxBoardItem("home.greeting", {kind: "text", text: i18n("state.boardcore.4e6ff6dda14d"), variant: "title"}, {x: 304, y: 0, w: 800, h: 132}),
     pxBoardItem("home.services", {kind: "custom", id: "services"}, {x: 0, y: 156, w: 1104, h: 196}),
     pxBoardItem("home.tasks", {kind: "custom", id: "homework"}, {x: 0, y: 376, w: 540, h: 356}),
     pxBoardItem("home.classes", {kind: "custom", id: "classes"}, {x: 564, y: 376, w: 540, h: 356}),

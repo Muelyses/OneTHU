@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 暂存箱云盘适配器（Phase 2.2）：把清单传上清华云盘并生成分享链接；
  * 接收方通过匿名分享链接读回清单。不依赖自建后端。
@@ -26,7 +27,7 @@ const EXPIRE_DAYS = 7;
 
 function tokenOrThrow(): string {
   const t = getSeafileToken();
-  if (!t) throw new Error("清华云盘未连接：到云盘页粘贴 token 后再生成云分享口令");
+  if (!t) throw new Error(i18n("state.vaultcloud.33798ae55697"));
   return t;
 }
 
@@ -41,7 +42,7 @@ async function ensureRepo(token: string): Promise<string> {
   await invoke("seafile_create_repo", { token, name: REPO_NAME });
   const again = await invoke<Repo[]>("seafile_repos", { token });
   const made = again.find((r) => r.name === REPO_NAME);
-  if (!made) throw new Error("创建 OneTHU 资料库失败：云盘没有返回该库");
+  if (!made) throw new Error(i18n("state.vaultcloud.9fc6ff2f9450"));
   return made.id;
 }
 
@@ -62,7 +63,7 @@ async function uploadSharedManifest(token: string, repoId: string, dir: string, 
     rememberShare({ shareUrl: share.link, shareToken: share.token, repoId, path, manifestName: "manifest.json", files: shareFiles, expiresAt, keyRepoId });
     return { provider: "seafile", repoId, path, manifestName: "manifest.json", shareUrl: share.link, shareToken: share.token, expiresAt, keyRepoId };
   } catch (error) {
-    if (shareFiles.length) throw new Error(`无法分享附件目录：${String(error)}`);
+    if (shareFiles.length) throw new Error(i18n("state.vaultcloud.ac986af5f7b3", { value: String(String(error)) }));
     /* 目录分享被云盘策略拒绝：退化为分享清单文件（文件条目不可直接下载） */
     path = manifestPath;
   }
@@ -129,7 +130,7 @@ const adapter: VaultCloudAdapter = {
         data = await invoke<string>("read_file_base64", {path,maxBytes:128*1024*1024});
       } else if (f.cloudPath?.startsWith("/")) {
         data = await invoke<string>("seafile_read_bytes", {token,repoId:f.cloudRepoId ?? repoId,path:f.cloudPath,maxBytes:128*1024*1024});
-      } else throw new Error(`文件「${f.name}」没有可读取的内容，请重新添加`);
+      } else throw new Error(i18n("state.vaultcloud.aae73c7a3e65", { name: String(f.name) }));
       if (!filesReady) {
         await invoke("seafile_mkdir", { token, repoId, path: filesDir });
         filesReady = true;
@@ -155,34 +156,34 @@ const adapter: VaultCloudAdapter = {
   },
 
   async resolve(ref: VaultCloudRef): Promise<VaultSharePayload> {
-    if (!ref.shareUrl) throw new Error("这条云分享口令没有分享链接");
+    if (!ref.shareUrl) throw new Error(i18n("state.vaultcloud.124e692f8b2a"));
     const text = await seafileShareRead(ref.shareUrl, ref.manifestName ?? "manifest.json");
     const p = await readSharedJson(text) as VaultSharePayload;
-    if (p?.kind !== "vault-share" || p.v !== 1) throw new Error("云盘清单格式不受支持");
+    if (p?.kind !== "vault-share" || p.v !== 1) throw new Error(i18n("state.vaultcloud.8adb5a5068bc"));
     return p;
   },
 
   /** 就地覆盖同一个分享里的清单（改名 / 限定邮箱）；口令与分享链接都不变。 */
   async update(ref: VaultCloudRef, payload: VaultSharePayload): Promise<void> {
     const token = tokenOrThrow();
-    if (!ref.repoId) throw new Error("这条分享缺少云盘定位（repoId）");
+    if (!ref.repoId) throw new Error(i18n("state.vaultcloud.ccd9ad2a2fee"));
     await assertRepoOwner(ref.repoId);
     const manifest = JSON.stringify(payload);
     const key=ref.keyRepoId?await readShareKey({v:1,kind:"onethu-sealed",keyRepoId:ref.keyRepoId,keyPath:"/key.json",iv:"",data:""}):undefined;
-    if(Boolean(payload.allowEmail)!==Boolean(key))throw new Error("改变接收范围需要重新生成分享");
+    if(Boolean(payload.allowEmail)!==Boolean(key))throw new Error(i18n("state.vaultcloud.20e701b06a1a"));
     const localPath = await writeTemp("manifest.json", key?JSON.stringify(await sealBytes(new TextEncoder().encode(manifest),key)):manifest);
     /* 目录分享时 ref.path 是目录；退化成单文件分享时 path 指向 manifest.json，取父目录写回。 */
     const parentDir = /\/manifest\.json$/.test(ref.path) ? ref.path.replace(/\/manifest\.json$/, "") : ref.path;
-    if (!parentDir) throw new Error("这条分享没有可写的目录");
+    if (!parentDir) throw new Error(i18n("state.vaultcloud.6a07b0abd9b4"));
     await invoke("seafile_upload", { token, repoId: ref.repoId, parentDir, localPath, replace: true });
   },
 
   async revoke(ref: VaultCloudRef): Promise<void> {
     const st = ref.shareToken?.trim();
-    if (!st) throw new Error("没有可撤销的分享 token");
+    if (!st) throw new Error(i18n("state.vaultcloud.21e554dce895"));
     const record = shareRefsSnapshot().refs.find((r) => r.shareUrl === ref.shareUrl || r.shareToken === st);
     const ownerRepo=ref.repoId??record?.repoId;
-    if(!ownerRepo)throw new Error("找不到分享的发送方资料库，请在发送设备上撤销");
+    if(!ownerRepo)throw new Error(i18n("state.vaultcloud.c71c20943dfd"));
     await assertRepoOwner(ownerRepo);
     // Remove key first: if the subsequent link deletion fails the content stays inaccessible.
     if(ref.keyRepoId ?? record?.keyRepoId){
@@ -213,7 +214,7 @@ const adapter: VaultCloudAdapter = {
 export async function cacheVaultFiles(): Promise<{ ok: boolean; uploaded: number; reason?: string }> {
   await ensureSeafileLoaded();
   const token = getSeafileToken();
-  if (!token) return { ok: false, uploaded: 0, reason: "云盘未连接" };
+  if (!token) return { ok: false, uploaded: 0, reason: i18n("state.vaultcloud.notConnected") };
   const repoId = await ensureRepo(token);
   const cacheDir = "/Vault/cache";
   try { await invoke("seafile_mkdir", { token, repoId, path: cacheDir }); } catch { /* 已存在 */ }
@@ -272,9 +273,9 @@ export function vaultCloudConnected(): boolean {
 }
 
 export async function materializeSharedFile(ref:VaultCloudRef,path:string,name:string):Promise<string>{
- if(!ref.shareUrl||!/^files\/[^/\\]{1,240}$/.test(path))throw new Error("分享文件路径无效");
+ if(!ref.shareUrl||!/^files\/[^/\\]{1,240}$/.test(path))throw new Error(i18n("state.vaultcloud.5ce19f9c3d3c"));
  const b64=await invoke<string>("seafile_share_read_bytes",{link:ref.shareUrl,path,maxBytes:180*1024*1024});
  let bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
- if(ref.keyRepoId){const envelope=JSON.parse(new TextDecoder().decode(bytes));if(!isSealed(envelope)||envelope.keyRepoId!==ref.keyRepoId)throw new Error("分享文件校验失败");bytes=new Uint8Array(await unsealBytes(envelope));}
+ if(ref.keyRepoId){const envelope=JSON.parse(new TextDecoder().decode(bytes));if(!isSealed(envelope)||envelope.keyRepoId!==ref.keyRepoId)throw new Error(i18n("state.vaultcloud.bd2fb4465b55"));bytes=new Uint8Array(await unsealBytes(envelope));}
  return invoke<string>("write_temp_file",{name:name.replace(/[\\/:*?"<>|]+/g,"_").slice(0,120),dataBase64:bytesToBase64(bytes)});
 }

@@ -1,3 +1,5 @@
+import { courseDisplayName } from "../lib/learnLanguage.js";
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 /**
  * 网络学堂入口（learnX Courses）：课程卡片列表 + 全部作业/通知/文件/搜索/学期快捷入口。
@@ -22,6 +24,8 @@ import { HwRemindPop, semesterText } from "./learn/shared.js";
 /** 全局作业 DDL 提醒卡（用户拍板：先设所有作业共用的节点，想改单个再在作业行改）。
  *  openSignal：原子深链（learn-hwremind）到达时自动弹开设置层。 */
 function HwRemindDefaultCard({ openSignal }: { openSignal?: boolean }) {
+  const uiLocale = useUiLocale();
+
   const def = useHwDefault();
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -29,20 +33,20 @@ function HwRemindDefaultCard({ openSignal }: { openSignal?: boolean }) {
   }, [openSignal]);
   return (
     <Card className="stat-card stat-click stat-hwremind">
-      <button className="stat-link" onClick={() => setOpen((o) => !o)} aria-label="作业 DDL 提醒设置">
+      <button className="stat-link" onClick={() => setOpen((o) => !o)} aria-label={i18n("pages.learn.0cebfcb94425")}>
         <span className="stat-icon">
           <IconBell width={17} height={17} />
         </span>
         <span className="stat-text">
           <span className="stat-num">{fmtRemindOffset(def)}</span>
-          <span className="stat-label">DDL 提醒</span>
+          <span className="stat-label">{i18n("pages.learn.687d0d801e7a")}</span>
         </span>
       </button>
       {open ? (
         <HwRemindPop
           value={def}
-          title="所有作业共用：截止前提醒（写入系统日历闹钟，改完即同步）"
-          foot="单个作业想单独改 → 作业行/课程详情页的铃铛（覆盖此默认）"
+          title={i18n("pages.learn.4005ca86f6e8")}
+          foot={i18n("pages.learn.41319c365478")}
           onApply={(m) => {
             if (m != null) {
               setHwDefault(m);
@@ -56,6 +60,8 @@ function HwRemindDefaultCard({ openSignal }: { openSignal?: boolean }) {
 }
 
 export function LearnPage() {
+  const uiLocale = useUiLocale();
+
   const { navigate, navParams } = useApp();
   const { data, state, error, reload } = useLearnData();
 
@@ -73,14 +79,14 @@ export function LearnPage() {
 
   // 外部作业（雨课堂/TUOJ/Tyche/DSA OJ）与学期无关，全量计入「未交作业」；未配置凭据时 extHw 恒为空（零回归）
   const ext = useExternalHomework();
-  const extHw = useMemo(() => ext.items.map(toHomework), [ext.items]);
+  const extHw = useMemo(() => ext.items.map(toHomework), [uiLocale, ext.items]);
 
   // 雨课堂课程：与网络学堂课程并列展示在同一页（外部源一并拉回的课程列表；未登录时为空）
-  const yktCourses = useMemo(() => ext.courses.filter((c) => c.source === "yuketang"), [ext.courses]);
+  const yktCourses = useMemo(() => ext.courses.filter((c) => c.source === "yuketang"), [uiLocale, ext.courses]);
   /** R28：按课程名把雨课堂课程并到网络学堂课程卡片上（纯函数，见 pages/learn/courseMerge.ts） */
   const merge = useMemo(
     () => mergeCoursesByName(data?.courses ?? [], yktCourses),
-    [data, yktCourses],
+    [uiLocale, data, yktCourses],
   );
 
   // R21c：忽略优先级最高——所有对用户展示的计数/列表都不含已忽略作业
@@ -94,7 +100,7 @@ export function LearnPage() {
       notifications: (data?.notifications ?? []).length,
       files: (data?.files ?? []).length,
     };
-  }, [data, extHw, ignored]);
+  }, [uiLocale, data, extHw, ignored]);
 
   const courseStats = useMemo(() => {
     const m = new Map<string, { hw: number; notices: number; files: number }>();
@@ -115,7 +121,7 @@ export function LearnPage() {
       m.set(f.courseId, s);
     }
     return m;
-  }, [data, ignored]);
+  }, [uiLocale, data, ignored]);
 
   /** R31：雨课堂侧逐课计数（与课程详情页口径一致）：
    *  未交 = 未提交且未忽略未旁听；通知 = 公告条数；文件 = 非作业/非公告内容（资料/课件/视频…） */
@@ -134,7 +140,7 @@ export function LearnPage() {
       m.set(y.id, { hw, notices, files });
     }
     return m;
-  }, [yktCourses, ext.items, ext.contents, ignored]);
+  }, [uiLocale, yktCourses, ext.items, ext.contents, ignored]);
 
   /** 合并后的卡片计数（网络学堂 + 同名雨课堂），与课程详情页三个栏位的计数同口径 */
   const cardStats = (learnCourseId: string, learnStats?: { hw: number; notices: number; files: number }) => {
@@ -148,57 +154,52 @@ export function LearnPage() {
   return (
     <div className="learn-page">
       <PageHead
-        title="课程"
-        meta={data ? `${semesterText(data.semester.id)} · ${data.courses.length + merge.unmatchedYkt.length} 门课程` : "加载中…"}
+        title={i18n("pages.learn.60db1afb4022")}
+        meta={data ? i18n("pages.learn.c58fe880cfb6", { value: String(semesterText(data.semester.id)), value2: String(data.courses.length + merge.unmatchedYkt.length) }) : i18n("pages.learn.4927a53bcc88")}
         actions={
           <>
-            <PageAtomStar atomKey="learn" title="课程" />
-            <Btn variant="ghost" onClick={() => navigate("learn-search")}><IconSearch width={14} height={14} />搜索
-            </Btn>
-            <Btn variant="ghost" onClick={() => navigate("learn-semester")}><IconCalendar width={14} height={14} />学期
-            </Btn>
-            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />刷新
-            </Btn>
+            <PageAtomStar atomKey="learn" title={i18n("pages.learn.60db1afb4022")} />
+            <Btn variant="ghost" onClick={() => navigate("learn-search")}><IconSearch width={14} height={14} />{i18n("pages.learn.44ce7ae909bb")}</Btn>
+            <Btn variant="ghost" onClick={() => navigate("learn-semester")}><IconCalendar width={14} height={14} />{i18n("pages.learn.79a4ef019e9c")}</Btn>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.aee887434131")}</Btn>
           </>
         }
       />
-      <div className="learn-page-note">
-        雨课堂与 OJ 的作业同步在「设置 → 数据与同步」里配置（登录一次后作业会自动并入「全部作业」）。
-      </div>
+      <div className="learn-page-note">{i18n("pages.learn.2079ef6b94d0")}</div>
 
       {state === "error" ? <ErrorNote text={error ?? ""} onRetry={() => void reload()} /> : null}
 
       <div className="stats">
         <Card className="stat-card stat-click" >
-          <button className="stat-link" onClick={() => navigate("learn-assignments")} aria-label="查看全部作业">
+          <button className="stat-link" onClick={() => navigate("learn-assignments")} aria-label={i18n("pages.learn.d4b1b25d27b2")}>
             <span className="stat-icon red">
               <IconPen width={17} height={17} />
             </span>
             <span className="stat-text">
               <span className="stat-num">{state === "loading" && !data ? "–" : stats.unfinished}</span>
-              <span className="stat-label">未交作业</span>
+              <span className="stat-label">{i18n("pages.learn.1236edf41da0")}</span>
             </span>
           </button>
         </Card>
         <Card className="stat-card stat-click">
-          <button className="stat-link" onClick={() => navigate("learn-notices")} aria-label="查看全部通知">
+          <button className="stat-link" onClick={() => navigate("learn-notices")} aria-label={i18n("pages.learn.568090ece667")}>
             <span className="stat-icon amber">
               <IconBell width={17} height={17} />
             </span>
             <span className="stat-text">
               <span className="stat-num">{state === "loading" && !data ? "–" : stats.notifications}</span>
-              <span className="stat-label">课程通知</span>
+              <span className="stat-label">{i18n("pages.learn.f37a13fc55b3")}</span>
             </span>
           </button>
         </Card>
         <Card className="stat-card stat-click">
-          <button className="stat-link" onClick={() => navigate("learn-files")} aria-label="查看全部文件">
+          <button className="stat-link" onClick={() => navigate("learn-files")} aria-label={i18n("pages.learn.2a81fbaa67a8")}>
             <span className="stat-icon green">
               <IconFile width={17} height={17} />
             </span>
             <span className="stat-text">
               <span className="stat-num">{state === "loading" && !data ? "–" : stats.files}</span>
-              <span className="stat-label">课程文件</span>
+              <span className="stat-label">{i18n("pages.learn.2bb745fb2e6f")}</span>
             </span>
           </button>
         </Card>
@@ -215,10 +216,9 @@ export function LearnPage() {
         // 会话半死吐过一次空列表时用户只能硬刷新）
         state === "error" ? null : (
           <Card>
-            <Empty text={state === "loading" ? "正在重新加载本学期课程…" : "本学期暂无课程，或数据未就绪。"} />
+            <Empty text={state === "loading" ? i18n("pages.learn.6ebc2dd26a23") : i18n("pages.learn.6874ac8d6028")} />
             <div className="learn-empty-actions">
-              <Btn variant="ghost" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />重新加载
-              </Btn>
+              <Btn variant="ghost" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.7bdd5ce1e298")}</Btn>
             </div>
           </Card>
         )
@@ -232,12 +232,12 @@ export function LearnPage() {
               <LearnCourseCard
                 key={c.id}
                 courseId={c.id}
-                title={c.name}
+                title={courseDisplayName(c)}
                 details={[c.teacherName, `${c.courseNumber}${c.courseIndex ? `-${c.courseIndex}` : ""}`].filter(Boolean).join(" · ")}
                 schedule={c.timeAndLocation.join(" · ")}
                 source="learn"
                 stats={s}
-                aside={<CollectStar atom={{ kind: "course", key: enc(c.id, c.name, c.teacherName) }} title={c.name} />}
+                aside={<CollectStar atom={{ kind: "course", key: enc(c.id, c.name, c.teacherName) }} title={courseDisplayName(c)} />}
                 onOpen={() => navigate("learn-course", { courseId: c.id })}
                 onOpenSection={(courseTab) => navigate("learn-course", { courseId: c.id, courseTab })}
                 yktEntry={ykt ? {

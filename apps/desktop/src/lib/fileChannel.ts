@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 统一文件通道（Phase 2.1，暂存箱先落地「取件 → 哈希 → 暂存」这一段）。
  *
@@ -28,7 +29,7 @@ function newId(): string {
 }
 
 export async function sha256Hex(bytes: Uint8Array): Promise<string> {
-  if (!globalThis.crypto?.subtle) throw new Error("当前环境没有 WebCrypto，无法计算文件指纹");
+  if (!globalThis.crypto?.subtle) throw new Error(i18n("lib.filechannel.13db15846e8d"));
   const copy = new Uint8Array(bytes.byteLength);
   copy.set(bytes);
   const digest = await crypto.subtle.digest("SHA-256", copy.buffer);

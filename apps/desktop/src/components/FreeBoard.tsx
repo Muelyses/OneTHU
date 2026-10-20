@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { useIsSimpleLike } from "../state/experienceMode.js";
 /**
  * 自由图层白板（2026-10-13 定稿，霖：要可以互相重叠盖住的高级白板）。
@@ -153,6 +154,8 @@ function ItemBody({ item, defs, renderers, onOpen, onFolderAdd, onProps }: {
   onFolderAdd?: () => void;
   onProps?: (props: Record<string, unknown> | undefined) => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const spec = item.spec;
   /* OnePage 入口（组合组件之一）：把另一块 OnePage 钉在画布上，点击即打开 */
@@ -162,7 +165,7 @@ function ItemBody({ item, defs, renderers, onOpen, onFolderAdd, onProps }: {
     if (!b) {
       return (
         <div className="wg-empty" role="note">
-          <span className="wg-empty-title">这个 OnePage 已删除</span>
+          <span className="wg-empty-title">{i18n("components.freeboard.7779b244eef6")}</span>
         </div>
       );
     }
@@ -210,7 +213,7 @@ function ItemBody({ item, defs, renderers, onOpen, onFolderAdd, onProps }: {
     const labelFor = (en: { kind: string; page?: string; label?: string; boardId?: string; wsId?: string }): string => {
       if (en.label) return en.label;
       if (en.kind === "onepage" && en.boardId) return loadBoard().boards.find((x) => x.id === en.boardId)?.name ?? "OnePage";
-      if (en.kind === "ws" && en.wsId) return explorerSnapshot().workspaces.find((w) => w.id === en.wsId)?.name ?? "工作区";
+      if (en.kind === "ws" && en.wsId) return explorerSnapshot().workspaces.find((w) => w.id === en.wsId)?.name ?? i18n("components.freeboard.37979829426b");
       if (en.kind === "page") return NAV.find((x) => x.page === (en.page as never))?.label ?? String(en.page);
       return "?";
     };
@@ -238,14 +241,14 @@ function ItemBody({ item, defs, renderers, onOpen, onFolderAdd, onProps }: {
           <button
             type="button"
             className="free-folder-cell is-add"
-            title="添加入口"
+            title={i18n("components.freeboard.a450a21ac723")}
             onClick={(ev) => {
               ev.stopPropagation();
               onFolderAdd?.();
             }}
           >
             <span className="free-folder-ball is-add">＋</span>
-            <span className="free-folder-label">添加</span>
+            <span className="free-folder-label">{i18n("components.freeboard.7a8a11ead507")}</span>
           </button>
         </div>
       </div>
@@ -258,7 +261,7 @@ function ItemBody({ item, defs, renderers, onOpen, onFolderAdd, onProps }: {
     if (!w) {
       return (
         <div className="wg-empty" role="note">
-          <span className="wg-empty-title">这个生成组件已被删除</span>
+          <span className="wg-empty-title">{i18n("components.freeboard.e489b964ce42")}</span>
         </div>
       );
     }
@@ -280,6 +283,8 @@ function TemplateItemPicker({ item, onPick, onClose }: {
   onPick: (props: Record<string, unknown>) => void;
   onClose: () => void;
 }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const learn = useLearnData();
   const items: PickerItem[] = useMemo(() => {
     if (item.spec.kind !== "custom") return [];
@@ -290,21 +295,21 @@ function TemplateItemPicker({ item, onPick, onClose }: {
         .sort((a, b) => String(b.uploadTime).localeCompare(String(a.uploadTime)))
         .map((f) => ({
           key: f.courseId + ":" + f.id,
-          label: f.title || "课件 " + f.id,
+          label: f.title || i18n("components.freeboard.207cb94f4067") + f.id,
           sub: (byCourse.get(f.courseId) ?? "") + " · " + String(f.uploadTime).slice(0, 10),
           props: { courseId: f.courseId, itemId: f.id, title: f.title },
         }));
     }
     return [];
-  }, [item, learn.data]);
+  }, [uiLocale, item, learn.data]);
   const currentKey = item.spec.kind === "custom"
     ? String(item.spec.props?.courseId ?? "") + ":" + String(item.spec.props?.itemId ?? "")
     : undefined;
   return (
     <BoardItemPicker
       open
-      title="选择课程文件"
-      searchHint="搜索课程或文件名"
+      title={i18n("components.freeboard.5adb904a905f")}
+      searchHint={i18n("components.freeboard.38b74a1e40a3")}
       items={items}
       currentKey={currentKey}
       onPick={onPick}
@@ -322,14 +327,16 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   orientation?: Orientation;
   chrome?: { title: string };
 } = {}): ReactNode {
-  const ops = useMemo(() => freeBoardOps(boardId, orientation), [boardId, orientation]);
+  const uiLocale = useUiLocale();
+
+  const ops = useMemo(() => freeBoardOps(boardId, orientation), [uiLocale, boardId, orientation]);
   const items = useFreeBoard(boardId, orientation);
   /* 事件回调（窗口级键盘、浮层菜单）要读到最新的条目：state 在闭包里会过期，故用 ref 镜像。 */
   const itemsRef = useRef(items);
   itemsRef.current = items;
   const { navigate } = useApp();
   const menu = useContextMenu();
-  const defs = useMemo(() => allWidgetDefs(), []);
+  const defs = useMemo(() => allWidgetDefs(), [uiLocale]);
   const renderers = useRenderers();
   const hostRef = useRef<HTMLDivElement | null>(null);
   /* ── 无限画布的视口（2026-10-15 模型纠正）──
@@ -367,9 +374,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       try { localStorage.setItem(PHONE_CANVAS_KEY, next ? "1" : "0"); } catch { /* 配额满：仅本次生效 */ }
       if (next) {
         if (!hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
-        window.setTimeout(() => sayRef.current("自由摆放：拖动卡片，点选后拉角点调大小"), 30);
+        window.setTimeout(() => sayRef.current(i18n("components.freeboard.472cc80df106")), 30);
       } else {
-        sayRef.current("已回到阅读顺序");
+        sayRef.current(i18n("components.freeboard.dbd17f63d721"));
       }
       return next;
     });
@@ -434,7 +441,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       y += h + 12;
     }
     return { map, box: { w, h: Math.max(0, y - 12) + 24 } };
-  }, [stack, items, port.w, stackTop]);
+  }, [uiLocale, stack, items, port.w, stackTop]);
 
   // A viewport-relative 100% is distinct from the user's zoom. Capture authored
   // width once per board so dragging/resizing never changes scale mid-gesture.
@@ -683,36 +690,36 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     /* 模板组件（课程文件条目等）：选择显示哪一条具体项 */
     if (item.spec.kind === "custom" && ATOM_TEMPLATE_IDS.includes("custom:" + item.spec.id)) {
       const picked = !!item.spec.props && Object.keys(item.spec.props).length > 0;
-      list.push({ key: "pick", label: picked ? "更换条目" : "选择条目", onSelect: () => setPickFor(item.id) });
+      list.push({ key: "pick", label: picked ? i18n("components.freeboard.d13523826411") : i18n("components.freeboard.153d487fec51"), onSelect: () => setPickFor(item.id) });
     }
     /* 尺寸入口分两路：挡位控制 → 复用添加抽屉选档位；自由控制 → 选中出把手。 */
     if (def && isTierControlled(def)) {
       const defId = def.id;
-      list.push({ key: "resize", label: "改变大小", onSelect: () => { setSelected(null); setResizeFor({ id: item.id, defId, size: plan.size }); } });
+      list.push({ key: "resize", label: i18n("components.freeboard.12e0be622c36"), onSelect: () => { setSelected(null); setResizeFor({ id: item.id, defId, size: plan.size }); } });
     } else {
-      list.push({ key: "resize", label: "自由调整大小", onSelect: () => setSelected(item.id) });
+      list.push({ key: "resize", label: i18n("components.freeboard.d003f87ed602"), onSelect: () => setSelected(item.id) });
     }
     if (def && def.editableProps && def.editableProps.length) {
-      list.push({ key: "edit", label: "编辑", onSelect: () => setEditingId(item.id) });
+      list.push({ key: "edit", label: i18n("components.freeboard.051836569928"), onSelect: () => setEditingId(item.id) });
     }
-    list.push({ key: "pin", label: item.pinned ? "取消固定" : "固定", onSelect: () => ops.pin(item.id) });
-    list.push({ key: "front", label: "置顶", onSelect: () => ops.raise(item.id) });
+    list.push({ key: "pin", label: item.pinned ? i18n("components.freeboard.20590a6a7b9a") : i18n("components.freeboard.d4b3f49cd2e4"), onSelect: () => ops.pin(item.id) });
+    list.push({ key: "front", label: i18n("components.freeboard.173f88d28ebf"), onSelect: () => ops.raise(item.id) });
     list.push({
       key: "vault",
-      label: "收进暂存箱",
+      label: i18n("components.freeboard.17eac802d3f7"),
       onSelect: () => {
         const r = addToVault({
           type: "board-item",
-          title: plan.title || def?.title || "白板组件",
+          title: plan.title || def?.title || i18n("components.freeboard.206359b4b54d"),
           sub: def?.description,
           board: { boardId, itemId: item.id },
           source: "白板",
         });
-        say(r.ok ? "已收进暂存箱" : r.reason === "duplicate" ? "暂存箱里已经有这个组件了" : "暂存箱暂时不可用，稍后再试");
+        say(r.ok ? i18n("components.freeboard.4cfe5f20b9dd") : r.reason === "duplicate" ? i18n("components.freeboard.910046f3ea83") : i18n("components.freeboard.57ce97c584ca"));
       },
     });
-    list.push({ key: "info", label: "详情", onSelect: () => say(def ? def.description : "这个组件已经不在组件目录里了。") });
-    list.push({ key: "remove", label: "删除", danger: true, onSelect: () => { ops.remove(item.id); setSelected(null); } });
+    list.push({ key: "info", label: i18n("components.freeboard.979a332955c8"), onSelect: () => say(def ? def.description : i18n("components.freeboard.fa35f4f53dd5")) });
+    list.push({ key: "remove", label: i18n("components.freeboard.2f9daa828907"), danger: true, onSelect: () => { ops.remove(item.id); setSelected(null); } });
     menu.open({ x, y, title: plan.title, items: list });
   }, [boardId, defs, menu, ops, say, phoneUi]);
 
@@ -856,7 +863,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     if (freeBoardOps(boardId, orientation).replace(next)) {
       resetLayoutView();
       setTplOpen(false);
-      say("已套用模板：" + tpl.name);
+      say(i18n("components.freeboard.46090fa0d5a2") + tpl.name);
     }
   };
 
@@ -878,7 +885,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       const ref = atomRefFromKey(spec.ref);
       const view = ref ? resolveAtom(ref) : null;
       if (!view) {
-        say("这条入口已失效，可从右键菜单移除");
+        say(i18n("components.freeboard.a1714f5783d4"));
         return;
       }
       view.open(navigate);
@@ -888,7 +895,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const pickItem = pickFor ? itemsRef.current.find((x) => x.id === pickFor) : undefined;
   const resizeDef = useMemo(
     () => (resizeFor ? defs.find((d) => d.id === resizeFor.defId) ?? null : null),
-    [resizeFor, defs],
+    [uiLocale, resizeFor, defs],
   );
 
   return (
@@ -899,32 +906,32 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       {chrome ? (
         <PageHead
           title={chrome.title}
-          meta="直接拖动卡片摆放，选中后拉角点调整大小；底部工具栏可调整画布比例"
+          meta={i18n("components.freeboard.83d2e3f15c71")}
           menu={[
-            { key: "add-widget", label: "添加组件", onSelect: () => setAddOpen(true) },
-            { key: "apply-tpl", label: "套用模板", onSelect: () => setTplOpen(true) },
+            { key: "add-widget", label: i18n("components.freeboard.97dcf4348652"), onSelect: () => setAddOpen(true) },
+            { key: "apply-tpl", label: i18n("components.freeboard.765be150d6cb"), onSelect: () => setTplOpen(true) },
             ...(phonePortrait && orientation === "portrait" && !compact
-              ? [{ key: "phone-canvas", label: phoneCanvas ? "阅读顺序" : "自由摆放", onSelect: togglePhoneCanvas }]
+              ? [{ key: "phone-canvas", label: phoneCanvas ? i18n("components.freeboard.593f0f466b3e") : i18n("components.freeboard.f87eebfdca60"), onSelect: togglePhoneCanvas }]
               : []),
-            { key: "pen", label: penOn ? "画笔：关" : "画笔：开", onSelect: () => setPenOn((v) => !v) },
+            { key: "pen", label: penOn ? i18n("components.freeboard.084cfc0311c3") : i18n("components.freeboard.2a95e1939b68"), onSelect: () => setPenOn((v) => !v) },
             /* 「所有 OnePage」：删掉旧白板页之后，这里是列表页在 UI 里的入口（另一条通路是 OneGO） */
-            { key: "all-boards", label: "所有 OnePage", onSelect: () => navigate("boards") },
+            { key: "all-boards", label: i18n("components.freeboard.0f591af87c35"), onSelect: () => navigate("boards") },
           ]}
         />
       ) : (
         <div className="workbench-board-head">
           <div>
-            <h2>首页</h2>
-            <span>{stack ? "阅读顺序：点右侧「自由摆放」可拖动、缩放" : "拖动卡片摆放，选中后拖动边角调整大小"}</span>
+            <h2>{i18n("components.freeboard.203c08e0d44a")}</h2>
+            <span>{stack ? i18n("components.freeboard.2880a75c7f5f") : i18n("components.freeboard.5b80d5358a4b")}</span>
           </div>
           <div className="workbench-board-actions">
-            <Btn variant="ghost" onClick={() => setTplOpen(true)}>模板</Btn>
+            <Btn variant="ghost" onClick={() => setTplOpen(true)}>{i18n("components.freeboard.62b95daecb7f")}</Btn>
           </div>
         </div>
       )}
       {chrome && items.length === 0 ? (
         <Card>
-          <Empty text="这块白板还是空的。可以从模板开始，或从「＋」添加一个组件。" />
+          <Empty text={i18n("components.freeboard.9a3bd2de70be")} />
           {/* 空板引导：三套预制排版，点一下就有东西可看 */}
           <div className="board-tpl-row">
             {BOARD_TEMPLATES.map((tpl) => (
@@ -1008,9 +1015,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               >
                 {/* 折叠态：只留标题条（toolbar 的「展开」还原） */}
                 {it.folded ? (
-                  <div className="free-folded" title="已折叠（浮条里可展开）">
+                  <div className="free-folded" title={i18n("components.freeboard.8d6ca2d1e48b")}>
                     <span className="free-note-dot" aria-hidden="true" />
-                    <span>便笺</span>
+                    <span>{i18n("components.freeboard.6374c187518d")}</span>
                   </div>
                 ) : (
                 <>
@@ -1018,7 +1025,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 {editingNow ? (
                   <textarea
                     className="free-note-editor"
-                    aria-label={isNote ? "便笺内容" : "文字内容"}
+                    aria-label={isNote ? i18n("components.freeboard.3a83db6cc546") : i18n("components.freeboard.53684bb9137a")}
                     onChange={(e) => ops.props(it.id, { text: e.currentTarget.value })}
                     autoFocus
                     defaultValue={isNote
@@ -1048,33 +1055,33 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 {isSel && !penOn ? (
                   <div className="free-toolbar" onPointerDown={(e) => e.stopPropagation()}>
                     {stack ? <>
-                      {[-1, 1].map(dir => <button key={dir} type="button" title={dir < 0 ? "上移" : "下移"} onClick={() => {
+                      {[-1, 1].map(dir => <button key={dir} type="button" title={dir < 0 ? i18n("components.freeboard.f853a70b1204") : i18n("components.freeboard.e75e8b4e5c97")} onClick={() => {
                         const sorted = [...itemsRef.current].sort((a, b) => a.y - b.y || a.x - b.x);
                         const at = sorted.findIndex(x => x.id === it.id); const other = sorted[at + dir];
                         if (!other || it.pinned || other.pinned) return;
                         ops.move(it.id, other.x, other.y); ops.move(other.id, it.x, it.y);
                       }}>{dir < 0 ? "↑" : "↓"}</button>)}
-                      <Btn variant="ghost" titleAttr="增加高度" onClick={() => ops.resize(it.id, {x: it.x, y: it.y, w: it.w, h: it.h + 48})}>增高</Btn>
-                      <Btn variant="ghost" titleAttr="减小高度" onClick={() => ops.resize(it.id, {x: it.x, y: it.y, w: it.w, h: Math.max(MIN_H, it.h - 48)})}>减高</Btn>
+                      <Btn variant="ghost" titleAttr={i18n("components.freeboard.22b32f301474")} onClick={() => ops.resize(it.id, {x: it.x, y: it.y, w: it.w, h: it.h + 48})}>{i18n("components.freeboard.6cedd5ab1aa9")}</Btn>
+                      <Btn variant="ghost" titleAttr={i18n("components.freeboard.68303cbc8d03")} onClick={() => ops.resize(it.id, {x: it.x, y: it.y, w: it.w, h: Math.max(MIN_H, it.h - 48)})}>{i18n("components.freeboard.837940c33698")}</Btn>
                     </> : null}
-                    {isNote || isText ? <button type="button" title="编辑文字" onClick={() => setEditingId(it.id)}>编辑文字</button> : null}
-                    <button type="button" title="图层置顶（只压过与它重叠的组件）" onClick={() => ops.raise(it.id)}>⤒</button>
+                    {isNote || isText ? <button type="button" title={i18n("components.freeboard.fe067a88a36d")} onClick={() => setEditingId(it.id)}>{i18n("components.freeboard.fe067a88a36d")}</button> : null}
+                    <button type="button" title={i18n("components.freeboard.3389965d46d4")} onClick={() => ops.raise(it.id)}>⤒</button>
                     {isNote ? (
                       <button
                         type="button"
-                        title={it.folded ? "展开" : "折叠"}
+                        title={it.folded ? i18n("components.freeboard.00bd3960fea8") : i18n("components.freeboard.84a07f292f1f")}
                         className="free-note-toggle"
                         onClick={() => ops.fold(it.id, !it.folded)}
                       >
-                        {it.folded ? " 展开" : "折叠"}
+                        {it.folded ? i18n("components.freeboard.2de119793cb4") : i18n("components.freeboard.84a07f292f1f")}
                       </button>
                     ) : null}
-                    <button type="button" title="切换不透明度" onClick={() => {
+                    <button type="button" title={i18n("components.freeboard.f7b6fbf1f2f6")} onClick={() => {
                       const steps = [1, .75, .5, .3]; const at = steps.indexOf(it.opacity ?? 1);
                       ops.opacity(it.id, steps[(at + 1) % steps.length] ?? 1);
                     }}>{Math.round((it.opacity ?? 1) * 100)}%</button>
-                    <button type="button" title={it.pinned ? "取消固定" : "固定位置"} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>{it.pinned ? "解锁" : "固定"}</button>
-                    <button type="button" title="删除" className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
+                    <button type="button" title={it.pinned ? i18n("components.freeboard.20590a6a7b9a") : i18n("components.freeboard.7230466e3998")} className={"free-op free-pin" + (it.pinned ? " is-on" : "")} onClick={() => ops.pin(it.id)}>{it.pinned ? i18n("components.freeboard.70fba17fffb7") : i18n("components.freeboard.d4b3f49cd2e4")}</button>
+                    <button type="button" title={i18n("components.freeboard.2f9daa828907")} className="is-danger" onClick={() => { ops.remove(it.id); setSelected(null); }}>
                       <IconTrash width={13} height={13} />
                     </button>
                   </div>
@@ -1085,7 +1092,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                   ? (["nw", "ne", "sw", "se", "e", "s"] as const).map((h) => (
                       <span
                         key={h}
-                        role="button" aria-label={"调整大小 " + h}
+                        role="button" aria-label={i18n("components.freeboard.ff84465bf83c") + h}
                         className={"free-handle fh-" + h}
                         onPointerDown={(ev) => beginPointer(ev, it.id, h)}
                       />
@@ -1110,19 +1117,19 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label="白板工具">
-          <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>组件</Btn>
+        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
+          <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>{i18n("components.freeboard.783d638053ea")}</Btn>
           {phonePortrait && orientation === "portrait" ? (
             <Btn variant="outline" size="sm" aria-pressed={phoneCanvas} onClick={togglePhoneCanvas}>
-              {phoneCanvas ? "阅读顺序" : "自由摆放"}
+              {phoneCanvas ? i18n("components.freeboard.593f0f466b3e") : i18n("components.freeboard.f87eebfdca60")}
             </Btn>
           ) : null}
           {stack ? null : <>
             <span className="board-tool-divider" />
-            <IconBtn label="缩小" icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
-            <Btn size="sm" variant="ghost" titleAttr="恢复适合当前窗口的 100%" onClick={resetView}>{zoomLabel(view.z)}</Btn>
-            <IconBtn label="放大" icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
-            <Btn size="sm" icon={<IconPen />} selected={penOn} aria-pressed={penOn} onClick={() => {setPenOn(v => !v); setSelected(null);}}>画笔</Btn>
+            <IconBtn label={i18n("components.freeboard.290f68030501")} icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />
+            <Btn size="sm" variant="ghost" titleAttr={i18n("components.freeboard.996f7b2c0f27")} onClick={resetView}>{zoomLabel(view.z)}</Btn>
+            <IconBtn label={i18n("components.freeboard.80f8fbcfa011")} icon={<OgIconPlus />} disabled={view.z >= ZOOM_MAX} onClick={() => zoomBy(1)} />
+            <Btn size="sm" icon={<IconPen />} selected={penOn} aria-pressed={penOn} onClick={() => {setPenOn(v => !v); setSelected(null);}}>{i18n("components.freeboard.05731b92ad31")}</Btn>
           </>}
           {penOn ? (
             <div className="free-pen-panel">
@@ -1143,10 +1150,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       {folderPicker && !compact
         ? createPortal(
             <div className="hs-more-mask" onClick={() => setFolderPicker(null)}>
-              <div className="hs-more" role="dialog" aria-label="添加入口" onClick={(e) => e.stopPropagation()}>
+              <div className="hs-more" role="dialog" aria-label={i18n("components.freeboard.a450a21ac723")} onClick={(e) => e.stopPropagation()}>
                 <div className="hs-more-head">
-                  <span>添加入口到文件夹</span>
-                  <button type="button" className="hs-close" aria-label="关闭" onClick={() => setFolderPicker(null)}>
+                  <span>{i18n("components.freeboard.03aadf165657")}</span>
+                  <button type="button" className="hs-close" aria-label={i18n("components.freeboard.3fd47edce45b")} onClick={() => setFolderPicker(null)}>
                     <IconX width={14} height={14} />
                   </button>
                 </div>
@@ -1162,7 +1169,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                   };
                   return (
                     <div className="free-add-list">
-                      <div className="hs-detail-group-name">一级功能</div>
+                      <div className="hs-detail-group-name">{i18n("components.freeboard.0a5eea295bf2")}</div>
                       {NAV.map((n) => (
                         <button
                           key={n.page}
@@ -1181,9 +1188,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                             <span>{b.name}</span>
                           </button>
                         ))}
-                      <div className="hs-detail-group-name">工作区</div>
+                      <div className="hs-detail-group-name">{i18n("components.freeboard.37979829426b")}</div>
                       {wsSnap.workspaces.length === 0 ? (
-                        <div className="hs-op-hint">还没有工作区（标签右键可把标签编入工作区）</div>
+                        <div className="hs-op-hint">{i18n("components.freeboard.8e1c845f3d61")}</div>
                       ) : (
                         wsSnap.workspaces.map((w) => (
                           <button key={w.id} type="button" className="hs-detail-row" onClick={() => append({ kind: "ws", wsId: w.id, label: w.name })}>
@@ -1203,7 +1210,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       {/* 套用模板（空板引导之外的第二条入口，同一份纯逻辑） */}
       <ActionSheet
         open={tplOpen}
-        title="套用模板"
+        title={i18n("components.freeboard.765be150d6cb")}
         items={BOARD_TEMPLATES.map((tpl) => ({
           id: tpl.id,
           label: tpl.name + " · " + tpl.description,
@@ -1222,11 +1229,11 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         extras={[
           {
             id: "extra-folder",
-            title: "文件夹",
-            description: "圆形 logo 网格：收纳一级入口、OnePage 与工作区",
+            title: i18n("components.freeboard.7c7802d8adae"),
+            description: i18n("components.freeboard.9818eabd5c89"),
             pick: () => {
               const at = dropAt();
-              ops.add({ kind: "custom", id: "folder", props: { title: "文件夹", entries: [] } }, at.x, at.y, 180, 180);
+              ops.add({ kind: "custom", id: "folder", props: { title: i18n("components.freeboard.7c7802d8adae"), entries: [] } }, at.x, at.y, 180, 180);
               setAddOpen(false);
               setAddAt(null);
             },
@@ -1234,7 +1241,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           ...loadBoard().boards.filter((b) => b.kind !== "system").map((b) => ({
             id: "extra-onepage-" + b.id,
             title: b.name,
-            description: "把这块 OnePage 钉到画布上（点击即打开）",
+            description: i18n("components.freeboard.eef4bb73e8a0"),
             pick: () => {
               const at = dropAt();
               ops.add({ kind: "custom", id: "onepage", props: { boardId: b.id } }, at.x, at.y, 150, 84);
@@ -1247,7 +1254,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           const at = dropAt();
           const key = JSON.stringify(d.spec);
           if (itemsRef.current.some((it) => JSON.stringify(it.spec) === key)) {
-            say("白板上已有这个组件");
+            say(i18n("components.freeboard.daaec6369d42"));
             return;
           }
           const px = pxSizeOf(size);
@@ -1255,7 +1262,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             ? { kind: "custom" as const, id: d.spec.id, props: d.spec.props }
             : JSON.parse(JSON.stringify(d.spec));
           ops.add(spec, at.x, at.y, px.w, px.h);
-          say("已添加：" + d.title + " " + size.w + "×" + size.h);
+          say(i18n("components.freeboard.591cb2edcb7e") + d.title + " " + size.w + "×" + size.h);
           setAddOpen(false);
           setAddAt(null);
         }}
@@ -1266,7 +1273,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           const px = pxSizeOf(size);
           ops.resize(resizeFor.id, { x: cur.x, y: cur.y, w: px.w, h: px.h });
           setResizeFor(null);
-          say("已改为 " + size.w + "×" + size.h);
+          say(i18n("components.freeboard.fcbe33148f3a") + size.w + "×" + size.h);
         }}
         onClose={() => {
           setAddOpen(false);
@@ -1281,7 +1288,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           onPick={(props) => {
             ops.props(pickItem.id, props);
             setPickFor(null);
-            say("已选择条目");
+            say(i18n("components.freeboard.e8f9281f866e"));
           }}
           onClose={() => setPickFor(null)}
         />
@@ -1381,6 +1388,8 @@ function useCanvasProbeImpl(_boardKey: string, hostRef: React.RefObject<HTMLDivE
 let zoomSelfTested = false;
 
 export function OnePageSurface(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [doc, setDoc] = useState<BoardDoc>(() => loadBoard());
   /* OneGO / 收藏星 / 星标在别处改了板文档 → 重读（否则刚新建的 OnePage 打不开） */
   useEffect(() => {
@@ -1403,7 +1412,7 @@ export function OnePageSurface(): ReactNode {
     ? <FreeBoard boardId={board.id} orientation={orientation} chrome={{ title: board.name }} />
     : (
       <Card>
-        <Empty text="这块 OnePage 已经不存在了。" />
+        <Empty text={i18n("components.freeboard.dbb6d640ea9f")} />
       </Card>
     );
   if (!phoneUi) return body;
@@ -1416,7 +1425,7 @@ export function OnePageSurface(): ReactNode {
       }
       style={sheet.dragH != null ? { height: `${sheet.dragH}px` } : undefined}
     >
-      <PhoneSheetGrip label="OnePage 面板：拖住改高度（半屏或全屏）" gripProps={sheet.gripProps} />
+      <PhoneSheetGrip label={i18n("components.freeboard.84d2b65c5548")} gripProps={sheet.gripProps} />
       <div className="onepage-sheet-body">{body}</div>
     </div>
   );

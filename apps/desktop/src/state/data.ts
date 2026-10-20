@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 /** 校园数据钩子：全部取自 @onethu/core（登录后按学期聚合课程 / 作业 / 通知 / 文件 / 课表 / 用户）。 */
 import { CONFIRM_DROP_COURSE, confirmOk, confirmDanger } from "../lib/confirm.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -902,6 +903,7 @@ export interface XkSearchMeta {
  * 写操作串行（token 一次性，v1.3.12 结论），完成后自动刷新已选/候补/余量。
  */
 export function useXkWorkbench(): XkWorkbench {
+  const uiLocale = useUiLocale();
   const { status } = useApp();
   const [semester, setSemester] = useState<string | null>(null);
   const [semesterOverride, setSemesterOverrideState] = useState<string | null>(null);
@@ -1568,7 +1570,7 @@ export function useXkWorkbench(): XkWorkbench {
         setSearchIncomplete(deficit > 0 || tp > okPages || (tp === 0 && okPages === probeTo && lastFull)); // 总数核对优先，页数兜底
         setSearchError(head.pageKind === "unknown" ? `教务返回异常页（首段: ${head.htmlHead}）` : null);
         setSearchState("ready");
-        if (deficit > 0) setToast(`爬取不完整：教务共 ${locked} 门，实得 ${merged.length} 门，缺 ${deficit} 门。建议刷新或待会再来看看`);
+        if (deficit > 0) setToast(i18n("state.data.5a755838cd1f", { locked: String(locked), length: String(merged.length), deficit: String(deficit) }));
       } catch (err) {
         failSearch(err, seq);
       }
@@ -1635,9 +1637,9 @@ export function useXkWorkbench(): XkWorkbench {
       setSearchIncomplete(deficit > 0 || (hadFailure && !empty)); // 仍缺：横幅留着可再点
       setSearchState("ready");
       if (deficit > 0) {
-        setToast(`爬取不完整：教务共 ${expected} 门，实得 ${seen.size} 门，缺 ${deficit} 门。建议刷新或待会再来看看`);
+        setToast(i18n("state.data.4375e66c768d", { expected: String(expected), size: String(seen.size), deficit: String(deficit) }));
       } else {
-        setToast(`已加载全部 ${seen.size} 门`);
+        setToast(i18n("state.data.c6f1a8749849", { size: String(seen.size) }));
       }
     } catch (err) {
       if (seq !== searchSeqRef.current) return;
@@ -1645,7 +1647,7 @@ export function useXkWorkbench(): XkWorkbench {
       if (added.length) {
         setSearchRaw((prev) => [...prev, ...added]);
         setSearchState("ready");
-        setToast(`已加载 ${added.length} 门（中途中断，可再点继续）`);
+        setToast(i18n("state.data.4c24a526b2a0", { length: String(added.length) }));
       } else {
         failSearch(err, seq);
       }
@@ -1744,10 +1746,10 @@ export function useXkWorkbench(): XkWorkbench {
   const addToStage = useCallback((row: XkRow, flag: XkFlag, zy: number) => {
     setStageCart((prev) => {
       if (prev.some((s) => s.code === row.c.code && String(s.seq || "0") === String(row.c.seq || "0"))) {
-        setToast("该课程已在暂存区");
+        setToast(i18n("state.data.867cbd70a5b2"));
         return prev;
       }
-      setToast(`已暂存「${row.name}」`);
+      setToast(i18n("state.data.acb8456494a1", { name: String(row.name) }));
       const next = [...prev, { code: row.c.code, seq: row.c.seq, name: row.name, teacher: row.teacher, time: row.time, note: row.c.note ?? "", credits: row.credits, flag, zy, baseFlag: row.flag }];
       lsSet(LS.stage, next);
       return next;
@@ -1781,12 +1783,12 @@ export function useXkWorkbench(): XkWorkbench {
     lsSet(LS.drafts, next);
   }, []);
   const saveDraft = useCallback((name: string) => {
-    if (!stageCart.length) { setToast("暂存区没有课程"); return; }
+    if (!stageCart.length) { setToast(i18n("state.data.654c0455ea1b")); return; }
     persistDrafts((() => {
       const base = savedDrafts.length >= 5 ? savedDrafts.slice(0, 4) : savedDrafts;
       return [...base, { name, courses: stageCart }];
     })());
-    setToast(`草稿「${name}」已保存`);
+    setToast(i18n("state.data.4a297091d7e8", { name: String(name) }));
   }, [stageCart, savedDrafts, persistDrafts]);
   const deleteDraft = useCallback((idx: number) => {
     persistDrafts(savedDrafts.filter((_, i) => i !== idx));
@@ -1797,7 +1799,7 @@ export function useXkWorkbench(): XkWorkbench {
     persistDrafts(savedDrafts.map((x, i) => (i === idx ? { ...x, courses: x.courses.filter((c) => !(c.code === code && String(c.seq || "0") === String(seq || "0"))) } : x)));
   }, [savedDrafts, persistDrafts]);
   const saveCurrentAsDraft = useCallback((name: string) => {
-    if (!selected.length) { setToast("没有已选课程"); return; }
+    if (!selected.length) { setToast(i18n("state.data.1744c58d26ad")); return; }
     persistDrafts([...savedDrafts, {
       name,
       courses: selected.map((s) => ({
@@ -1806,34 +1808,34 @@ export function useXkWorkbench(): XkWorkbench {
         zy: s.zy || 3, baseFlag: (s.typeCode === "006" ? "bx" : s.typeCode === "008" ? "xx" : s.typeCode === "007" ? "rx" : "ty") as XkFlag,
       })),
     }]);
-    setToast(`已选课程已保存为「${name}」`);
+    setToast(i18n("state.data.993d797826cc", { name: String(name) }));
   }, [selected, savedDrafts, persistDrafts]);
   const exportDraft = useCallback(async (idx: number) => {
     const d = savedDrafts[idx];
     if (!d) return;
     try {
       await navigator.clipboard.writeText(JSON.stringify({ v: 1, name: d.name, courses: d.courses }));
-      setToast(`草稿「${d.name}」已导出到剪贴板`);
+      setToast(i18n("state.data.329fbface8f2", { name: String(d.name) }));
     } catch {
-      setToast("导出失败：剪贴板不可用");
+      setToast(i18n("state.data.58302b53a63d"));
     }
   }, [savedDrafts]);
   const importDraft = useCallback(() => {
-    const raw = globalThis.prompt?.("粘贴导出的草稿 JSON");
-    if (!raw) { setToast("已取消"); return; }
+    const raw = globalThis.prompt?.(i18n("state.data.0f1ade7c641d"));
+    if (!raw) { setToast(i18n("state.data.a37778f17c5f")); return; }
     try {
       const obj = JSON.parse(raw) as { name?: string; courses?: XkStageItem[] };
       const incoming = obj.courses;
-      if (!Array.isArray(incoming)) throw new Error("缺少 courses");
+      if (!Array.isArray(incoming)) throw new Error(i18n("state.data.1ad3aeaef070"));
       setStageCart((prev) => {
         const merged = [...prev];
         for (const c of incoming) if (!merged.some((s) => s.code === c.code && String(s.seq || "0") === String(c.seq || "0"))) merged.push(c);
         lsSet(LS.stage, merged);
-        setToast(`已导入 ${incoming.length} 门课程到暂存区`);
+        setToast(i18n("state.data.315af7fb0ae9", { length: String(incoming.length) }));
         return merged;
       });
     } catch (e) {
-      setToast(`导入失败: ${e instanceof Error ? e.message : String(e)}`);
+      setToast(i18n("state.data.579d5468a97a", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   }, []);
   /** 提交草稿（§7.4 promoteDraft）：确认后先退全部已选（间隔 1s），再逐门选入（间隔 2s） */
@@ -1849,16 +1851,16 @@ export function useXkWorkbench(): XkWorkbench {
     const toDrop = selected.filter((c) => !wantKeys.has(key(c.code, c.seq))); // 已选、草稿不要
     const kept = d.courses.length - toAdd.length;
     if (toAdd.length === 0 && toDrop.length === 0) {
-      setToast(`「${d.name}」与当前已选完全一致，无需提交`);
+      setToast(i18n("state.data.4f59a9588280", { name: String(d.name) }));
       return;
     }
     const lines = [
-      `保留 ${kept} 门（两边的交集，不动）`,
-      toAdd.length ? `新选 ${toAdd.length} 门：${toAdd.map((c) => c.name).join("、")}` : null,
-      toDrop.length ? `退掉 ${toDrop.length} 门：${toDrop.map((c) => c.name).join("、")}` : null,
+      i18n("state.data.3361c2cc7a9e", { count: kept }),
+      toAdd.length ? i18n("state.data.9d6825c38899", { count: toAdd.length, courses: toAdd.map((c) => c.name).join("、") }) : null,
+      toDrop.length ? i18n("state.data.661a5ba1d0ca", { count: toDrop.length, courses: toDrop.map((c) => c.name).join("、") }) : null,
     ].filter(Boolean).join("\n");
-    if (!(await confirmOk(`确定提交「${d.name}」？（差分提交，不会全退重选）\n${lines}`))) {
-      setToast("已取消");
+    if (!(await confirmOk(i18nMsg("state.data.c49ed890d985", { name: String(d.name), lines: String(lines) })))) {
+      setToast(i18n("state.data.a37778f17c5f"));
       return;
     }
     setBusy("promote");
@@ -1868,23 +1870,23 @@ export function useXkWorkbench(): XkWorkbench {
     try {
       for (let i = 0; i < toAdd.length; i++) {
         const c = toAdd[i]!;
-        setProgress(`新选 ${i + 1}/${toAdd.length}：${c.name}`);
+        setProgress(i18n("state.data.d84b6a7e9fbd", { value: String(i + 1), length: String(toAdd.length), name: String(c.name) }));
         await submitXkCourse(xkSession(), { code: c.code, seq: c.seq, zy: c.zy || 3, flag: c.flag });
         if (i + 1 < toAdd.length) await new Promise((r) => setTimeout(r, 2000)); // 防验证码限速
       }
       for (let i = 0; i < toDrop.length; i++) {
         // 每退一门都过玻璃警告弹窗（用户令：让人意识到这是真实退课）
-        if (!(await confirmDanger(`「${toDrop[i]!.name}」（${toDrop[i]!.code}_${toDrop[i]!.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, CONFIRM_DROP_COURSE))) {
-          setProgress(`已取消：${toDrop[i]!.name} 不退选，提交中止（已执行部分不受影响）`);
+        if (!(await confirmDanger(i18nMsg("state.data.5b1ff08354a0", { name: String(toDrop[i]!.name), code: String(toDrop[i]!.code), value: String(toDrop[i]!.seq || "0") }), CONFIRM_DROP_COURSE))) {
+          setProgress(i18n("state.data.5e8ccd9c182a", { name: String(toDrop[i]!.name) }));
           break;
         }
-        setProgress(`退掉 ${i + 1}/${toDrop.length}：${toDrop[i]!.name}`);
+        setProgress(i18n("state.data.d8141ccb27fe", { value: String(i + 1), length: String(toDrop.length), name: String(toDrop[i]!.name) }));
         await dropXkCourse(xkSession(), { code: toDrop[i]!.code, seq: toDrop[i]!.seq, isQueue: false });
         if (i + 1 < toDrop.length) await new Promise((r) => setTimeout(r, 1000));
       }
-      setToast(`「${d.name}」差分提交完成：新选 ${toAdd.length}、退掉 ${toDrop.length}、保留 ${kept}`);
+      setToast(i18n("state.data.e90750f742dd", { name: String(d.name), length: String(toAdd.length), length2: String(toDrop.length), kept: String(kept) }));
     } catch (err) {
-      setToast(`提交出错（已执行部分不回滚）：${err instanceof Error ? err.message : String(err)}`);
+      setToast(i18n("state.data.d92ad0ceef64", { value: String(err instanceof Error ? err.message : String(err)) }));
     } finally {
       setProgress(null);
       setBusy(null);
@@ -1893,25 +1895,25 @@ export function useXkWorkbench(): XkWorkbench {
   }, [savedDrafts, selected, refreshCore]);
 
   const addManualEvent = useCallback((name: string, day: number, slot: number) => {
-    if (!name.trim()) { setToast("请输入活动名称"); return; }
+    if (!name.trim()) { setToast(i18n("state.data.88fb2fce716c")); return; }
     const ev: XkManualEvent = { id: `m${Date.now()}`, name: name.trim(), code: `manual-${Date.now()}`, seq: "0", time: `${day}-${slot}(自定义)`, manual: true, credits: 0 };
     setManualEvents((prev) => {
       const next = [...prev, ev];
       lsSet(LS.manual, next);
       return next;
     });
-    setToast(`已添加「${name.trim()}」`);
+    setToast(i18n("state.data.d7b50ed7e7b5", { value: String(name.trim()) }));
   }, []);
   /** 时钟段占用（时间轴预览）：任意 HH:MM–HH:MM，不占大节槽位 */
   const addManualEventRange = useCallback((name: string, day: number, begin: string, end: string) => {
-    if (!name.trim()) { setToast("请输入活动名称"); return; }
+    if (!name.trim()) { setToast(i18n("state.data.88fb2fce716c")); return; }
     const ev: XkManualEvent = { id: `m${Date.now()}`, name: name.trim(), code: `manual-${Date.now()}`, seq: "0", time: "", manual: true, credits: 0, begin, end, day };
     setManualEvents((prev) => {
       const next = [...prev, ev];
       lsSet(LS.manual, next);
       return next;
     });
-    setToast(`已添加「${name.trim()}」`);
+    setToast(i18n("state.data.d7b50ed7e7b5", { value: String(name.trim()) }));
   }, []);
 
   const clearManualEvents = useCallback(() => {
@@ -1922,7 +1924,7 @@ export function useXkWorkbench(): XkWorkbench {
       const ev = prev.find((e) => e.id === id);
       const next = prev.filter((e) => e.id !== id);
       lsSet(LS.manual, next);
-      if (ev) setToast(`已删除「${ev.name}」`);
+      if (ev) setToast(i18n("state.data.e6d7b9ff838f", { name: String(ev.name) }));
       return next;
     });
   }, []);
@@ -1952,7 +1954,7 @@ export function useXkWorkbench(): XkWorkbench {
       setQueueMap(qd.map);
       setPhase(qd.phase);
       setQueueState("ready");
-      setToast(`队列数据已刷新 · ${Object.keys(qd.map).length}门课余量 · ${candidates.length}门我的队列`);
+      setToast(i18n("state.data.017029db358e", { length: String(Object.keys(qd.map).length), length2: String(candidates.length) }));
     } catch (err) {
       logPageError("XK-QUEUE", err);
       // 失登（稳定性专项）：softRecover 透明重建 → 原地重取一次；仍败才 toast
@@ -1963,11 +1965,11 @@ export function useXkWorkbench(): XkWorkbench {
           setQueueMap(qd.map);
           setPhase(qd.phase);
           setQueueState("ready");
-          setToast(`队列数据已刷新 · ${Object.keys(qd.map).length}门课余量 · ${candidates.length}门我的队列`);
+          setToast(i18n("state.data.017029db358e", { length: String(Object.keys(qd.map).length), length2: String(candidates.length) }));
           return;
         }
       }
-      setToast("课余量排队人数获取失败，可稍后重试（登录状态已自动重建）");
+      setToast(i18n("state.data.fc8f70858d9c"));
       setQueueState("ready");
     }
   }, [status, candidates, selected, stageCart]);
@@ -1975,24 +1977,26 @@ export function useXkWorkbench(): XkWorkbench {
   const semesterOptions = useMemo(() => {
     const cur = semester ?? semesterFromDate();
     const m = /^(\d{4})-(\d{4})-(\d)$/.exec(cur);
-    const opts: Array<{ value: string; label: string }> = [{ value: cur, label: `${cur}（当前）` }];
+    const opts: Array<{ value: string; label: string }> = [{ value: cur, label: i18n("state.data.2c990a5b9a06", { cur: String(cur) }) }];
     if (m) {
       const y0 = Number(m[1]);
       const s0 = Number(m[3]);
-      const name = (s: number): string => (s === 1 ? "秋" : s === 2 ? "春" : "夏");
       // 全局学期序号 y*3+(s-1)：一学年 1秋/2春/3夏 顺序递推，跨学年自动进/退位
       const at = (delta: number): { value: string; label: string } => {
         const n = y0 * 3 + (s0 - 1) + delta;
         const y = Math.floor(n / 3);
         const s = (n % 3) + 1;
-        return { value: `${y}-${y + 1}-${s}`, label: `${y}-${y + 1} ${name(s)}` };
+        const params = { startYear: y, endYear: y + 1 };
+        const label = s === 1 ? i18n("state.data.6f0c2bbab1f6", params)
+          : s === 2 ? i18n("state.data.606fee690bb1", params) : i18n("state.data.99541445f961", params);
+        return { value: `${y}-${y + 1}-${s}`, label };
       };
       // 当前 + 往后 2 个学期（含下学年秋/春，选课系统常提前开放）+ 往回 6 个
       for (let i = 1; i <= 2; i++) opts.push(at(i));
       for (let i = 1; i <= 6; i++) opts.push(at(-i));
     }
     return opts;
-  }, [semester]);
+  }, [semester, uiLocale]);
 
   const setSemesterOverride = useCallback(async (sem: string | null) => {
     setSemesterOverrideState(sem);
@@ -2119,11 +2123,11 @@ export function seedPreviewData(): () => void {
 
   /* 成绩单：成绩统计四张 + 成绩明细都读它 */
   const report: ReportRow[] = [
-    { name: "高等数学A(1)", credit: 5, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
-    { name: "大学物理B(1)", credit: 4, grade: "A-", point: 3.7, semester: "2025-2026秋", raw: [] },
-    { name: "程序设计基础", credit: 3, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
-    { name: "线性代数", credit: 3, grade: "B+", point: 3.3, semester: "2024-2025春", raw: [] },
-    { name: "英语读写译(1)", credit: 2, grade: "A", point: 4.0, semester: "2024-2025春", raw: [] },
+    { name: i18n("state.data.d4fa4ba858a6"), credit: 5, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
+    { name: i18n("state.data.b5a0c9e5f04e"), credit: 4, grade: "A-", point: 3.7, semester: "2025-2026秋", raw: [] },
+    { name: i18n("state.data.3759fa0fb1c0"), credit: 3, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
+    { name: i18n("state.data.f830684c231e"), credit: 3, grade: "B+", point: 3.3, semester: "2024-2025春", raw: [] },
+    { name: i18n("state.data.29a6e56cb5af"), credit: 2, grade: "A", point: 4.0, semester: "2024-2025春", raw: [] },
   ];
   undo.push(cacheSeedPreview(REPORT_KEY, report));
 
@@ -2142,8 +2146,8 @@ export function seedPreviewData(): () => void {
       maxOneTimeTransactionAmount: 50,
     },
     transactions: [
-      { id: "t1", summary: "示例食堂", timestamp: new Date(), amount: -12.5, balance: 123.45 },
-      { id: "t2", summary: "圈存充值", timestamp: new Date(Date.now() - 86400000), amount: 100, balance: 135.95 },
+      { id: "t1", summary: i18n("state.data.444c4d808b3a"), timestamp: new Date(), amount: -12.5, balance: 123.45 },
+      { id: "t2", summary: i18n("state.data.b5481d51eb1a"), timestamp: new Date(Date.now() - 86400000), amount: 100, balance: 135.95 },
     ],
   };
   undo.push(cacheSeedPreview("card:1", cardBundle));
@@ -2164,32 +2168,32 @@ export function seedPreviewData(): () => void {
   const campus: CampusData = {
     courses: [course("c1", "高等数学A(1)", "示例老师", "六教 6A101"), course("c2", "大学物理B(1)", "示例老师", "三教 3200")],
     homework: [
-      { id: "h1", courseId: "c1", title: "第一次小作业", content: "", publishTime: ymdOf(-3), deadline: ymdOf(2) + " 23:59", submitted: false, graded: false, url: "" },
-      { id: "h2", courseId: "c2", title: "实验报告一", content: "", publishTime: ymdOf(-5), deadline: ymdOf(4) + " 23:59", submitted: false, graded: false, url: "" },
-      { id: "h3", courseId: "c1", title: "习题册第 2 章", content: "", publishTime: ymdOf(-8), deadline: ymdOf(-1) + " 23:59", submitted: true, graded: false, url: "" },
+      { id: "h1", courseId: "c1", title: i18n("state.data.49e6ad399f86"), content: "", publishTime: ymdOf(-3), deadline: ymdOf(2) + " 23:59", submitted: false, graded: false, url: "" },
+      { id: "h2", courseId: "c2", title: i18n("state.data.c9bb87027880"), content: "", publishTime: ymdOf(-5), deadline: ymdOf(4) + " 23:59", submitted: false, graded: false, url: "" },
+      { id: "h3", courseId: "c1", title: i18n("state.data.6fb901c0f8f4"), content: "", publishTime: ymdOf(-8), deadline: ymdOf(-1) + " 23:59", submitted: true, graded: false, url: "" },
     ],
     notifications: [
-      { id: "n1", courseId: "c1", title: "关于期中考试安排的通知", publisher: "示例老师", publishTime: ymdOf(-1), url: "" },
-      { id: "n2", courseId: "c2", title: "实验课调课通知", publisher: "示例老师", publishTime: ymdOf(-3), url: "" },
+      { id: "n1", courseId: "c1", title: i18n("state.data.2ac5386c015e"), publisher: "示例老师", publishTime: ymdOf(-1), url: "" },
+      { id: "n2", courseId: "c2", title: i18n("state.data.c01840b9fd81"), publisher: "示例老师", publishTime: ymdOf(-3), url: "" },
     ],
     files: [
-      { id: "f1", courseId: "c1", title: "第一讲 课件.pdf", uploadTime: ymdOf(-2) + " 10:00", downloadUrl: "", size: "2.3MB" },
-      { id: "f2", courseId: "c2", title: "实验指导书.pdf", uploadTime: ymdOf(-4) + " 09:00", downloadUrl: "", size: "1.1MB" },
-      { id: "f3", courseId: "c1", title: "习题参考答案.pdf", uploadTime: ymdOf(-6) + " 15:00", downloadUrl: "", size: "860KB" },
+      { id: "f1", courseId: "c1", title: i18n("state.data.6e0521c2d6bc"), uploadTime: ymdOf(-2) + " 10:00", downloadUrl: "", size: "2.3MB" },
+      { id: "f2", courseId: "c2", title: i18n("state.data.1788c736d7b1"), uploadTime: ymdOf(-4) + " 09:00", downloadUrl: "", size: "1.1MB" },
+      { id: "f3", courseId: "c1", title: i18n("state.data.76d617dd1e96"), uploadTime: ymdOf(-6) + " 15:00", downloadUrl: "", size: "860KB" },
     ],
     schedule: [
       { courseName: "高等数学A(1)", dayOfWeek: wd, startSection: 1, endSection: 2, location: "六教 6A101", startTime: hm(8, 0), endTime: hm(9, 35), raw: {} },
       { courseName: "大学物理B(1)", dayOfWeek: wd, startSection: 3, endSection: 4, location: "三教 3200", startTime: hm(9, 55), endTime: hm(11, 30), raw: {} },
       { courseName: "程序设计基础", dayOfWeek: wd, startSection: 6, endSection: 6, location: "四教 4101", startTime: hm(13, 30), endTime: hm(14, 15), raw: {} },
     ],
-    user: { name: "示例同学", studentId: "2023000000", department: "示例院系", email: "demo@mails.tsinghua.edu.cn" },
+    user: { name: i18n("state.data.f9b45f6b66e0"), studentId: "2023000000", department: "示例院系", email: "demo@mails.tsinghua.edu.cn" },
   };
   undo.push(cacheSeedPreview(CAMPUS_KEY, campus));
 
   /* 倒计时提醒（deadlines）：日程与提醒卡读它；起止时间要落进「开始前 14 天 ~ 结束前」的窗口里 */
   const deadlines: DeadlineItem[] = [
-    { title: "退课(第一阶段)", begin: ymdOf(-2) + " 08:00", end: ymdOf(7) + " 16:00", url: "" },
-    { title: "本科生选择课程以P/F记载", begin: ymdOf(-1) + " 08:00", end: ymdOf(9) + " 16:00", url: "" },
+    { title: i18n("state.data.3efc9adfbfb8"), begin: ymdOf(-2) + " 08:00", end: ymdOf(7) + " 16:00", url: "" },
+    { title: i18n("state.data.ce63956984a9"), begin: ymdOf(-1) + " 08:00", end: ymdOf(9) + " 16:00", url: "" },
   ];
   undo.push(cacheSeedPreview(DEADLINES_KEY, deadlines));
 
@@ -2208,21 +2212,21 @@ export function seedPreviewData(): () => void {
 
   /* 今日预约：座位 + 研讨间各一条（ResvRows 会读 kind/venue/place/start/end） */
   const resv: TodayReservation[] = [
-    { key: "seat-demo-1", kind: "seat", venue: "图书馆 北馆", place: "A-12", start: new Date(d0.getTime() + 3600000), end: null, note: "已签到" },
+    { key: "seat-demo-1", kind: "seat", venue: "图书馆 北馆", place: "A-12", start: new Date(d0.getTime() + 3600000), end: null, note: i18n("state.data.21c05833ab53") },
     { key: "room-demo-1", kind: "room", venue: "研讨间 4-201", place: "", start: new Date(d0.getTime() + 7200000), end: new Date(d0.getTime() + 10800000), note: "" },
   ];
   undo.push(cacheSeedPreview(TODAYRESV_KEY, resv));
 
   /* 日程与提醒（今日校历节点）：AgendaWidget 读 name/date/daysUntil */
   const calNodes: TodayCalendarNode[] = [
-    { key: "cal-demo-1", name: "退课(第一阶段) 结束", date: new Date(d0.getTime() + 7 * 86400000), daysUntil: 7 },
-    { key: "cal-demo-2", name: "本科生选择课程以P/F记载 结束", date: new Date(d0.getTime() + 9 * 86400000), daysUntil: 9 },
+    { key: "cal-demo-1", name: i18n("state.data.38509e346ecf"), date: new Date(d0.getTime() + 7 * 86400000), daysUntil: 7 },
+    { key: "cal-demo-2", name: i18n("state.data.9e6183684b78"), date: new Date(d0.getTime() + 9 * 86400000), daysUntil: 9 },
   ];
   undo.push(cacheSeedPreview(TODAYCAL_KEY, calNodes));
 
   /* 个人信息（profile）：信息页「个人信息栏目」与学生卡都读它，字段就是 BasicUserInfo */
   const profileSample: BasicUserInfo = {
-    name: "示例同学",
+    name: i18n("state.data.f9b45f6b66e0"),
     studentId: "2023000000",
     gender: "男",
     department: "示例院系",
@@ -2368,7 +2372,7 @@ export function useCard(days = 30) {
       // 余额预警：任何一次余额刷新（卡页手刷 / 切回本栏重试 / 首页与小组件的静默重验证 /
       // 充值后刷新）都在这里过一遍判定，判定放在取数之后，新增刷新途径无需再接线。
       void observeCardBalance(cardInfo.balance);
-      setRefreshError(transactions === null ? "流水明细获取失败，已显示上次拉到的明细" : null);
+      setRefreshError(transactions === null ? i18n("state.data.35552730badd") : null);
       recover.current = 0;
       setState("ready");
     } catch (err) {
@@ -2538,10 +2542,10 @@ function calendarNodes(cal: CalendarData): TodayCalendarNode[] {
     const start = parseYmdDate(sem.firstDay);
     if (!start) return;
     const nm = sem.semesterName || sem.semesterId;
-    nodes.push({ key: `${sem.semesterId}-start`, name: `${nm} 开学`, date: start, daysUntil: 0 });
+    nodes.push({ key: `${sem.semesterId}-start`, name: i18n("state.data.14fa0b5c5261", { nm: String(nm) }), date: start, daysUntil: 0 });
     if (withEnd) {
       const end = new Date(start.getTime() + Math.max(1, sem.weekCount || 1) * 7 * 86400000 - 86400000);
-      nodes.push({ key: `${sem.semesterId}-end`, name: `${nm} 结束`, date: end, daysUntil: 0 });
+      nodes.push({ key: `${sem.semesterId}-end`, name: i18n("state.data.e980f2b04637", { nm: String(nm) }), date: end, daysUntil: 0 });
     }
   };
   push(cal, true);
@@ -2873,9 +2877,9 @@ export function useNews(page: number, length = 20) {
 /** 预览用的新闻示例（today 与 info 两处共用，字段按消费方需要补齐：name/xxid/date/source/topped/channel）。 */
 function previewNewsItems(): NewsItem[] {
   return [
-    { xxid: "demo-1", name: "关于本学期选课安排的通知", date: "2026-10-10", source: "教务处", topped: true, channel: "LM_JWGG", url: "" },
-    { xxid: "demo-2", name: "图书馆假期开放时间调整", date: "2026-10-08", source: "图书馆", channel: "LM_JWGG", url: "" },
-    { xxid: "demo-3", name: "关于开展本学期教学评估的通知", date: "2026-10-06", source: "教学质量评估中心", channel: "LM_JWGG", url: "" },
+    { xxid: "demo-1", name: i18n("state.data.2785db8cbe3a"), date: "2026-10-10", source: "教务处", topped: true, channel: "LM_JWGG", url: "" },
+    { xxid: "demo-2", name: i18n("state.data.f820fbf5072a"), date: "2026-10-08", source: "图书馆", channel: "LM_JWGG", url: "" },
+    { xxid: "demo-3", name: i18n("state.data.a53fee1c4dbb"), date: "2026-10-06", source: "教学质量评估中心", channel: "LM_JWGG", url: "" },
   ];
 }
 

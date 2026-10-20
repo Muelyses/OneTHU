@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 灵动岛胶囊智能文本：屏幕底部胶囊的状态一句话。
  *
@@ -22,9 +23,9 @@ export const ISLAND_DEFAULT_TEXT = ISLAND_ENTRY_TEXT;
 
 function fmtLeft(ms: number): string {
   const m = Math.max(1, Math.round(ms / 60_000));
-  if (m < 60) return `还有${m}分钟`;
-  if (m < 2880) return `还有${Math.round(m / 60)}小时`;
-  return `还有${Math.round(m / 1440)}天`;
+  if (m < 60) return i18n("state.island.55d3dfb01bc9", { m: String(m) });
+  if (m < 2880) return i18n("state.island.f61e332cda51", { value: String(Math.round(m / 60)) });
+  return i18n("state.island.b1b5b78e6398", { value: String(Math.round(m / 1440)) });
 }
 
 function ymd(d: Date): string {
@@ -60,7 +61,7 @@ export function computeIslandText(
     if (dl <= now) continue;
     const windowMs = effectiveRemind(hwRemind, h.id ?? "") * 60_000;
     if (dl - now > windowMs) continue;
-    const t = h.title ?? "作业";
+    const t = h.title ?? i18n("state.island.b0dff016ff17");
     const title = t.length > 12 ? `${t.slice(0, 12)}…` : t;
     if (!best || dl < best.at) best = { text: `${title}·${fmtLeft(dl - now)}`, at: dl };
   }

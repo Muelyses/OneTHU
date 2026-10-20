@@ -1,0 +1,1362 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "state.navigation.21e7aec68918",
+      "source": "填写课程评价与教学问卷",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 94,
+          "context": "return i18n(\"state.navigation.21e7aec68918\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.231ff6cd9b63",
+      "source": "学期切换",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 88,
+          "context": "return i18n(\"state.navigation.231ff6cd9b63\");"
+        }
+      ],
+      "translation": "Switch semester",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.241e209e86bb",
+      "source": "生活服务总览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 102,
+          "context": "return i18n(\"state.navigation.241e209e86bb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.24be2018df29",
+      "source": "银行代发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 115,
+          "context": "return i18n(\"state.navigation.24be2018df29\");"
+        }
+      ],
+      "translation": "Payroll",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.2c9595063af1",
+      "source": "查看个人到账与发放记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 115,
+          "context": "return i18n(\"state.navigation.2c9595063af1\");"
+        },
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 116,
+          "context": "return i18n(\"state.navigation.2c9595063af1\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.2e3250329028",
+      "source": "课表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 103,
+          "context": "return i18n(\"state.navigation.2e3250329028\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.316da6d69b7d",
+      "source": "体测成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 135,
+          "context": "return i18n(\"state.navigation.316da6d69b7d\");"
+        }
+      ],
+      "translation": "Fitness test",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.31c17158ebdb",
+      "source": "图书馆座位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 119,
+          "context": "return i18n(\"state.navigation.31c17158ebdb\");"
+        }
+      ],
+      "translation": "Library seat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.336dbe5fd82f",
+      "source": "研究生收入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 116,
+          "context": "return i18n(\"state.navigation.336dbe5fd82f\");"
+        }
+      ],
+      "translation": "Graduate stipend",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.337f19124f1e",
+      "source": "入口在设置页高级模式开关之下",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 142,
+          "context": "return i18n(\"state.navigation.337f19124f1e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.34adfacd98bb",
+      "source": "OJ 作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 90,
+          "context": "return i18n(\"state.navigation.34adfacd98bb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.37d169b450b9",
+      "source": "名片 · 好友 · 组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 80,
+          "context": "return i18n(\"state.navigation.37d169b450b9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.38c1262f3fc9",
+      "source": "宿舍电费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 109,
+          "context": "return i18n(\"state.navigation.38c1262f3fc9\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.39bd4d7ba57c",
+      "source": "浏览校园新闻与通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 136,
+          "context": "return i18n(\"state.navigation.39bd4d7ba57c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.3a74de9a9014",
+      "source": "宿舍",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 111,
+          "context": "return i18n(\"state.navigation.3a74de9a9014\");"
+        }
+      ],
+      "translation": "Dorm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.41d497d6e07e",
+      "source": "卫生成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 112,
+          "context": "return i18n(\"state.navigation.41d497d6e07e\");"
+        }
+      ],
+      "translation": "Hygiene score",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.462b362a41da",
+      "source": "查看编程作业与截止时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 90,
+          "context": "return i18n(\"state.navigation.462b362a41da\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.4792ab1440aa",
+      "source": "校历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 105,
+          "context": "return i18n(\"state.navigation.4792ab1440aa\");"
+        }
+      ],
+      "translation": "Academic calendar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.4aa7af5b95ec",
+      "source": "插件系统",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 141,
+          "context": "return i18n(\"state.navigation.4aa7af5b95ec\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.4da04dfef534",
+      "source": "课程信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 92,
+          "context": "return i18n(\"state.navigation.4da04dfef534\");"
+        }
+      ],
+      "translation": "Course info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.4ebe692f5dbb",
+      "source": "其他 Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 138,
+          "context": "return i18n(\"state.navigation.4ebe692f5dbb\");"
+        }
+      ],
+      "translation": "Other Info apps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.52f247fc75da",
+      "source": "查询洗衣机和烘干机状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 110,
+          "context": "return i18n(\"state.navigation.52f247fc75da\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.52fdbbaeda4c",
+      "source": "待办",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 101,
+          "context": "return i18n(\"state.navigation.52fdbbaeda4c\");"
+        }
+      ],
+      "translation": "To-dos",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.60458dfb4c14",
+      "source": "寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 104,
+          "context": "return i18n(\"state.navigation.60458dfb4c14\");"
+        }
+      ],
+      "translation": "Trace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.62fd8d15cf0a",
+      "source": "网络学堂搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 87,
+          "context": "return i18n(\"state.navigation.62fd8d15cf0a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.640803d89773",
+      "source": "个人信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 134,
+          "context": "return i18n(\"state.navigation.640803d89773\");"
+        }
+      ],
+      "translation": "Personal info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.69102d38703b",
+      "source": "查看雨课堂作业与提交情况",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 89,
+          "context": "return i18n(\"state.navigation.69102d38703b\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 110,
+          "context": "return i18n(\"state.navigation.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.73075237fd0f",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 130,
+          "context": "return i18n(\"state.navigation.73075237fd0f\");"
+        }
+      ],
+      "translation": "Mail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 82,
+          "context": "return i18n(\"state.navigation.804002a9c49a\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.88df420f8207",
+      "source": "考试安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 93,
+          "context": "return i18n(\"state.navigation.88df420f8207\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.90b4e4c67fc9",
+      "source": "插件功能页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 180,
+          "context": "note: i18n(\"state.navigation.90b4e4c67fc9\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.92341cf02c56",
+      "source": "电子发票",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 114,
+          "context": "return i18n(\"state.navigation.92341cf02c56\");"
+        }
+      ],
+      "translation": "Invoices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.934dc85b3ca3",
+      "source": "开发者面板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 142,
+          "context": "return i18n(\"state.navigation.934dc85b3ca3\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.99f047c591bb",
+      "source": "临时来访人员报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 127,
+          "context": "return i18n(\"state.navigation.99f047c591bb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.9b1dc46aaa51",
+      "source": "查看选课、退课与候补",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 95,
+          "context": "return i18n(\"state.navigation.9b1dc46aaa51\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1c24c7d5716",
+      "source": "亲友来访报备 · 我的报备 · 来访人登记",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 127,
+          "context": "return i18n(\"state.navigation.a1c24c7d5716\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1cabc0664cf",
+      "source": "全部作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 84,
+          "context": "return i18n(\"state.navigation.a1cabc0664cf\");"
+        }
+      ],
+      "translation": "All assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1e8f8681634",
+      "source": "按时间查看课程与日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 103,
+          "context": "return i18n(\"state.navigation.a1e8f8681634\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a24d34354353",
+      "source": "查询宿舍用电与电费余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 109,
+          "context": "return i18n(\"state.navigation.a24d34354353\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 83,
+          "context": "return i18n(\"state.navigation.aa39cac2b409\");"
+        }
+      ],
+      "translation": "Learn",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.b1abb3dc2271",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 98,
+          "context": "return i18n(\"state.navigation.b1abb3dc2271\");"
+        }
+      ],
+      "translation": "Xiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.bb7b63b39fd4",
+      "source": "本学期课程总览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 83,
+          "context": "return i18n(\"state.navigation.bb7b63b39fd4\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.bdac834d0ba2",
+      "source": "全部通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 85,
+          "context": "return i18n(\"state.navigation.bdac834d0ba2\");"
+        }
+      ],
+      "translation": "All notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 108,
+          "context": "return i18n(\"state.navigation.caf1f095b108\");"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 136,
+          "context": "return i18n(\"state.navigation.d39567b2b9f1\");"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.dd94488f5269",
+      "source": "校园网",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 113,
+          "context": "return i18n(\"state.navigation.dd94488f5269\");"
+        }
+      ],
+      "translation": "Campus network",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 120,
+          "context": "return i18n(\"state.navigation.e4d40b4d6759\");"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 123,
+          "context": "return i18n(\"state.navigation.e81059e1a712\");"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ecc11c8afea8",
+      "source": "空教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 121,
+          "context": "return i18n(\"state.navigation.ecc11c8afea8\");"
+        }
+      ],
+      "translation": "Empty classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ecc33b3339e6",
+      "source": "查找校内办事与在线申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 133,
+          "context": "return i18n(\"state.navigation.ecc33b3339e6\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f0cd4338679e",
+      "source": "雨课堂作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 89,
+          "context": "return i18n(\"state.navigation.f0cd4338679e\");"
+        }
+      ],
+      "translation": "Yuketang assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f0fc61f517f5",
+      "source": "校园 AI 学伴：聊天 · 历史 · 智能体 · 技能广场",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 98,
+          "context": "return i18n(\"state.navigation.f0fc61f517f5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f75562426e77",
+      "source": "云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 131,
+          "context": "return i18n(\"state.navigation.f75562426e77\");"
+        }
+      ],
+      "translation": "Cloud",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fa8fe752727c",
+      "source": "全部课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 86,
+          "context": "return i18n(\"state.navigation.fa8fe752727c\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fd17d86dd268",
+      "source": "选课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 95,
+          "context": "return i18n(\"state.navigation.fd17d86dd268\");"
+        }
+      ],
+      "translation": "Course selection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fdcd1bd074c9",
+      "source": "成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 91,
+          "context": "return i18n(\"state.navigation.fdcd1bd074c9\");"
+        }
+      ],
+      "translation": "Grades",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fe07d17e6d4b",
+      "source": "全部待办与提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 101,
+          "context": "return i18n(\"state.navigation.fe07d17e6d4b\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ff2ae006e964",
+      "source": "任何元素先收进来，再整理/分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 82,
+          "context": "return i18n(\"state.navigation.ff2ae006e964\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ff3eca1db845",
+      "source": "汇总课程作业，按截止时间查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 84,
+          "context": "return i18n(\"state.navigation.ff3eca1db845\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.09acfa2e9fc5",
+      "source": "已写入系统调度并可回读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 140,
+          "context": "seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.0b1efad5cf18",
+      "source": "还没有快照（打开应用并刷新一次数据即可生成）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 113,
+          "context": "ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.0c9fc2c91156",
+      "source": "无探针需要撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 148,
+          "context": "probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.18be67a09527",
+      "source": "原生拒绝了排程：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 132,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.18be67a09527\", { value: String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.34fa93f1c10b",
+      "source": "排程写入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 132,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.18be67a09527\", { value: String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")) }))"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 138,
+          "context": "push(\n        \"schedule\",\n        i18n(\"state.notifydoctor.34fa93f1c10b\"),\n        seen ? \"ok\" : \"warn\",\n        seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\"),\n      )"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 144,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.b28333fd00e3\", { value: String(String(e).slice(0, 100)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.3644e9a2e134",
+      "source": "写入成功，但系统待投递列表里读不到（可能被系统限流或立即触发）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 140,
+          "context": "seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.3712f8280c0c",
+      "source": "平台后端",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 71,
+          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"fail\", i18n(\"state.notifydoctor.42ab62b890f5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 74,
+          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"ok\", st.backend)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.3d485e1438c5",
+      "source": "OneTHU 自检探针",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 127,
+          "context": "title: i18n(\"state.notifydoctor.3d485e1438c5\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifydoctor.3edfd112e604",
+      "source": "投递被拒绝（见上一步与权限状态）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 153,
+          "context": "sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.42ab62b890f5",
+      "source": "本平台没有通知后端，提醒不会发出（桌面端 Linux 等未接入平台属正常）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 71,
+          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"fail\", i18n(\"state.notifydoctor.42ab62b890f5\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.521e65ffc7d0",
+      "source": "已授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 81,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"ok\", i18n(\"state.notifydoctor.521e65ffc7d0\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.58f371818c4f",
+      "source": "已发出测试通知——若没看到，检查系统「勿扰」或通知分组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 153,
+          "context": "sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.5e0a3ee20f6b",
+      "source": "可自选尺寸{k}={t}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "k",
+          "expression": "String(k)"
+        },
+        {
+          "name": "t",
+          "expression": "String(t)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 101,
+          "context": "([k, t]) => i18n(\"state.notifydoctor.5e0a3ee20f6b\", { k: String(k), t: String(t) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.60d7f4ea2680",
+      "source": "槽位{k}:{v}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "k",
+          "expression": "String(k)"
+        },
+        {
+          "name": "v",
+          "expression": "String(v)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 99,
+          "context": "([k, v]) => i18n(\"state.notifydoctor.60d7f4ea2680\", { k: String(k), v: String(v) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.6726f815e5dd",
+      "source": "（{warned} 项提示）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "warned",
+          "expression": "String(warned)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 63,
+          "context": "warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.6dfd9883ec6d",
+      "source": "通知授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 78,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"fail\", i18n(\"state.notifydoctor.d9540c4fcc17\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 81,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"ok\", i18n(\"state.notifydoctor.521e65ffc7d0\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.76e3238d6fee",
+      "source": "系统读到 {length} 个小组件尺寸（{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(ws.providersRegistered.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(ws.providersRegistered.join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 105,
+          "context": "ws.providersRegistered.length === 0\n          ? i18n(\"state.notifydoctor.f8cd5feb5360\")\n          : i18n(\"state.notifydoctor.76e3238d6fee\", { length: String(ws.providersRegistered.length), value: String(ws.providersRegistered.join(\"、\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.7941c9adf8cc",
+      "source": "自检失败：{failed} 项不通过{value}——见下方第一处「不通过」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "failed",
+          "expression": "String(failed)"
+        },
+        {
+          "name": "value",
+          "expression": "String(warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 64,
+          "context": "ok\n      ? i18n(\"state.notifydoctor.c273c2086a0d\", { length: String(steps.length), value: String(warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\") })\n      : i18n(\"state.notifydoctor.7941c9adf8cc\", { failed: String(failed), value: String(warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\") })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.89f5f5eed848",
+      "source": "精确提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 87,
+          "context": "push(\n      \"exact\",\n      i18n(\"state.notifydoctor.89f5f5eed848\"),\n      st.exact ? \"ok\" : \"warn\",\n      st.exact ? i18n(\"state.notifydoctor.cafc3774b86b\") : i18n(\"state.notifydoctor.c8b5af17e6d2\"),\n    )"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.91e36d30a350",
+      "source": "、{warned} 项提示",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "warned",
+          "expression": "String(warned)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 64,
+          "context": "warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\""
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

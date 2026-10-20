@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 「碰一碰」分享组合（Phase 5 地基，当前用口令/二维码代替 NFC）：
  * 发出者可选：当前暂存箱口令 + 个人名片 + 组织名片（邀请）三者任意组合；
@@ -58,15 +59,15 @@ export function encodeTouch(p: TouchPayload): string {
 export function decodeTouch(code: string): { ok: boolean; payload?: TouchPayload; reason?: string } {
   const raw = String(code ?? "").trim();
   const parts = raw.split(".");
-  if (parts.length !== 3 || parts[0] !== TOUCH_PREFIX) return { ok: false, reason: "不是 OneTHU 碰一碰口令（应以 ONTOUCH1. 开头）" };
+  if (parts.length !== 3 || parts[0] !== TOUCH_PREFIX) return { ok: false, reason: i18n("state.touch.invalidPrefix") };
   let json: string;
-  try { json = new TextDecoder().decode(fromB64Url(parts[1]!)); } catch { return { ok: false, reason: "口令内容损坏" }; }
-  if (checksum(json) !== parts[2]) return { ok: false, reason: "口令校验失败（可能复制不完整）" };
+  try { json = new TextDecoder().decode(fromB64Url(parts[1]!)); } catch { return { ok: false, reason: i18n("state.touch.corrupt") }; }
+  if (checksum(json) !== parts[2]) return { ok: false, reason: i18n("state.touch.checksum") };
   try {
     const p = JSON.parse(json) as TouchPayload;
-    if (p?.v !== 1 || p.kind !== "onethu-touch") return { ok: false, reason: "口令版本不受支持" };
+    if (p?.v !== 1 || p.kind !== "onethu-touch") return { ok: false, reason: i18n("state.touch.version") };
     return { ok: true, payload: p };
-  } catch { return { ok: false, reason: "口令内容不是合法 JSON" }; }
+  } catch { return { ok: false, reason: i18n("state.touch.invalidJson") }; }
 }
 
 /** 组装组合口令：暂存箱复用未失效的短码；名片/组织只带摘要。 */
@@ -109,12 +110,12 @@ export interface TouchImportResult {
 }
 
 /** 接收方：暂存箱按 vaultTarget 落库；名片进通讯录；组织邀请合并成员。 */
-export async function importTouchCode(code: string, myName = "我", vaultTarget: "current" | "new" = "current"): Promise<TouchImportResult> {
+export async function importTouchCode(code: string, myName = i18n("state.touch.self"), vaultTarget: "current" | "new" = "current"): Promise<TouchImportResult> {
   let resolved: string;
   try { resolved = await resolveExchangeCode(code); }
   catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
   const dec = decodeTouch(resolved);
-  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? "口令无法解析" };
+  if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.touch.unreadable") };
   const p = dec.payload;
   let vault = false;
   let contact = false;
@@ -122,11 +123,11 @@ export async function importTouchCode(code: string, myName = "我", vaultTarget:
   let duplicate = false;
   if (p.vaultCode) {
     const r = await importShareCodeAsCurrent(p.vaultCode, vaultTarget);
-    if (!r.ok) return { ok: false, reason: r.reason ?? "暂存箱口令无法导入" };
+    if (!r.ok) return { ok: false, reason: r.reason ?? i18n("state.touch.vaultImportFailed") };
     vault = true;
   }
   if (p.personal) {
-    const r = addContact("personal", p.personal, p.from ? `来自 ${p.from}` : "");
+    const r = addContact("personal", p.personal, p.from ? i18n("state.touch.from", {name:p.from}) : "");
     if (r.ok) contact = true;
     else if (r.reason === "duplicate") duplicate = true;
   }
@@ -136,8 +137,8 @@ export async function importTouchCode(code: string, myName = "我", vaultTarget:
   }
   if (!vault && !contact && !org) {
     /* 重复接收要说明白：内容认出来了，只是本地已经有，不是口令坏。 */
-    if (duplicate) return { ok: true, duplicate: true, reason: "名片已在通讯录里（重复接收不会重复添加）" };
-    return { ok: false, reason: "这个碰一碰口令里没有可导入的内容" };
+    if (duplicate) return { ok: true, duplicate: true, reason: i18n("state.touch.duplicateContact") };
+    return { ok: false, reason: i18n("state.touch.empty") };
   }
   return { ok: true, vault, contact, org, duplicate };
 }

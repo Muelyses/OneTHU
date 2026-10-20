@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-20",
+  "boundary": "Explicit JSX text/visible string attributes and Chinese strings within JSX expressions; excludes gallery, ExplorerPreview and real screenshot/3D scene assets. This is a targeted residual scan, not a claim that every English translation is finished.",
+  "directTextAndVisibleLiteralAttributes": 0,
+  "expressionCandidates": 36,
+  "actions": [
+    {
+      "file": "apps/desktop/src/pages/Schedule.tsx",
+      "result": "Localized ICS export fallback"
+    },
+    {
+      "file": "apps/desktop/src/components/vault/VaultTextPreview.tsx",
+      "result": "Localized unnamed text preview fallback"
+    },
+    {
+      "file": "apps/desktop/src/pages/Plugins.tsx",
+      "result": "Error color derives from failed boolean; failed update releases busy"
+    },
+    {
+      "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
+      "result": "Search placeholder resolved at render, stable island sentinel unchanged"
+    }
+  ],
+  "preserved": [
+    "Protocol confirmation/cancellation content",
+    "Persisted settings and filter identities",
+    "School status comparisons and search queries",
+    "Vault source metadata",
+    "External calendar name and protocol placeholders"
+  ],
+  "parentOwned": [
+    "LiveTiles weekday formatting"
+  ],
+  "newMessages": 19
+}

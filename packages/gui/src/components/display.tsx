@@ -1,3 +1,4 @@
+import { useOneGUILocale } from "../locale.js";
 /* OneGUI · 展示件：Avatar / Tile / StatTile / Table / Accordion / Progress / Ring /
  *                     Skeleton / Timeline / Breadcrumb / Pagination / CodeBlock / Spinner
  *
@@ -318,12 +319,13 @@ export interface SpinnerProps extends OneBase {
 }
 
 export function Spinner({ size = "md", inverse, scope, className }: SpinnerProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
     <span
       {...scopeProps(scope)}
       className={cx("og-spinner", size !== "md" ? `og-spinner--${size}` : "", inverse ? "og-spinner--inverse" : "", className)}
       role="status"
-      aria-label="加载中"
+      aria-label={guiText("gui.status.loading")}
     />
   );
 }
@@ -366,8 +368,9 @@ export interface BreadcrumbProps {
 }
 
 export function Breadcrumb({ items, separator = "/", scope, className }: BreadcrumbProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   return (
-    <nav {...scopeProps(scope)} className={cx("og-crumbs", className)} aria-label="面包屑">
+    <nav {...scopeProps(scope)} className={cx("og-crumbs", className)} aria-label={guiText("gui.breadcrumb.label")}>
       {items.map((item, i) => {
         const last = i === items.length - 1;
         return (
@@ -393,6 +396,7 @@ export interface PaginationProps {
 }
 
 export function Pagination({ page, pageCount, onChange, scope, className }: PaginationProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   if (pageCount <= 1) return null;
   const window: Array<number | "…"> = [];
   for (let p = 1; p <= pageCount; p += 1) {
@@ -401,11 +405,11 @@ export function Pagination({ page, pageCount, onChange, scope, className }: Pagi
   }
   return (
     <div {...scopeProps(scope)} className={cx("og-pagination", className)}>
-      <button type="button" className="og-page-btn" disabled={page <= 1} onClick={() => onChange(page - 1)} aria-label="上一页">‹</button>
+      <button type="button" className="og-page-btn" disabled={page <= 1} onClick={() => onChange(page - 1)} aria-label={guiText("gui.pagination.previous")}>‹</button>
       {window.map((p, i) => p === "…"
         ? <span key={`e${i}`} className="og-page-ellipsis">…</span>
         : <button key={p} type="button" className={cx("og-page-btn", p === page ? "is-current" : "")} onClick={() => onChange(p)} aria-current={p === page}>{p}</button>)}
-      <button type="button" className="og-page-btn" disabled={page >= pageCount} onClick={() => onChange(page + 1)} aria-label="下一页">›</button>
+      <button type="button" className="og-page-btn" disabled={page >= pageCount} onClick={() => onChange(page + 1)} aria-label={guiText("gui.pagination.next")}>›</button>
     </div>
   );
 }
@@ -417,6 +421,7 @@ export interface CodeBlockProps extends OneBase {
 }
 
 export function CodeBlock({ code, lang, onCopy, scope, className }: CodeBlockProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const [copied, setCopied] = useState(false);
   return (
     <pre {...scopeProps(scope)} className={cx("og-code", className)} data-lang={lang}>
@@ -431,7 +436,7 @@ export function CodeBlock({ code, lang, onCopy, scope, className }: CodeBlockPro
           onCopy?.();
         }}
       >
-        {copied ? "已复制" : "复制"}
+        {copied ? guiText("gui.code.copied") : guiText("gui.code.copy")}
       </button>
     </pre>
   );

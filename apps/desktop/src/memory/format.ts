@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OH 记忆知识格式：三段式 markdown（frontmatter + observations + relations）。
  *
@@ -245,12 +246,12 @@ export async function genPermalink(title: string, salt: string): Promise<string>
 /* ── 隐私黑名单（引擎层硬拦，提示词之外的最后一道闸） ── */
 
 const BLACKLIST: Array<{ re: RegExp; what: string }> = [
-  { re: /sk-[A-Za-z0-9]{20,}/, what: "疑似 LLM API Key（sk-…）" },
-  { re: /gh[pousr]_[A-Za-z0-9]{30,}/, what: "疑似 GitHub Token" },
-  { re: /Bearer\s+[A-Za-z0-9._-]{20,}/i, what: "疑似 HTTP Bearer Token" },
-  { re: /\d{15,}/, what: "连续 15+ 位数字（疑似证件号/卡号）" },
-  { re: /(验证码|校验码)[\s:：]*\d{3,8}/, what: "疑似验证码" },
-  { re: /(密码|口令)[\s:：是为]+\S{4,}/, what: "疑似明文密码" },
+  { re: /sk-[A-Za-z0-9]{20,}/, get what() { return i18n("memory.format.7ba456c0f242"); } },
+  { re: /gh[pousr]_[A-Za-z0-9]{30,}/, get what() { return i18n("memory.format.6b1a70ac9eb1"); } },
+  { re: /Bearer\s+[A-Za-z0-9._-]{20,}/i, get what() { return i18n("memory.format.9ba2145bd66a"); } },
+  { re: /\d{15,}/, get what() { return i18n("memory.format.22ac782381ea"); } },
+  { re: /(验证码|校验码)[\s:：]*\d{3,8}/, get what() { return i18n("memory.format.d79be29d7fb5"); } },
+  { re: /(密码|口令)[\s:：是为]+\S{4,}/, get what() { return i18n("memory.format.ce72f2106e4f"); } },
 ];
 
 /** 命中返回违规描述；干净返回 null */

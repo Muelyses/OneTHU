@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
@@ -40,6 +41,8 @@ const COLOR_ROLES: Record<keyof StudioPalette, string> = {
 };
 
 export function TourStudioScene(props: TourStudioSceneProps) {
+  const uiLocale = useUiLocale();
+
   const [screens, setScreens] = useState<StudioScreenAssets | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -51,13 +54,15 @@ export function TourStudioScene(props: TourStudioSceneProps) {
     return () => { mounted = false; };
   }, []);
   if (!screens) return <div className="tour-studio-scene" data-renderer={failed ? "fallback" : "loading"} data-context-state={failed ? "assets-unavailable" : "loading-assets"} data-scene-lesson={props.lesson}>
-    {failed ? props.fallback : <div className="tour-studio-loading" role="status">正在载入真实界面…</div>}
+    {failed ? props.fallback : <div className="tour-studio-loading" role="status">{i18n("components.tourstudioscene.d689bd368468")}</div>}
   </div>;
   return <StudioEngine {...props} screens={screens} />;
 }
 
 /** Decode once before mounting one renderer; chapter changes retain the physical scene. */
 function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAssets }) {
+  const uiLocale = useUiLocale();
+
   const host = useRef<HTMLDivElement>(null), canvas = useRef<StudioCanvas>(null);
   const runtime = useRef<{ update: (next: TourStudioSceneProps) => void; paint: () => void } | null>(null);
   const [available, setAvailable] = useState(false);

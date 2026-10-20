@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
 /**
  * 远端内容的「拖进暂存箱 = 自动缓存」：
  *  - 云盘文件 / 课程与新闻附件：先把字节下到本机（seafile_download / downloadLearnUrl），
@@ -38,7 +39,7 @@ export async function cacheRemoteFileToVault(itemId: string, remote: NonNullable
     } else if (remote.url) {
       localPath = await downloadLearnUrl(remote.url, title);
     }
-    if (!localPath) throw new Error("没有拿到文件地址");
+    if (!localPath) throw new Error(i18n("lib.vaultremote.b97fee010675"));
     const b64 = await invoke<string>("read_file_base64", { path: localPath, maxBytes: 512 * 1024 * 1024 });
     const bin = atob(b64);
     const bytes = new Uint8Array(bin.length);
@@ -46,13 +47,13 @@ export async function cacheRemoteFileToVault(itemId: string, remote: NonNullable
     const hash = await sha256Hex(bytes);
     updateVaultItem(itemId, {
       file: { name: title, size: bytes.byteLength, mime: mimeOf(title), hash, cloudPath: null, stagedPath: localPath },
-      sub: `${bytes.byteLength} B · 已缓存`,
+      sub: i18n("lib.vaultremote.ffccb4633b09", { byteLength: String(bytes.byteLength) }),
     });
     const cached = await cacheVaultFiles();
-    showToast(cached.ok ? `已缓存到暂存箱云盘：${title}` : `已缓存到暂存箱；云盘备份失败：${cached.reason ?? "稍后重试"}`);
+    showToast(cached.ok ? i18n("lib.vaultremote.0e41e88fae37", { title: title }) : i18n("lib.vaultremote.c2ffc377da9f", { error: cached.reason ?? i18n("lib.vaultremote.7b0fe85cc2ee") }));
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    showToast(`已加入暂存箱；缓存失败：${msg.slice(0, 60)}（桌面端重试）`);
+    showToast(i18nMsg("lib.vaultremote.b4a5cedce0c2", { value: String(msg.slice(0, 60)) }));
   }
 }
 
@@ -61,10 +62,10 @@ export async function offerScheduleToCalendar(payload: { title?: string; date?: 
   const { confirmChoice } = await import("./confirm.js");
   const start = Number(payload.startMs) || (payload.date ? Date.parse(payload.date + "T09:00:00") : Date.now());
   const end = Number(payload.endMs) || start + 3600_000;
-  const ok = await confirmChoice("这条日程只存在暂存箱里；要加入「我的日程」吗？", {
-    title: "添加到我的日程？",
-    confirmText: "添加到日程",
-    cancelText: "先留在暂存箱",
+  const ok = await confirmChoice(i18nMsg("lib.vaultremote.1af4dc2d2c3a"), {
+    title: i18nMsg("lib.vaultremote.9c896aad088b"),
+    confirmText: i18nMsg("lib.vaultremote.75085b8b6e3c"),
+    cancelText: i18nMsg("lib.vaultremote.7092111f462a"),
   });
   if (!ok) return;
   try {
@@ -77,8 +78,8 @@ export async function offerScheduleToCalendar(payload: { title?: string; date?: 
       location: payload.location || undefined,
       onethuSource: "manual",
     } as never);
-    showToast("已添加到我的日程");
+    showToast(i18nMsg("lib.vaultremote.af6eec38ad8b"));
   } catch (e) {
-    showToast(`添加到日程失败：${e instanceof Error ? e.message : String(e)}`);
+    showToast(i18nMsg("lib.vaultremote.759687a48a96", { value: String(e instanceof Error ? e.message : String(e)) }));
   }
 }

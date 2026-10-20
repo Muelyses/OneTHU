@@ -1,3 +1,4 @@
+import { useOneGUILocale } from "../locale.js";
 /* OneGUI · 小件：Icon / Chip / Tag / Badge / Divider 的 TS 侧 */
 import type { ReactNode } from "react";
 import { cx, one, scopeProps, type OGSize, type OGTone, type OneBase } from "./kit.js";
@@ -55,6 +56,7 @@ export interface ChipProps extends OneBase {
 
 /** 胶囊：筛选、标签、快速入口共用（高度与圆角走 --r-pill 家族） */
 export function Chip({ tone = "neutral", size = "md", icon, onClick, selected, disabled, onRemove, scope, className, children }: ChipProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const cls = cx(
     one("chip").size(size).tone(tone === "neutral" ? undefined : tone).state("selected", selected).state("disabled", disabled).toString(),
     onClick ? "og-chip--interactive og-interactive" : "",
@@ -75,7 +77,7 @@ export function Chip({ tone = "neutral", size = "md", icon, onClick, selected, d
     <span {...scopeProps(scope)} className={cls} aria-disabled={disabled || undefined}>
       {onClick ? <button type="button" className="og-chip-main og-interactive" onClick={onClick} disabled={disabled} aria-pressed={selected}>{label}</button> : label}
       {onRemove ? (
-        <button type="button" className="og-chip-x" aria-label="移除" disabled={disabled} onClick={(e) => { e.stopPropagation(); onRemove(); }}>×</button>
+        <button type="button" className="og-chip-x" aria-label={guiText("gui.action.remove")} disabled={disabled} onClick={(e) => { e.stopPropagation(); onRemove(); }}>×</button>
       ) : null}
     </span>
   );

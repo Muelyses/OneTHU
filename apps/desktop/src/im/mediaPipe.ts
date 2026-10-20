@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * IM 附件管道（两段式，对齐「不要一股脑直接存」的用户口径）：
  *   ① stage：下载（Rust im_fetch_media，含微信 CDN 解密）→ 读文本预览（im_peek_text）
@@ -46,7 +47,7 @@ export function safeName(name: string): string {
 async function token(): Promise<string> {
   await ensureSeafileLoaded();
   const t = getSeafileToken();
-  if (!t) throw new Error("云盘未配置：先在应用的「云盘」页连接");
+  if (!t) throw new Error(i18n("im.mediapipe.734edfaaa263"));
   return t;
 }
 
@@ -159,7 +160,7 @@ export async function commitStored(
 ): Promise<{ path: string; repoId: string; repoName: string; size: number }> {
   const tk = await token();
   const repo = await configuredRepo();
-  if (!repo) throw new Error("尚未指定资料库（请先回复库序号或库名，我来记住）");
+  if (!repo) throw new Error(i18n("im.mediapipe.da65b434a10b"));
   const { repoId, repoName } = repo;
   const cfg = await loadImConfig();
   const base = (cfg.seafile?.dir || "/IM").replace(/\/+$/, "");

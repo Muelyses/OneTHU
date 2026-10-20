@@ -1,3 +1,4 @@
+import { useOneGUILocale } from "../locale.js";
 /* OneGUI · 表单族：全站唯一的输入件（Input / TextArea / Search / Number / Select / Check / Radio / Switch / Slider）
  *
  * 所有控件共享同一个"壳"（.og-input）：边框、底色、聚焦环、尺寸档、无效态都在壳里，
@@ -180,7 +181,8 @@ export interface SearchFieldProps extends Omit<InputProps, "type" | "icon"> {
   onSearch?: (value: string) => void;
 }
 
-export function SearchField({ onSearch, onEnter, onEscape, value, defaultValue, onChange, size = "md", scope, className, placeholder = "搜索", ...rest }: SearchFieldProps): ReactNode {
+export function SearchField({ onSearch, onEnter, onEscape, value, defaultValue, onChange, size = "md", scope, className, placeholder, ...rest }: SearchFieldProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const [inner, setInner] = useState(defaultValue ?? "");
   const controlled = value !== undefined;
   const current = controlled ? value : inner;
@@ -195,10 +197,10 @@ export function SearchField({ onSearch, onEnter, onEscape, value, defaultValue, 
       className={cx("og-input--search", className)}
       size={size}
       value={current}
-      placeholder={placeholder}
+      placeholder={placeholder ?? guiText("gui.search.placeholder")}
       icon={<svg className="og-icon og-icon--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round"><circle cx="11" cy="11" r="6" /><path d="m20 20-4.3-4.3" /></svg>}
       trailing={current ? (
-        <button type="button" className="og-input-clear" aria-label="清空" onClick={() => { set(""); onSearch?.(""); }}>×</button>
+        <button type="button" className="og-input-clear" aria-label={guiText("gui.search.clear")} onClick={() => { set(""); onSearch?.(""); }}>×</button>
       ) : null}
       onChange={set}
       onEnter={(v) => { onSearch?.(v); onEnter?.(v); }}
@@ -220,6 +222,7 @@ export interface NumberFieldProps extends Omit<InputProps, "type" | "onChange" |
 }
 
 export function NumberField({ value, defaultValue, onChange, min, max, step = 1, unit, scope, className, disabled, size = "md", ...rest }: NumberFieldProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const [inner, setInner] = useState(defaultValue ?? 0);
   const controlled = value !== undefined;
   const current = controlled ? value : inner;
@@ -237,7 +240,7 @@ export function NumberField({ value, defaultValue, onChange, min, max, step = 1,
   const [focused, setFocused] = useState(false);
   return (
     <div {...scopeProps(scope)} className={cx("og-number", className)}>
-      <button type="button" className="og-number-btn" aria-label="减" aria-disabled={min !== undefined && current <= min} onClick={() => set(current - step)}>−</button>
+      <button type="button" className="og-number-btn" aria-label={guiText("gui.number.decrease")} aria-disabled={min !== undefined && current <= min} onClick={() => set(current - step)}>−</button>
       <Shell size={size} disabled={disabled} focused={focused}>
         <input
           className="og-input-el"
@@ -258,7 +261,7 @@ export function NumberField({ value, defaultValue, onChange, min, max, step = 1,
         />
         {unit ? <span className="og-input-icon">{unit}</span> : null}
       </Shell>
-      <button type="button" className="og-number-btn" aria-label="加" aria-disabled={max !== undefined && current >= max} onClick={() => set(current + step)}>+</button>
+      <button type="button" className="og-number-btn" aria-label={guiText("gui.number.increase")} aria-disabled={max !== undefined && current >= max} onClick={() => set(current + step)}>+</button>
     </div>
   );
 }
@@ -505,6 +508,7 @@ export interface RangeSliderProps extends Omit<SliderProps, "value" | "defaultVa
 }
 
 export function RangeSlider({ value, defaultValue, onChange, onCommit, min = 0, max = 100, step = 1, disabled, showValue, scope, className }: RangeSliderProps): ReactNode {
+  const { t: guiText } = useOneGUILocale();
   const [inner, setInner] = useState<[number, number]>(defaultValue ?? [min, max]);
   const [a, b] = value ?? inner;
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -555,8 +559,8 @@ export function RangeSlider({ value, defaultValue, onChange, onCommit, min = 0, 
         onPointerCancel={() => setActive(null)}
       >
         <span className="og-slider-fill" data-og-dynamic="slider" style={{ ["--og-c-slider-pos-a" as string]: pct(a), ["--og-c-slider-pos-b" as string]: pct(b) } as React.CSSProperties} />
-        <span className="og-slider-thumb" data-og-dynamic="slider" style={{ ["--og-c-slider-pos" as string]: pct(a) } as React.CSSProperties} role="slider" tabIndex={disabled ? -1 : 0} aria-valuemin={min} aria-valuemax={max} aria-valuenow={a} aria-label="下限" />
-        <span className="og-slider-thumb" data-og-dynamic="slider" style={{ ["--og-c-slider-pos" as string]: pct(b) } as React.CSSProperties} role="slider" tabIndex={disabled ? -1 : 0} aria-valuemin={min} aria-valuemax={max} aria-valuenow={b} aria-label="上限" />
+        <span className="og-slider-thumb" data-og-dynamic="slider" style={{ ["--og-c-slider-pos" as string]: pct(a) } as React.CSSProperties} role="slider" tabIndex={disabled ? -1 : 0} aria-valuemin={min} aria-valuemax={max} aria-valuenow={a} aria-label={guiText("gui.range.lower")} />
+        <span className="og-slider-thumb" data-og-dynamic="slider" style={{ ["--og-c-slider-pos" as string]: pct(b) } as React.CSSProperties} role="slider" tabIndex={disabled ? -1 : 0} aria-valuemin={min} aria-valuemax={max} aria-valuenow={b} aria-label={guiText("gui.range.upper")} />
       </div>
       {showValue ? <span className="og-slider-value">{a}–{b}</span> : null}
     </div>

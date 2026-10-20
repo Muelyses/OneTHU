@@ -1,0 +1,1462 @@
+{
+  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "lib.overlayandroid.38793c1c1c23",
+      "source": "相册",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 364,
+          "context": "return i18n(\"lib.overlayandroid.38793c1c1c23\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.4d46b1512ea6",
+      "source": "附件：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(name ?? \"（未命名）\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 394,
+          "context": "text: i18n(\"lib.overlayandroid.4d46b1512ea6\", { value: String(name ?? i18n(\"lib.overlayandroid.89a7d926bd0e\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.6e3a10ade7c7",
+      "source": "拍照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 363,
+          "context": "return i18n(\"lib.overlayandroid.6e3a10ade7c7\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.89a7d926bd0e",
+      "source": "（未命名）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 394,
+          "context": "name ?? i18n(\"lib.overlayandroid.89a7d926bd0e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.9e07e3c0532d",
+      "source": "上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 365,
+          "context": "return i18n(\"lib.overlayandroid.9e07e3c0532d\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.c638cd4dde22",
+      "source": "（出错了：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 351,
+          "context": "text: i18n(\"lib.overlayandroid.c638cd4dde22\", { value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.c7225dbf105e",
+      "source": "附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 370,
+          "context": "ATTACH_LABEL[kind] ?? i18n(\"lib.overlayandroid.c7225dbf105e\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.overlayandroid.d7111ec9e5c7",
+      "source": "（打开{label}失败：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 378,
+          "context": "text: i18n(\"lib.overlayandroid.d7111ec9e5c7\", { label: String(label), value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.overlayandroid.d873d782b371",
+      "source": "（附件发送失败：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 413,
+          "context": "text: i18n(\"lib.overlayandroid.d873d782b371\", { value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.f11889f79829",
+      "source": "（附件已交给 OH）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 406,
+          "context": "reply || i18n(\"lib.overlayandroid.f11889f79829\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pdf.runtime.0c6ad6379eeb",
+      "source": "Math.sumPrecise: 元素必须是 number",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pdf-runtime.ts",
+          "line": 100,
+          "context": "new TypeError(i18n(\"lib.pdf.runtime.0c6ad6379eeb\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.311456c35da6",
+      "source": "嵌入内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 624,
+          "context": "return i18n(\"lib.pptxrender.311456c35da6\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.465bf7f89508",
+      "source": "压缩包内未找到 ppt/slides/slideN.xml（可能不是 .pptx）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 663,
+          "context": "new Error(i18n(\"lib.pptxrender.465bf7f89508\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.53f92c063963",
+      "source": "对象",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 604,
+          "context": "isDgm ? \"SmartArt\" : i18n(\"lib.pptxrender.53f92c063963\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.5547406e74d1",
+      "source": "图片过大未渲染",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 580,
+          "context": "known ? i18n(\"lib.pptxrender.5547406e74d1\") : i18n(\"lib.pptxrender.e957a1c1958c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.8cb443ab8379",
+      "source": "图表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 604,
+          "context": "isChart ? i18n(\"lib.pptxrender.8cb443ab8379\") : isDgm ? \"SmartArt\" : i18n(\"lib.pptxrender.53f92c063963\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.b5c59e63ba8f",
+      "source": "未能解析任何幻灯片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 745,
+          "context": "new Error(i18n(\"lib.pptxrender.b5c59e63ba8f\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.e957a1c1958c",
+      "source": "图片（格式不支持）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 580,
+          "context": "known ? i18n(\"lib.pptxrender.5547406e74d1\") : i18n(\"lib.pptxrender.e957a1c1958c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.qrscan.b3a1f9364b8c",
+      "source": "当前环境不支持二维码识别（需要较新的系统 WebView）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/qrScan.ts",
+          "line": 17,
+          "context": "new Error(i18n(\"lib.qrscan.b3a1f9364b8c\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.378968f3ae7e",
+      "source": "云盘返回了不支持的分享链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 13,
+          "context": "new Error(i18n(\"lib.shortcode.378968f3ae7e\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.67ab8f79df50",
+      "source": "不是 OneTHU 短口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 32,
+          "context": "new Error(i18n(\"lib.shortcode.67ab8f79df50\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.8421942a683e",
+      "source": "短口令含有无法识别的字符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 38,
+          "context": "new Error(i18n(\"lib.shortcode.8421942a683e\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.aef75cc315e1",
+      "source": "短口令格式不完整",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 28,
+          "context": "new Error(i18n(\"lib.shortcode.aef75cc315e1\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.bf3d8cf6fe66",
+      "source": "短口令应有四组、每组四个字符，请完整复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 34,
+          "context": "new Error(i18n(\"lib.shortcode.bf3d8cf6fe66\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.speech.1737f29c47c1",
+      "source": "桌面端暂不支持原生语音识别：点「点击输入，长按说话」用键盘输入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/speech.ts",
+          "line": 62,
+          "context": "isAndroid\n    ? i18n(\"lib.speech.4eb4956de694\")\n    : i18n(\"lib.speech.1737f29c47c1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.speech.4eb4956de694",
+      "source": "此设备未提供系统语音识别：先在系统设置里启用「语音服务」再长按",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/speech.ts",
+          "line": 61,
+          "context": "isAndroid\n    ? i18n(\"lib.speech.4eb4956de694\")\n    : i18n(\"lib.speech.1737f29c47c1\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.suggest.132e3b256a4c",
+      "source": "和你在用的地方同类",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/suggest.ts",
+          "line": 84,
+          "context": "why: i18n(\"lib.suggest.132e3b256a4c\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.suggest.548b0e407001",
+      "source": "多数人天天用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/suggest.ts",
+          "line": 93,
+          "context": "why: i18n(\"lib.suggest.548b0e407001\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.suggest.c02a34b5141f",
+      "source": "顺手看看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/suggest.ts",
+          "line": 99,
+          "context": "why: i18n(\"lib.suggest.c02a34b5141f\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.thosopen.76024592a2c9",
+      "source": "应用内打开失败：{value}（改用浏览器）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(reason.slice(0, 80))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/thosOpen.ts",
+          "line": 47,
+          "context": "showToast(i18nMsg(\"lib.thosopen.76024592a2c9\", { value: String(reason.slice(0, 80)) }), 9000)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.3a8b5cef5790",
+      "source": "步行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 247,
+          "context": "return i18n(\"lib.trace.3a8b5cef5790\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.455ece81de56",
+      "source": "百度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 287,
+          "context": "return i18n(\"lib.trace.455ece81de56\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.50537dab7650",
+      "source": "苹果",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 288,
+          "context": "return i18n(\"lib.trace.50537dab7650\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.53874092e000",
+      "source": "腾讯",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 286,
+          "context": "return i18n(\"lib.trace.53874092e000\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.7c25d6aa499e",
+      "source": "高德",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 285,
+          "context": "return i18n(\"lib.trace.7c25d6aa499e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.7f21257362cb",
+      "source": "驾车",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 249,
+          "context": "return i18n(\"lib.trace.7f21257362cb\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.a02caf9878b5",
+      "source": "<1分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 356,
+          "context": "return i18n(\"lib.trace.a02caf9878b5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.c76e20944989",
+      "source": "{value}时{value2}分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(m / 60))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(m % 60)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 358,
+          "context": "return i18n(\"lib.trace.c76e20944989\", { value: String(Math.floor(m / 60)), value2: String(m % 60) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.d5b54d668a13",
+      "source": "{m}分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "m",
+          "expression": "String(m)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 357,
+          "context": "return i18n(\"lib.trace.d5b54d668a13\", { m: String(m) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.e81f910c0f2b",
+      "source": "骑行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 248,
+          "context": "return i18n(\"lib.trace.e81f910c0f2b\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.53480e72e233",
+      "source": "重定向次数超限（{maxHops}）末跳={value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "maxHops",
+          "expression": "String(maxHops)"
+        },
+        {
+          "name": "value",
+          "expression": "String(currentUrl.slice(0, 140))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 417,
+          "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.81870141c552",
+      "source": "请求超时（90s）：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(url.slice(0, 120))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 214,
+          "context": "new Error(i18n(\"lib.transport.81870141c552\", { value: networkLogUrl(url) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.browserCors",
+      "source": "浏览器预览不支持直连校园网（CORS 拦截）。请运行桌面端：pnpm tauri:dev。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 478,
+          "context": "return i18n(\"lib.transport.browserCors\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.cancelled",
+      "source": "请求已取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 80,
+          "context": "new DOMException(i18n(\"lib.transport.cancelled\"), \"AbortError\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.cd880977cdbd",
+      "source": "请求超时（{value}s）：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(guardMs / 1000)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(url.slice(0, 120))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 94,
+          "context": "new Error(i18n(\"lib.transport.cd880977cdbd\", { value: String(guardMs / 1000), value2: networkLogUrl(url) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.fileTooLarge",
+      "source": "文件较大（{size}），应用内预览上限 {limit}——请改用「下载」或「另存为」。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "limit"
+        },
+        {
+          "name": "size"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 462,
+          "context": "return i18n(\"lib.transport.fileTooLarge\", {size:mb(big[1]!),limit:mb(big[2]!)});"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.noReason",
+      "source": "操作失败（原生未给出原因，可到「设置 → 诊断」看日志）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 457,
+          "context": "return i18n(\"lib.transport.noReason\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.reloginAdvice",
+      "source": "下拉刷新即可重试；若持续出现，到「设置 → 账户」重新登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 468,
+          "context": "advice = i18n(\"lib.transport.reloginAdvice\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.serverRejected",
+      "source": "{error}：服务端拒绝了这次请求（登录态过期或该文件无权限）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 475,
+          "context": "return i18n(\"lib.transport.serverRejected\", {error:raw});"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.timeoutAdvice",
+      "source": "网络超时：请确认校园网 / WebVPN 可达。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 481,
+          "context": "return i18n(\"lib.transport.timeoutAdvice\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.305378ddd2b8",
+      "source": "链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 246,
+          "context": "() => i18n(\"lib.tts.305378ddd2b8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.56b01b7faa9d",
+      "source": " （代码略） ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 242,
+          "context": "() => i18n(\"lib.tts.56b01b7faa9d\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.9138d2ecd64e",
+      "source": "引擎默认音色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 266,
+          "context": "return i18n(\"lib.tts.9138d2ecd64e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.98f963cb664a",
+      "source": "空文本",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 151,
+          "context": "new Error(i18n(\"lib.tts.98f963cb664a\"))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.tts.c031b065a3a3",
+      "source": "……（内容较长，剩下的看屏幕吧）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 258,
+          "context": "(cut > max * 0.5 ? head.slice(0, cut + 1) : head) + i18n(\"lib.tts.c031b065a3a3\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.update.c459fb3f09e6",
+      "source": "新版本 {version} 可用：设置 → 关于 查看详情",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "version",
+          "expression": "rel.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/update.ts",
+          "line": 103,
+          "context": "onToast(i18n(\"lib.update.c459fb3f09e6\", { version: rel.name }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.01e9ed6e0882",
+      "source": "{what} 不可达（403）——官方端点若变更请检查 share-links API（本模块用的是匿名 dirents 接口）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 211,
+          "context": "return i18n(\"lib.updater.01e9ed6e0882\", { what: String(what) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.072f4658615f",
+      "source": "{what} 服务端错误（HTTP {status}）——云盘侧暂时不可用，稍后重试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        },
+        {
+          "name": "status",
+          "expression": "String(status)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 213,
+          "context": "return i18n(\"lib.updater.072f4658615f\", { what: String(what), status: String(status) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.185680ad27cd",
+      "source": "已用系统默认方式打开：若是 DMG，把应用拖进「应用程序」即完成更新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 494,
+          "context": "key === \"macos\" ? i18n(\"lib.updater.185680ad27cd\") : i18n(\"lib.updater.95bc488982b2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.194b24406399",
+      "source": "镜像目录 {path}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "path",
+          "expression": "String(path)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 234,
+          "context": "shareErr(i18n(\"lib.updater.194b24406399\", { path: String(path) }), r.status)"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2985491184cc",
+      "source": "两个更新源都没取到清单：\n{detail}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "detail",
+          "expression": "String(detail)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 429,
+          "context": "error: i18n(\"lib.updater.2985491184cc\", { detail: String(detail) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2d2cad3f99ea",
+      "source": "HTTP 404（Releases 还没挂 latest.json 资产）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 343,
+          "context": "res.status === 404 ? i18n(\"lib.updater.2d2cad3f99ea\") : `HTTP ${res.status}`"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2da47c897e30",
+      "source": "已拉起系统安装页：首次安装需在系统提示里允许「安装未知应用」，之后按系统页确认即可。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 492,
+          "context": "hint: i18n(\"lib.updater.2da47c897e30\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2f939477c47e",
+      "source": "安卓",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 122,
+          "context": "return i18n(\"lib.updater.2f939477c47e\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.361980a5e6ce",
+      "source": "{what} 不存在（404）——镜像上还没有这个文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 212,
+          "context": "return i18n(\"lib.updater.361980a5e6ce\", { what: String(what) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.3d383f5a5c29",
+      "source": "清单不是合法 JSON",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 139,
+          "context": "error: i18n(\"lib.updater.3d383f5a5c29\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.4219a7449e26",
+      "source": "已是最新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 414,
+          "context": "r.hasUpdate ? i18n(\"lib.updater.daedea385864\") : i18n(\"lib.updater.4219a7449e26\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.42b98aa3fae8",
+      "source": "没有可安装的本地路径",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 487,
+          "context": "error: i18n(\"lib.updater.42b98aa3fae8\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.4bffec153a88",
+      "source": "{dir}/ 里没有可识别的安装包（期望 OneTHU_<版本>_<arch>.{ext}；目录里现有 {length} 项）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "dir",
+          "expression": "String(dir)"
+        },
+        {
+          "name": "ext",
+          "expression": "String(ext)"
+        },
+        {
+          "name": "length",
+          "expression": "String(dirList.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 382,
+          "context": "new Error(i18n(\"lib.updater.4bffec153a88\", { dir: String(dir), ext: String(ext), length: String(dirList.length) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.71c70711a602",
+      "source": "GitHub Releases（外网）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 45,
+          "context": "return i18n(\"lib.updater.71c70711a602\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.95bc488982b2",
+      "source": "已用系统默认方式打开安装包。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 494,
+          "context": "key === \"macos\" ? i18n(\"lib.updater.185680ad27cd\") : i18n(\"lib.updater.95bc488982b2\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.9fa399af02de",
+      "source": "清华云盘（官方镜像 · 校内可达）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 46,
+          "context": "return i18n(\"lib.updater.9fa399af02de\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 422,
+          "context": "failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 428,
+          "context": "a.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.ab90d58874ee",
+      "source": "{label} 不可用：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(failed.label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 422,
+          "context": "fallbackReason: i18n(\"lib.updater.ab90d58874ee\", { label: String(failed.label), value: String(failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")) })"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.updater.b331bcbd6083",
+      "source": "清单 v{version} 没有当前平台（{key}）的包",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "version",
+          "expression": "String(m.version)"
+        },
+        {
+          "name": "key",
+          "expression": "String(key)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 349,
+          "context": "new Error(i18n(\"lib.updater.b331bcbd6083\", { version: String(m.version), key: String(key) }))"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 404,
+          "context": "new Error(i18n(\"lib.updater.b331bcbd6083\", { version: String(m.version), key: String(key) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.bf52642dd8c4",
+      "source": "镜像目录不可达：{value}（校外环境请确认网络；该接口无需登录）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 232,
+          "context": "new Error(i18n(\"lib.updater.bf52642dd8c4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.c57372e35f51",
+      "source": "[更新] 拉起安装页失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "msg",
+          "expression": "String(msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 497,
+          "context": "logLine(i18n(\"lib.updater.c57372e35f51\", { msg: String(msg) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.cfc1ecb75eaf",
+      "source": "镜像目录返回的不是 JSON（{path}）——官方接口形态可能变了",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "path",
+          "expression": "String(path)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 241,
+          "context": "new Error(i18n(\"lib.updater.cfc1ecb75eaf\", { path: String(path) }))"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.d7fb13f125e5",
+      "source": "自定义更新源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 47,
+          "context": "return i18n(\"lib.updater.d7fb13f125e5\");"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.dae2c06aec63",
+      "source": "{what} 失败（HTTP {status}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        },
+        {
+          "name": "status",
+          "expression": "String(status)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 214,
+          "context": "return i18n(\"lib.updater.dae2c06aec63\", { what: String(what), status: String(status) });"
+        }
+      ],
+      "translation": "",
+      "status": "pending",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

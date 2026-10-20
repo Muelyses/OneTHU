@@ -15,6 +15,10 @@ const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), "utf8");
 
 const app = read("apps/desktop/src/App.tsx");
 const tour = read("apps/desktop/src/components/OnboardingTour.tsx");
+const lessons = read("apps/desktop/src/lib/onboardingLessons.ts");
+const navigation = read("apps/desktop/src/lib/onboardingNavigation.ts");
+const practiceReturn = read("apps/desktop/src/components/OnboardingPracticeReturn.tsx");
+const { FULL_LESSONS, EXTRA_LESSONS, SIMPLE_LESSONS, PRACTICAL_LESSONS } = await import("../apps/desktop/src/lib/onboardingLessons.ts");
 const state = read("apps/desktop/src/state/onboarding.ts");
 const picker = read("apps/desktop/src/components/ExperienceModePicker.tsx");
 const settings = read("apps/desktop/src/pages/Settings.tsx");
@@ -34,20 +38,29 @@ assert.ok(settings.includes("resetActiveOnboarding();"), "设置页保留「导�
 /* ---------- ③ 三种模式 × 各自课程 ---------- */
 assert.ok(/ExperienceModePicker/.test(tour), "第一步要有模式选择器");
 for (const s of ["极简模式", "实用模式", "完整模式"]) assert.ok(picker.includes(s), "模式选择器缺 " + s);
-assert.ok(/chosen==="simple"\?SIMPLE_LESSONS:chosen==="practical"\?PRACTICAL_LESSONS:FULL_LESSONS/.test(tour), "三种模式必须各走自己的课程");
+assert.ok(/lessonsForMode\(chosen\)/.test(tour), "三种模式必须各走自己的课程");
+assert.deepEqual(FULL_LESSONS.map(lesson => lesson.id), ["board", "vault", "code", "nfc", "organization"], "完整模式主线只保留五项重点");
+assert.deepEqual(EXTRA_LESSONS.map(lesson => lesson.id), ["explorer", "onego", "plugin", "customize", "campus", "data"], "原六个主题必须保留为结束页可选探索");
+assert.deepEqual(SIMPLE_LESSONS.map(lesson => lesson.id), ["today", "quick"], "极简模式只展示两课");
+assert.deepEqual(PRACTICAL_LESSONS.map(lesson => lesson.id), ["today", "more", "swap"], "实用模式展示三课");
+assert.ok(tour.includes("EXTRA_LESSONS") && tour.includes("继续探索"), "结束页必须让用户选择继续探索六个附加主题");
 for (const t of [
   "白板与 OnePage：首页由你摆", "标签页与工作区：多任务不打架", "暂存箱：什么都能先收进来",
   "一个短口令，传递一组内容", "碰一碰：名片与内容接力", "组织：人、文件、项目一处管",
   "OneGO!：全局入口与自动化", "插件与 OH：把能力装进来", "外观与工作台：全都可调",
   "校园服务：完整模式的聚合", "数据与同步：跨设备继续",
 ]) {
-  assert.ok(tour.includes(t), "完整模式缺一课：" + t);
+  assert.ok(lessons.includes(t), "完整模式缺一课：" + t);
 }
-assert.ok(tour.includes("悬浮球可在 OH 设置中开启或关闭。"), "完整模式导览缺少悬浮球设置入口提示");
+assert.ok(lessons.includes("悬浮球可在 OH 设置中开启或关闭。"), "完整模式导览缺少悬浮球设置入口提示");
 assert.ok(tour.includes("向本机应用开放 OH MCP") && tour.includes("setMcpServer") && tour.includes("mcpServerEnabled"), "导览缺少 OH MCP 说明/开关");
 assert.ok(/syncOverlayPreference/.test(tour) === false, "导览不应负责悬浮球启动同步（由 boot 干）");
-for (const t of ["首页，只关心今天", "五个功能，固定在手边"]) assert.ok(tour.includes(t), "极简模式缺一课：" + t);
-for (const t of ["首页，只关心今天", "更多功能：所有基础功能都在这里", "四个入口，随你安排"]) assert.ok(tour.includes(t), "实用模式缺一课：" + t);
+for (const t of ["首页，只关心今天", "五个功能，固定在手边"]) assert.ok(SIMPLE_LESSONS.some(lesson => lesson.title === t), "极简模式缺一课：" + t);
+for (const t of ["首页，只关心今天", "更多功能：所有基础功能都在这里", "四个入口，随你安排"]) assert.ok(PRACTICAL_LESSONS.some(lesson => lesson.title === t), "实用模式缺一课：" + t);
+for (const target of new Set([...FULL_LESSONS, ...EXTRA_LESSONS, ...SIMPLE_LESSONS, ...PRACTICAL_LESSONS].map(lesson => lesson.target))) {
+  assert.ok(navigation.includes(`case "${target}"`), "导览动作缺真实落点：" + target);
+}
+assert.ok(/openLessonTarget/.test(tour) && /closePracticePanels/.test(tour), "向导必须接入真实体验动作与返回清理");
 /* 开场模式口径（用户 2026-10-19 给定原话） */
 for (const t of [
   "仅保留学习、预约、生活、课表、信息五个功能。",
@@ -59,7 +72,8 @@ for (const t of [
 assert.ok(/localStorage\.setItem\(KEY,"1"\)/.test(tour), "结束必须写完成标记（否则下次启动又弹）");
 for (const t of ["跳过导览", "上一步", "开始使用", "按此模式开始"]) assert.ok(tour.includes(t), "导览缺少「" + t + "」");
 assert.ok(/<Modal open/.test(tour) && /aria-label="OneTHU 使用导览"/.test(tour), "导览卡走 OneGUI Modal + 可读名");
-assert.ok(/tour-resume/.test(tour) && /继续导览/.test(tour) && /正在体验/.test(tour), "演练态要有「继续导览」返回条");
+assert.ok(/<OnboardingPracticeReturn/.test(tour) && /tour-resume/.test(practiceReturn) && /继续导览/.test(practiceReturn) && /正在体验/.test(practiceReturn), "演练态要有「继续导览」返回条");
+assert.ok(tour.includes("beginPracticePanels();") && tour.includes("if(!closePracticePanels())"), "练习必须记录弹层边界，忙碌拒关时不得强行恢复导览");
 
 /* ---------- ⑤ 设置页模式卡片 ---------- */
 assert.ok(/ExperienceModeControl/.test(settings), "设置页要有「使用模式」卡片");

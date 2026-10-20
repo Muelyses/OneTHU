@@ -297,6 +297,9 @@
   --og-bookmark-max: 184px;
   --og-schedule-sync-width: 230px;
   --og-exchange-stage-height: 240px;
+  --og-tour-scene-h: 240px;
+  --og-tour-studio-h: 360px;
+  --og-tour-scene-action-dur: 520ms;
   --og-vault-anchor-w: 64px;
   --og-vault-anchor-h: 48px;
   --og-vault-anchor-gap: 6px;

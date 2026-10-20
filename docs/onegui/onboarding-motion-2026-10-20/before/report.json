@@ -1,0 +1,410 @@
+[
+  {
+    "width": 1280,
+    "height": 860,
+    "mode": "full",
+    "title": "白板与 OnePage：首页由你摆",
+    "scene": {
+      "rect": {
+        "x": 400,
+        "y": 266.5,
+        "width": 470,
+        "height": 192,
+        "top": 266.5,
+        "right": 870,
+        "bottom": 458.5,
+        "left": 400
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 470,
+      "clientWidth": 470
+    },
+    "dialog": {
+      "x": 379,
+      "y": 109.5,
+      "width": 512,
+      "height": 641
+    },
+    "footer": {
+      "x": 380,
+      "y": 672.5,
+      "width": 510,
+      "height": 77
+    }
+  },
+  {
+    "width": 1280,
+    "height": 860,
+    "mode": "simple",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 400,
+        "y": 307.5,
+        "width": 470,
+        "height": 162,
+        "top": 307.5,
+        "right": 870,
+        "bottom": 469.5,
+        "left": 400
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 470,
+      "clientWidth": 470
+    },
+    "dialog": {
+      "x": 379,
+      "y": 150.5,
+      "width": 512,
+      "height": 559
+    },
+    "footer": {
+      "x": 380,
+      "y": 631.5,
+      "width": 510,
+      "height": 77
+    }
+  },
+  {
+    "width": 1280,
+    "height": 860,
+    "mode": "practical",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 400,
+        "y": 337.5,
+        "width": 470,
+        "height": 162,
+        "top": 337.5,
+        "right": 870,
+        "bottom": 499.5,
+        "left": 400
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 470,
+      "clientWidth": 470
+    },
+    "dialog": {
+      "x": 379,
+      "y": 158.5,
+      "width": 512,
+      "height": 543
+    },
+    "footer": {
+      "x": 380,
+      "y": 623.5,
+      "width": 510,
+      "height": 77
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "mode": "full",
+    "title": "白板与 OnePage：首页由你摆",
+    "scene": {
+      "rect": {
+        "x": 45,
+        "y": 255.703125,
+        "width": 290,
+        "height": 191.59375,
+        "top": 255.703125,
+        "right": 335,
+        "bottom": 447.296875,
+        "left": 45
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 290,
+      "clientWidth": 290
+    },
+    "dialog": {
+      "x": 24,
+      "y": 64.703125,
+      "width": 332,
+      "height": 714.59375
+    },
+    "footer": {
+      "x": 25,
+      "y": 693.296875,
+      "width": 330,
+      "height": 85
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "mode": "simple",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 45,
+        "y": 275.703125,
+        "width": 290,
+        "height": 159.59375,
+        "top": 275.703125,
+        "right": 335,
+        "bottom": 435.296875,
+        "left": 45
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 290,
+      "clientWidth": 290
+    },
+    "dialog": {
+      "x": 24,
+      "y": 92.703125,
+      "width": 332,
+      "height": 658.59375
+    },
+    "footer": {
+      "x": 25,
+      "y": 665.296875,
+      "width": 330,
+      "height": 85
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "mode": "practical",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 45,
+        "y": 305.703125,
+        "width": 290,
+        "height": 159.59375,
+        "top": 305.703125,
+        "right": 335,
+        "bottom": 465.296875,
+        "left": 45
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 290,
+      "clientWidth": 290
+    },
+    "dialog": {
+      "x": 24,
+      "y": 122.703125,
+      "width": 332,
+      "height": 598.59375
+    },
+    "footer": {
+      "x": 25,
+      "y": 635.296875,
+      "width": 330,
+      "height": 85
+    }
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "mode": "full",
+    "title": "白板与 OnePage：首页由你摆",
+    "scene": {
+      "rect": {
+        "x": 45,
+        "y": -93,
+        "width": 220,
+        "height": 209.1875,
+        "top": -93,
+        "right": 265,
+        "bottom": 116.1875,
+        "left": 45
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 220,
+      "clientWidth": 220
+    },
+    "dialog": {
+      "x": 24,
+      "y": 24,
+      "width": 262,
+      "height": 520
+    },
+    "footer": {
+      "x": 25,
+      "y": 406,
+      "width": 260,
+      "height": 137
+    }
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "mode": "simple",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 45,
+        "y": -7,
+        "width": 220,
+        "height": 201.1875,
+        "top": -7,
+        "right": 265,
+        "bottom": 194.1875,
+        "left": 45
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 220,
+      "clientWidth": 220
+    },
+    "dialog": {
+      "x": 24,
+      "y": 24,
+      "width": 262,
+      "height": 520
+    },
+    "footer": {
+      "x": 25,
+      "y": 406,
+      "width": 260,
+      "height": 137
+    }
+  },
+  {
+    "width": 320,
+    "height": 568,
+    "mode": "practical",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 45,
+        "y": 35,
+        "width": 220,
+        "height": 201.1875,
+        "top": 35,
+        "right": 265,
+        "bottom": 236.1875,
+        "left": 45
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 220,
+      "clientWidth": 220
+    },
+    "dialog": {
+      "x": 24,
+      "y": 24,
+      "width": 262,
+      "height": 520
+    },
+    "footer": {
+      "x": 25,
+      "y": 406,
+      "width": 260,
+      "height": 137
+    }
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "mode": "full",
+    "title": "白板与 OnePage：首页由你摆",
+    "scene": {
+      "rect": {
+        "x": 182,
+        "y": 25,
+        "width": 470,
+        "height": 192,
+        "top": 25,
+        "right": 652,
+        "bottom": 217,
+        "left": 182
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 470,
+      "clientWidth": 470
+    },
+    "dialog": {
+      "x": 161,
+      "y": 24,
+      "width": 512,
+      "height": 342
+    },
+    "footer": {
+      "x": 162,
+      "y": 288,
+      "width": 510,
+      "height": 77
+    }
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "mode": "simple",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 182,
+        "y": 25,
+        "width": 470,
+        "height": 162,
+        "top": 25,
+        "right": 652,
+        "bottom": 187,
+        "left": 182
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 470,
+      "clientWidth": 470
+    },
+    "dialog": {
+      "x": 161,
+      "y": 24,
+      "width": 512,
+      "height": 342
+    },
+    "footer": {
+      "x": 162,
+      "y": 288,
+      "width": 510,
+      "height": 77
+    }
+  },
+  {
+    "width": 844,
+    "height": 390,
+    "mode": "practical",
+    "title": "首页，只关心今天",
+    "scene": {
+      "rect": {
+        "x": 182,
+        "y": 47,
+        "width": 470,
+        "height": 162,
+        "top": 47,
+        "right": 652,
+        "bottom": 209,
+        "left": 182
+      },
+      "buttons": 0,
+      "animations": 0,
+      "scrollWidth": 470,
+      "clientWidth": 470
+    },
+    "dialog": {
+      "x": 161,
+      "y": 24,
+      "width": 512,
+      "height": 342
+    },
+    "footer": {
+      "x": 162,
+      "y": 288,
+      "width": 510,
+      "height": 77
+    }
+  }
+]

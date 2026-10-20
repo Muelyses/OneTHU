@@ -53,6 +53,13 @@
   --og-media-ink-light: var(--og-ref-ink-0);
   --og-media-ink-dark: var(--og-ref-neutral-1000);
   --og-media-shadow: var(--og-ref-ink-1000);
+  /* Product models keep physical material colors, like photographs within a themed surface. */
+  --og-studio-body: var(--og-ref-neutral-300);
+  --og-studio-edge: var(--og-ref-neutral-500);
+  --og-studio-glass: var(--og-ref-neutral-1000);
+  --og-studio-screen: var(--og-ref-neutral-25);
+  --og-studio-muted: var(--og-ref-neutral-600);
+  --og-studio-accent: var(--og-ref-neutral-900);
   --og-contrast-ink-light: var(--og-ref-contrast-ink-light);
   --og-contrast-ink-dark: var(--og-ref-contrast-ink-dark);
   --og-video-fallback: var(--og-ref-video-fallback);

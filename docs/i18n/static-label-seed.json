@@ -277,7 +277,7 @@
       "en-US": "No account or password remembered on this device: remember the password in Settings first, or sign in once on the official page."
     },
     "pages.info.visittab.0dc9677cab64": {
-      "zh-CN": "统一身份认证页面形态不认识（HTTP {value}）",
+      "zh-CN": "统一身份认证页面形态不认识（HTTP {value}），请稍后重试",
       "en-US": "Unrecognized identity-authentication page (HTTP {value}). Please try again later."
     },
     "pages.info.visittab.7cfaed11d6a4": {

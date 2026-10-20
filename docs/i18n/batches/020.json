@@ -1,7 +1,365 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.onboardingtourmobile.514adbf12726",
+      "source": "在对话里说，它就动手。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 92,
+          "context": "return i18n(\"components.onboardingtourmobile.514adbf12726\");"
+        }
+      ],
+      "translation": "Just tell it in the conversation and it gets to work.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.55a3f02850c2",
+      "source": "点「编」进编辑，再点「＋」选组件放到白板上。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 76
+        }
+      ],
+      "translation": "Tap “Edit” to enter edit mode, then tap “＋” to pick widgets and place them on the board.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.59acb966c21f",
+      "source": "底栏右侧「OneGO!」→ 我的 OnePage：起名后「新建」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 82
+        }
+      ],
+      "translation": "In the bottom bar’s right side, “OneGO!” → My OnePage: name it, then “New”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.60a2e62fe82d",
+      "source": "按住一个标签拖一拖，就换了顺序。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Press and drag a tab to reorder it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.67ab2cc6012c",
+      "source": "工具箱自己会长：说到哪，就长到哪。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 94,
+          "context": "return i18n(\"components.onboardingtourmobile.67ab2cc6012c\");"
+        }
+      ],
+      "translation": "The toolbox grows on its own: wherever the conversation goes, it grows there.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.6957eb34bc44",
+      "source": "点一下：从底部长出半屏搜索窗，可拉满全屏。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 87
+        }
+      ],
+      "translation": "Tap once: a half-screen search panel grows from the bottom; you can stretch it to full screen.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.6aebf4025ba6",
+      "source": "新建即得一块白板，跟首页同一套手势。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 82
+        }
+      ],
+      "translation": "A new tab is a fresh board, using the same gestures as Home.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.70297c6559a9",
+      "source": "长按 0.45 秒开始说话；松手直发，上划取消。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 87
+        }
+      ],
+      "translation": "Press and hold for 0.45 seconds to start speaking; release to send, swipe up to cancel.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.70bec8e88b2c",
+      "source": "按住 0.5 秒不动出菜单：聚焦、复制、关闭、解散工作区。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Press and hold for 0.5 seconds without moving to open the menu: focus, copy, close, disband workspace.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.715ee9dc842f",
+      "source": "开始使用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 144,
+          "context": "{i18n(\"components.onboardingtourmobile.715ee9dc842f\")}"
+        }
+      ],
+      "translation": "Get started",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.7599c8d0f2fd",
+      "source": "拖到另一个标签上停一停（0.6 秒灰框），松手合并成工作区。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Drag one tab onto another and pause (a gray frame appears for 0.6 seconds), then release to merge them into a workspace.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.76a3f832bbfa",
+      "source": "OneGO! 里管它们。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 81,
+          "context": "return i18n(\"components.onboardingtourmobile.76a3f832bbfa\");"
+        }
+      ],
+      "translation": "Manage them in OneGO!.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.7c100b50261d",
+      "source": "OH 的对话窗也长在同一个胶囊上。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 88,
+          "context": "return i18n(\"components.onboardingtourmobile.7c100b50261d\");"
+        }
+      ],
+      "translation": "OH’s conversation window also grows from the same pill.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.7c2809268e55",
+      "source": "OH：说一句，长一样本领",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 91,
+          "context": "return i18n(\"components.onboardingtourmobile.7c2809268e55\");"
+        }
+      ],
+      "translation": "OH: say the word and it picks up the same skills",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.8201fca38b06",
+      "source": "能搜页面、面板与插件；结果直接点开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 87
+        }
+      ],
+      "translation": "Search pages, panels, and plugins; tap a result to open it directly.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.854174121d0a",
+      "source": "组件长按出菜单，可调尺寸、固定与删除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 76
+        }
+      ],
+      "translation": "Long-press a widget to open a menu for resizing, pinning, and deleting.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.8a900694ff18",
+      "source": "搜索胶囊",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 85,
+          "context": "return i18n(\"components.onboardingtourmobile.8a900694ff18\");"
+        }
+      ],
+      "translation": "Search pill",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.9552fe3bd366",
+      "source": "第 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 154,
+          "context": "i18n(\"components.onboardingtourmobile.9552fe3bd366\") + (step + 1)"
+        }
+      ],
+      "translation": "Step ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.98af2b06c2d8",
+      "source": "抽屉可从半屏拉到全屏；顶栏那颗圆形房子钮随时回首页。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.onboardingtourmobile.98af2b06c2d8\");"
+        }
+      ],
+      "translation": "The drawer stretches from half screen to full; the round Home button in the top bar returns to Home anytime.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.a2d3a4eeefd7",
+      "source": "不再显示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 142,
+          "context": "{i18n(\"components.onboardingtourmobile.a2d3a4eeefd7\")}"
+        }
+      ],
+      "translation": "Don’t show again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.acfc4e74a650",
+      "source": "下一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 146,
+          "context": "{i18n(\"components.onboardingtourmobile.acfc4e74a650\")}"
+        }
+      ],
+      "translation": "Next",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.c5c41a9591a1",
+      "source": "首页右下角开始。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 75,
+          "context": "return i18n(\"components.onboardingtourmobile.c5c41a9591a1\");"
+        }
+      ],
+      "translation": "Start at the bottom-right corner of Home.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.c765edddbdf2",
+      "source": "添加组件：白板随你摆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 74,
+          "context": "return i18n(\"components.onboardingtourmobile.c765edddbdf2\");"
+        }
+      ],
+      "translation": "Add widgets: arrange the board your way",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardingtourmobile.da336fdc0dbd",
       "source": "上一步",
@@ -892,367 +1250,6 @@
         }
       ],
       "translation": "Seven steps in one minute for the desktop essentials.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.c575f6222266",
-      "source": "骨架不动：右键大时间或功能区可调透明度（四档）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 75
-        }
-      ],
-      "translation": "The skeleton stays put: right-click the large clock or a feature area to adjust opacity (four levels).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.cb17e22bf3f0",
-      "source": "OneGO! 里还有 OneFlow：在 OH 对话里说「创建一个流程」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 86
-        }
-      ],
-      "translation": "OneGO! also has OneFlow: tell OH “create a flow” in the conversation.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.d45c9dc68d4b",
-      "source": "演练中：把一张标签拖到另一张上，灰框出现就松手",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 188,
-          "context": "{i18n(\"components.onboardingtourv3.d45c9dc68d4b\")}"
-        }
-      ],
-      "translation": "Try it: drag one tab onto another and release when the gray frame appears",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.d6a2506f30a7",
-      "source": "首页是一张自由白板",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 73,
-          "context": "return i18n(\"components.onboardingtourv3.d6a2506f30a7\");"
-        }
-      ],
-      "translation": "Home is a free-form board",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.d750e7aaed28",
-      "source": "工作区底板就在标签栏上：右键可解散（标签保留）或删除。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "The workspace base lives on the tab bar: right-click to disband it (tabs are kept) or delete it.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.da336fdc0dbd",
-      "source": "上一步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 211,
-          "context": "{i18n(\"components.onboardingtourv3.da336fdc0dbd\")}"
-        }
-      ],
-      "translation": "Back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.dc819c398a78",
-      "source": "底栏「OneGO!」→ 我的 OnePage：起名后点「新建」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 86
-        }
-      ],
-      "translation": "Bottom bar “OneGO!” → My OnePage: name it, then tap “New”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.dd3208ca2917",
-      "source": "欢迎使用 OneTHU",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 63,
-          "context": "return i18n(\"components.onboardingtourv3.dd3208ca2917\");"
-        }
-      ],
-      "translation": "Welcome to OneTHU",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.dde91a15ff1f",
-      "source": "标签栏横竖随时切，窄一点也站得住。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 80,
-          "context": "return i18n(\"components.onboardingtourv3.dde91a15ff1f\");"
-        }
-      ],
-      "translation": "Switch the tab bar between landscape and portrait anytime; it holds up even narrow.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.e010e3f578cc",
-      "source": " 步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 225,
-          "context": "i18n(\"components.onboardingtourv3.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourv3.fd73c2773154\") + STEPS + i18n(\"components.onboardingtourv3.e010e3f578cc\")"
-        }
-      ],
-      "translation": " steps",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.e18fe8598d89",
-      "source": "全是常态手势，没有要进出的「编辑模式」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 76,
-          "context": "return i18n(\"components.onboardingtourv3.e18fe8598d89\");"
-        }
-      ],
-      "translation": "All everyday gestures — there is no “edit mode” to enter or exit.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.edaec615b68d",
-      "source": "拖拽演练",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 176,
-          "context": "{i18n(\"components.onboardingtourv3.edaec615b68d\")}"
-        }
-      ],
-      "translation": "Drag-and-drop practice",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.f3ff6e20abc7",
-      "source": "任何页面按 Ctrl+K：输入即搜，回车直达。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 92
-        }
-      ],
-      "translation": "Press Ctrl+K on any page: type to search, press Enter to jump.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.f73a8a19c591",
-      "source": "设置 → 插件：「我的插件 / 插件市场」两个视图随时切。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 92
-        }
-      ],
-      "translation": "Settings → Plugins: switch anytime between “My plugins” and “Plugin marketplace”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.f8d9c42c331f",
-      "source": "自己拖一次",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 245,
-          "context": "{i18n(\"components.onboardingtourv3.f8d9c42c331f\")}"
-        }
-      ],
-      "translation": "Try the drag yourself",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.fd73c2773154",
-      "source": " 步，共 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 225,
-          "context": "i18n(\"components.onboardingtourv3.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourv3.fd73c2773154\")"
-        }
-      ],
-      "translation": " of ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.fded5e53272d",
-      "source": "新建即得白板页，与首页同一套手势，摆什么都行。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 86
-        }
-      ],
-      "translation": "A new tab is a board page with the same gestures as Home; put anything on it.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.096678f835a7",
-      "source": "已加入组织",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 63,
-          "context": "showToast(i18nMsg(\"components.organizationsection.096678f835a7\"))"
-        }
-      ],
-      "translation": "Joined organizations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.10f106e00d20",
-      "source": "组织邀请口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 27,
-          "context": "return i18n(\"components.organizationsection.10f106e00d20\");"
-        }
-      ],
-      "translation": "Organization invite share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.1a428fa57dd7",
-      "source": "用邀请口令加入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 72,
-          "context": "{i18n(\"components.organizationsection.1a428fa57dd7\")}"
-        }
-      ],
-      "translation": "Join with an invite share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.1d3b05b3fd2d",
-      "source": "还没有组织。建一个：成员按邮箱加入，资料库共享到邮箱。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 75,
-          "context": "{i18n(\"components.organizationsection.1d3b05b3fd2d\")}"
-        }
-      ],
-      "translation": "No organizations yet. Create one: members join by email, and the library is shared by email.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.276c9bcadb27",
-      "source": "组织邀请口令（ON-…，兼容旧口令）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 54,
-          "context": "label: i18nMsg(\"components.organizationsection.276c9bcadb27\")"
-        }
-      ],
-      "translation": "Organization invite share code (ON-…, older codes still supported)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.organizationsection.2f9daa828907",
-      "source": "删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 88,
-          "context": "{i18n(\"components.organizationsection.2f9daa828907\")}"
-        }
-      ],
-      "translation": "Delete",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

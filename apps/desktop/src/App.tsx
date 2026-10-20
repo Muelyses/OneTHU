@@ -137,7 +137,7 @@ function Routed() {
       <PluginBridge />
       <NotifyBridge />
       {(status === "ready") && <ChatDock />}
-      {/* 首启导览（2026-10-19 起）：统一模式向导 OnboardingTour——先选极简/实用/完整，再按模式走课程（组件内部判是否首启） */}
+      {/* 首启导览（2026-10-19 起）：统一模式向导 OnboardingTour——先选语言，再选极简/实用/完整，按所选语言与模式走课程（组件内部判是否首启） */}
       {status === "ready" ? <OnboardingTourGate /> : null}
       <FilePreviewHost />
       <ToastHost />

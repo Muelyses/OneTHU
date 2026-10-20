@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { installFakeCloud } from './lib/fake-cloud.mjs';
-import { closeTestBrowser } from './lib/onboarding-browser-steps.mjs';
+import { closeTestBrowser, advanceOnboardingLanguage } from './lib/onboarding-browser-steps.mjs';
 import { recordScreencast } from './lib/onboarding-recording.mjs';
 
 const out = process.env.ONETHU_AUTOPLAY_OUT ?? 'docs/onegui/onboarding-autoplay-2026-10-20';
@@ -76,6 +76,7 @@ async function openPage(width, height, fallback = false) {
 async function openMode(page, mode, start = true) {
   await page.evaluate(() => window.dispatchEvent(new Event('onethu.onboarding.replay')));
   await tour(page).waitFor();
+  await advanceOnboardingLanguage(page);
   await tour(page).getByRole('button', { name: names[mode] + '模式', exact: true }).click();
   if (start) await tour(page).getByRole('button', { name: '按此模式开始', exact: true }).click();
 }

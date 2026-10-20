@@ -133,3 +133,29 @@ html:root[data-og-motion="reduced"] .is-onboarding .experience-mode-preview { tr
 /* A practice dialog owns its return strip, so keyboard focus and reading stay in one layer. */
 html:root .tour-resume.is-embedded { position:relative; inset:auto; flex:0 0 auto; width:100%; max-width:none; border:0; border-top:1px solid var(--og-line-1); border-radius:0; box-shadow:none; margin:0; padding:var(--og-space-3); z-index:auto; }
 .tour-resume.is-embedded .tour-resume-copy { flex:1; }
+
+/* Language precedes mode selection; the question itself stays bilingual. */
+html:root .experience-tour.is-language.og-modal--lg { width:min(var(--og-page-max-narrow),100%); }
+.tour-language { display:grid; gap:var(--og-space-7); }
+.tour-language-heading h2 > span,.tour-language-heading p > span { display:block; }
+.tour-language-heading h2 > span + span { margin-top:var(--og-space-2); color:var(--og-content-2); font-size:var(--og-text-title); }
+.tour-language-heading p > span + span { margin-top:var(--og-space-2); }
+.tour-language-options { border:0; padding:0; margin:0; min-width:0; }
+.tour-language-options legend { padding:0; margin-bottom:var(--og-space-3); color:var(--og-content-3); font-size:var(--og-text-label); }
+.tour-language-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--og-grid-min-md)),1fr)); gap:var(--og-space-3); }
+html:root .tour-language-option { width:100%; min-width:0; padding:var(--og-space-4); border:1px solid var(--og-line-2); border-radius:var(--og-radius-lg); background:var(--og-surface-1); }
+html:root .tour-language-option.is-selected { border-color:var(--og-content-1); background:var(--og-selection-fill); }
+.tour-language-name { display:grid; gap:var(--og-space-1); overflow-wrap:anywhere; }
+.tour-language-name strong { font-weight:var(--og-weight-semibold); }
+.tour-language-name > span { font-size:var(--og-text-micro); color:var(--og-content-3); }
+.tour-language-continue { margin-left:auto; }
+.tour-language-heading .tour-language-short { display:none; }
+@media (max-width:600px) and (max-height:680px) {
+  .is-language .tour-header { margin-bottom:var(--og-space-3); }
+  .tour-language { gap:var(--og-space-4); }
+  .tour-language-heading { gap:var(--og-space-2); }
+  .tour-language-heading h2 > span + span { font-size:var(--og-text-subtitle); }
+  .tour-language-heading .tour-language-lead { display:none; }
+  .tour-language-heading .tour-language-short { display:block; }
+  html:root .tour-language-option { padding:var(--og-space-3); }
+}

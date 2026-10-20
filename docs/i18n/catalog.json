@@ -1,6 +1,6 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
-  "count": 7320,
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
+  "count": 7343,
   "messages": [
     {
       "key": "app.08566a4b57a3",
@@ -21178,6 +21178,84 @@
       ]
     },
     {
+      "key": "components.onboardinglanguage.continue",
+      "source": "继续",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 13,
+          "context": "continue: msg(\"components.onboardinglanguage.continue\")"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardinglanguage.hint",
+      "source": "之后可在设置中更改。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 10,
+          "context": "hint: msg(\"components.onboardinglanguage.hint\")"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardinglanguage.label",
+      "source": "界面语言",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 11,
+          "context": "label: msg(\"components.onboardinglanguage.label\")"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardinglanguage.lead",
+      "source": "接下来的导览与界面将使用你选择的语言。之后也可以在设置中更改。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 9,
+          "context": "lead: msg(\"components.onboardinglanguage.lead\")"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardinglanguage.step",
+      "source": "第 0 步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 12,
+          "context": "step: msg(\"components.onboardinglanguage.step\")"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardinglanguage.title",
+      "source": "你想使用哪种语言？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 8,
+          "context": "title: msg(\"components.onboardinglanguage.title\")"
+        }
+      ]
+    },
+    {
       "key": "components.onboardingpracticereturn.12fd8c16961e",
       "source": "继续导览",
       "kind": "text",
@@ -21237,7 +21315,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 96,
+          "line": 100,
           "context": "{i18n(\"components.onboardingtour.069d9b73883f\")}"
         }
       ]
@@ -21250,7 +21328,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ]
@@ -21263,7 +21341,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 98,
+          "line": 102,
           "context": "{i18n(\"components.onboardingtour.0e633d7479ee\")}"
         }
       ]
@@ -21281,7 +21359,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.19f469fec604\", { title: String(item.title) })}"
         }
       ]
@@ -21294,7 +21372,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 122,
+          "line": 127,
           "context": "last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ]
@@ -21307,7 +21385,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.1b47dc7fdca4\")}"
         }
       ]
@@ -21320,7 +21398,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.20fe3342156f\")}"
         }
       ]
@@ -21333,7 +21411,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 118,
+          "line": 122,
           "context": "{i18n(\"components.onboardingtour.24e75cb57392\")}"
         }
       ]
@@ -21346,7 +21424,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 109,
+          "line": 113,
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ]
@@ -21359,7 +21437,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "{i18n(\"components.onboardingtour.307ebc489657\")}"
         }
       ]
@@ -21372,7 +21450,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.368669b4e8f4\")}"
         }
       ]
@@ -21385,7 +21463,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ]
@@ -21398,7 +21476,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "{i18n(\"components.onboardingtour.427f33ee91af\")}"
         }
       ]
@@ -21411,7 +21489,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.4d572d8843d7\")}"
         }
       ]
@@ -21424,12 +21502,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "{i18n(\"components.onboardingtour.715ee9dc842f\")}"
         }
       ]
@@ -21442,7 +21520,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 52,
+          "line": 54,
           "context": "showToast(i18nMsg(\"components.onboardingtour.7d38695ada28\"))"
         }
       ]
@@ -21455,7 +21533,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 109,
+          "line": 113,
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ]
@@ -21468,7 +21546,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 89,
+          "line": 91,
           "context": "{i18n(\"components.onboardingtour.8dc51de059fe\")}"
         }
       ]
@@ -21481,7 +21559,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.9352315ee32a\")}"
         }
       ]
@@ -21494,17 +21572,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 99,
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.a8ab98831f5c\")}"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 116,
+          "line": 120,
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${String(step+1).padStart(2,\"0\")} / ${modeName}`"
         }
       ]
@@ -21517,7 +21595,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "intro?i18n(\"components.onboardingtour.aa4142e144b8\"):last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ]
@@ -21530,7 +21608,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 99,
           "context": "{i18n(\"components.onboardingtour.ac794a015ee3\")}"
         }
       ]
@@ -21543,7 +21621,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 86,
+          "line": 88,
           "context": "showToast(i18nMsg(\"components.onboardingtour.acb7923e4be1\"))"
         }
       ]
@@ -21556,7 +21634,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ]
@@ -21569,7 +21647,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 106,
+          "line": 110,
           "context": "{i18n(\"components.onboardingtour.b92a02095b87\")}"
         }
       ]
@@ -21582,7 +21660,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 90,
+          "line": 93,
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ]
@@ -21600,7 +21678,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 97,
+          "line": 101,
           "context": "{i18n(\"components.onboardingtour.bfd00f0d13de\", { value: String(CHAPTERS[item.id]) })}"
         }
       ]
@@ -21613,7 +21691,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 98,
+          "line": 102,
           "context": "{i18n(\"components.onboardingtour.c0b3fbff51cc\")}"
         }
       ]
@@ -21626,8 +21704,203 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 99,
           "context": "intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.board",
+      "source": "白板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.board\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.campus",
+      "source": "校园服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.campus\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.code",
+      "source": "口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.code\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.customize",
+      "source": "外观",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.customize\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.data",
+      "source": "数据与同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.data\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.explorer",
+      "source": "标签与工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.explorer\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.more",
+      "source": "更多功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.more\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.nfc",
+      "source": "碰一碰",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.nfc\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.onego",
+      "source": "OneGO!",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.onego\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.organization",
+      "source": "组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.organization\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.plugin",
+      "source": "插件与 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.plugin\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.quick",
+      "source": "五个入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.quick\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.swap",
+      "source": "常用入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.swap\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.today",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.today\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.chapter.vault",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.vault\");"
         }
       ]
     },
@@ -21639,7 +21912,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.d4208c3cace4\")}"
         }
       ]
@@ -21652,7 +21925,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 91,
+          "line": 94,
           "context": "{i18n(\"components.onboardingtour.d69e80a19484\")}"
         }
       ]
@@ -21665,7 +21938,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 90,
+          "line": 93,
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ]
@@ -21678,7 +21951,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 27,
           "context": "return i18n(\"components.onboardingtour.e2ee720ea747\");"
         }
       ]
@@ -21691,7 +21964,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 101,
+          "line": 105,
           "context": "intro?MODE_INTRO[chosen]:i18n(\"components.onboardingtour.f1804844a899\")"
         }
       ]
@@ -21704,7 +21977,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.f60b58eb72b6\")}"
         }
       ]
@@ -21717,8 +21990,34 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 122,
+          "line": 127,
           "context": "intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.modeintro.practical",
+      "source": "常用顺手，功能齐全",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.onboardingtour.modeintro.practical\");"
+        }
+      ]
+    },
+    {
+      "key": "components.onboardingtour.modeintro.simple",
+      "source": "把今天放在眼前",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.onboardingtour.modeintro.simple\");"
         }
       ]
     },
@@ -62385,7 +62684,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 66,
+          "line": 55,
           "context": "return i18n(\"pages.info.visittab.00afe7c5403e\");"
         }
       ]
@@ -62398,7 +62697,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 282,
+          "line": 286,
           "context": "{i18n(\"pages.info.visittab.082be97daf88\")}"
         }
       ]
@@ -62416,7 +62715,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 168,
+          "line": 165,
           "context": "logLine(i18n(\"pages.info.visittab.085419250804\", { value: String(String(e)) }))"
         }
       ]
@@ -62429,7 +62728,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 273,
+          "line": 277,
           "context": "{i18n(\"pages.info.visittab.095b00fc092b\")}"
         }
       ]
@@ -62455,14 +62754,14 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 46,
-          "context": "() => i18n(\"pages.info.visittab.0b0682ac2f83\")"
+          "line": 39,
+          "context": "() => msg(\"pages.info.visittab.0b0682ac2f83\")"
         }
       ]
     },
     {
       "key": "pages.info.visittab.0dc9677cab64",
-      "source": "统一身份认证页面形态不认识（HTTP {value}）",
+      "source": "统一身份认证页面形态不认识（HTTP {value}），请稍后重试",
       "kind": "text",
       "parameters": [
         {
@@ -62472,7 +62771,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 60,
+          "line": 49,
           "context": "return i18n(\"pages.info.visittab.0dc9677cab64\", { value: m1[1] });"
         }
       ]
@@ -62485,7 +62784,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 327,
+          "line": 331,
           "context": "{i18n(\"pages.info.visittab.178375c36ece\")}"
         }
       ]
@@ -62498,17 +62797,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 225,
+          "line": 229,
           "context": "{i18n(\"pages.info.visittab.1ecea7d51b20\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 249,
+          "line": 253,
           "context": "{i18n(\"pages.info.visittab.1ecea7d51b20\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 364,
+          "line": 368,
           "context": "{i18n(\"pages.info.visittab.1ecea7d51b20\")}"
         }
       ]
@@ -62526,7 +62825,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 385,
+          "line": 389,
           "context": "{i18n(\"pages.info.visittab.1fe96980cdde\", { value: String(prettyTime(r.createdAt)) })}"
         }
       ]
@@ -62539,7 +62838,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 266,
+          "line": 270,
           "context": "model?.formName ?? i18n(\"pages.info.visittab.247ae62767cc\")"
         }
       ]
@@ -62552,7 +62851,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 307,
+          "line": 311,
           "context": "{i18n(\"pages.info.visittab.2a4c86ea2def\")}"
         }
       ]
@@ -62565,7 +62864,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 70,
+          "line": 59,
           "context": "return i18n(\"pages.info.visittab.34c680feb9c9\");"
         }
       ]
@@ -62591,7 +62890,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 217,
+          "line": 221,
           "context": "{i18n(\"pages.info.visittab.370f63b02317\")}"
         }
       ]
@@ -62604,7 +62903,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 338,
+          "line": 342,
           "context": "{i18n(\"pages.info.visittab.4018b809d4b2\")}"
         }
       ]
@@ -62617,7 +62916,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 321,
+          "line": 325,
           "context": "{i18n(\"pages.info.visittab.421d678098ad\")}"
         }
       ]
@@ -62630,7 +62929,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 69,
+          "line": 58,
           "context": "return i18n(\"pages.info.visittab.47ae9eb80e64\");"
         }
       ]
@@ -62647,7 +62946,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 55,
+          "line": 44,
           "context": "return i18n(\"pages.info.visittab.488837fe85bd\", { value: m1[1] });"
         }
       ]
@@ -62660,7 +62959,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 64,
+          "line": 53,
           "context": "return i18n(\"pages.info.visittab.48ea9c8f9a02\");"
         }
       ]
@@ -62673,7 +62972,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 296,
+          "line": 300,
           "context": "{i18n(\"pages.info.visittab.50b5b1d2abef\")}"
         }
       ]
@@ -62686,7 +62985,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 378,
+          "line": 382,
           "context": "{i18n(\"pages.info.visittab.50d72b73d567\")}"
         }
       ]
@@ -62699,7 +62998,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 294,
+          "line": 298,
           "context": "{i18n(\"pages.info.visittab.50fcc24a609a\")}"
         }
       ]
@@ -62712,7 +63011,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 378,
+          "line": 382,
           "context": "{i18n(\"pages.info.visittab.609175d34db8\")}"
         }
       ]
@@ -62725,8 +63024,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 38,
-          "context": "return i18n(\"pages.info.visittab.65897f00fbc6\");"
+          "line": 36,
+          "context": "() => msg(\"pages.info.visittab.65897f00fbc6\")"
         }
       ]
     },
@@ -62738,12 +63037,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 272,
+          "line": 276,
           "context": "{i18n(\"pages.info.visittab.65f83437c9a8\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 273,
+          "line": 277,
           "context": "{i18n(\"pages.info.visittab.65f83437c9a8\")}"
         }
       ]
@@ -62765,7 +63064,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 406,
+          "line": 410,
           "context": "{i18n(\"pages.info.visittab.67f6b1d5a484\", { visitDate: String(form.visitDate), length: String(form.visitors.length) })}"
         }
       ]
@@ -62778,7 +63077,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 269,
+          "line": 273,
           "context": "{i18n(\"pages.info.visittab.6a4658f8a7e1\")}"
         }
       ]
@@ -62791,7 +63090,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 237,
+          "line": 241,
           "context": "{i18n(\"pages.info.visittab.6ab2a47b49be\")}"
         }
       ]
@@ -62804,12 +63103,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 299,
+          "line": 303,
           "context": "{i18n(\"pages.info.visittab.6f52cc94db65\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 335,
+          "line": 339,
           "context": "{i18n(\"pages.info.visittab.6f52cc94db65\")}"
         }
       ]
@@ -62822,7 +63121,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 352,
+          "line": 356,
           "context": "{i18n(\"pages.info.visittab.70db7ae136ad\")}"
         }
       ]
@@ -62840,8 +63139,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 153,
-          "context": "setMineNote(i18n(\"pages.info.visittab.727f5033a84b\", { value: String(e instanceof Error ? localizeVisitError(e.message) : i18n(\"pages.info.visittab.cc06059ac1bf\")) }))"
+          "line": 378,
+          "context": "{i18n(\"pages.info.visittab.727f5033a84b\", { value: resolveVisitText(mineNote) })}"
         }
       ]
     },
@@ -62853,7 +63152,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 59,
+          "line": 48,
           "context": "return i18n(\"pages.info.visittab.7a786a6f0ace\");"
         }
       ]
@@ -62866,7 +63165,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 338,
+          "line": 342,
           "context": "{i18n(\"pages.info.visittab.7a8f9a9b056c\")}"
         }
       ]
@@ -62879,12 +63178,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 343,
+          "line": 347,
           "context": "{i18n(\"pages.info.visittab.7b5d518d3cfe\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 344,
+          "line": 348,
           "context": "{i18n(\"pages.info.visittab.7b5d518d3cfe\")}"
         }
       ]
@@ -62897,7 +63196,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 248,
+          "line": 252,
           "context": "{i18n(\"pages.info.visittab.7bdd5ce1e298\")}"
         }
       ]
@@ -62910,7 +63209,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 54,
+          "line": 43,
           "context": "return i18n(\"pages.info.visittab.7c4768ed455b\");"
         }
       ]
@@ -62928,7 +63227,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 386,
+          "line": 390,
           "context": "{i18nRich(\"pages.info.visittab.7ca7f03d80cd\", { status: r.status })}"
         }
       ]
@@ -62941,7 +63240,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 304,
+          "line": 308,
           "context": "{i18n(\"pages.info.visittab.7cde84399a2c\")}"
         }
       ]
@@ -62954,7 +63253,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 61,
+          "line": 50,
           "context": "return i18n(\"pages.info.visittab.7cfaed11d6a4\");"
         }
       ]
@@ -62967,7 +63266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 373,
+          "line": 377,
           "context": "{i18n(\"pages.info.visittab.83a23e30465b\")}"
         }
       ]
@@ -62993,7 +63292,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 62,
+          "line": 51,
           "context": "return i18n(\"pages.info.visittab.86889497e1c5\");"
         }
       ]
@@ -63006,7 +63305,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 376,
+          "line": 380,
           "context": "{i18n(\"pages.info.visittab.86b6d0d63062\")}"
         }
       ]
@@ -63019,7 +63318,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 279,
+          "line": 283,
           "context": "{i18n(\"pages.info.visittab.8b34c0fd32be\")}"
         }
       ]
@@ -63032,8 +63331,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 45,
-          "context": "() => i18n(\"pages.info.visittab.8d66f991153b\")"
+          "line": 38,
+          "context": "() => msg(\"pages.info.visittab.8d66f991153b\")"
         }
       ]
     },
@@ -63045,7 +63344,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 65,
+          "line": 54,
           "context": "return i18n(\"pages.info.visittab.8da17766bce7\");"
         }
       ]
@@ -63058,7 +63357,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 311,
+          "line": 315,
           "context": "{i18n(\"pages.info.visittab.94b9ec80f3bb\")}"
         }
       ]
@@ -63071,7 +63370,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 57,
+          "line": 46,
           "context": "return i18n(\"pages.info.visittab.95f5bc49c2c0\");"
         }
       ]
@@ -63084,7 +63383,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 63,
+          "line": 52,
           "context": "return i18n(\"pages.info.visittab.962b844284e8\");"
         }
       ]
@@ -63097,7 +63396,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 261,
+          "line": 265,
           "context": "{i18n(\"pages.info.visittab.99f047c591bb\")}"
         }
       ]
@@ -63110,7 +63409,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 344,
+          "line": 348,
           "context": "{i18n(\"pages.info.visittab.9b68dcff364d\")}"
         }
       ]
@@ -63123,7 +63422,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 401,
+          "line": 405,
           "context": "{i18n(\"pages.info.visittab.9ebe36f8cf23\")}"
         }
       ]
@@ -63136,7 +63435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 68,
+          "line": 57,
           "context": "return i18n(\"pages.info.visittab.9f2554ab6827\");"
         }
       ]
@@ -63149,7 +63448,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 286,
+          "line": 290,
           "context": "{i18n(\"pages.info.visittab.a8f4cf665a0d\")}"
         }
       ]
@@ -63162,7 +63461,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 320,
+          "line": 324,
           "context": "{i18n(\"pages.info.visittab.a90002b0961c\")}"
         }
       ]
@@ -63175,8 +63474,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 37,
-          "context": "return i18n(\"pages.info.visittab.af16cc0b5325\");"
+          "line": 35,
+          "context": "() => msg(\"pages.info.visittab.af16cc0b5325\")"
         }
       ]
     },
@@ -63188,12 +63487,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 281,
+          "line": 285,
           "context": "{i18n(\"pages.info.visittab.af29f087cc77\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 282,
+          "line": 286,
           "context": "{i18n(\"pages.info.visittab.af29f087cc77\")}"
         }
       ]
@@ -63206,7 +63505,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 346,
+          "line": 350,
           "context": "{i18n(\"pages.info.visittab.af72f5d45ca1\")}"
         }
       ]
@@ -63219,12 +63518,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 278,
+          "line": 282,
           "context": "{i18n(\"pages.info.visittab.b0861c591f25\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 279,
+          "line": 283,
           "context": "{i18n(\"pages.info.visittab.b0861c591f25\")}"
         }
       ]
@@ -63237,7 +63536,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 287,
+          "line": 291,
           "context": "{i18n(\"pages.info.visittab.b35fb6eff43f\")}"
         }
       ]
@@ -63263,7 +63562,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 330,
+          "line": 334,
           "context": "{i18n(\"pages.info.visittab.c425e1cfd31d\")}"
         }
       ]
@@ -63276,8 +63575,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 153,
-          "context": "e instanceof Error ? localizeVisitError(e.message) : i18n(\"pages.info.visittab.cc06059ac1bf\")"
+          "line": 123,
+          "context": "e instanceof Error ? e.message : msg(\"pages.info.visittab.cc06059ac1bf\")"
         }
       ]
     },
@@ -63289,7 +63588,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 400,
+          "line": 404,
           "context": "{i18n(\"pages.info.visittab.d8bd7eda6680\")}"
         }
       ]
@@ -63302,8 +63601,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 39,
-          "context": "return i18n(\"pages.info.visittab.e22da1c2173d\");"
+          "line": 199,
+          "context": "setNote(msg(\"pages.info.visittab.e22da1c2173d\"))"
         }
       ]
     },
@@ -63319,7 +63618,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 56,
+          "line": 45,
           "context": "return i18n(\"pages.info.visittab.e3301e2db296\", { value: m1[1] });"
         }
       ]
@@ -63332,7 +63631,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 360,
+          "line": 364,
           "context": "model?.confirmLabel || i18n(\"pages.info.visittab.eda19ba6e037\")"
         }
       ]
@@ -63345,7 +63644,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 311,
+          "line": 315,
           "context": "{i18n(\"pages.info.visittab.f265a7b34089\")}"
         }
       ]
@@ -63358,7 +63657,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 262,
+          "line": 266,
           "context": "{i18n(\"pages.info.visittab.f56c6c82203b\")}"
         }
       ]
@@ -63371,7 +63670,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 44,
+          "line": 37,
           "context": "() => i18n(\"pages.info.visittab.f733797ef61a\")"
         }
       ]
@@ -63384,7 +63683,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 363,
+          "line": 367,
           "context": "{i18n(\"pages.info.visittab.f7c356bbe1c2\")}"
         }
       ]
@@ -63397,7 +63696,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 67,
+          "line": 56,
           "context": "return i18n(\"pages.info.visittab.f8a7bfe03fb8\");"
         }
       ]
@@ -63410,7 +63709,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 58,
+          "line": 47,
           "context": "return i18n(\"pages.info.visittab.fcafad5054ea\");"
         }
       ]
@@ -63423,7 +63722,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 224,
+          "line": 228,
           "context": "{i18n(\"pages.info.visittab.fd9918edd55e\")}"
         }
       ]

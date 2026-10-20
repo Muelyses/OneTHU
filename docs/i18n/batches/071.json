@@ -1,7 +1,395 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.settings.46ec3a81bd34",
+      "source": "全窗壁纸库、上传与动态壁纸声音",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 92,
+          "context": "return i18n(\"pages.settings.46ec3a81bd34\");"
+        }
+      ],
+      "translation": "Whole-window wallpaper library, uploads, and dynamic wallpaper sound",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.47a5ccceaeca",
+      "source": "主题插件的启用 / 停用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 89,
+          "context": "return i18n(\"pages.settings.47a5ccceaeca\");"
+        }
+      ],
+      "translation": "Enable / disable theme plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.47fcb97b9b6b",
+      "source": "导入失败：格式不正确，请粘贴本应用导出的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 401,
+          "context": "setFavMsg(i18n(\"pages.settings.47fcb97b9b6b\"))"
+        }
+      ],
+      "translation": "Import failed: wrong format; paste content exported by this app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.48b3252fa3bf",
+      "source": "云盘连接失效时一键重连",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 115,
+          "context": "return i18n(\"pages.settings.48b3252fa3bf\");"
+        }
+      ],
+      "translation": "Reconnect the cloud drive in one tap when the connection fails",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4a944ac462b1",
+      "source": "只列已启用主题，点「应用」切换",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 87,
+          "context": "return i18n(\"pages.settings.4a944ac462b1\");"
+        }
+      ],
+      "translation": "Lists enabled themes only; tap \"Apply\" to switch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4b6ded8a7f18",
+      "source": "通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 106,
+          "context": "return i18n(\"pages.settings.4b6ded8a7f18\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 433,
+          "context": "{i18n(\"pages.settings.4b6ded8a7f18\")}"
+        }
+      ],
+      "translation": "Notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4b7a59bc4d83",
+      "source": "云盘连接出问题在「日程云同步」那张卡上重试/重新授权；当前没有独立的「云盘重连」按钮（连接正常时用不上），已带到「云同步」分节。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 115,
+          "context": "return i18n(\"pages.settings.4b7a59bc4d83\");"
+        }
+      ],
+      "translation": "If the cloud drive connection breaks, retry or re-authorize on the \"Schedule cloud sync\" card; there is no separate \"Cloud drive reconnect\" button (not needed while connected) — brought you to the \"Cloud sync\" section.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4c2f3a5e0a01",
+      "source": "一键下载/检查 Playwright 浏览器与独立 profile",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 100,
+          "context": "return i18n(\"pages.settings.4c2f3a5e0a01\");"
+        }
+      ],
+      "translation": "Download / check Playwright browsers and a separate profile in one tap",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4d85ccc9814b",
+      "source": "本机没有可直接用的浏览器，可一键下载专用版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 866,
+          "context": "probe.browsers.length > 0\n                ? i18n(\"pages.settings.1e4072e67ba7\", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")) })\n                : i18n(\"pages.settings.4d85ccc9814b\")"
+        }
+      ],
+      "translation": "No directly usable browser on this machine; download a dedicated build in one tap",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4e66e6c598d5",
+      "source": "视频壁纸有声时是否放开声音",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 93,
+          "context": "return i18n(\"pages.settings.4e66e6c598d5\");"
+        }
+      ],
+      "translation": "Whether to allow sound when a video wallpaper has audio",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.4ef6221d6213",
+      "source": "已启动",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 841,
+          "context": "r.port ? i18n(\"pages.settings.e389a150e32e\", { port: String(r.port) }) : i18n(\"pages.settings.4ef6221d6213\")"
+        }
+      ],
+      "translation": "Started",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.50efca8dcb36",
+      "source": "打开电子身份",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 321,
+          "context": "{i18n(\"pages.settings.50efca8dcb36\")}"
+        }
+      ],
+      "translation": "Open electronic identity",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.52af44747494",
+      "source": "下载/检查在「极客模式（浏览器探索）」行下方的环境卡里；已带到「极客模式」分节。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 100,
+          "context": "return i18n(\"pages.settings.52af44747494\");"
+        }
+      ],
+      "translation": "Download / check are in the environment card below the \"Geek mode (browser exploration)\" row; brought you to the \"Geek mode\" section.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.52d25a9e30ba",
+      "source": "关于",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 109,
+          "context": "return i18n(\"pages.settings.52d25a9e30ba\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 269,
+          "context": "{i18n(\"pages.settings.52d25a9e30ba\")}"
+        }
+      ],
+      "translation": "About",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.52de8e2d0c2c",
+      "source": "下载位置已保存，下次下载时生效。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 523,
+          "context": "reset ? i18n(\"pages.settings.9c5584655501\") : i18n(\"pages.settings.52de8e2d0c2c\")"
+        }
+      ],
+      "translation": "Download location saved; takes effect on the next download.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.53b5c5c16016",
+      "source": "极客模式（浏览器探索）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 99,
+          "context": "return i18n(\"pages.settings.53b5c5c16016\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 852,
+          "context": "{i18n(\"pages.settings.53b5c5c16016\")}"
+        }
+      ],
+      "translation": "Geek mode (browser exploration)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.56a9e30d6963",
+      "source": "电子身份窗口已打开，账号密码已自动填入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 319,
+          "context": "setEidMsg(i18n(\"pages.settings.56a9e30d6963\"))"
+        }
+      ],
+      "translation": "Electronic identity window is open; username and password auto-filled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.576d81bb0631",
+      "source": "导入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 382,
+          "context": "{i18n(\"pages.settings.576d81bb0631\")}"
+        }
+      ],
+      "translation": "Import",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.590151cbdb54",
+      "source": "亮色用白天主题，深色用黑夜主题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 90,
+          "context": "return i18n(\"pages.settings.590151cbdb54\");"
+        }
+      ],
+      "translation": "Light theme in light mode, dark theme in dark mode",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.5aeb7a87addf",
+      "source": "管理主题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 89,
+          "context": "return i18n(\"pages.settings.5aeb7a87addf\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 738,
+          "context": "{i18n(\"pages.settings.5aeb7a87addf\")}"
+        }
+      ],
+      "translation": "Manage themes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.61bf6fa12002",
+      "source": "系统浏览器（复用本机 Chrome/Edge）或探索专用浏览器。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 880,
+          "context": "{i18n(\"pages.settings.61bf6fa12002\")}"
+        }
+      ],
+      "translation": "The system browser (reusing local Chrome/Edge) or the dedicated exploration browser.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.636849c8095c",
+      "source": "删除全部用户收藏夹并复位折叠记录？默认一级入口不受影响。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 384,
+          "context": "confirmOk(i18nMsg(\"pages.settings.636849c8095c\"))"
+        }
+      ],
+      "translation": "Delete all user favorites and reset collapse state? Default top-level entries are unaffected.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.63c3e2b4bea1",
+      "source": "外部作业源账号登录与刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 116,
+          "context": "return i18n(\"pages.settings.63c3e2b4bea1\");"
+        }
+      ],
+      "translation": "External assignment source account sign-in and refresh",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.settings.646c8247d71f",
       "source": "下载位置读取失败，请重新选择文件夹或恢复默认。",
@@ -1006,399 +1394,6 @@
         }
       ],
       "translation": "The default level is a neutral, glass-free surface; the other three are three glass styles.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.bcc2333dc631",
-      "source": "下载中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 871,
-          "context": "busy === \"dl\" ? i18n(\"pages.settings.bcc2333dc631\") : i18n(\"pages.settings.c1fc27cebdd4\")"
-        }
-      ],
-      "translation": "Downloading…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.bce2377283c2",
-      "source": "清除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 458,
-          "context": "clearing ? i18n(\"pages.settings.cd23a528a4cd\") : i18n(\"pages.settings.bce2377283c2\")"
-        }
-      ],
-      "translation": "Clear",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c1be461c4aa2",
-      "source": "反馈问题时粘贴这段文字，不含学号等个人信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 605,
-          "context": "{i18n(\"pages.settings.c1be461c4aa2\")}"
-        }
-      ],
-      "translation": "Paste this text when reporting issues; it contains no student ID or other personal info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c1c79b63f418",
-      "source": "下载完成",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 827,
-          "context": "r || i18n(\"pages.settings.c1c79b63f418\")"
-        }
-      ],
-      "translation": "Download complete",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c1f658373079",
-      "source": "未登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 291,
-          "context": "user?.displayName || displayStudentId(user?.username) || i18n(\"pages.settings.c1f658373079\")"
-        }
-      ],
-      "translation": "Not signed in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c1fc27cebdd4",
-      "source": "下载专用版",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 871,
-          "context": "busy === \"dl\" ? i18n(\"pages.settings.bcc2333dc631\") : i18n(\"pages.settings.c1fc27cebdd4\")"
-        }
-      ],
-      "translation": "Download dedicated build",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c2c3d838b52c",
-      "source": "删除全部用户收藏夹与折叠记录（默认一级入口不受影响，永远在左侧栏）。 各功能仍在原来的页面，收藏夹只是跳转入口。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "favMsg ? <>　{favMsg}</> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 366,
-          "context": "{i18nRich(\"pages.settings.c2c3d838b52c\", { value: favMsg ? <>　{favMsg}</> : null })}"
-        }
-      ],
-      "translation": "Delete all user favorites and collapse state (default top-level entries are unaffected and always stay in the left sidebar). Features remain on their original pages; favorites are just shortcuts. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c38372ef73d3",
-      "source": "清华电子身份（账号密码管理）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 302,
-          "context": "{i18n(\"pages.settings.c38372ef73d3\")}"
-        }
-      ],
-      "translation": "Tsinghua electronic identity (account & password management)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c3abbc2eb455",
-      "source": "安装主题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 88,
-          "context": "return i18n(\"pages.settings.c3abbc2eb455\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 734,
-          "context": "{i18n(\"pages.settings.c3abbc2eb455\")}"
-        }
-      ],
-      "translation": "Install theme",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c820e3820a04",
-      "source": "，需重新登录一次。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "eidMsg ? <ErrorLine text={eidMsg} tone=\"quiet\" /> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 304,
-          "context": "{i18nRich(\"pages.settings.c820e3820a04\", { value: eidMsg ? <ErrorLine text={eidMsg} tone=\"quiet\" /> : null })}"
-        }
-      ],
-      "translation": ", you'll need to sign in once more. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c85fea7bf89f",
-      "source": "全站玻璃面材浓度四档",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 95,
-          "context": "return i18n(\"pages.settings.c85fea7bf89f\");"
-        }
-      ],
-      "translation": "Four levels of glass surface intensity site-wide",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.c8877a829fab",
-      "source": "导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 113,
-          "context": "return i18n(\"pages.settings.c8877a829fab\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 212,
-          "context": "{i18n(\"pages.settings.c8877a829fab\")}"
-        }
-      ],
-      "translation": "Tour",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.ccdb042ac3e2",
-      "source": "版本、更新与开源信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 109,
-          "context": "return i18n(\"pages.settings.ccdb042ac3e2\");"
-        }
-      ],
-      "translation": "Version, updates, and open-source info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.ccea37f61ff9",
-      "source": "到插件市场安装主题（自动筛选「主题」类别）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 732,
-          "context": "{i18n(\"pages.settings.ccea37f61ff9\")}"
-        }
-      ],
-      "translation": "Install themes from the plugin market (auto-filtered to the \"Themes\" category)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.cd23a528a4cd",
-      "source": "清除中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 458,
-          "context": "clearing ? i18n(\"pages.settings.cd23a528a4cd\") : i18n(\"pages.settings.bce2377283c2\")"
-        }
-      ],
-      "translation": "Clearing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.ce93302dab64",
-      "source": "用于问题排查，导出到系统下载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 579,
-          "context": "where ? i18n(\"pages.settings.212735f5be92\", { where: String(where) }) : i18n(\"pages.settings.ce93302dab64\")"
-        }
-      ],
-      "translation": "For troubleshooting; exports to system Downloads",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.d0a6f0c08b1a",
-      "source": "生效中：关掉开关即恢复所选主题。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 771,
-          "context": "{i18n(\"pages.settings.d0a6f0c08b1a\")}"
-        }
-      ],
-      "translation": "Active: turn off the toggle to restore the selected theme.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.d26529fe64b3",
-      "source": "粘贴收藏夹内容（另一台设备导出的）…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 396,
-          "context": "{i18n(\"pages.settings.d26529fe64b3\")}"
-        }
-      ],
-      "translation": "Paste favorites content (exported from another device)…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.d4d78d3b38d0",
-      "source": "外部作业源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 104,
-          "context": "return i18n(\"pages.settings.d4d78d3b38d0\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 336,
-          "context": "{i18n(\"pages.settings.d4d78d3b38d0\")}"
-        }
-      ],
-      "translation": "External homework",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.d8ff71d6c093",
-      "source": "导入并覆盖",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 408,
-          "context": "{i18n(\"pages.settings.d8ff71d6c093\")}"
-        }
-      ],
-      "translation": "Import & overwrite",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.da4f90828ea3",
-      "source": "收藏夹管理与导入导出",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 102,
-          "context": "return i18n(\"pages.settings.da4f90828ea3\");"
-        }
-      ],
-      "translation": "Favorites management & import/export",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.dccec95b65e1",
-      "source": "未下载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 865,
-          "context": "probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")"
-        }
-      ],
-      "translation": "Not downloaded",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.dce6e572314e",
-      "source": "导出中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 580,
-          "context": "busy ? i18n(\"pages.settings.dce6e572314e\") : i18n(\"pages.settings.b8f32d284848\")"
-        }
-      ],
-      "translation": "Exporting…",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

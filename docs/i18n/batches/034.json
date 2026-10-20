@@ -1,7 +1,380 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.homecards.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 141,
+          "context": "return i18n(\"lib.homecards.e4d40b4d6759\");"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.e703d13e3468",
+      "source": "生活页 · 财务 · 发票列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 145,
+          "context": "return i18n(\"lib.homecards.e703d13e3468\");"
+        }
+      ],
+      "translation": "Life page · Finance · Invoice list",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 155,
+          "context": "return i18n(\"lib.homecards.e81059e1a712\");"
+        }
+      ],
+      "translation": "Common space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.ebfa3e62fea6",
+      "source": "点击查看详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 115,
+          "context": "return i18n(\"lib.homecards.ebfa3e62fea6\");"
+        }
+      ],
+      "translation": "Tap to view details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.ecc11c8afea8",
+      "source": "空教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 152,
+          "context": "return i18n(\"lib.homecards.ecc11c8afea8\");"
+        }
+      ],
+      "translation": "Empty classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.ede028d7ec64",
+      "source": "全部成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 134,
+          "context": "return i18n(\"lib.homecards.ede028d7ec64\");"
+        }
+      ],
+      "translation": "All grades",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.ee6388006cb5",
+      "source": "预约页 · 体育场馆时段预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 154,
+          "context": "return i18n(\"lib.homecards.ee6388006cb5\");"
+        }
+      ],
+      "translation": "Reservations page · Sports venue time slots",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.fa8fe752727c",
+      "source": "全部课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 132,
+          "context": "return i18n(\"lib.homecards.fa8fe752727c\");"
+        }
+      ],
+      "translation": "All course files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.fc7c1ff5f380",
+      "source": "信息页 · 学期安排图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 151,
+          "context": "return i18n(\"lib.homecards.fc7c1ff5f380\");"
+        }
+      ],
+      "translation": "Info page · Semester schedule images",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.fcb73401e714",
+      "source": "校历 · 学校重要事项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 119,
+          "context": "return i18n(\"lib.homecards.fcb73401e714\");"
+        }
+      ],
+      "translation": "Academic calendar · Key school events",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.fd17d86dd268",
+      "source": "选课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 129,
+          "context": "return i18n(\"lib.homecards.fd17d86dd268\");"
+        }
+      ],
+      "translation": "Course selection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.fe7dbfcadf51",
+      "source": "生活页 · 余额与流水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 139,
+          "context": "return i18n(\"lib.homecards.fe7dbfcadf51\");"
+        }
+      ],
+      "translation": "Life page · Balance and transactions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.hwcourse.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/hwCourse.ts",
+          "line": 37,
+          "context": "courseMap.get(h.courseId) ?? i18n(\"lib.hwcourse.60db1afb4022\")"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.1073267e70f3",
+      "source": "不做处理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 37,
+          "context": "return i18n(\"lib.imagefilters.1073267e70f3\");"
+        }
+      ],
+      "translation": "No processing",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.18b8640fe01c",
+      "source": "这张图打不开，请重新选择",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 405,
+          "context": "new Error(i18n(\"lib.imagefilters.18b8640fe01c\"))"
+        }
+      ],
+      "translation": "This image can't be opened, please choose another one",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.1a407ccbb6dc",
+      "source": "暖色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 41,
+          "context": "return i18n(\"lib.imagefilters.1a407ccbb6dc\");"
+        }
+      ],
+      "translation": "Warm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.47d88357c5ea",
+      "source": "黑白",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 39,
+          "context": "return i18n(\"lib.imagefilters.47d88357c5ea\");"
+        }
+      ],
+      "translation": "Black and white",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.4b1db520af46",
+      "source": "原图",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 37,
+          "context": "return i18n(\"lib.imagefilters.4b1db520af46\");"
+        }
+      ],
+      "translation": "Original",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.6403563723c7",
+      "source": "提亮去阴影",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 38,
+          "context": "return i18n(\"lib.imagefilters.6403563723c7\");"
+        }
+      ],
+      "translation": "Brighten and remove shadows",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.6dfabd848137",
+      "source": "当前环境没有画布，无法处理图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 88,
+          "context": "new Error(i18n(\"lib.imagefilters.6dfabd848137\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 93,
+          "context": "new Error(i18n(\"lib.imagefilters.6dfabd848137\"))"
+        }
+      ],
+      "translation": "No canvas available in this environment, images can't be processed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.b9c153f4ea21",
+      "source": "字迹更利落",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 40,
+          "context": "return i18n(\"lib.imagefilters.b9c153f4ea21\");"
+        }
+      ],
+      "translation": "Sharper handwriting",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.c2a291b64f6b",
+      "source": "扫描",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 38,
+          "context": "return i18n(\"lib.imagefilters.c2a291b64f6b\");"
+        }
+      ],
+      "translation": "Scan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.imagefilters.d4040b81cd67",
+      "source": "黑白文档",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/imageFilters.ts",
+          "line": 39,
+          "context": "return i18n(\"lib.imagefilters.d4040b81cd67\");"
+        }
+      ],
+      "translation": "Black and white document",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.imagefilters.e0cebe6ab1c6",
       "source": "偏暖色调",
@@ -911,374 +1284,6 @@
         }
       ],
       "translation": "Payment Request Letter Issuance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2a9efe0b1940",
-      "source": "研究生管理规定自测",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 96,
-          "context": "return i18n(\"lib.infoapps.2a9efe0b1940\");"
-        }
-      ],
-      "translation": "Graduate Regulations Self-Assessment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2af0c57e9753",
-      "source": "书院/院系内专业确认",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 110,
-          "context": "return i18n(\"lib.infoapps.2af0c57e9753\");"
-        }
-      ],
-      "translation": "Major Confirmation Within College or Department",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2b4cba90fa59",
-      "source": "酒店住宿服务合同（示范文本）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 32,
-          "context": "return i18n(\"lib.infoapps.2b4cba90fa59\");"
-        }
-      ],
-      "translation": "Hotel Accommodation Service Contract (Model Text)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2b8c1b13b28f",
-      "source": "电子招投标平台信息借用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 191,
-          "context": "return i18n(\"lib.infoapps.2b8c1b13b28f\");"
-        }
-      ],
-      "translation": "E-Procurement Platform Information Access",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2d3dbd8298a7",
-      "source": "财务审批系统",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 214,
-          "context": "return i18n(\"lib.infoapps.2d3dbd8298a7\");"
-        }
-      ],
-      "translation": "Finance Approval System",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2d6a19246f8f",
-      "source": "论文认领",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 128,
-          "context": "return i18n(\"lib.infoapps.2d6a19246f8f\");"
-        }
-      ],
-      "translation": "Paper Claim",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2e3250329028",
-      "source": "课表",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 81,
-          "context": "return i18n(\"lib.infoapps.2e3250329028\");"
-        }
-      ],
-      "translation": "Timetable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.2e737fbf15bc",
-      "source": "市政基础设施和校园环境类合同审批/备案",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 66,
-          "context": "return i18n(\"lib.infoapps.2e737fbf15bc\");"
-        }
-      ],
-      "translation": "Municipal Infrastructure and Campus Environment Contract Approval/Filing",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.302454afa3f8",
-      "source": "共建研究生必修环节社会实践基地协议书（示范文本）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 33,
-          "context": "return i18n(\"lib.infoapps.302454afa3f8\");"
-        }
-      ],
-      "translation": "Joint Graduate Social Practice Base Agreement (Model Text)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.313b134f0149",
-      "source": "资产评估及备案",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 170,
-          "context": "return i18n(\"lib.infoapps.313b134f0149\");"
-        }
-      ],
-      "translation": "Asset Appraisal and Filing",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.33143df95cdd",
-      "source": "申请校外媒体报道",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 71,
-          "context": "return i18n(\"lib.infoapps.33143df95cdd\");"
-        }
-      ],
-      "translation": "Off-Campus Media Coverage Request",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.3338a21e54e2",
-      "source": "工程硕博士培养改革专项试点全日制研究生联合培养协议（示范文本）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 36,
-          "context": "return i18n(\"lib.infoapps.3338a21e54e2\");"
-        }
-      ],
-      "translation": "Engineering Master's and Doctoral Training Reform Pilot Joint Training Agreement (Model Text)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.33464fa68c22",
-      "source": "就业手续办理",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 294,
-          "context": "return i18n(\"lib.infoapps.33464fa68c22\");"
-        }
-      ],
-      "translation": "Employment Procedures",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.335de0697b53",
-      "source": "清华邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 258,
-          "context": "return i18n(\"lib.infoapps.335de0697b53\");"
-        }
-      ],
-      "translation": "Tsinghua Email",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.368f0d68fc00",
-      "source": "新闻宣传拍摄许可申请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 257,
-          "context": "return i18n(\"lib.infoapps.368f0d68fc00\");"
-        }
-      ],
-      "translation": "News Coverage Filming Permit Application",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.36b3a063e555",
-      "source": "学生申诉申请材料提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 123,
-          "context": "return i18n(\"lib.infoapps.36b3a063e555\");"
-        }
-      ],
-      "translation": "Student Appeal Material Submission",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.3706de9dda4c",
-      "source": "教室平面图",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 107,
-          "context": "return i18n(\"lib.infoapps.3706de9dda4c\");"
-        }
-      ],
-      "translation": "Classroom Floor Plan",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.3770c9abc2c6",
-      "source": "学生访客（无身份证人员）预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 275,
-          "context": "return i18n(\"lib.infoapps.3770c9abc2c6\");"
-        }
-      ],
-      "translation": "Student Guest Reservation (Visitors Without ID Cards)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.38c094e9849a",
-      "source": "项目经费转出",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 200,
-          "context": "return i18n(\"lib.infoapps.38c094e9849a\");"
-        }
-      ],
-      "translation": "Project Fund Transfer Out",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.39068871d8f5",
-      "source": "教学计划完成情况",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 95,
-          "context": "return i18n(\"lib.infoapps.39068871d8f5\");"
-        }
-      ],
-      "translation": "Study Plan Completion Status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.39c1b177e090",
-      "source": "补开票据",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 194,
-          "context": "return i18n(\"lib.infoapps.39c1b177e090\");"
-        }
-      ],
-      "translation": "Reissue Invoice",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.3a9a0f63d7b0",
-      "source": "文化素质课",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 98,
-          "context": "return i18n(\"lib.infoapps.3a9a0f63d7b0\");"
-        }
-      ],
-      "translation": "General Education Courses",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.3c39c5a202e8",
-      "source": "公派境外修读课程认定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 109,
-          "context": "return i18n(\"lib.infoapps.3c39c5a202e8\");"
-        }
-      ],
-      "translation": "Government-Sponsored Overseas Course Recognition",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

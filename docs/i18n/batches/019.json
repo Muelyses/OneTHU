@@ -1,5 +1,5 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -151,6 +151,102 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
+      "key": "components.onboardinglanguage.continue",
+      "source": "继续",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 13,
+          "context": "continue: msg(\"components.onboardinglanguage.continue\")"
+        }
+      ],
+      "translation": "Continue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardinglanguage.hint",
+      "source": "之后可在设置中更改。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 10,
+          "context": "hint: msg(\"components.onboardinglanguage.hint\")"
+        }
+      ],
+      "translation": "Change later in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardinglanguage.label",
+      "source": "界面语言",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 11,
+          "context": "label: msg(\"components.onboardinglanguage.label\")"
+        }
+      ],
+      "translation": "Interface language",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.onboardinglanguage.lead",
+      "source": "接下来的导览与界面将使用你选择的语言。之后也可以在设置中更改。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 9,
+          "context": "lead: msg(\"components.onboardinglanguage.lead\")"
+        }
+      ],
+      "translation": "The guide and interface will use your chosen language. You can change it later in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardinglanguage.step",
+      "source": "第 0 步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 12,
+          "context": "step: msg(\"components.onboardinglanguage.step\")"
+        }
+      ],
+      "translation": "Step 0",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardinglanguage.title",
+      "source": "你想使用哪种语言？",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 8,
+          "context": "title: msg(\"components.onboardinglanguage.title\")"
+        }
+      ],
+      "translation": "Which language would you like to use?",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
       "key": "components.onboardingpracticereturn.12fd8c16961e",
       "source": "继续导览",
       "kind": "text",
@@ -222,7 +318,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 96,
+          "line": 100,
           "context": "{i18n(\"components.onboardingtour.069d9b73883f\")}"
         }
       ],
@@ -238,7 +334,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ],
@@ -254,7 +350,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 98,
+          "line": 102,
           "context": "{i18n(\"components.onboardingtour.0e633d7479ee\")}"
         }
       ],
@@ -275,7 +371,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.19f469fec604\", { title: String(item.title) })}"
         }
       ],
@@ -291,7 +387,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 122,
+          "line": 127,
           "context": "last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
@@ -307,7 +403,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.1b47dc7fdca4\")}"
         }
       ],
@@ -323,7 +419,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.20fe3342156f\")}"
         }
       ],
@@ -339,7 +435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 118,
+          "line": 122,
           "context": "{i18n(\"components.onboardingtour.24e75cb57392\")}"
         }
       ],
@@ -355,7 +451,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 109,
+          "line": 113,
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ],
@@ -371,7 +467,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "{i18n(\"components.onboardingtour.307ebc489657\")}"
         }
       ],
@@ -387,7 +483,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.368669b4e8f4\")}"
         }
       ],
@@ -403,7 +499,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ],
@@ -419,7 +515,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 117,
           "context": "{i18n(\"components.onboardingtour.427f33ee91af\")}"
         }
       ],
@@ -435,7 +531,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.4d572d8843d7\")}"
         }
       ],
@@ -451,12 +547,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "{i18n(\"components.onboardingtour.715ee9dc842f\")}"
         }
       ],
@@ -472,7 +568,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 52,
+          "line": 54,
           "context": "showToast(i18nMsg(\"components.onboardingtour.7d38695ada28\"))"
         }
       ],
@@ -488,7 +584,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 109,
+          "line": 113,
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ],
@@ -504,7 +600,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 89,
+          "line": 91,
           "context": "{i18n(\"components.onboardingtour.8dc51de059fe\")}"
         }
       ],
@@ -520,7 +616,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.9352315ee32a\")}"
         }
       ],
@@ -536,17 +632,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 99,
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.a8ab98831f5c\")}"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 116,
+          "line": 120,
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${String(step+1).padStart(2,\"0\")} / ${modeName}`"
         }
       ],
@@ -562,7 +658,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "intro?i18n(\"components.onboardingtour.aa4142e144b8\"):last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ],
@@ -578,7 +674,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 99,
           "context": "{i18n(\"components.onboardingtour.ac794a015ee3\")}"
         }
       ],
@@ -594,7 +690,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 86,
+          "line": 88,
           "context": "showToast(i18nMsg(\"components.onboardingtour.acb7923e4be1\"))"
         }
       ],
@@ -610,7 +706,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 92,
+          "line": 95,
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ],
@@ -626,7 +722,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 106,
+          "line": 110,
           "context": "{i18n(\"components.onboardingtour.b92a02095b87\")}"
         }
       ],
@@ -642,7 +738,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 90,
+          "line": 93,
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ],
@@ -663,7 +759,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 97,
+          "line": 101,
           "context": "{i18n(\"components.onboardingtour.bfd00f0d13de\", { value: String(CHAPTERS[item.id]) })}"
         }
       ],
@@ -679,7 +775,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 98,
+          "line": 102,
           "context": "{i18n(\"components.onboardingtour.c0b3fbff51cc\")}"
         }
       ],
@@ -695,11 +791,251 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 99,
           "context": "intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         }
       ],
       "translation": "Choose your way",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.board",
+      "source": "白板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.board\");"
+        }
+      ],
+      "translation": "Board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.campus",
+      "source": "校园服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.campus\");"
+        }
+      ],
+      "translation": "Campus services",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.code",
+      "source": "口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.code\");"
+        }
+      ],
+      "translation": "Share codes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.customize",
+      "source": "外观",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.customize\");"
+        }
+      ],
+      "translation": "Appearance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.data",
+      "source": "数据与同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.data\");"
+        }
+      ],
+      "translation": "Data & sync",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.explorer",
+      "source": "标签与工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.explorer\");"
+        }
+      ],
+      "translation": "Tabs & workspaces",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.more",
+      "source": "更多功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.more\");"
+        }
+      ],
+      "translation": "More features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.nfc",
+      "source": "碰一碰",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.nfc\");"
+        }
+      ],
+      "translation": "Tap to share",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.onego",
+      "source": "OneGO!",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.onego\");"
+        }
+      ],
+      "translation": "OneGO!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.organization",
+      "source": "组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.organization\");"
+        }
+      ],
+      "translation": "Organizations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.plugin",
+      "source": "插件与 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.plugin\");"
+        }
+      ],
+      "translation": "Plugins & OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.quick",
+      "source": "五个入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.quick\");"
+        }
+      ],
+      "translation": "Five shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.swap",
+      "source": "常用入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.swap\");"
+        }
+      ],
+      "translation": "Your shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.today",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.today\");"
+        }
+      ],
+      "translation": "Today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.chapter.vault",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.onboardingtour.chapter.vault\");"
+        }
+      ],
+      "translation": "Stash",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -711,7 +1047,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 104,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.d4208c3cace4\")}"
         }
       ],
@@ -727,7 +1063,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 91,
+          "line": 94,
           "context": "{i18n(\"components.onboardingtour.d69e80a19484\")}"
         }
       ],
@@ -743,7 +1079,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 90,
+          "line": 93,
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ],
@@ -759,7 +1095,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 27,
           "context": "return i18n(\"components.onboardingtour.e2ee720ea747\");"
         }
       ],
@@ -775,7 +1111,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 101,
+          "line": 105,
           "context": "intro?MODE_INTRO[chosen]:i18n(\"components.onboardingtour.f1804844a899\")"
         }
       ],
@@ -791,7 +1127,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 112,
           "context": "{i18n(\"components.onboardingtour.f60b58eb72b6\")}"
         }
       ],
@@ -807,13 +1143,45 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 122,
+          "line": 127,
           "context": "intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
       "translation": "Choose a trial mode",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.onboardingtour.modeintro.practical",
+      "source": "常用顺手，功能齐全",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.onboardingtour.modeintro.practical\");"
+        }
+      ],
+      "translation": "Your essentials at hand, with every feature available",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtour.modeintro.simple",
+      "source": "把今天放在眼前",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.onboardingtour.modeintro.simple\");"
+        }
+      ],
+      "translation": "Keep today in view",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
     },
     {
       "key": "components.onboardingtourmobile.0195603ee49e",
@@ -954,364 +1322,6 @@
         }
       ],
       "translation": "Tap “Tabs” in the bottom bar — it is all in the drawer.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.514adbf12726",
-      "source": "在对话里说，它就动手。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 92,
-          "context": "return i18n(\"components.onboardingtourmobile.514adbf12726\");"
-        }
-      ],
-      "translation": "Just tell it in the conversation and it gets to work.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.55a3f02850c2",
-      "source": "点「编」进编辑，再点「＋」选组件放到白板上。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 76
-        }
-      ],
-      "translation": "Tap “Edit” to enter edit mode, then tap “＋” to pick widgets and place them on the board.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.59acb966c21f",
-      "source": "底栏右侧「OneGO!」→ 我的 OnePage：起名后「新建」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 82
-        }
-      ],
-      "translation": "In the bottom bar’s right side, “OneGO!” → My OnePage: name it, then “New”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.60a2e62fe82d",
-      "source": "按住一个标签拖一拖，就换了顺序。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "Press and drag a tab to reorder it.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.67ab2cc6012c",
-      "source": "工具箱自己会长：说到哪，就长到哪。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 94,
-          "context": "return i18n(\"components.onboardingtourmobile.67ab2cc6012c\");"
-        }
-      ],
-      "translation": "The toolbox grows on its own: wherever the conversation goes, it grows there.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.6957eb34bc44",
-      "source": "点一下：从底部长出半屏搜索窗，可拉满全屏。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 87
-        }
-      ],
-      "translation": "Tap once: a half-screen search panel grows from the bottom; you can stretch it to full screen.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.6aebf4025ba6",
-      "source": "新建即得一块白板，跟首页同一套手势。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 82
-        }
-      ],
-      "translation": "A new tab is a fresh board, using the same gestures as Home.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.70297c6559a9",
-      "source": "长按 0.45 秒开始说话；松手直发，上划取消。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 87
-        }
-      ],
-      "translation": "Press and hold for 0.45 seconds to start speaking; release to send, swipe up to cancel.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.70bec8e88b2c",
-      "source": "按住 0.5 秒不动出菜单：聚焦、复制、关闭、解散工作区。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "Press and hold for 0.5 seconds without moving to open the menu: focus, copy, close, disband workspace.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.715ee9dc842f",
-      "source": "开始使用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 144,
-          "context": "{i18n(\"components.onboardingtourmobile.715ee9dc842f\")}"
-        }
-      ],
-      "translation": "Get started",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.7599c8d0f2fd",
-      "source": "拖到另一个标签上停一停（0.6 秒灰框），松手合并成工作区。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "Drag one tab onto another and pause (a gray frame appears for 0.6 seconds), then release to merge them into a workspace.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.76a3f832bbfa",
-      "source": "OneGO! 里管它们。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 81,
-          "context": "return i18n(\"components.onboardingtourmobile.76a3f832bbfa\");"
-        }
-      ],
-      "translation": "Manage them in OneGO!.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.7c100b50261d",
-      "source": "OH 的对话窗也长在同一个胶囊上。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 88,
-          "context": "return i18n(\"components.onboardingtourmobile.7c100b50261d\");"
-        }
-      ],
-      "translation": "OH’s conversation window also grows from the same pill.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.7c2809268e55",
-      "source": "OH：说一句，长一样本领",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 91,
-          "context": "return i18n(\"components.onboardingtourmobile.7c2809268e55\");"
-        }
-      ],
-      "translation": "OH: say the word and it picks up the same skills",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.8201fca38b06",
-      "source": "能搜页面、面板与插件；结果直接点开。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 87
-        }
-      ],
-      "translation": "Search pages, panels, and plugins; tap a result to open it directly.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.854174121d0a",
-      "source": "组件长按出菜单，可调尺寸、固定与删除。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 76
-        }
-      ],
-      "translation": "Long-press a widget to open a menu for resizing, pinning, and deleting.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.8a900694ff18",
-      "source": "搜索胶囊",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 85,
-          "context": "return i18n(\"components.onboardingtourmobile.8a900694ff18\");"
-        }
-      ],
-      "translation": "Search pill",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.9552fe3bd366",
-      "source": "第 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 154,
-          "context": "i18n(\"components.onboardingtourmobile.9552fe3bd366\") + (step + 1)"
-        }
-      ],
-      "translation": "Step ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.98af2b06c2d8",
-      "source": "抽屉可从半屏拉到全屏；顶栏那颗圆形房子钮随时回首页。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 71,
-          "context": "return i18n(\"components.onboardingtourmobile.98af2b06c2d8\");"
-        }
-      ],
-      "translation": "The drawer stretches from half screen to full; the round Home button in the top bar returns to Home anytime.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.a2d3a4eeefd7",
-      "source": "不再显示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 142,
-          "context": "{i18n(\"components.onboardingtourmobile.a2d3a4eeefd7\")}"
-        }
-      ],
-      "translation": "Don’t show again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.acfc4e74a650",
-      "source": "下一步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 146,
-          "context": "{i18n(\"components.onboardingtourmobile.acfc4e74a650\")}"
-        }
-      ],
-      "translation": "Next",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.c5c41a9591a1",
-      "source": "首页右下角开始。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 75,
-          "context": "return i18n(\"components.onboardingtourmobile.c5c41a9591a1\");"
-        }
-      ],
-      "translation": "Start at the bottom-right corner of Home.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.c765edddbdf2",
-      "source": "添加组件：白板随你摆",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 74,
-          "context": "return i18n(\"components.onboardingtourmobile.c765edddbdf2\");"
-        }
-      ],
-      "translation": "Add widgets: arrange the board your way",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

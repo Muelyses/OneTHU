@@ -1,7 +1,389 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.vaultexchangeactions.2a4057bbb923",
+      "source": "箱内内容口令可在「已发出口令」管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 129,
+          "context": "withVault && i18n(\"components.vault.vaultexchangeactions.2a4057bbb923\")"
+        }
+      ],
+      "translation": "Share codes for box contents can be managed in “Issued share codes”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.31e8013b76c6",
+      "source": "无法读取剪贴板，请直接在输入框粘贴口令。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 93,
+          "context": "e instanceof Error && e.message.includes(\"剪贴板里\") ? e.message : i18n(\"components.vault.vaultexchangeactions.31e8013b76c6\")"
+        }
+      ],
+      "translation": "Cannot read the clipboard; paste the share code directly into the input field.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.32c1c83421fc",
+      "source": "不带组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 142,
+          "context": "label: i18n(\"components.vault.vaultexchangeactions.32c1c83421fc\")"
+        }
+      ],
+      "translation": "Without organization card",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.32db96a41dc9",
+      "source": "「{name}」的 {length} 项内容",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(target.name)"
+        },
+        {
+          "name": "length",
+          "expression": "String(target.items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 76,
+          "context": "setSentSummary(i18n(\"components.vault.vaultexchangeactions.32db96a41dc9\", { name: String(target.name), length: String(target.items.length) }))"
+        }
+      ],
+      "translation": "{length} items from “{name}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3580f829b532",
+      "source": "接收内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 111,
+          "context": "view === \"send\" ? i18n(\"components.vault.vaultexchangeactions.a840e8381cf3\") : i18n(\"components.vault.vaultexchangeactions.3580f829b532\")"
+        }
+      ],
+      "translation": "Receive content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.37c201950f27",
+      "source": "正在接收…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 159,
+          "context": "work === \"receive\" ? i18n(\"components.vault.vaultexchangeactions.37c201950f27\") : i18n(\"components.vault.vaultexchangeactions.3e3b496af014\")"
+        }
+      ],
+      "translation": "Receiving…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3c4f03e4df9e",
+      "source": "分享口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 108,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.3c4f03e4df9e\")}"
+        }
+      ],
+      "translation": "Share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3c8e966d966b",
+      "source": "撤销未完成，请检查云盘连接后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 101,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.3c8e966d966b\"))"
+        }
+      ],
+      "translation": "Revoke was not completed; check your cloud drive connection and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3e3b496af014",
+      "source": "接收口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 159,
+          "context": "work === \"receive\" ? i18n(\"components.vault.vaultexchangeactions.37c201950f27\") : i18n(\"components.vault.vaultexchangeactions.3e3b496af014\")"
+        }
+      ],
+      "translation": "Receive share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.401caf5fdfe9",
+      "source": "检查云盘连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 147,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.401caf5fdfe9\")}"
+        }
+      ],
+      "translation": "Check cloud drive connection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.487e926379fe",
+      "source": "我的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.personal && i18n(\"components.vault.vaultexchangeactions.487e926379fe\")"
+        }
+      ],
+      "translation": "My card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.542ad2d546d0",
+      "source": "组织「{orgName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "orgName",
+          "expression": "String(shared.payload.orgName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.orgName && i18n(\"components.vault.vaultexchangeactions.542ad2d546d0\", { orgName: String(shared.payload.orgName) })"
+        }
+      ],
+      "translation": "Organization “{orgName}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.577a1f849d63",
+      "source": "暂存箱已经切换或更新，请关闭后重新确认要分享的内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 67,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.577a1f849d63\"))"
+        }
+      ],
+      "translation": "The Stash has been switched or updated; please close this and reconfirm the content you want to share.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.626483b777ae",
+      "source": "重试生成口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 146,
+          "context": "error ? i18n(\"components.vault.vaultexchangeactions.626483b777ae\") : i18n(\"components.vault.vaultexchangeactions.645b0bbba87e\")"
+        }
+      ],
+      "translation": "Retry creating the share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.645b0bbba87e",
+      "source": "生成分享口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 146,
+          "context": "error ? i18n(\"components.vault.vaultexchangeactions.626483b777ae\") : i18n(\"components.vault.vaultexchangeactions.645b0bbba87e\")"
+        }
+      ],
+      "translation": "Create share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.68368d728a9e",
+      "source": "这条分享已撤销，口令与二维码将无法再读取。已接收的副本会保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 102,
+          "context": "setResult(i18n(\"components.vault.vaultexchangeactions.68368d728a9e\"))"
+        }
+      ],
+      "translation": "This share has been revoked; the share code and QR code can no longer be read. Copies already received will be kept.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.6b6a8f5e0dbb",
+      "source": "带上组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 142,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.6b6a8f5e0dbb\")}"
+        }
+      ],
+      "translation": "Include organization card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.6e17991c80d7",
+      "source": "带上这个暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 136,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.6e17991c80d7\")}"
+        }
+      ],
+      "translation": "Include this Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.6e684586884e",
+      "source": "接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 109,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.6e684586884e\")}"
+        }
+      ],
+      "translation": "Receive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.6ebb64384907",
+      "source": "识别二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 163,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.6ebb64384907\")}"
+        }
+      ],
+      "translation": "Scan QR code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.6f61e147f9fb",
+      "source": "也可以",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 162,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.6f61e147f9fb\")}"
+        }
+      ],
+      "translation": "You can also",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.74acec2e689a",
+      "source": "箱子还是空的，也可以只发送个人或组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 134,
+          "context": "target.items.length ? i18n(\"components.vault.vaultexchangeactions.c4070317e698\", { length: String(target.items.length) }) : i18n(\"components.vault.vaultexchangeactions.74acec2e689a\")"
+        }
+      ],
+      "translation": "The box is still empty; you can also send just a personal or organization card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.75d3321f0e54",
+      "source": "组合分享 · 带上名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 138,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.75d3321f0e54\")}"
+        }
+      ],
+      "translation": "Combined share · Include card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.vault.vaultexchangeactions.7ac87294020a",
       "source": "口令、二维码与 NFC 使用同一份内容，接收时需要联网。",
@@ -941,389 +1323,6 @@
         }
       ],
       "translation": "News attachment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.a14f23af7016",
-      "source": "日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 30,
-          "context": "[i18n(\"components.vault.vaultitempresentation.a14f23af7016\"), \"calendar\"]"
-        }
-      ],
-      "translation": "Schedule",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.a626aad412b7",
-      "source": "标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 102,
-          "context": "atomKind === \"tab\" ? i18n(\"components.vault.vaultitempresentation.a626aad412b7\") : i18n(\"components.vault.vaultitempresentation.5f2cfbfecf9f\")"
-        },
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 115,
-          "context": "[i18n(\"components.vault.vaultitempresentation.a626aad412b7\"), pageIcon(text(payload.page))]"
-        }
-      ],
-      "translation": "Tabs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.a8f2a0de5fdf",
-      "source": "代码文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 68,
-          "context": "[i18n(\"components.vault.vaultitempresentation.a8f2a0de5fdf\"), \"code\"]"
-        }
-      ],
-      "translation": "Code file",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.b0dff016ff17",
-      "source": "作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 17,
-          "context": "[i18n(\"components.vault.vaultitempresentation.b0dff016ff17\"), \"check\"]"
-        }
-      ],
-      "translation": "Assignments",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.b1bd19b13336",
-      "source": "组织名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 108,
-          "context": "[i18n(\"components.vault.vaultitempresentation.b1bd19b13336\"), \"organization\"]"
-        }
-      ],
-      "translation": "Organization card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.b5f224115dae",
-      "source": "云盘文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 29,
-          "context": "[i18n(\"components.vault.vaultitempresentation.b5f224115dae\"), \"cloud\"]"
-        }
-      ],
-      "translation": "Cloud drive file",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.bbaa9f06378b",
-      "source": "壁纸",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 31,
-          "context": "[i18n(\"components.vault.vaultitempresentation.bbaa9f06378b\"), \"image\"]"
-        }
-      ],
-      "translation": "Wallpaper",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.c20f7618d330",
-      "source": "视频",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 63,
-          "context": "[i18n(\"components.vault.vaultitempresentation.c20f7618d330\"), \"video\"]"
-        }
-      ],
-      "translation": "Video",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.cdda5d2fdd8a",
-      "source": "PDF 文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 61,
-          "context": "[i18n(\"components.vault.vaultitempresentation.cdda5d2fdd8a\"), \"file\"]"
-        }
-      ],
-      "translation": "PDF file",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.d24c10d37db0",
-      "source": "图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 62,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d24c10d37db0\"), \"image\"]"
-        }
-      ],
-      "translation": "Image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.d39567b2b9f1",
-      "source": "新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 19,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d39567b2b9f1\"), \"text\"]"
-        }
-      ],
-      "translation": "News",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.d4f7864690bb",
-      "source": "Info 应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 26,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
-        }
-      ],
-      "translation": "Info app",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.dd42589239f7",
-      "source": "合并请求",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 21,
-          "context": "[i18n(\"components.vault.vaultitempresentation.dd42589239f7\"), \"gitlab\"]"
-        }
-      ],
-      "translation": "Merge request",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.df7a65bb1371",
-      "source": "教室",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 23,
-          "context": "[i18n(\"components.vault.vaultitempresentation.df7a65bb1371\"), \"location\"]"
-        }
-      ],
-      "translation": "Classroom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.e00b99270be7",
-      "source": "体育场馆",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 24,
-          "context": "[i18n(\"components.vault.vaultitempresentation.e00b99270be7\"), \"location\"]"
-        }
-      ],
-      "translation": "Sports venue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.e26e5de89c0a",
-      "source": "新闻订阅",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 19,
-          "context": "[i18n(\"components.vault.vaultitempresentation.e26e5de89c0a\"), \"text\"]"
-        }
-      ],
-      "translation": "News subscription",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.e4d40b4d6759",
-      "source": "研讨间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 23,
-          "context": "[i18n(\"components.vault.vaultitempresentation.e4d40b4d6759\"), \"location\"]"
-        }
-      ],
-      "translation": "Seminar room",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.e806fbbe8ec6",
-      "source": "插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 32,
-          "context": "[i18n(\"components.vault.vaultitempresentation.e806fbbe8ec6\"), \"plugin\"]"
-        }
-      ],
-      "translation": "Plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.e81059e1a712",
-      "source": "公共空间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 24,
-          "context": "[i18n(\"components.vault.vaultitempresentation.e81059e1a712\"), \"location\"]"
-        }
-      ],
-      "translation": "Public space",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.ed31fbb483ee",
-      "source": "操作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 20,
-          "context": "[i18n(\"components.vault.vaultitempresentation.ed31fbb483ee\"), \"check\"]"
-        }
-      ],
-      "translation": "Action",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.f37a13fc55b3",
-      "source": "课程通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 18,
-          "context": "[i18n(\"components.vault.vaultitempresentation.f37a13fc55b3\"), \"bell\"]"
-        },
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 32,
-          "context": "[i18n(\"components.vault.vaultitempresentation.f37a13fc55b3\"), \"bell\"]"
-        }
-      ],
-      "translation": "Course notification",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.fc01d82d7556",
-      "source": "云盘文件夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 29,
-          "context": "[i18n(\"components.vault.vaultitempresentation.fc01d82d7556\"), \"folder\"]"
-        }
-      ],
-      "translation": "Cloud drive folder",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.fd5394f29856",
-      "source": "个人名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 30,
-          "context": "[i18n(\"components.vault.vaultitempresentation.fd5394f29856\"), \"card\"]"
-        },
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 108,
-          "context": "[i18n(\"components.vault.vaultitempresentation.fd5394f29856\"), \"card\"]"
-        }
-      ],
-      "translation": "Personal card",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

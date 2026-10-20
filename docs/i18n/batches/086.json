@@ -1,7 +1,375 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.navigation.934dc85b3ca3",
+      "source": "开发者面板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 142,
+          "context": "return i18n(\"state.navigation.934dc85b3ca3\");"
+        }
+      ],
+      "translation": "Developer panel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.99f047c591bb",
+      "source": "临时来访人员报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 127,
+          "context": "return i18n(\"state.navigation.99f047c591bb\");"
+        }
+      ],
+      "translation": "Temporary visitor registration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.9b1dc46aaa51",
+      "source": "查看选课、退课与候补",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 95,
+          "context": "return i18n(\"state.navigation.9b1dc46aaa51\");"
+        }
+      ],
+      "translation": "View course selection, dropping, and waitlist",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1c24c7d5716",
+      "source": "亲友来访报备 · 我的报备 · 来访人登记",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 127,
+          "context": "return i18n(\"state.navigation.a1c24c7d5716\");"
+        }
+      ],
+      "translation": "Visitor registration for family and friends · My registrations · Visitor check-in",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1cabc0664cf",
+      "source": "全部作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 84,
+          "context": "return i18n(\"state.navigation.a1cabc0664cf\");"
+        }
+      ],
+      "translation": "All assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1e8f8681634",
+      "source": "按时间查看课程与日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 103,
+          "context": "return i18n(\"state.navigation.a1e8f8681634\");"
+        }
+      ],
+      "translation": "View courses and schedule by time",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a24d34354353",
+      "source": "查询宿舍用电与电费余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 109,
+          "context": "return i18n(\"state.navigation.a24d34354353\");"
+        }
+      ],
+      "translation": "Check dorm electricity usage and balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 83,
+          "context": "return i18n(\"state.navigation.aa39cac2b409\");"
+        }
+      ],
+      "translation": "Web Learning",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.b1abb3dc2271",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 98,
+          "context": "return i18n(\"state.navigation.b1abb3dc2271\");"
+        }
+      ],
+      "translation": "Xiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.bb7b63b39fd4",
+      "source": "本学期课程总览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 83,
+          "context": "return i18n(\"state.navigation.bb7b63b39fd4\");"
+        }
+      ],
+      "translation": "This semester's course overview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.bdac834d0ba2",
+      "source": "全部通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 85,
+          "context": "return i18n(\"state.navigation.bdac834d0ba2\");"
+        }
+      ],
+      "translation": "All notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 108,
+          "context": "return i18n(\"state.navigation.caf1f095b108\");"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 136,
+          "context": "return i18n(\"state.navigation.d39567b2b9f1\");"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.dd94488f5269",
+      "source": "校园网",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 113,
+          "context": "return i18n(\"state.navigation.dd94488f5269\");"
+        }
+      ],
+      "translation": "Campus network",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 120,
+          "context": "return i18n(\"state.navigation.e4d40b4d6759\");"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 123,
+          "context": "return i18n(\"state.navigation.e81059e1a712\");"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ecc11c8afea8",
+      "source": "空教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 121,
+          "context": "return i18n(\"state.navigation.ecc11c8afea8\");"
+        }
+      ],
+      "translation": "Empty classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ecc33b3339e6",
+      "source": "查找校内办事与在线申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 133,
+          "context": "return i18n(\"state.navigation.ecc33b3339e6\");"
+        }
+      ],
+      "translation": "Find campus services and apply online",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f0cd4338679e",
+      "source": "雨课堂作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 89,
+          "context": "return i18n(\"state.navigation.f0cd4338679e\");"
+        }
+      ],
+      "translation": "Rain Classroom assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f0fc61f517f5",
+      "source": "校园 AI 学伴：聊天 · 历史 · 智能体 · 技能广场",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 98,
+          "context": "return i18n(\"state.navigation.f0fc61f517f5\");"
+        }
+      ],
+      "translation": "Campus AI study companion: Chat · History · Agents · Skill plaza",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f75562426e77",
+      "source": "云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 131,
+          "context": "return i18n(\"state.navigation.f75562426e77\");"
+        }
+      ],
+      "translation": "Cloud Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fa8fe752727c",
+      "source": "全部课程文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 86,
+          "context": "return i18n(\"state.navigation.fa8fe752727c\");"
+        }
+      ],
+      "translation": "All course files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fd17d86dd268",
+      "source": "选课",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 95,
+          "context": "return i18n(\"state.navigation.fd17d86dd268\");"
+        }
+      ],
+      "translation": "Course selection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.navigation.fdcd1bd074c9",
       "source": "成绩",
@@ -1019,374 +1387,6 @@
         }
       ],
       "translation": "Reservation pro",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.2e67474d8dad",
-      "source": "极简",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 147,
-          "context": "return i18n(\"state.onboarding.2e67474d8dad\");"
-        }
-      ],
-      "translation": "Minimal",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.42803ef36875",
-      "source": "日程、预约、场馆与宿舍设备为主",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 156,
-          "context": "return i18n(\"state.onboarding.42803ef36875\");"
-        }
-      ],
-      "translation": "Focused on schedule, reservations, venues, and dorm facilities",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.524a5d266a8f",
-      "source": "成绩、考试、学籍、新闻与网络学堂全在",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 164,
-          "context": "return i18n(\"state.onboarding.524a5d266a8f\");"
-        }
-      ],
-      "translation": "Grades, exams, student records, news, and Web Learning all included",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.8c45a98b34de",
-      "source": "所有功能都在侧栏，适合想一次看全的人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 140,
-          "context": "return i18n(\"state.onboarding.8c45a98b34de\");"
-        }
-      ],
-      "translation": "All features are in the sidebar, for those who want everything at a glance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.1e4404a53a1d",
-      "source": "口令版本不受支持",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 390,
-          "context": "reason: i18n(\"state.org.1e4404a53a1d\")"
-        }
-      ],
-      "translation": "Share code version not supported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.1f5874fd9b2a",
-      "source": "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 384,
-          "context": "reason: i18n(\"state.org.1f5874fd9b2a\")"
-        }
-      ],
-      "translation": "Not a OneTHU organization invite share code (must start with ONORG1.)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.22f86a2a8ff2",
-      "source": "当前没有可删除的邀请口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 370,
-          "context": "reason: i18n(\"state.org.22f86a2a8ff2\")"
-        }
-      ],
-      "translation": "There are no invite share codes to delete",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.3dc0aa93b10c",
-      "source": "口令内容损坏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 386,
-          "context": "reason: i18n(\"state.org.3dc0aa93b10c\")"
-        }
-      ],
-      "translation": "The share code content is corrupted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.7aa0c43fe053",
-      "source": "口令内容不是合法 JSON",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 401,
-          "context": "reason: i18n(\"state.org.7aa0c43fe053\")"
-        }
-      ],
-      "translation": "The share code content is not valid JSON",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.989f1cde10a3",
-      "source": "口令校验失败（可能复制不完整）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 387,
-          "context": "reason: i18n(\"state.org.989f1cde10a3\")"
-        }
-      ],
-      "translation": "Share code verification failed (it may have been copied incompletely)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.c4591b5b1fe8",
-      "source": "口令无法解析",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 426,
-          "context": "dec.reason ?? i18n(\"state.org.c4591b5b1fe8\")"
-        }
-      ],
-      "translation": "The share code could not be parsed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.c6b6912e4bd5",
-      "source": "本地记录已删除；云盘分享撤销未成功（可能已过期）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 378,
-          "context": "reason: i18n(\"state.org.c6b6912e4bd5\")"
-        }
-      ],
-      "translation": "The local record was deleted; revoking the cloud drive share did not succeed (it may have expired)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.0ed5ca0bc425",
-      "source": "这个 GitLab 账号已经是组织成员，请使用编辑或角色菜单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 183,
-          "context": "new Error(i18n(\"state.orgsync.0ed5ca0bc425\"))"
-        }
-      ],
-      "translation": "This GitLab account is already an organization member. Use the edit or role menu instead.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.1345eb189bbb",
-      "source": "未完成的权限变更期间只能解除资源关联，请先完成重试再添加资源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 228,
-          "context": "new Error(i18n(\"state.orgsync.1345eb189bbb\"))"
-        }
-      ],
-      "translation": "While a permission change is incomplete, you can only detach resources. Complete the retry before adding resources.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.15f11e1c75da",
-      "source": "至少保留一位服务器上的组织负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 191,
-          "context": "new Error(i18n(\"state.orgsync.15f11e1c75da\"))"
-        }
-      ],
-      "translation": "Keep at least one organization Owner on the server",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.275a305b9f8b",
-      "source": "这个云盘邮箱已经绑定其他组织成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 195,
-          "context": "new Error(i18n(\"state.orgsync.275a305b9f8b\"))"
-        }
-      ],
-      "translation": "This Cloud Drive email is already bound to another organization member",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.2da1ab0ba765",
-      "source": "当前 GitLab 账号不是这个群组的负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 108,
-          "context": "new Error(i18n(\"state.orgsync.2da1ab0ba765\"))"
-        }
-      ],
-      "translation": "The current GitLab account is not an Owner of this group",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.43f661af3a74",
-      "source": "核对全部权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 208,
-          "context": "label:i18n(\"state.orgsync.43f661af3a74\")"
-        }
-      ],
-      "translation": "Verify all permissions",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsync.47b018369530",
-      "source": "上一次权限变更尚未完成，请先重试并完成它",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 67,
-          "context": "new Error(i18n(\"state.orgsync.47b018369530\"))"
-        }
-      ],
-      "translation": "The previous permission change is not finished yet. Retry and complete it first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.5784fd684c09",
-      "source": "这个组织尚未启用多人协作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 55,
-          "context": "new Error(i18n(\"state.orgsync.5784fd684c09\"))"
-        }
-      ],
-      "translation": "This organization has not enabled collaboration yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.66f49a483a9b",
-      "source": "请先给每位组织成员填写云盘邮箱，再关联资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 237,
-          "context": "new Error(i18n(\"state.orgsync.66f49a483a9b\"))"
-        }
-      ],
-      "translation": "Fill in a Cloud Drive email for each organization member before linking libraries",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.68b2e1779e6b",
-      "source": "多人协作需要你拥有的独立私有 GitLab 群组，不能使用公开群组或继承权限的子群组",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 106,
-          "context": "new Error(i18n(\"state.orgsync.68b2e1779e6b\"))"
-        }
-      ],
-      "translation": "Collaboration requires your own standalone private GitLab group; public groups or subgroups with inherited permissions cannot be used",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.6ad659d36005",
-      "source": "组织中存在 GitLab Maintainer 特殊权限，无法保证只有负责人能改管理资料；请先在 GitLab 调整为负责人或普通成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 34,
-          "context": "new Error(i18n(\"state.orgsync.6ad659d36005\"))"
-        }
-      ],
-      "translation": "A GitLab Maintainer special permission exists in this organization, so it cannot be guaranteed that only Owners can change management content. Change it to Owner or regular member in GitLab first.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

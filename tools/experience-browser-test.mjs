@@ -3,7 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {installFakeCloud} from './lib/fake-cloud.mjs';
-import {walkFullOnboarding,closeTestBrowser} from './lib/onboarding-browser-steps.mjs';
+import {walkFullOnboarding,closeTestBrowser,advanceOnboardingLanguage} from './lib/onboarding-browser-steps.mjs';
 const out='docs/onegui/experience-mode';mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-updater-scheduler']});
 let passed=false;const checks=[],errors=[];const check=(v,n)=>{assert.ok(v,n);checks.push(n);console.log('✓ '+n);};
@@ -57,13 +57,13 @@ try{
  await mode(p,'full');await p.waitForTimeout(350);
  const restored=await p.evaluate(()=>Object.fromEntries(Object.entries(localStorage).filter(([k])=>/explorer|board|oneshot|onepage/.test(k))));
  console.log('changed stores',Object.keys({...saved,...restored}).filter(k=>saved[k]!==restored[k]).map(k=>({key:k,before:saved[k],after:restored[k]})));check(JSON.stringify(saved)===JSON.stringify(restored),'往返模式和极简导航不改完整存档');
- await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await advanceOnboardingLanguage(p);await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();
  await p.getByRole('button',{name:'极简模式',exact:true}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
  check(await p.getByRole('heading',{name:'首页，只关心今天'}).isVisible(),'极简导览正确分流');
  await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'五个功能，固定在手边'}).isVisible(),'极简导览精简');
  await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'需要时，再连接'}).isVisible(),'接入步骤可选');check(await p.getByRole('switch',{name:'OH MCP 服务器开关'}).count()===0,'极简导览隐藏高级 MCP 开关');
  await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
- await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('button',{name:'完整模式',exact:true}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await advanceOnboardingLanguage(p);await p.getByRole('button',{name:'完整模式',exact:true}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
  await walkFullOnboarding(p,check);
  await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
  await nav(p,'contacts',{section:'orgs'});await p.getByRole('button',{name:'新建组织',exact:true}).click();await p.locator('.plg-form-modal input').first().fill('测试组织');await p.getByRole('button',{name:'提交',exact:true}).click();
@@ -142,7 +142,7 @@ try{
  await mode(p,'practical');await p.waitForTimeout(400);
  check((await p.locator('.oneshot button').allTextContents())[1]==='宿舍电费','切回实用模式配置还在');
  /* 实用模式导览 */
- await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await advanceOnboardingLanguage(p);
  await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();
  await p.waitForTimeout(400);await p.screenshot({path:out+'/mode-picker-desktop.png'});
  check(await p.getByRole('button',{name:'实用模式',exact:true}).count()===1,'导览提供实用模式选项');
@@ -164,6 +164,6 @@ try{
  const fits=await p.getByRole('dialog',{name:'更多功能'}).evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&r.top>=0;});check(fits,width+' 手机功能目录完整位于屏幕内');
  await p.keyboard.press('Escape');await p.waitForTimeout(300);
  await p.getByRole('button',{name:'设置',exact:true}).click();check(await p.locator('.simple-settings').count()===1,width+' 实用模式设置同样精简');await p.getByRole('button',{name:'关闭设置',exact:true}).click();await p.waitForTimeout(300);
- await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();await p.waitForTimeout(300);await p.screenshot({path:out+'/mode-picker-phone-'+width+'.png'});await p.unrouteAll({behavior:"ignoreErrors"});await p.request.dispose();await p.close();}
+ await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await advanceOnboardingLanguage(p);await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();await p.waitForTimeout(300);await p.screenshot({path:out+'/mode-picker-phone-'+width+'.png'});await p.unrouteAll({behavior:"ignoreErrors"});await p.request.dispose();await p.close();}
  check(errors.length===0,'无新增浏览器错误 '+JSON.stringify(errors));passed=true;
 }catch(error){errors.push(String(error));console.error(error);console.error("Browser errors:",errors);throw error;}finally{try{await closeTestBrowser(browser);}catch(error){passed=false;errors.push(String(error));throw error;}finally{writeFileSync(out+'/report.json',JSON.stringify({passed,checks,errors},null,2));}}

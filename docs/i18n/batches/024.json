@@ -1,7 +1,375 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.tourillustration.6d3f6f685e53",
+      "source": "保留简单首页，常用入口可以自己安排。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 34,
+          "context": "return i18n(\"components.tourillustration.6d3f6f685e53\");"
+        }
+      ],
+      "translation": "Keeps a simple Home while you arrange the usual entry points yourself.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.6d78bc490e7e",
+      "source": "功能入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 142,
+          "context": "extra?.title??i18n(\"components.tourillustration.6d78bc490e7e\")"
+        }
+      ],
+      "translation": "Feature entry",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.tourillustration.6f56d8a61fe3",
+      "source": "五个清晰入口，随时回到需要的功能。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.tourillustration.6f56d8a61fe3\");"
+        }
+      ],
+      "translation": "Five clear entry points, back to what you need anytime.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.7119f12b506b",
+      "source": "五个快捷入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 30,
+          "context": "return i18n(\"components.tourillustration.7119f12b506b\");"
+        }
+      ],
+      "translation": "Five shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.73446b07bee3",
+      "source": "播放演示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 147,
+          "context": "paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
+        }
+      ],
+      "translation": "Play demo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.76aa084fbdd3",
+      "source": "已减弱动画",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 147,
+          "context": "reduced?i18n(\"components.tourillustration.76aa084fbdd3\"):paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
+        }
+      ],
+      "translation": "Animation reduced",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.7b25b8069c23",
+      "source": "传递完成的示意；真实使用需设备支持 NFC。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.tourillustration.7b25b8069c23\");"
+        }
+      ],
+      "translation": "An illustration of a completed transfer; real use requires NFC support on the device.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.7d20856e7f07",
+      "source": "内容可以自由组织，完整设置随时保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 35,
+          "context": "return i18n(\"components.tourillustration.7d20856e7f07\");"
+        }
+      ],
+      "translation": "Content can be organized freely, and your full settings are kept at all times.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.8173df51f2a7",
+      "source": "首页会把今日待办和下一节课整理清楚。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 29,
+          "context": "return i18n(\"components.tourillustration.8173df51f2a7\");"
+        }
+      ],
+      "translation": "Home lays out today’s tasks and the next class clearly.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.81a9402f9808",
+      "source": "仅为操作示意，不会修改你的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 156,
+          "context": "{i18n(\"components.tourillustration.81a9402f9808\")}"
+        }
+      ],
+      "translation": "For demonstration only; your content will not be modified",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.88f643c1b98a",
+      "source": "保存一组正在进行的事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 39,
+          "context": "return i18n(\"components.tourillustration.88f643c1b98a\");"
+        }
+      ],
+      "translation": "Keep a set of work in progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.8d12fc0d4eb2",
+      "source": "暂停",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 147,
+          "context": "paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
+        }
+      ],
+      "translation": "Pause",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.92ea3aacf873",
+      "source": "今日首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 29,
+          "context": "return i18n(\"components.tourillustration.92ea3aacf873\");"
+        }
+      ],
+      "translation": "Today’s Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.9593aef7149a",
+      "source": "打开就看今天，其他复杂功能收起来。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 33,
+          "context": "return i18n(\"components.tourillustration.9593aef7149a\");"
+        }
+      ],
+      "translation": "Open it and see today; the more complex features stay tucked away.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.96b3145a6b73",
+      "source": "短口令传递",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.tourillustration.96b3145a6b73\");"
+        }
+      ],
+      "translation": "Short share code transfer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.9c7a9fcee92f",
+      "source": "更多功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.tourillustration.9c7a9fcee92f\");"
+        }
+      ],
+      "translation": "More features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.a134c7737c93",
+      "source": "双方进入收发，再把设备靠近。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.tourillustration.a134c7737c93\");"
+        }
+      ],
+      "translation": "Both sides enter send/receive first, then bring the devices close together.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.a31b16bc552a",
+      "source": "真实界面暂未载入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 71,
+          "context": "{i18n(\"components.tourillustration.a31b16bc552a\")}"
+        }
+      ],
+      "translation": "The real interface hasn’t loaded yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.a53febdc5466",
+      "source": "暂存箱收纳",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"components.tourillustration.a53febdc5466\");"
+        }
+      ],
+      "translation": "Stash tidy-up",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.bb3cdc17373c",
+      "source": "准备出发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 36,
+          "context": "return i18n(\"components.tourillustration.bb3cdc17373c\");"
+        }
+      ],
+      "translation": "Ready to set off",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.bf5b53af13f4",
+      "source": "今天要做的事，和接下来要上的课。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 29,
+          "context": "return i18n(\"components.tourillustration.bf5b53af13f4\");"
+        }
+      ],
+      "translation": "What to do today, and the classes coming up next.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.c20f83cc52d2",
+      "source": "从更多功能选择，再挑一个入口位置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 32,
+          "context": "return i18n(\"components.tourillustration.c20f83cc52d2\");"
+        }
+      ],
+      "translation": "Pick from More features, then choose a slot for the shortcut.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.c3396195e91c",
+      "source": "播放",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 147,
+          "context": "paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
+        }
+      ],
+      "translation": "Play",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.tourillustration.c3d0e8d4b506",
       "source": "选好的模式，随时可以在设置里调整。",
@@ -951,389 +1319,6 @@
         }
       ],
       "translation": "Copying…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.2fe0e3339ac4",
-      "source": "已过期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 16,
-          "context": "return i18n(\"components.vault.issuedsharescard.2fe0e3339ac4\");"
-        }
-      ],
-      "translation": "Expired",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.32ab30d4f1a4",
-      "source": "收起口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 125,
-          "context": "revealed === selected.id ? i18n(\"components.vault.issuedsharescard.32ab30d4f1a4\") : i18n(\"components.vault.issuedsharescard.84168ec6814c\")"
-        }
-      ],
-      "translation": "Hide share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.3588b544b50b",
-      "source": "还没有发出口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 121,
-          "context": "{i18n(\"components.vault.issuedsharescard.3588b544b50b\")}"
-        }
-      ],
-      "translation": "No share codes issued yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.36bdc2fdb515",
-      "source": "记录已删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 90,
-          "context": "showToast(i18nMsg(\"components.vault.issuedsharescard.36bdc2fdb515\"))"
-        }
-      ],
-      "translation": "Record deleted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.38844b135cf7",
-      "source": "更多",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 117,
-          "context": "{i18n(\"components.vault.issuedsharescard.38844b135cf7\")}"
-        }
-      ],
-      "translation": "More",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.3c71ad2b46e2",
-      "source": "清华云盘邮箱（留空允许持有口令的人接收）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 70,
-          "context": "label: i18nMsg(\"components.vault.issuedsharescard.3c71ad2b46e2\")"
-        }
-      ],
-      "translation": "Tsinghua Cloud Drive email (leave blank to let anyone holding the code receive)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.vault.issuedsharescard.3c8e966d966b",
-      "source": "撤销未完成，请检查云盘连接后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 59,
-          "context": "new Error(i18n(\"components.vault.issuedsharescard.3c8e966d966b\"))"
-        }
-      ],
-      "translation": "Revocation didn’t finish; check the Cloud Drive connection and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.4371a9b86f89",
-      "source": "接收范围已更新，旧口令已撤销。请复制新口令发送。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 75,
-          "context": "result.code ? i18nMsg(\"components.vault.issuedsharescard.4371a9b86f89\") : i18nMsg(\"components.vault.issuedsharescard.9d7deae4f40d\")"
-        }
-      ],
-      "translation": "Receiver scope updated and the old share code revoked. Copy the new share code to send.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.4391437c6fb1",
-      "source": "正在更新名称…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 17,
-          "context": "return i18n(\"components.vault.issuedsharescard.4391437c6fb1\");"
-        }
-      ],
-      "translation": "Updating the name…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.4aa0b6ffacf1",
-      "source": "生成暂存箱分享后，会在这里留下记录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 121,
-          "context": "!allEntries && log.entries.length ? i18n(\"components.vault.issuedsharescard.bdb38862008b\") : i18n(\"components.vault.issuedsharescard.4aa0b6ffacf1\")"
-        }
-      ],
-      "translation": "After you create a Stash share, a record appears here.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.525bd7fa41f3",
-      "source": "全部口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 98,
-          "context": "label: i18n(\"components.vault.issuedsharescard.525bd7fa41f3\")"
-        }
-      ],
-      "translation": "All share codes",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.vault.issuedsharescard.533f11fea9a2",
-      "source": "持有口令即可接收",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 110,
-          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
-        }
-      ],
-      "translation": "Anyone holding the share code can receive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.5c07ccfd4b6e",
-      "source": "已发出口令{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "currentCount ? ` · ${currentCount}` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 95,
-          "context": "{i18nRich(\"components.vault.issuedsharescard.5c07ccfd4b6e\", { value: currentCount ? ` · ${currentCount}` : \"\" })}"
-        }
-      ],
-      "translation": "Share codes issued{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.5e43012c5ebe",
-      "source": "这条口令仍有效，删除记录不会撤销分享。确定只删除记录？",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 89,
-          "context": "confirmOk(i18nMsg(\"components.vault.issuedsharescard.5e43012c5ebe\"))"
-        }
-      ],
-      "translation": "This share code is still valid, and deleting the record will not revoke the share. Delete the record only?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.6d2ce5e21b2a",
-      "source": "当前箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 98,
-          "context": "label: i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 99,
-          "context": "allEntries ? i18n(\"components.vault.issuedsharescard.cc7232862b97\") : i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
-        }
-      ],
-      "translation": "Current box",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.vault.issuedsharescard.6d970e8dbefd",
-      "source": "仅 {allowEmail}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "allowEmail",
-          "expression": "String(entry.allowEmail)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 110,
-          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
-        }
-      ],
-      "translation": "{allowEmail} only",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.7627cfd1a5fe",
-      "source": "分享升级未完成，请重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 81,
-          "context": "result.reason ?? i18n(\"components.vault.issuedsharescard.7627cfd1a5fe\")"
-        }
-      ],
-      "translation": "The share upgrade didn’t finish; please try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.7aefa357c175",
-      "source": "名称（留空使用箱子名）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 63,
-          "context": "label: i18nMsg(\"components.vault.issuedsharescard.7aefa357c175\")"
-        }
-      ],
-      "translation": "Name (leave blank to use the box name)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.vault.issuedsharescard.7dc5266a2019",
-      "source": "复制口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 116,
-          "context": "entry.allowEmail && !entry.cloud?.keyRepoId ? i18n(\"components.vault.issuedsharescard.164caa9ac6c3\") : i18n(\"components.vault.issuedsharescard.7dc5266a2019\")"
-        }
-      ],
-      "translation": "Copy share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.83c37e8a4a5f",
-      "source": "改名",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 126,
-          "context": "label: i18n(\"components.vault.issuedsharescard.83c37e8a4a5f\")"
-        }
-      ],
-      "translation": "Rename",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.vault.issuedsharescard.84168ec6814c",
-      "source": "查看口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 125,
-          "context": "revealed === selected.id ? i18n(\"components.vault.issuedsharescard.32ab30d4f1a4\") : i18n(\"components.vault.issuedsharescard.84168ec6814c\")"
-        }
-      ],
-      "translation": "View share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.8de1bb55709d",
-      "source": "不过期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 111,
-          "context": "entry.expiresAt ? i18n(\"components.vault.issuedsharescard.ed74c111755f\", { value: String(timeText(entry.expiresAt)) }) : i18n(\"components.vault.issuedsharescard.8de1bb55709d\")"
-        }
-      ],
-      "translation": "Never expires",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.9d7deae4f40d",
-      "source": "接收范围已更新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 75,
-          "context": "result.code ? i18nMsg(\"components.vault.issuedsharescard.4371a9b86f89\") : i18nMsg(\"components.vault.issuedsharescard.9d7deae4f40d\")"
-        }
-      ],
-      "translation": "Receiver scope updated",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

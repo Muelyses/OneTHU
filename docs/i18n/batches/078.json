@@ -1,7 +1,427 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.chatdock.fe0342f05ca5",
+      "source": "已导出：{path}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "path",
+          "expression": "String(path)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 1831,
+          "context": "path ? i18n(\"plugins.chatdock.fe0342f05ca5\", { path: String(path) }) : i18n(\"plugins.chatdock.7b376795bbca\")"
+        }
+      ],
+      "translation": "Exported: {path}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.feb95ed0fa91",
+      "source": "{value}回答出错：{error}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(partialAnswer ? partialAnswer + \"\\n\\n\" : \"\")"
+        },
+        {
+          "name": "error",
+          "expression": "String(r.error)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 1450,
+          "context": "r?.error != null\n      ? i18n(\"plugins.chatdock.feb95ed0fa91\", { value: String(partialAnswer ? partialAnswer + \"\\n\\n\" : \"\"), error: String(r.error) })\n      : typeof r?.answer === \"string\" ? r.answer : i18n(\"plugins.chatdock.8282ce4afe46\")"
+        }
+      ],
+      "translation": "{value} reply failed: {error}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.015edb6a8f1a",
+      "source": "标题不能为空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 258,
+          "context": "new Error(i18n(\"plugins.facade.015edb6a8f1a\"))"
+        }
+      ],
+      "translation": "Title cannot be empty",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.0a9a214b2734",
+      "source": "url 要以 http(s):// 开头",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1597,
+          "context": "new Error(i18n(\"plugins.facade.0a9a214b2734\"))"
+        }
+      ],
+      "translation": "url must start with http(s)://",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.168f93bc690d",
+      "source": "收藏夹不存在（先在收藏夹页创建）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1465,
+          "context": "new Error(i18n(\"plugins.facade.168f93bc690d\"))"
+        }
+      ],
+      "translation": "Favorites folder does not exist (create it on the Favorites page first)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1261,
+          "context": "title: i18n(\"plugins.facade.203c08e0d44a\")"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "plugins.facade.265965114fef",
+      "source": "没有这块白板：{bid}（先用 ext.onepage_list 拿板 id；列表页用 page=\"boards\"）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "bid",
+          "expression": "String(bid)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 731,
+          "context": "new Error(i18n(\"plugins.facade.265965114fef\", { bid: String(bid) }))"
+        }
+      ],
+      "translation": "No such Board: {bid} (get the board id via ext.onepage_list first; use page=\"boards\" on the list page)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.2d98325ea8eb",
+      "source": "会话不存在",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1936,
+          "context": "new Error(i18n(\"plugins.facade.2d98325ea8eb\"))"
+        },
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1950,
+          "context": "new Error(i18n(\"plugins.facade.2d98325ea8eb\"))"
+        }
+      ],
+      "translation": "Session does not exist",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.30c5627d3abc",
+      "source": "没有这个 OneFlow",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 960,
+          "context": "new Error(i18n(\"plugins.facade.30c5627d3abc\"))"
+        },
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 966,
+          "context": "new Error(i18n(\"plugins.facade.30c5627d3abc\"))"
+        }
+      ],
+      "translation": "No such OneFlow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.33db9bfbf0a0",
+      "source": "日程需要标题 summary",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1358,
+          "context": "new Error(i18n(\"plugins.facade.33db9bfbf0a0\"))"
+        }
+      ],
+      "translation": "Schedule entry requires a summary title",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.38273097f67a",
+      "source": "本机无记住的密码：请开启「记住密码」并重新登录一次后使用选课功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1985,
+          "context": "new Error(i18n(\"plugins.facade.38273097f67a\"))"
+        }
+      ],
+      "translation": "No remembered password on this device: enable \"Remember password\" and sign in again before using course selection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.3f6e4c3f9ebd",
+      "source": "手机端不开放浏览器探索（桌面端专属）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1590,
+          "context": "new Error(i18n(\"plugins.facade.3f6e4c3f9ebd\"))"
+        }
+      ],
+      "translation": "Browser exploration is not available on mobile (desktop only).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.449acaed3d6f",
+      "source": "{label} 响应超时（{value} 秒），站点可能限流，稍后再试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(ms / 1000)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1997,
+          "context": "new Error(i18n(\"plugins.facade.449acaed3d6f\", { label: String(label), value: String(ms / 1000) }))"
+        }
+      ],
+      "translation": "{label} timed out ({value} s); the site may be rate-limiting. Try again later",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "plugins.facade.4c822bdd81d6",
+      "source": "日程不存在：{uid}（先用 cal.agenda 拿最近日程的 uid）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "uid",
+          "expression": "String(uid)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 297,
+          "context": "new Error(i18n(\"plugins.facade.4c822bdd81d6\", { uid: String(uid) }))"
+        }
+      ],
+      "translation": "Schedule entry not found: {uid} (get a recent uid via cal.agenda first)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.532d892a16b6",
+      "source": "课程 {courseId} 不在学期 {semesterId} 的课程列表中（跨学期请确认 semesterId）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseId",
+          "expression": "String(courseId)"
+        },
+        {
+          "name": "semesterId",
+          "expression": "String(semesterId)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 534,
+          "context": "new Error(i18n(\"plugins.facade.532d892a16b6\", { courseId: String(courseId), semesterId: String(semesterId) }))"
+        }
+      ],
+      "translation": "Course {courseId} is not in the course list for semester {semesterId} (for cross-semester use, check semesterId)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.536acdd7d116",
+      "source": "导航桥未就绪（应用启动中）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 736,
+          "context": "new Error(i18n(\"plugins.facade.536acdd7d116\"))"
+        }
+      ],
+      "translation": "Navigation bridge not ready (app is starting)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.5a9154403950",
+      "source": "这个标签不能复制（首页或标签不存在）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1278,
+          "context": "new Error(i18n(\"plugins.facade.5a9154403950\"))"
+        }
+      ],
+      "translation": "This tab cannot be duplicated (Home or the tab does not exist)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.6082f18ce536",
+      "source": "webModal 仅支持 https:// 链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 866,
+          "context": "new Error(i18n(\"plugins.facade.6082f18ce536\"))"
+        }
+      ],
+      "translation": "webModal only supports https:// links",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.667f8382b324",
+      "source": "addAtom 需要 { kind: \"plugin:<插件id>\", key }",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1457,
+          "context": "new Error(i18n(\"plugins.facade.667f8382b324\"))"
+        }
+      ],
+      "translation": "addAtom requires { kind: \"plugin:<plugin id>\", key }",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.7241d265bd8c",
+      "source": "目前只接受内置壁纸（builtin:aurora/dusk/matcha/ink），本地图请从设置→壁纸上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1292,
+          "context": "new Error(i18n(\"plugins.facade.7241d265bd8c\"))"
+        }
+      ],
+      "translation": "Only built-in wallpapers are accepted for now (builtin:aurora/dusk/matcha/ink); upload local images from Settings → Wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.7437bebe3a97",
+      "source": "没有这个 OneFlow（id 来自 ext_flow_list）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 971,
+          "context": "new Error(i18n(\"plugins.facade.7437bebe3a97\"))"
+        }
+      ],
+      "translation": "No such OneFlow (ids come from ext_flow_list)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.74881d8fa852",
+      "source": "创建收藏夹失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1436,
+          "context": "new Error(i18n(\"plugins.facade.74881d8fa852\"))"
+        }
+      ],
+      "translation": "Failed to create favorites folder",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.776c5600bcab",
+      "source": "favorites.add 需要 key",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1430,
+          "context": "new Error(i18n(\"plugins.facade.776c5600bcab\"))"
+        }
+      ],
+      "translation": "favorites.add requires a key",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.facade.777811e6adc7",
       "source": "onTabReady 仅限本插件注册的 tab",
@@ -966,412 +1386,6 @@
         }
       ],
       "translation": "Model (for self-paid mode; the free tier defaults to DeepSeek-V4.1-Flash)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.9da85b4807f2",
-      "source": "API Key（自费模式用）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 407,
-          "context": "return i18n(\"plugins.loader.9da85b4807f2\");"
-        }
-      ],
-      "translation": "API key (for self-paid mode)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.b761f4b378ca",
-      "source": "清华 MadModel 免费（校园网/VPN · 自动续期）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 403,
-          "context": "return i18n(\"plugins.loader.b761f4b378ca\");"
-        }
-      ],
-      "translation": "Tsinghua MadModel free (campus network/VPN · auto-renewed)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.c3b7ba70078b",
-      "source": "单次任务最多工具调用步数（默认 16）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 432,
-          "context": "return i18n(\"plugins.loader.c3b7ba70078b\");"
-        }
-      ],
-      "translation": "Max tool-call steps per task (default 16)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.c7689034a299",
-      "source": "逐字显示回答（关＝等整段生成完一次给出）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 425,
-          "context": "return i18n(\"plugins.loader.c7689034a299\");"
-        }
-      ],
-      "translation": "Show replies character by character (off = wait for the full reply and show it at once)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.d87b3e6576de",
-      "source": "插件须导出 default(ctx) 激活函数",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 86,
-          "context": "isTheme\n      ? i18n(\"plugins.loader.66e63df3fb0a\")\n      : i18n(\"plugins.loader.d87b3e6576de\")"
-        }
-      ],
-      "translation": "Plugins must export a default(ctx) activation function",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.e7a25c627c2f",
-      "source": "输入单价（美元，每百万 tokens；自费模式）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 429,
-          "context": "return i18n(\"plugins.loader.e7a25c627c2f\");"
-        }
-      ],
-      "translation": "Input price (USD per million tokens; self-paid mode)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.e8ce81d059b5",
-      "source": "插件不存在：{id}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "id",
-          "expression": "String(id)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 163,
-          "context": "new Error(i18n(\"plugins.loader.e8ce81d059b5\", { id: String(id) }))"
-        }
-      ],
-      "translation": "Plugin not found: {id}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.e9cbdd258b61",
-      "source": "默认（DeepSeek-V4.1-Flash）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 410,
-          "context": "return i18n(\"plugins.loader.e9cbdd258b61\");"
-        }
-      ],
-      "translation": "Default (DeepSeek-V4.1-Flash)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.eb582a7f804c",
-      "source": "自费花费上限（美元；到量自动停止）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 431,
-          "context": "return i18n(\"plugins.loader.eb582a7f804c\");"
-        }
-      ],
-      "translation": "Self-paid spending cap (USD; stops automatically when reached)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.loader.f5c252ff822a",
-      "source": "关闭（整段生成完一次给出）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/loader.ts",
-          "line": 427,
-          "context": "return i18n(\"plugins.loader.f5c252ff822a\");"
-        }
-      ],
-      "translation": "Off (waits for the full reply and shows it at once)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.pluginwidgets.10243e85ea3c",
-      "source": "插件小组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/pluginWidgets.ts",
-          "line": 135,
-          "context": "def.title ?? def.pluginName ?? i18n(\"plugins.pluginwidgets.10243e85ea3c\")"
-        },
-        {
-          "file": "apps/desktop/src/plugins/pluginWidgets.ts",
-          "line": 135,
-          "context": "String(def.title ?? def.pluginName ?? i18n(\"plugins.pluginwidgets.10243e85ea3c\")).trim() || i18n(\"plugins.pluginwidgets.10243e85ea3c\")"
-        }
-      ],
-      "translation": "Plugin widgets",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "plugins.rust.d10deb8d0c0e",
-      "source": "未知接口：onethu.{ns}.{method}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "ns",
-          "expression": "String(ns)"
-        },
-        {
-          "name": "method",
-          "expression": "String(method)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/rust.ts",
-          "line": 144,
-          "context": "new Error(i18n(\"plugins.rust.d10deb8d0c0e\", { ns: String(ns), method: String(method) }))"
-        }
-      ],
-      "translation": "Unknown interface: onethu.{ns}.{method}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.rust.e8ce81d059b5",
-      "source": "插件不存在：{id}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "id",
-          "expression": "String(id)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/rust.ts",
-          "line": 36,
-          "context": "new Error(i18n(\"plugins.rust.e8ce81d059b5\", { id: String(id) }))"
-        },
-        {
-          "file": "apps/desktop/src/plugins/rust.ts",
-          "line": 52,
-          "context": "new Error(i18n(\"plugins.rust.e8ce81d059b5\", { id: String(id) }))"
-        }
-      ],
-      "translation": "Plugin not found: {id}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.01e0b2699c29",
-      "source": "查询与应用主题、参与昼夜跟随调度（可改变全局外观）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 90,
-          "context": "return i18n(\"plugins.types.01e0b2699c29\");"
-        }
-      ],
-      "translation": "Query and apply themes and join day/night scheduling (can change the global appearance)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.056ff6cc3d7e",
-      "source": "读取日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 64,
-          "context": "return i18n(\"plugins.types.056ff6cc3d7e\");"
-        }
-      ],
-      "translation": "Read schedule",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.062675c673b0",
-      "source": "插件私有键值存储（卸载即清除）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 81,
-          "context": "return i18n(\"plugins.types.062675c673b0\");"
-        }
-      ],
-      "translation": "Plugin-private key-value storage (cleared on uninstall)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.08eccad108d6",
-      "source": "读取邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 66,
-          "context": "return i18n(\"plugins.types.08eccad108d6\");"
-        }
-      ],
-      "translation": "Read email",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.0a267e07b231",
-      "source": "插件未获授权「{permission}」，无法执行：{action}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "permission",
-          "expression": "permission"
-        },
-        {
-          "name": "action",
-          "expression": "what"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 792,
-          "context": "super(i18n(\"plugins.types.0a267e07b231\", { permission: permission, action: what }))"
-        }
-      ],
-      "translation": "The plugin is not authorized for \"{permission}\" and cannot perform: {action}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.0b0aeead7381",
-      "source": "清华 GitLab 项目、仓库文件、Issue、合并请求与流水线（只读）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 72,
-          "context": "return i18n(\"plugins.types.0b0aeead7381\");"
-        }
-      ],
-      "translation": "Tsinghua GitLab projects, repository files, issues, merge requests, and pipelines (read-only)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.0b73861126d5",
-      "source": "向系统通知中心推送通知（三端），内容与时刻由插件决定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 85,
-          "context": "return i18n(\"plugins.types.0b73861126d5\");"
-        }
-      ],
-      "translation": "Push notifications to the system notification center (all platforms); content and timing are decided by the plugin",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.0dc09ebd6c0e",
-      "source": "读取校园卡",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 74,
-          "context": "return i18n(\"plugins.types.0dc09ebd6c0e\");"
-        }
-      ],
-      "translation": "Read campus card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.0e3c0e14077d",
-      "source": "新建/追加/改写/归档 OH 记忆（写操作，需确认）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 71,
-          "context": "return i18n(\"plugins.types.0e3c0e14077d\");"
-        }
-      ],
-      "translation": "Create/append/rewrite/archive OH memory (write operation, requires confirmation)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.1004769bdb4e",
-      "source": "预约与取消场馆",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 61,
-          "context": "return i18n(\"plugins.types.1004769bdb4e\");"
-        }
-      ],
-      "translation": "Book and cancel venues",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

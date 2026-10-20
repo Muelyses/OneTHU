@@ -1,5 +1,5 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -587,7 +587,7 @@
           "context": "return i18n(\"components.experiencemodepicker.32b0d50230a3\");"
         }
       ],
-      "translation": "Keeps only five features: study, reservations, daily life, timetable, and news.",
+      "translation": "Keeps only five features: study, reservations, daily life, timetable, and information.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },

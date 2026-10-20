@@ -1,7 +1,390 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.vaultitempresentation.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 30,
+          "context": "[i18n(\"components.vault.vaultitempresentation.a14f23af7016\"), \"calendar\"]"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 102,
+          "context": "atomKind === \"tab\" ? i18n(\"components.vault.vaultitempresentation.a626aad412b7\") : i18n(\"components.vault.vaultitempresentation.5f2cfbfecf9f\")"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 115,
+          "context": "[i18n(\"components.vault.vaultitempresentation.a626aad412b7\"), pageIcon(text(payload.page))]"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.a8f2a0de5fdf",
+      "source": "代码文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 68,
+          "context": "[i18n(\"components.vault.vaultitempresentation.a8f2a0de5fdf\"), \"code\"]"
+        }
+      ],
+      "translation": "Code file",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.b0dff016ff17",
+      "source": "作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 17,
+          "context": "[i18n(\"components.vault.vaultitempresentation.b0dff016ff17\"), \"check\"]"
+        }
+      ],
+      "translation": "Assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.b1bd19b13336",
+      "source": "组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 108,
+          "context": "[i18n(\"components.vault.vaultitempresentation.b1bd19b13336\"), \"organization\"]"
+        }
+      ],
+      "translation": "Organization card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.b5f224115dae",
+      "source": "云盘文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 29,
+          "context": "[i18n(\"components.vault.vaultitempresentation.b5f224115dae\"), \"cloud\"]"
+        }
+      ],
+      "translation": "Cloud drive file",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.bbaa9f06378b",
+      "source": "壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 31,
+          "context": "[i18n(\"components.vault.vaultitempresentation.bbaa9f06378b\"), \"image\"]"
+        }
+      ],
+      "translation": "Wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.c20f7618d330",
+      "source": "视频",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 63,
+          "context": "[i18n(\"components.vault.vaultitempresentation.c20f7618d330\"), \"video\"]"
+        }
+      ],
+      "translation": "Video",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.cdda5d2fdd8a",
+      "source": "PDF 文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 61,
+          "context": "[i18n(\"components.vault.vaultitempresentation.cdda5d2fdd8a\"), \"file\"]"
+        }
+      ],
+      "translation": "PDF file",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d24c10d37db0",
+      "source": "图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 62,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d24c10d37db0\"), \"image\"]"
+        }
+      ],
+      "translation": "Image",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 19,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d39567b2b9f1\"), \"text\"]"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d4f7864690bb",
+      "source": "Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 26,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
+        }
+      ],
+      "translation": "Info app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.dd42589239f7",
+      "source": "合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 21,
+          "context": "[i18n(\"components.vault.vaultitempresentation.dd42589239f7\"), \"gitlab\"]"
+        }
+      ],
+      "translation": "Merge request",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.df7a65bb1371",
+      "source": "教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 23,
+          "context": "[i18n(\"components.vault.vaultitempresentation.df7a65bb1371\"), \"location\"]"
+        }
+      ],
+      "translation": "Classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e00b99270be7",
+      "source": "体育场馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 24,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e00b99270be7\"), \"location\"]"
+        }
+      ],
+      "translation": "Sports venue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e26e5de89c0a",
+      "source": "新闻订阅",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 19,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e26e5de89c0a\"), \"text\"]"
+        }
+      ],
+      "translation": "News subscription",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 23,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e4d40b4d6759\"), \"location\"]"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e806fbbe8ec6",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 32,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e806fbbe8ec6\"), \"plugin\"]"
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 24,
+          "context": "[i18n(\"components.vault.vaultitempresentation.e81059e1a712\"), \"location\"]"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.ed31fbb483ee",
+      "source": "操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 20,
+          "context": "[i18n(\"components.vault.vaultitempresentation.ed31fbb483ee\"), \"check\"]"
+        }
+      ],
+      "translation": "Action",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.f37a13fc55b3",
+      "source": "课程通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 18,
+          "context": "[i18n(\"components.vault.vaultitempresentation.f37a13fc55b3\"), \"bell\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 32,
+          "context": "[i18n(\"components.vault.vaultitempresentation.f37a13fc55b3\"), \"bell\"]"
+        }
+      ],
+      "translation": "Course notification",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.fc01d82d7556",
+      "source": "云盘文件夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 29,
+          "context": "[i18n(\"components.vault.vaultitempresentation.fc01d82d7556\"), \"folder\"]"
+        }
+      ],
+      "translation": "Cloud drive folder",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.fd5394f29856",
+      "source": "个人名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 30,
+          "context": "[i18n(\"components.vault.vaultitempresentation.fd5394f29856\"), \"card\"]"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 108,
+          "context": "[i18n(\"components.vault.vaultitempresentation.fd5394f29856\"), \"card\"]"
+        }
+      ],
+      "translation": "Personal card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.vault.vaultpage.804002a9c49a",
       "source": "暂存箱",
@@ -969,414 +1352,6 @@
         }
       ],
       "translation": "Stash action menu",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultworkspace.e2d666e87d74",
-      "source": "查找箱内内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
-          "line": 117,
-          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
-          "line": 117,
-          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
-        }
-      ],
-      "translation": "Search box contents",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultworkspace.e4bbf7bc2d7e",
-      "source": "松手放入「{name}」",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "box.name"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
-          "line": 124,
-          "context": "{i18nRich(\"components.vault.vaultworkspace.e4bbf7bc2d7e\", { name: box.name })}"
-        }
-      ],
-      "translation": "Release to drop into “{name}”",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultworkspace.ee32f25f7050",
-      "source": "清除搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
-          "line": 123,
-          "context": "{i18n(\"components.vault.vaultworkspace.ee32f25f7050\")}"
-        }
-      ],
-      "translation": "Clear search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.03e731b6fbf6",
-      "source": "{value}。可在系统设置 → 无障碍/语言 → 文字转语音 里安装或启用引擎与中文语音数据，再回来点「重新检查」。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 61,
-          "context": "desc: i18n(\"components.voicesettingssection.03e731b6fbf6\", { value: String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")) })"
-        }
-      ],
-      "translation": "{value}. You can install or enable a text-to-speech engine and Chinese voice data in System settings → Accessibility / Language → Text-to-speech, then come back and tap “Recheck”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.06c47ff40845",
-      "source": "　可选音色 {length} 个。",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "voices.length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 173,
-          "context": "{i18nRich(\"components.voicesettingssection.06c47ff40845\", { length: voices.length })}"
-        }
-      ],
-      "translation": "  {length} voices available.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.08ceb2822aa1",
-      "source": "系统没有可用的文字转语音引擎",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 61,
-          "context": "st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")"
-        }
-      ],
-      "translation": "The system has no available text-to-speech engine",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.0c278a68af8a",
-      "source": "引擎尚未初始化",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 64,
-          "context": "title: i18n(\"components.voicesettingssection.0c278a68af8a\")"
-        }
-      ],
-      "translation": "Engine not initialized",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.voicesettingssection.1aa0e6cae35c",
-      "source": "稍等一下，初始化完成后试听与朗读才会出声。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 50,
-          "context": "desc: i18n(\"components.voicesettingssection.1aa0e6cae35c\")"
-        }
-      ],
-      "translation": "Wait a moment; preview and reading only produce sound after initialization finishes.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.1ead396a0d02",
-      "source": "正在朗读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 57,
-          "context": "title: i18n(\"components.voicesettingssection.1ead396a0d02\")"
-        }
-      ],
-      "translation": "Reading",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.voicesettingssection.20e403134d07",
-      "source": "当前平台是否支持语音合成 / 重新检查",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 71,
-          "context": "return i18n(\"components.voicesettingssection.20e403134d07\");"
-        }
-      ],
-      "translation": "Whether the current platform supports speech synthesis / Recheck",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.2a015c420014",
-      "source": "音色、语速、音高全部回到原声，并关闭自动朗读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 274,
-          "context": "{i18n(\"components.voicesettingssection.2a015c420014\")}"
-        }
-      ],
-      "translation": "Voice, speed, and pitch all return to default, and auto-read is turned off",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.36aaad1be5c9",
-      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 269,
-          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
-        }
-      ],
-      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.3b6c48ce496b",
-      "source": "全部恢复默认",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 279,
-          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
-        }
-      ],
-      "translation": "Restore all defaults",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.3e3b45ef84ac",
-      "source": "引擎状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 71,
-          "context": "return i18n(\"components.voicesettingssection.3e3b45ef84ac\");"
-        }
-      ],
-      "translation": "Engine status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.5e4df038f43b",
-      "source": "正在准备朗读引擎…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 40,
-          "context": "title: i18n(\"components.voicesettingssection.5e4df038f43b\")"
-        }
-      ],
-      "translation": "Preparing the reading engine…",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.voicesettingssection.5ffbeb114a74",
-      "source": "试听失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 156,
-          "context": "setMsg(i18n(\"components.voicesettingssection.5ffbeb114a74\", { value: String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\")) }))"
-        }
-      ],
-      "translation": "Preview failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.6ab9d2bde92c",
-      "source": "音色",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 72,
-          "context": "return i18n(\"components.voicesettingssection.6ab9d2bde92c\");"
-        },
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 183,
-          "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 190,
-          "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
-        }
-      ],
-      "translation": "Voice",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.6e5d0cde3be6",
-      "source": "引擎不可用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 60,
-          "context": "title: i18n(\"components.voicesettingssection.6e5d0cde3be6\")"
-        }
-      ],
-      "translation": "Engine unavailable",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.voicesettingssection.7603ae8c852e",
-      "source": "系统引擎首次初始化需要一两秒。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 40,
-          "context": "desc: i18n(\"components.voicesettingssection.7603ae8c852e\")"
-        }
-      ],
-      "translation": "The system engine takes a second or two to initialize the first time.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.7f0a0fda741c",
-      "source": "试听",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 268,
-          "context": "{i18n(\"components.voicesettingssection.7f0a0fda741c\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 273,
-          "context": "speaking ? i18n(\"components.voicesettingssection.ca4d973c0b00\") : i18n(\"components.voicesettingssection.7f0a0fda741c\")"
-        }
-      ],
-      "translation": "Preview",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.82ee2ef744bf",
-      "source": "点「重新检查」触发一次初始化。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 64,
-          "context": "desc: i18n(\"components.voicesettingssection.82ee2ef744bf\")"
-        }
-      ],
-      "translation": "Tap “Recheck” to trigger an initialization.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.853dd990730b",
-      "source": "系统引擎没有报出可选的普通话嗓音，用引擎默认音色朗读。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 186,
-          "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
-        }
-      ],
-      "translation": "The system engine did not report any selectable Mandarin voices; the engine's default voice is used for reading.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.87e2903f67f2",
-      "source": "不同 ROM 自带的嗓音不同（如小艺、小爱、Google 的普通话嗓音）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 187,
-          "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
-        }
-      ],
-      "translation": "Different ROMs ship different voices (e.g. Celia, Xiao AI, and Google's Mandarin voices).",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

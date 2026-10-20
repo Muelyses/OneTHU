@@ -1,7 +1,460 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.tts.c031b065a3a3",
+      "source": "……（内容较长，剩下的看屏幕吧）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/tts.ts",
+          "line": 258,
+          "context": "(cut > max * 0.5 ? head.slice(0, cut + 1) : head) + i18n(\"lib.tts.c031b065a3a3\")"
+        }
+      ],
+      "translation": "… (the content is long; read the rest on screen)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.update.c459fb3f09e6",
+      "source": "新版本 {version} 可用：设置 → 关于 查看详情",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "version",
+          "expression": "rel.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/update.ts",
+          "line": 103,
+          "context": "onToast(i18n(\"lib.update.c459fb3f09e6\", { version: rel.name }))"
+        }
+      ],
+      "translation": "New version {version} available: see \"Settings → About\" for details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.01e9ed6e0882",
+      "source": "{what} 不可达（403）——官方端点若变更请检查 share-links API（本模块用的是匿名 dirents 接口）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 211,
+          "context": "return i18n(\"lib.updater.01e9ed6e0882\", { what: String(what) });"
+        }
+      ],
+      "translation": "{what} unreachable (403) — if the official endpoint changed, check the share-links API (this module uses the anonymous dirents endpoint)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.072f4658615f",
+      "source": "{what} 服务端错误（HTTP {status}）——云盘侧暂时不可用，稍后重试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        },
+        {
+          "name": "status",
+          "expression": "String(status)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 213,
+          "context": "return i18n(\"lib.updater.072f4658615f\", { what: String(what), status: String(status) });"
+        }
+      ],
+      "translation": "{what} server error (HTTP {status}) — the cloud drive side is temporarily unavailable, try again later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.185680ad27cd",
+      "source": "已用系统默认方式打开：若是 DMG，把应用拖进「应用程序」即完成更新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 494,
+          "context": "key === \"macos\" ? i18n(\"lib.updater.185680ad27cd\") : i18n(\"lib.updater.95bc488982b2\")"
+        }
+      ],
+      "translation": "Opened with the system default: for a DMG, drag the app into \"Applications\" to finish the update.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.194b24406399",
+      "source": "镜像目录 {path}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "path",
+          "expression": "String(path)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 234,
+          "context": "shareErr(i18n(\"lib.updater.194b24406399\", { path: String(path) }), r.status)"
+        }
+      ],
+      "translation": "Mirror directory {path}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2985491184cc",
+      "source": "两个更新源都没取到清单：\n{detail}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "detail",
+          "expression": "String(detail)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 429,
+          "context": "error: i18n(\"lib.updater.2985491184cc\", { detail: String(detail) })"
+        }
+      ],
+      "translation": "Could not fetch the manifest from either update source:\n{detail}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2d2cad3f99ea",
+      "source": "HTTP 404（Releases 还没挂 latest.json 资产）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 343,
+          "context": "res.status === 404 ? i18n(\"lib.updater.2d2cad3f99ea\") : `HTTP ${res.status}`"
+        }
+      ],
+      "translation": "HTTP 404 (Releases doesn't have the latest.json asset yet)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2da47c897e30",
+      "source": "已拉起系统安装页：首次安装需在系统提示里允许「安装未知应用」，之后按系统页确认即可。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 492,
+          "context": "hint: i18n(\"lib.updater.2da47c897e30\")"
+        }
+      ],
+      "translation": "System install page opened: for first installation, allow \"Install unknown apps\" when the system prompts, then confirm on the system page.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.2f939477c47e",
+      "source": "安卓",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 122,
+          "context": "return i18n(\"lib.updater.2f939477c47e\");"
+        }
+      ],
+      "translation": "Android",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.361980a5e6ce",
+      "source": "{what} 不存在（404）——镜像上还没有这个文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "what",
+          "expression": "String(what)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 212,
+          "context": "return i18n(\"lib.updater.361980a5e6ce\", { what: String(what) });"
+        }
+      ],
+      "translation": "{what} not found (404) — the file isn't on the mirror yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.3d383f5a5c29",
+      "source": "清单不是合法 JSON",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 139,
+          "context": "error: i18n(\"lib.updater.3d383f5a5c29\")"
+        }
+      ],
+      "translation": "Manifest is not valid JSON",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.4219a7449e26",
+      "source": "已是最新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 414,
+          "context": "r.hasUpdate ? i18n(\"lib.updater.daedea385864\") : i18n(\"lib.updater.4219a7449e26\")"
+        }
+      ],
+      "translation": "Already up to date",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.42b98aa3fae8",
+      "source": "没有可安装的本地路径",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 487,
+          "context": "error: i18n(\"lib.updater.42b98aa3fae8\")"
+        }
+      ],
+      "translation": "No local installable path available",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.4bffec153a88",
+      "source": "{dir}/ 里没有可识别的安装包（期望 OneTHU_<版本>_<arch>.{ext}；目录里现有 {length} 项）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "dir",
+          "expression": "String(dir)"
+        },
+        {
+          "name": "ext",
+          "expression": "String(ext)"
+        },
+        {
+          "name": "length",
+          "expression": "String(dirList.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 382,
+          "context": "new Error(i18n(\"lib.updater.4bffec153a88\", { dir: String(dir), ext: String(ext), length: String(dirList.length) }))"
+        }
+      ],
+      "translation": "No recognizable installer package in {dir}/ (expected OneTHU_<version>_<arch>.{ext}; the directory has {length} items)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.71c70711a602",
+      "source": "GitHub Releases（外网）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 45,
+          "context": "return i18n(\"lib.updater.71c70711a602\");"
+        }
+      ],
+      "translation": "GitHub Releases (public internet)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.95bc488982b2",
+      "source": "已用系统默认方式打开安装包。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 494,
+          "context": "key === \"macos\" ? i18n(\"lib.updater.185680ad27cd\") : i18n(\"lib.updater.95bc488982b2\")"
+        }
+      ],
+      "translation": "The installer package was opened with the system default.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.9fa399af02de",
+      "source": "清华云盘（官方镜像 · 校内可达）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 46,
+          "context": "return i18n(\"lib.updater.9fa399af02de\");"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive (official mirror · reachable on campus)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.a1a9da9ee6ed",
+      "source": "未知原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 422,
+          "context": "failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 428,
+          "context": "a.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
+        }
+      ],
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.ab90d58874ee",
+      "source": "{label} 不可用：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(failed.label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 422,
+          "context": "fallbackReason: i18n(\"lib.updater.ab90d58874ee\", { label: String(failed.label), value: String(failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")) })"
+        }
+      ],
+      "translation": "{label} unavailable: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.updater.b331bcbd6083",
+      "source": "清单 v{version} 没有当前平台（{key}）的包",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "version",
+          "expression": "String(m.version)"
+        },
+        {
+          "name": "key",
+          "expression": "String(key)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 349,
+          "context": "new Error(i18n(\"lib.updater.b331bcbd6083\", { version: String(m.version), key: String(key) }))"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 404,
+          "context": "new Error(i18n(\"lib.updater.b331bcbd6083\", { version: String(m.version), key: String(key) }))"
+        }
+      ],
+      "translation": "Manifest v{version} has no package for the current platform ({key})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.bf52642dd8c4",
+      "source": "镜像目录不可达：{value}（校外环境请确认网络；该接口无需登录）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 232,
+          "context": "new Error(i18n(\"lib.updater.bf52642dd8c4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
+        }
+      ],
+      "translation": "Mirror directory unreachable: {value} (check your network off campus; this endpoint needs no sign-in)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.updater.c57372e35f51",
+      "source": "[更新] 拉起安装页失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "msg",
+          "expression": "String(msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 497,
+          "context": "logLine(i18n(\"lib.updater.c57372e35f51\", { msg: String(msg) }))"
+        }
+      ],
+      "translation": "[Update] Failed to open the install page: {msg}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.updater.cfc1ecb75eaf",
       "source": "镜像目录返回的不是 JSON（{path}）——官方接口形态可能变了",
@@ -992,415 +1445,6 @@
       "translation": "No data",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "lib.xklogic.bf81401ed39e",
-      "source": "(英语阅读写作/听说交流)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 522,
-          "context": "coveredBy = i18n(\"lib.xklogic.bf81401ed39e\")"
-        }
-      ],
-      "translation": "(English reading & writing / listening & speaking)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.c430f4c12eaa",
-      "source": "周一",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Mon",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.d1378a68e620",
-      "source": "周二",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Tue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.d78be007f184",
-      "source": "(英语进阶读写)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 518,
-          "context": "coveredBy = i18n(\"lib.xklogic.d78be007f184\")"
-        }
-      ],
-      "translation": "(Advanced English reading & writing)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.dfdf3e83c0bd",
-      "source": "1-2节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 15
-        }
-      ],
-      "translation": "Periods 1-2",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.e7e4b83f7714",
-      "source": "11-12节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 15
-        }
-      ],
-      "translation": "Periods 11-12",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.e9d3b01a5a00",
-      "source": "周四",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Thu",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.ee239f394329",
-      "source": "周日",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Sun",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.ef7be5be3c13",
-      "source": "体育",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 63,
-          "context": "return i18n(\"lib.xklogic.ef7be5be3c13\");"
-        }
-      ],
-      "translation": "Sports",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xklogic.f9aa11dbb15c",
-      "source": "周六",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xklogic.ts",
-          "line": 14
-        }
-      ],
-      "translation": "Sat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktassets.29516ecba0fc",
-      "source": "图片代理响应非图片（mime={value} bytes={value2}）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(out?.mime ?? \"空\")"
-        },
-        {
-          "name": "value2",
-          "expression": "String(out?.data?.length ?? 0)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktAssets.ts",
-          "line": 146,
-          "context": "new Error(i18n(\"lib.yktassets.29516ecba0fc\", { value: String(out?.mime ?? \"空\"), value2: String(out?.data?.length ?? 0) }))"
-        }
-      ],
-      "translation": "Image proxy response is not an image (mime={value} bytes={value2})",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktassets.5950a346694f",
-      "source": "非 Tauri 环境无图片代理通道",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktAssets.ts",
-          "line": 139,
-          "context": "new Error(i18n(\"lib.yktassets.5950a346694f\"))"
-        }
-      ],
-      "translation": "No image proxy channel outside the Tauri environment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktbody.d24c10d37db0",
-      "source": "图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktBody.ts",
-          "line": 283,
-          "context": "return i18n(\"lib.yktbody.d24c10d37db0\");"
-        },
-        {
-          "file": "apps/desktop/src/lib/yktBody.ts",
-          "line": 297,
-          "context": "return i18n(\"lib.yktbody.d24c10d37db0\");"
-        }
-      ],
-      "translation": "Image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktbody.e4eb68f7fdd0",
-      "source": "{name}（图片加载失败）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "\"__YKT_IMAGE_NAME__\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktBody.ts",
-          "line": 664,
-          "context": "failedImage: i18n(\"lib.yktbody.e4eb68f7fdd0\", { name: \"__YKT_IMAGE_NAME__\" })"
-        }
-      ],
-      "translation": "{name} (image failed to load)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.3865ba32b6b5",
-      "source": "已交未批",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 82,
-          "context": "text: i18n(\"lib.yktdetail.3865ba32b6b5\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 122,
-          "context": "text: i18n(\"lib.yktdetail.3865ba32b6b5\")"
-        }
-      ],
-      "translation": "Submitted, not graded",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.41bb47e4b848",
-      "source": "无题目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 113,
-          "context": "text: i18n(\"lib.yktdetail.41bb47e4b848\")"
-        }
-      ],
-      "translation": "No title",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.8032af4a590f",
-      "source": "未提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 121,
-          "context": "text: i18n(\"lib.yktdetail.8032af4a590f\")"
-        }
-      ],
-      "translation": "Not submitted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.9b2367542d68",
-      "source": "已批 {value} 分",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(yktScoreText(p.myScore))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 79,
-          "context": "text: i18n(\"lib.yktdetail.9b2367542d68\", { value: String(yktScoreText(p.myScore)) })"
-        }
-      ],
-      "translation": "Graded {value} points",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.b5f241af1539",
-      "source": "未作答",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 83,
-          "context": "text: i18n(\"lib.yktdetail.b5f241af1539\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 114,
-          "context": "text: i18n(\"lib.yktdetail.b5f241af1539\")"
-        }
-      ],
-      "translation": "Not answered",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.d42baf1647c8",
-      "source": "已批改",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 80,
-          "context": "text: i18n(\"lib.yktdetail.d42baf1647c8\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 115,
-          "context": "text: i18n(\"lib.yktdetail.d42baf1647c8\")"
-        }
-      ],
-      "translation": "Graded",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktdetail.ef020c5a8603",
-      "source": "已批 {graded}/{total} 题",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "graded",
-          "expression": "String(graded)"
-        },
-        {
-          "name": "total",
-          "expression": "String(total)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktDetail.ts",
-          "line": 116,
-          "context": "text: i18n(\"lib.yktdetail.ef020c5a8603\", { graded: String(graded), total: String(total) })"
-        }
-      ],
-      "translation": "{graded}/{total} questions graded",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktimageprep.982e69733466",
-      "source": "图片编码失败",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktImagePrep.ts",
-          "line": 65,
-          "context": "new Error(i18n(\"lib.yktimageprep.982e69733466\"))"
-        }
-      ],
-      "translation": "Image encoding failed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.yktimageprep.9acbcc843b8f",
-      "source": "canvas 不可用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/yktImagePrep.ts",
-          "line": 57,
-          "context": "new Error(i18n(\"lib.yktimageprep.9acbcc843b8f\"))"
-        }
-      ],
-      "translation": "Canvas unavailable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

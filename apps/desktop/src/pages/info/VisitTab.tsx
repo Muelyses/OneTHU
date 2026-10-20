@@ -1,4 +1,4 @@
-import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale, msg, resolveMessage, type UiText } from "../../i18n/index.js";
 /**
  * 临时来访人员报备（预约页 · 来访报备栏）。
  *
@@ -13,7 +13,7 @@ import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18
  *  ② 样式零旁路：全部 @onethu/gui 组件 —— 无页面 CSS、无内联样式、无自造控件。
  *  ③ 卡片区只读官方：我的报备列表按服务端返回原样显示，不做状态文案推测。
  */
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   Banner, Btn, Card, Checkbox, Divider, EmptyState, Field, Inline, Input, Modal, NumberField,
   Row, Select, Stack, Text, TextArea,
@@ -31,23 +31,12 @@ const PAGE_HINT = () => i18n("pages.info.visittab.35ad08711b68");
 const LOGIN_HINT = () => i18n("pages.info.visittab.0a2bc74c4275");
 const LOGIN_HINT_2 = () => i18n("pages.info.visittab.861a76f9d065");
 const SUBMIT_HINT = () => i18n("pages.info.visittab.b72e3073880e");
-// Notes starting with "@" hold a message key and re-resolve on locale switch.
-// Known keys are spelled out so the i18n checker can verify every message reference.
-const resolveNote = (n: string | null): string | null => {
-  if (n === "@pages.info.visittab.af16cc0b5325") return i18n("pages.info.visittab.af16cc0b5325");
-  if (n === "@pages.info.visittab.65897f00fbc6") return i18n("pages.info.visittab.65897f00fbc6");
-  if (n === "@pages.info.visittab.e22da1c2173d") return i18n("pages.info.visittab.e22da1c2173d");
-  return n;
-};
-const DRAFT_FROM_OH = "pages.info.visittab.af16cc0b5325";
-const AUTO_SUBMIT_FROM_OH = "pages.info.visittab.65897f00fbc6";
+// Persist descriptors rather than translated strings so open notices follow the locale.
+const DRAFT_FROM_OH = () => msg("pages.info.visittab.af16cc0b5325");
+const AUTO_SUBMIT_FROM_OH = () => msg("pages.info.visittab.65897f00fbc6");
 const CONFIRM_TITLE = () => i18n("pages.info.visittab.f733797ef61a");
-const LOAD_FAIL = () => i18n("pages.info.visittab.8d66f991153b");
-const SUBMIT_FAIL = () => i18n("pages.info.visittab.0b0682ac2f83");
-// App-generated error texts from the visit client are re-resolved at display time;
-// school-server messages are kept verbatim (external {reason}).
-
-
+const LOAD_FAIL = () => msg("pages.info.visittab.8d66f991153b");
+const SUBMIT_FAIL = () => msg("pages.info.visittab.0b0682ac2f83");
 // App-generated error texts from the visit client are re-resolved at display time;
 // school-server messages are kept verbatim (external {reason}).
 const localizeVisitError = (message: string): string => {
@@ -57,7 +46,7 @@ const localizeVisitError = (message: string): string => {
   if (message === "临时来访报备系统没有下发登录令牌") return i18n("pages.info.visittab.95f5bc49c2c0");
   if (message === "统一身份认证跳转次数过多，请稍后重试") return i18n("pages.info.visittab.fcafad5054ea");
   if (message === "本机没有记住账号密码：请先在设置里记住密码，或打开官方页面手动登录一次") return i18n("pages.info.visittab.7a786a6f0ace");
-  { const m1 = message.match(/^统一身份认证页面形态不认识（HTTP (\d+)）$/); if (m1) return i18n("pages.info.visittab.0dc9677cab64", { value: m1[1] }); }
+  { const m1 = message.match(/^统一身份认证页面形态不认识（HTTP (\d+)），请稍后重试$/); if (m1) return i18n("pages.info.visittab.0dc9677cab64", { value: m1[1] }); }
   if (message === "统一身份认证要求二次验证：请先到官方页面完成一次验证") return i18n("pages.info.visittab.7cfaed11d6a4");
   if (message === "统一身份认证没有返回漫游票据，请稍后重试") return i18n("pages.info.visittab.86889497e1c5");
   if (message === "表单预载没有返回模型标识") return i18n("pages.info.visittab.962b844284e8");
@@ -70,6 +59,9 @@ const localizeVisitError = (message: string): string => {
   if (message === "发送成功") return i18n("pages.info.visittab.34c680feb9c9");
   return message;
 };
+
+const resolveVisitText = (value: UiText): string =>
+  typeof value === "string" ? localizeVisitError(value) : resolveMessage(value);
 
 type Phase = "need_login" | "loading" | "ready" | "error";
 
@@ -94,11 +86,11 @@ export function VisitTab() {
   const [model, setModel] = useState<VisitFormModel | null>(null);
   const [catalogs, setCatalogs] = useState<Record<string, VisitOption[]>>({});
   const [rows, setRows] = useState<VisitReportRow[] | null>(null);
-  const [mineNote, setMineNote] = useState<string | null>(null);
+  const [mineNote, setMineNote] = useState<UiText | null>(null);
   const [form, setForm] = useState<VisitReportDraft>(emptyDraft);
   const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [note, setNote] = useState<UiText | null>(null);
+  const [error, setError] = useState<UiText | null>(null);
   const [askSubmit, setAskSubmit] = useState(false);
   /** OH 请求了自动提交：等表单/模型就绪后直接走 submit()，不弹确认框 */
   const [autoSubmit, setAutoSubmit] = useState(false);
@@ -116,10 +108,21 @@ export function VisitTab() {
       confirmed: wantAuto ? true : false,
       visitors: patch.visitors?.length ? patch.visitors : f.visitors,
     }));
-    setNote(wantAuto ? `@${AUTO_SUBMIT_FROM_OH}` : `@${DRAFT_FROM_OH}`);
+    setNote(wantAuto ? AUTO_SUBMIT_FROM_OH() : DRAFT_FROM_OH());
     if (wantAuto) setAutoSubmit(true);
     clearVisitDraft();
   }, [draftVersion]);
+
+  const loadMine = useCallback(async (): Promise<void> => {
+    try {
+      const mine = await visitClient.myReports();
+      setRows(mine.rows);
+      setMineNote(null);
+    } catch (e) {
+      setRows([]);
+      setMineNote(e instanceof Error ? e.message : msg("pages.info.visittab.cc06059ac1bf"));
+    }
+  }, []);
 
   const load = useCallback(async (): Promise<void> => {
     setPhase("loading");
@@ -145,33 +148,33 @@ export function VisitTab() {
       );
       setCatalogs(Object.fromEntries(pairs));
       setPhase("ready");
-      try {
-        const mine = await visitClient.myReports();
-        setRows(mine.rows);
-      } catch (e) {
-        setRows([]);
-        setMineNote(i18n("pages.info.visittab.727f5033a84b", { value: String(e instanceof Error ? localizeVisitError(e.message) : i18n("pages.info.visittab.cc06059ac1bf")) }));
-      }
+      await loadMine();
     } catch (e) {
       if (e instanceof VisitLoginError) {
         setPhase("need_login");
-        setNote(localizeVisitError(e.message));
+        setNote(e.message);
         return;
       }
       if (e instanceof VisitAuthRequiredError) {
         setPhase("need_login");
-        setNote(localizeVisitError(e.message));
+        setNote(e.message);
         return;
       }
       setPhase("error");
-      setError(e instanceof VisitApiError ? localizeVisitError(e.message) : LOAD_FAIL());
+      setError(e instanceof VisitApiError ? e.message : LOAD_FAIL());
       void logLine(i18n("pages.info.visittab.085419250804", { value: String(String(e)) }));
     }
-  }, []);
+  }, [loadMine]);
 
+  // Only restored sessions auto-load on mount. A manual load sets phase=loading
+  // itself and must not trigger a second sign-in/form request through this effect.
+  const autoLoadStarted = useRef(false);
   useEffect(() => {
-    if (phase === "loading" && !model) void load();
-  }, [phase, model, load]);
+    if (!autoLoadStarted.current && visitHasSession()) {
+      autoLoadStarted.current = true;
+      void load();
+    }
+  }, [load]);
 
   const options = useMemo(() => ({
     category: catalogs.mfield1 ?? [],
@@ -190,15 +193,16 @@ export function VisitTab() {
     setAskSubmit(false);
     setBusy(true);
     setNote(null);
+    setError(null);
     try {
       await visitClient.submitReport(form, model);
-      setNote("@pages.info.visittab.e22da1c2173d");
+      setNote(msg("pages.info.visittab.e22da1c2173d"));
       setForm(emptyDraft());
-      const mine = await visitClient.myReports();
-      setRows(mine.rows);
-      setMineNote(null);
+      // Reading the updated list can fail after the write has succeeded.
+      // Keep that failure in the list notice rather than reporting a failed submission.
+      await loadMine();
     } catch (e) {
-      setError(e instanceof VisitApiError ? localizeVisitError(e.message) : SUBMIT_FAIL());
+      setError(e instanceof VisitApiError ? e.message : SUBMIT_FAIL());
     } finally {
       setBusy(false);
     }
@@ -224,7 +228,7 @@ export function VisitTab() {
               <Btn variant="solid" onClick={() => void load()}>{i18n("pages.info.visittab.fd9918edd55e")}</Btn>
               <Btn onClick={() => void openExternal(VISIT_MOBILE_ENTRY)}>{i18n("pages.info.visittab.1ecea7d51b20")}</Btn>
             </Inline>
-            {note ? <Text tone="quiet">{resolveNote(note)}</Text> : null}
+            {note ? <Text tone="quiet">{resolveVisitText(note)}</Text> : null}
           </Stack>
         </Card>
       </Stack>
@@ -243,7 +247,7 @@ export function VisitTab() {
     return (
       <Card>
         <Stack gap={2}>
-          <Text>{error ?? LOAD_FAIL()}</Text>
+          <Text>{resolveVisitText(error ?? LOAD_FAIL())}</Text>
           <Inline gap={2}>
             <Btn variant="solid" onClick={() => void load()}>{i18n("pages.info.visittab.7bdd5ce1e298")}</Btn>
             <Btn onClick={() => void openExternal(VISIT_MOBILE_ENTRY)}>{i18n("pages.info.visittab.1ecea7d51b20")}</Btn>
@@ -259,7 +263,7 @@ export function VisitTab() {
   return (
     <Stack gap={3}>
       <Banner tone="info" title={i18n("pages.info.visittab.99f047c591bb")}>{PAGE_HINT()}</Banner>
-      {note ? <Banner tone="success" title={i18n("pages.info.visittab.f56c6c82203b")}>{resolveNote(note)}</Banner> : null}
+      {note ? <Banner tone="success" title={i18n("pages.info.visittab.f56c6c82203b")}>{resolveVisitText(note)}</Banner> : null}
 
       <Card>
         <Stack gap={3}>
@@ -364,14 +368,14 @@ export function VisitTab() {
             <Btn onClick={() => void openExternal(VISIT_MOBILE_ENTRY)}>{i18n("pages.info.visittab.1ecea7d51b20")}</Btn>
           </Inline>
           <Text tone="quiet" size="sm">{SUBMIT_HINT()}</Text>
-          {error ? <Text tone="error">{error}</Text> : null}
+          {error ? <Text tone="error">{resolveVisitText(error)}</Text> : null}
         </Stack>
       </Card>
 
       <Card>
         <Stack gap={2}>
           <Text weight="semibold">{i18n("pages.info.visittab.83a23e30465b")}</Text>
-          {mineNote ? <Text tone="quiet">{mineNote}</Text> : null}
+          {mineNote ? <Text tone="quiet">{i18n("pages.info.visittab.727f5033a84b", { value: resolveVisitText(mineNote) })}</Text> : null}
           {rows === null ? (
             <Text tone="quiet">{i18n("pages.info.visittab.86b6d0d63062")}</Text>
           ) : rows.length === 0 ? (

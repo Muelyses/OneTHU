@@ -1,3 +1,10 @@
+/** Advance the bilingual language step without changing the saved locale. */
+export async function advanceOnboardingLanguage(page) {
+  await page.locator('.experience-tour [data-tour-phase="language"]').waitFor();
+  await page.locator('.experience-tour .tour-language-continue').click();
+  await page.locator('.experience-tour [data-tour-phase="intro"]').waitFor();
+}
+
 /** Shared real-button walkthrough: assertions cover destinations, not source-code strings. */
 export async function resumeWithKeyboard(page, panel, check, label) {
   const resume = panel.getByRole('button', { name: '继续导览', exact: true });

@@ -1,7 +1,399 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.widgetbindmodal.ea9677c3d21f",
+      "source": "要显示：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "bindingSummary(binding, favs.data)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 145,
+          "context": "{i18nRich(\"components.widgetbindmodal.ea9677c3d21f\", { value: bindingSummary(binding, favs.data) })}"
+        }
+      ],
+      "translation": "To show: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.fce3bfe1b135",
+      "source": "这块小组件显示什么",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 177,
+          "context": "{i18n(\"components.widgetbindmodal.fce3bfe1b135\")}"
+        }
+      ],
+      "translation": "What this widget shows",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetbindmodal.ff6541441f00",
+      "source": "桌面上可以同时放多块，各显示各的（点卡片即可换）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
+          "line": 183,
+          "context": "{i18n(\"components.widgetbindmodal.ff6541441f00\")}"
+        }
+      ],
+      "translation": "You can place several widgets on the home screen at once, each showing its own content (tap a card to switch).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.15539ef189fb",
+      "source": "它依赖的功能可能已改名或被移除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 48,
+          "context": "{i18n(\"components.widgethost.15539ef189fb\")}"
+        }
+      ],
+      "translation": "The feature it depends on may have been renamed or removed.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.32f8c1be3eb7",
+      "source": "该组件已不可用，请从白板移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 47,
+          "context": "{i18n(\"components.widgethost.32f8c1be3eb7\")}"
+        }
+      ],
+      "translation": "This widget is no longer available; please remove it from the Board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.7d77a938e62b",
+      "source": "暂无内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 92,
+          "context": "{i18n(\"components.widgethost.7d77a938e62b\")}"
+        }
+      ],
+      "translation": "No content yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.857e5e59690b",
+      "source": "这条入口已失效，请从白板移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 70,
+          "context": "{i18n(\"components.widgethost.857e5e59690b\")}"
+        }
+      ],
+      "translation": "This entry is no longer valid; please remove it from the Board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgethost.b77883b96b72",
+      "source": "内容由原页面提供",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetHost.tsx",
+          "line": 98,
+          "context": "{i18n(\"components.widgethost.b77883b96b72\")}"
+        }
+      ],
+      "translation": "Content is provided by the original page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.021377fb5c78",
+      "source": "尚未添加小组件：桌面长按 → 小组件 → OneTHU，添加后可选择显示内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 103,
+          "context": "instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
+        }
+      ],
+      "translation": "No widgets added yet: long-press the home screen → Widgets → OneTHU; after adding one you can choose what it shows",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.130123e01753",
+      "source": "立即刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.widgetsettingssection.130123e01753\")}"
+        }
+      ],
+      "translation": "Refresh now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.15eb664681a3",
+      "source": "{length} 种：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(status.providersRegistered.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(status.providersRegistered.map(plainShapeName).join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 136,
+          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
+        }
+      ],
+      "translation": "{length} kinds: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.174b9ff2e902",
+      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 135,
+          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
+        }
+      ],
+      "translation": "No usable sizes were read yet; please report this line's content to the developers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.17a0e39c6089",
+      "source": "日程与 DDL",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 195,
+          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
+        }
+      ],
+      "translation": "Schedule & DDL",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.23a5d87729b6",
+      "source": "刷新失败，详情见运行日志",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 78,
+          "context": "okNow ? i18n(\"components.widgetsettingssection.6a46a714e7c0\") : i18n(\"components.widgetsettingssection.23a5d87729b6\")"
+        }
+      ],
+      "translation": "Refresh failed; see the run log for details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.23c3567bc418",
+      "source": "选择每个槽位显示哪块插件小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 38,
+          "context": "return i18n(\"components.widgetsettingssection.23c3567bc418\");"
+        }
+      ],
+      "translation": "Choose which plugin widget each slot shows",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.28b0433b1b95",
+      "source": "桌面小组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 36,
+          "context": "return i18n(\"components.widgetsettingssection.28b0433b1b95\");"
+        },
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 85,
+          "context": "{i18n(\"components.widgetsettingssection.28b0433b1b95\")}"
+        }
+      ],
+      "translation": "Desktop widgets",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.2a85a7e5a3ad",
+      "source": "刚放上桌面、还没选的块用它兜底：{value}。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "bindingSummary(map.fallback, favs.data)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 177,
+          "context": "{i18nRich(\"components.widgetsettingssection.2a85a7e5a3ad\", { value: bindingSummary(map.fallback, favs.data) })}"
+        }
+      ],
+      "translation": "Widgets just placed on the home screen and not yet configured fall back to this: {value}.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.35588dcb9be3",
+      "source": "重新载入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 124,
+          "context": "{i18n(\"components.widgetsettingssection.35588dcb9be3\")}"
+        }
+      ],
+      "translation": "Reload",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.502498767131",
+      "source": "　尚未选择内容（桌面显示「点一下选择」）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 157,
+          "context": "{i18n(\"components.widgetsettingssection.502498767131\")}"
+        }
+      ],
+      "translation": "  No content selected yet (the home screen shows “Tap to choose”)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.5321a21a1d1c",
+      "source": "当前启动器不支持一键添加，请长按桌面 → 小组件 → OneTHU",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 119,
+          "context": "showToast(i18nMsg(\"components.widgetsettingssection.5321a21a1d1c\"), 6000)"
+        }
+      ],
+      "translation": "The current launcher does not support one-tap adding; long-press the home screen → Widgets → OneTHU",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.651c36e836dd",
+      "source": "桌面小组件由 Android 版提供：日程与 DDL、某个收藏项的详情、收藏夹图标组、1×1 快捷方式； 当前平台不支持。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 86,
+          "context": "{i18n(\"components.widgetsettingssection.651c36e836dd\")}"
+        }
+      ],
+      "translation": "Desktop widgets are provided by the Android version: Schedule & DDL, details of a favorite item, favorites icon group, 1×1 shortcuts; not supported on this platform.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.6a46a714e7c0",
+      "source": "桌面小组件已刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 78,
+          "context": "okNow ? i18n(\"components.widgetsettingssection.6a46a714e7c0\") : i18n(\"components.widgetsettingssection.23a5d87729b6\")"
+        }
+      ],
+      "translation": "Desktop widgets refreshed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.770e44c4c483",
+      "source": "默认内容用哪个收藏项做快捷方式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 205,
+          "context": "{i18n(\"components.widgetsettingssection.770e44c4c483\")}"
+        }
+      ],
+      "translation": "Which favorite item the default content uses as a shortcut",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.widgetsettingssection.796fd26679bc",
       "source": "添加到桌面的 OneTHU 小组件与内容设置",
@@ -934,374 +1326,6 @@
         }
       ],
       "translation": "Widget",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.8289e67df525",
-      "source": "科研",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 14,
-          "context": "return t(\"enum.label.8289e67df525\");"
-        }
-      ],
-      "translation": "Research",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.8459c1e91bc0",
-      "source": "选课指导语",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 39,
-          "context": "return t(\"enum.label.8459c1e91bc0\");"
-        }
-      ],
-      "translation": "Course selection tips",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.9151a836f996",
-      "source": "GitLab",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 45,
-          "context": "return t(\"enum.label.9151a836f996\");"
-        }
-      ],
-      "translation": "GitLab",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.a0f88ca9398c",
-      "source": "就业离校",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 24,
-          "context": "return t(\"enum.label.a0f88ca9398c\");"
-        }
-      ],
-      "translation": "Employment & leaving school",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.a14f23af7016",
-      "source": "日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 7,
-          "context": "return t(\"enum.label.a14f23af7016\");"
-        }
-      ],
-      "translation": "Schedule",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.a17b8666e5d9",
-      "source": "北大研",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 27,
-          "context": "return t(\"enum.label.a17b8666e5d9\");"
-        }
-      ],
-      "translation": "PKU Grad",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.a626aad412b7",
-      "source": "标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 54,
-          "context": "return t(\"enum.label.a626aad412b7\");"
-        }
-      ],
-      "translation": "Tabs",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.a914a7b52cec",
-      "source": "教材及参考书",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 37,
-          "context": "return t(\"enum.label.a914a7b52cec\");"
-        }
-      ],
-      "translation": "Textbooks & references",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.aa39cac2b409",
-      "source": "网络学堂",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 59,
-          "context": "return t(\"enum.label.aa39cac2b409\");"
-        }
-      ],
-      "translation": "Web Learning",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.aaabe42b5a23",
-      "source": "党建",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 16,
-          "context": "return t(\"enum.label.aaabe42b5a23\");"
-        }
-      ],
-      "translation": "Party affairs",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.b0938ffbd07c",
-      "source": "外事",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 18,
-          "context": "return t(\"enum.label.b0938ffbd07c\");"
-        }
-      ],
-      "translation": "International affairs",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.bd2d74b297d1",
-      "source": "课程名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 30,
-          "context": "return t(\"enum.label.bd2d74b297d1\");"
-        }
-      ],
-      "translation": "Course name",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.be67cc45b9f0",
-      "source": "考核安排",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 35,
-          "context": "return t(\"enum.label.be67cc45b9f0\");"
-        }
-      ],
-      "translation": "Assessment plan",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.d39567b2b9f1",
-      "source": "新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 53,
-          "context": "return t(\"enum.label.d39567b2b9f1\");"
-        }
-      ],
-      "translation": "News",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.d4f7864690bb",
-      "source": "Info 应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 46,
-          "context": "return t(\"enum.label.d4f7864690bb\");"
-        }
-      ],
-      "translation": "Info apps",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.d7d6b21c2cf5",
-      "source": "北外",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 28,
-          "context": "return t(\"enum.label.d7d6b21c2cf5\");"
-        }
-      ],
-      "translation": "BFSU",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e310bbf0e506",
-      "source": "北大",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 26,
-          "context": "return t(\"enum.label.e310bbf0e506\");"
-        }
-      ],
-      "translation": "PKU",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e4d40b4d6759",
-      "source": "研讨间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 56,
-          "context": "return t(\"enum.label.e4d40b4d6759\");"
-        }
-      ],
-      "translation": "Seminar room",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e79890c96ee6",
-      "source": "行政",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 10,
-          "context": "return t(\"enum.label.e79890c96ee6\");"
-        }
-      ],
-      "translation": "Administration",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e806fbbe8ec6",
-      "source": "插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 11,
-          "context": "return t(\"enum.label.e806fbbe8ec6\");"
-        }
-      ],
-      "translation": "Plugins",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e81059e1a712",
-      "source": "公共空间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 49,
-          "context": "return t(\"enum.label.e81059e1a712\");"
-        }
-      ],
-      "translation": "Public space",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e842a5dff916",
-      "source": "总学分",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 32,
-          "context": "return t(\"enum.label.e842a5dff916\");"
-        }
-      ],
-      "translation": "Total credits",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.e96da2049129",
-      "source": "课程编号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 29,
-          "context": "return t(\"enum.label.e96da2049129\");"
-        }
-      ],
-      "translation": "Course code",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

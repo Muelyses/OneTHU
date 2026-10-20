@@ -1,7 +1,380 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.courseinfotab.2ac0f59489ba",
+      "source": "正在加载时间地点…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 175,
+          "context": "{i18n(\"pages.info.courseinfotab.2ac0f59489ba\")}"
+        }
+      ],
+      "translation": "Loading time and location…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.2cb850be9a59",
+      "source": "共 {length} 条 · 点行查看时间地点",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(courses!.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 145,
+          "context": "{i18n(\"pages.info.courseinfotab.2cb850be9a59\", { length: String(courses!.length) })}"
+        }
+      ],
+      "translation": "{length} entries in total · tap a row for time and location",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.3304ea97ead6",
+      "source": "共享库暂无该课的时间地点——数据覆盖取决于 learnX 等客户端用户的共享参与。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 205,
+          "context": "{i18n(\"pages.info.courseinfotab.3304ea97ead6\")}"
+        }
+      ],
+      "translation": "The shared library has no time and location for this course — coverage depends on shared data from learnX and similar client users.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.33c758d831de",
+      "source": "选择学期…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 115,
+          "context": "{i18n(\"pages.info.courseinfotab.33c758d831de\")}"
+        }
+      ],
+      "translation": "Choose a semester…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.3e3c1858822c",
+      "source": "搜索课程名 / 教师姓名（如：微积分 / 冯铃）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 127,
+          "context": "{i18n(\"pages.info.courseinfotab.3e3c1858822c\")}"
+        }
+      ],
+      "translation": "Search course name / teacher name (e.g. Calculus / 冯铃)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.44ce7ae909bb",
+      "source": "搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 131,
+          "context": "{i18n(\"pages.info.courseinfotab.44ce7ae909bb\")}"
+        }
+      ],
+      "translation": "Search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 150,
+          "context": "{i18n(\"pages.info.courseinfotab.60db1afb4022\")}"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.643500a3864b",
+      "source": "时间地点",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 200,
+          "context": "{i18n(\"pages.info.courseinfotab.643500a3864b\")}"
+        }
+      ],
+      "translation": "Time & location",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.79a4ef019e9c",
+      "source": "学期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 152,
+          "context": "{i18n(\"pages.info.courseinfotab.79a4ef019e9c\")}"
+        }
+      ],
+      "translation": "Semester",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.88d72ece7cf7",
+      "source": "搜索结果",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 145,
+          "context": "{i18n(\"pages.info.courseinfotab.88d72ece7cf7\")}"
+        }
+      ],
+      "translation": "Search results",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.927e4b9750fb",
+      "source": "搜索课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 128,
+          "context": "{i18n(\"pages.info.courseinfotab.927e4b9750fb\")}"
+        }
+      ],
+      "translation": "Search courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.9e9f5c3022d6",
+      "source": "课程共享计划 · 众包数据，覆盖不全时请多包涵",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 103,
+          "context": "{i18n(\"pages.info.courseinfotab.9e9f5c3022d6\")}"
+        }
+      ],
+      "translation": "Course sharing program · crowdsourced data; coverage may be incomplete — thanks for your patience",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.a6654120cbec",
+      "source": "教师",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 151,
+          "context": "{i18n(\"pages.info.courseinfotab.a6654120cbec\")}"
+        }
+      ],
+      "translation": "Instructor",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.bb21f7ddad12",
+      "source": "没找到匹配课程：换个关键词，或该课还没被共享。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 142,
+          "context": "{i18n(\"pages.info.courseinfotab.bb21f7ddad12\")}"
+        }
+      ],
+      "translation": "No matching course found: try another keyword, or the course has not been shared yet.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.courseinfotab.ce121d2ad0d2",
+      "source": "共享库中无此课程详情。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CourseInfoTab.tsx",
+          "line": 209,
+          "context": "{i18n(\"pages.info.courseinfotab.ce121d2ad0d2\")}"
+        }
+      ],
+      "translation": "No details for this course in the shared library.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.18931020ad52",
+      "source": "提交中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 240,
+          "context": "waterState === \"busy\" ? i18n(\"pages.info.dormtab.18931020ad52\") : i18n(\"pages.info.dormtab.d189e0a2a1c5\")"
+        }
+      ],
+      "translation": "Submitting…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.3303b56982a0",
+      "source": "联系人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 215,
+          "context": "{i18n(\"pages.info.dormtab.3303b56982a0\")}"
+        }
+      ],
+      "translation": "Contact",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.337269e5b07c",
+      "source": "Netweb 缴费流水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 166,
+          "context": "{i18n(\"pages.info.dormtab.337269e5b07c\")}"
+        }
+      ],
+      "translation": "Netweb payment records",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.3a37484d933f",
+      "source": "水种",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 228,
+          "context": "{i18n(\"pages.info.dormtab.3a37484d933f\")}"
+        }
+      ],
+      "translation": "Water type",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.3da69f3bb5a2",
+      "source": "充值记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 166,
+          "context": "{i18n(\"pages.info.dormtab.3da69f3bb5a2\")}"
+        }
+      ],
+      "translation": "Top-up records",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.3dd6c0cbae44",
+      "source": "已载入联系人/地址",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 121,
+          "context": "u.name || u.address ? i18n(\"pages.info.dormtab.3dd6c0cbae44\") : i18n(\"pages.info.dormtab.dd57d5ccb2f3\")"
+        }
+      ],
+      "translation": "Contacts/addresses loaded",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.40819c08f4e1",
+      "source": "订水提交成功",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 140,
+          "context": "setWaterMsg(i18n(\"pages.info.dormtab.40819c08f4e1\"))"
+        }
+      ],
+      "translation": "Water order submitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.658c536de644",
+      "source": "缴费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 182,
+          "context": "r.status || i18n(\"pages.info.dormtab.658c536de644\")"
+        }
+      ],
+      "translation": "Pay",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.dormtab.6cb5a329f274",
       "source": "订水量（桶）",
@@ -961,402 +1334,6 @@
         }
       ],
       "translation": "Reset",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.hygienetab.faaa5c3ec584",
-      "source": "宿舍卫生检查成绩单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/HygieneTab.tsx",
-          "line": 82,
-          "context": "{i18n(\"pages.info.hygienetab.faaa5c3ec584\")}"
-        }
-      ],
-      "translation": "Dorm hygiene inspection report",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.0bdbabde48b3",
-      "source": "管理信息栏目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 163,
-          "context": "{i18n(\"pages.info.infopage.0bdbabde48b3\")}"
-        }
-      ],
-      "translation": "Manage info sections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.12526376d387",
-      "source": "管理栏目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 123,
-          "context": "{i18n(\"pages.info.infopage.12526376d387\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 145,
-          "context": "{i18n(\"pages.info.infopage.12526376d387\")}"
-        }
-      ],
-      "translation": "Manage sections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.14384c9d60cc",
-      "source": "教学评估",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 44,
-          "context": "return i18n(\"pages.info.infopage.14384c9d60cc\");"
-        }
-      ],
-      "translation": "Teaching evaluation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.316da6d69b7d",
-      "source": "体测成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 42,
-          "context": "return i18n(\"pages.info.infopage.316da6d69b7d\");"
-        }
-      ],
-      "translation": "Fitness test",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.39e8f1d8cad6",
-      "source": "点下面的按钮可以把它们叫回来。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 144,
-          "context": "{i18n(\"pages.info.infopage.39e8f1d8cad6\")}"
-        }
-      ],
-      "translation": "Tap the button below to bring them back.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.3ae2b35fabd4",
-      "source": "所有栏目都被藏起来了。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 143,
-          "context": "{i18n(\"pages.info.infopage.3ae2b35fabd4\")}"
-        }
-      ],
-      "translation": "All sections are hidden.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.4792ab1440aa",
-      "source": "校历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 45,
-          "context": "return i18n(\"pages.info.infopage.4792ab1440aa\");"
-        }
-      ],
-      "translation": "Academic calendar",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.4da04dfef534",
-      "source": "课程信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 48,
-          "context": "return i18n(\"pages.info.infopage.4da04dfef534\");"
-        }
-      ],
-      "translation": "Course info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.4eb6db225088",
-      "source": "信息功能",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 127,
-          "context": "{i18n(\"pages.info.infopage.4eb6db225088\")}"
-        }
-      ],
-      "translation": "Info features",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.640803d89773",
-      "source": "个人信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 47,
-          "context": "return i18n(\"pages.info.infopage.640803d89773\");"
-        }
-      ],
-      "translation": "Personal info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.d26ef0190d6c",
-      "source": "考试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 43,
-          "context": "return i18n(\"pages.info.infopage.d26ef0190d6c\");"
-        }
-      ],
-      "translation": "Exams",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.d39567b2b9f1",
-      "source": "新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 46,
-          "context": "return i18n(\"pages.info.infopage.d39567b2b9f1\");"
-        }
-      ],
-      "translation": "News",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.e7028601e7da",
-      "source": "信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 119,
-          "context": "{i18n(\"pages.info.infopage.e7028601e7da\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 122,
-          "context": "{i18n(\"pages.info.infopage.e7028601e7da\")}"
-        }
-      ],
-      "translation": "Info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.fa0124c14866",
-      "source": "栏目显隐与排序",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 123,
-          "context": "{i18n(\"pages.info.infopage.fa0124c14866\")}"
-        }
-      ],
-      "translation": "Show, hide, and reorder sections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.infopage.fdcd1bd074c9",
-      "source": "成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InfoPage.tsx",
-          "line": 41,
-          "context": "return i18n(\"pages.info.infopage.fdcd1bd074c9\");"
-        }
-      ],
-      "translation": "Grades",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.invoicetab.2beeb89ed47a",
-      "source": "共 {total} 张 · 第 {page}/{totalPages} 页",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "total",
-          "expression": "String(total)"
-        },
-        {
-          "name": "page",
-          "expression": "String(page)"
-        },
-        {
-          "name": "totalPages",
-          "expression": "String(totalPages)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 58,
-          "context": "total > 0 ? i18n(\"pages.info.invoicetab.2beeb89ed47a\", { total: String(total), page: String(page), totalPages: String(totalPages) }) : i18n(\"pages.info.invoicetab.6d110ca94c48\")"
-        }
-      ],
-      "translation": "{total} in total · page {page}/{totalPages}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.invoicetab.4008bdf12187",
-      "source": "您目前没有可用电子发票。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 67,
-          "context": "{i18n(\"pages.info.invoicetab.4008bdf12187\")}"
-        }
-      ],
-      "translation": "You currently have no available e-invoices.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.invoicetab.6d110ca94c48",
-      "source": "财务综合服务 · 发票列表",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 58,
-          "context": "total > 0 ? i18n(\"pages.info.invoicetab.2beeb89ed47a\", { total: String(total), page: String(page), totalPages: String(totalPages) }) : i18n(\"pages.info.invoicetab.6d110ca94c48\")"
-        }
-      ],
-      "translation": "Comprehensive finance services · invoice list",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.invoicetab.8a8542f69648",
-      "source": "下一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 97,
-          "context": "{i18n(\"pages.info.invoicetab.8a8542f69648\")}"
-        }
-      ],
-      "translation": "Next page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.invoicetab.92341cf02c56",
-      "source": "电子发票",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 57,
-          "context": "{i18n(\"pages.info.invoicetab.92341cf02c56\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 77,
-          "context": "r.financial_item_name || r.inv_typeStr || i18n(\"pages.info.invoicetab.92341cf02c56\")"
-        }
-      ],
-      "translation": "E-invoices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.invoicetab.c9b9ae7a6144",
-      "source": "上一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/InvoiceTab.tsx",
-          "line": 93,
-          "context": "{i18n(\"pages.info.invoicetab.c9b9ae7a6144\")}"
-        }
-      ],
-      "translation": "Previous page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.0afc4fe3d305",
-      "source": "取消预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 373,
-          "context": "{i18n(\"pages.info.kongjiantab.0afc4fe3d305\")}"
-        }
-      ],
-      "translation": "Cancel reservation",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

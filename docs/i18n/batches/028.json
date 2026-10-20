@@ -1,7 +1,415 @@
 {
-  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
+  "sourceHash": "175bfa588c53da0771b7a9d55a34d07853803a768d77edf4c8c8e996f55ced76",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.vaultworkspace.e2d666e87d74",
+      "source": "查找箱内内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
+        }
+      ],
+      "translation": "Search box contents",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.e4bbf7bc2d7e",
+      "source": "松手放入「{name}」",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "box.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 124,
+          "context": "{i18nRich(\"components.vault.vaultworkspace.e4bbf7bc2d7e\", { name: box.name })}"
+        }
+      ],
+      "translation": "Release to drop into “{name}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultworkspace.ee32f25f7050",
+      "source": "清除搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultWorkspace.tsx",
+          "line": 123,
+          "context": "{i18n(\"components.vault.vaultworkspace.ee32f25f7050\")}"
+        }
+      ],
+      "translation": "Clear search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.03e731b6fbf6",
+      "source": "{value}。可在系统设置 → 无障碍/语言 → 文字转语音 里安装或启用引擎与中文语音数据，再回来点「重新检查」。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 61,
+          "context": "desc: i18n(\"components.voicesettingssection.03e731b6fbf6\", { value: String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")) })"
+        }
+      ],
+      "translation": "{value}. You can install or enable a text-to-speech engine and Chinese voice data in System settings → Accessibility / Language → Text-to-speech, then come back and tap “Recheck”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.06c47ff40845",
+      "source": "　可选音色 {length} 个。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "voices.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 173,
+          "context": "{i18nRich(\"components.voicesettingssection.06c47ff40845\", { length: voices.length })}"
+        }
+      ],
+      "translation": "  {length} voices available.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.08ceb2822aa1",
+      "source": "系统没有可用的文字转语音引擎",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 61,
+          "context": "st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")"
+        }
+      ],
+      "translation": "The system has no available text-to-speech engine",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.0c278a68af8a",
+      "source": "引擎尚未初始化",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 64,
+          "context": "title: i18n(\"components.voicesettingssection.0c278a68af8a\")"
+        }
+      ],
+      "translation": "Engine not initialized",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.1aa0e6cae35c",
+      "source": "稍等一下，初始化完成后试听与朗读才会出声。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 50,
+          "context": "desc: i18n(\"components.voicesettingssection.1aa0e6cae35c\")"
+        }
+      ],
+      "translation": "Wait a moment; preview and reading only produce sound after initialization finishes.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.1ead396a0d02",
+      "source": "正在朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 57,
+          "context": "title: i18n(\"components.voicesettingssection.1ead396a0d02\")"
+        }
+      ],
+      "translation": "Reading",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.20e403134d07",
+      "source": "当前平台是否支持语音合成 / 重新检查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.20e403134d07\");"
+        }
+      ],
+      "translation": "Whether the current platform supports speech synthesis / Recheck",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.2a015c420014",
+      "source": "音色、语速、音高全部回到原声，并关闭自动朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.voicesettingssection.2a015c420014\")}"
+        }
+      ],
+      "translation": "Voice, speed, and pitch all return to default, and auto-read is turned off",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.36aaad1be5c9",
+      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
+        }
+      ],
+      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3b6c48ce496b",
+      "source": "全部恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
+        }
+      ],
+      "translation": "Restore all defaults",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3e3b45ef84ac",
+      "source": "引擎状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.3e3b45ef84ac\");"
+        }
+      ],
+      "translation": "Engine status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.5e4df038f43b",
+      "source": "正在准备朗读引擎…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 40,
+          "context": "title: i18n(\"components.voicesettingssection.5e4df038f43b\")"
+        }
+      ],
+      "translation": "Preparing the reading engine…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.5ffbeb114a74",
+      "source": "试听失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 156,
+          "context": "setMsg(i18n(\"components.voicesettingssection.5ffbeb114a74\", { value: String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\")) }))"
+        }
+      ],
+      "translation": "Preview failed: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.6ab9d2bde92c",
+      "source": "音色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 72,
+          "context": "return i18n(\"components.voicesettingssection.6ab9d2bde92c\");"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 183,
+          "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 190,
+          "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
+        }
+      ],
+      "translation": "Voice",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.6e5d0cde3be6",
+      "source": "引擎不可用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 60,
+          "context": "title: i18n(\"components.voicesettingssection.6e5d0cde3be6\")"
+        }
+      ],
+      "translation": "Engine unavailable",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.7603ae8c852e",
+      "source": "系统引擎首次初始化需要一两秒。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 40,
+          "context": "desc: i18n(\"components.voicesettingssection.7603ae8c852e\")"
+        }
+      ],
+      "translation": "The system engine takes a second or two to initialize the first time.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.7f0a0fda741c",
+      "source": "试听",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 268,
+          "context": "{i18n(\"components.voicesettingssection.7f0a0fda741c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 273,
+          "context": "speaking ? i18n(\"components.voicesettingssection.ca4d973c0b00\") : i18n(\"components.voicesettingssection.7f0a0fda741c\")"
+        }
+      ],
+      "translation": "Preview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.82ee2ef744bf",
+      "source": "点「重新检查」触发一次初始化。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 64,
+          "context": "desc: i18n(\"components.voicesettingssection.82ee2ef744bf\")"
+        }
+      ],
+      "translation": "Tap “Recheck” to trigger an initialization.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.853dd990730b",
+      "source": "系统引擎没有报出可选的普通话嗓音，用引擎默认音色朗读。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 186,
+          "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
+        }
+      ],
+      "translation": "The system engine did not report any selectable Mandarin voices; the engine's default voice is used for reading.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.87e2903f67f2",
+      "source": "不同 ROM 自带的嗓音不同（如小艺、小爱、Google 的普通话嗓音）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 187,
+          "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
+        }
+      ],
+      "translation": "Different ROMs ship different voices (e.g. Celia, Xiao AI, and Google's Mandarin voices).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.voicesettingssection.892033f846ab",
       "source": "说完会自动停下。",
@@ -986,398 +1394,6 @@
         }
       ],
       "translation": "Icon shortcut for a feature page or favorite item (from 1×1)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.ea9677c3d21f",
-      "source": "要显示：{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "bindingSummary(binding, favs.data)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 145,
-          "context": "{i18nRich(\"components.widgetbindmodal.ea9677c3d21f\", { value: bindingSummary(binding, favs.data) })}"
-        }
-      ],
-      "translation": "To show: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.fce3bfe1b135",
-      "source": "这块小组件显示什么",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 177,
-          "context": "{i18n(\"components.widgetbindmodal.fce3bfe1b135\")}"
-        }
-      ],
-      "translation": "What this widget shows",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetbindmodal.ff6541441f00",
-      "source": "桌面上可以同时放多块，各显示各的（点卡片即可换）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 183,
-          "context": "{i18n(\"components.widgetbindmodal.ff6541441f00\")}"
-        }
-      ],
-      "translation": "You can place several widgets on the home screen at once, each showing its own content (tap a card to switch).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.15539ef189fb",
-      "source": "它依赖的功能可能已改名或被移除。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 48,
-          "context": "{i18n(\"components.widgethost.15539ef189fb\")}"
-        }
-      ],
-      "translation": "The feature it depends on may have been renamed or removed.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.32f8c1be3eb7",
-      "source": "该组件已不可用，请从白板移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 47,
-          "context": "{i18n(\"components.widgethost.32f8c1be3eb7\")}"
-        }
-      ],
-      "translation": "This widget is no longer available; please remove it from the Board",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.7d77a938e62b",
-      "source": "暂无内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 92,
-          "context": "{i18n(\"components.widgethost.7d77a938e62b\")}"
-        }
-      ],
-      "translation": "No content yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.857e5e59690b",
-      "source": "这条入口已失效，请从白板移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 70,
-          "context": "{i18n(\"components.widgethost.857e5e59690b\")}"
-        }
-      ],
-      "translation": "This entry is no longer valid; please remove it from the Board",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgethost.b77883b96b72",
-      "source": "内容由原页面提供",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 98,
-          "context": "{i18n(\"components.widgethost.b77883b96b72\")}"
-        }
-      ],
-      "translation": "Content is provided by the original page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.021377fb5c78",
-      "source": "尚未添加小组件：桌面长按 → 小组件 → OneTHU，添加后可选择显示内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 103,
-          "context": "instances.length === 0\n                  ? i18n(\"components.widgetsettingssection.021377fb5c78\")\n                  : i18n(\"components.widgetsettingssection.dea5a08f19a0\", { length: String(instances.length) })"
-        }
-      ],
-      "translation": "No widgets added yet: long-press the home screen → Widgets → OneTHU; after adding one you can choose what it shows",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.130123e01753",
-      "source": "立即刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 123,
-          "context": "{i18n(\"components.widgetsettingssection.130123e01753\")}"
-        }
-      ],
-      "translation": "Refresh now",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.15eb664681a3",
-      "source": "{length} 种：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(status.providersRegistered.length)"
-        },
-        {
-          "name": "value",
-          "expression": "String(status.providersRegistered.map(plainShapeName).join(\"、\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 136,
-          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
-        }
-      ],
-      "translation": "{length} kinds: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.174b9ff2e902",
-      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 135,
-          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
-        }
-      ],
-      "translation": "No usable sizes were read yet; please report this line's content to the developers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.17a0e39c6089",
-      "source": "日程与 DDL",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 195,
-          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
-        }
-      ],
-      "translation": "Schedule & DDL",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.23a5d87729b6",
-      "source": "刷新失败，详情见运行日志",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 78,
-          "context": "okNow ? i18n(\"components.widgetsettingssection.6a46a714e7c0\") : i18n(\"components.widgetsettingssection.23a5d87729b6\")"
-        }
-      ],
-      "translation": "Refresh failed; see the run log for details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.23c3567bc418",
-      "source": "选择每个槽位显示哪块插件小组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 38,
-          "context": "return i18n(\"components.widgetsettingssection.23c3567bc418\");"
-        }
-      ],
-      "translation": "Choose which plugin widget each slot shows",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.28b0433b1b95",
-      "source": "桌面小组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 36,
-          "context": "return i18n(\"components.widgetsettingssection.28b0433b1b95\");"
-        },
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 85,
-          "context": "{i18n(\"components.widgetsettingssection.28b0433b1b95\")}"
-        }
-      ],
-      "translation": "Desktop widgets",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.2a85a7e5a3ad",
-      "source": "刚放上桌面、还没选的块用它兜底：{value}。",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "bindingSummary(map.fallback, favs.data)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 177,
-          "context": "{i18nRich(\"components.widgetsettingssection.2a85a7e5a3ad\", { value: bindingSummary(map.fallback, favs.data) })}"
-        }
-      ],
-      "translation": "Widgets just placed on the home screen and not yet configured fall back to this: {value}.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.35588dcb9be3",
-      "source": "重新载入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 124,
-          "context": "{i18n(\"components.widgetsettingssection.35588dcb9be3\")}"
-        }
-      ],
-      "translation": "Reload",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.502498767131",
-      "source": "　尚未选择内容（桌面显示「点一下选择」）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 157,
-          "context": "{i18n(\"components.widgetsettingssection.502498767131\")}"
-        }
-      ],
-      "translation": "  No content selected yet (the home screen shows “Tap to choose”)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.5321a21a1d1c",
-      "source": "当前启动器不支持一键添加，请长按桌面 → 小组件 → OneTHU",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 119,
-          "context": "showToast(i18nMsg(\"components.widgetsettingssection.5321a21a1d1c\"), 6000)"
-        }
-      ],
-      "translation": "The current launcher does not support one-tap adding; long-press the home screen → Widgets → OneTHU",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.651c36e836dd",
-      "source": "桌面小组件由 Android 版提供：日程与 DDL、某个收藏项的详情、收藏夹图标组、1×1 快捷方式； 当前平台不支持。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 86,
-          "context": "{i18n(\"components.widgetsettingssection.651c36e836dd\")}"
-        }
-      ],
-      "translation": "Desktop widgets are provided by the Android version: Schedule & DDL, details of a favorite item, favorites icon group, 1×1 shortcuts; not supported on this platform.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.6a46a714e7c0",
-      "source": "桌面小组件已刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 78,
-          "context": "okNow ? i18n(\"components.widgetsettingssection.6a46a714e7c0\") : i18n(\"components.widgetsettingssection.23a5d87729b6\")"
-        }
-      ],
-      "translation": "Desktop widgets refreshed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.770e44c4c483",
-      "source": "默认内容用哪个收藏项做快捷方式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 205,
-          "context": "{i18n(\"components.widgetsettingssection.770e44c4c483\")}"
-        }
-      ],
-      "translation": "Which favorite item the default content uses as a shortcut",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

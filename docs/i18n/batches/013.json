@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.freeboard.7779b244eef6",
+      "source": "这个 OnePage 已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 168,
+          "context": "{i18n(\"components.freeboard.7779b244eef6\")}"
+        }
+      ],
+      "translation": "This OnePage has been deleted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.783d638053ea",
+      "source": "组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1121,
+          "context": "{i18n(\"components.freeboard.783d638053ea\")}"
+        }
+      ],
+      "translation": "Widget",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.7a8a11ead507",
+      "source": "添加",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 251,
+          "context": "{i18n(\"components.freeboard.7a8a11ead507\")}"
+        }
+      ],
+      "translation": "Add",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.freeboard.7c7802d8adae",
       "source": "文件夹",
@@ -19,8 +67,8 @@
           "context": "title: i18n(\"components.freeboard.7c7802d8adae\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Folder",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -35,8 +83,8 @@
           "context": "{i18n(\"components.freeboard.7e8f29dd96a4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Board tools",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -51,8 +99,8 @@
           "context": "{i18n(\"components.freeboard.80f8fbcfa011\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Zoom in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +131,8 @@
           "context": "{i18n(\"components.freeboard.83d2e3f15c71\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag cards directly to arrange them; select one, then drag a corner to resize. The bottom toolbar adjusts the canvas scale",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -104,8 +152,8 @@
           "context": "it.folded ? i18n(\"components.freeboard.2de119793cb4\") : i18n(\"components.freeboard.84a07f292f1f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +168,8 @@
           "context": "{i18n(\"components.freeboard.84d2b65c5548\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OnePage panel: drag to change height (half screen or full screen)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +184,8 @@
           "context": "{i18n(\"components.freeboard.8d6ca2d1e48b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapsed (expand from the floating bar)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -152,8 +200,8 @@
           "context": "{i18n(\"components.freeboard.8e1c845f3d61\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No workspaces yet (right-click a tab to add it to a workspace)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,7 +216,7 @@
           "context": "r.reason === \"duplicate\" ? i18n(\"components.freeboard.910046f3ea83\") : i18n(\"components.freeboard.57ce97c584ca\")"
         }
       ],
-      "translation": "This widget is already in the vault",
+      "translation": "This widget is already in the Stash",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -216,8 +264,8 @@
           "context": "description: i18n(\"components.freeboard.9818eabd5c89\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grid of circular logos: holds main feature entries, OnePages, and workspaces",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +296,8 @@
           "context": "{i18n(\"components.freeboard.9a3bd2de70be\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This board is still empty. Start from a template, or add a widget from \"＋\".",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -264,7 +312,7 @@
           "context": "say(i18n(\"components.freeboard.a1714f5783d4\"))"
         }
       ],
-      "translation": "This link is no longer valid. Remove it from the context menu.",
+      "translation": "This entry is no longer valid; remove it from the context menu",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -285,8 +333,8 @@
           "context": "{i18n(\"components.freeboard.a450a21ac723\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add entry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -317,8 +365,8 @@
           "context": "picked ? i18n(\"components.freeboard.d13523826411\") : i18n(\"components.freeboard.153d487fec51\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change entry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -338,8 +386,8 @@
           "context": "it.pinned ? i18n(\"components.freeboard.70fba17fffb7\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pin",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -370,8 +418,8 @@
           "context": "{i18n(\"components.freeboard.dbb6d640ea9f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This OnePage no longer exists.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -386,8 +434,8 @@
           "context": "sayRef.current(i18n(\"components.freeboard.dbd17f63d721\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back in reading order",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -402,8 +450,8 @@
           "context": "{i18n(\"components.freeboard.e489b964ce42\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This generated widget has been deleted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -418,8 +466,8 @@
           "context": "dir < 0 ? i18n(\"components.freeboard.f853a70b1204\") : i18n(\"components.freeboard.e75e8b4e5c97\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move down",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -434,7 +482,7 @@
           "context": "say(i18n(\"components.freeboard.e8f9281f866e\"))"
         }
       ],
-      "translation": "Item selected",
+      "translation": "Selected entries",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -450,8 +498,8 @@
           "context": "description: i18n(\"components.freeboard.eef4bb73e8a0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pin this OnePage to the canvas (click to open it)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -466,8 +514,8 @@
           "context": "{i18n(\"components.freeboard.f7b6fbf1f2f6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Toggle opacity",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -482,8 +530,8 @@
           "context": "dir < 0 ? i18n(\"components.freeboard.f853a70b1204\") : i18n(\"components.freeboard.e75e8b4e5c97\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -503,8 +551,8 @@
           "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free layout",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -519,7 +567,7 @@
           "context": "def ? def.description : i18n(\"components.freeboard.fa35f4f53dd5\")"
         }
       ],
-      "translation": "This widget is no longer in the catalog.",
+      "translation": "This widget is no longer in the widget catalog.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -535,8 +583,8 @@
           "context": "i18n(\"components.freeboard.fcbe33148f3a\") + size.w"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Changed to ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -556,8 +604,8 @@
           "context": "{i18n(\"components.freeboard.fe067a88a36d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Edit text",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -572,8 +620,8 @@
           "context": "i18n(\"components.freeboard.ff84465bf83c\") + h"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Resize ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -593,8 +641,8 @@
           "context": "r?.ok ? i18n(\"components.globalorb.eebaa565cacd\", { value: String(r.path ? `：${r.path}` : \"\") }) : i18n(\"components.globalorb.044d85b3d264\", { value: String(r?.error ? `：${r.error}` : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachment action not completed{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -618,8 +666,8 @@
           "context": "logOrb(i18n(\"components.globalorb.04cda3e1158f\", { value: String(String(e)), value2: String(String(e2)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Both paths for changing height failed: {value} / {value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -643,8 +691,8 @@
           "context": "logOrb(i18n(\"components.globalorb.0bf8950b7ddb\", { value: String(Object.keys(r ?? {}).join(\",\")), value2: String(String(r?.error ?? \"\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "askOh returned an empty answer: keys=[{value}] err={value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -659,8 +707,8 @@
           "context": "{i18n(\"components.globalorb.1c5fc047a7ba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No search history yet; search a feature or entity once and it stays here",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -675,8 +723,8 @@
           "context": "{i18n(\"components.globalorb.1ef3de06b32e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -691,8 +739,8 @@
           "context": "prefs.autoSpeak ? i18n(\"components.globalorb.2cf01f9ef0c9\") : i18n(\"components.globalorb.213b81f4850f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Auto read aloud",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -712,8 +760,8 @@
           "context": "logOrb(i18n(\"components.globalorb.217e86ac14d6\", { value: String(Math.round(lastPanelH.current)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "handle up: panel_h={value} (persisted by Rust)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -728,8 +776,8 @@
           "context": "{i18n(\"components.globalorb.25f5ce57a190\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feature",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -744,8 +792,8 @@
           "context": "{i18n(\"components.globalorb.2ab7bee583b2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search features, assignments, files, settings…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -760,8 +808,8 @@
           "context": "prefs.autoSpeak ? i18n(\"components.globalorb.2cf01f9ef0c9\") : i18n(\"components.globalorb.213b81f4850f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Auto read aloud · on",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -813,8 +861,8 @@
           "context": "{i18n(\"components.globalorb.4670c2e7bb80\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag up and down to adjust the floating window height",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -829,8 +877,8 @@
           "context": "i18n(\"components.globalorb.5214e0bc5dce\") + t"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -850,8 +898,8 @@
           "context": "logOrb(i18n(\"components.globalorb.52ee41a798f4\", { value: String(Math.round(h)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "handle → panel_h={value} (using the set_mode compatibility path; overlay_set_panel_height should be registered)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -871,8 +919,8 @@
           "context": "text: i18n(\"components.globalorb.878d364bd67d\", { summary: String(summary) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[Attachment] {summary}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -900,8 +948,8 @@
           "context": "logOrb(i18n(\"components.globalorb.8e23c7e1cfcc\", { value: String(Math.round(realH)), value2: String(winHRef.current > 0 ? \"geometry.h\" : \"innerHeight\"), value3: String(Math.round(e.screenY)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "handle down: h0={value} (source {value2}) screenY0={value3}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -921,8 +969,8 @@
           "context": "{i18nRich(\"components.globalorb.8f2fc5ad7ce5\", { value: oquery.trim() })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Didn't find \"{value}\"? Ask OH directly",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -937,8 +985,8 @@
           "context": "{i18n(\"components.globalorb.afd4b783536b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -953,8 +1001,8 @@
           "context": "{i18n(\"components.globalorb.bb198f53046f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Click to type (you can also speak with system dictation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -974,8 +1022,8 @@
           "context": "text: i18n(\"components.globalorb.c638cd4dde22\", { value: String(e instanceof Error ? e.message : String(e)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Error: {value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -990,8 +1038,8 @@
           "context": "{i18n(\"components.globalorb.cb46971d81ea\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH floating orb: single-click to open the chat; press and hold to drag",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1006,8 +1054,8 @@
           "context": "{i18n(\"components.globalorb.cc50237edca2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Searching…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1027,8 +1075,8 @@
           "context": "answer || i18n(\"components.globalorb.dd377fa5341b\", { value: String(typeof r?.error === \"string\" ? `：${r.error}` : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(No reply received{value}; see the [orb] lines in the debug log /tmp/onethu-debug.log)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1043,8 +1091,8 @@
           "context": "{i18n(\"components.globalorb.df3d58c7d84b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1064,8 +1112,8 @@
           "context": "logOrb(i18n(\"components.globalorb.e526f04d40e1\", { DRAG_PX: String(DRAG_PX) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Movement > {DRAG_PX}px counts as a drag (release won't open the panel)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1085,8 +1133,8 @@
           "context": "r?.ok ? i18n(\"components.globalorb.eebaa565cacd\", { value: String(r.path ? `：${r.path}` : \"\") }) : i18n(\"components.globalorb.044d85b3d264\", { value: String(r?.error ? `：${r.error}` : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachments processed{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1101,8 +1149,8 @@
           "context": "{i18n(\"components.globalorb.f60ae5f5abad\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back to OneTHU",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1117,8 +1165,8 @@
           "context": "return i18n(\"components.helpsection.0478e4ba85fb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to pay my dorm electricity bill and check my campus card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1133,8 +1181,8 @@
           "context": "return i18n(\"components.helpsection.09e7cf41dd47\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to submit an assignment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1149,8 +1197,8 @@
           "context": "return i18n(\"components.helpsection.0a9dea0904bb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to sync my timetable and schedule to my phone",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1165,8 +1213,8 @@
           "context": "return i18n(\"components.helpsection.31689de9b7b3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to change notifications and appearance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1181,8 +1229,8 @@
           "context": "return i18n(\"components.helpsection.5ba6014f3e9c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grades, exams, and course info are all in \"Info\".",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1197,8 +1245,8 @@
           "context": "{i18n(\"components.helpsection.5dadf7093a8f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "How do I use the Board, Stash, and Organizations?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1213,8 +1261,8 @@
           "context": "return i18n(\"components.helpsection.7a25374f5630\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to change what desktop widgets show",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1229,8 +1277,8 @@
           "context": "return i18n(\"components.helpsection.7e5d9d2915e9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus network is in \"Life\"; open it and sign in once as prompted.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1245,8 +1293,8 @@
           "context": "return i18n(\"components.helpsection.8b4f5f124179\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to check grades and exam schedules",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1261,8 +1309,8 @@
           "context": "return i18n(\"components.helpsection.9889374af97c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "What widgets show and how often they refresh are in Settings; the button below takes you straight there.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1277,8 +1325,8 @@
           "context": "return i18n(\"components.helpsection.abd9b1221963\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I want to connect to the campus network and check my network fee",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1293,8 +1341,8 @@
           "context": "return i18n(\"components.helpsection.b8c8d955a2a8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bind your Tsinghua email once and your schedule syncs across devices, including on iPhone.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1309,8 +1357,8 @@
           "context": "return i18n(\"components.helpsection.bd78a657da8a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life services are all in the \"Life\" group.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1325,8 +1373,8 @@
           "context": "return i18n(\"components.helpsection.cfab57dc28e1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation services are grouped under \"Reservations\".",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1341,56 +1389,8 @@
           "context": "{i18n(\"components.helpsection.e4699249f613\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.ebaa5fad9de2",
-      "source": "网络学堂、雨课堂、OJ 的作业都汇总在作业区；雨课堂要先扫码绑一次。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 27,
-          "context": "return i18n(\"components.helpsection.ebaa5fad9de2\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.eea78fdb74ce",
-      "source": "打开导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 71,
-          "context": "{i18n(\"components.helpsection.eea78fdb74ce\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.f96e2a787c76",
-      "source": "我要预约图书馆座位、研讨间、体育",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 36,
-          "context": "return i18n(\"components.helpsection.f96e2a787c76\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Browse the tour by mode to learn how to arrange the Board, stash content, share short codes and NFC Tap to share, and manage organizations.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

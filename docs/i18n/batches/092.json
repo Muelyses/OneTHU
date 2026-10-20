@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.widgets.c732e4d7e380",
+      "source": "黄",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 147,
+          "context": "return i18n(\"state.widgets.c732e4d7e380\");"
+        }
+      ],
+      "translation": "Yellow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.cb232f86e59b",
+      "source": "课程文件条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 358,
+          "context": "return i18n(\"state.widgets.cb232f86e59b\");"
+        }
+      ],
+      "translation": "Course file entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.cbc4fafd7657",
+      "source": "考试栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 227,
+          "context": "return i18n(\"state.widgets.cbc4fafd7657\");"
+        }
+      ],
+      "translation": "Exams section",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.cd92acd73a04",
+      "source": "写点什么…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 146,
+          "context": "return i18n(\"state.widgets.cd92acd73a04\");"
+        }
+      ],
+      "translation": "Write something…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.cda323fd4e1d",
+      "source": "信息门户的订阅新闻。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 102,
+          "context": "return i18n(\"state.widgets.cda323fd4e1d\");"
+        }
+      ],
+      "translation": "Subscribed news from the info portal. Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.d00069a5d3b5",
+      "source": "粉",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 147,
+          "context": "return i18n(\"state.widgets.d00069a5d3b5\");"
+        }
+      ],
+      "translation": "Pink",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.d86fcc64b8e6",
+      "source": "信息页考试安排栏目的数据卡。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 228,
+          "context": "return i18n(\"state.widgets.d86fcc64b8e6\");"
+        }
+      ],
+      "translation": "Data card for the exam schedule section on the Info page.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.widgets.d88ab50f7ac1",
       "source": "来自「我的」页的已修学分，需要登录后才有数。",
@@ -14,8 +126,8 @@
           "context": "return i18n(\"state.widgets.d88ab50f7ac1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Credits earned from the Me page; shows data only after sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +142,8 @@
           "context": "return i18n(\"state.widgets.dc6c9f070ee1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courses completed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "return i18n(\"state.widgets.deb8f7305005\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course registration entry with registration period reminders. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +174,8 @@
           "context": "return i18n(\"state.widgets.df6cbf44585a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus news you subscribed to. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +190,8 @@
           "context": "return i18n(\"state.widgets.dfaad9edebfd\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Live campus weather and a three-day forecast, refreshed every half hour from open data. No sign-in needed.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +206,8 @@
           "context": "return i18n(\"state.widgets.e4912d152656\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search within Web Learning. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +222,8 @@
           "context": "return i18n(\"state.widgets.e842a5dff916\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Total credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +238,8 @@
           "context": "return i18n(\"state.widgets.eb21e822e78e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Data card for the course info section on the Info page.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +254,8 @@
           "context": "return i18n(\"state.widgets.f42d1c6829c9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Weighted average for the most recent term. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -158,8 +270,8 @@
           "context": "return i18n(\"state.widgets.f4802624f209\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grades section",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -174,8 +286,8 @@
           "context": "return i18n(\"state.widgets.f48d92cf0b84\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Empty classroom lookup. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -190,8 +302,8 @@
           "context": "return i18n(\"state.widgets.f9d072c4804c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -206,8 +318,8 @@
           "context": "return i18n(\"state.widgets.fae0c4931d49\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus network account and data usage. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -222,8 +334,8 @@
           "context": "return i18n(\"state.widgets.fb4ffac2dc8d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Venues and seats you reserved today. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -238,8 +350,8 @@
           "context": "return i18n(\"state.widgets.fce8c2b36f6a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus card balance, transactions, and top-ups. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -254,8 +366,8 @@
           "context": "return i18n(\"state.widgets.fd611796f383\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dorm cleanliness scores. Requires sign-in.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

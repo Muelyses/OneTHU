@@ -1,7 +1,157 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.zhjwxk.courses.def2a886248f",
+      "source": "候选中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1111,
+          "context": "r.cand.myPos ? i18n(\"pages.zhjwxk.courses.519d719dc036\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.def2a886248f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1111,
+          "context": "r.cand ? (r.cand.myPos ? i18n(\"pages.zhjwxk.courses.519d719dc036\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.def2a886248f\")) : i18n(\"pages.zhjwxk.courses.def2a886248f\")"
+        }
+      ],
+      "translation": "Candidate",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.df8ffc573e08",
+      "source": "暂无匹配课程。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 800,
+          "context": "wb.searchError || i18n(\"pages.zhjwxk.courses.df8ffc573e08\")"
+        }
+      ],
+      "translation": "No matching courses.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.e371bb0c700d",
+      "source": "余{qRemaining}/{qCapacity}{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "qRemaining",
+          "expression": "q.qRemaining"
+        },
+        {
+          "name": "qCapacity",
+          "expression": "q.qCapacity"
+        },
+        {
+          "name": "value",
+          "expression": "q.qQueue > 0 ? i18n(\"pages.zhjwxk.courses.a1065b209234\", { qQueue: String(q.qQueue) }) : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1056,
+          "context": "{i18nRich(\"pages.zhjwxk.courses.e371bb0c700d\", { qRemaining: q.qRemaining, qCapacity: q.qCapacity, value: q.qQueue > 0 ? i18n(\"pages.zhjwxk.courses.a1065b209234\", { qQueue: String(q.qQueue) }) : \"\" })}"
+        }
+      ],
+      "translation": "{qRemaining}/{qCapacity} left{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.e57b6dbedea3",
+      "source": "暂存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1106,
+          "context": "inStage ? i18n(\"pages.zhjwxk.courses.847d376afd41\") : i18n(\"pages.zhjwxk.courses.e57b6dbedea3\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1124,
+          "context": "inStage ? i18n(\"pages.zhjwxk.courses.847d376afd41\") : i18n(\"pages.zhjwxk.courses.e57b6dbedea3\")"
+        }
+      ],
+      "translation": "Stage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.e5e83906ac41",
+      "source": "余量 {remaining}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "remaining",
+          "expression": "String(r.c.remaining)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1037,
+          "context": "typeof r.c.remaining === \"number\" ? i18n(\"pages.zhjwxk.courses.e5e83906ac41\", { remaining: String(r.c.remaining) }) : \"\""
+        }
+      ],
+      "translation": "Openings {remaining}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.e66200d4cbbd",
+      "source": "研院余量>0",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 789,
+          "context": "{i18n(\"pages.zhjwxk.courses.e66200d4cbbd\")}"
+        }
+      ],
+      "translation": "Grad school openings >0",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.e9d3b01a5a00",
+      "source": "周四",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1358,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"), i18n(\"pages.zhjwxk.courses.d1378a68e620\"), i18n(\"pages.zhjwxk.courses.2961168962be\"), i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"), i18n(\"pages.zhjwxk.courses.572388f3b096\"), i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"), i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1420,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1441,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        }
+      ],
+      "translation": "Thu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.zhjwxk.courses.ea29940ac15a",
       "source": "仅冲突",
@@ -14,8 +164,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ea29940ac15a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Only conflicts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +180,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ebc1a817b794\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading course introduction…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +196,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ec9205286c3d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not satisfied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +217,8 @@
           "context": "confirmOk(i18nMsg(\"pages.zhjwxk.courses.ed67b28e1e78\", { value: String(x?.name || code) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove \"{value}\" from the draft?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -93,8 +243,8 @@
           "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sun",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -134,8 +284,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.ef8963e02e96\", { count: entry.count, value: entry.kkdw ? ` · ${entry.kkdw}` : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " {count} reviews{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -159,8 +309,8 @@
           "context": "r.cand.myPos ? i18n(\"pages.zhjwxk.courses.f09113c77540\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.90c4b556f895\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My queue position: #{myPos} / {queueTotal} in total",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -175,8 +325,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.f31a1706ec82\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Draft name (e.g., Plan A)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -196,8 +346,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.f3477d357ef2\", { length: undet.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Time TBD / unparsable ({length} courses, not shown on the timeline above)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -229,8 +379,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.f391fe0280a5\", { coveredN: coveredN, length: coverage.length, coveredCr: coveredCr, totalCr: totalCr })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Degree plan progress: {coveredN}/{length} courses · {coveredCr}/{totalCr} credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -250,8 +400,8 @@
           "context": "wb.searchTotalRows > 0 ? i18n(\"pages.zhjwxk.courses.f723ce33054e\", { searchTotalRows: String(wb.searchTotalRows) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "({searchTotalRows} courses in total)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -279,8 +429,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.f7486a1ba60e\", { lbl: u.lbl, credits: u.credits, value: u.zy ? i18n(\"pages.zhjwxk.courses.4a640209de60\", { zy: String(u.zy) }) : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{lbl} · {credits} credits{value} ✕",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -300,8 +450,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.f791593c30e2\", { cr: String(cr) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "/{cr} credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -326,8 +476,8 @@
           "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -342,8 +492,8 @@
           "context": "c.cand ? i18n(\"pages.zhjwxk.courses.fa33afcd5d0c\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Candidates:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -363,8 +513,8 @@
           "context": "label: i18n(\"pages.zhjwxk.courses.fab993c6ff6f\", { qRemaining: String(qd.qRemaining) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{qRemaining} left",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -405,8 +555,8 @@
           "context": "r?.error ?? i18n(\"plugins.chatdock.01aaebc96af1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Import failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -426,8 +576,8 @@
           "context": "r.ok ? i18n(\"plugins.chatdock.6c2911b77d68\", { value: String(r.path ? `：${r.path}` : \"\") }) : i18n(\"plugins.chatdock.044d85b3d264\", { value: String(r.error ? `：${r.error}` : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachment action incomplete{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -442,8 +592,8 @@
           "context": "setNotice(i18n(\"plugins.chatdock.077a6d37719a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -468,8 +618,8 @@
           "context": "{i18n(\"plugins.chatdock.0eccd0db7b81\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Past sessions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -489,8 +639,8 @@
           "context": "{i18n(\"plugins.chatdock.109c66fc6f1f\", { name: String(im.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View image {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -505,8 +655,8 @@
           "context": "{i18n(\"plugins.chatdock.15a3eb5151c9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Export current session as JSON",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -521,8 +671,8 @@
           "context": "voice === \"arming\" ? i18n(\"plugins.chatdock.16b38246ad63\") : liveShown || i18n(\"plugins.chatdock.584965ac8398\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Starting voice…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +692,8 @@
           "context": "setNotice(i18n(\"plugins.chatdock.177a41a28139\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Export failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +708,8 @@
           "context": "mode === \"xiaoda\" ? i18n(\"plugins.chatdock.634b2bf11df6\") : i18n(\"plugins.chatdock.19e77f892e70\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Release to send to OH",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +724,8 @@
           "context": "{i18n(\"plugins.chatdock.1bdfd51dbccf\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The main chat requires the full desktop environment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -590,8 +740,8 @@
           "context": "{i18n(\"plugins.chatdock.1c5fc047a7ba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No search history yet; search for a feature or entity once and it will appear here",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +756,8 @@
           "context": "prefs.autoSpeak ? i18n(\"plugins.chatdock.76773f6ea0ce\") : i18n(\"plugins.chatdock.1dfa6c369f2c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Currently muted (tap to enable auto-read; long-press for text-to-speech settings)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -622,8 +772,8 @@
           "context": "speakingText === m.text ? i18n(\"plugins.chatdock.6113d2b22a57\") : i18n(\"plugins.chatdock.1ee104560d87\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read this message aloud",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -638,8 +788,8 @@
           "context": "{i18n(\"plugins.chatdock.225204c58214\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search mode is unaffected and works normally. Open the same entry on the desktop app (Tauri desktop version) to see the main chat.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -654,8 +804,8 @@
           "context": "return i18n(\"plugins.chatdock.22eb0f8779ab\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sending…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -670,8 +820,8 @@
           "context": "{i18n(\"plugins.chatdock.25f5ce57a190\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Features",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -686,8 +836,8 @@
           "context": "{i18n(\"plugins.chatdock.2a3281c6dc74\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag to adjust panel height",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -707,8 +857,8 @@
           "context": "setNotice(i18n(\"plugins.chatdock.2bc2f4c3a349\", { value: String(r.title ?? i18n(\"plugins.chatdock.a63280253f17\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Imported: {value}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -723,8 +873,8 @@
           "context": "{i18n(\"plugins.chatdock.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -739,8 +889,8 @@
           "context": "{i18n(\"plugins.chatdock.2da5b19c4f4f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(no sessions)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -771,8 +921,8 @@
           "context": "{i18n(\"plugins.chatdock.2fd39ace06ea\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Export session",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -787,8 +937,8 @@
           "context": "{i18n(\"plugins.chatdock.35ceb8b5b08c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Set up your own API",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -803,8 +953,8 @@
           "context": "r?.error ?? i18n(\"plugins.chatdock.381dce90b336\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to switch session",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -824,8 +974,8 @@
           "context": "{i18nRich(\"plugins.chatdock.38c07c95baa1\", { value: q.length > 18 ? q.slice(0, 18) + \"…\" : q })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No results? Ask Xiao OH directly: \"{value}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -845,8 +995,8 @@
           "context": "{i18n(\"plugins.chatdock.3ad85f7e8c59\", { name: String(im.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{name} (tap to view full size)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -866,8 +1016,8 @@
           "context": "p.thinkOpen ? i18n(\"plugins.chatdock.3afccd0197f6\") : i18n(\"plugins.chatdock.489208184337\", { length: String(p.think.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to collapse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -882,8 +1032,8 @@
           "context": "{i18n(\"plugins.chatdock.3b5ac9baaaae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recent searches",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -898,8 +1048,8 @@
           "context": "{i18n(\"plugins.chatdock.3c0e1d1ef000\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The main chat cannot be deleted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -914,8 +1064,8 @@
           "context": "a.sub ?? i18n(\"plugins.chatdock.3c1917e1c662\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Related content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -930,8 +1080,8 @@
           "context": "{i18n(\"plugins.chatdock.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -946,8 +1096,8 @@
           "context": "{i18n(\"plugins.chatdock.427a4c3a62ca\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Hi! I'm Xiao OH. How can I help you?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -962,8 +1112,8 @@
           "context": "sub: i18n(\"plugins.chatdock.44bc7ccc3677\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -994,7 +1144,7 @@
           "context": "{i18n(\"plugins.chatdock.452c7b10d57a\")}"
         }
       ],
-      "translation": "Page",
+      "translation": "Pages",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1015,8 +1165,8 @@
           "context": "{i18nRich(\"plugins.chatdock.488d7b3cb249\", { q: q })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No results for \"{q}\". Try rephrasing, or ask Xiao OH directly:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1036,8 +1186,8 @@
           "context": "p.thinkOpen ? i18n(\"plugins.chatdock.3afccd0197f6\") : i18n(\"plugins.chatdock.489208184337\", { length: String(p.think.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} characters · collapsed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1052,8 +1202,8 @@
           "context": "{i18n(\"plugins.chatdock.4aa34ed30482\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Requests are temporarily limited",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1073,8 +1223,8 @@
           "context": "{i18n(\"plugins.chatdock.584741806d83\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Creator mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1089,8 +1239,8 @@
           "context": "liveShown || i18n(\"plugins.chatdock.584965ac8398\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Speak now…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1105,8 +1255,8 @@
           "context": "autoSpeak ? i18n(\"plugins.chatdock.cd3d72fa5906\") : i18n(\"plugins.chatdock.5c393fa3cd3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read this message aloud (currently muted; tap to read it)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1121,8 +1271,8 @@
           "context": "{i18n(\"plugins.chatdock.5f0649ad2ef8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No Harness process in this window (browser preview or plugin not loaded). Conversation history is unavailable here and sending will have no effect.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1137,8 +1287,8 @@
           "context": "{i18n(\"plugins.chatdock.5fb46a520c25\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Creator mode: when enabled, Xiao OH will more actively create plugins, themes, OnePages, and script tools",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1153,8 +1303,8 @@
           "context": "return i18n(\"plugins.chatdock.60c4e7086f28\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Requires a permission prompt the first time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1174,8 +1324,8 @@
           "context": "speakingText === m.text\n                ? i18n(\"plugins.chatdock.6113d2b22a57\")\n                : autoSpeak ? i18n(\"plugins.chatdock.cd3d72fa5906\") : i18n(\"plugins.chatdock.5c393fa3cd3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stop reading",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1190,8 +1340,8 @@
           "context": "mode === \"xiaoda\" ? i18n(\"plugins.chatdock.634b2bf11df6\") : i18n(\"plugins.chatdock.19e77f892e70\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Release to send to Xiaoda",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1211,8 +1361,8 @@
           "context": "setStatus(i18n(\"plugins.chatdock.64088d8cd78a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Thinking…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1227,8 +1377,8 @@
           "context": "alt || i18n(\"plugins.chatdock.6549c7947471\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Image (could not be read)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1248,8 +1398,8 @@
           "context": "s.title || i18n(\"plugins.chatdock.67bee6acfc3c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Untitled",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1264,8 +1414,8 @@
           "context": "{i18n(\"plugins.chatdock.68a35e224268\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm execution",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1280,8 +1430,8 @@
           "context": "{i18n(\"plugins.chatdock.68ea82b28806\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Import session JSON",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1296,8 +1446,8 @@
           "context": "{i18n(\"plugins.chatdock.6b5cbaa40b65\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Import session",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1317,8 +1467,8 @@
           "context": "r.ok ? i18n(\"plugins.chatdock.6c2911b77d68\", { value: String(r.path ? `：${r.path}` : \"\") }) : i18n(\"plugins.chatdock.044d85b3d264\", { value: String(r.error ? `：${r.error}` : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachments processed{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1333,8 +1483,8 @@
           "context": "r?.error ?? i18n(\"plugins.chatdock.6e4445df6957\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Export failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1349,125 +1499,8 @@
           "context": "{i18n(\"plugins.chatdock.6f57749ffaa9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.723588bf300c",
-      "source": "重试这条消息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 831,
-          "context": "{i18n(\"plugins.chatdock.723588bf300c\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.76773f6ea0ce",
-      "source": "自动朗读已开启（点击改静音；长按进语音合成设置）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 2478,
-          "context": "prefs.autoSpeak ? i18n(\"plugins.chatdock.76773f6ea0ce\") : i18n(\"plugins.chatdock.1dfa6c369f2c\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.7742ad93c98a",
-      "source": "新建会话失败",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 1752,
-          "context": "r?.error ?? i18n(\"plugins.chatdock.7742ad93c98a\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.7855f5a8df25",
-      "source": "设置 · {t}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "t",
-          "expression": "t"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 1061,
-          "context": "{i18nRich(\"plugins.chatdock.7855f5a8df25\", { t: t })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.7b376795bbca",
-      "source": "已取消导出",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 1831,
-          "context": "path ? i18n(\"plugins.chatdock.fe0342f05ca5\", { path: String(path) }) : i18n(\"plugins.chatdock.7b376795bbca\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.8282ce4afe46",
-      "source": "(空响应)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 1451,
-          "context": "typeof r?.answer === \"string\" ? r.answer : i18n(\"plugins.chatdock.8282ce4afe46\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.84bca22bedb3",
-      "source": "服务暂时限制了请求，请稍后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 826,
-          "context": "{i18n(\"plugins.chatdock.84bca22bedb3\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search or chat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

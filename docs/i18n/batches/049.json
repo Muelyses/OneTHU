@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.kongjiantab.18931020ad52",
+      "source": "提交中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 348,
+          "context": "busy ? i18n(\"pages.info.kongjiantab.18931020ad52\") : i18n(\"pages.info.kongjiantab.da32887460b5\")"
+        }
+      ],
+      "translation": "Submitting…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.1a558735ea57",
+      "source": "我的预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 360,
+          "context": "{i18n(\"pages.info.kongjiantab.1a558735ea57\")}"
+        }
+      ],
+      "translation": "My reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.kongjiantab.298336ec2c0e",
+      "source": "上午",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
+          "line": 228,
+          "context": "[i18n(\"pages.info.kongjiantab.298336ec2c0e\"), slots.filter((x) => Number(String(x.time).split(\":\")[0]) < 12)]"
+        }
+      ],
+      "translation": "Morning",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.kongjiantab.2cd0f3be8738",
       "source": "取消",
@@ -14,8 +62,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.2ec81db68e25\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All rooms…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.434f5b0b9e74\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Public space reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.50b5b1d2abef\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +131,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.58ed0c97a7b1\", { length: String(page.spaces.length) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select space ({length})…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -108,8 +156,8 @@
           "context": "confirmOk(i18nMsg(\"pages.info.kongjiantab.5e02f649e2b6\", { space: String(rec.space), time: String(rec.time) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel reservation: {space} {time}?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -124,8 +172,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.60ac5285aa4d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Purpose (optional)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -140,8 +188,8 @@
           "context": "unavailable ? i18n(\"pages.info.kongjiantab.6325654ae002\") : (error ?? \"\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The Shared Home Network is unavailable right now. Please try again later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -156,8 +204,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.698451e7a267\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No open sessions for this room/date.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -172,8 +220,8 @@
           "context": "label: i18n(\"pages.info.kongjiantab.6dbaeff68e66\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All rooms",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -188,8 +236,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.70d0c1b33626\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -204,8 +252,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.72944bf6d779\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -225,8 +273,8 @@
           "context": "page.rooms.find((r) => r.id === effRoomId)?.name ?? i18n(\"pages.info.kongjiantab.96b2d406041b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Room",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -241,8 +289,8 @@
           "context": "new Error(i18n(\"pages.info.kongjiantab.9820727211b1\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Public space list is empty (portal fallback not matched)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -257,8 +305,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.98fde9b93a54\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared Home Network · Activity space reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -278,8 +326,8 @@
           "context": "window.alert(i18n(\"pages.info.kongjiantab.99ed81157283\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancellation failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -294,8 +342,8 @@
           "context": "useState(i18n(\"pages.info.kongjiantab.9e9bead81498\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Activity",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -310,8 +358,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.a0624ace1039\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Public space list unavailable (may be closed or your session has expired).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -326,8 +374,8 @@
           "context": "slot.state || i18n(\"pages.info.kongjiantab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not bookable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -342,8 +390,8 @@
           "context": "[i18n(\"pages.info.kongjiantab.a9b1124b3461\"), slots.filter((x) => Number(String(x.time).split(\":\")[0]) >= 17)]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Evening",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -358,8 +406,8 @@
           "context": "[i18n(\"pages.info.kongjiantab.af81dcf37aa8\"), slots.filter((x) => { const h = Number(String(x.time).split(\":\")[0]); return h >= 12 && h < 17; })]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Afternoon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -374,8 +422,8 @@
           "context": "picked.state || i18n(\"pages.info.kongjiantab.bc37a6110a07\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -390,8 +438,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.bf8b5d378f01\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Phone",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -406,8 +454,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.c3b180cc0d49\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No reservations yet.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -422,8 +470,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.c4d678ef6e37\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Student ID",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -438,8 +486,8 @@
           "context": "bookable ? i18n(\"pages.info.kongjiantab.d1d50368fefe\") : slot.state || i18n(\"pages.info.kongjiantab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bookable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -454,8 +502,8 @@
           "context": "busy ? i18n(\"pages.info.kongjiantab.18931020ad52\") : i18n(\"pages.info.kongjiantab.da32887460b5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -491,8 +539,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.f68b28f7f2a2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dorm public space",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -512,8 +560,8 @@
           "context": "setNotice(i18n(\"pages.info.kongjiantab.fe4a11b61bf6\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submission failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -533,8 +581,8 @@
           "context": "text: i18n(\"pages.info.librarytab.0362227e8948\", { zhName: String(seat.zhName) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seat {zhName} reserved. You must check in within 30 minutes after the reservation starts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -549,8 +597,8 @@
           "context": "busySeat !== null ? i18n(\"pages.info.librarytab.08db97b4fd8b\") : i18n(\"pages.info.librarytab.72944bf6d779\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reserving…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -565,8 +613,8 @@
           "context": "busyCancel !== null ? i18n(\"pages.info.librarytab.0addd7784578\") : i18n(\"pages.info.librarytab.b741efb628be\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancelling…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -581,8 +629,8 @@
           "context": "{i18n(\"pages.info.librarytab.0afc4fe3d305\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -597,8 +645,8 @@
           "context": "{i18n(\"pages.info.librarytab.1a558735ea57\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -618,8 +666,8 @@
           "context": "{i18nRich(\"pages.info.librarytab.1e0034462d91\", { usableCount: usableCount })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{usableCount} bookable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -634,8 +682,8 @@
           "context": "libs?.find((l) => l.id === libId)?.zhName ?? i18n(\"pages.info.librarytab.266e6cb77079\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -659,8 +707,8 @@
           "context": "{i18n(\"pages.info.librarytab.2bc5f3d52c71\", { caption: String(caption), msg: String(img.msg) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{caption} failed to load: {msg}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -675,8 +723,8 @@
           "context": "{i18n(\"pages.info.librarytab.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -691,8 +739,8 @@
           "context": "sections.length === 0 ? i18n(\"pages.info.librarytab.2e205d7f1965\") : i18n(\"pages.info.librarytab.40955d56e66e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No available zones",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -712,8 +760,8 @@
           "context": "{i18nRich(\"pages.info.librarytab.30289a8d04c0\", { zhName: pendingSeat.zhName })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reserve seat {zhName}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -728,8 +776,8 @@
           "context": "{i18n(\"pages.info.librarytab.312d122d681e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Power outlet available",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -760,8 +808,8 @@
           "context": "text: i18n(\"pages.info.librarytab.328966d7d40c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation cancelled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -781,8 +829,8 @@
           "context": "sections?.find((sec) => sec.id === sectionId)?.zhName ?? i18n(\"pages.info.librarytab.3382870bc4ad\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Zone",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -813,8 +861,8 @@
           "context": "s.hasPower ? i18n(\"pages.info.librarytab.36f1b7b0d4cf\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Has outlet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -829,8 +877,8 @@
           "context": "{i18n(\"pages.info.librarytab.3c4849cb1508\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel this reservation?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -845,8 +893,8 @@
           "context": "sections.length === 0 ? i18n(\"pages.info.librarytab.2e205d7f1965\") : i18n(\"pages.info.librarytab.40955d56e66e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select zone…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -866,8 +914,8 @@
           "context": "!sections ? i18n(\"pages.info.librarytab.4927a53bcc88\") : sections.length === 0 ? i18n(\"pages.info.librarytab.2e205d7f1965\") : i18n(\"pages.info.librarytab.40955d56e66e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -882,8 +930,8 @@
           "context": "{i18n(\"pages.info.librarytab.4e7028070d16\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "You must check in within 30 minutes after the reservation starts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -898,8 +946,8 @@
           "context": "new Error(i18n(\"pages.info.librarytab.53d496172b27\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library list is empty (the data source returned nothing; your session may not be established)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -914,8 +962,8 @@
           "context": "{i18n(\"pages.info.librarytab.56e603f6d1da\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -930,8 +978,8 @@
           "context": "{i18n(\"pages.info.librarytab.6776297fac38\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select library…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -946,8 +994,8 @@
           "context": "{i18n(\"pages.info.librarytab.6b7589029582\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Never mind",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -967,8 +1015,8 @@
           "context": "{i18n(\"pages.info.librarytab.70d0c1b33626\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -983,8 +1031,8 @@
           "context": "busySeat !== null ? i18n(\"pages.info.librarytab.08db97b4fd8b\") : i18n(\"pages.info.librarytab.72944bf6d779\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -999,8 +1047,8 @@
           "context": "{i18n(\"pages.info.librarytab.733125b04b38\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "= Has power outlet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1024,8 +1072,8 @@
           "context": "{i18nRich(\"pages.info.librarytab.784c472214f9\", { SEAT_CAP: SEAT_CAP, length: seatList.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Showing the first {SEAT_CAP} of {length}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1040,8 +1088,8 @@
           "context": "{i18n(\"pages.info.librarytab.7bd9d53b62f0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1056,8 +1104,8 @@
           "context": "floors.length === 0 ? i18n(\"pages.info.librarytab.81453cb31460\") : i18n(\"pages.info.librarytab.fc39fa88920f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No available floors",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1077,8 +1125,8 @@
           "context": "{i18n(\"pages.info.librarytab.8299d1d4bae5\", { zhName: String(section.zhName) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{zhName} · Seat map",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1093,8 +1141,8 @@
           "context": "!l.valid ? i18n(\"pages.info.librarytab.8a2ffcb89689\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Not bookable yet)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1114,8 +1162,8 @@
           "context": "text: i18n(\"pages.info.librarytab.90bd6800e5b6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign-in required (student ID not detected)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1135,8 +1183,8 @@
           "context": "{i18nRich(\"pages.info.librarytab.95003d952366\", { value: gridSeats.length - usableCount })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reserved/unavailable {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1151,8 +1199,8 @@
           "context": "usable ? i18n(\"pages.info.librarytab.9ebbc08083a7\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Tap to reserve",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1167,8 +1215,8 @@
           "context": "m.trim().slice(0, 160) || i18n(\"pages.info.librarytab.a1a9da9ee6ed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1183,8 +1231,8 @@
           "context": "s.valid ? i18n(\"pages.info.librarytab.dae661d17c2d\") : i18n(\"pages.info.librarytab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not bookable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1209,8 +1257,8 @@
           "context": "dateChoice === 0 ? i18n(\"pages.info.librarytab.d5f5a7a01073\") : i18n(\"pages.info.librarytab.b1d841b978fb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tomorrow",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1225,8 +1273,8 @@
           "context": "busyCancel !== null ? i18n(\"pages.info.librarytab.0addd7784578\") : i18n(\"pages.info.librarytab.b741efb628be\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm cancellation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1256,8 +1304,8 @@
           "context": "{i18n(\"pages.info.librarytab.b8784c8dd563\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1272,8 +1320,8 @@
           "context": "{i18n(\"pages.info.librarytab.c3b180cc0d49\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No reservations yet.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1293,8 +1341,8 @@
           "context": "{i18nRich(\"pages.info.librarytab.c84b1d592f6d\", { locTrace: locTrace })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Location: {locTrace}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1309,8 +1357,8 @@
           "context": "{i18n(\"pages.info.librarytab.cdbc73064158\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seat reservation records",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1330,8 +1378,8 @@
           "context": "floors?.find((f) => f.id === floorId)?.zhName ?? i18n(\"pages.info.librarytab.ce3b386bd714\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Floor",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1351,8 +1399,8 @@
           "context": "{i18n(\"pages.info.librarytab.d01c30463932\", { zhName: String(floor.zhName) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{zhName} · Floor plan",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1377,56 +1425,8 @@
           "context": "dateChoice === 0 ? i18n(\"pages.info.librarytab.d5f5a7a01073\") : i18n(\"pages.info.librarytab.b1d841b978fb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.librarytab.dae661d17c2d",
-      "source": "空闲",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
-          "line": 129,
-          "context": "s.valid ? i18n(\"pages.info.librarytab.dae661d17c2d\") : i18n(\"pages.info.librarytab.a4c0233f1d6c\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.librarytab.e977820670a9",
-      "source": "该区域暂无座位数据。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
-          "line": 728,
-          "context": "{i18n(\"pages.info.librarytab.e977820670a9\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.librarytab.fc39fa88920f",
-      "source": "选择楼层…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/LibraryTab.tsx",
-          "line": 621,
-          "context": "floors.length === 0 ? i18n(\"pages.info.librarytab.81453cb31460\") : i18n(\"pages.info.librarytab.fc39fa88920f\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

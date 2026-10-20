@@ -1,7 +1,124 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.explorer.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 254,
+          "context": "return i18n(\"state.explorer.15d208d1b4c9\");"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 175,
+          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
+        },
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 263,
+          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.22519a88484f",
+      "source": "课程详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 232,
+          "context": "return i18n(\"state.explorer.22519a88484f\");"
+        }
+      ],
+      "translation": "Course details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.231ff6cd9b63",
+      "source": "学期切换",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 237,
+          "context": "return i18n(\"state.explorer.231ff6cd9b63\");"
+        }
+      ],
+      "translation": "Switch semester",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.24be2018df29",
+      "source": "银行代发",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 257,
+          "context": "return i18n(\"state.explorer.24be2018df29\");"
+        }
+      ],
+      "translation": "Payroll",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.27b6154b3fd3",
+      "source": "文件详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 241,
+          "context": "return i18n(\"state.explorer.27b6154b3fd3\");"
+        }
+      ],
+      "translation": "File details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.explorer.2d3197fccc89",
+      "source": "网络学堂 · 搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 236,
+          "context": "return i18n(\"state.explorer.2d3197fccc89\");"
+        }
+      ],
+      "translation": "Web Learning · Search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.explorer.316da6d69b7d",
       "source": "体测成绩",
@@ -14,7 +131,7 @@
           "context": "return i18n(\"state.explorer.316da6d69b7d\");"
         }
       ],
-      "translation": "Fitness test",
+      "translation": "Fitness test results",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -30,7 +147,7 @@
           "context": "return i18n(\"state.explorer.31c17158ebdb\");"
         }
       ],
-      "translation": "Library seat",
+      "translation": "Library seats",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -83,8 +200,8 @@
           "context": "opts.name.trim() || i18n(\"state.explorer.37979829426b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,7 +248,7 @@
           "context": "return i18n(\"state.explorer.44028d43b39b\");"
         }
       ],
-      "translation": "Learn · All files",
+      "translation": "Web Learning · All files",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -211,7 +328,7 @@
           "context": "return i18n(\"state.explorer.52fdbbaeda4c\");"
         }
       ],
-      "translation": "To-dos",
+      "translation": "Tasks",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -232,7 +349,7 @@
           "context": "title = i18n(\"state.explorer.55add4b94983\")"
         }
       ],
-      "translation": "Whiteboard",
+      "translation": "Board",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -280,7 +397,7 @@
           "context": "return i18n(\"state.explorer.617416a4719a\");"
         }
       ],
-      "translation": "Learn · All notices",
+      "translation": "Web Learning · All notices",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -344,7 +461,7 @@
           "context": "return i18n(\"state.explorer.ac9a3e2c965a\");"
         }
       ],
-      "translation": "All whiteboards",
+      "translation": "All boards",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -392,7 +509,7 @@
           "context": "return i18n(\"state.explorer.c0262b668835\");"
         }
       ],
-      "translation": "Learn · All assignments",
+      "translation": "Web Learning · All assignments",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -584,7 +701,7 @@
           "context": "return i18n(\"state.explorer.f0cd4338679e\");"
         }
       ],
-      "translation": "Yuketang assignment",
+      "translation": "Rain Classroom assignment",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -621,8 +738,8 @@
           "context": "new Error(i18n(\"state.exthw.0ba343b633e5\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rain Classroom is not signed in: sign in under Settings → External assignment sources first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -637,8 +754,8 @@
           "context": "new Error(i18n(\"state.exthw.15b8b711a27d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "WebCrypto is not supported in this environment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +770,8 @@
           "context": "new Error(i18n(\"state.friendchannel.0507dadfda6a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive is not connected: paste a token on the Cloud Drive page first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -669,8 +786,8 @@
           "context": "reason: i18n(\"state.friendchannel.596d6dbf6630\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The message cannot be empty",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -685,8 +802,8 @@
           "context": "new Error(i18n(\"state.friendchannel.6c6de71e6e09\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The other person's card has no Cloud Drive email: ask them to fill it in by editing their card, then try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +823,8 @@
           "context": "new Error(i18n(\"state.friendchannel.a6e7bedde538\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive is not connected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -727,8 +844,8 @@
           "context": "new Error(i18n(\"state.friendchannel.b0267114fbda\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No shared cloud drive yet: create a shared drive on a contact first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -743,8 +860,8 @@
           "context": "new Error(i18n(\"state.friendchannel.c9a7838f815d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create a friend shared drive first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +876,8 @@
           "context": "new Error(i18n(\"state.friendchannel.e6e1b1bf2d70\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The file has no local staging path (in a browser, download or select a readable file first)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -775,8 +892,8 @@
           "context": "new Error(i18n(\"state.gitlab.114edc146ab3\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab requires a unified authentication session: sign in again on the login page (check Remember password)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -796,8 +913,8 @@
           "context": "return i18n(\"state.hwremind.1789166f275b\", { count: Math.round(m / 60) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hours",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -817,8 +934,8 @@
           "context": "return i18n(\"state.hwremind.1a009fb8a332\", { count: m / 1440 });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} days",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -838,8 +955,8 @@
           "context": "return i18n(\"state.hwremind.8d2f9af2212a\", { count: m });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minutes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -859,8 +976,8 @@
           "context": "return i18n(\"state.island.55d3dfb01bc9\", { m: String(m) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{m} minutes left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -896,8 +1013,8 @@
           "context": "return i18n(\"state.island.b1b5b78e6398\", { value: String(Math.round(m / 1440)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} days left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -917,8 +1034,8 @@
           "context": "return i18n(\"state.island.f61e332cda51\", { value: String(Math.round(m / 60)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} hours left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -933,8 +1050,8 @@
           "context": "new Error(\n      i18n(\"state.madmodel.03964a43d8ea\"),\n    )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Could not renew the free-tier token: a valid Tsinghua unified authentication session is required (the SSO ticket could not be obtained or the exchange was refused). Sign in to your Tsinghua account again in OneTHU and retry, or switch to a paid API.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1066,8 @@
           "context": "freeTierHint(i18n(\"state.madmodel.0e0df04b7d65\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your school session has expired. Please sign in again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -965,8 +1082,8 @@
           "context": "freeTierHint(i18n(\"state.madmodel.302ca473236a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Updating the school session is deferred. Please retry later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -986,8 +1103,8 @@
           "context": "new TemporaryMadModelError(i18n(\"state.madmodel.6aa588205779\", { status: String(res.status) }), retryAt(res))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The school sign-in service is temporarily unavailable (HTTP {status}). Please retry later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1007,8 +1124,8 @@
           "context": "new TemporaryMadModelError(i18n(\"state.madmodel.795ecc37977c\", { status: String(res.status) }), retryAt(res))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unified authentication is temporarily unavailable (HTTP {status}). Please retry later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1028,8 +1145,8 @@
           "context": "return i18n(\"state.madmodel.93c04445723a\", { reason: why });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The school model is temporarily unavailable: {reason}. If your session has expired, sign in to your Tsinghua account again; for network or rate-limit issues, retry later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1049,8 +1166,8 @@
           "context": "new Error(i18n(\"state.madmodel.a3642b461fee\", { value: String(Math.max(1, Math.ceil((nextAt - Date.now()) / 60_000))) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Backing off on renewal (retrying in about {value} minutes)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1065,8 +1182,8 @@
           "context": "e instanceof Error ? e.message : i18n(\"state.madmodel.c04cfb0974f5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to update sign-in credentials",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1081,8 +1198,8 @@
           "context": "freeTierHint(i18n(\"state.madmodel.cc4b425932b8\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your school session has expired; verification cannot complete right now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1129,8 +1246,8 @@
           "context": "new Error(i18n(\"state.mail.c7533b0c0d79\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bind your email and an app-specific password first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1145,8 +1262,8 @@
           "context": "errorsByFolder[folder] = i18n(\"state.mail.cacheWriteFailed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mail was updated, but the local cache could not be saved",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1161,8 +1278,8 @@
           "context": "message = i18n(\"state.mail.credentialsReadFailed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to read the mail connection info. Please retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1177,8 +1294,8 @@
           "context": "new Error(i18n(\"state.mail.e405fef4c8cd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The recipient cannot be empty",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1193,8 +1310,8 @@
           "context": "new Error(i18n(\"state.mail.e9a7b9e11064\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The mail account has changed. Please reopen your mail.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1214,8 +1331,8 @@
           "context": "title: i18n(\"state.namecard.6344e8e2c076\", { value: String(doc.personal.name || \"我\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Card · {value}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1235,8 +1352,8 @@
           "context": "title: i18n(\"state.namecard.e769cfbccd53\", { name: String(org.name) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization card · {name}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1253,118 +1370,6 @@
       ],
       "translation": "Contacts",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.07a0fa11958e",
-      "source": "体育预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 122,
-          "context": "return i18n(\"state.navigation.07a0fa11958e\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.082bbf74eb0f",
-      "source": "查看余额与收支记录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 108,
-          "context": "return i18n(\"state.navigation.082bbf74eb0f\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.10532ed2578b",
-      "source": "查看考试时间与考场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 93,
-          "context": "return i18n(\"state.navigation.10532ed2578b\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.14384c9d60cc",
-      "source": "教学评估",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 94,
-          "context": "return i18n(\"state.navigation.14384c9d60cc\");"
-        }
-      ],
-      "translation": "Teaching evaluation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 102,
-          "context": "return i18n(\"state.navigation.15d208d1b4c9\");"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.1760b98532ec",
-      "source": "在线服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 133,
-          "context": "return i18n(\"state.navigation.1760b98532ec\");"
-        }
-      ],
-      "translation": "Online services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.1bba779cd16c",
-      "source": "JS / Rust / Android 内嵌三类插件，市场一键安装（2026-10-09 起一级入口）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 141,
-          "context": "return i18n(\"state.navigation.1bba779cd16c\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

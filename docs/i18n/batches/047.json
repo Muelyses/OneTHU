@@ -1,7 +1,60 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.cardtab.6fe44db82dfb",
+      "source": "调起支付宝 App 支付",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 240,
+          "context": "{i18n(\"pages.info.cardtab.6fe44db82dfb\")}"
+        }
+      ],
+      "translation": "Open the Alipay app to pay",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.705ff9657d5d",
+      "source": "数据已超过 6 小时未更新（{value}），可能不是最新",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 451,
+          "context": "refreshError\n                ? i18n(\"pages.info.cardtab.7c250813afe4\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")), refreshError: String(refreshError) })\n                : i18n(\"pages.info.cardtab.705ff9657d5d\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\")) })"
+        }
+      ],
+      "translation": "Data has not updated for over 6 hours ({value}); it may not be the latest",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.710a42081cbe",
+      "source": "校园卡充值",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 172,
+          "context": "{i18n(\"pages.info.cardtab.710a42081cbe\")}"
+        }
+      ],
+      "translation": "Campus card top-up",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.cardtab.780317fc7e6f",
       "source": "生成微信收银台二维码，手机微信扫码支付",
@@ -14,8 +67,8 @@
           "context": "return i18n(\"pages.info.cardtab.780317fc7e6f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Generate the WeChat cashier QR code and pay by scanning it in WeChat on your phone",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -39,8 +92,8 @@
           "context": "refreshError\n                ? i18n(\"pages.info.cardtab.7c250813afe4\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")), refreshError: String(refreshError) })\n                : i18n(\"pages.info.cardtab.705ff9657d5d\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh failed; showing data from {value} ({refreshError})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -55,8 +108,8 @@
           "context": "state === \"loading\" ? i18n(\"pages.info.cardtab.7f3c8312816f\") : i18n(\"pages.info.cardtab.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refreshing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -71,8 +124,8 @@
           "context": "{i18n(\"pages.info.cardtab.7f77f23af7b0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "CNY",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -87,8 +140,8 @@
           "context": "{i18n(\"pages.info.cardtab.802b027b4fe5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fetch balance and transactions again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -108,8 +161,8 @@
           "context": "channel === \"alipay\" ? i18n(\"pages.info.cardtab.276a8bc45803\") : i18n(\"pages.info.cardtab.81b430b69643\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "WeChat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -124,8 +177,8 @@
           "context": "{i18n(\"pages.info.cardtab.8b4b20eb5e5d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Don't remind repeatedly (while the balance is unchanged)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -145,8 +198,8 @@
           "context": "t.txName ?? i18n(\"pages.info.cardtab.919ddbbd91c0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Transactions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -161,8 +214,8 @@
           "context": "{i18n(\"pages.info.cardtab.958112166ebf\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Arrival is usually instant; please rely on the campus card balance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -177,8 +230,8 @@
           "context": "{i18n(\"pages.info.cardtab.964044a7cb90\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "· some fields missing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -193,8 +246,8 @@
           "context": "{i18n(\"pages.info.cardtab.97309bac3008\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Custom amount (10–1000 CNY)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -209,8 +262,8 @@
           "context": "{i18n(\"pages.info.cardtab.99660d2a2c11\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Balance alert line (CNY)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -225,8 +278,8 @@
           "context": "{i18n(\"pages.info.cardtab.acfc4e74a650\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -241,8 +294,8 @@
           "context": "{i18n(\"pages.info.cardtab.aedf4e856541\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Alert line",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -257,8 +310,8 @@
           "context": "state === \"loading\" ? i18n(\"pages.info.cardtab.7f3c8312816f\") : i18n(\"pages.info.cardtab.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -273,8 +326,8 @@
           "context": "busy ? i18n(\"pages.info.cardtab.bc1beaa93a7d\") : i18n(\"pages.info.cardtab.36f33adaf094\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Placing order…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -289,8 +342,8 @@
           "context": "{i18n(\"pages.info.cardtab.bc9202e87177\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reminder cooldown",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -305,8 +358,8 @@
           "context": "return i18n(\"pages.info.cardtab.bd29d329c11f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bank-card deposit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -321,8 +374,8 @@
           "context": "{i18n(\"pages.info.cardtab.bd957bc497aa\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "minutes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -337,8 +390,8 @@
           "context": "{i18n(\"pages.info.cardtab.bf806b71ea83\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " balance; if the funds have not arrived, check the deposit record under \"Recent transactions\" later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -358,8 +411,8 @@
           "context": "return i18n(\"pages.info.cardtab.d262a8a8360c\", { value: String(Math.floor(h / 24)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} days ago",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -374,8 +427,8 @@
           "context": "channel === \"wechat\" && isAndroid ? i18n(\"pages.info.cardtab.4c6443bdcde7\") : i18n(\"pages.info.cardtab.d4507373a0ce\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the payment page in a browser",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -395,8 +448,8 @@
           "context": "{i18n(\"pages.info.cardtab.db0a5f3fe6c3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Balance alert",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -411,8 +464,8 @@
           "context": "return i18n(\"pages.info.cardtab.de6785d99e02\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Just now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -427,8 +480,8 @@
           "context": "{i18n(\"pages.info.cardtab.de7d16d37942\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The top-up amount must be between 10 and 1000 CNY (all channels share the 10 CNY minimum; the official cashier also starts at 10 CNY)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -448,8 +501,8 @@
           "context": "{i18nRich(\"pages.info.cardtab.e22e82c70130\", { value: fmtAgo(updatedAt) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Updated {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -464,8 +517,8 @@
           "context": "{i18n(\"pages.info.cardtab.e84d5394f0a6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Balance / transactions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -480,8 +533,8 @@
           "context": "{i18n(\"pages.info.cardtab.e8adeabba93d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No transactions in the last 30 days.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -496,8 +549,8 @@
           "context": "{i18n(\"pages.info.cardtab.eb095f18e602\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Transaction count",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -512,8 +565,8 @@
           "context": "channel === \"bank\" ? i18n(\"pages.info.cardtab.ef4019825558\") : i18n(\"pages.info.cardtab.648616c62275\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bank-card deposits start at 10 CNY; the amount must be 1–1000 CNY (at most two decimal places)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -533,8 +586,8 @@
           "context": "{i18nRich(\"pages.info.cardtab.f629fc7ac825\", { value: data?.info.cardId || \"–\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Card number {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -549,8 +602,8 @@
           "context": "updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Last",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -578,8 +631,8 @@
           "context": "result?.currentWeekNumber\n                ? i18n(\"pages.info.classroomtab.02773293c3fd\", { currentWeekNumber: String(result.currentWeekNumber), freeToday: String(freeToday), value: String(selSlots.size > 0 ? i18n(\"pages.info.classroomtab.e9805d3099de\", { size: String(selSlots.size), length: String(rows.length) }) : \"\") })\n                : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Teaching week {currentWeekNumber} · {freeToday} rooms free today{value} (the table below shows today)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -593,8 +646,8 @@
           "line": 23
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period 3",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -608,8 +661,8 @@
           "line": 23
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period 2",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -624,8 +677,8 @@
           "context": "{i18n(\"pages.info.classroomtab.3214411c2d00\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose a teaching building…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -640,8 +693,8 @@
           "context": "selSlots.size > 0\n                      ? i18n(\"pages.info.classroomtab.3301179d613a\")\n                      : i18n(\"pages.info.classroomtab.e484707c2386\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No room is free for all selected periods — try selecting fewer periods or clearing the filter.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -656,8 +709,8 @@
           "context": "{i18n(\"pages.info.classroomtab.5c8d010fd9a3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Teaching buildings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -671,8 +724,8 @@
           "line": 23
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period 4",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -692,8 +745,8 @@
           "context": "{i18n(\"pages.info.classroomtab.66491a8adc2f\", { name: String(sel.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{name} · this week",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -707,8 +760,8 @@
           "line": 23
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period 5",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -723,8 +776,8 @@
           "context": "{i18n(\"pages.info.classroomtab.8c4cb748dde9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear (show all)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -738,8 +791,8 @@
           "line": 23
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period 1",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +812,8 @@
           "context": "bState === \"ready\" ? i18n(\"pages.info.classroomtab.baa795a5668d\", { value: String(buildings?.length ?? 0) }) : i18n(\"pages.info.classroomtab.ed844405c301\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} · tap to check this week's status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -775,8 +828,8 @@
           "context": "free ? i18n(\"pages.info.classroomtab.dae661d17c2d\") : i18n(\"pages.info.classroomtab.c0aa76aebce6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Occupied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -791,8 +844,8 @@
           "context": "value.size === 0\n      ? i18n(\"pages.info.classroomtab.d3151b17255b\")\n      : i18n(\"pages.info.classroomtab.ee90805b2f64\", { value: String([...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join(\"、\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period filter: all rooms",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -806,8 +859,8 @@
           "line": 23
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period 6",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -822,8 +875,8 @@
           "context": "free ? i18n(\"pages.info.classroomtab.dae661d17c2d\") : i18n(\"pages.info.classroomtab.c0aa76aebce6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -838,8 +891,8 @@
           "context": "{i18n(\"pages.info.classroomtab.df7a65bb1371\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Room",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -854,8 +907,8 @@
           "context": "selSlots.size > 0\n                      ? i18n(\"pages.info.classroomtab.3301179d613a\")\n                      : i18n(\"pages.info.classroomtab.e484707c2386\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No room status data for this teaching building this week (it may not be in a teaching period).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -879,8 +932,8 @@
           "context": "selSlots.size > 0 ? i18n(\"pages.info.classroomtab.e9805d3099de\", { size: String(selSlots.size), length: String(rows.length) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · {length} rooms free for all {size} selected periods",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -895,8 +948,8 @@
           "context": "bState === \"ready\" ? i18n(\"pages.info.classroomtab.baa795a5668d\", { value: String(buildings?.length ?? 0) }) : i18n(\"pages.info.classroomtab.ed844405c301\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "教学 Tina · Classroom resources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -916,8 +969,8 @@
           "context": "value.size === 0\n      ? i18n(\"pages.info.classroomtab.d3151b17255b\")\n      : i18n(\"pages.info.classroomtab.ee90805b2f64\", { value: String([...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join(\"、\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period filter: {value}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -932,8 +985,8 @@
           "context": "{i18n(\"pages.info.classroomtab.fb523dfd65ce\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No classroom resource data yet (it may not be a teaching period, or the service is not open yet).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -948,8 +1001,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.2ac0f59489ba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading time and location…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -969,8 +1022,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.2cb850be9a59\", { length: String(courses!.length) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} entries in total · tap a row for time and location",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -985,8 +1038,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.3304ea97ead6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The shared library has no time and location for this course — coverage depends on shared data from learnX and similar client users.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1001,8 +1054,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.33c758d831de\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose a semester…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1017,8 +1070,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.3e3c1858822c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search course name / teacher name (e.g. Calculus / 冯铃)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1065,8 +1118,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.643500a3864b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Time & location",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1081,8 +1134,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.79a4ef019e9c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Semester",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1150,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.88d72ece7cf7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search results",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1113,8 +1166,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.927e4b9750fb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search courses",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1129,8 +1182,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.9e9f5c3022d6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course sharing program · crowdsourced data; coverage may be incomplete — thanks for your patience",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1145,8 +1198,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.a6654120cbec\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Instructor",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1161,8 +1214,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.bb21f7ddad12\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching course found: try another keyword, or the course has not been shared yet.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1177,8 +1230,8 @@
           "context": "{i18n(\"pages.info.courseinfotab.ce121d2ad0d2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No details for this course in the shared library.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1193,8 +1246,8 @@
           "context": "waterState === \"busy\" ? i18n(\"pages.info.dormtab.18931020ad52\") : i18n(\"pages.info.dormtab.d189e0a2a1c5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1209,8 +1262,8 @@
           "context": "{i18n(\"pages.info.dormtab.3303b56982a0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Contact",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1225,8 +1278,8 @@
           "context": "{i18n(\"pages.info.dormtab.337269e5b07c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Netweb payment records",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1241,8 +1294,8 @@
           "context": "{i18n(\"pages.info.dormtab.3a37484d933f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Water type",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1257,8 +1310,8 @@
           "context": "{i18n(\"pages.info.dormtab.3da69f3bb5a2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Top-up records",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1273,8 +1326,8 @@
           "context": "u.name || u.address ? i18n(\"pages.info.dormtab.3dd6c0cbae44\") : i18n(\"pages.info.dormtab.dd57d5ccb2f3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Contacts/addresses loaded",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1289,8 +1342,8 @@
           "context": "setWaterMsg(i18n(\"pages.info.dormtab.40819c08f4e1\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Water order submitted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1305,56 +1358,8 @@
           "context": "r.status || i18n(\"pages.info.dormtab.658c536de644\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.dormtab.6cb5a329f274",
-      "source": "订水量（桶）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/DormTab.tsx",
-          "line": 219,
-          "context": "{i18n(\"pages.info.dormtab.6cb5a329f274\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.dormtab.8d6ebc4e3453",
-      "source": "清华水站 dingshui.bjqzhd.com · 公开数据",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/DormTab.tsx",
-          "line": 203,
-          "context": "{i18n(\"pages.info.dormtab.8d6ebc4e3453\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.dormtab.a0d22c766730",
-      "source": "家园网 myhome.tsinghua.edu.cn · 宿舍绑定房间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/DormTab.tsx",
-          "line": 160,
-          "context": "{i18n(\"pages.info.dormtab.a0d22c766730\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pay",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

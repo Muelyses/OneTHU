@@ -1,7 +1,147 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.zhjwxk.courses.78a83dfa97af",
+      "source": "{length} 门 · {value} 学分",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "d.courses.length"
+        },
+        {
+          "name": "value",
+          "expression": "d.courses.reduce((a, c) => a + (c.credits || 0), 0)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1559,
+          "context": "{i18nRich(\"pages.zhjwxk.courses.78a83dfa97af\", { length: d.courses.length, value: d.courses.reduce((a, c) => a + (c.credits || 0), 0) })}"
+        }
+      ],
+      "translation": "{length} courses · {value} credits",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.7bce208862bb",
+      "source": "此页未加载——点上方「加载全部」后可查看。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 813,
+          "context": "{i18n(\"pages.zhjwxk.courses.7bce208862bb\")}"
+        }
+      ],
+      "translation": "This page is not loaded — tap \"Load all\" above to view it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.7bdbe718ba55",
+      "source": "暂无暂存课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1507,
+          "context": "{i18n(\"pages.zhjwxk.courses.7bdbe718ba55\")}"
+        }
+      ],
+      "translation": "No staged courses yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.7e37a0b0d351",
+      "source": "选课管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 511,
+          "context": "[\"manage\", i18n(\"pages.zhjwxk.courses.7e37a0b0d351\")]"
+        }
+      ],
+      "translation": "Course selection management",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.7ecf1cde6486",
+      "source": "已选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 770,
+          "context": "[\"selected\", i18n(\"pages.zhjwxk.courses.7ecf1cde6486\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1221,
+          "context": "label: i18n(\"pages.zhjwxk.courses.7ecf1cde6486\")"
+        }
+      ],
+      "translation": "Selected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.8131eafd0239",
+      "source": "简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 952,
+          "context": "{i18n(\"pages.zhjwxk.courses.8131eafd0239\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1112,
+          "context": "{i18n(\"pages.zhjwxk.courses.8131eafd0239\")}"
+        }
+      ],
+      "translation": "Intro",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.83820da93bbb",
+      "source": "点击搜索：{name}（{code}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(s.name)"
+        },
+        {
+          "name": "code",
+          "expression": "String(s.code)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1514,
+          "context": "{i18n(\"pages.zhjwxk.courses.83820da93bbb\", { name: String(s.name), code: String(s.code) })}"
+        }
+      ],
+      "translation": "Tap to search: {name} ({code})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.zhjwxk.courses.83954f3e3c76",
       "source": "跳至",
@@ -14,8 +154,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.83954f3e3c76\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Jump to",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +175,8 @@
           "context": "inStage ? i18n(\"pages.zhjwxk.courses.847d376afd41\") : i18n(\"pages.zhjwxk.courses.e57b6dbedea3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Staged",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -51,8 +191,8 @@
           "context": "vc.level === \"easy\" ? i18n(\"pages.zhjwxk.courses.8490de9e4f0a\") : vc.level === \"medium\" ? i18n(\"pages.zhjwxk.courses.5ca6cb21cd29\") : vc.level === \"hard\" ? i18n(\"pages.zhjwxk.courses.135fef5e1db6\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Low competition",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -72,8 +212,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.873290bd40ad\", { value: i + 1 })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -93,8 +233,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.878421afac2a\", { searchError: wb.searchError })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh failed; showing previous search results: {searchError}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -109,8 +249,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.8a0c890e2957\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "★≤3.0 caution line",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -125,8 +265,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.8a8542f69648\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -141,8 +281,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.8ade52e3ff55\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No degree plan data (this semester may not be configured, or your sign-in has expired)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -157,8 +297,8 @@
           "context": "r.cand.myPos ? i18n(\"pages.zhjwxk.courses.f09113c77540\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.90c4b556f895\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Candidate (no queue position yet)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -173,8 +313,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.912ee0b6d057\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preference data sync failed. Tap Retry on the right",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -189,8 +329,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.930f9dfb61f1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "📌 PKU and BFSU course times are provided as notice attachments (including odd/even weeks),",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -215,8 +355,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.93fbcc41041a\", { credits: s.credits })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{credits} credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -240,8 +380,8 @@
           "context": "[\n          wb.semester ?? i18n(\"pages.zhjwxk.courses.c6b20f53de3e\"),\n          wb.phase ? i18n(\"pages.zhjwxk.courses.9a512330e94a\") : i18n(\"pages.zhjwxk.courses.ba23721689b0\"),\n          i18n(\"pages.zhjwxk.courses.960b5a9f210e\", { length: String(wb.selected.length), selCredits: String(selCredits) }),\n          i18n(\"pages.zhjwxk.courses.cc4aef94b28b\", { length: String(wb.searchRows.length) }),\n        ]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} selected · {selCredits} credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -256,8 +396,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.96fc74daea7d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to remove",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -272,8 +412,8 @@
           "context": "wb.searchTotalPages > 0 ? i18n(\"pages.zhjwxk.courses.56a7b5abaea4\", { searchTotalPages: String(wb.searchTotalPages), value: String(wb.searchTotalRows > 0 ? i18n(\"pages.zhjwxk.courses.f723ce33054e\", { searchTotalRows: String(wb.searchTotalRows) }) : \"\") }) : i18n(\"pages.zhjwxk.courses.9896d1a50a30\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": ", and more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -293,8 +433,8 @@
           "context": "confirmOk(i18nMsg(\"pages.zhjwxk.courses.989a65fefd6f\", { value: String(x?.name || code) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove \"{value}\" from the staging area?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -309,8 +449,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.99b048211611\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " contributors, under ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -325,8 +465,8 @@
           "context": "wb.phase ? i18n(\"pages.zhjwxk.courses.9a512330e94a\") : i18n(\"pages.zhjwxk.courses.ba23721689b0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course openings mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -341,8 +481,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.9aa48e0ea5e2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag to adjust the width of the two columns; drag to either end to collapse into one column",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -357,8 +497,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.9ab2a2d8455a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Has reviews",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -373,8 +513,8 @@
           "context": "b.cand ? i18n(\"pages.zhjwxk.courses.9ea04b6a9425\") : i18n(\"pages.zhjwxk.courses.6135d4159e89\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Leave waitlist",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -389,8 +529,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.9ebe36f8cf23\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm submission",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -405,8 +545,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.9eefcbca074f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Community rating: low → high",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -421,8 +561,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.9fd1ea01249e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save current selection",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -437,8 +577,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.a0876e50b428\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "General education group: Any",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -458,8 +598,8 @@
           "context": "q.qQueue > 0 ? i18n(\"pages.zhjwxk.courses.a1065b209234\", { qQueue: String(q.qQueue) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · {qQueue} in queue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -474,8 +614,8 @@
           "context": "globalThis.prompt?.(i18n(\"pages.zhjwxk.courses.a2658663724d\"), i18n(\"pages.zhjwxk.courses.bbb5405f0e01\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Draft name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -490,8 +630,8 @@
           "context": "p.coveredBy || i18n(\"pages.zhjwxk.courses.a42029434c65\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Satisfied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -506,8 +646,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.a7d043c48d9b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "PKU graduate",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -522,8 +662,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.a8c7d1760ed1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Paste exported timetable data…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -543,8 +683,8 @@
           "context": "r.selected ? i18n(\"pages.zhjwxk.courses.aa21e6887117\", { value: String(r.zy ? i18n(\"pages.zhjwxk.courses.2ea763bbee3e\", { zy: String(r.zy) }) : \"\") }) : r.isCandidate ? (r.cand?.myPos ? i18n(\"pages.zhjwxk.courses.4d4f91afcd66\", { myPos: String(r.cand.myPos) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")) : state === \"full\" ? i18n(\"pages.zhjwxk.courses.0ba6b11d9de0\") : r.available ? i18n(\"pages.zhjwxk.courses.537352400c49\") : i18n(\"pages.zhjwxk.courses.0ba6b11d9de0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Selected {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -559,8 +699,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.aa7f2e6b23d5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No course introduction available (this course lacks a teacher ID and cannot be fetched)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -575,8 +715,8 @@
           "context": "p.prob < 0 ? i18n(\"pages.zhjwxk.courses.ab9ba6d10394\") : `${p.percentLabel} · ${p.ratioLabel}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No data",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -591,8 +731,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.aba7797394c4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Blocks are saved locally and drawn on the timeline (any time range supported), making it easy to compare overlaps with courses.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -607,8 +747,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ac86b7d1284b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Querying the academic system in real time (1 round trip per search/page jump, instant results)…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -623,8 +763,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ae4b6316156e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Undergrad openings: Any",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -648,8 +788,8 @@
           "context": "out = i18n(\"pages.zhjwxk.courses.afb7bec1c0e2\", { pri: String(pri), out: String(out) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Priority {pri}/{out}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -664,8 +804,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.b17cb44f0c38\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course selection notice text search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -690,8 +830,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.b2af275db60a\", { z: z })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preference {z}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +846,8 @@
           "context": "[\"queue\", i18n(\"pages.zhjwxk.courses.b584dd846f9a\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My queue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -732,8 +872,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.b8784c8dd563\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -748,8 +888,8 @@
           "context": "wb.phase ? i18n(\"pages.zhjwxk.courses.9a512330e94a\") : i18n(\"pages.zhjwxk.courses.ba23721689b0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pre-selection mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -764,8 +904,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ba401db1483e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Review count: high → low",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -780,8 +920,8 @@
           "context": "globalThis.prompt?.(i18n(\"pages.zhjwxk.courses.a2658663724d\"), i18n(\"pages.zhjwxk.courses.bbb5405f0e01\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -805,8 +945,8 @@
           "context": "c.myPos ? i18n(\"pages.zhjwxk.courses.c0587f566be1\", { myPos: String(c.myPos), queueTotal: String(c.queueTotal) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "#{myPos}/{queueTotal}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -821,8 +961,8 @@
           "context": "label: i18n(\"pages.zhjwxk.courses.c0aa76aebce6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Blocks",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -837,8 +977,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c398134d7d1f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Weekday",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -858,8 +998,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c42dc6f6316f\", { length: String(wb.stageCart.length) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Staged timetable ({length})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -884,8 +1024,8 @@
           "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -900,8 +1040,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c4c21f2c783f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "＋ Add block",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -916,8 +1056,8 @@
           "context": "[\"find\", i18n(\"pages.zhjwxk.courses.c518420d2110\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course finder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -932,8 +1072,8 @@
           "context": "wb.semester ?? i18n(\"pages.zhjwxk.courses.c6b20f53de3e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course selection system",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -948,8 +1088,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c799be2fc953\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course feature: Any",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -969,8 +1109,8 @@
           "context": "parts.push(i18n(\"pages.zhjwxk.courses.c7acb7331269\", { v: String(v) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Required {v}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -985,8 +1125,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c7b24e7997e9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "End",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1010,8 +1150,8 @@
           "context": "confirmOk(i18nMsg(\"pages.zhjwxk.courses.c853fddad79f\", { length: String(wb.stageCart.length), length2: String(wb.manualEvents.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear staged courses ({length} courses) and {length2} custom blocks?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1026,8 +1166,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c97657457226\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My degree plan",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1042,8 +1182,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.c9b9ae7a6144\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Previous page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1063,8 +1203,8 @@
           "context": "[\n          wb.semester ?? i18n(\"pages.zhjwxk.courses.c6b20f53de3e\"),\n          wb.phase ? i18n(\"pages.zhjwxk.courses.9a512330e94a\") : i18n(\"pages.zhjwxk.courses.ba23721689b0\"),\n          i18n(\"pages.zhjwxk.courses.960b5a9f210e\", { length: String(wb.selected.length), selCredits: String(selCredits) }),\n          i18n(\"pages.zhjwxk.courses.cc4aef94b28b\", { length: String(wb.searchRows.length) }),\n        ]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} courses browsed (real-time)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1079,8 +1219,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.cc5250e00330\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "✎ Write a review",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1095,8 +1235,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ccd11f27c335\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View course page ↗",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1116,8 +1256,8 @@
           "context": "parts.push(i18n(\"pages.zhjwxk.courses.cd80acb3d16b\", { v: String(v) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restricted elective {v}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1132,8 +1272,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.ce1aa25eb717\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "THUxk",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1153,8 +1293,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.cf2dd5254476\", { g: g })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Class of {g}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1174,8 +1314,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.d0b3c2123cf2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove from staging area",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1200,8 +1340,8 @@
           "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1221,8 +1361,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.d28b333318b4\", { name: String(name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{name} · Community reviews",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1242,8 +1382,8 @@
           "context": "c.group || c.attr || i18n(\"pages.zhjwxk.courses.d2909f1647e7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Other",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1258,8 +1398,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.d2bb025a2e51\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1274,8 +1414,8 @@
           "context": "busy ? i18n(\"pages.zhjwxk.courses.4927a53bcc88\") : i18n(\"pages.zhjwxk.courses.d56768244576\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Load all for current keyword",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1290,8 +1430,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.d826fde21582\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grade: Any",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1315,8 +1455,8 @@
           "context": "(x) => i18n(\"pages.zhjwxk.courses.dc9b0041ffc7\", { day: String(x.day), slot: String(x.slot) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{day} period {slot}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1331,158 +1471,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.de32e20193ad\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.def2a886248f",
-      "source": "候选中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1111,
-          "context": "r.cand.myPos ? i18n(\"pages.zhjwxk.courses.519d719dc036\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.def2a886248f\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1111,
-          "context": "r.cand ? (r.cand.myPos ? i18n(\"pages.zhjwxk.courses.519d719dc036\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.def2a886248f\")) : i18n(\"pages.zhjwxk.courses.def2a886248f\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.df8ffc573e08",
-      "source": "暂无匹配课程。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 800,
-          "context": "wb.searchError || i18n(\"pages.zhjwxk.courses.df8ffc573e08\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.e371bb0c700d",
-      "source": "余{qRemaining}/{qCapacity}{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "qRemaining",
-          "expression": "q.qRemaining"
-        },
-        {
-          "name": "qCapacity",
-          "expression": "q.qCapacity"
-        },
-        {
-          "name": "value",
-          "expression": "q.qQueue > 0 ? i18n(\"pages.zhjwxk.courses.a1065b209234\", { qQueue: String(q.qQueue) }) : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1056,
-          "context": "{i18nRich(\"pages.zhjwxk.courses.e371bb0c700d\", { qRemaining: q.qRemaining, qCapacity: q.qCapacity, value: q.qQueue > 0 ? i18n(\"pages.zhjwxk.courses.a1065b209234\", { qQueue: String(q.qQueue) }) : \"\" })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.e57b6dbedea3",
-      "source": "暂存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1106,
-          "context": "inStage ? i18n(\"pages.zhjwxk.courses.847d376afd41\") : i18n(\"pages.zhjwxk.courses.e57b6dbedea3\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1124,
-          "context": "inStage ? i18n(\"pages.zhjwxk.courses.847d376afd41\") : i18n(\"pages.zhjwxk.courses.e57b6dbedea3\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.e5e83906ac41",
-      "source": "余量 {remaining}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "remaining",
-          "expression": "String(r.c.remaining)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1037,
-          "context": "typeof r.c.remaining === \"number\" ? i18n(\"pages.zhjwxk.courses.e5e83906ac41\", { remaining: String(r.c.remaining) }) : \"\""
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.e66200d4cbbd",
-      "source": "研院余量>0",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 789,
-          "context": "{i18n(\"pages.zhjwxk.courses.e66200d4cbbd\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.e9d3b01a5a00",
-      "source": "周四",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1358,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"), i18n(\"pages.zhjwxk.courses.d1378a68e620\"), i18n(\"pages.zhjwxk.courses.2961168962be\"), i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"), i18n(\"pages.zhjwxk.courses.572388f3b096\"), i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"), i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1420,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1441,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Got it",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

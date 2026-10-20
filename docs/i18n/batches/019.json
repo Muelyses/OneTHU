@@ -1,7 +1,65 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.ohsettingspage.d09e846cd4ab",
+      "source": "系统设置 → 应用 → 应用启动管理 → OneTHU 设「手动管理」，并允许自启动、关联启动、后台活动； 再把 OneTHU 加入电池优化白名单。设置完悬浮球与语音在后台才不会被系统掐掉。{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 218,
+          "context": "{i18nRich(\"components.ohsettingspage.d09e846cd4ab\", { value: jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\" })}"
+        }
+      ],
+      "translation": "In System Settings → Apps → App launch management, set OneTHU to “Manage manually” and allow auto-launch, associated launch, and background activity; then add OneTHU to the battery-optimization whitelist. Only after this will the floating ball and voice keep running in the background instead of being killed by the system. {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.d121e4ba4f4c",
+      "source": "正在续签…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 172,
+          "context": "busy ? i18n(\"components.ohsettingspage.d121e4ba4f4c\") : checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
+        }
+      ],
+      "translation": "Renewing…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.dc1d05f60500",
+      "source": "历史超长自动收成要点清单，重要内容不再丢",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 51,
+          "context": "return i18n(\"components.ohsettingspage.dc1d05f60500\");"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.ohsettingspage.dc1d05f60500\")}"
+        }
+      ],
+      "translation": "Overlong history is auto-condensed into key points so important content is never lost",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.ohsettingspage.f204a61ba9f0",
       "source": "免费额度（MadModel）",
@@ -14,8 +72,8 @@
           "context": "{i18n(\"components.ohsettingspage.f204a61ba9f0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free quota (MadModel)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +93,8 @@
           "context": "{i18n(\"components.ohsettingspage.f2b78947c49a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "MadModel free tier",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -51,8 +109,8 @@
           "context": "checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Checking free model connection…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -72,8 +130,8 @@
           "context": "{i18n(\"components.ohsettingspage.fbf9575ea3c9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Context memory mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -88,8 +146,8 @@
           "context": "warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "School sign-in status renews automatically before expiry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -104,8 +162,8 @@
           "context": "{i18n(\"components.onboardingpracticereturn.12fd8c16961e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Continue tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +178,8 @@
           "context": "{i18n(\"components.onboardingpracticereturn.28a8dedd4ed0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back to the tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +194,8 @@
           "context": "{i18n(\"components.onboardingpracticereturn.bdb8ec437a18\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "End tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -152,8 +210,8 @@
           "context": "{i18n(\"components.onboardingpracticereturn.da5089b7b6da\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exploring",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,8 +226,8 @@
           "context": "{i18n(\"components.onboardingtour.069d9b73883f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tour chapters",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -200,8 +258,8 @@
           "context": "{i18n(\"components.onboardingtour.0e633d7479ee\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Jump to: Setup complete",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -221,8 +279,8 @@
           "context": "{i18n(\"components.onboardingtour.19f469fec604\", { title: String(item.title) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep exploring: {title}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -237,8 +295,8 @@
           "context": "last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tour complete; you can connect services now",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -253,8 +311,8 @@
           "context": "{i18n(\"components.onboardingtour.1b47dc7fdca4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Learn about these features later, when you need them.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -269,8 +327,8 @@
           "context": "{i18n(\"components.onboardingtour.20fe3342156f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pick one first; you can switch anytime.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -285,8 +343,8 @@
           "context": "{i18n(\"components.onboardingtour.24e75cb57392\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the real page and come back to continue anytime",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -301,8 +359,8 @@
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect via QR code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -333,8 +391,8 @@
           "context": "{i18n(\"components.onboardingtour.368669b4e8f4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scan to connect Rain Classroom, or use OH in WeChat and Feishu. You can skip this for now.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -349,7 +407,7 @@
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ],
-      "translation": "Off by default. When on, other local apps can call OneTHU as a tool.",
+      "translation": "Off by default. When on, other apps on this device can call OneTHU as a tool",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -381,8 +439,8 @@
           "context": "{i18n(\"components.onboardingtour.4d572d8843d7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your OneTHU is ready",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -402,8 +460,8 @@
           "context": "{i18n(\"components.onboardingtour.715ee9dc842f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Get started",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -418,8 +476,8 @@
           "context": "showToast(i18nMsg(\"components.onboardingtour.7d38695ada28\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Finish the current action before opening the tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -434,8 +492,8 @@
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Hide connection options",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -450,8 +508,8 @@
           "context": "{i18n(\"components.onboardingtour.8dc51de059fe\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -466,8 +524,8 @@
           "context": "{i18n(\"components.onboardingtour.9352315ee32a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "How would you like to use OneTHU?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -492,8 +550,8 @@
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${String(step+1).padStart(2,\"0\")} / ${modeName}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep exploring",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -508,8 +566,8 @@
           "context": "intro?i18n(\"components.onboardingtour.aa4142e144b8\"):last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start with this mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -524,8 +582,8 @@
           "context": "{i18n(\"components.onboardingtour.ac794a015ee3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -540,8 +598,8 @@
           "context": "showToast(i18nMsg(\"components.onboardingtour.acb7923e4be1\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current action is still running; continue the tour after it finishes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -556,8 +614,8 @@
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -572,8 +630,8 @@
           "context": "{i18n(\"components.onboardingtour.b92a02095b87\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switching only changes the interface. Existing tabs, boards, and settings are all kept.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -588,8 +646,8 @@
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back to the finish page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -609,8 +667,8 @@
           "context": "{i18n(\"components.onboardingtour.bfd00f0d13de\", { value: String(CHAPTERS[item.id]) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Jump to: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -625,8 +683,8 @@
           "context": "{i18n(\"components.onboardingtour.c0b3fbff51cc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Done",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -641,8 +699,8 @@
           "context": "intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose your way",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -657,8 +715,8 @@
           "context": "{i18n(\"components.onboardingtour.d4208c3cace4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start in the way that suits you",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -673,8 +731,8 @@
           "context": "{i18n(\"components.onboardingtour.d69e80a19484\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Skip tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -689,8 +747,8 @@
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -705,8 +763,8 @@
           "context": "return i18n(\"components.onboardingtour.e2ee720ea747\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organize campus life your way",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -721,8 +779,8 @@
           "context": "intro?MODE_INTRO[chosen]:i18n(\"components.onboardingtour.f1804844a899\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All set — begin at your own pace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -737,8 +795,8 @@
           "context": "{i18n(\"components.onboardingtour.f60b58eb72b6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect later, when needed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -753,8 +811,8 @@
           "context": "intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose a trial mode",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -769,8 +827,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.0195603ee49e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OnePage: your single page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -785,8 +843,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.1ef4be486cc7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tab drawer",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -801,8 +859,8 @@
           "context": "{i18n(\"components.onboardingtourmobile.1f5a2b96e178\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Completion mark: it will not appear automatically again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -817,8 +875,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.21d113f5a8e8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The pill at the center of the bottom bar is more than an input field.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -833,8 +891,8 @@
           "context": "{i18n(\"components.onboardingtourmobile.285daf1ff2f1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close this tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -848,8 +906,8 @@
           "line": 82
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The drawer also has a workspace panel; on mobile you can disband groups and build them too.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -864,8 +922,8 @@
           "context": "{i18n(\"components.onboardingtourmobile.29b54acdd26a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU mobile tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -879,8 +937,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "On mobile there is no tab strip in either orientation: switching tabs and opening new pages all happen in this drawer.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -895,8 +953,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.37533b435eb5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap “Tabs” in the bottom bar — it is all in the drawer.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -911,8 +969,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.514adbf12726\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Just tell it in the conversation and it gets to work.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -926,8 +984,8 @@
           "line": 76
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap “Edit” to enter edit mode, then tap “＋” to pick widgets and place them on the board.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -941,8 +999,8 @@
           "line": 82
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In the bottom bar’s right side, “OneGO!” → My OnePage: name it, then “New”.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -956,8 +1014,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press and drag a tab to reorder it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -972,8 +1030,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.67ab2cc6012c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The toolbox grows on its own: wherever the conversation goes, it grows there.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -987,8 +1045,8 @@
           "line": 87
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap once: a half-screen search panel grows from the bottom; you can stretch it to full screen.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1002,8 +1060,8 @@
           "line": 82
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A new tab is a fresh board, using the same gestures as Home.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1017,8 +1075,8 @@
           "line": 87
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press and hold for 0.45 seconds to start speaking; release to send, swipe up to cancel.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1032,8 +1090,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press and hold for 0.5 seconds without moving to open the menu: focus, copy, close, disband workspace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1048,8 +1106,8 @@
           "context": "{i18n(\"components.onboardingtourmobile.715ee9dc842f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Get started",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1063,8 +1121,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag one tab onto another and pause (a gray frame appears for 0.6 seconds), then release to merge them into a workspace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1079,8 +1137,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.76a3f832bbfa\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage them in OneGO!.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1095,8 +1153,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.7c100b50261d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH’s conversation window also grows from the same pill.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1111,8 +1169,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.7c2809268e55\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH: say the word and it picks up the same skills",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1126,8 +1184,8 @@
           "line": 87
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search pages, panels, and plugins; tap a result to open it directly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1141,8 +1199,8 @@
           "line": 76
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Long-press a widget to open a menu for resizing, pinning, and deleting.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1157,8 +1215,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.8a900694ff18\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search pill",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1173,8 +1231,8 @@
           "context": "i18n(\"components.onboardingtourmobile.9552fe3bd366\") + (step + 1)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Step ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1189,8 +1247,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.98af2b06c2d8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The drawer stretches from half screen to full; the round Home button in the top bar returns to Home anytime.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1205,8 +1263,8 @@
           "context": "{i18n(\"components.onboardingtourmobile.a2d3a4eeefd7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Don’t show again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1221,8 +1279,8 @@
           "context": "{i18n(\"components.onboardingtourmobile.acfc4e74a650\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1237,8 +1295,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.c5c41a9591a1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start at the bottom-right corner of Home.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1253,56 +1311,8 @@
           "context": "return i18n(\"components.onboardingtourmobile.c765edddbdf2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.da336fdc0dbd",
-      "source": "上一步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 140,
-          "context": "{i18n(\"components.onboardingtourmobile.da336fdc0dbd\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.e010e3f578cc",
-      "source": " 步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 154,
-          "context": "i18n(\"components.onboardingtourmobile.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourmobile.fd73c2773154\") + STEPS + i18n(\"components.onboardingtourmobile.e010e3f578cc\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.ef3094385769",
-      "source": "「添加组件」抽屉从底部长出来，也不挡白板。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 77,
-          "context": "return i18n(\"components.onboardingtourmobile.ef3094385769\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add widgets: arrange the board your way",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

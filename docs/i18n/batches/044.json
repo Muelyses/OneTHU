@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.folderpage.8c07aaf9e12a",
+      "source": "新建子收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 265,
+          "context": "{i18n(\"pages.folderpage.8c07aaf9e12a\")}"
+        }
+      ],
+      "translation": "New sub-folder",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.8ed04e5fa4f6",
+      "source": "收藏夹图标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 562,
+          "context": "{i18n(\"pages.folderpage.8ed04e5fa4f6\")}"
+        }
+      ],
+      "translation": "Folder icon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.920fe6ef0593",
+      "source": "删除收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 107,
+          "context": "{i18n(\"pages.folderpage.920fe6ef0593\")}"
+        }
+      ],
+      "translation": "Delete favorites folder",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.folderpage.953582170d8c",
       "source": "从图标库选择收藏夹图标",
@@ -14,8 +62,8 @@
           "context": "{i18n(\"pages.folderpage.953582170d8c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose a folder icon from the icon library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "on ? i18n(\"pages.folderpage.d61319988ab5\") : i18n(\"pages.folderpage.a02c3f04e2cc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show this favorite on the home screen widget (details)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "on ? i18n(\"pages.folderpage.a04eea31ee47\") : i18n(\"pages.folderpage.1911d1c0d6a4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This favorites folder is already on a home screen widget",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -77,8 +125,8 @@
           "context": "{i18n(\"pages.folderpage.a20afdb6296d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch to square card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -93,8 +141,8 @@
           "context": "{i18n(\"pages.folderpage.b0822cec9840\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete sub-folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -109,8 +157,8 @@
           "context": "{i18n(\"pages.folderpage.b99f5737b98f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show on home screen widget",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -125,8 +173,8 @@
           "context": "{i18n(\"pages.folderpage.c0b3fbff51cc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Done",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -141,8 +189,8 @@
           "context": "{i18n(\"pages.folderpage.c12f6816eb2b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add favorite",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -157,8 +205,8 @@
           "context": "i18n(\"pages.folderpage.c6807d67c7d9\") + FAVS_MAX_DEPTH"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Up to ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -173,8 +221,8 @@
           "context": "{i18n(\"pages.folderpage.ca2717e27293\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No data yet (when data is empty, the same widget on Home hides the whole card).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -189,8 +237,8 @@
           "context": "{i18n(\"pages.folderpage.cde2cd071d25\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -205,8 +253,8 @@
           "context": "newSubName || i18n(\"pages.folderpage.cef56c9e15e6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sub-folders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -221,8 +269,8 @@
           "context": "i18n(\"pages.folderpage.d1049242f41b\") + f.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage \"",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -237,8 +285,8 @@
           "context": "on ? i18n(\"pages.folderpage.d61319988ab5\") : i18n(\"pages.folderpage.a02c3f04e2cc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This favorite is already on a home screen widget",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -253,8 +301,8 @@
           "context": "i18n(\"pages.folderpage.26e0a9e64fed\") + folder.title + i18n(\"pages.folderpage.d8aa0728e675\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"?\nIts sub-folders and collected favorite entries will be removed as well (the original features are not affected).",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -269,8 +317,8 @@
           "context": "i18n(\"pages.folderpage.c6807d67c7d9\") + FAVS_MAX_DEPTH + i18n(\"pages.folderpage.d8f4406b527d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " folder levels",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -285,8 +333,8 @@
           "context": "on ? i18n(\"pages.folderpage.4f9c7d13e1bc\") : i18n(\"pages.folderpage.de0b42d48b30\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add to home screen",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -301,8 +349,8 @@
           "context": "isRoot ? i18n(\"pages.folderpage.86620776ee32\") : i18n(\"pages.folderpage.e3c22b9870e1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show, hide, or reorder sections via \"Manage sections\" in the top right.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -317,8 +365,8 @@
           "context": "{i18n(\"pages.folderpage.e6f0a1fa5326\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move up in sidebar order",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -343,8 +391,8 @@
           "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move down",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -359,8 +407,8 @@
           "context": "{i18n(\"pages.folderpage.e9075f60449d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sub-folder name…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -385,8 +433,8 @@
           "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -401,8 +449,8 @@
           "context": "c.new_file ? i18n(\"pages.gitlabpage.0006d696d8e1\") : c.deleted_file ? i18n(\"pages.gitlabpage.2f9daa828907\") : c.renamed_file ? i18n(\"pages.gitlabpage.83c37e8a4a5f\") : i18n(\"pages.gitlabpage.37090f456516\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Added",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -417,8 +465,8 @@
           "context": "c.mine !== null ? i18n(\"pages.gitlabpage.8d26329d7f0b\") : i18n(\"pages.gitlabpage.04d2bbae5e67\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to react",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -454,8 +502,8 @@
           "context": "{i18n(\"pages.gitlabpage.05c20e7c2695\", { value: String(assignees.length ? assignees.map((a) => a.name).join(\"、\") : i18n(\"pages.gitlabpage.484d55613910\")) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assigned: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -470,8 +518,8 @@
           "context": "return i18n(\"pages.gitlabpage.0601c8f04bd8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed; tap to retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -495,8 +543,8 @@
           "context": "reopen\n      ? i18nMsg(\"pages.gitlabpage.fcd5cc7382e7\", { value: String(kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")), iid: String(iid) })\n      : i18nMsg(\"pages.gitlabpage.09ccc8d4588e\", { value: String(kind === \"issue\" ? \" Issue\" : i18n(\"pages.gitlabpage.dd42589239f7\")), iid: String(iid) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close {value} !{iid}?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -520,8 +568,8 @@
           "context": "{i18nRich(\"pages.gitlabpage.0ab1c6be09b5\", { value: fmtTime(p.last_activity_at), value2: p.default_branch ? <>{i18n(\"pages.gitlabpage.da9042ae73fe\")}<Text slot=\"label\" mono>{p.default_branch}</Text></> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recent activity {value}{value2}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -536,8 +584,8 @@
           "context": "busy ? i18n(\"pages.gitlabpage.364970d8168c\") : i18n(\"pages.gitlabpage.0bfca7bdd220\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Post comment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -552,8 +600,8 @@
           "context": "{i18n(\"pages.gitlabpage.0d43af500eb5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reset SSO and retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -573,8 +621,8 @@
           "context": "{i18nRich(\"pages.gitlabpage.0fc133f59cdb\", { length: changes.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} files changed · see the original via \"Open in browser\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -594,8 +642,8 @@
           "context": "{i18n(\"pages.gitlabpage.1024f6a03bd1\", { value: String(item.user_notes_count ?? 0) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Comments ({value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -610,8 +658,8 @@
           "context": "{i18n(\"pages.gitlabpage.1400847b08da\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Repository files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -631,8 +679,8 @@
           "context": "note.author?.name ?? i18n(\"pages.gitlabpage.145e4989bedb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This comment's author",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -647,8 +695,8 @@
           "context": "label: i18n(\"pages.gitlabpage.151d712244a2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Participating",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -663,8 +711,8 @@
           "context": "{i18n(\"pages.gitlabpage.187d7966e388\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add by name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -679,8 +727,8 @@
           "context": "{i18n(\"pages.gitlabpage.1a3f4ae4da3d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignment list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -695,8 +743,8 @@
           "context": "showToast(i18nMsg(\"pages.gitlabpage.1a9b30c9020b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This repository has only one branch, so there is no branch pair to merge",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -720,8 +768,8 @@
           "context": "return i18n(\"pages.gitlabpage.1c6fcf296dce\", { value: String(d.getMonth() + 1), value2: String(d.getDate()) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value}/{value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -736,8 +784,8 @@
           "context": "{i18n(\"pages.gitlabpage.1d345684bc1e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Write a comment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -752,8 +800,8 @@
           "context": "return i18n(\"pages.gitlabpage.1e9f2561b7cf\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Passed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -768,8 +816,8 @@
           "context": "return i18n(\"pages.gitlabpage.1f0eb99b7ed0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Running",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -784,8 +832,8 @@
           "context": "showToast(i18nMsg(\"pages.gitlabpage.25e56226e6dd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign-in state has been reset; retrying",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -800,8 +848,8 @@
           "context": "kind === \"issue\" ? i18n(\"pages.gitlabpage.296549a13f34\") : i18n(\"pages.gitlabpage.46c1fbe70bd5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search issues (Enter)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -816,8 +864,8 @@
           "context": "{i18n(\"pages.gitlabpage.2a2fd29bd27a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Draft",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -832,8 +880,8 @@
           "context": "return i18n(\"pages.gitlabpage.2b6f149fbccf\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Waiting for resources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -853,8 +901,8 @@
           "context": "editing ? i18n(\"pages.gitlabpage.2cd0f3be8738\") : i18n(\"pages.gitlabpage.051836569928\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -874,8 +922,8 @@
           "context": "showToast(i18nMsg(\"pages.gitlabpage.2d2ab24375ce\", { path: String(path) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded to: {path}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -911,8 +959,8 @@
           "context": "return i18n(\"pages.gitlabpage.315316ceae14\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scheduled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -927,8 +975,8 @@
           "context": "resolved ? i18n(\"pages.gitlabpage.cfcbf4636b9f\") : i18n(\"pages.gitlabpage.319f50e7c074\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Resolve discussion",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -943,8 +991,8 @@
           "context": "openFormModal(i18nMsg(\"pages.gitlabpage.321337088a38\"), [\n      { key: \"source\", label: i18nMsg(\"pages.gitlabpage.5a2cf08cfe74\"), kind: \"select\", options, default: source, required: true },\n      { key: \"target\", label: i18nMsg(\"pages.gitlabpage.f3d0ff87958d\"), kind: \"select\", options, default: target, required: true },\n      { key: \"title\", label: i18nMsg(\"pages.gitlabpage.c3405f8c7d9d\"), required: true, placeholder: i18nMsg(\"pages.gitlabpage.7c7432153b95\") },\n      { key: \"description\", label: i18nMsg(\"pages.gitlabpage.dc2ba467fc7a\"), kind: \"textarea\", placeholder: i18nMsg(\"pages.gitlabpage.c174de4461ab\") },\n    ])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New merge request",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -959,8 +1007,8 @@
           "context": "q.loading ? i18n(\"pages.gitlabpage.346ff60e6c7c\") : i18n(\"pages.gitlabpage.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -975,8 +1023,8 @@
           "context": "{i18n(\"pages.gitlabpage.3557ea316b82\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading projects…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -991,8 +1039,8 @@
           "context": "project.default_branch || i18n(\"pages.gitlabpage.35e9a0c6fbb2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default branch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1007,8 +1055,8 @@
           "context": "busy ? i18n(\"pages.gitlabpage.364970d8168c\") : i18n(\"pages.gitlabpage.0bfca7bdd220\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sending…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1023,8 +1071,8 @@
           "context": "c.renamed_file ? i18n(\"pages.gitlabpage.83c37e8a4a5f\") : i18n(\"pages.gitlabpage.37090f456516\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Changed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1039,8 +1087,8 @@
           "context": "project.archived ? i18n(\"pages.gitlabpage.3788d7bcf01e\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Archived",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1055,8 +1103,8 @@
           "context": "{i18n(\"pages.gitlabpage.385cc1e73c14\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Any emoji name, e.g. dart",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1076,8 +1124,8 @@
           "context": "mr?.state === \"merged\" ? i18n(\"pages.gitlabpage.38d37d8a6f38\", { value: String(fmtTime(mr.merged_at)) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Merged on {value} · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1117,8 +1165,8 @@
           "context": "{i18nRich(\"pages.gitlabpage.3aaff60a78a8\", { value: item.author?.name ?? i18n(\"pages.gitlabpage.c96ed7ec0b0b\"), value2: fmtTime(item.created_at) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} created on {value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1133,8 +1181,8 @@
           "context": "showToast(i18nMsg(\"pages.gitlabpage.3b1041977e05\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Comment posted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1149,8 +1197,8 @@
           "context": "reopen ? i18nMsg(\"pages.gitlabpage.3c3b8f56eff5\") : i18nMsg(\"pages.gitlabpage.6744b4c6a9aa\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reopened",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1165,8 +1213,8 @@
           "context": "{i18n(\"pages.gitlabpage.3ea0e6e41518\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Empty directory",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1181,8 +1229,8 @@
           "context": "{i18n(\"pages.gitlabpage.3f6bc3c90f9e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This is an empty repository (no commits yet).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1197,8 +1245,8 @@
           "context": "closed ? i18n(\"pages.gitlabpage.9f24062367f0\") : i18n(\"pages.gitlabpage.3fd47edce45b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1213,8 +1261,8 @@
           "context": "mode === \"starred\" ? i18n(\"pages.gitlabpage.58f7245bd43c\") : i18n(\"pages.gitlabpage.403f06a230eb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No projects you participate in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1234,8 +1282,8 @@
           "context": "showToast(i18nMsg(\"pages.gitlabpage.4116995f2e14\", { value: String(String(e instanceof Error ? e.message : e).slice(0, 90)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load branches: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1255,8 +1303,8 @@
           "context": "showToast(i18nMsg(\"pages.gitlabpage.413d19ee4956\", { iid: String(issue.iid) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Issue !{iid} created",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1271,8 +1319,8 @@
           "context": "{i18n(\"pages.gitlabpage.42784f502e47\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No comments yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1287,8 +1335,8 @@
           "context": "{i18n(\"pages.gitlabpage.42beec0fa60c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "THU GitLab",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1303,8 +1351,8 @@
           "context": "ref || i18n(\"pages.gitlabpage.42ee2863b6d7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Root",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1319,8 +1367,8 @@
           "context": "kind === \"issue\" ? i18n(\"pages.gitlabpage.296549a13f34\") : i18n(\"pages.gitlabpage.46c1fbe70bd5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search merge requests (Enter)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1335,8 +1383,8 @@
           "context": "assignees.length ? assignees.map((a) => a.name).join(\"、\") : i18n(\"pages.gitlabpage.484d55613910\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "None",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1351,61 +1399,8 @@
           "context": "cloneRow(i18n(\"pages.gitlabpage.485a45dc92cb\"), project.http_url_to_repo)"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.48640f4a2ca0",
-      "source": "没有匹配「{query}」的项目",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "query",
-          "expression": "String(query)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 295,
-          "context": "query ? i18n(\"pages.gitlabpage.48640f4a2ca0\", { query: String(query) }) : mode === \"starred\" ? i18n(\"pages.gitlabpage.58f7245bd43c\") : i18n(\"pages.gitlabpage.403f06a230eb\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.4d016b2f1e36",
-      "source": "文件变更",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1138,
-          "context": "{i18n(\"pages.gitlabpage.4d016b2f1e36\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.50ef2f4cf6a4",
-      "source": "新建",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1326,
-          "context": "{i18n(\"pages.gitlabpage.50ef2f4cf6a4\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clone (HTTPS)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

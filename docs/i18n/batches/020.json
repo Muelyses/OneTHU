@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.onboardingtourmobile.da336fdc0dbd",
+      "source": "上一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 140,
+          "context": "{i18n(\"components.onboardingtourmobile.da336fdc0dbd\")}"
+        }
+      ],
+      "translation": "Back",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.e010e3f578cc",
+      "source": " 步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 154,
+          "context": "i18n(\"components.onboardingtourmobile.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourmobile.fd73c2773154\") + STEPS + i18n(\"components.onboardingtourmobile.e010e3f578cc\")"
+        }
+      ],
+      "translation": " steps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.ef3094385769",
+      "source": "「添加组件」抽屉从底部长出来，也不挡白板。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 77,
+          "context": "return i18n(\"components.onboardingtourmobile.ef3094385769\");"
+        }
+      ],
+      "translation": "The “Add widget” drawer grows from the bottom without covering the board.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardingtourmobile.fd73c2773154",
       "source": " 步，共 ",
@@ -14,8 +62,8 @@
           "context": "i18n(\"components.onboardingtourmobile.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourmobile.fd73c2773154\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " of ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "{i18n(\"components.onboardingtourparticles.1f73e4c619b0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Play again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "return i18n(\"components.onboardingtourparticles.5ca6730d4415\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tools",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "return i18n(\"components.onboardingtourparticles.783d638053ea\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Widgets",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "return i18n(\"components.onboardingtourparticles.788db1cfec2a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Themes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "{i18n(\"components.onboardingtourparticles.934e7ed8a02c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A demo animation of particles converging into talent: scattered dust gathers into one, then splits into tools, flows, and widgets",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +158,8 @@
           "context": "return i18n(\"components.onboardingtourparticles.bdd207e8c6e3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Flows",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +190,8 @@
           "context": "return i18n(\"components.onboardingtourparticles.e8898c88f026\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Home screen widgets",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -158,8 +206,8 @@
           "context": "return i18n(\"components.onboardingtourv3.0195603ee49e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OnePage: your single page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -174,8 +222,8 @@
           "context": "return i18n(\"components.onboardingtourv3.06d3cfb40d27\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "It comes with a board page where you can arrange widgets freely.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -190,8 +238,8 @@
           "context": "return i18n(\"components.onboardingtourv3.0afabdd4308c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Two paths are enough: go search, go to the marketplace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -206,8 +254,8 @@
           "context": "return i18n(\"components.onboardingtourv3.0b3cb95bce97\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The large clock and main features form the skeleton; the rest of the widgets are yours to arrange.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -221,8 +269,8 @@
           "line": 81
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The bottom bar stays put: “Tabs” on the left, “Search or ask Little OH” in the middle, “OneGO!” on the right.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -236,8 +284,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Right-click a tab to copy, close it, or one-star it into OnePage.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -251,8 +299,8 @@
           "line": 75
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Double-click empty space to create a note in place; the pen always stays on top, with undo and clear.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -267,8 +315,8 @@
           "context": "{i18n(\"components.onboardingtourv3.1f5a2b96e178\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Completion mark: it will not appear automatically again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -282,8 +330,8 @@
           "line": 81
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Set the default style in Settings; the button at the bottom of the vertical sidebar switches to “Narrow”.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -298,8 +346,8 @@
           "context": "return i18n(\"components.onboardingtourv3.280832e11f57\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tabs & workspaces",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -313,8 +361,8 @@
           "line": 65
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The × in the top-right corner only closes it this once; it will appear again on the next launch.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -329,8 +377,8 @@
           "context": "{i18n(\"components.onboardingtourv3.285daf1ff2f1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close this tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -344,8 +392,8 @@
           "line": 75
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Right-click empty space (the menu follows the pointer) or use the ＋ on the right to add widgets.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -359,8 +407,8 @@
           "line": 92
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "“Install plugin” supports installing straight from a repository and one-tap install from the marketplace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -375,8 +423,8 @@
           "context": "return i18n(\"components.onboardingtourv3.2cbb006447b1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search is shared: whatever the panel can find, the page can find too.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -391,8 +439,8 @@
           "context": "return i18n(\"components.onboardingtourv3.2f8345141c89\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your portable toolbox for the Tsinghua campus.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -407,8 +455,8 @@
           "context": "return i18n(\"components.onboardingtourv3.30633ea11f9b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The command palette (Ctrl+K) also takes you straight to your board.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -422,8 +470,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The workspace panel also appears in the bottom bar’s “Tabs” and “OneGO!” drawers.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -438,8 +486,8 @@
           "context": "{i18n(\"components.onboardingtourv3.35915ce8d259\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back to the tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -453,8 +501,8 @@
           "line": 65
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Every step can be skipped; to revisit it later, “Tour” is in the top-right of Settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -469,8 +517,8 @@
           "context": "{i18n(\"components.onboardingtourv3.5021907844de\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugins get two extras: give it a repository URL and it installs on the spot.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -485,8 +533,8 @@
           "context": "return i18n(\"components.onboardingtourv3.514adbf12726\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Just tell it in the conversation and it gets to work.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -501,8 +549,8 @@
           "context": "{i18n(\"components.onboardingtourv3.5f0c74b96547\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "One sentence and OH builds tools, runs flows, draws widgets, changes themes, and adds home screen widgets.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -516,8 +564,8 @@
           "line": 92
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The center-bottom pill “Search or ask Little OH”: tap it and type to search.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -532,8 +580,8 @@
           "context": "return i18n(\"components.onboardingtourv3.67ab2cc6012c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The toolbox grows on its own: wherever the conversation goes, it grows there.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -547,8 +595,8 @@
           "line": 81
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A narrow sidebar expands when you hover over it and collapses when you move away.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -563,8 +611,8 @@
           "context": "{i18n(\"components.onboardingtourv3.715ee9dc842f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Get started",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -579,8 +627,8 @@
           "context": "return i18n(\"components.onboardingtourv3.768ddf66b868\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pages live in tabs; drag one onto another and it grows into a workspace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -595,8 +643,8 @@
           "context": "return i18n(\"components.onboardingtourv3.794833cba26d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Two skeletons, landscape and portrait",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -611,8 +659,8 @@
           "context": "return i18n(\"components.onboardingtourv3.7c2809268e55\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH: say the word and it picks up the same skills",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -627,8 +675,8 @@
           "context": "return i18n(\"components.onboardingtourv3.8a12026f5cee\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install plugins, find everything",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -642,8 +690,8 @@
           "line": 81
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Landscape: tabs sit in a row on top; portrait: tabs sit in a column on the left.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -657,8 +705,8 @@
           "line": 75
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press a widget to drag it, resize with the four corner handles, and widgets can overlap.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -673,8 +721,8 @@
           "context": "i18n(\"components.onboardingtourv3.9552fe3bd366\") + (step + 1)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Step ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -689,8 +737,8 @@
           "context": "{i18n(\"components.onboardingtourv3.958b344e82b3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU desktop tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -704,8 +752,8 @@
           "line": 75
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Selecting one floats up a mini toolbar: keep on top, four opacity levels, delete.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -720,8 +768,8 @@
           "context": "{i18n(\"components.onboardingtourv3.a2d3a4eeefd7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Don’t show again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -735,8 +783,8 @@
           "line": 81
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The bottom bar’s “Tabs” drawer has the landscape/portrait switch.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -751,8 +799,8 @@
           "context": "{i18n(\"components.onboardingtourv3.aa01e1d7252b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Local plugins can be published to GitHub and submitted to the marketplace for listing.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -767,8 +815,8 @@
           "context": "{i18n(\"components.onboardingtourv3.acfc4e74a650\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -782,8 +830,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The row on top is the tabs; in portrait mode they move to the left sidebar.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -798,8 +846,8 @@
           "context": "{i18n(\"components.onboardingtourv3.bcd7acd491b0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The card steps aside so you can act; tap the pill to come back and continue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -813,8 +861,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag one tab onto another, wait for the gray frame (0.6 s), then release to merge.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -828,8 +876,8 @@
           "line": 86
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Right-click a tab and choose “One-star”: the content is gathered into a OnePage.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -843,8 +891,8 @@
           "line": 65
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seven steps in one minute for the desktop essentials.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -858,8 +906,8 @@
           "line": 75
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The skeleton stays put: right-click the large clock or a feature area to adjust opacity (four levels).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -873,8 +921,8 @@
           "line": 86
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneGO! also has OneFlow: tell OH “create a flow” in the conversation.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -889,8 +937,8 @@
           "context": "{i18n(\"components.onboardingtourv3.d45c9dc68d4b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Try it: drag one tab onto another and release when the gray frame appears",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -905,8 +953,8 @@
           "context": "return i18n(\"components.onboardingtourv3.d6a2506f30a7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Home is a free-form board",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -920,8 +968,8 @@
           "line": 70
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The workspace base lives on the tab bar: right-click to disband it (tabs are kept) or delete it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -936,8 +984,8 @@
           "context": "{i18n(\"components.onboardingtourv3.da336fdc0dbd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -951,8 +999,8 @@
           "line": 86
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bottom bar “OneGO!” → My OnePage: name it, then tap “New”.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -967,8 +1015,8 @@
           "context": "return i18n(\"components.onboardingtourv3.dd3208ca2917\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Welcome to OneTHU",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -983,8 +1031,8 @@
           "context": "return i18n(\"components.onboardingtourv3.dde91a15ff1f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch the tab bar between landscape and portrait anytime; it holds up even narrow.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -999,8 +1047,8 @@
           "context": "i18n(\"components.onboardingtourv3.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourv3.fd73c2773154\") + STEPS + i18n(\"components.onboardingtourv3.e010e3f578cc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " steps",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1015,8 +1063,8 @@
           "context": "return i18n(\"components.onboardingtourv3.e18fe8598d89\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All everyday gestures — there is no “edit mode” to enter or exit.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1031,8 +1079,8 @@
           "context": "{i18n(\"components.onboardingtourv3.edaec615b68d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag-and-drop practice",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1046,8 +1094,8 @@
           "line": 92
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press Ctrl+K on any page: type to search, press Enter to jump.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1061,8 +1109,8 @@
           "line": 92
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings → Plugins: switch anytime between “My plugins” and “Plugin marketplace”.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1077,8 +1125,8 @@
           "context": "{i18n(\"components.onboardingtourv3.f8d9c42c331f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Try the drag yourself",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1093,8 +1141,8 @@
           "context": "i18n(\"components.onboardingtourv3.9552fe3bd366\") + (step + 1) + i18n(\"components.onboardingtourv3.fd73c2773154\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " of ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1108,8 +1156,8 @@
           "line": 86
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A new tab is a board page with the same gestures as Home; put anything on it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1124,8 +1172,8 @@
           "context": "showToast(i18nMsg(\"components.organizationsection.096678f835a7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Joined organizations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1140,8 +1188,8 @@
           "context": "return i18n(\"components.organizationsection.10f106e00d20\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization invite share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1156,8 +1204,8 @@
           "context": "{i18n(\"components.organizationsection.1a428fa57dd7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Join with an invite share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1172,8 +1220,8 @@
           "context": "{i18n(\"components.organizationsection.1d3b05b3fd2d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No organizations yet. Create one: members join by email, and the library is shared by email.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1188,8 +1236,8 @@
           "context": "label: i18nMsg(\"components.organizationsection.276c9bcadb27\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization invite share code (ON-…, older codes still supported)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1206,59 +1254,6 @@
       ],
       "translation": "Delete",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.3f38e493103b",
-      "source": "组织名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 42,
-          "context": "label: i18nMsg(\"components.organizationsection.3f38e493103b\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.organizationsection.40c6a5e5d509",
-      "source": "删除组织「{name}」？成员清单会一起删除（云盘资料库与 GitLab 仓库不动）。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(o.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 88,
-          "context": "confirmOk(i18nMsg(\"components.organizationsection.40c6a5e5d509\", { name: String(o.name) }))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.organizationsection.4dd6695c0a10",
-      "source": "管理组织",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OrganizationSection.tsx",
-          "line": 87,
-          "context": "{i18n(\"components.organizationsection.4dd6695c0a10\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

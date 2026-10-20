@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.yktsubmitwebview.00598e3b8d46",
+      "source": "应用内作答需在 OneTHU App 内使用（浏览器预览不可用）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktSubmitWebview.ts",
+          "line": 25,
+          "context": "new Error(i18n(\"lib.yktsubmitwebview.00598e3b8d46\"))"
+        }
+      ],
+      "translation": "In-app answering requires the OneTHU App (not available in browser preview).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktsubmitwebview.feded33a22ee",
+      "source": "官方作答页地址非法（仅允许 http(s)）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktSubmitWebview.ts",
+          "line": 26,
+          "context": "new Error(i18n(\"lib.yktsubmitwebview.feded33a22ee\"))"
+        }
+      ],
+      "translation": "The official answer page URL is invalid (only http(s) is allowed).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.yktwebview.4aa36272b60e",
+      "source": "尚未检测到雨课堂登录会话（请先在窗口内完成扫码或短信登录）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/yktWebview.ts",
+          "line": 89,
+          "context": "new Error(i18n(\"lib.yktwebview.4aa36272b60e\"))"
+        }
+      ],
+      "translation": "No Rain Classroom login session detected yet (please complete QR code or SMS sign-in in the window first).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.yktwebview.745473448800",
       "source": "读取失败。请在电脑浏览器登录 pro.yuketang.cn 后，用下方「高级：手动粘贴 Cookie」粘贴会话（浏览器 F12 → Application → Cookies）。",
@@ -14,8 +62,8 @@
           "context": "() => i18n(\"lib.yktwebview.745473448800\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign-in failed. Please sign in to pro.yuketang.cn in a desktop browser, then paste the session using \"Advanced: Paste cookie manually\" below (browser F12 → Application → Cookies).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +83,8 @@
           "context": "new Error(i18n(\"lib.yktwebview.9df0abd7d05e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The official web sign-in must be used inside the OneTHU app (browser preview is unavailable).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -51,8 +99,8 @@
           "context": "new Error(i18n(\"lib.ziptree.2c7d571eccc7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The ZIP local file header is corrupted; this entry cannot be extracted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -72,8 +120,8 @@
           "context": "new Error(i18n(\"lib.ziptree.310739c83167\", { method: String(entry.method) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unsupported compression method (method={method}); please download to view",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -88,8 +136,8 @@
           "context": "new Error(i18n(\"lib.ziptree.465bf7f89508\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "ppt/slides/slideN.xml not found in the archive (it may not be a .pptx)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -104,8 +152,8 @@
           "context": "new Error(i18n(\"lib.ziptree.732ef6430c80\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "ZIP data is out of bounds; the file may be corrupted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +168,8 @@
           "context": "new Error(i18n(\"lib.ziptree.802ee7801233\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "ZIP end of central directory (EOCD) not found; the file may be corrupted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +184,8 @@
           "context": "new Error(i18n(\"lib.ziptree.8bcdc7156f9f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "ZIP64 format is not supported yet; please download to view",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -162,8 +210,8 @@
           "context": "new Error(i18n(\"lib.ziptree.8ec67ebd5d24\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Extracted content exceeds the preview size limit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -178,8 +226,8 @@
           "context": "new Error(i18n(\"lib.ziptree.97befa4e485c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Extraction is not supported in this environment (DecompressionStream missing); please download to view",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -194,8 +242,8 @@
           "context": "new Error(i18n(\"lib.ziptree.c63d5a292e55\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This entry is a directory and cannot be extracted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -210,8 +258,8 @@
           "context": "new Error(i18n(\"lib.ziptree.d9346a6de600\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "ZIP directory is empty or failed to parse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -226,8 +274,8 @@
           "context": "return i18n(\"memory.format.22ac782381ea\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "15+ consecutive digits (likely an ID or card number)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -242,8 +290,8 @@
           "context": "return i18n(\"memory.format.6b1a70ac9eb1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Likely a GitHub token",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -258,8 +306,8 @@
           "context": "return i18n(\"memory.format.7ba456c0f242\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Likely an LLM API key (sk-…)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -274,8 +322,8 @@
           "context": "return i18n(\"memory.format.9ba2145bd66a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Likely an HTTP bearer token",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -290,8 +338,8 @@
           "context": "return i18n(\"memory.format.ce72f2106e4f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Likely a plaintext password",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -306,8 +354,8 @@
           "context": "return i18n(\"memory.format.d79be29d7fb5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Likely a verification code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -327,8 +375,8 @@
           "context": "new Error(i18n(\"memory.operations.6383fb8dcdcc\", { bad: String(bad) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Memory write blocked: {bad} — credential-like content is not allowed into long-term memory",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -348,8 +396,8 @@
           "context": "new Error(i18n(\"memory.operations.ccc5a5900f02\", { value: String(find.slice(0, 30)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Text to replace not found ({value}…) — use memory_read to check the original first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -373,8 +421,8 @@
           "context": "new Error(i18n(\"memory.operations.e613fe77a194\", { title: String(input.title), permalink: String(existing.permalink) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A memory titled \"{title}\" already exists ({permalink}) — use memory_append to add observations",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -409,8 +457,8 @@
           "context": "new Error(i18n(\"memory.operations.f564f74f2806\", { permalink: String(permalink) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Memory not found: {permalink}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -425,8 +473,8 @@
           "context": "new Error(i18n(\"memory.sync.9f1773200fb8\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to create the OH-Memory library (it did not appear on the cloud drive)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -440,8 +488,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to choose",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -455,8 +503,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to choose what to show",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -474,8 +522,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -493,8 +541,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -512,8 +560,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} class",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -531,8 +579,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -550,8 +598,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -569,8 +617,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -591,8 +639,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{time} {title}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +654,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All of today's classes are done",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -621,8 +669,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -643,8 +691,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{month}/{day}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -662,8 +710,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} days left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -681,8 +729,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} days left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -700,8 +748,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} day left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -719,8 +767,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} days left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -738,8 +786,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} days left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -757,8 +805,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} days left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -776,8 +824,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "DDL {title}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -795,8 +843,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} deadlines",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -814,8 +862,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} deadlines",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -833,8 +881,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} deadline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -852,8 +900,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} deadlines",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -871,8 +919,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} deadlines",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -890,8 +938,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} deadlines",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -905,8 +953,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Details",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -920,8 +968,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No classes or deadlines today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -935,8 +983,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No plugin occupies this slot yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -950,8 +998,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -969,8 +1017,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule {title}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -988,8 +1036,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} schedule items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1007,8 +1055,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} schedule items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1026,8 +1074,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} schedule item",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1045,8 +1093,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} schedule items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1064,8 +1112,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} schedule items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1083,8 +1131,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} schedule items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1098,8 +1146,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1113,8 +1161,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1132,8 +1180,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hours left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1151,8 +1199,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hours left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1170,8 +1218,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hour left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1189,8 +1237,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hours left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1208,8 +1256,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hours left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1227,8 +1275,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} hours left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1242,8 +1290,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1261,8 +1309,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minutes left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1280,8 +1328,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minutes left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1299,8 +1347,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minute left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1318,8 +1366,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minutes left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1337,8 +1385,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minutes left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1356,8 +1404,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} minutes left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1375,8 +1423,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1394,8 +1442,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1413,65 +1461,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.other",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.two",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.more.zero",
-      "source": "还有 {count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

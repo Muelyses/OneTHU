@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.tabmanagemodal.b36ae796d429",
+      "source": "勾选控制显示；↑↓ 调整顺序（即时生效并保存）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TabManageModal.tsx",
+          "line": 94,
+          "context": "{i18n(\"components.tabmanagemodal.b36ae796d429\")}"
+        }
+      ],
+      "translation": "Checkboxes control visibility; ↑↓ reorder (applied instantly and saved).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tabmanagemodal.ba2e93e73037",
+      "source": "恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TabManageModal.tsx",
+          "line": 109,
+          "context": "{i18n(\"components.tabmanagemodal.ba2e93e73037\")}"
+        }
+      ],
+      "translation": "Restore defaults",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tabmanagemodal.c0b3fbff51cc",
+      "source": "完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TabManageModal.tsx",
+          "line": 110,
+          "context": "{i18n(\"components.tabmanagemodal.c0b3fbff51cc\")}"
+        }
+      ],
+      "translation": "Done",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.tabmanagemodal.e75e8b4e5c97",
       "source": "下移",
@@ -14,8 +62,8 @@
           "context": "{i18n(\"components.tabmanagemodal.e75e8b4e5c97\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move down",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "{i18n(\"components.tabmanagemodal.f853a70b1204\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "i18n(\"components.themepickermodal.0580fcee37e0\") + String(e).slice(0, 100)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete failed:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "{i18n(\"components.themepickermodal.06bc14b60f35\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uninstall",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "i18n(\"components.themepickermodal.093197238318\") + t.name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete theme “",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "{i18n(\"components.themepickermodal.0ad01e8954e9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fetching the theme marketplace…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +163,8 @@
           "context": "i18n(\"components.themepickermodal.14f80dfb3d98\") + t.name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted “",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,8 +179,8 @@
           "context": "{i18n(\"components.themepickermodal.1cdf519489b5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching installed themes.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +195,8 @@
           "context": "i18n(\"components.themepickermodal.316fe39d4c6f\") + String(e instanceof Error ? e.message : e).slice(0, 160)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install failed:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +211,8 @@
           "context": "secHead(\n            i18n(\"components.themepickermodal.5df274b078ee\"),\n            <Btn variant=\"ghost\" disabled={busy} onClick={() => void load(true)}>{busy ? i18n(\"components.themepickermodal.7f3c8312816f\") : i18n(\"components.themepickermodal.aee887434131\")}</Btn>,\n          )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Theme marketplace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -179,8 +227,8 @@
           "context": "{i18n(\"components.themepickermodal.61e80772a4e6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restore built-ins",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -195,8 +243,8 @@
           "context": "selected ? i18n(\"components.themepickermodal.7dcf1f288aa3\") : i18n(\"components.themepickermodal.63c73c4730f4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Apply",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -211,8 +259,8 @@
           "context": "i18n(\"components.themepickermodal.6a644ac83c43\") + m.name + i18n(\"components.themepickermodal.6644799ba0ab\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "”; it can now be applied directly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -227,8 +275,8 @@
           "context": "i18n(\"components.themepickermodal.6a644ac83c43\") + m.name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Installed “",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -243,8 +291,8 @@
           "context": "[i18n(\"components.themepickermodal.708c97df7bec\"), i18n(\"components.themepickermodal.844b8cc8dff7\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graphite",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -259,8 +307,8 @@
           "context": "i18n(\"components.themepickermodal.744b48e64720\") + restoreBuiltins()"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restored ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -275,8 +323,8 @@
           "context": "i18n(\"components.themepickermodal.093197238318\") + t.name + i18n(\"components.themepickermodal.a28cbce49ad9\") + owner + i18n(\"components.themepickermodal.75b15e92ecf7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "”; its settings and commands will be removed too. Continue?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -291,8 +339,8 @@
           "context": "{i18n(\"components.themepickermodal.78c3900fe08f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graphite · default",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -307,8 +355,8 @@
           "context": "selected ? i18n(\"components.themepickermodal.7dcf1f288aa3\") : i18n(\"components.themepickermodal.63c73c4730f4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In use ✓",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -323,8 +371,8 @@
           "context": "busy ? i18n(\"components.themepickermodal.7f3c8312816f\") : i18n(\"components.themepickermodal.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refreshing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -339,8 +387,8 @@
           "context": "{i18n(\"components.themepickermodal.7fad67d470dc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching themes.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -355,8 +403,8 @@
           "context": "[i18n(\"components.themepickermodal.708c97df7bec\"), i18n(\"components.themepickermodal.844b8cc8dff7\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -371,8 +419,8 @@
           "context": "{i18n(\"components.themepickermodal.8e3513d1f479\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change theme",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -387,8 +435,8 @@
           "context": "i18n(\"components.themepickermodal.97ba287f80fd\") + String(e instanceof Error ? e.message : e).slice(0, 160)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch the theme marketplace:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -403,8 +451,8 @@
           "context": "i18n(\"components.themepickermodal.093197238318\") + t.name + i18n(\"components.themepickermodal.a28cbce49ad9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "”? This will also uninstall the plugin “",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -419,8 +467,8 @@
           "context": "{i18n(\"components.themepickermodal.a4195ac97a28\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Themes are plugins: once installed they can be applied right here; installed community themes appear in both columns.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -435,8 +483,8 @@
           "context": "i18n(\"components.themepickermodal.744b48e64720\") + restoreBuiltins() + i18n(\"components.themepickermodal.a68af2113d77\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " built-in themes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -461,8 +509,8 @@
           "context": "has ? i18n(\"components.themepickermodal.a8b6c39dcabf\") : busy ? \"…\" : i18n(\"components.themepickermodal.e8f88f51ccb0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Installed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -477,8 +525,8 @@
           "context": "busy ? i18n(\"components.themepickermodal.7f3c8312816f\") : i18n(\"components.themepickermodal.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -493,8 +541,8 @@
           "context": "{i18n(\"components.themepickermodal.b0192c6c705a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search theme names / descriptions / tags",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -509,8 +557,8 @@
           "context": "{i18n(\"components.themepickermodal.e0ad632058d7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Neutral surface steps, black-and-white primary actions, and clear text hierarchy",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -525,8 +573,8 @@
           "context": "busy ? \"…\" : i18n(\"components.themepickermodal.e8f88f51ccb0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -541,8 +589,8 @@
           "context": "i18n(\"components.themepickermodal.e9b593117599\") + t.name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Applied “",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -557,8 +605,8 @@
           "context": "i18n(\"components.themepickermodal.14f80dfb3d98\") + t.name + i18n(\"components.themepickermodal.f71d14f528ee\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "” and the plugin “",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -573,8 +621,8 @@
           "context": "return i18n(\"components.tourillustration.081c32889cff\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The first slot is now the Cloud Drive; the other entries stay as they were.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -589,8 +637,8 @@
           "context": "paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pause demo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -605,8 +653,8 @@
           "context": "return i18n(\"components.tourillustration.14904f50ba72\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tabs, boards, the Stash, and collaboration — combine them your way.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -621,8 +669,8 @@
           "context": "return i18n(\"components.tourillustration.16afed511861\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Adjust shortcuts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -637,8 +685,8 @@
           "context": "return i18n(\"components.tourillustration.24a36e5f10e5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization collaboration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +701,8 @@
           "context": "return i18n(\"components.tourillustration.299d568b581f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "After you create an organization, its card is bound to it directly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -669,8 +717,8 @@
           "context": "return i18n(\"components.tourillustration.2af3e3257866\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Head back to Home and start with one small thing today.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -685,8 +733,8 @@
           "context": "return i18n(\"components.tourillustration.2f356fc75c90\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Extend capabilities as needed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -701,8 +749,8 @@
           "context": "paused?i18n(\"components.tourillustration.eb0c326b60ae\"):i18n(\"components.tourillustration.3272fe53c0f6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Auto demo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -722,8 +770,8 @@
           "context": "{i18n(\"components.tourillustration.37bf31378e03\", { name: String(spec.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Demo animation: {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -738,8 +786,8 @@
           "context": "return i18n(\"components.tourillustration.3a7769c0aa16\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Long-press the content, then drag it to the Stash at the edge.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -754,8 +802,8 @@
           "context": "return i18n(\"components.tourillustration.3c3ca96372d1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Make it look the way you like",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -770,8 +818,8 @@
           "context": "return i18n(\"components.tourillustration.413088d3b1a0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -786,8 +834,8 @@
           "context": "return i18n(\"components.tourillustration.420be7bc077e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A whole set of content, shared with a single short share code.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -802,8 +850,8 @@
           "context": "return i18n(\"components.tourillustration.4a8eac97e960\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free-form board",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -818,8 +866,8 @@
           "context": "return i18n(\"components.tourillustration.4c7a7f26e106\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Three items are stashed away; the original content is kept as is.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -834,8 +882,8 @@
           "context": "return i18n(\"components.tourillustration.5f716b7dedd8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Put the card wherever it is handy.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -850,8 +898,8 @@
           "context": "before:i18n(\"components.tourillustration.60d33c9c54ae\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Find related features from one entry point.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -871,8 +919,8 @@
           "context": "reduced?i18n(\"components.tourillustration.65c89582594c\"):paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Static illustration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -887,8 +935,8 @@
           "context": "return i18n(\"components.tourillustration.6cc2a4b7bfc9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Frequently used items sit at the bottom; other services are found from here.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -903,8 +951,8 @@
           "context": "return i18n(\"components.tourillustration.6d3f6f685e53\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keeps a simple Home while you arrange the usual entry points yourself.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -919,8 +967,8 @@
           "context": "extra?.title??i18n(\"components.tourillustration.6d78bc490e7e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feature entry",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -935,8 +983,8 @@
           "context": "return i18n(\"components.tourillustration.6f56d8a61fe3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Five clear entry points, back to what you need anytime.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -951,8 +999,8 @@
           "context": "return i18n(\"components.tourillustration.7119f12b506b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Five shortcuts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -967,8 +1015,8 @@
           "context": "paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Play demo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -983,8 +1031,8 @@
           "context": "reduced?i18n(\"components.tourillustration.76aa084fbdd3\"):paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Animation reduced",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -999,8 +1047,8 @@
           "context": "return i18n(\"components.tourillustration.7b25b8069c23\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "An illustration of a completed transfer; real use requires NFC support on the device.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1015,8 +1063,8 @@
           "context": "return i18n(\"components.tourillustration.7d20856e7f07\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Content can be organized freely, and your full settings are kept at all times.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1031,8 +1079,8 @@
           "context": "return i18n(\"components.tourillustration.8173df51f2a7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Home lays out today’s tasks and the next class clearly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1047,8 +1095,8 @@
           "context": "{i18n(\"components.tourillustration.81a9402f9808\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "For demonstration only; your content will not be modified",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1063,8 +1111,8 @@
           "context": "return i18n(\"components.tourillustration.88f643c1b98a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep a set of work in progress",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1079,8 +1127,8 @@
           "context": "paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pause",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1095,8 +1143,8 @@
           "context": "return i18n(\"components.tourillustration.92ea3aacf873\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today’s Home",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1111,8 +1159,8 @@
           "context": "return i18n(\"components.tourillustration.9593aef7149a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open it and see today; the more complex features stay tucked away.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1127,8 +1175,8 @@
           "context": "return i18n(\"components.tourillustration.96b3145a6b73\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Short share code transfer",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1143,7 +1191,7 @@
           "context": "return i18n(\"components.tourillustration.9c7a9fcee92f\");"
         }
       ],
-      "translation": "More",
+      "translation": "More features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1159,8 +1207,8 @@
           "context": "return i18n(\"components.tourillustration.a134c7737c93\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Both sides enter send/receive first, then bring the devices close together.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1175,8 +1223,8 @@
           "context": "{i18n(\"components.tourillustration.a31b16bc552a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The real interface hasn’t loaded yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1191,8 +1239,8 @@
           "context": "return i18n(\"components.tourillustration.a53febdc5466\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash tidy-up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1207,8 +1255,8 @@
           "context": "return i18n(\"components.tourillustration.bb3cdc17373c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ready to set off",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1223,8 +1271,8 @@
           "context": "return i18n(\"components.tourillustration.bf5b53af13f4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "What to do today, and the classes coming up next.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1239,8 +1287,8 @@
           "context": "return i18n(\"components.tourillustration.c20f83cc52d2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pick from More features, then choose a slot for the shortcut.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1255,56 +1303,8 @@
           "context": "paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tourillustration.c3d0e8d4b506",
-      "source": "选好的模式，随时可以在设置里调整。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
-          "context": "return i18n(\"components.tourillustration.c3d0e8d4b506\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tourillustration.c6331cafc401",
-      "source": "课表就在手边；首页和 OH 搜索始终可用。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
-          "context": "return i18n(\"components.tourillustration.c6331cafc401\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tourillustration.c89246ea218f",
-      "source": "极简模式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
-          "context": "return i18n(\"components.tourillustration.c89246ea218f\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Play",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

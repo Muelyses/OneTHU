@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.plugins.aa82a2888412",
+      "source": "＋ 添加 MCP 服务器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 910,
+          "context": "{i18n(\"pages.plugins.aa82a2888412\")}"
+        }
+      ],
+      "translation": "＋ Add MCP server",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.aaffab66fd29",
+      "source": "搜索框在插件市场顶部，已带到市场视图。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 163,
+          "context": "note: i18n(\"pages.plugins.aaffab66fd29\")"
+        }
+      ],
+      "translation": "The search box is at the top of the plugin market; brought you to the market view.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.ac5214002800",
+      "source": "manifest.kind 须为 rust 且声明 bin",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1417,
+          "context": "new Error(i18n(\"pages.plugins.ac5214002800\"))"
+        }
+      ],
+      "translation": "manifest.kind must be rust and declare bin",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.ad7b16c2a298",
+      "source": "粘贴完整模块代码，安装即激活。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1463,
+          "context": "{i18n(\"pages.plugins.ad7b16c2a298\")}"
+        }
+      ],
+      "translation": "Paste the complete module code; installing activates it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1211,
+          "context": "busy ? i18n(\"pages.plugins.7f3c8312816f\") : i18n(\"pages.plugins.aee887434131\")"
+        }
+      ],
+      "translation": "Refresh",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.af23c5048f07",
+      "source": "机架空空如也",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 404,
+          "context": "{i18n(\"pages.plugins.af23c5048f07\")}"
+        }
+      ],
+      "translation": "The rack is empty",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.af7a3fa54da7",
+      "source": "OH MCP 服务器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 814,
+          "context": "{i18n(\"pages.plugins.af7a3fa54da7\")}"
+        }
+      ],
+      "translation": "OH MCP server",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.plugins.af8383d6b923",
       "source": "收起安装",
@@ -14,8 +126,8 @@
           "context": "instOpen ? i18n(\"pages.plugins.af8383d6b923\") : i18n(\"pages.plugins.edc3f02843ff\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse install",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +142,8 @@
           "context": "{i18n(\"pages.plugins.b49395c80847\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "via ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "{i18n(\"pages.plugins.b588afe533c6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Update available ↑",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +179,8 @@
           "context": "repoCheck.busy ? i18n(\"pages.plugins.a0bacec44f47\") : i18n(\"pages.plugins.b59008384c66\", { value: String(repoCheck.remote || repoRemote) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Update to repo version v{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +195,8 @@
           "context": "{i18n(\"pages.plugins.b5a929dae5ba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Revert changes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +211,8 @@
           "context": "isThemeEntry(detail) ? i18n(\"pages.plugins.b6b4d7e04dee\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Themes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +232,8 @@
           "context": "msg: i18n(\"pages.plugins.b6ef24000dbb\", { remoteVersion: String(remoteVersion) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Updating from the plugin's own repository to v{remoteVersion}…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +248,8 @@
           "context": "{i18n(\"pages.plugins.b8784c8dd563\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -152,8 +264,8 @@
           "context": "note: i18n(\"pages.plugins.b8cdc17d21b0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Category filters are above the plugin market list; brought you to the market view.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -173,8 +285,8 @@
           "context": "{i18n(\"pages.plugins.bd2db6941185\", { value: String(normalizeRepoUrl(item.repo)) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open repository in browser: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -189,8 +301,8 @@
           "context": "{i18n(\"pages.plugins.be93cf140b54\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " public APIs extend OneTHU — permission gating, session self-healing, and 45s timeouts are handled by the host",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -210,8 +322,8 @@
           "context": "{i18n(\"pages.plugins.c0b3fbff51cc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Done",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -226,8 +338,8 @@
           "context": "new Error(i18n(\"pages.plugins.c3db55f566f3\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "manifest.json is missing id/name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -242,8 +354,8 @@
           "context": "idx === -1 ? i18nMsg(\"pages.plugins.c52661984f93\") : i18nMsg(\"pages.plugins.2def3dbabf90\", { value: String(cur?.name ?? \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add MCP server",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -258,8 +370,8 @@
           "context": "{i18n(\"pages.plugins.c8279d4cc145\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Installing means you trust this code and grant the permissions it declares.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -274,8 +386,8 @@
           "context": "{i18n(\"pages.plugins.cb115d68fb47\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Basic settings / Advanced configuration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -290,8 +402,8 @@
           "context": "note: i18n(\"pages.plugins.cd21f64a56a4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The \"Check for updates\" button is on every plugin card that comes from a repository; the current list has no such cards, so brought you to the \"My plugins\" view.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -306,8 +418,8 @@
           "context": "{i18n(\"pages.plugins.cf4c259c0592\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "user/repo or https://github.com/user/repo (may include @branch or /tree/branch)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -327,8 +439,8 @@
           "context": "{i18n(\"pages.plugins.d0cfe8bf3a7e\", { repo: String(rec.repo) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Check the latest version from {repo} (plugin's own repository first, market as fallback)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -343,8 +455,8 @@
           "context": "failed ? i18n(\"pages.plugins.d1d044826a45\") : i18n(\"pages.plugins.a8c3698b5b8c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -359,8 +471,8 @@
           "context": "{i18n(\"pages.plugins.d261c0fe80e6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch in \"Appearance & Layout → Themes\" (that section will be highlighted)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -375,8 +487,8 @@
           "context": "msg: i18n(\"pages.plugins.d268b0d673a5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed: the repository contains a plugin with a different id (the repo may have been reused); please check the source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -391,8 +503,8 @@
           "context": "return i18n(\"pages.plugins.d2ccc4a2731e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch in \"Appearance & Layout → Themes\" (that section will be highlighted)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -407,8 +519,8 @@
           "context": "{i18n(\"pages.plugins.d41b8d846ae4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings take effect on the plugin's next run (read live each run).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -423,8 +535,8 @@
           "context": "return i18n(\"pages.plugins.d6115208d601\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The plugin market's \"All / Themes / General\" filter",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -439,8 +551,8 @@
           "context": "label: i18nMsg(\"pages.plugins.da4d9440dea0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name (tool prefix mcp_<name>_)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -455,8 +567,8 @@
           "context": "label: i18n(\"pages.plugins.da83088b9429\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Paste JS module",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -471,8 +583,8 @@
           "context": "liveCount > 0 ? i18n(\"pages.plugins.dedd4ea84562\") : i18n(\"pages.plugins.dae661d17c2d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Idle",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -492,8 +604,8 @@
           "context": "{i18n(\"pages.plugins.dd08ecd97ad1\", { value: String(repoCheck.remote || repoRemote) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Update from the plugin's own repository to v{value} (same pipeline as install: overwrite, update, and reactivate)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -508,8 +620,8 @@
           "context": "{i18n(\"pages.plugins.de32e20193ad\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Got it",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -524,8 +636,8 @@
           "context": "liveCount > 0 ? i18n(\"pages.plugins.dedd4ea84562\") : i18n(\"pages.plugins.dae661d17c2d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Modules running",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -545,8 +657,8 @@
           "context": "mode === \"settings\" ? i18n(\"pages.plugins.df3d58c7d84b\") : mode === \"mcp\" ? i18n(\"pages.plugins.a203f86cf6a6\") : i18n(\"pages.plugins.fc08fa260979\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -561,8 +673,8 @@
           "context": "window.confirm(i18n(\"pages.plugins.df66136c7ca9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm = select a .zip plugin package; Cancel = select a plugin folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -582,8 +694,8 @@
           "context": "{i18nRich(\"pages.plugins.e0d0ddfcb366\", { evtCount: evtCount })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{evtCount} events · up to 300 kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -603,8 +715,8 @@
           "context": "{i18nRich(\"pages.plugins.e39742ef4f8c\", { value: widgetSlots.map((x) => x.slot).join(\"/\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Widget {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -619,8 +731,8 @@
           "context": "label: i18nMsg(\"pages.plugins.e3c1578696ec\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Environment variables (KEY=VALUE, space-separated)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -635,8 +747,8 @@
           "context": "{i18n(\"pages.plugins.e41e77014e1d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " (Streamable-HTTP) to call OneTHU.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -651,8 +763,8 @@
           "context": "{i18n(\"pages.plugins.e601f799d681\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Want to list your plugin? Submit a Pull Request to the OneTHU-Market repository — see ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -672,8 +784,8 @@
           "context": "{i18n(\"pages.plugins.e6a68608da0c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch theme",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -719,8 +831,8 @@
           "context": "busy ? i18n(\"pages.plugins.19658d9fa9aa\") : i18n(\"pages.plugins.e8f88f51ccb0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -740,8 +852,8 @@
           "context": "label: i18n(\"pages.plugins.ec80eda36409\", { length: String(listPlugins.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All {length}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -766,8 +878,8 @@
           "context": "{i18n(\"pages.plugins.edc3f02843ff\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install plugin",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -782,8 +894,8 @@
           "context": "on ? i18n(\"pages.plugins.09c7b2e4141f\") : i18n(\"pages.plugins.ee0b1c901dad\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Off: this machine's MCP is not exposed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -798,8 +910,8 @@
           "context": "ohCmds.length > 0 ? ohCmds.map((c) => c.id).join(\" · \") : i18n(\"pages.plugins.ee3360ed4f76\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No commands yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -814,8 +926,8 @@
           "context": "{i18n(\"pages.plugins.eec62fdf53b6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "§7 of the plugin development docs.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -830,8 +942,8 @@
           "context": "requestSettingsTab(i18n(\"pages.plugins.efcccbda5d2b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Appearance & Layout",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -851,8 +963,8 @@
           "context": "{i18n(\"pages.plugins.f1ae34bf6dad\", { repo: String(item.repo) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open repository {repo}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -867,8 +979,8 @@
           "context": "rec.enabled ? i18n(\"pages.plugins.4e6fd0e28c55\") : i18n(\"pages.plugins.f4f0ead1116b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -883,8 +995,8 @@
           "context": "{i18n(\"pages.plugins.f76ad1b3aaac\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fetch plugin.js (or index.js / main.js) from the repository root; same validation pipeline as paste install.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -899,8 +1011,8 @@
           "context": "{i18n(\"pages.plugins.fa01073a720f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matches",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -915,8 +1027,8 @@
           "context": "{i18n(\"pages.plugins.fa086d830f50\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Interrupt run",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -956,8 +1068,8 @@
           "context": "text: i18n(\"pages.plugins.fa5cae9e9254\", { value: String(String(e2 instanceof Error ? e2.message : e2).slice(0, 200)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -972,8 +1084,8 @@
           "context": "checkBusy || repoCheck.busy ? i18n(\"pages.plugins.fb11aa6f2982\") : i18n(\"pages.plugins.7f68ebad19ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Checking…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -988,8 +1100,8 @@
           "context": "mode === \"mcp\" ? i18n(\"pages.plugins.a203f86cf6a6\") : i18n(\"pages.plugins.fc08fa260979\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Run logs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1004,8 +1116,8 @@
           "context": "return i18n(\"pages.plugins.feed82f0b110\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin category filter",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1020,8 +1132,8 @@
           "context": "{i18n(\"pages.plugins.ff08afdc6ecc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install your first plugin to add a new capability module to OneTHU.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1036,8 +1148,8 @@
           "context": "cal.syncing ? i18n(\"pages.schedule.4e2238b74ec7\") : i18n(\"pages.schedule.07c9a15ad13f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync cloud calendar",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1061,8 +1173,8 @@
           "context": "setMsg(i18n(\"pages.schedule.09405e6ef9e6\", { added: String(r.added), removed: String(r.removed) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Written to the system calendar \"OneTHU Schedule\": {added} added ({removed} old ones cleaned up); schedule changes will sync automatically from now on.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1077,8 +1189,8 @@
           "context": "{i18n(\"pages.schedule.0b97c851e4a7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All day",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1093,8 +1205,8 @@
           "context": "{i18n(\"pages.schedule.0eaedd12dc70\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1123,8 +1235,8 @@
           "context": "{i18nRich(\"pages.schedule.0f02af2d5985\", { value: calView.getFullYear(), value2: calView.getMonth() + 1 })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value2}/{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1139,8 +1251,8 @@
           "context": "setMsg(i18n(\"pages.schedule.1258adb63f05\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exported timetable, assignment deadlines, and events; the system calendar import window should have opened (choose the calendar to write to).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1160,8 +1272,8 @@
           "context": "courseName: i18n(\"pages.schedule.135b82866399\", { length: String(members.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} events",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1176,8 +1288,8 @@
           "context": "{i18n(\"pages.schedule.1536c81c69be\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Jump to teaching week",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1197,8 +1309,8 @@
           "context": "newTab(\"trace\", { traceTarget: { title: d.courseName, location: d.location ?? \"\", date: d.date, startTime: d.startTime, endTime: d.endTime } }, i18n(\"pages.schedule.15f929ce6cd4\", { courseName: String(d.courseName) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Directions · {courseName}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1218,8 +1330,8 @@
           "context": "setMsg(i18n(\"pages.schedule.177a41a28139\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Export failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1234,8 +1346,8 @@
           "context": "setMsg(i18n(\"pages.schedule.193f229df3d9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saved.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1250,8 +1362,8 @@
           "context": "{i18n(\"pages.schedule.1c5c06713870\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1266,8 +1378,8 @@
           "context": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1303,8 +1415,8 @@
           "context": "{i18n(\"pages.schedule.253ac66fb8e1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Location",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1328,132 +1440,8 @@
           "context": "{i18nRich(\"pages.schedule.2589da741b80\", { value: hhmmWin(win.from), value2: hhmmWin(win.to) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.28ee8c1f603e",
-      "source": "{value}月{value2}日 – {value3}日",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(weekStart.getMonth() + 1)"
-        },
-        {
-          "name": "value2",
-          "expression": "String(weekStart.getDate())"
-        },
-        {
-          "name": "value3",
-          "expression": "String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate())"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 812,
-          "context": "mode === \"timetable\"\n      ? i18n(\"pages.schedule.28ee8c1f603e\", { value: String(weekStart.getMonth() + 1), value2: String(weekStart.getDate()), value3: String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate()) })\n      : i18n(\"pages.schedule.0f02af2d5985\", { value: String(anchor.getFullYear()), value2: String(anchor.getMonth() + 1) })"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.2961168962be",
-      "source": "周三",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 69
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1321,
-          "context": "{i18n(\"pages.schedule.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.2f9daa828907",
-      "source": "删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1324,
-          "context": "{i18n(\"pages.schedule.2f9daa828907\")}"
-        }
-      ],
-      "translation": "Delete",
+      "translation": "Show periods {value}–{value2}",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.302f7d04d98f",
-      "source": "考试详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1213,
-          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.302f7d04d98f\") : i18n(\"pages.schedule.22519a88484f\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.30fd49298c03",
-      "source": "下一年",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1078,
-          "context": "{i18n(\"pages.schedule.30fd49298c03\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.310a9aa08211",
-      "source": "本周暂无排课与日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 933,
-          "context": "winLoading ? i18n(\"pages.schedule.48cbf2cb0bd7\") : i18n(\"pages.schedule.310a9aa08211\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

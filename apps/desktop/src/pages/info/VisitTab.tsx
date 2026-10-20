@@ -31,8 +31,16 @@ const PAGE_HINT = () => i18n("pages.info.visittab.35ad08711b68");
 const LOGIN_HINT = () => i18n("pages.info.visittab.0a2bc74c4275");
 const LOGIN_HINT_2 = () => i18n("pages.info.visittab.861a76f9d065");
 const SUBMIT_HINT = () => i18n("pages.info.visittab.b72e3073880e");
-const DRAFT_FROM_OH = () => i18n("pages.info.visittab.af16cc0b5325");
-const AUTO_SUBMIT_FROM_OH = () => i18n("pages.info.visittab.65897f00fbc6");
+// Notes starting with "@" hold a message key and re-resolve on locale switch.
+// Known keys are spelled out so the i18n checker can verify every message reference.
+const resolveNote = (n: string | null): string | null => {
+  if (n === "@pages.info.visittab.af16cc0b5325") return i18n("pages.info.visittab.af16cc0b5325");
+  if (n === "@pages.info.visittab.65897f00fbc6") return i18n("pages.info.visittab.65897f00fbc6");
+  if (n === "@pages.info.visittab.e22da1c2173d") return i18n("pages.info.visittab.e22da1c2173d");
+  return n;
+};
+const DRAFT_FROM_OH = "pages.info.visittab.af16cc0b5325";
+const AUTO_SUBMIT_FROM_OH = "pages.info.visittab.65897f00fbc6";
 const CONFIRM_TITLE = () => i18n("pages.info.visittab.f733797ef61a");
 const LOAD_FAIL = () => i18n("pages.info.visittab.8d66f991153b");
 const SUBMIT_FAIL = () => i18n("pages.info.visittab.0b0682ac2f83");
@@ -82,7 +90,7 @@ export function VisitTab() {
       confirmed: wantAuto ? true : false,
       visitors: patch.visitors?.length ? patch.visitors : f.visitors,
     }));
-    setNote(wantAuto ? AUTO_SUBMIT_FROM_OH() : DRAFT_FROM_OH());
+    setNote(wantAuto ? `@${AUTO_SUBMIT_FROM_OH}` : `@${DRAFT_FROM_OH}`);
     if (wantAuto) setAutoSubmit(true);
     clearVisitDraft();
   }, [draftVersion]);
@@ -158,7 +166,7 @@ export function VisitTab() {
     setNote(null);
     try {
       await visitClient.submitReport(form, model);
-      setNote(i18n("pages.info.visittab.e22da1c2173d"));
+      setNote("@pages.info.visittab.e22da1c2173d");
       setForm(emptyDraft());
       const mine = await visitClient.myReports();
       setRows(mine.rows);
@@ -190,7 +198,7 @@ export function VisitTab() {
               <Btn variant="solid" onClick={() => void load()}>{i18n("pages.info.visittab.fd9918edd55e")}</Btn>
               <Btn onClick={() => void openExternal(VISIT_MOBILE_ENTRY)}>{i18n("pages.info.visittab.1ecea7d51b20")}</Btn>
             </Inline>
-            {note ? <Text tone="quiet">{note}</Text> : null}
+            {note ? <Text tone="quiet">{resolveNote(note)}</Text> : null}
           </Stack>
         </Card>
       </Stack>
@@ -225,7 +233,7 @@ export function VisitTab() {
   return (
     <Stack gap={3}>
       <Banner tone="info" title={i18n("pages.info.visittab.99f047c591bb")}>{PAGE_HINT()}</Banner>
-      {note ? <Banner tone="success" title={i18n("pages.info.visittab.f56c6c82203b")}>{note}</Banner> : null}
+      {note ? <Banner tone="success" title={i18n("pages.info.visittab.f56c6c82203b")}>{resolveNote(note)}</Banner> : null}
 
       <Card>
         <Stack gap={3}>

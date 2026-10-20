@@ -1,7 +1,161 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.notifydoctor.60d7f4ea2680",
+      "source": "槽位{k}:{v}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "k",
+          "expression": "String(k)"
+        },
+        {
+          "name": "v",
+          "expression": "String(v)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 99,
+          "context": "([k, v]) => i18n(\"state.notifydoctor.60d7f4ea2680\", { k: String(k), v: String(v) })"
+        }
+      ],
+      "translation": "Slot {k}: {v}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.6726f815e5dd",
+      "source": "（{warned} 项提示）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "warned",
+          "expression": "String(warned)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 63,
+          "context": "warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\""
+        }
+      ],
+      "translation": "({warned} warnings)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.6dfd9883ec6d",
+      "source": "通知授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 78,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"fail\", i18n(\"state.notifydoctor.d9540c4fcc17\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 81,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"ok\", i18n(\"state.notifydoctor.521e65ffc7d0\"))"
+        }
+      ],
+      "translation": "Notification permission",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.76e3238d6fee",
+      "source": "系统读到 {length} 个小组件尺寸（{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(ws.providersRegistered.length)"
+        },
+        {
+          "name": "value",
+          "expression": "String(ws.providersRegistered.join(\"、\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 105,
+          "context": "ws.providersRegistered.length === 0\n          ? i18n(\"state.notifydoctor.f8cd5feb5360\")\n          : i18n(\"state.notifydoctor.76e3238d6fee\", { length: String(ws.providersRegistered.length), value: String(ws.providersRegistered.join(\"、\")) })"
+        }
+      ],
+      "translation": "The system read {length} widget sizes ({value})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.7941c9adf8cc",
+      "source": "自检失败：{failed} 项不通过{value}——见下方第一处「不通过」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "failed",
+          "expression": "String(failed)"
+        },
+        {
+          "name": "value",
+          "expression": "String(warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 64,
+          "context": "ok\n      ? i18n(\"state.notifydoctor.c273c2086a0d\", { length: String(steps.length), value: String(warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\") })\n      : i18n(\"state.notifydoctor.7941c9adf8cc\", { failed: String(failed), value: String(warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\") })"
+        }
+      ],
+      "translation": "Self-check failed: {failed} items did not pass{value} — see the first \"not passed\" below",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.89f5f5eed848",
+      "source": "精确提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 87,
+          "context": "push(\n      \"exact\",\n      i18n(\"state.notifydoctor.89f5f5eed848\"),\n      st.exact ? \"ok\" : \"warn\",\n      st.exact ? i18n(\"state.notifydoctor.cafc3774b86b\") : i18n(\"state.notifydoctor.c8b5af17e6d2\"),\n    )"
+        }
+      ],
+      "translation": "Exact alarms",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.91e36d30a350",
+      "source": "、{warned} 项提示",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "warned",
+          "expression": "String(warned)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 64,
+          "context": "warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\""
+        }
+      ],
+      "translation": ", {warned} warnings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.notifydoctor.962a6e0b8f61",
       "source": "桌面已放 {placed} 个（宿主 {hostPlaced}）{slotInfo}",
@@ -27,8 +181,8 @@
           "context": "placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{placed} placed on the desktop ({hostPlaced} in the host){slotInfo}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -43,8 +197,8 @@
           "context": "push(\"deliver\", i18n(\"state.notifydoctor.a14a16f450ae\"), sent ? \"ok\" : \"fail\", sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delivery test",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -59,8 +213,8 @@
           "context": "r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -75,8 +229,8 @@
           "context": "titles || i18n(\"state.notifydoctor.a7320eda2464\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(No plugin is using a slot currently)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -91,8 +245,8 @@
           "context": "probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Probes revoked",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -107,8 +261,8 @@
           "context": "push(\"cleanup\", i18n(\"state.notifydoctor.b1a8b45ace8b\"), \"ok\", probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Probe cleanup",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -128,8 +282,8 @@
           "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.b28333fd00e3\", { value: String(String(e).slice(0, 100)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scheduling call failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -153,8 +307,8 @@
           "context": "ok\n      ? i18n(\"state.notifydoctor.c273c2086a0d\", { length: String(steps.length), value: String(warned ? i18n(\"state.notifydoctor.6726f815e5dd\", { warned: String(warned) }) : \"\") })\n      : i18n(\"state.notifydoctor.7941c9adf8cc\", { failed: String(failed), value: String(warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Self-check passed: {length} items{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -169,8 +323,8 @@
           "context": "st.exact ? i18n(\"state.notifydoctor.cafc3774b86b\") : i18n(\"state.notifydoctor.c8b5af17e6d2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not allowed: the system may delay delivery by a few minutes (nothing is lost). You can allow it in system settings under \"Alarms & reminders\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -185,8 +339,8 @@
           "context": "st.exact ? i18n(\"state.notifydoctor.cafc3774b86b\") : i18n(\"state.notifydoctor.c8b5af17e6d2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exact alarms allowed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -201,8 +355,8 @@
           "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"fail\", i18n(\"state.notifydoctor.d9540c4fcc17\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not authorized: reminders cannot be sent. Enable notification permission for this app in system settings, then run the self-check again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -217,8 +371,8 @@
           "context": "push(\n        \"widget\",\n        i18n(\"state.notifydoctor.e8898c88f026\"),\n        widgetStatus,\n        [\n          providerInfo,\n          ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\"),\n          placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\"),\n          titles || i18n(\"state.notifydoctor.a7320eda2464\"),\n        ].join(\"；\"),\n      )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Widgets",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -233,8 +387,8 @@
           "context": "placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No widgets have been placed on the desktop yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -254,8 +408,8 @@
           "context": "ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Snapshot generated at {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -270,8 +424,8 @@
           "context": "ws.providersRegistered.length === 0\n          ? i18n(\"state.notifydoctor.f8cd5feb5360\")\n          : i18n(\"state.notifydoctor.76e3238d6fee\", { length: String(ws.providersRegistered.length), value: String(ws.providersRegistered.join(\"、\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system did not read any widget sizes (the manifest merge may not have taken effect; please report this to the developer)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -286,8 +440,8 @@
           "context": "return i18n(\"state.notifyplan.7f9ab29b611d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courses and schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -302,8 +456,8 @@
           "context": "return i18n(\"state.notifyplan.9b702fb32d62\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignment due dates",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -318,8 +472,8 @@
           "context": "return i18n(\"state.notifyplan.fe593e7c8ef9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Daily briefing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -334,8 +488,8 @@
           "context": "text: i18n(\"state.notifystatus.03f0a153cd11\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notifications are not authorized, so reminders cannot be sent. Enable notification permission for this app in system settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -350,8 +504,8 @@
           "context": "s.backend === \"android\" ? i18n(\"state.notifystatus.8657a95fc74c\") : i18n(\"state.notifystatus.13632693e676\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System notification settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -366,8 +520,8 @@
           "context": "return i18n(\"state.notifystatus.571c1a7180e0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Android notification channels + scheduled alarms",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -382,8 +536,8 @@
           "context": "label: i18n(\"state.notifystatus.6fd3264bb821\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Allow exact alarms",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -398,8 +552,8 @@
           "context": "text: i18n(\"state.notifystatus.8533a6995d6d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System notifications are not integrated on this platform yet, so reminders will not be sent (Tasks are still visible in the app).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -414,8 +568,8 @@
           "context": "s.backend === \"android\" ? i18n(\"state.notifystatus.8657a95fc74c\") : i18n(\"state.notifystatus.13632693e676\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notification channel settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -430,8 +584,8 @@
           "context": "return i18n(\"state.notifystatus.94b0e03aba0d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Windows notifications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -451,8 +605,8 @@
           "context": "text: i18n(\"state.notifystatus.a9c6ad5d54e8\", { label: String(label) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notifications are ready ({label}).",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -467,8 +621,8 @@
           "context": "label: i18n(\"state.notifystatus.b19160883cfe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Authorize in system settings",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -483,8 +637,8 @@
           "context": "return i18n(\"state.notifystatus.ca8b58ed4c71\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "macOS Notification Center",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -499,8 +653,8 @@
           "context": "text: i18n(\"state.notifystatus.cef529305e3b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notifications are available; \"Exact alarms\" is not allowed yet, so delivery may be slightly delayed (delivery itself is unaffected). You can allow exact alarms in system settings under \"Alarms & reminders\".",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -515,8 +669,8 @@
           "context": "return i18n(\"state.onboarding.00b2d49ca0de\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info master",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -531,8 +685,8 @@
           "context": "return i18n(\"state.onboarding.088b27d0ed00\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -547,8 +701,8 @@
           "context": "return i18n(\"state.onboarding.1052251daaf7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep only Home, Web Learning, Info, Life, and Online services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -563,8 +717,8 @@
           "context": "return i18n(\"state.onboarding.257c80cc4f44\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation pro",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -579,8 +733,8 @@
           "context": "return i18n(\"state.onboarding.2e67474d8dad\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Minimal",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -595,8 +749,8 @@
           "context": "return i18n(\"state.onboarding.42803ef36875\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Focused on schedule, reservations, venues, and dorm facilities",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -611,8 +765,8 @@
           "context": "return i18n(\"state.onboarding.524a5d266a8f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grades, exams, student records, news, and Web Learning all included",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -627,8 +781,8 @@
           "context": "return i18n(\"state.onboarding.8c45a98b34de\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All features are in the sidebar, for those who want everything at a glance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -643,8 +797,8 @@
           "context": "reason: i18n(\"state.org.1e4404a53a1d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share code version not supported",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -659,8 +813,8 @@
           "context": "reason: i18n(\"state.org.1f5874fd9b2a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not a OneTHU organization invite share code (must start with ONORG1.)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -675,8 +829,8 @@
           "context": "reason: i18n(\"state.org.22f86a2a8ff2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "There are no invite share codes to delete",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -691,8 +845,8 @@
           "context": "reason: i18n(\"state.org.3dc0aa93b10c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code content is corrupted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -707,8 +861,8 @@
           "context": "reason: i18n(\"state.org.7aa0c43fe053\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code content is not valid JSON",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -723,8 +877,8 @@
           "context": "reason: i18n(\"state.org.989f1cde10a3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share code verification failed (it may have been copied incompletely)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -739,8 +893,8 @@
           "context": "dec.reason ?? i18n(\"state.org.c4591b5b1fe8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code could not be parsed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -755,8 +909,8 @@
           "context": "reason: i18n(\"state.org.c6b6912e4bd5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The local record was deleted; revoking the cloud drive share did not succeed (it may have expired)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -771,8 +925,8 @@
           "context": "new Error(i18n(\"state.orgsync.0ed5ca0bc425\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This GitLab account is already an organization member. Use the edit or role menu instead.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -787,8 +941,8 @@
           "context": "new Error(i18n(\"state.orgsync.1345eb189bbb\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "While a permission change is incomplete, you can only detach resources. Complete the retry before adding resources.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -803,8 +957,8 @@
           "context": "new Error(i18n(\"state.orgsync.15f11e1c75da\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep at least one organization Owner on the server",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -819,8 +973,8 @@
           "context": "new Error(i18n(\"state.orgsync.275a305b9f8b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This Cloud Drive email is already bound to another organization member",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -835,8 +989,8 @@
           "context": "new Error(i18n(\"state.orgsync.2da1ab0ba765\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current GitLab account is not an Owner of this group",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -851,8 +1005,8 @@
           "context": "label:i18n(\"state.orgsync.43f661af3a74\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Verify all permissions",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -867,8 +1021,8 @@
           "context": "new Error(i18n(\"state.orgsync.47b018369530\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The previous permission change is not finished yet. Retry and complete it first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -883,8 +1037,8 @@
           "context": "new Error(i18n(\"state.orgsync.5784fd684c09\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This organization has not enabled collaboration yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -899,8 +1053,8 @@
           "context": "new Error(i18n(\"state.orgsync.66f49a483a9b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fill in a Cloud Drive email for each organization member before linking libraries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -915,8 +1069,8 @@
           "context": "new Error(i18n(\"state.orgsync.68b2e1779e6b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collaboration requires your own standalone private GitLab group; public groups or subgroups with inherited permissions cannot be used",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -931,8 +1085,8 @@
           "context": "new Error(i18n(\"state.orgsync.6ad659d36005\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A GitLab Maintainer special permission exists in this organization, so it cannot be guaranteed that only Owners can change management content. Change it to Owner or regular member in GitLab first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -947,8 +1101,8 @@
           "context": "new Error(i18n(\"state.orgsync.7bdb46eb7930\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current GitLab account does not have access to this organization yet. Ask an Owner to add your GitLab account first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -963,8 +1117,8 @@
           "context": "new Error(i18n(\"state.orgsync.839d06db8102\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The metadata project must be a private project in this organization that is not shared with other groups",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -979,8 +1133,8 @@
           "context": "new Error(i18n(\"state.orgsync.8d6293d606a5\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Have another Owner perform your removal or downgrade",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -995,8 +1149,8 @@
           "context": "new Error(i18n(\"state.orgsync.8defedbcd2a0\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization collaboration address is invalid",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1011,8 +1165,8 @@
           "context": "new Error(i18n(\"state.orgsync.8f58376b6cc9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization metadata project has extra direct member grants. Remove them in GitLab first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1027,8 +1181,8 @@
           "context": "new Error(i18n(\"state.orgsync.9278a31bb0c8\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change Maintainers in the group to Owners or regular members before initializing collaboration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1043,8 +1197,8 @@
           "context": "new Error(i18n(\"state.orgsync.a6cbed9d57aa\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "While a permission change is incomplete, you can only add Cloud Drive emails for existing members. Complete the retry before adjusting roles or members.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1059,8 +1213,8 @@
           "context": "new Error(i18n(\"state.orgsync.ab3125f51556\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization metadata project is shared with other groups. Remove the extra group grants in GitLab first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1080,8 +1234,8 @@
           "context": "new Error(i18n(\"state.orgsync.b4a14ad2c5e3\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Server-side protection for the organization branch {name} does not meet requirements. Ask an Owner to check the GitLab branch protection.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1096,8 +1250,8 @@
           "context": "new Error(i18n(\"state.orgsync.b9043bc090ae\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "To change a GitLab account, remove the old member first, then add the new one.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1112,8 +1266,8 @@
           "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current account has no permission to edit organization content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1133,8 +1287,8 @@
           "context": "new Error(i18n(\"state.orgsync.cd3d301c9ac0\", { value: String(errors.join(\"；\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The permission change is not finished: {value}. Fix the cause and click retry; completed steps will not be granted again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1149,8 +1303,8 @@
           "context": "new Error(i18n(\"state.orgsync.d42bb89b365b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "There are too many branch protection rules to fully verify the organization configuration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1165,8 +1319,8 @@
           "context": "new Error(i18n(\"state.orgsync.e6793d4dc90e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This collaboration project already belongs to another organization and cannot be overwritten with local content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1181,8 +1335,8 @@
           "context": "new Error(i18n(\"state.orgsync.f1478672fcff\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enter the exact GitLab username and Tsinghua Cloud Drive email",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1197,8 +1351,8 @@
           "context": "new Error(i18n(\"state.orgsync.f9a3b8011053\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization not found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1213,124 +1367,8 @@
           "context": "new Error(i18n(\"state.orgsync.fa0fdd1e567b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.fb99a121e507",
-      "source": "同步关联资源权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 231,
-          "context": "label:i18n(\"state.orgsync.fb99a121e507\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsync.fc4f3897fb63",
-      "source": "组织资料必须位于对应 GitLab 私有群组的私有项目内",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 32,
-          "context": "new Error(i18n(\"state.orgsync.fc4f3897fb63\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.ownerOnly",
-      "source": "只有服务器上的组织负责人可以执行此操作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 66,
-          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.permissionsUnverified",
-      "source": "关联资源权限尚未核对，请负责人完成权限核对",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 50,
-          "context": "config.permissionsVerified !== 1 ? i18n(\"state.orgsync.permissionsUnverified\") : undefined"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.removeMemberLabel",
-      "source": "移除成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 201,
-          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsync.updateMemberLabel",
-      "source": "更新 {username}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "username"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 201,
-          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsynccore.13447b8f6ab6",
-      "source": "降权回读不符",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSyncCore.ts",
-          "line": 168,
-          "context": "new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No usable GitLab username was found. Ask the other person to confirm it in their GitLab profile.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

@@ -223,6 +223,34 @@
     "enum.label.452c7b10d57a": {
       "zh": "页面",
       "en": ""
+    },
+    "components.experiencemodepicker.463e4036289e": {
+      "zh-CN": "只留必需",
+      "en-US": "Essentials only"
+    },
+    "components.experiencemodepicker.bc2310856d94": {
+      "zh-CN": "常用在手边",
+      "en-US": "Frequent picks at hand"
+    },
+    "components.experiencemodepicker.96d67525c77e": {
+      "zh-CN": "自由组织",
+      "en-US": "Organize freely"
+    },
+    "pages.info.visittab.af16cc0b5325": {
+      "zh-CN": "已按你的说明填好草稿：核对后点「提交报备」。",
+      "en-US": "Draft filled in from your notes: review it, then tap \"Submit registration\"."
+    },
+    "pages.info.visittab.65897f00fbc6": {
+      "zh-CN": "已按你的要求填好并自动提交报备。",
+      "en-US": "Filled in and submitted the registration automatically as you asked."
+    },
+    "pages.info.visittab.8d66f991153b": {
+      "zh-CN": "读取报备信息失败：请点「重新加载」再试一次。",
+      "en-US": "Failed to load registration info: tap \"Reload\" and try again."
+    },
+    "pages.info.visittab.0b0682ac2f83": {
+      "zh-CN": "提交没有成功：请检查填写内容后重试，或到官方页面提交。",
+      "en-US": "Submission did not go through: check the fields and try again, or submit on the official page."
     }
   }
 }

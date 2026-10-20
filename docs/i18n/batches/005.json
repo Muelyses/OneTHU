@@ -1,5 +1,5 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -14,8 +14,8 @@
           "context": "i18n(\"components.devpanel.3ae6ad22bb00\") + buildTimeText()"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "dev build ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +30,8 @@
           "context": "{i18n(\"components.devpanel.3eb1a705053a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(none)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +46,8 @@
           "context": "{i18n(\"components.devpanel.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +62,8 @@
           "context": "copy(devLogText(), i18n(\"components.devpanel.45eb3fe0c084\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Frontend logs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +83,8 @@
           "context": "return i18n(\"components.devpanel.4d8c1c5b4283\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +99,8 @@
           "context": "{i18n(\"components.devpanel.5203112d0597\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Build time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +115,8 @@
           "context": "{i18n(\"components.devpanel.56b73ac398f5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Viewport",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,8 +131,8 @@
           "context": "i18n(\"components.devpanel.7915396dd491\") + String(err instanceof Error ? err.message : err)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy failed: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +147,8 @@
           "context": "i18n(\"components.devpanel.87809c747d7f\") + window.innerWidth"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Viewport: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +163,8 @@
           "context": "i18n(\"components.devpanel.8b60354a8cb0\") + APP_VERSION"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Version: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -179,8 +179,8 @@
           "context": "copy(diagnostics(), i18n(\"components.devpanel.9167ee8b67db\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Diagnostics",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -200,8 +200,8 @@
           "context": "{i18nRich(\"components.devpanel.954ac65f7b6e\", { length: logs.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Frontend logs ({length} entries, newest last; already synced to onethu-debug.log)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -216,8 +216,8 @@
           "context": "i18n(\"components.devpanel.961ef8b1bc21\") + where"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exported to ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +232,8 @@
           "context": "{i18n(\"components.devpanel.ab87bb2473af\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy frontend logs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +248,8 @@
           "context": "{i18n(\"components.devpanel.ba0230926769\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Portrait safe frame",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -264,8 +264,8 @@
           "context": "{i18n(\"components.devpanel.bbce140b7682\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy diagnostics",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -280,8 +280,8 @@
           "context": "what + i18n(\"components.devpanel.cce28dd1fcdf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copied to clipboard",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -296,8 +296,8 @@
           "context": "{i18n(\"components.devpanel.d8456739a2ed\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Host",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -312,8 +312,8 @@
           "context": "busy ? i18n(\"components.devpanel.dce6e572314e\") : i18n(\"components.devpanel.24eacefddcaf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exporting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -328,8 +328,8 @@
           "context": "i18n(\"components.devpanel.f1943a24f844\") + buildTimeText()"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Build time: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -344,8 +344,8 @@
           "context": "i18n(\"components.devpanel.ff0557f3ef7f\") + (nav ? nav.language : \"?\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Language: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -365,8 +365,8 @@
           "context": "{i18n(\"components.downloadopenbuttons.4c8a4e3da39e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open file",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -381,8 +381,8 @@
           "context": "{i18n(\"components.downloadopenbuttons.74e3f19da118\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open folder (reveal file)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -402,8 +402,8 @@
           "context": "{i18n(\"components.downloadopenbuttons.7d0d5850515d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open folder",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -418,8 +418,8 @@
           "context": "{i18n(\"components.downloadopenbuttons.8e41f8c5d046\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open downloaded file",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -434,8 +434,8 @@
           "context": "{i18n(\"components.downloadopenbuttons.ab6abf6a2149\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open file (default app)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -459,8 +459,8 @@
           "context": "showToast(i18nMsg(\"components.downloadopenbuttons.ba0f72777540\", { value: String(kind === \"file\" ? i18n(\"components.downloadopenbuttons.4c8a4e3da39e\") : i18n(\"components.downloadopenbuttons.7d0d5850515d\")), value2: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} failed: {value2}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -475,8 +475,8 @@
           "context": "{i18n(\"components.exchangefeedback.43c75d0b128e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exchange cards and content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -491,8 +491,8 @@
           "context": "state?.phase==='error'?i18n(\"components.exchangefeedback.a7ff58014f69\"):i18n(\"components.exchangefeedback.a09140ba2076\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to share · exchange content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -507,8 +507,8 @@
           "context": "state?.phase==='error'?i18n(\"components.exchangefeedback.a7ff58014f69\"):i18n(\"components.exchangefeedback.a09140ba2076\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exchange not completed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -523,8 +523,8 @@
           "context": "state?.phase==='reading'||state?.phase==='ready'?i18n(\"components.exchangefeedback.b4dc674af8e0\"):i18n(\"components.exchangefeedback.c0b3fbff51cc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse progress",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -539,8 +539,8 @@
           "context": "state?.phase==='reading'||state?.phase==='ready'?i18n(\"components.exchangefeedback.b4dc674af8e0\"):i18n(\"components.exchangefeedback.c0b3fbff51cc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Done",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -555,8 +555,8 @@
           "context": "state?.phase==='success'?i18n(\"components.exchangefeedback.fd5604fb98da\"):state?.phase==='error'?i18n(\"components.exchangefeedback.a7ff58014f69\"):i18n(\"components.exchangefeedback.a09140ba2076\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Received",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -571,8 +571,8 @@
           "context": "return i18n(\"components.experiencemodepicker.26cbedbe0b4f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Arrange the four shortcuts as you like; the fifth tile, \"More features\", expands everything.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -587,8 +587,8 @@
           "context": "return i18n(\"components.experiencemodepicker.32b0d50230a3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keeps only five features: study, reservations, daily life, timetable, and news.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -603,8 +603,24 @@
           "context": "return i18n(\"components.experiencemodepicker.413088d3b1a0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full mode",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.experiencemodepicker.463e4036289e",
+      "source": "只留必需",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
+          "line": 5,
+          "context": "return i18n(\"components.experiencemodepicker.463e4036289e\");"
+        }
+      ],
+      "translation": "Essentials only",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -619,8 +635,8 @@
           "context": "return i18n(\"components.experiencemodepicker.5d3752839f3f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open and use, no organizing needed.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -635,8 +651,8 @@
           "context": "return i18n(\"components.experiencemodepicker.7dbdf431adc5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Experience the full convenience and customizability of the OneTHU services.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -651,8 +667,40 @@
           "context": "return i18n(\"components.experiencemodepicker.8dc9a2960ed1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Board, Stash and handoff, tabs/workspaces, organizations, plugins, and OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.experiencemodepicker.96d67525c77e",
+      "source": "自由组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
+          "line": 7,
+          "context": "return i18n(\"components.experiencemodepicker.96d67525c77e\");"
+        }
+      ],
+      "translation": "Organize freely",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.experiencemodepicker.bc2310856d94",
+      "source": "常用在手边",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
+          "line": 6,
+          "context": "return i18n(\"components.experiencemodepicker.bc2310856d94\");"
+        }
+      ],
+      "translation": "Frequent picks at hand",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -667,8 +715,8 @@
           "context": "return i18n(\"components.experiencemodepicker.c89246ea218f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Minimal mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -683,8 +731,8 @@
           "context": "return i18n(\"components.experiencemodepicker.cbe971c9e2fc\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Includes all essential features.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -699,8 +747,8 @@
           "context": "return i18n(\"components.experiencemodepicker.d8aa9757d2b3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Practical mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -715,8 +763,8 @@
           "context": "{i18n(\"components.explorer.bottombar.056c999fb13a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace navigation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -736,8 +784,8 @@
           "context": "{i18n(\"components.explorer.bottombar.1f24049e6f6b\", { count: String(count) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tabs ({count})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -757,8 +805,8 @@
           "context": "phone ? \"OneGO!\" : i18n(\"components.explorer.bottombar.7f1d9dd04cd1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Me",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -794,8 +842,8 @@
           "context": "{i18n(\"components.explorer.foldericonpicker.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -810,8 +858,8 @@
           "context": "{i18n(\"components.explorer.foldericonpicker.6d8adad124d0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose an icon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -826,8 +874,8 @@
           "context": "{i18n(\"components.explorer.foldericonpicker.b86fc3eba8dd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A OnePage uses the fist logo by default; you can switch to any of the icons below",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -842,8 +890,8 @@
           "context": "i18n(\"components.explorer.foldericonpicker.ea3db278696e\") + k"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Icon ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -863,8 +911,8 @@
           "context": "{i18nRich(\"components.explorer.foldericonpicker.f45caa2cd437\", { name: board.name })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Icon for \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -884,7 +932,7 @@
           "context": "{i18n(\"components.explorer.homespheres.005601165516\")}"
         }
       ],
-      "translation": "All services",
+      "translation": "All features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -900,8 +948,8 @@
           "context": "inHome ? i18n(\"components.explorer.homespheres.ed9b9a23bf82\") : i18n(\"components.explorer.homespheres.53d3695385a7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add to Home ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -916,8 +964,8 @@
           "context": "{i18n(\"components.explorer.homespheres.8bc0ff588cb7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -937,7 +985,7 @@
           "context": "{i18n(\"components.explorer.homespheres.9c7a9fcee92f\")}"
         }
       ],
-      "translation": "More",
+      "translation": "More features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -958,7 +1006,7 @@
           "context": "{i18n(\"components.explorer.homespheres.a45eee2e0119\")}"
         }
       ],
-      "translation": "Primary services",
+      "translation": "Main features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -974,7 +1022,7 @@
           "context": "{i18n(\"components.explorer.homespheres.a6f3e6634e51\")}"
         }
       ],
-      "translation": "Service catalog",
+      "translation": "Feature catalog",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1006,8 +1054,8 @@
           "context": "inHome ? i18n(\"components.explorer.homespheres.ed9b9a23bf82\") : i18n(\"components.explorer.homespheres.53d3695385a7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove from Home ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1038,8 +1086,8 @@
           "context": "lit ? i18n(\"components.explorer.ohcapsule.825750d712cc\") : i18n(\"components.explorer.ohcapsule.009a73342eab\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save as OnePage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1054,8 +1102,8 @@
           "context": "isOpen ? undefined : i18n(\"components.explorer.ohcapsule.245c82d696b4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to open search / OH; press and hold to talk",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1075,8 +1123,8 @@
           "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.4d403cab80e6\") : i18n(\"components.explorer.ohcapsule.3e11141c195b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search or ask OH",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1091,8 +1139,8 @@
           "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.4d403cab80e6\") : i18n(\"components.explorer.ohcapsule.3e11141c195b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ask Xiaoda",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1107,8 +1155,8 @@
           "context": "ui.hint || i18n(\"components.explorer.ohcapsule.81f0f45f7ad2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Release to send, slide up to cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1123,8 +1171,8 @@
           "context": "lit ? i18n(\"components.explorer.ohcapsule.825750d712cc\") : i18n(\"components.explorer.ohcapsule.009a73342eab\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove star",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1139,8 +1187,8 @@
           "context": "lit ? i18n(\"components.explorer.ohcapsule.cb013b74bfc3\") : i18n(\"components.explorer.ohcapsule.82ae0981093e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "One star: save the current page as a OnePage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1155,8 +1203,8 @@
           "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.c9ec33563d39\") : i18n(\"components.explorer.ohcapsule.afa493184dbe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ask OH…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1171,8 +1219,8 @@
           "context": "ui.mode === \"xiaoda\" ? i18n(\"components.explorer.ohcapsule.c9ec33563d39\") : i18n(\"components.explorer.ohcapsule.afa493184dbe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ask Xiaoda…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1187,8 +1235,8 @@
           "context": "lit ? i18n(\"components.explorer.ohcapsule.cb013b74bfc3\") : i18n(\"components.explorer.ohcapsule.82ae0981093e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove star: deletes this OnePage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1203,8 +1251,8 @@
           "context": "isOpen ? i18n(\"components.explorer.ohcapsule.3e11141c195b\") : i18n(\"components.explorer.ohcapsule.d134f5438ae2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search and OH (tap to open, press and hold to talk)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1235,8 +1283,8 @@
           "context": "label:i18n(\"components.explorer.onegobar.0552e329ccf8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1251,8 +1299,8 @@
           "context": "openFormModal(i18nMsg(\"components.explorer.onegobar.0c898fe25ba6\"),[{key:'name',label:i18nMsg(\"components.explorer.onegobar.d44e9b3d3b31\"),required:true,default:e.title}])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename OnePage",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1267,7 +1315,7 @@
           "context": "label:i18n(\"components.explorer.onegobar.17eac802d3f7\")"
         }
       ],
-      "translation": "Send to vault",
+      "translation": "Send to Stash",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
@@ -1283,8 +1331,8 @@
           "context": "{i18n(\"components.explorer.onegobar.2d1cb40d3c6d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneGO! favorites bar",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1299,56 +1347,8 @@
           "context": "e.kind==='board'?'OnePage':i18n(\"components.explorer.onegobar.37979829426b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.onegobar.4cfe5f20b9dd",
-      "source": "已收进暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
-          "line": 29,
-          "context": "r.ok?i18nMsg(\"components.explorer.onegobar.4cfe5f20b9dd\"):i18nMsg(\"components.explorer.onegobar.eaaa11207297\")"
-        }
-      ],
-      "translation": "Sent to vault",
+      "translation": "Workspace",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.onegobar.810c7fbfef76",
-      "source": "更换图标…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
-          "line": 28,
-          "context": "label:i18n(\"components.explorer.onegobar.810c7fbfef76\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.explorer.onegobar.a1b27175f9e6",
-      "source": "收藏的 OnePage 和工作区会放在这里",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
-          "line": 35,
-          "context": "{i18n(\"components.explorer.onegobar.a1b27175f9e6\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

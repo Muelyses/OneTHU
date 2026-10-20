@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.homecards.119099ab1bad",
+      "source": "今日课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 113,
+          "context": "return i18n(\"lib.homecards.119099ab1bad\");"
+        }
+      ],
+      "translation": "Today's classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.13a9d4b0c392",
+      "source": "网络学堂 · 切换数据学期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 142,
+          "context": "return i18n(\"lib.homecards.13a9d4b0c392\");"
+        }
+      ],
+      "translation": "Web Learning · Switch data semester",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.homecards.14259c8a65a8",
+      "source": "未交作业 · 截止 · 今日课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/homeCards.ts",
+          "line": 118,
+          "context": "return i18n(\"lib.homecards.14259c8a65a8\");"
+        }
+      ],
+      "translation": "Unsubmitted assignments · Due · Today's classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.homecards.14384c9d60cc",
       "source": "教学评估",
@@ -14,7 +62,7 @@
           "context": "return i18n(\"lib.homecards.14384c9d60cc\");"
         }
       ],
-      "translation": "Teaching evaluation",
+      "translation": "Course evaluation",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -30,8 +78,8 @@
           "context": "return i18n(\"lib.homecards.14e681cbe318\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Web Learning · Course notices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "return i18n(\"lib.homecards.1599af41d9c3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courses / Assignments / Notices / Files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "return i18n(\"lib.homecards.1c1ece1ebe90\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Dorm services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "return i18n(\"lib.homecards.211d36ccbe1e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today at a glance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +158,8 @@
           "context": "return i18n(\"lib.homecards.23530d9f428a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's tasks",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,7 +174,7 @@
           "context": "return i18n(\"lib.homecards.24be2018df29\");"
         }
       ],
-      "translation": "Payroll",
+      "translation": "Bank payroll",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -142,8 +190,8 @@
           "context": "return i18n(\"lib.homecards.2e6eca802ef8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Latest news",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -190,8 +238,8 @@
           "context": "return i18n(\"lib.homecards.33005938adb3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recent notices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -222,8 +270,8 @@
           "context": "return i18n(\"lib.homecards.390251ce8a9d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Device status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -238,8 +286,8 @@
           "context": "return i18n(\"lib.homecards.3b7240a9d253\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation · Seats and check-in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -254,8 +302,8 @@
           "context": "return i18n(\"lib.homecards.3d39419f4b36\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seats · Seminar rooms · Tap to manage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -270,8 +318,8 @@
           "context": "return i18n(\"lib.homecards.3e668eb1a6ae\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservations page · Dorm common spaces",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -286,8 +334,8 @@
           "context": "return i18n(\"lib.homecards.411769324590\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation · Seminar room applications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -334,8 +382,8 @@
           "context": "return i18n(\"lib.homecards.4d947325473f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Weather",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -350,8 +398,8 @@
           "context": "return i18n(\"lib.homecards.4f375a90d354\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dorm / Electricity / Water",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -366,8 +414,8 @@
           "context": "return i18n(\"lib.homecards.53090df93da8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Finance · Research assistant stipend",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -382,8 +430,8 @@
           "context": "return i18n(\"lib.homecards.5531576bd063\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Exam schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -398,8 +446,8 @@
           "context": "return i18n(\"lib.homecards.5a91ca6f1bdb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your next class today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -414,8 +462,8 @@
           "context": "return i18n(\"lib.homecards.5bdb39b4e305\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to open timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -430,8 +478,8 @@
           "context": "return i18n(\"lib.homecards.62fd8d15cf0a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Web Learning search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -478,8 +526,8 @@
           "context": "return i18n(\"lib.homecards.70d0c1b33626\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -494,8 +542,8 @@
           "context": "return i18n(\"lib.homecards.7ca0b3673bc7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Subscriptions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -510,8 +558,8 @@
           "context": "return i18n(\"lib.homecards.838814f1139e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Finance · Salary deposits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -526,8 +574,8 @@
           "context": "return i18n(\"lib.homecards.85a913c6a681\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recommended for you",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +590,8 @@
           "context": "return i18n(\"lib.homecards.88df420f8207\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exam schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +606,8 @@
           "context": "return i18n(\"lib.homecards.8e46dccaa4fb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Account and data",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -590,8 +638,8 @@
           "context": "return i18n(\"lib.homecards.95ce4af97b93\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Grade history",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +654,8 @@
           "context": "return i18n(\"lib.homecards.961b6374e9a5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Enrollment info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -622,8 +670,8 @@
           "context": "return i18n(\"lib.homecards.9e6a260920fb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -654,7 +702,7 @@
           "context": "return i18n(\"lib.homecards.a45eee2e0119\");"
         }
       ],
-      "translation": "Primary services",
+      "translation": "Main features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -670,8 +718,8 @@
           "context": "return i18n(\"lib.homecards.a9e8177b10ff\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Balance at a glance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -686,8 +734,8 @@
           "context": "return i18n(\"lib.homecards.aefd9d91e6da\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recommended by your usage habits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -702,8 +750,8 @@
           "context": "return i18n(\"lib.homecards.b3ed0c353c77\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Web Learning · Assignment list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -734,8 +782,8 @@
           "context": "return i18n(\"lib.homecards.c0c6bb8b8618\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -750,8 +798,8 @@
           "context": "return i18n(\"lib.homecards.c730a0bada79\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule and reminders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -782,8 +830,8 @@
           "context": "return i18n(\"lib.homecards.cce40ddbb7b9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info page · Fitness test",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -798,8 +846,8 @@
           "context": "return i18n(\"lib.homecards.cf05dea41f42\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Dorm hygiene checks",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -814,8 +862,8 @@
           "context": "return i18n(\"lib.homecards.d3a28cd3b434\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next class",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -830,8 +878,8 @@
           "context": "return i18n(\"lib.homecards.d4549b05b429\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to open the Life page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -846,8 +894,8 @@
           "context": "return i18n(\"lib.homecards.d9087a096dc2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course selection · Selected courses and waitlist",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -894,8 +942,8 @@
           "context": "return i18n(\"lib.homecards.e703d13e3468\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Finance · Invoice list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -910,7 +958,7 @@
           "context": "return i18n(\"lib.homecards.e81059e1a712\");"
         }
       ],
-      "translation": "Public space",
+      "translation": "Common space",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -926,8 +974,8 @@
           "context": "return i18n(\"lib.homecards.ebfa3e62fea6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to view details",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -958,8 +1006,8 @@
           "context": "return i18n(\"lib.homecards.ede028d7ec64\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All grades",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -974,8 +1022,8 @@
           "context": "return i18n(\"lib.homecards.ee6388006cb5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservations page · Sports venue time slots",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -990,8 +1038,8 @@
           "context": "return i18n(\"lib.homecards.fa8fe752727c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All course files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1006,8 +1054,8 @@
           "context": "return i18n(\"lib.homecards.fc7c1ff5f380\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info page · Semester schedule images",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1022,8 +1070,8 @@
           "context": "return i18n(\"lib.homecards.fcb73401e714\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Academic calendar · Key school events",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1054,8 +1102,8 @@
           "context": "return i18n(\"lib.homecards.fe7dbfcadf51\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Balance and transactions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1086,8 +1134,8 @@
           "context": "return i18n(\"lib.imagefilters.1073267e70f3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No processing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1102,8 +1150,8 @@
           "context": "new Error(i18n(\"lib.imagefilters.18b8640fe01c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This image can't be opened, please choose another one",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1118,8 +1166,8 @@
           "context": "return i18n(\"lib.imagefilters.1a407ccbb6dc\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Warm",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1134,8 +1182,8 @@
           "context": "return i18n(\"lib.imagefilters.47d88357c5ea\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Black and white",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1150,8 +1198,8 @@
           "context": "return i18n(\"lib.imagefilters.4b1db520af46\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Original",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1166,8 +1214,8 @@
           "context": "return i18n(\"lib.imagefilters.6403563723c7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Brighten and remove shadows",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1187,8 +1235,8 @@
           "context": "new Error(i18n(\"lib.imagefilters.6dfabd848137\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No canvas available in this environment, images can't be processed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1203,8 +1251,8 @@
           "context": "return i18n(\"lib.imagefilters.b9c153f4ea21\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sharper handwriting",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1219,8 +1267,8 @@
           "context": "return i18n(\"lib.imagefilters.c2a291b64f6b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scan",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1235,56 +1283,8 @@
           "context": "return i18n(\"lib.imagefilters.d4040b81cd67\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.imagefilters.e0cebe6ab1c6",
-      "source": "偏暖色调",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/imageFilters.ts",
-          "line": 41,
-          "context": "return i18n(\"lib.imagefilters.e0cebe6ab1c6\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.imagefilters.fc538f246da7",
-      "source": "锐化",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/imageFilters.ts",
-          "line": 40,
-          "context": "return i18n(\"lib.imagefilters.fc538f246da7\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.imagesave.23ba2e35420a",
-      "source": "图片内容为空",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/imageSave.ts",
-          "line": 96,
-          "context": "new Error(i18n(\"lib.imagesave.23ba2e35420a\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Black and white document",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

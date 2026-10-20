@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.helpsection.ebaa5fad9de2",
+      "source": "网络学堂、雨课堂、OJ 的作业都汇总在作业区；雨课堂要先扫码绑一次。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 27,
+          "context": "return i18n(\"components.helpsection.ebaa5fad9de2\");"
+        }
+      ],
+      "translation": "Assignments from Web Learning, Rain Classroom, and OJ are all aggregated in the assignments area; Rain Classroom needs a one-time QR scan to link.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.eea78fdb74ce",
+      "source": "打开导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 71,
+          "context": "{i18n(\"components.helpsection.eea78fdb74ce\")}"
+        }
+      ],
+      "translation": "Open the tour",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.f96e2a787c76",
+      "source": "我要预约图书馆座位、研讨间、体育",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 36,
+          "context": "return i18n(\"components.helpsection.f96e2a787c76\");"
+        }
+      ],
+      "translation": "I want to book library seats, study rooms, and sports venues",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.helpsection.faf8fc496688",
       "source": "这些都在设置里，下面直接带你到对应的栏目。",
@@ -14,8 +62,8 @@
           "context": "return i18n(\"components.helpsection.faf8fc496688\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "These are all in Settings; the buttons below take you straight to the right section.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "return i18n(\"components.homecoachmarks.3f1467fc681a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The main features dock is here. Anything you can't find is on the \"Services\" page, or search directly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -55,8 +103,8 @@
           "context": "{i18nRich(\"components.homecoachmarks.626caf19ebdb\", { value: idx + 1, length: avail.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} of {length}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -71,8 +119,8 @@
           "context": "{i18n(\"components.homecoachmarks.a54a0add5447\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Don't show again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -87,8 +135,8 @@
           "context": "return i18n(\"components.homecoachmarks.a698c6f322d5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag cards directly to arrange them; select one, then drag a corner to resize. The bottom toolbar lets you add and zoom anytime.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -103,8 +151,8 @@
           "context": "last ? i18n(\"components.homecoachmarks.de32e20193ad\") : i18n(\"components.homecoachmarks.df119e585ece\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Got it",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -119,8 +167,8 @@
           "context": "last ? i18n(\"components.homecoachmarks.de32e20193ad\") : i18n(\"components.homecoachmarks.df119e585ece\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -135,8 +183,8 @@
           "context": "return i18n(\"components.homecoachmarks.fe031a3ba2eb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add widgets from here: built-in widgets, your favorites, and other OnePages are all here.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -151,8 +199,8 @@
           "context": "{i18n(\"components.homewidgets.00c13966da7b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No new notifications for now.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -167,8 +215,8 @@
           "context": "i18n(\"components.homewidgets.0631b8517ea4\") + r.place"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seat ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -183,8 +231,8 @@
           "context": "{i18n(\"components.homewidgets.0ba4abe941a2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No classes today.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -199,8 +247,8 @@
           "context": "text: i18n(\"components.homewidgets.106e2c9d79fd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -215,8 +263,8 @@
           "context": "{i18n(\"components.homewidgets.1156e9912bf8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No unsubmitted assignments. Enjoy your day!",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -231,8 +279,8 @@
           "context": "days === 0 ? i18n(\"components.homewidgets.115a5e14e269\") : i18n(\"components.homewidgets.16612dac51bc\") + -days + i18n(\"components.homewidgets.4ce3054e7c4d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deadline passed today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -252,8 +300,8 @@
           "context": "{i18n(\"components.homewidgets.119099ab1bad\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -273,8 +321,8 @@
           "context": "{i18n(\"components.homewidgets.1236edf41da0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unsubmitted assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -289,8 +337,8 @@
           "context": "text: i18n(\"components.homewidgets.1645edf73a88\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due tomorrow",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -305,8 +353,8 @@
           "context": "i18n(\"components.homewidgets.16612dac51bc\") + -days"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Overdue ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -321,8 +369,8 @@
           "context": "i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due in ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -337,8 +385,8 @@
           "context": "nearest.title || i18n(\"components.homewidgets.1b2515c676f0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments to do",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -353,8 +401,8 @@
           "context": "{i18n(\"components.homewidgets.2073bb9744cb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View this week's timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -369,8 +417,8 @@
           "context": "disabled ? i18n(\"components.homewidgets.414869e94ef0\") : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Available after data loads",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -385,8 +433,8 @@
           "context": "{i18n(\"components.homewidgets.4a61ef7cac46\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Check your Tasks",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -416,8 +464,8 @@
           "context": "i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil + i18n(\"components.homewidgets.4ce3054e7c4d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " days",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -432,8 +480,8 @@
           "context": "hm(r.start) + i18n(\"components.homewidgets.56209f0a5989\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " check-in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -448,8 +496,8 @@
           "context": "i18n(\"components.homewidgets.60367daaba0b\") + days"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not started · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -480,8 +528,8 @@
           "context": "n.source || i18n(\"components.homewidgets.6699d0be5ff8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus notices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -501,8 +549,8 @@
           "context": "{i18n(\"components.homewidgets.6dbfc7966582\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due within 3 days",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -517,8 +565,8 @@
           "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.7979e047afe2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus card (loading)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -538,8 +586,8 @@
           "context": "days + i18n(\"components.homewidgets.79bfedfa5fcb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " days to deadline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -554,8 +602,8 @@
           "context": "r.kind === \"seat\" ? i18n(\"components.homewidgets.7bd9d53b62f0\") : i18n(\"components.homewidgets.e4d40b4d6759\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -580,8 +628,8 @@
           "context": "{i18nRich(\"components.homewidgets.849f9c17224f\", { externalProgress: h.externalProgress })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{externalProgress} problems completed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -596,8 +644,8 @@
           "context": "text: i18n(\"components.homewidgets.8e88f8b0acf1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown due date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -612,8 +660,8 @@
           "context": "i18n(\"components.homewidgets.954daea3eaaa\") + WEEKDAYS[n.date.getDay()]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Academic calendar · weekday",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -628,8 +676,8 @@
           "context": "{i18n(\"components.homewidgets.98d8baebd69d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open Web Learning",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -644,8 +692,8 @@
           "context": "text: i18n(\"components.homewidgets.9b0b6c84ccb6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Starts today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -660,8 +708,8 @@
           "context": "i18n(\"components.homewidgets.a0d4cfb9759e\") + (d.begin ?? \"\").slice(5, 16)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Important · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -676,8 +724,8 @@
           "context": "i18n(\"components.homewidgets.60367daaba0b\") + days + i18n(\"components.homewidgets.aff97ddc4f4d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " days from now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -692,8 +740,8 @@
           "context": "i18n(\"components.homewidgets.b4768eecdbfd\") + days"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In progress · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -708,8 +756,8 @@
           "context": "text: i18n(\"components.homewidgets.bc37a6110a07\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -729,8 +777,8 @@
           "context": "balance != null ? i18n(\"components.homewidgets.c0c6bb8b8618\") : i18n(\"components.homewidgets.7979e047afe2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -745,8 +793,8 @@
           "context": "i18n(\"components.homewidgets.c9f6e2ad23fd\") + days"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not started · in ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -798,8 +846,8 @@
           "context": "text: i18n(\"components.homewidgets.d42baf1647c8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graded",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -814,8 +862,8 @@
           "context": "n.daysUntil === 0 ? i18n(\"components.homewidgets.d5f5a7a01073\") : i18n(\"components.homewidgets.1a1f6f3d0815\") + n.daysUntil + i18n(\"components.homewidgets.4ce3054e7c4d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -830,8 +878,8 @@
           "context": "{i18n(\"components.homewidgets.dba6c45f9f3a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Syncing assignments from other platforms",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -851,8 +899,8 @@
           "context": "{i18nRich(\"components.homewidgets.e272d62dae3f\", { value: h.deadline.slice(11, 16) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -883,8 +931,8 @@
           "context": "{i18n(\"components.homewidgets.f7b18ee399fc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Audit classes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -899,8 +947,8 @@
           "context": "{i18n(\"components.homewidgets.f8308b0b2728\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Audit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -915,8 +963,8 @@
           "context": "text: i18n(\"components.homewidgets.fa22f0f0b501\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ends today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -931,8 +979,8 @@
           "context": "small: i18n(\"components.homeworkcarousel.07b65092ac19\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due soon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -952,8 +1000,8 @@
           "context": "confirmDanger(\n                      i18nMsg(\"components.homeworkcarousel.11ac26dfc826\", { title: String(h.title) }),\n                        CONFIRM_IGNORE_HW,\n                      )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ignore \"{title}\"?\n\nOnce ignored, it won't appear in the assignments area or schedule reminders. You can restore it under \"All assignments → Ignored\".",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -968,8 +1016,8 @@
           "context": "big: i18n(\"components.homeworkcarousel.13c68d134847\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Overdue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -984,8 +1032,8 @@
           "context": "small: i18n(\"components.homeworkcarousel.4881997d6f3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due in ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1000,8 +1048,8 @@
           "context": "{i18n(\"components.homeworkcarousel.4bdb0fcd89b8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All assignments are submitted. Go enjoy yourself!",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1016,8 +1064,8 @@
           "context": "days + i18n(\"components.homeworkcarousel.4ce3054e7c4d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " days",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1037,8 +1085,8 @@
           "context": "m.logLine(i18n(\"components.homeworkcarousel.759af5356c1e\", { mode: String(r.mode) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[HAPTIC] Pre-baked haptics unavailable; fallback path={mode}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1053,8 +1101,8 @@
           "context": "SOURCE_NAMES[h.source] ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "External assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1069,8 +1117,8 @@
           "context": "{i18n(\"components.homeworkcarousel.8cc765f4b8b9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Starred assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1085,8 +1133,8 @@
           "context": "i18n(\"components.homeworkcarousel.a80f2d59cd5f\") + h.externalProgress"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitted ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1101,7 +1149,7 @@
           "context": "h.source ? SOURCE_NAMES[h.source] ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
         }
       ],
-      "translation": "Learn",
+      "translation": "Web Learning",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1117,8 +1165,8 @@
           "context": "small: i18n(\"components.homeworkcarousel.cac076fbec2f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Handle soon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1133,8 +1181,8 @@
           "context": "{i18n(\"components.homeworkcarousel.d4b1b25d27b2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View all assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1149,8 +1197,8 @@
           "context": "text: i18n(\"components.homeworkcarousel.da7ecec544ad\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Overdue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1165,8 +1213,8 @@
           "context": "{i18n(\"components.homeworkcarousel.e9d65d05f085\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ignore this assignment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1181,8 +1229,8 @@
           "context": "big: i18n(\"components.homeworkcarousel.f299c513a8fc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "<1 day",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1197,8 +1245,8 @@
           "context": "small: i18n(\"components.homeworkcarousel.fb37c61898d5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1213,8 +1261,8 @@
           "context": "details.length ? details.join(\" · \") : i18n(\"components.identitycard.3fa24b555e9d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Click to edit and write your intro",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1229,8 +1277,8 @@
           "context": "organization ? i18n(\"components.identitycard.d203a5652f03\") : i18n(\"components.identitycard.487e926379fe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1245,8 +1293,8 @@
           "context": "org.brief || i18n(\"components.identitycard.b8fde21bc2ca\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization invitations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1261,8 +1309,8 @@
           "context": "organization ? i18n(\"components.identitycard.d203a5652f03\") : i18n(\"components.identitycard.487e926379fe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unnamed organization",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1277,8 +1325,8 @@
           "context": "person.bio || i18n(\"components.identitycard.f83c8237fcf6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Meeting you at Tsinghua.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1293,8 +1341,8 @@
           "context": "!loaded\n      ? i18n(\"components.imagefiltersheet.0ecc16e7fa2c\")\n      : busy\n        ? i18n(\"components.imagefiltersheet.5217984b59e5\")\n        : `${info?.hint ?? \"\"}${rotate ? i18n(\"components.imagefiltersheet.fc1f2c7428d8\", { rotate: String(rotate) }) : \"\"}${dirty ? \"\" : i18n(\"components.imagefiltersheet.e6a608674c0f\")}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reading image…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1309,56 +1357,8 @@
           "context": "{i18n(\"components.imagefiltersheet.1a9d08f722bd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imagefiltersheet.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
-          "line": 210,
-          "context": "{i18n(\"components.imagefiltersheet.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imagefiltersheet.2e603f5665a4",
-      "source": "处理后的预览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
-          "line": 182,
-          "context": "{i18n(\"components.imagefiltersheet.2e603f5665a4\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imagefiltersheet.346ff60e6c7c",
-      "source": "读取中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
-          "line": 182,
-          "context": "{i18n(\"components.imagefiltersheet.346ff60e6c7c\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rotate 90°",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

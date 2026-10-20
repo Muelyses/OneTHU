@@ -1,7 +1,139 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.trace.d407c45a6be7",
+      "source": "用{appLabel}前往",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "appLabel",
+          "expression": "appLabel"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 471,
+          "context": "{i18nRich(\"pages.trace.d407c45a6be7\", { appLabel: appLabel })}"
+        }
+      ],
+      "translation": "Open with {appLabel}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.d79b1d0e5c61",
+      "source": "已结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.d79b1d0e5c61\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"done\", i18n(\"pages.trace.d79b1d0e5c61\")]"
+        }
+      ],
+      "translation": "Ended",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.dc07c04f3fc3",
+      "source": "高德 Web 服务 Key 未配置：POI 定位与路程估算不可用（地图与今日日程仍可查看）。将 apps/desktop/src-tauri/.env.example 复制为同目录 .env，填入 TRACE_AMAP_KEY=<你的key> 后重启应用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 478,
+          "context": "{i18n(\"pages.trace.dc07c04f3fc3\")}"
+        }
+      ],
+      "translation": "Amap Web service key not configured: POI lookup and travel-time estimates are unavailable (map and today's events are still viewable). Copy apps/desktop/src-tauri/.env.example to .env in the same folder, fill in TRACE_AMAP_KEY=<your key>, then restart the app.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.dc9591e56d50",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.dc9591e56d50\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"live\", i18n(\"pages.trace.dc9591e56d50\")]"
+        }
+      ],
+      "translation": "In progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.e1be450ce158",
+      "source": "{label}地图",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "a.label"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 469,
+          "context": "{i18nRich(\"pages.trace.e1be450ce158\", { label: a.label })}"
+        }
+      ],
+      "translation": "{label} Maps",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.00376d744fbd",
+      "source": "平台模型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 393,
+          "context": "{i18n(\"pages.xiaoda.xiaodapage.00376d744fbd\")}"
+        }
+      ],
+      "translation": "Platform model",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.09829d304017",
+      "source": "对话智能体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 386,
+          "context": "{i18n(\"pages.xiaoda.xiaodapage.09829d304017\")}"
+        }
+      ],
+      "translation": "Conversational agent",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.xiaoda.xiaodapage.0d46455d92d1",
       "source": "清小搭功能仅供实验与参考，无法取代 OneTHU Harness。",
@@ -14,8 +146,8 @@
           "context": "() => i18n(\"pages.xiaoda.xiaodapage.0d46455d92d1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiaoda features are experimental and for reference only; they do not replace the OneTHU Harness.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +162,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.0dd5ba052d62\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Contributors",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +178,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.115f8a99ff8d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Just type your question; to switch agents, pick one on the \"Agents\" page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +194,8 @@
           "context": "(c.query.split(\"\\n\")[0] ?? \"\").slice(0, 40) || i18n(\"pages.xiaoda.xiaodapage.1587a76a2d84\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(empty conversation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +210,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.21fbaf3a4f57\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Say something",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +231,8 @@
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.2df7697dbb61\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Agents",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +247,8 @@
           "context": "c.isDeepResearch ? i18n(\"pages.xiaoda.xiaodapage.34d33c5a7a08\") : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deep research",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,8 +263,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.350d0be1b4e7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign-in failed. Tap Retry below.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +279,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.47392b6dbaa8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No conversation history yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,8 +300,8 @@
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -184,8 +316,8 @@
           "context": "() => i18n(\"pages.xiaoda.xiaodapage.49d451178263\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "It also cannot dispatch OH features; this page is OneTHU's integration interface.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -200,8 +332,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.4c279d27ac1e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The agent cannot be changed once a conversation starts; tap \"New conversation\" first to switch.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -216,8 +348,8 @@
           "context": "selectedSkill?.name ?? i18n(\"pages.xiaoda.xiaodapage.4f79dada892b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Skill details",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +364,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.515559957fd3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Category",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +380,8 @@
           "context": "selectedSkill.categoryName || i18n(\"pages.xiaoda.xiaodapage.54b89f901274\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uncategorized",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -264,8 +396,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.56fb269924d9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load skills. Tap Retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -289,8 +421,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.5aa03810e659\", { value: String(s.downloadCount ?? 0), value2: String(s.authorName ?? \"\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} downloads · {value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -305,8 +437,8 @@
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.5d44af892c1b\") : i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Continue conversation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -321,8 +453,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.5e2031c13ffa\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep chatting",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -346,8 +478,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.6610f0b69218\", { value: String(selectedSkill.categoryName || i18n(\"pages.xiaoda.xiaodapage.54b89f901274\")), value2: String(selectedSkill.downloadCount ?? 0) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} · {value2} downloads",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -362,8 +494,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.69543fafadb1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load agents. Tap Retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -383,8 +515,8 @@
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.6beb452a379a\", { name: String(who.name) }) : `${who.name}${modelName ? ` · ${modelName}` : \"\"}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Continued from earlier content · {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -399,8 +531,8 @@
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.6bf6d3f3d626\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Chat",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -415,8 +547,8 @@
           "context": "new Error(i18n(\"pages.xiaoda.xiaodapage.6d4fec35ccbe\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to start a new conversation. Tap Send to retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -431,8 +563,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.7fbcbca49ec5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Conversation history",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -452,8 +584,8 @@
           "context": "total ? i18n(\"pages.xiaoda.xiaodapage.84f7f9dfd488\", { total: String(total) }) : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{total} segments in total; tap \"Keep chatting\" to continue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -468,8 +600,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.93588c0a42ab\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Total downloads",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -484,8 +616,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.957244cdb9f2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign in again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -500,8 +632,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.9577e7464c1f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No agent groups yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -521,8 +653,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.99aea2f9131a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Skills",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -537,8 +669,8 @@
           "context": "selectedSkill.description || i18n(\"pages.xiaoda.xiaodapage.a21b64510d88\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No description yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +690,8 @@
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Load more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +706,8 @@
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.b0385cfe4b42\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "History",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -611,8 +743,8 @@
           "context": "me?.name ?? i18n(\"pages.xiaoda.xiaodapage.b70bb4acc048\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Me",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -642,8 +774,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -663,8 +795,8 @@
           "context": "total ? i18n(\"pages.xiaoda.xiaodapage.bf8875666acb\", { total: String(total) }) : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{total} in total",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -679,8 +811,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.c4084a277493\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ask something…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -695,8 +827,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.c599990d6fb9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Skill plaza",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -711,8 +843,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ca4d973c0b00\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stop",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -727,8 +859,8 @@
           "context": "me ? (me.zjh ? `${me.name} · ${me.zjh}` : me.name) : i18n(\"pages.xiaoda.xiaodapage.cbc3933d7f0a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus AI study companion",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -743,8 +875,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ce5b23a25653\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Chat with it",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +891,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.d4bdd78f6bb0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Typing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -775,8 +907,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.d883a9b91e85\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load history. Tap Retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -791,8 +923,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.de9e3ada6a80\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Conversation failed. Resend the message or switch agents and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -812,8 +944,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New conversation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -833,8 +965,8 @@
           "context": "{i18n(\"pages.xiaoda.xiaodapage.edecf0ae6e51\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -849,8 +981,8 @@
           "context": "selectedSkill.authorName || i18n(\"pages.xiaoda.xiaodapage.fa137f21519d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiaoda community",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -865,8 +997,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.02e289f65f4d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot filter by time in the filter bar",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -890,8 +1022,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.03132616defc\", { gCovered: gCovered, gTotal: gTotal })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{gCovered}/{gTotal} credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -919,8 +1051,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.04071043a9de\", { value: zi + 1, label: p.label, value2: p.prob >= 0 && p.ratioLabel ? ` · ${p.ratioLabel}` : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preference {value}: {label}{value2}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -935,8 +1067,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.0468ee76ee3d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh data",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -951,8 +1083,8 @@
           "context": "o === \"北大研\" ? i18n(\"pages.zhjwxk.courses.44a94cb2b71a\") : i18n(\"pages.zhjwxk.courses.06ac33331166\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Peking University and BFSU courses",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -977,8 +1109,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.06f610639057\", { value: conflicts.slice(0, 5).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.a}/${c.b}`).join(\" · \") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Conflict: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -993,8 +1125,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.07ee656ca409\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Undergrad openings >0",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1009,8 +1141,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.08a85f4ab4ba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1038,8 +1170,8 @@
           "context": "{i18nRich(\"pages.zhjwxk.courses.096a7bc0a88d\", { curPage: curPage, totalPages: totalPages, value: searchMode && !wb.searchIncomplete ? i18n(\"pages.zhjwxk.courses.1d58af91498f\", { length: String(listRows.length) }) : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Page {curPage} / {totalPages}{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1069,8 +1201,8 @@
           "context": "label: i18n(\"pages.zhjwxk.courses.0ba6b11d9de0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1090,8 +1222,8 @@
           "context": "r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1) ? \"\" : i18n(\"pages.zhjwxk.courses.0bc08374ab3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This preference is full",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1106,8 +1238,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.0fe3db929495\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fetching body…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1122,8 +1254,8 @@
           "context": "vc.level === \"hard\" ? i18n(\"pages.zhjwxk.courses.135fef5e1db6\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Highly competitive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1138,8 +1270,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.13d61fea9f17\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1154,8 +1286,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.14a8f4b49e16\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1170,8 +1302,8 @@
           "context": "wb.busy === `submit-${r.c.code}-${r.c.seq}` ? i18n(\"pages.zhjwxk.courses.18931020ad52\") : state === \"full\" ? i18n(\"pages.zhjwxk.courses.2e486022e4f8\") : i18n(\"pages.zhjwxk.courses.fd17d86dd268\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1186,8 +1318,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.19368dbee54d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course introduction",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1211,8 +1343,8 @@
           "context": "cand.myPos ? i18n(\"pages.zhjwxk.courses.1a01e52411e2\", { myPos: String(cand.myPos), queueTotal: String(cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.64af28c77281\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Queued #{myPos}/{queueTotal}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1227,8 +1359,8 @@
           "context": "new Error(i18n(\"pages.zhjwxk.courses.1ad3aeaef070\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Missing courses",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1243,8 +1375,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.1bf3158a977b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Timetable preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1264,8 +1396,8 @@
           "context": "searchMode && !wb.searchIncomplete ? i18n(\"pages.zhjwxk.courses.1d58af91498f\", { length: String(listRows.length) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "({length} courses)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1280,8 +1412,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.1ef3de06b32e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1296,8 +1428,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.1f5350ec49f1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No courses yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1312,8 +1444,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.2071a95cf2d7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No review body yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1328,145 +1460,8 @@
           "context": "{i18n(\"pages.zhjwxk.courses.20b4ffc097d3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.24f0b1d35bb6",
-      "source": "预览暂存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1346,
-          "context": "{i18n(\"pages.zhjwxk.courses.24f0b1d35bb6\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1541,
-          "context": "{i18n(\"pages.zhjwxk.courses.24f0b1d35bb6\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.25de4f1abc92",
-      "source": "志愿数据同步中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1498,
-          "context": "{i18n(\"pages.zhjwxk.courses.25de4f1abc92\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2702f7fc3c8a",
-      "source": "北大·北外本科",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 757,
-          "context": "{i18n(\"pages.zhjwxk.courses.2702f7fc3c8a\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.290d10efc55e",
-      "source": "恢复双栏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 486,
-          "context": "{i18n(\"pages.zhjwxk.courses.290d10efc55e\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2961168962be",
-      "source": "周三",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1358,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"), i18n(\"pages.zhjwxk.courses.d1378a68e620\"), i18n(\"pages.zhjwxk.courses.2961168962be\"), i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"), i18n(\"pages.zhjwxk.courses.572388f3b096\"), i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"), i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1420,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1441,
-          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2cb6ebd1ab1f",
-      "source": "{credits} 学分",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "credits",
-          "expression": "r.credits"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 977,
-          "context": "{i18nRich(\"pages.zhjwxk.courses.2cb6ebd1ab1f\", { credits: r.credits })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1550,
-          "context": "{i18n(\"pages.zhjwxk.courses.2cd0f3be8738\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1563,
-          "context": "{i18n(\"pages.zhjwxk.courses.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm import to the staging area",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

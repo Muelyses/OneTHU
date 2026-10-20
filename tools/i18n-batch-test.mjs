@@ -57,8 +57,18 @@ try {
   const before = readDataFile(file), batch = JSON.parse(fs.readFileSync(path.join(fixture, "batch.json"), "utf8"));
   const messages = { ...before.messages };
   for (const row of batch.messages) messages[row.key] = `TEST ${row.source}`;
+  // Rewrite message values line-by-line so the fixture does not depend on the
+  // dictionary file matching canonical JSON.stringify formatting exactly.
   const writeTarget = values => {
-    const next = beforeText.replace(JSON.stringify(before, null, 2), JSON.stringify({ ...before, messages: values }, null, 2));
+    const lines = beforeText.split("\n");
+    for (const [key, value] of Object.entries(values)) {
+      const exact = `    ${JSON.stringify(key)}: `;
+      const i = lines.findIndex(line => line.startsWith(exact));
+      assert.notEqual(i, -1, `Fixture dictionary must contain key ${key}`);
+      const trailing = lines[i].trimEnd().endsWith(",") ? "," : "";
+      lines[i] = `    ${JSON.stringify(key)}: ${JSON.stringify(value)}${trailing}`;
+    }
+    const next = lines.join("\n");
     assert.notEqual(next, beforeText, "Generated dictionary fixture must actually change values");
     fs.writeFileSync(file, next);
   };

@@ -1,7 +1,64 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.cloudpage.8ccac03bbf00",
+      "source": "删除文件夹，请确认！",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 97,
+          "context": "isDir ? i18nMsg(\"pages.cloudpage.8ccac03bbf00\") : i18nMsg(\"pages.cloudpage.7349aa455665\")"
+        }
+      ],
+      "translation": "Delete folders. Please confirm!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.8dba5236dfa7",
+      "source": "已下载 {ok}/{length} 个文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "ok",
+          "expression": "String(ok)"
+        },
+        {
+          "name": "length",
+          "expression": "String(items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 322,
+          "context": "showToast(i18nMsg(\"pages.cloudpage.8dba5236dfa7\", { ok: String(ok), length: String(items.length) }))"
+        }
+      ],
+      "translation": "Downloaded {ok}/{length} files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.99b4882003c8",
+      "source": "没有可见的资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 623,
+          "context": "{i18n(\"pages.cloudpage.99b4882003c8\")}"
+        }
+      ],
+      "translation": "No visible libraries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.cloudpage.9ab296886086",
       "source": "批量选择",
@@ -14,8 +71,8 @@
           "context": "{i18n(\"pages.cloudpage.9ab296886086\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bulk select",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +87,8 @@
           "context": "{i18n(\"pages.cloudpage.9e07e3c0532d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Upload",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +103,8 @@
           "context": "{i18n(\"pages.cloudpage.a111035ab3cc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive is a required component; the disconnect option is no longer available from this version",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +124,8 @@
           "context": "confirmText: i18nMsg(\"pages.cloudpage.a3ea3c17b401\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm delete",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +140,8 @@
           "context": "{i18n(\"pages.cloudpage.aca7d4470108\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect cloud drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +156,8 @@
           "context": "{i18n(\"pages.cloudpage.ada099dd389a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download to Downloads",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +172,8 @@
           "context": "{i18n(\"pages.cloudpage.aee887434131\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +193,8 @@
           "context": "names.length > 6 ? i18n(\"pages.cloudpage.b16f02c3e4d9\", { length: String(names.length) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\n… and {length} items in total",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -161,8 +218,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.b221697cb461\", { name: String(e.name), value: String(String(err).slice(0, 60)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to delete \"{name}\": {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -182,8 +239,8 @@
           "context": "dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enter subfolders ({length} at this level) ▸",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -198,8 +255,8 @@
           "context": "{i18n(\"pages.cloudpage.b5f224115dae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud drive files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -227,8 +284,8 @@
           "context": "return i18n(\"pages.cloudpage.b92d3082a65a\", { value: String(d.getFullYear()), value2: String(d.getMonth() + 1), value3: String(d.getDate()) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value2}/{value3}/{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -243,8 +300,8 @@
           "context": "placeholder: i18nMsg(\"pages.cloudpage.bacf701908d8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Folder name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -264,8 +321,8 @@
           "context": "isDir\n      ? i18nMsg(\"pages.cloudpage.baf5b6f85f76\", { name: String(e.name) })\n      : i18nMsg(\"pages.cloudpage.5f7afa5a8570\", { name: String(e.name), value: String(fmtSize(e.size)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete folder \"{name}\"?\n\nThe folder and all of its contents will be permanently deleted from the cloud drive. This action cannot be undone.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -280,8 +337,8 @@
           "context": "isSamePlace ? i18n(\"pages.cloudpage.bf7d41f4829b\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(already in place)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -301,8 +358,8 @@
           "context": "logLine(i18n(\"pages.cloudpage.c89a8d7ca4a0\", { value: String(String(e).slice(0, 90)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[CLOUD-MOVE] failed to list directory: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -317,8 +374,8 @@
           "context": "selMode ? i18n(\"pages.cloudpage.571e8b9e66f2\") : i18n(\"pages.cloudpage.cb7707463c16\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bulk",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -333,8 +390,8 @@
           "context": "{i18n(\"pages.cloudpage.cc50237edca2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Searching…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -354,8 +411,8 @@
           "context": "r.length > 1 ? i18nMsg(\"pages.cloudpage.cda6fdc5607b\", { length: String(r.length) }) : (r[0] ?? i18n(\"pages.cloudpage.f2f02049468d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uploaded {length} files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -370,8 +427,8 @@
           "context": "{i18n(\"pages.cloudpage.d0948549f71a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create share link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -391,8 +448,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.d1403c75a692\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Created \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -407,8 +464,8 @@
           "context": "batchBusy ? i18n(\"pages.cloudpage.d3d21191f32e\") : i18n(\"pages.cloudpage.14909c3a7b16\", { size: String(selSet.size) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Processing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -433,8 +490,8 @@
           "context": "{i18n(\"pages.cloudpage.d7b6a5ec5201\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -449,8 +506,8 @@
           "context": "dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No subfolders at this level — you can tap \"Move here\" directly",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -470,8 +527,8 @@
           "context": "{i18n(\"pages.cloudpage.dc342d1bfbd2\", { q: String(searchMeta.q) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No files match \"{q}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -495,8 +552,8 @@
           "context": "confirmDanger(\n      i18nMsg(\"pages.cloudpage.dcd9bc5583f5\", { length: String(items.length), shown: String(shown) }),\n      { title: i18nMsg(\"pages.cloudpage.8c74b8fa706e\", { length: String(items.length) }), confirmText: i18nMsg(\"pages.cloudpage.a3ea3c17b401\") },\n    )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete the following {length} items?\n\n{shown}\n\nThe selected files and folders (including contents) will be permanently deleted from the cloud drive. This action cannot be undone.",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -511,8 +568,8 @@
           "context": "x.kind === \"dir\" ? i18n(\"pages.cloudpage.ecb80d06607e\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(folder)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -527,8 +584,8 @@
           "context": "{i18n(\"pages.cloudpage.ee9ebe523d42\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connecting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -543,8 +600,8 @@
           "context": "r[0] ?? i18n(\"pages.cloudpage.f2f02049468d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uploaded",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -559,8 +616,8 @@
           "context": "{i18n(\"pages.cloudpage.f369bd636d02\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading libraries…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -575,8 +632,8 @@
           "context": "allSelected ? i18n(\"pages.cloudpage.f4d4bae588c4\") : i18n(\"pages.cloudpage.3a5040b68abf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deselect all",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -591,8 +648,8 @@
           "context": "{i18n(\"pages.cloudpage.f72a6bc6a957\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move to another location",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -607,8 +664,8 @@
           "context": "{i18n(\"pages.cloudpage.f77b9b7075b8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "After connecting you can browse and download Tsinghua Cloud Drive files.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -623,8 +680,8 @@
           "context": "{i18n(\"pages.cloudpage.fc6bb436b8ca\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -660,8 +717,8 @@
           "context": "label: i18n(\"pages.contacts.1ad56c152731\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Card holder",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -676,8 +733,8 @@
           "context": "label: i18n(\"pages.contacts.51cc2efa3e8d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My organization",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -692,8 +749,8 @@
           "context": "{i18n(\"pages.contacts.b62dac5fc7e9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exchange a card, and the connection stays here.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -708,8 +765,8 @@
           "context": "{i18n(\"pages.contacts.d3548ea24212\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Members join by email, libraries are shared by email, and GitLab repositories are attached to the organization; each organization comes with its own card.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -724,8 +781,8 @@
           "context": "{i18n(\"pages.contacts.ea0abe91fe00\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back to card holder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -756,8 +813,8 @@
           "context": "{i18n(\"pages.favshomepage.681e227b4cc6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Quick access to the features and entries you use most; long-press the star on any page header to add one",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -772,8 +829,8 @@
           "context": "{i18n(\"pages.favshomepage.8b07fc93b7c4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No favorites folders yet. Create one and collect the features you use most.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -803,8 +860,8 @@
           "context": "{i18n(\"pages.favshomepage.fdf0b569d820\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New favorites folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -819,8 +876,8 @@
           "context": "i18n(\"pages.folderpage.0089819a6f6e\") + f.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete sub-folder \"",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -851,8 +908,8 @@
           "context": "{i18n(\"pages.folderpage.081f065eda63\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This favorites folder does not exist or has been deleted.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -867,8 +924,8 @@
           "context": "{i18n(\"pages.folderpage.085a2e26f1a4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -888,8 +945,8 @@
           "context": "{i18n(\"pages.folderpage.0d0cbac2eee5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -904,8 +961,8 @@
           "context": "{i18n(\"pages.folderpage.0d720eeea264\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Icon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -920,8 +977,8 @@
           "context": "{i18n(\"pages.folderpage.12526376d387\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -936,8 +993,8 @@
           "context": "on ? i18n(\"pages.folderpage.a04eea31ee47\") : i18n(\"pages.folderpage.1911d1c0d6a4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Put this favorites folder on the home screen widget (icon group)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -952,8 +1009,8 @@
           "context": "i18n(\"pages.folderpage.26e0a9e64fed\") + folder.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete favorites folder \"",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -968,8 +1025,8 @@
           "context": "i18n(\"pages.folderpage.0089819a6f6e\") + f.title + i18n(\"pages.folderpage.27dd348dd737\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"?\nIts sub-levels and collected favorite entries will be removed as well (the original features are not affected).",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -984,8 +1041,8 @@
           "context": "{i18n(\"pages.folderpage.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1000,8 +1057,8 @@
           "context": "{i18n(\"pages.folderpage.3164dc27697e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Icons apply to the sidebar and the folder page header; root and sub-folders can each pick their own.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1016,8 +1073,8 @@
           "context": "{i18n(\"pages.folderpage.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1032,8 +1089,8 @@
           "context": "{i18n(\"pages.folderpage.40ba45e6d266\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Square",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1053,8 +1110,8 @@
           "context": "{i18n(\"pages.folderpage.4a5ff677e1db\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grid",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1069,8 +1126,8 @@
           "context": "on ? i18n(\"pages.folderpage.4f9c7d13e1bc\") : i18n(\"pages.folderpage.de0b42d48b30\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Already on the desktop",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1085,8 +1142,8 @@
           "context": "{i18n(\"pages.folderpage.53b5e083df0f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open source page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1101,8 +1158,8 @@
           "context": "{i18n(\"pages.folderpage.5622577925ed\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose folder icon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1117,8 +1174,8 @@
           "context": "{i18n(\"pages.folderpage.588e87dec444\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move down in sidebar order",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1133,8 +1190,8 @@
           "context": "\" · \" + subCount + i18n(\"pages.folderpage.58b3437bdc94\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " sub-folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1149,8 +1206,8 @@
           "context": "{i18n(\"pages.folderpage.597ae23d84d4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Wide",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1170,8 +1227,8 @@
           "context": "{i18n(\"pages.folderpage.5e54189643b0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch to wide card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1196,8 +1253,8 @@
           "context": "{i18n(\"pages.folderpage.6135d4159e89\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1212,8 +1269,8 @@
           "context": "i18n(\"pages.folderpage.d1049242f41b\") + f.title + i18n(\"pages.folderpage.6cf018741f53\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\" section",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1228,8 +1285,8 @@
           "context": "{i18n(\"pages.folderpage.73daf2085ecd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No favorites in this section yet — use \"Edit\" → \"Add favorite\" to search and add, or tap the star on any page to favorite it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1265,8 +1322,8 @@
           "context": "{i18n(\"pages.folderpage.7ca45b9c8d65\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All sections are hidden. Tap \"Manage sections\" to restore them.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1286,8 +1343,8 @@
           "context": "i18n(\"pages.folderpage.7d8622e414eb\") + view.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open \"",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1302,8 +1359,8 @@
           "context": "i18n(\"pages.folderpage.8aee3fda5a89\") + atomCount + i18n(\"pages.folderpage.8165f5e454e8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " favorites",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1323,8 +1380,8 @@
           "context": "{i18n(\"pages.folderpage.844b8cc8dff7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1339,8 +1396,8 @@
           "context": "isRoot ? i18n(\"pages.folderpage.86620776ee32\") : i18n(\"pages.folderpage.e3c22b9870e1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename/delete the root folder in the page header; reorder favorites with ↑↓ on each item.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1365,8 +1422,8 @@
           "context": "{i18n(\"pages.folderpage.87a05c76c0bf\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove from this folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1381,56 +1438,8 @@
           "context": "i18n(\"pages.folderpage.8aee3fda5a89\") + atomCount"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.8c07aaf9e12a",
-      "source": "新建子收藏夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 265,
-          "context": "{i18n(\"pages.folderpage.8c07aaf9e12a\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.8ed04e5fa4f6",
-      "source": "收藏夹图标",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 562,
-          "context": "{i18n(\"pages.folderpage.8ed04e5fa4f6\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.920fe6ef0593",
-      "source": "删除收藏夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 107,
-          "context": "{i18n(\"pages.folderpage.920fe6ef0593\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

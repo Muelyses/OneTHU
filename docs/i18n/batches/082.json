@@ -1,7 +1,129 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.atoms.b80e3dfb7fba",
+      "source": "讨论区板块",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 450,
+          "context": "name || i18n(\"state.atoms.b80e3dfb7fba\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 450,
+          "context": "(courseName ? courseName + \" · \" : \"\") + i18n(\"state.atoms.b80e3dfb7fba\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 724,
+          "context": "(b.courseName ? b.courseName + \" · \" : \"\") + i18n(\"state.atoms.b80e3dfb7fba\")"
+        }
+      ],
+      "translation": "Forum boards",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.b9d8c8f7b02f",
+      "source": "全量扫描云端日程变化（etag 对账）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 172,
+          "context": "return i18n(\"state.atoms.b9d8c8f7b02f\");"
+        }
+      ],
+      "translation": "Full scan of cloud schedule changes (etag reconciliation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.bb7b63b39fd4",
+      "source": "本学期课程总览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 225,
+          "context": "return i18n(\"state.atoms.bb7b63b39fd4\");"
+        }
+      ],
+      "translation": "This semester's course overview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.bb8c939d0fcd",
+      "source": "订水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 242,
+          "context": "return i18n(\"state.atoms.bb8c939d0fcd\");"
+        }
+      ],
+      "translation": "Order water",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.bdac834d0ba2",
+      "source": "全部通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 227,
+          "context": "return i18n(\"state.atoms.bdac834d0ba2\");"
+        }
+      ],
+      "translation": "All notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.c0c6bb8b8618",
+      "source": "校园卡余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 311,
+          "context": "return i18n(\"state.atoms.c0c6bb8b8618\");"
+        }
+      ],
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.c141273da51a",
+      "source": "全局默认提醒时间 · 同步系统日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 231,
+          "context": "return i18n(\"state.atoms.c141273da51a\");"
+        }
+      ],
+      "translation": "Global default reminder time · Sync with system calendar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.atoms.c6460a02e85e",
       "source": "时钟 · 程序坞 · 自由画布",
@@ -14,8 +136,8 @@
           "context": "return i18n(\"state.atoms.c6460a02e85e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clock · Dock · Free canvas",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +152,8 @@
           "context": "return i18n(\"state.atoms.c730a0bada79\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule and reminders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +168,8 @@
           "context": "sub: i18n(\"state.atoms.c7811f3d9d70\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library · Seats and check-in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +189,8 @@
           "context": "a.cat + i18n(\"state.atoms.c94cd3fab151\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Info apps",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +221,8 @@
           "context": "return i18n(\"state.atoms.cce40ddbb7b9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info page · Fitness test",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +237,8 @@
           "context": "fName || i18n(\"state.atoms.ce3b386bd714\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Floors",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,8 +253,8 @@
           "context": "return i18n(\"state.atoms.cf05dea41f42\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Dorm hygiene inspection",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -164,8 +286,8 @@
           "context": "return i18n(\"state.atoms.d25aafa6ed3f\", { total: String(r.total), added: String(r.added), updated: String(r.updated), removed: String(r.removed) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{total} schedules in the cloud ({added} added, {updated} updated, {removed} removed)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -196,8 +318,8 @@
           "context": "cat || i18n(\"state.atoms.d4f7864690bb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info apps",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -212,8 +334,8 @@
           "context": "return i18n(\"state.atoms.d5a374a5b103\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Legacy favorites (located by folderId)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -228,8 +350,8 @@
           "context": "(libName || \"\") + (fName ? \" · \" + fName : \"\") + i18n(\"state.atoms.d648ae3059c3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Seat areas",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -244,8 +366,8 @@
           "context": "(path.length > 0 ? path.join(\" / \") + \" · \" : \"\") + i18n(\"state.atoms.d66273bca391\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites (move/rename/delete → edit mode on the Favorites page)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -260,8 +382,8 @@
           "context": "return i18n(\"state.atoms.d8e3dfbe5f8a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Original portal app navigation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -276,8 +398,8 @@
           "context": "return i18n(\"state.atoms.dcd2bf114535\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life hub page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -297,8 +419,8 @@
           "context": "isIssue ? \"Issue\" : i18n(\"state.atoms.dd42589239f7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Merge requests",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -334,8 +456,8 @@
           "context": "sub: i18n(\"state.atoms.e00b99270be7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sports venues",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -376,8 +498,8 @@
           "context": "sub: i18n(\"state.atoms.e642c7fc3df2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab merge requests",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -408,8 +530,8 @@
           "context": "return i18n(\"state.atoms.e703d13e3468\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Finance · Invoice list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -477,8 +599,8 @@
           "context": "return i18n(\"state.atoms.ed80f9723a5a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Compose",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -493,8 +615,8 @@
           "context": "return i18n(\"state.atoms.ede028d7ec64\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All grades",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -509,8 +631,8 @@
           "context": "return i18n(\"state.atoms.ee6388006cb5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservations page · Sports venue time slot booking",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -525,8 +647,8 @@
           "context": "sub: i18n(\"state.atoms.f37a13fc55b3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course notices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -541,8 +663,8 @@
           "context": "return i18n(\"state.atoms.f3849df7f168\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync assignment due dates to the cloud calendar",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -557,7 +679,7 @@
           "context": "return i18n(\"state.atoms.f75562426e77\");"
         }
       ],
-      "translation": "Cloud",
+      "translation": "Cloud Drive",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -573,8 +695,8 @@
           "context": "return i18n(\"state.atoms.f951111a412f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua GitLab · Projects · Issues · Merge requests · Pipelines",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -589,8 +711,8 @@
           "context": "return i18n(\"state.atoms.fa8fe752727c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All course files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -605,8 +727,8 @@
           "context": "return i18n(\"state.atoms.fc7c1ff5f380\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info page · Semester schedule images",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -637,8 +759,8 @@
           "context": "return i18n(\"state.atoms.fe7dbfcadf51\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Balance and transactions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +775,8 @@
           "context": "text: i18n(\"state.boardcore.4e6ff6dda14d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Get today sorted.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -669,8 +791,8 @@
           "context": "return i18n(\"state.boardtemplates.0a6fddad6b91\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All assignments, notices, and course files — great for tracking progress during exam week.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -685,8 +807,8 @@
           "context": "return i18n(\"state.boardtemplates.2545760589cb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today at a glance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -701,8 +823,8 @@
           "context": "return i18n(\"state.boardtemplates.2e67474d8dad\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Minimal",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -717,8 +839,8 @@
           "context": "return i18n(\"state.boardtemplates.353b51755790\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A title, a timetable, and a balance. Start simple, add more later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -733,8 +855,8 @@
           "context": "return i18n(\"state.boardtemplates.3d0b47c6e59c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clock, greeting, main features, and today's four essentials.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -749,8 +871,8 @@
           "context": "return i18n(\"state.boardtemplates.811d02529318\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Timetable and Tasks side by side, with notices, next class, and balance below.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -765,8 +887,8 @@
           "context": "return i18n(\"state.boardtemplates.c11531ab33d2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Take today at an easier pace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -781,8 +903,8 @@
           "context": "return i18n(\"state.boardtemplates.d5e8c95c5448\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Study first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -797,8 +919,8 @@
           "context": "return i18n(\"state.boardtemplates.e8ada398d92a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default Home",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -813,8 +935,8 @@
           "context": "return i18n(\"state.cardwarn.0ca2f1aa431e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "App is running unpackaged; system notifications are unavailable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -838,8 +960,8 @@
           "context": "return i18n(\"state.cardwarn.304901f669bd\", { value: String(balance.toFixed(2)), value2: String(settings.threshold.toFixed(2)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current balance ¥{value} is above the warning threshold ¥{value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -859,8 +981,8 @@
           "context": "min < 60 ? i18n(\"state.cardwarn.3770554318c1\", { min: String(min) }) : i18n(\"state.cardwarn.690c01945f17\", { value: String(Math.floor(min / 60)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{min} minutes ago",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -875,8 +997,8 @@
           "context": "return i18n(\"state.cardwarn.3d2f25974036\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delivery time has passed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -891,8 +1013,8 @@
           "context": "return i18n(\"state.cardwarn.441543d6afc0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System notifications are not authorized. Allow notifications for this app in system settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -912,8 +1034,8 @@
           "context": "min < 60 ? i18n(\"state.cardwarn.3770554318c1\", { min: String(min) }) : i18n(\"state.cardwarn.690c01945f17\", { value: String(Math.floor(min / 60)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} hours ago",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -928,8 +1050,8 @@
           "context": "key || i18n(\"state.cardwarn.6c61f7700756\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System notifications unavailable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1071,8 @@
           "context": "return i18n(\"state.cardwarn.a2d31fa4bf47\", { value: String(cardWarnReasonText(state.reason)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reminder not delivered: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -965,8 +1087,8 @@
           "context": "title: i18n(\"state.cardwarn.ad508635dc98\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU balance alert",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -986,8 +1108,8 @@
           "context": "return i18n(\"state.cardwarn.bf2868f8d201\", { value: String(balance.toFixed(2)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current balance ¥{value} is below the warning threshold",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1002,8 +1124,8 @@
           "context": "return i18n(\"state.cardwarn.cc0ee8d6a882\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System notifications are not supported on this platform yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1018,8 +1140,8 @@
           "context": "min < 1 ? i18n(\"state.cardwarn.de6785d99e02\") : min < 60 ? i18n(\"state.cardwarn.3770554318c1\", { min: String(min) }) : i18n(\"state.cardwarn.690c01945f17\", { value: String(Math.floor(min / 60)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Just now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1034,8 +1156,8 @@
           "context": "return i18n(\"state.cardwarn.f5fc812e10d4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not enabled: no alert when the balance drops below the warning threshold",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1055,8 +1177,8 @@
           "context": "return i18n(\"state.cardwarn.f817a3ab0c4e\", { value: String(ago ? `（${ago}）` : \"\") });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Alerted {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1076,8 +1198,8 @@
           "context": "return i18n(\"state.cardwarn.fef9dc03d14d\", { value: String(settings.threshold.toFixed(2)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Alert when balance drops below ¥{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1107,8 +1229,8 @@
           "context": "new Error(i18n(\"state.cloudcal.253f54401fa7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud sync not configured",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1123,8 +1245,8 @@
           "context": "new Error(i18n(\"state.cloudcal.33de4f649f2f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The local schedule archive is corrupted; existing schedules were not overwritten",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1139,8 +1261,8 @@
           "context": "new Error(i18n(\"state.cloudcal.5a6208164ba7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud sync account has changed. Please retry the current operation.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1155,8 +1277,8 @@
           "context": "new Error(i18n(\"state.cloudcal.5b53abc907c9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The mail connection configuration could not be read. Please set it up again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1171,8 +1293,8 @@
           "context": "new Error(i18n(\"state.cloudcal.5e7a239fbc21\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please enter your email and authorization code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1187,8 +1309,8 @@
           "context": "new Error(i18n(\"state.cloudcal.6600b7092f4c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "For recurring schedules, export the whole series first; a single instance cannot be moved on its own",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1203,8 +1325,8 @@
           "context": "lastError = i18n(\"state.cloudcal.6b8367664e76\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to read the calendar archive. Please retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1219,8 +1341,8 @@
           "context": "new Error(i18n(\"state.cloudcal.6d9090d5290b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The mail connection configuration is corrupted. Please set it up again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1235,8 +1357,8 @@
           "context": "new Error(i18n(\"state.cloudcal.72574f41faea\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The server returned an invalid calendar; the local mirror was kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1256,8 +1378,8 @@
           "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The timetable contains unrecognized sessions; the cloud calendar was not modified",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1272,120 +1394,8 @@
           "context": "new Error(i18n(\"state.cloudcal.812d9e62ba2d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.892291a664b5",
-      "source": "新位置已保存，原位置清理失败，两侧日程均保留；请同步后再清理重复项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 382,
-          "context": "new Error(i18n(\"state.cloudcal.892291a664b5\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.bd5ff99826df",
-      "source": "未找到日程，请先同步后再删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 336,
-          "context": "new Error(i18n(\"state.cloudcal.bd5ff99826df\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.e2f9152c9203",
-      "source": "学期信息无效",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 458,
-          "context": "new Error(i18n(\"state.cloudcal.e2f9152c9203\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.f3f8e2d173eb",
-      "source": "云同步配置已变更，本次验证结果未应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 247,
-          "context": "new Error(i18n(\"state.cloudcal.f3f8e2d173eb\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.fc42ba627dce",
-      "source": "日程版本信息缺失，请先同步再删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 337,
-          "context": "new Error(i18n(\"state.cloudcal.fc42ba627dce\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.fe20ed20d492",
-      "source": "云日历缓存损坏，未覆盖已有日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 146,
-          "context": "new Error(i18n(\"state.cloudcal.fe20ed20d492\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudexchange.388fc6c63ebe",
-      "source": "分享内容超过支持的大小",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudExchange.ts",
-          "line": 157,
-          "context": "new Error(i18n(\"state.cloudexchange.388fc6c63ebe\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule version info is missing. Sync first before editing.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

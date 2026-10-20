@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.imagefiltersheet.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 210,
+          "context": "{i18n(\"components.imagefiltersheet.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.2e603f5665a4",
+      "source": "处理后的预览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 182,
+          "context": "{i18n(\"components.imagefiltersheet.2e603f5665a4\")}"
+        }
+      ],
+      "translation": "Processed preview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.imagefiltersheet.346ff60e6c7c",
+      "source": "读取中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
+          "line": 182,
+          "context": "{i18n(\"components.imagefiltersheet.346ff60e6c7c\")}"
+        }
+      ],
+      "translation": "Reading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.imagefiltersheet.5217984b59e5",
       "source": "正在生成，请稍候…",
@@ -14,8 +62,8 @@
           "context": "busy\n        ? i18n(\"components.imagefiltersheet.5217984b59e5\")\n        : `${info?.hint ?? \"\"}${rotate ? i18n(\"components.imagefiltersheet.fc1f2c7428d8\", { rotate: String(rotate) }) : \"\"}${dirty ? \"\" : i18n(\"components.imagefiltersheet.e6a608674c0f\")}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Generating, please wait…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "busy ? i18n(\"components.imagefiltersheet.d3d21191f32e\") : i18n(\"components.imagefiltersheet.63c73c4730f4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Apply",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "e instanceof Error && e.message ? e.message : i18n(\"components.imagefiltersheet.90a4851cb62d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This step didn't finish. Please try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "title = i18n(\"components.imagefiltersheet.9393fa8872d2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Edit image",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -78,8 +126,8 @@
           "context": "base || i18n(\"components.imagefiltersheet.d24c10d37db0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Image",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "busy ? i18n(\"components.imagefiltersheet.d3d21191f32e\") : i18n(\"components.imagefiltersheet.63c73c4730f4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Processing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +158,8 @@
           "context": "{i18n(\"components.imagefiltersheet.e4fe3a04ff89\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Filter presets",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +174,8 @@
           "context": "dirty ? \"\" : i18n(\"components.imagefiltersheet.e6a608674c0f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Unchanged",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +195,8 @@
           "context": "rotate ? i18n(\"components.imagefiltersheet.fc1f2c7428d8\", { rotate: String(rotate) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Rotated {rotate}°",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +211,8 @@
           "context": "saving ? i18n(\"components.imageviewer.a1a1720d3eb5\") : i18n(\"components.imageviewer.850de13a01d9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save image",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -179,8 +227,8 @@
           "context": "showToast(i18nMsg(\"components.imageviewer.8a4c192efb6b\"), 3000)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saved to Photos",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -195,8 +243,8 @@
           "context": "saving ? i18n(\"components.imageviewer.a1a1720d3eb5\") : i18n(\"components.imageviewer.850de13a01d9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saving",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -211,8 +259,8 @@
           "context": "{i18n(\"components.imageviewer.a9769c635970\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View image",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +280,8 @@
           "context": "showToast(i18nMsg(\"components.imageviewer.f1326e4568dd\", { msg: String(msg) }), 9000)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save failed: {msg}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -253,8 +301,8 @@
           "context": "flash(i18n(\"components.imsettingssection.020a11d70b94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to start Feishu QR scan: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -269,8 +317,8 @@
           "context": "{i18n(\"components.imsettingssection.021f76bfa953\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "On this device? Open the confirmation page directly (no scan needed)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -285,8 +333,8 @@
           "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not bound. Generate a bind code, then send \"/bind\" plus the code to the bot in a Feishu direct message.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -301,8 +349,8 @@
           "context": "{i18n(\"components.imsettingssection.107fecedccba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save and connect",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -330,8 +378,8 @@
           "context": "{i18nRich(\"components.imsettingssection.14087a9867d2\", { value: PHASE_TEXT[wechatStatus.phase] ?? wechatStatus.phase, value2: wechatStatus.note ? `：${wechatStatus.note}` : \"\", value3: cfg?.channels.wechat?.botId ? `（bot ${cfg.channels.wechat.botId.slice(0, 10)}…）` : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "After authorizing via WeChat QR scan you can chat (no App ID/Secret needed): messages reach this device by long polling over the official iLink channel, and OH replies are sent back the same way. Current status: {value}{value2}{value3}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -346,8 +394,8 @@
           "context": "{i18n(\"components.imsettingssection.1c925e27fa1d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create via QR scan",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -367,8 +415,8 @@
           "context": "bound\n                  ? i18n(\"components.imsettingssection.2217f7c35158\", { value: String(bound.slice(0, 12)) })\n                  : i18n(\"components.imsettingssection.0f8c1b732b2c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bound: {value}… (single-owner model: only this person's messages reach OH)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -383,8 +431,8 @@
           "context": "{i18n(\"components.imsettingssection.28690afd1ecd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feishu Open Platform → Custom app → Credentials & basic info. Stored only on this device (encrypted).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -404,8 +452,8 @@
           "context": "{i18n(\"components.imsettingssection.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -420,8 +468,8 @@
           "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign in via QR scan",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -436,8 +484,8 @@
           "context": "{i18n(\"components.imsettingssection.390c8b791bcd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scan with the Feishu mobile app → confirm creation on the opened page → App ID/Secret are fetched automatically and connected (the app owner is bound as the owner). If you'd rather not scan, enter credentials manually under Advanced configuration.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -452,8 +500,8 @@
           "context": "return i18n(\"components.imsettingssection.394ee5935d8c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Channel connection status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -468,8 +516,8 @@
           "context": "return i18n(\"components.imsettingssection.3becaa3847a1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Long-connection event subscription",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -489,8 +537,8 @@
           "context": "flash(i18n(\"components.imsettingssection.3cbb7d58f5e4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to start QR scan: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -505,8 +553,8 @@
           "context": "{i18n(\"components.imsettingssection.4a151de9633d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The bot stays online while the desktop app runs: a Feishu Open Platform custom app (long-connection event subscription, no public endpoint needed). Incoming messages go straight to OH, replies are sent back the same way; attachments are archived to the cloud drive afterwards.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -531,8 +579,8 @@
           "context": "wxNote || i18n(\"components.imsettingssection.516b7af343ed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Waiting for scan…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -547,8 +595,8 @@
           "context": "flash(i18n(\"components.imsettingssection.54821806e300\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feishu credentials saved (stored encrypted on disk)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -563,8 +611,8 @@
           "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enabled, connecting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -579,8 +627,8 @@
           "context": "flash(i18n(\"components.imsettingssection.57afe4560634\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The bind code is valid for 10 minutes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -595,8 +643,8 @@
           "context": "return i18n(\"components.imsettingssection.5f2af850764a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Generate bind code / Unbind",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -616,8 +664,8 @@
           "context": "{i18nRich(\"components.imsettingssection.6ec82af7b630\", { code: code })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In a Feishu direct message, send: /bind {code}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -632,8 +680,8 @@
           "context": "return i18n(\"components.imsettingssection.7c546888c169\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enter Feishu app credentials manually",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +701,8 @@
           "context": "{i18n(\"components.imsettingssection.8615725de235\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "App credentials (manual)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -669,8 +717,8 @@
           "context": "return i18n(\"components.imsettingssection.86b11345bf97\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bind via WeChat QR scan / Rescan / Unbind",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -685,8 +733,8 @@
           "context": "return i18n(\"components.imsettingssection.89c4766afc85\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connection failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +754,8 @@
           "context": "{i18n(\"components.imsettingssection.8c9a5097d028\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "WeChat (official iLink bot · ready after scanning)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -722,8 +770,8 @@
           "context": "cfg?.channels.wechat?.botToken ? i18n(\"components.imsettingssection.a379593b5b75\") : i18n(\"components.imsettingssection.378eaca774bb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rescan",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -738,8 +786,8 @@
           "context": "flash(i18n(\"components.imsettingssection.a445a63759f6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbound: future messages will no longer reach OH",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -754,8 +802,8 @@
           "context": "{i18n(\"components.imsettingssection.a84a8e151194\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feishu channel toggle",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -770,8 +818,8 @@
           "context": "v ? i18n(\"components.imsettingssection.550c7a151569\") : i18n(\"components.imsettingssection.a8c3698b5b8c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -786,8 +834,8 @@
           "context": "{i18n(\"components.imsettingssection.b35839220413\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "App ID (starts with cli_)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -807,8 +855,8 @@
           "context": "{i18n(\"components.imsettingssection.b8f945ea49ff\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connection status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -828,8 +876,8 @@
           "context": "{i18n(\"components.imsettingssection.c432e0322b39\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feishu bot (P0 channel)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -844,8 +892,8 @@
           "context": "flash(i18n(\"components.imsettingssection.d49461b1f610\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "WeChat channel enabled (QR sign-in succeeded)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -860,8 +908,8 @@
           "context": "return i18n(\"components.imsettingssection.d5679a030605\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create the Feishu app via QR scan and bind automatically",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -876,8 +924,8 @@
           "context": "flash(i18n(\"components.imsettingssection.e869014f4368\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feishu app created and connected (QR app creation succeeded)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -897,8 +945,8 @@
           "context": "{i18n(\"components.imsettingssection.ecf1cf831460\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create the app via QR scan (recommended, no manual setup)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -918,8 +966,8 @@
           "context": "{i18nRich(\"components.imsettingssection.ee91e7a6f98f\", { value: wxNote || i18n(\"components.imsettingssection.516b7af343ed\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} (scan with WeChat; OneTHU on your phone can't scan itself, so use the Feishu channel first)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -939,8 +987,8 @@
           "context": "{i18n(\"components.imsettingssection.f48f46f71775\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bind owner",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -955,8 +1003,8 @@
           "context": "{i18n(\"components.imsettingssection.f69e6a2f5669\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Generate bind code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -984,8 +1032,8 @@
           "context": "{i18nRich(\"components.imsettingssection.f779d8072854\", { value: PHASE_TEXT[fs.phase] ?? fs.phase, value2: fs.note ? `：${fs.note}` : \"\", value3: fmtAt(fs.lastInboundAt) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value}{value2} (last inbound {value3})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1005,8 +1053,8 @@
           "context": "{i18n(\"components.imsettingssection.fb3f6cc3047d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbind",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1021,8 +1069,8 @@
           "context": "setFsNote(i18n(\"components.imsettingssection.fea96ff7ab72\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please scan with the Feishu mobile app and confirm creating the agent app on the opened page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1053,8 +1101,8 @@
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sidebar: full → switch to narrow (expands on hover)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1138,8 +1186,8 @@
           "context": "label: i18n(\"components.layout.487e926379fe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My card",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1170,7 +1218,7 @@
           "context": "return i18n(\"components.layout.52fdbbaeda4c\");"
         }
       ],
-      "translation": "To-dos",
+      "translation": "Tasks",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1186,8 +1234,8 @@
           "context": "label: i18n(\"components.layout.56043fcf0aa1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Portrait viewfinder (dev)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1202,7 +1250,7 @@
           "context": "return i18n(\"components.layout.60458dfb4c14\");"
         }
       ],
-      "translation": "Trace",
+      "translation": "Directions",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1239,8 +1287,8 @@
           "context": "{i18n(\"components.layout.61156d427af0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back to top",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1255,8 +1303,8 @@
           "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch to narrow mode (thumbnails, expands on hover)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1271,7 +1319,7 @@
           "context": "return i18n(\"components.layout.73075237fd0f\");"
         }
       ],
-      "translation": "Mail",
+      "translation": "Email",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1287,8 +1335,8 @@
           "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch to full display",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1303,8 +1351,8 @@
           "context": "{i18n(\"components.layout.7a007b29bf56\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Hard refresh (full page reload) · press and hold to drag its position",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1324,8 +1372,8 @@
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Me",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1340,8 +1388,8 @@
           "context": "{i18n(\"components.layout.9f07d2ce4115\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "More actions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1358,54 +1406,6 @@
       ],
       "translation": "Schedule",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.a626aad412b7",
-      "source": "标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 194,
-          "context": "{i18n(\"components.layout.a626aad412b7\")}"
-        }
-      ],
-      "translation": "Tabs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.b1abb3dc2271",
-      "source": "清小搭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 112,
-          "context": "return i18n(\"components.layout.b1abb3dc2271\");"
-        }
-      ],
-      "translation": "Xiaoda",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.b5c07fc4f827",
-      "source": "侧栏：窄（悬停展开）→ 切换为完整",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 156,
-          "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

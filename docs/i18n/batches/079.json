@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.types.48e21aca2214",
+      "source": "上传/分享云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 69,
+          "context": "return i18n(\"plugins.types.48e21aca2214\");"
+        }
+      ],
+      "translation": "Upload to/share Cloud Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.4b9d52da5277",
+      "source": "跳转到应用的任意页面与子栏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 79,
+          "context": "return i18n(\"plugins.types.4b9d52da5277\");"
+        }
+      ],
+      "translation": "Navigate to any app page and subsection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.4bcb26f88d39",
+      "source": "模型对话",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 91,
+          "context": "return i18n(\"plugins.types.4bcb26f88d39\");"
+        }
+      ],
+      "translation": "Model chat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.50500d372141",
+      "source": "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 87,
+          "context": "return i18n(\"plugins.types.50500d372141\");"
+        }
+      ],
+      "translation": "Read system clipboard contents (sensitive: may read passwords copied from a password manager)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.5171b9b529e4",
+      "source": "体育场馆预约与取消（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 61,
+          "context": "return i18n(\"plugins.types.5171b9b529e4\");"
+        }
+      ],
+      "translation": "Book and cancel sports venues (write operation, requires confirmation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.556c5fcee2ec",
+      "source": "从清华邮箱发信（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 67,
+          "context": "return i18n(\"plugins.types.556c5fcee2ec\");"
+        }
+      ],
+      "translation": "Send email from your Tsinghua mailbox (write operation, requires confirmation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.584c7658f468",
+      "source": "余额与消费流水（只读，不含充值）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 74,
+          "context": "return i18n(\"plugins.types.584c7658f468\");"
+        }
+      ],
+      "translation": "Balance and spending records (read-only, no top-ups)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.types.5bbe605e0a01",
       "source": "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照",
@@ -14,8 +126,8 @@
           "context": "return i18n(\"plugins.types.5bbe605e0a01\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignment snapshots from Rain Classroom / TUOJ / Tyche / DSA OJ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +142,8 @@
           "context": "return i18n(\"plugins.types.5d78a4c234e1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Book library resources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "return i18n(\"plugins.types.627dd0f3fd6e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read Cloud Drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +174,8 @@
           "context": "return i18n(\"plugins.types.6dc54a9470ed\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read sports venues",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +190,8 @@
           "context": "return i18n(\"plugins.types.6f73980048f5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "External WebSocket connections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +206,8 @@
           "context": "return i18n(\"plugins.types.7015255aa19b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Local storage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +222,8 @@
           "context": "return i18n(\"plugins.types.781fead7e82d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In-app navigation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +238,8 @@
           "context": "return i18n(\"plugins.types.78a788aeb3ed\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read dorm info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +254,8 @@
           "context": "return i18n(\"plugins.types.7ad8378abec1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read memory",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -158,8 +270,8 @@
           "context": "return i18n(\"plugins.types.92acc8140843\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read the information portal",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -174,8 +286,8 @@
           "context": "return i18n(\"plugins.types.94d7e3d8ab44\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Inject CSS that affects the whole app's appearance (review carefully at install time)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -190,8 +302,8 @@
           "context": "return i18n(\"plugins.types.9665288d3db6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search and read OH long-term memory (personal preferences, course context, task status)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -206,8 +318,8 @@
           "context": "return i18n(\"plugins.types.9f61b41430d2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive libraries, directory browsing, in-library search, and downloads",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -222,8 +334,8 @@
           "context": "return i18n(\"plugins.types.9f78589bce11\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Write memory",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -238,8 +350,8 @@
           "context": "return i18n(\"plugins.types.a245f4a0189e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In-app web pages",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -254,8 +366,8 @@
           "context": "return i18n(\"plugins.types.b0709765f8a8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "External network requests",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -270,8 +382,8 @@
           "context": "return i18n(\"plugins.types.b15c42776a94\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send email",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -286,8 +398,8 @@
           "context": "return i18n(\"plugins.types.b2101414fb98\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show toasts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -302,8 +414,8 @@
           "context": "return i18n(\"plugins.types.b47c2c0ce65a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Balance/online devices/account info (read-only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -318,8 +430,8 @@
           "context": "return i18n(\"plugins.types.b4ccc4a10048\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Directly request any external network address (HTTP(S)) (e.g. LLM APIs)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -334,8 +446,8 @@
           "context": "return i18n(\"plugins.types.b5df04d0e95e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Upload files to Cloud Drive and create share links (write operation, requires confirmation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -350,8 +462,8 @@
           "context": "return i18n(\"plugins.types.bb44113c1bc4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read-only queries of cloud-synced calendars and the local schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -366,8 +478,8 @@
           "context": "return i18n(\"plugins.types.c0c4378797b8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show toast messages",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -382,8 +494,8 @@
           "context": "return i18n(\"plugins.types.c26692150916\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send system notifications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -398,8 +510,8 @@
           "context": "return i18n(\"plugins.types.c4aa15d951ce\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create/edit/delete schedule entries (cloud or local, write operation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -414,8 +526,8 @@
           "context": "return i18n(\"plugins.types.c4fad583342d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create issues, post comments, and close or reopen issues and merge requests (write operation, requires confirmation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -430,8 +542,8 @@
           "context": "return i18n(\"plugins.types.c6990190c123\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Establish and exchange messages over external WebSocket connections via the host (live-stream comments, real-time notifications, etc.; traffic goes through the host's Rust layer, and idle connections are cleaned up after 10 cumulative minutes)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -446,8 +558,8 @@
           "context": "return i18n(\"plugins.types.c6cb8feb5896\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Book/cancel seats and seminar rooms (write operation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -462,8 +574,8 @@
           "context": "return i18n(\"plugins.types.c73bd6334e39\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "List and run commands of other enabled plugins (including write operations)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -478,8 +590,8 @@
           "context": "return i18n(\"plugins.types.c958b2f88de5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read-only queries of venue scenes, bookable spaces, and my bookings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -494,8 +606,8 @@
           "context": "return i18n(\"plugins.types.cf01361e883f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read Web Learning",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -510,8 +622,8 @@
           "context": "return i18n(\"plugins.types.d7ca0f2e28a2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read-only queries of courses, assignments, notices, files, and forums",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -526,8 +638,8 @@
           "context": "return i18n(\"plugins.types.db1b60955a4e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Inject global styles",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +654,8 @@
           "context": "return i18n(\"plugins.types.db8046b7bb4f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read basic info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +670,8 @@
           "context": "return i18n(\"plugins.types.dcaf20f7619c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +686,8 @@
           "context": "return i18n(\"plugins.types.dd2d1636c619\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name/student ID/department and sign-in status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -590,8 +702,8 @@
           "context": "return i18n(\"plugins.types.e059f380bf07\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read clipboard",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +718,8 @@
           "context": "return i18n(\"plugins.types.e41be5c33320\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open web pages in-app (Android desktop-mode browsing)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -622,8 +734,8 @@
           "context": "return i18n(\"plugins.types.e821edec359c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Declare content for Android desktop widgets (rendering and data fetching are done by the host; plugins write no native code)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -638,8 +750,8 @@
           "context": "return i18n(\"plugins.types.e98935ae658f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read-only queries of grades, exams, news, academic calendar, free classrooms, payment records, etc.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -654,8 +766,8 @@
           "context": "return i18n(\"plugins.types.ec461a12a38e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh external assignment sources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -670,8 +782,8 @@
           "context": "return i18n(\"plugins.types.eeb2d48d3eaa\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Post and reply in forums (write operation, requires confirmation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -686,8 +798,8 @@
           "context": "return i18n(\"plugins.types.ef2ab4dbea94\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Access any Tsinghua on-campus system with your sign-in session (custom service integration)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -702,8 +814,8 @@
           "context": "return i18n(\"plugins.types.efe0261e5829\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua mailbox inbox/sent queries, reading messages, and full-mailbox search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -718,8 +830,8 @@
           "context": "return i18n(\"plugins.types.feef1c678595\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Floor/area/seat layout/booking records + seminar room resource queries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -739,8 +851,8 @@
           "context": "phase === \"boot\" ? i18n(\"plugins.xiaodapane.bfb954706240\") : i18n(\"plugins.xiaodapane.09a831a64684\", { err: String(err) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiaoda is temporarily unavailable: {err}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -755,8 +867,8 @@
           "context": "{i18n(\"plugins.xiaodapane.1956d71c54c5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Type your question in the pill below and press Enter to send. This is a new default conversation and does not continue history from elsewhere.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -771,8 +883,8 @@
           "context": "{i18n(\"plugins.xiaodapane.7e5de34cad87\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "For experimentation and reference only",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -792,8 +904,8 @@
           "context": "isUser ? i18n(\"plugins.xiaodapane.b70bb4acc048\") : AGENT_NAME"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Me",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -808,8 +920,8 @@
           "context": "{i18n(\"plugins.xiaodapane.ba38dfe30d1c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiaoda is temporarily unavailable. Please try again later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -824,8 +936,8 @@
           "context": "phase === \"boot\" ? i18n(\"plugins.xiaodapane.bfb954706240\") : i18n(\"plugins.xiaodapane.09a831a64684\", { err: String(err) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiaoda is still getting ready. One moment.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -840,8 +952,8 @@
           "context": "{i18n(\"plugins.xiaodapane.c90cd1ec2872\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send failed; you can send again to retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -856,8 +968,8 @@
           "context": "{i18n(\"plugins.xiaodapane.ca4d973c0b00\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stop",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -872,8 +984,8 @@
           "context": "{i18n(\"plugins.xiaodapane.d4bdd78f6bb0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Typing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -888,8 +1000,8 @@
           "context": "{i18n(\"plugins.xiaodapane.d89aac9533a3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preparing Xiaoda…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -904,8 +1016,8 @@
           "context": "{i18n(\"plugins.xiaodapane.edecf0ae6e51\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -920,8 +1032,8 @@
           "context": "new Error(i18n(\"plugins.xiaodapane.f620f4d59995\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to start a new conversation; send again to retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1106,7 +1218,7 @@
           "line": 1
         }
       ],
-      "translation": "Browser automation",
+      "translation": "Geek mode",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1168,111 +1280,6 @@
       ],
       "translation": "Assignment sources",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.market",
-      "source": "插件市场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Plugin marketplace",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.myPlugins",
-      "source": "我的插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "My plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.notification",
-      "source": "通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Notifications",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.notifications",
-      "source": "通知与提醒",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Notifications",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.oneshot",
-      "source": "OneShot 快捷入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OneShot shortcuts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.plugins",
-      "source": "插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.route.1a7930272017",
-      "source": "入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

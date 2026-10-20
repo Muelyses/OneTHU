@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.dormtab.6cb5a329f274",
+      "source": "订水量（桶）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 219,
+          "context": "{i18n(\"pages.info.dormtab.6cb5a329f274\")}"
+        }
+      ],
+      "translation": "Number of bottles",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.8d6ebc4e3453",
+      "source": "清华水站 dingshui.bjqzhd.com · 公开数据",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 203,
+          "context": "{i18n(\"pages.info.dormtab.8d6ebc4e3453\")}"
+        }
+      ],
+      "translation": "Tsinghua water station dingshui.bjqzhd.com · public data",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.a0d22c766730",
+      "source": "家园网 myhome.tsinghua.edu.cn · 宿舍绑定房间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 160,
+          "context": "{i18n(\"pages.info.dormtab.a0d22c766730\")}"
+        }
+      ],
+      "translation": "MyHome myhome.tsinghua.edu.cn · dorm-bound room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.dormtab.ab8cff9a597a",
       "source": "电费",
@@ -14,8 +62,8 @@
           "context": "{i18n(\"pages.info.dormtab.ab8cff9a597a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Electricity",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "{i18n(\"pages.info.dormtab.b09dff2cb1cb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "e.g. Zijing Building 1, 301A",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "{i18n(\"pages.info.dormtab.bb8c939d0fcd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Order water",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "{i18n(\"pages.info.dormtab.bcd6771e08ec\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Look up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "{i18n(\"pages.info.dormtab.c3fc6114b55c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The user number printed on the water station's invoice or label",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "{i18n(\"pages.info.dormtab.c70f03b85ab5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The MyHome system cannot fetch the balance API right now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +158,8 @@
           "context": "setWaterMsg(i18n(\"pages.info.dormtab.cdf03a9a9579\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Water order number and delivery address are required",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +174,8 @@
           "context": "waterState === \"busy\" ? i18n(\"pages.info.dormtab.18931020ad52\") : i18n(\"pages.info.dormtab.d189e0a2a1c5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit water order",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +190,8 @@
           "context": "{i18n(\"pages.info.dormtab.d872b26584ac\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delivery address (building + room number)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -158,8 +206,8 @@
           "context": "{i18n(\"pages.info.dormtab.d962ed9d270e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No top-up records yet.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -174,8 +222,8 @@
           "context": "u.name || u.address ? i18n(\"pages.info.dormtab.3dd6c0cbae44\") : i18n(\"pages.info.dormtab.dd57d5ccb2f3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The water station did not return info for this number; you can fill it in manually",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -190,8 +238,8 @@
           "context": "setWaterMsg(i18n(\"pages.info.dormtab.e115f82b905e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enter your water order number",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -206,8 +254,8 @@
           "context": "{i18n(\"pages.info.dormtab.e7d4e116f779\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Water tickets",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -222,8 +270,8 @@
           "context": "r.name || i18n(\"pages.info.dormtab.f06a3f64f717\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Electricity top-up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -238,8 +286,8 @@
           "context": "{i18n(\"pages.info.dormtab.fbfad2e4053e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Water order number (water station user number)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -254,8 +302,8 @@
           "context": "{i18n(\"pages.info.evaluationtab.01d95cc9fda4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courses to evaluate (fill them in under \"Teaching evaluation\" on the info portal; this page only shows progress)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -270,8 +318,8 @@
           "context": "{i18n(\"pages.info.evaluationtab.63ec4a3ba307\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No evaluation questionnaires (the evaluation period has not started, or no courses require evaluation this semester).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -286,8 +334,8 @@
           "context": "r[1] ? i18n(\"pages.info.evaluationtab.64363cae324a\") : i18n(\"pages.info.evaluationtab.f91dbaf513a7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Evaluated",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -302,8 +350,8 @@
           "context": "r[1] ? i18n(\"pages.info.evaluationtab.64363cae324a\") : i18n(\"pages.info.evaluationtab.f91dbaf513a7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "To evaluate",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -317,8 +365,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -346,8 +394,8 @@
           "context": "return i18n(\"pages.info.examstab.0e5071b93d57\", { month: String(month), day: String(day), value: String(weekdayOf(date)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{month}/{day} {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -362,8 +410,8 @@
           "context": "state === \"ready\" && data ? i18n(\"pages.info.examstab.9dec2ce0d8fc\", { length: String(data.length), upcoming: String(upcoming) }) : i18n(\"pages.info.examstab.3cdc60a174f2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This academic year",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -377,8 +425,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -392,8 +440,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Thu",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -413,8 +461,8 @@
           "context": "{i18nRich(\"pages.info.examstab.7736a85c89ff\", { value: e.endTime ?? \"--:--\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "to {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -428,8 +476,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sun",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -444,8 +492,8 @@
           "context": "{i18n(\"pages.info.examstab.88df420f8207\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exam schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -465,8 +513,8 @@
           "context": "Number.isNaN(d.getTime()) ? \"\" : i18n(\"pages.info.examstab.9491e7091592\", { value: String(WEEKDAYS[d.getDay()]) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Week {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -490,8 +538,8 @@
           "context": "state === \"ready\" && data ? i18n(\"pages.info.examstab.9dec2ce0d8fc\", { length: String(data.length), upcoming: String(upcoming) }) : i18n(\"pages.info.examstab.3cdc60a174f2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} exams · {upcoming} upcoming · this academic year",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -505,8 +553,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Wed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -536,8 +584,8 @@
           "context": "text: i18n(\"pages.info.examstab.aa9435b82109\", { days: String(days) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "in {days} days",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -552,8 +600,8 @@
           "context": "text: i18n(\"pages.info.examstab.b10b29ca43f2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Time TBD",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -568,8 +616,8 @@
           "context": "{i18n(\"pages.info.examstab.c490e6cc45d9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No exam schedule for this academic year.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -583,8 +631,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fri",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -599,8 +647,8 @@
           "context": "e.location || i18n(\"pages.info.examstab.d4b794824720\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Location TBD",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -615,8 +663,8 @@
           "context": "text: i18n(\"pages.info.examstab.d5f5a7a01073\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -631,8 +679,8 @@
           "context": "text: i18n(\"pages.info.examstab.d79b1d0e5c61\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ended",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -652,8 +700,8 @@
           "context": "{i18n(\"pages.info.examstab.dac4254b777c\", { length: String(exams.length) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} exams",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -667,8 +715,8 @@
           "line": 12
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -683,8 +731,8 @@
           "context": "{i18n(\"pages.info.fitnesstab.79f326be4409\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Item",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -699,8 +747,8 @@
           "context": "{i18n(\"pages.info.fitnesstab.e460bd4bfafb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No results yet (this semester's fitness test results may not be released).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -731,8 +779,8 @@
           "context": "r.name || i18n(\"pages.info.gradincometab.02dede2858a3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Issued",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -747,8 +795,8 @@
           "context": "{i18n(\"pages.info.gradincometab.215db61815eb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Finance system · net pay after tax",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -763,8 +811,8 @@
           "context": "{i18n(\"pages.info.gradincometab.3fcc227e6ab6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No income records yet (queryable only after payments such as research assistantships are issued).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -779,8 +827,8 @@
           "context": "{i18n(\"pages.info.gradincometab.9416e865d2ff\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Net pay total for the last 12 months",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -795,8 +843,8 @@
           "context": "{i18n(\"pages.info.gradincometab.ac0b8e78172e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graduate-only item; undergraduate accounts have no such data.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -811,8 +859,8 @@
           "context": "{i18n(\"pages.info.gradincometab.e603089879c7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Only the last 12 months are shown; query earlier records in the finance system.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -827,8 +875,8 @@
           "context": "{i18n(\"pages.info.gradincometab.fc240ea62ae1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Payment records for the last 12 months",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -848,8 +896,8 @@
           "context": "r.tax ? i18n(\"pages.info.gradincometab.fea0225bbfc4\", { value: String(r.tax.toFixed(2)) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · tax ¥{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -864,8 +912,8 @@
           "context": "{i18n(\"pages.info.hygienetab.01a1a12a8cc2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dorm hygiene score",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -880,8 +928,8 @@
           "context": "{i18n(\"pages.info.hygienetab.07c7e78ab1eb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No hygiene inspection records yet (inspections have not started this semester).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -896,8 +944,8 @@
           "context": "{i18n(\"pages.info.hygienetab.b0c4ef246a16\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "MyHome · dorm hygiene inspection report",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -912,8 +960,8 @@
           "context": "{i18n(\"pages.info.hygienetab.cb5d682bac3d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reset",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -928,8 +976,8 @@
           "context": "{i18n(\"pages.info.hygienetab.faaa5c3ec584\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dorm hygiene inspection report",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -944,8 +992,8 @@
           "context": "{i18n(\"pages.info.infopage.0bdbabde48b3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage info sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -965,8 +1013,8 @@
           "context": "{i18n(\"pages.info.infopage.12526376d387\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1013,8 +1061,8 @@
           "context": "{i18n(\"pages.info.infopage.39e8f1d8cad6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap the button below to bring them back.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1029,8 +1077,8 @@
           "context": "{i18n(\"pages.info.infopage.3ae2b35fabd4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All sections are hidden.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1077,8 +1125,8 @@
           "context": "{i18n(\"pages.info.infopage.4eb6db225088\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info features",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1162,8 +1210,8 @@
           "context": "{i18n(\"pages.info.infopage.fa0124c14866\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show, hide, and reorder sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1207,8 +1255,8 @@
           "context": "total > 0 ? i18n(\"pages.info.invoicetab.2beeb89ed47a\", { total: String(total), page: String(page), totalPages: String(totalPages) }) : i18n(\"pages.info.invoicetab.6d110ca94c48\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{total} in total · page {page}/{totalPages}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1223,8 +1271,8 @@
           "context": "{i18n(\"pages.info.invoicetab.4008bdf12187\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "You currently have no available e-invoices.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1239,8 +1287,8 @@
           "context": "total > 0 ? i18n(\"pages.info.invoicetab.2beeb89ed47a\", { total: String(total), page: String(page), totalPages: String(totalPages) }) : i18n(\"pages.info.invoicetab.6d110ca94c48\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Comprehensive finance services · invoice list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1255,8 +1303,8 @@
           "context": "{i18n(\"pages.info.invoicetab.8a8542f69648\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1276,7 +1324,7 @@
           "context": "r.financial_item_name || r.inv_typeStr || i18n(\"pages.info.invoicetab.92341cf02c56\")"
         }
       ],
-      "translation": "Invoices",
+      "translation": "E-invoices",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1292,8 +1340,8 @@
           "context": "{i18n(\"pages.info.invoicetab.c9b9ae7a6144\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Previous page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1308,56 +1356,8 @@
           "context": "{i18n(\"pages.info.kongjiantab.0afc4fe3d305\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.18931020ad52",
-      "source": "提交中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 348,
-          "context": "busy ? i18n(\"pages.info.kongjiantab.18931020ad52\") : i18n(\"pages.info.kongjiantab.da32887460b5\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.1a558735ea57",
-      "source": "我的预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 360,
-          "context": "{i18n(\"pages.info.kongjiantab.1a558735ea57\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.298336ec2c0e",
-      "source": "上午",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 228,
-          "context": "[i18n(\"pages.info.kongjiantab.298336ec2c0e\"), slots.filter((x) => Number(String(x.time).split(\":\")[0]) < 12)]"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

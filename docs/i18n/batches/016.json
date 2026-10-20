@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.layout.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 194,
+          "context": "{i18n(\"components.layout.a626aad412b7\")}"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.b1abb3dc2271",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 112,
+          "context": "return i18n(\"components.layout.b1abb3dc2271\");"
+        }
+      ],
+      "translation": "Xiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.b5c07fc4f827",
+      "source": "侧栏：窄（悬停展开）→ 切换为完整",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 156,
+          "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
+        }
+      ],
+      "translation": "Sidebar: narrow (expands on hover) → switch to full",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.layout.b8784c8dd563",
       "source": "重试",
@@ -14,8 +62,8 @@
           "context": "{i18n(\"components.layout.b8784c8dd563\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "label: i18n(\"components.layout.df3d58c7d84b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -94,8 +142,8 @@
           "context": "{i18n(\"components.layout.f9e31e1d63d5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Hard refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +163,8 @@
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Duplicate this tab (independent instance)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +195,8 @@
           "context": "free ? i18n(\"components.livetiles.0fea828373b2\") : i18n(\"components.livetiles.89a5bb504b96\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +211,8 @@
           "context": "loading ? i18n(\"components.livetiles.1a1df0978d14\") : (live as Live).text"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Checking status…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -179,8 +227,8 @@
           "context": "text: i18n(\"components.livetiles.1f6921b97987\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Device not found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -195,8 +243,8 @@
           "context": "i18n(\"components.livetiles.6fd6014dd2cc\") + (cur + 1) + i18n(\"components.livetiles.23f4f0e21d61\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " periods",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -224,8 +272,8 @@
           "context": "{i18nRich(\"components.livetiles.3b5c96c7ffbd\", { value: week ? i18n(\"components.livetiles.teachingWeek\", { week }) : \"\", value2: formatDate(now, { weekday: \"short\" }), freeCnt: freeCnt })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value}{value2} · {freeCnt}/6 periods free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -240,8 +288,8 @@
           "context": "i18n(\"components.livetiles.5cf755c0a421\") + w.eta + i18n(\"components.livetiles.40de54344d22\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " min",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -256,8 +304,8 @@
           "context": "i18n(\"components.livetiles.af50a0fe2a50\") + (si + 1) + i18n(\"components.livetiles.546b7ed920d9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " period ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -272,8 +320,8 @@
           "context": "text: i18n(\"components.livetiles.5a0cc6c04776\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fault",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -288,8 +336,8 @@
           "context": "i18n(\"components.livetiles.5cf755c0a421\") + w.eta"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In use · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -304,8 +352,8 @@
           "context": "text: i18n(\"components.livetiles.64c2c95bc26f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Classroom not found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -320,8 +368,8 @@
           "context": "i18n(\"components.livetiles.6fd6014dd2cc\") + (cur + 1)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Now in period ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -336,8 +384,8 @@
           "context": "i18n(\"components.livetiles.9552fe3bd366\") + (next + 1) + i18n(\"components.livetiles.86eba7d9469d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " onward",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -352,8 +400,8 @@
           "context": "free ? i18n(\"components.livetiles.0fea828373b2\") : i18n(\"components.livetiles.89a5bb504b96\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Occupied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -378,8 +426,8 @@
           "context": "text: i18n(\"components.livetiles.93e474c68ed5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -394,8 +442,8 @@
           "context": "i18n(\"components.livetiles.9552fe3bd366\") + (next + 1)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -410,8 +458,8 @@
           "context": "i18n(\"components.livetiles.af50a0fe2a50\") + (si + 1)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Period ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -426,8 +474,8 @@
           "context": "text: i18n(\"components.livetiles.be1b4f3c6c1c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Offline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -442,8 +490,8 @@
           "context": "text: i18n(\"components.livetiles.bed4c87f1838\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Standby",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -458,8 +506,8 @@
           "context": "{i18n(\"components.livetiles.bfb7cec90cc9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading today's status…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -479,8 +527,8 @@
           "context": "free(next) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Occupied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -495,8 +543,8 @@
           "context": "text: i18n(\"components.livetiles.d1adf68fb7c1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's classes are over",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -526,8 +574,8 @@
           "context": "day[cur] === AVAILABLE ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.e48e9c51687a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +590,8 @@
           "context": "day[cur] === AVAILABLE ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.e48e9c51687a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Has class",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +606,8 @@
           "context": "i18n(\"components.livetiles.eacbe16713ec\") + (free(cur) ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.c0aa76aebce6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This period",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +622,8 @@
           "context": "{i18n(\"components.livetiles.f0aac199731c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch today's status. Pull down and reopen to refresh.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -590,8 +638,8 @@
           "context": "cur >= 0 ? i18n(\"components.livetiles.6fd6014dd2cc\") + (cur + 1) + i18n(\"components.livetiles.23f4f0e21d61\") + (day[cur] === AVAILABLE ? i18n(\"components.livetiles.dae661d17c2d\") : i18n(\"components.livetiles.e48e9c51687a\")) : i18n(\"components.livetiles.f174226b9387\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No class right now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +654,8 @@
           "context": "w.eta > 0 ? i18n(\"components.livetiles.5cf755c0a421\") + w.eta + i18n(\"components.livetiles.40de54344d22\") : i18n(\"components.livetiles.fa48e8938940\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In use",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -642,8 +690,8 @@
           "context": "new Error(i18n(\"components.namecardsection.032ff20471ee\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep the avatar under 200KB",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -658,8 +706,8 @@
           "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No name cards in the Stash yet: add a name card to the Stash first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -674,8 +722,8 @@
           "context": "{i18n(\"components.namecardsection.12f63705ed44\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy joining info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -690,8 +738,8 @@
           "context": "r.ok ? i18nMsg(\"components.namecardsection.1322cdf5af8a\") : i18nMsg(\"components.namecardsection.2e31444feed1\", { reason: String(r.reason) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Two-way write enabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +754,8 @@
           "context": "(c.card as PersonalCard).bio || i18n(\"components.namecardsection.140181c90ccb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No bio yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -722,8 +770,8 @@
           "context": "{i18n(\"components.namecardsection.16b12866400d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Synced with the organization profile; older standalone cards are kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -743,8 +791,8 @@
           "context": "{i18n(\"components.namecardsection.16c88a1bd8a9\", { name: String(c.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open {name}'s card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +807,8 @@
           "context": "label: i18nMsg(\"components.namecardsection.1aadd1661e1d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Leave a note (synced to the shared cloud drive)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -780,8 +828,8 @@
           "context": "{i18n(\"components.namecardsection.1ce1f2806523\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Friend channel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -796,8 +844,8 @@
           "context": "{i18n(\"components.namecardsection.1da923d22b2f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Receive from Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -817,8 +865,8 @@
           "context": "k: i18n(\"components.namecardsection.22530f991560\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Personal URL",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -833,8 +881,8 @@
           "context": "{i18n(\"components.namecardsection.2335399f1fa8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -849,8 +897,8 @@
           "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Only your card and organization cards are here for now; cards you receive from others will appear here.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -865,8 +913,8 @@
           "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Written to the shared cloud drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -881,8 +929,8 @@
           "context": "{i18n(\"components.namecardsection.2a7be7efb999\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No notes yet. Notes / files are written to your shared cloud drive; the other person views them via the share link.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -897,8 +945,8 @@
           "context": "email || i18n(\"components.namecardsection.2b80886afc39\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unrecognized · needed for friend-to-friend transfer",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -913,8 +961,8 @@
           "context": "showToast(i18nMsg(\"components.namecardsection.2da6ab45cd99\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Card saved; cloud drive backup failed. Go to the cloud drive page, make sure you're signed in, and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -934,8 +982,8 @@
           "context": "r.ok ? i18nMsg(\"components.namecardsection.1322cdf5af8a\") : i18nMsg(\"components.namecardsection.2e31444feed1\", { reason: String(r.reason) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to enable: {reason}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -971,8 +1019,8 @@
           "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Contact info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -987,8 +1035,8 @@
           "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy card share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1013,8 +1061,8 @@
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Receive a card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1029,8 +1077,8 @@
           "context": "{i18n(\"components.namecardsection.381574fa5f7b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Card info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1045,8 +1093,8 @@
           "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching cards",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1061,8 +1109,8 @@
           "context": "openFormModal(i18nMsg(\"components.namecardsection.385d439d3e16\"), [{ key: \"text\", label: i18nMsg(\"components.namecardsection.1aadd1661e1d\"), kind: \"textarea\", required: true }])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Leave a note",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1077,8 +1125,8 @@
           "context": "{i18n(\"components.namecardsection.3e21bceb6dc5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open my card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1093,8 +1141,8 @@
           "context": "{i18n(\"components.namecardsection.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1109,8 +1157,8 @@
           "context": "twoWay.ok ? i18nMsg(\"components.namecardsection.409bad7496cf\") : i18nMsg(\"components.namecardsection.53c31c534b2e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared cloud drive created, with two-way friend write enabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1125,8 +1173,8 @@
           "context": "{i18n(\"components.namecardsection.4300017090d2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy share link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1141,8 +1189,8 @@
           "context": "{i18n(\"components.namecardsection.48659c30cb24\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scan to receive a card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1162,8 +1210,8 @@
           "context": "{i18n(\"components.namecardsection.487e926379fe\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1178,8 +1226,8 @@
           "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "These cards are already in Contacts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1194,8 +1242,8 @@
           "context": "{i18n(\"components.namecardsection.4dd6695c0a10\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage organizations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1210,8 +1258,8 @@
           "context": "twoWay.ok ? i18nMsg(\"components.namecardsection.409bad7496cf\") : i18nMsg(\"components.namecardsection.53c31c534b2e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared cloud drive created: link copied. Once the other person fills in their cloud drive email, two-way access can be enabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1226,8 +1274,8 @@
           "context": "sharingId === shown.id ? i18n(\"components.namecardsection.56b63def0e29\") : i18n(\"components.namecardsection.79d504ee7bef\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Creating…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1247,7 +1295,7 @@
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         }
       ],
-      "translation": "Vault is unavailable. Try again later.",
+      "translation": "Stash is temporarily unavailable. Try again later",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1263,8 +1311,8 @@
           "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This device only",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1279,8 +1327,8 @@
           "context": "label: i18n(\"components.namecardsection.5c55a67935af\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1300,8 +1348,8 @@
           "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Paste share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1316,8 +1364,8 @@
           "context": "shown.shared?.shareUrl ? i18n(\"components.namecardsection.675b3c608daf\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Created (link can be copied)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1342,62 +1390,9 @@
           "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.namecardsection.6a7ab670dbb4",
-      "source": "从通讯录删除「{name}」？",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(shown.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 644,
-          "context": "confirmOk(i18nMsg(\"components.namecardsection.6a7ab670dbb4\", { name: String(shown.name) }))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6b70038c3f75",
-      "source": "卡面已备份到云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 221,
-          "context": "showToast(i18nMsg(\"components.namecardsection.6b70038c3f75\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6d434210c5bf",
-      "source": "搜索好友、组织或简介",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 472,
-          "context": "{i18n(\"components.namecardsection.6d434210c5bf\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

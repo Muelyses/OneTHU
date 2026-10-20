@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.lifepage.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 41,
+          "context": "return i18n(\"pages.info.lifepage.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.92341cf02c56",
+      "source": "电子发票",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 44,
+          "context": "return i18n(\"pages.info.lifepage.92341cf02c56\");"
+        }
+      ],
+      "translation": "Invoices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.b735bde6b0d7",
+      "source": "管理生活栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 136,
+          "context": "{i18n(\"pages.info.lifepage.b735bde6b0d7\")}"
+        }
+      ],
+      "translation": "Manage life sections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.lifepage.caf1f095b108",
       "source": "校园卡",
@@ -46,8 +94,8 @@
           "context": "{i18n(\"pages.info.lifepage.f221af82663b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All sections are hidden. Tap \"Manage sections\" at the top right to restore them.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "{i18n(\"pages.info.lifepage.fa0124c14866\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Section visibility and order",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "{i18n(\"pages.info.networktab.04cb682d2b8d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "8~19 characters, case-sensitive letters, must not match the username, and must contain at least two of: digits, letters, special characters (!@#$%^*().~ only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "pwdBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.08a85f4ab4ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +163,8 @@
           "context": "pwdBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.08a85f4ab4ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,8 +179,8 @@
           "context": "{i18n(\"pages.info.networktab.21ef4abafb6f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Terminal connections · Tsinghua-Secure password",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +195,8 @@
           "context": "{i18n(\"pages.info.networktab.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +211,8 @@
           "context": "[i18n(\"pages.info.networktab.311bb313fdec\"), a.username || \"–\"]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Account",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -179,8 +227,8 @@
           "context": "[i18n(\"pages.info.networktab.32c49e5592c4\"), String(cnt.value)]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Terminal connections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -195,8 +243,8 @@
           "context": "setPwdMsg(i18n(\"pages.info.networktab.355fc1ddcfad\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The two entries do not match",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -211,8 +259,8 @@
           "context": "countBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.37090f456516\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -227,8 +275,8 @@
           "context": "loginBusy ? i18n(\"pages.info.networktab.3f06ed8f8c38\") : i18n(\"pages.info.networktab.4cd6b2e0e4c4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Signing in…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -243,8 +291,8 @@
           "context": "{i18n(\"pages.info.networktab.4927a53bcc88\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -259,8 +307,8 @@
           "context": "loginBusy ? i18n(\"pages.info.networktab.3f06ed8f8c38\") : i18n(\"pages.info.networktab.4cd6b2e0e4c4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign in to usereg",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -275,8 +323,8 @@
           "context": "[i18n(\"pages.info.networktab.50b5b1d2abef\"), a.realName || \"–\"]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -291,8 +339,8 @@
           "context": "{i18n(\"pages.info.networktab.515e9c7cf7b2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New password",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -307,8 +355,8 @@
           "context": "[i18n(\"pages.info.networktab.6320b4a8722a\"), a.status || \"–\"]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -328,8 +376,8 @@
           "context": "d.loggedAt ? i18n(\"pages.info.networktab.63d5dc2e839a\", { loggedAt: String(d.loggedAt) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Signed in at {loggedAt}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -349,8 +397,8 @@
           "context": "{i18n(\"pages.info.networktab.66265029155c\", { length: String(devices.length) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} devices · Can go offline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -365,8 +413,8 @@
           "context": "{i18n(\"pages.info.networktab.6baa450e31c0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to refresh the captcha",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -381,8 +429,8 @@
           "context": "{i18n(\"pages.info.networktab.6d9f04d2e157\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Each static IP under your account counts as one connection. Change with caution",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -402,8 +450,8 @@
           "context": "setCountMsg(i18n(\"pages.info.networktab.6de4ef1bdc04\", { n: String(n) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Changed to {n}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -418,8 +466,8 @@
           "context": "{i18n(\"pages.info.networktab.6fde05a916c6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm new password",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -439,8 +487,8 @@
           "context": "{i18nRich(\"pages.info.networktab.71534747219b\", { value: devCount ?? \"–\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Terminal connections (currently {value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -455,8 +503,8 @@
           "context": "{i18n(\"pages.info.networktab.79f326be4409\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Item",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -471,8 +519,8 @@
           "context": "{i18n(\"pages.info.networktab.8494fa9c8467\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The password is the same as your INFO password; enter the captcha shown on the right to sign in (same flow as the web portal).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -487,8 +535,8 @@
           "context": "[i18n(\"pages.info.networktab.963ead08d78d\"), a.userGroup || \"–\"]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "User group",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -503,8 +551,8 @@
           "context": "{i18n(\"pages.info.networktab.965fb250e5fd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -519,8 +567,8 @@
           "context": "{i18n(\"pages.info.networktab.9bc45ac6f5f0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change Tsinghua-Secure password",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -535,8 +583,8 @@
           "context": "{i18n(\"pages.info.networktab.9da8e7301f4e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Go offline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -551,8 +599,8 @@
           "context": "{i18n(\"pages.info.networktab.aed9c158c9ae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "usereg self-service · Captcha sign-in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -572,8 +620,8 @@
           "context": "{i18n(\"pages.info.networktab.bb015c60bafc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Captcha",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -588,8 +636,8 @@
           "context": "{i18n(\"pages.info.networktab.bb6d995724f4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -604,8 +652,8 @@
           "context": "setPwdMsg(i18n(\"pages.info.networktab.be8995021004\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Password changed (use the new password the next time you connect to Tsinghua-Secure)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -620,8 +668,8 @@
           "context": "[i18n(\"pages.info.networktab.cca768b12e76\"), String(a.allowedDevices)]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Allowed device count",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -636,8 +684,8 @@
           "context": "{i18n(\"pages.info.networktab.cd24d9aacefa\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "usereg captcha sign-in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -652,8 +700,8 @@
           "context": "{i18n(\"pages.info.networktab.d48b614e9571\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This feature is temporarily unavailable (fetch failed; try again later)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -684,8 +732,8 @@
           "context": "[i18n(\"pages.info.networktab.decb065f369c\"), b.usedBytes || \"–\"]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Data used",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -700,8 +748,8 @@
           "context": "[i18n(\"pages.info.networktab.e4e1122260bc\"), b.usedSeconds || \"–\"]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Time used",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -716,8 +764,8 @@
           "context": "{i18n(\"pages.info.networktab.e6a28243ce79\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New count",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -753,8 +801,8 @@
           "context": "setLoginErr(i18n(\"pages.info.networktab.edb3f8bb40a5\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch captcha: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -769,8 +817,8 @@
           "context": "setPwdMsg(i18n(\"pages.info.networktab.ee38ec30b36a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid format: 8~19 characters with at least one letter, one digit, and one special character (!@#$%^*().~)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -785,8 +833,8 @@
           "context": "{i18n(\"pages.info.networktab.ef611c008f80\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Online devices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -801,8 +849,8 @@
           "context": "{i18n(\"pages.info.networktab.f37abc08ae82\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The campus network is not signed in (it is separate from unified identity authentication). You can sign in here with a captcha.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -817,8 +865,8 @@
           "context": "subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All subscriptions",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -833,8 +881,8 @@
           "context": "{i18n(\"pages.info.newstab.088536fe1994\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The list of subscribable units is empty.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -854,8 +902,8 @@
           "context": "{i18nRich(\"pages.info.newstab.0986893ba243\", { subPage: subPage })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Page {subPage}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -875,8 +923,8 @@
           "context": "{i18nRich(\"pages.info.newstab.0b4ff6ccd332\", { value: subs.length > 0 ? `（${subs.length}）` : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage subscriptions{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -891,8 +939,8 @@
           "context": "{i18n(\"pages.info.newstab.13d61fea9f17\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -907,8 +955,8 @@
           "context": "{i18n(\"pages.info.newstab.1629c4dfeeb4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Subscription state is authoritative on the info portal server (same API and account as thu-info). Adding or removing writes to portal subscriptions immediately and refreshes; local localStorage is only a UI preference cache.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -944,8 +992,8 @@
           "context": "c.source ? i18n(\"pages.info.newstab.1bd26803ad79\", { source: String(c.source) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Source: {source}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -960,8 +1008,8 @@
           "context": "serverState === \"loading\" && localResults.length === 0\n                    ? i18n(\"pages.info.newstab.1dad8492f8c1\")\n                    : i18n(\"pages.info.newstab.5a91a7f48009\", { query: String(query) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Searching…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -976,8 +1024,8 @@
           "context": "page > 1 ? i18n(\"pages.info.newstab.c23d1354916d\") : i18n(\"pages.info.newstab.21ac3d54fe13\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No news.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -992,8 +1040,8 @@
           "context": "{i18n(\"pages.info.newstab.23d18fc44de0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Subscription feed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1008,8 +1056,8 @@
           "context": "{i18n(\"pages.info.newstab.241cfdfe3554\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add subscriptions (tap publishing units)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1024,8 +1072,8 @@
           "context": "{i18n(\"pages.info.newstab.260cbb8afb63\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search news",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1053,8 +1101,8 @@
           "context": "searching\n                ? i18n(\"pages.info.newstab.260d6f3af87e\", { query: String(query), length: String(subShown.length), value: String(subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`) })\n                : subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"{query}\" matched {length} items (searched within {value})",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1069,8 +1117,8 @@
           "context": "{i18n(\"pages.info.newstab.279658ea601c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus news",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1090,8 +1138,8 @@
           "context": "serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Local search · {length} items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1111,8 +1159,8 @@
           "context": "text: i18n(\"pages.info.newstab.2d2ab24375ce\", { path: String(path) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded to: {path}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1143,8 +1191,8 @@
           "context": "{i18n(\"pages.info.newstab.3725212d2092\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage subscriptions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1159,8 +1207,8 @@
           "context": "{i18n(\"pages.info.newstab.3b275fe0df2c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search titles / bodies / sources (server first, local fallback)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1175,8 +1223,8 @@
           "context": "{i18n(\"pages.info.newstab.3dd09b78c050\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Published on the info portal · Tap to open in system browser",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1191,8 +1239,8 @@
           "context": "localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Searching on the server…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1207,8 +1255,8 @@
           "context": "{i18n(\"pages.info.newstab.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1223,8 +1271,8 @@
           "context": "subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No more subscription updates on this page.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1239,8 +1287,8 @@
           "context": "new Error(i18n(\"pages.info.newstab.44c55113208f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Adding failed. Refresh and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1276,8 +1324,8 @@
           "context": "showServer\n                ? i18n(\"pages.info.newstab.477b586d63a0\", { length: String(searchItems.length) })\n                : serverState === \"loading\"\n                  ? localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")\n                  : serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Server search · {length} items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1297,8 +1345,8 @@
           "context": "serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Local fallback · Searched within {length} fetched items (server search unavailable)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1318,61 +1366,8 @@
           "context": "serverState === \"loading\" && localResults.length === 0\n                    ? i18n(\"pages.info.newstab.1dad8492f8c1\")\n                    : i18n(\"pages.info.newstab.5a91a7f48009\", { query: String(query) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5c55a67935af",
-      "source": "全部",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 672,
-          "context": "{i18n(\"pages.info.newstab.5c55a67935af\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5e8e7af57abb",
-      "source": "删除中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 869,
-          "context": "opBusy === c.id ? i18n(\"pages.info.newstab.5e8e7af57abb\") : i18n(\"pages.info.newstab.2f9daa828907\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.5f172c5140ca",
-      "source": "删除未成功，请刷新后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 475,
-          "context": "new Error(i18n(\"pages.info.newstab.5f172c5140ca\"))"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 495,
-          "context": "new Error(i18n(\"pages.info.newstab.5f172c5140ca\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No news related to \"{query}\".",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

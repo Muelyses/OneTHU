@@ -233,6 +233,12 @@ html:root .ohx-modeswitch > .og-btn.is-active { background: var(--og-surface-1);
 
 /* Layout containment: long pages grow; only explicit list/panel bodies scroll. */
 html:root .explorer-panel:not(.is-home-canvas):not(.is-onepage-canvas) { overflow: visible; }
+/* Each persistent tab owns its gutters. Home/OnePage can remain edge-to-edge
+   without changing the horizontal spacing of pages opened by their widgets. */
+html:root .explorer-shell:not(.is-simple) > .explorer-content { padding-inline: 0 !important; }
+html:root .explorer-shell:not(.is-simple) .explorer-panel[data-tab-page]:not(.is-home-canvas):not(.is-onepage-canvas):not([data-tab-page="schedule"]) {
+  padding-inline: var(--og-workbench-gutter);
+}
 html:root .explorer-settings-body { min-width: 0; min-height: 0; }
 html:root .workbench-plugin-settings { padding: var(--og-space-6); }
 html:root .settings-seg { position: static; transform: none; min-width: 0; }

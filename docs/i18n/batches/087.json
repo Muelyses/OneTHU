@@ -1,7 +1,123 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.orgsync.fb99a121e507",
+      "source": "同步关联资源权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 231,
+          "context": "label:i18n(\"state.orgsync.fb99a121e507\")"
+        }
+      ],
+      "translation": "Sync linked resource permissions",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.fc4f3897fb63",
+      "source": "组织资料必须位于对应 GitLab 私有群组的私有项目内",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 32,
+          "context": "new Error(i18n(\"state.orgsync.fc4f3897fb63\"))"
+        }
+      ],
+      "translation": "Organization content must be in a private project inside the corresponding private GitLab group",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.ownerOnly",
+      "source": "只有服务器上的组织负责人可以执行此操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 66,
+          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
+        }
+      ],
+      "translation": "Only organization Owners on the server can perform this action",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.permissionsUnverified",
+      "source": "关联资源权限尚未核对，请负责人完成权限核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 50,
+          "context": "config.permissionsVerified !== 1 ? i18n(\"state.orgsync.permissionsUnverified\") : undefined"
+        }
+      ],
+      "translation": "Linked resource permissions have not been verified yet. Ask an Owner to complete permission verification.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.removeMemberLabel",
+      "source": "移除成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 201,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "Remove member",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.updateMemberLabel",
+      "source": "更新 {username}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 201,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "Update {username}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsynccore.13447b8f6ab6",
+      "source": "降权回读不符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 168,
+          "context": "new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"))"
+        }
+      ],
+      "translation": "Permission downgrade readback mismatch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.orgsynccore.15f11e1c75da",
       "source": "至少保留一位服务器上的组织负责人",
@@ -14,8 +130,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.15f11e1c75da\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep at least one organization Owner on the server",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +146,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.181c794c590b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization collaboration content is corrupted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +162,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.22d16e7c98ba\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared permissions remain after detaching",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +183,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.26e81e5f3e41\", { id: String(id) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab repository #{id} must be a private repository inside this organization's group. Move it into the group and set it to private first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -88,8 +204,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.34320f02cd8e\", { name: String(lib.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The owner of library \"{name}\" has inherent permissions. Transfer the cloud drive ownership first, then retry the member change.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -109,8 +225,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.35d481d1c9b2\", { id: String(id) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab repository #{id} has direct grants outside the organization roster. Handle it in GitLab first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -125,8 +241,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.3ecab27b438e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization metadata project cannot be linked as a regular repository",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -141,8 +257,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.4368a8b9ff92\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This is not supported OneTHU organization collaboration content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -157,8 +273,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.5c00ac7e88bb\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The library owner has inherent write permission; ownership must be transferred before downgrading to read-only",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -173,8 +289,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.716bc0e42213\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization configuration is corrupted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -194,8 +310,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.75a0431ba7fe\", { id: String(id) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab repository #{id} has grants from other groups. Remove them in GitLab first.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -219,8 +335,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.79361f44af76\", { value: String(kind === \"groups\" ? i18n(\"state.orgsynccore.gitlabGroup\") : i18n(\"state.orgsynccore.gitlabProject\")), id: String(id) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Permission readback mismatch for {value} #{id}; a parent organization or other independent grant may remain. An Owner needs to handle it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -235,8 +351,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.8e43c3815f47\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Have another Owner perform your removal or downgrade so that readback and recording can complete after the permission change",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -251,8 +367,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.9715a0f9152f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The organization content format or size is not supported",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -267,8 +383,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.9eb8904e9896\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared permissions are still found after revocation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -283,8 +399,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.a6f0f050b88e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grant readback mismatch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -299,8 +415,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.b150bcce1fc7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Missing project identifier",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -315,8 +431,8 @@
           "context": "super(i18n(\"state.orgsynccore.conflict\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Another member just updated this content. Your input has been kept — refresh, compare, and save again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -331,8 +447,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.d2a3a9ac759a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This email is the library owner. The library ownership must be transferred on the cloud drive before access can be revoked.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -354,8 +470,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.detachLibrary\", {name:lib.name,email:binding.email}), async () => {\n      if ((await api.cloudOwner(lib.repoId)).toLowerCase() === binding.email) return; // intrinsic ownership is not an org grant\n      if ((await api.listCloud(lib.repoId)).some(s=>s.email===binding.email)) await api.removeCloud(lib.repoId,binding.email);\n      if ((await api.listCloud(lib.repoId)).some(s=>s.email===binding.email)) throw new Error(i18n(\"state.orgsynccore.22d16e7c98ba\"));\n    })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Detach library {name} / {email}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -377,8 +493,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.detachProject\", {name:repo.name,username:binding.username}), async () => {\n      const direct = (await api.members(\"projects\",repo.id,false)).find(m=>m.id===binding.userId);\n      if (direct) await api.removeMember(\"projects\",repo.id,binding.userId);\n      if ((await api.members(\"projects\",repo.id,false)).some(m=>m.id===binding.userId)) throw new Error(i18n(\"state.orgsynccore.f4efde7b447c\"));\n      // Group-inherited access belongs to the group itself, not this resource link.\n    })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Detach repository {name} / {username}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -393,8 +509,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.dffb811b78bd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current GitLab account is not an organization Owner and cannot modify members or sharing permissions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -409,8 +525,8 @@
           "context": "new Error(i18n(\"state.orgsynccore.f4efde7b447c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The direct grant has not been revoked yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -425,8 +541,8 @@
           "context": "kind === \"groups\" ? i18n(\"state.orgsynccore.gitlabGroup\") : i18n(\"state.orgsynccore.gitlabProject\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab organization",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -441,8 +557,8 @@
           "context": "kind === \"groups\" ? i18n(\"state.orgsynccore.gitlabGroup\") : i18n(\"state.orgsynccore.gitlabProject\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab repository",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -464,8 +580,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.grantCloud\", {name:lib.name,email:binding.email}), async () => {\n        if ((await api.cloudOwner(lib.repoId)).toLowerCase() === binding.email) {\n          if (permission !== \"rw\") throw new Error(i18n(\"state.orgsynccore.5c00ac7e88bb\"));\n          return;\n        }\n        if ((await api.listCloud(lib.repoId)).find(s => s.email === binding.email)?.permission !== permission) await api.setCloud(lib.repoId, binding.email, permission);\n        if ((await api.listCloud(lib.repoId)).find(s => s.email === binding.email)?.permission !== permission) throw new Error(i18n(\"state.orgsynccore.a6f0f050b88e\"));\n      })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grant cloud drive {name} to {email}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -487,8 +603,8 @@
           "context": "errors.push(i18n(\"state.orgsynccore.libraryMissingEmail\", {name:lib.name,username:binding.username}))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud drive {name}: {username} has no Cloud Drive email bound yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -507,8 +623,8 @@
           "context": "errors.push(i18n(\"state.orgsynccore.missingEmail\", {username:member.username}))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{username} has no Cloud Drive email bound yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -530,8 +646,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.reduceCloud\", {name:lib.name,email:binding.email}), async () => {\n      const existing = (await api.listCloud(lib.repoId)).find(s=>s.email===binding.email);\n      if (existing && existing.permission !== \"r\") {\n        await api.setCloud(lib.repoId,binding.email,\"r\");\n        if ((await api.listCloud(lib.repoId)).find(s=>s.email===binding.email)?.permission !== \"r\") throw new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"));\n      }\n    })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downgrade cloud drive {name} for {email}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -546,8 +662,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.removeMember\"), () => setGitPermission(api, \"groups\", ref.groupId, intent.removeUserId!, null))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove organization member",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -569,8 +685,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.revokeCloud\", {name:lib.name,email:binding.email}), async () => {\n        if ((await api.cloudOwner(lib.repoId)).toLowerCase() === binding.email) throw new Error(i18n(\"state.orgsynccore.d2a3a9ac759a\"));\n        if ((await api.listCloud(lib.repoId)).some(s => s.email === binding.email)) await api.removeCloud(lib.repoId, binding.email);\n        if ((await api.listCloud(lib.repoId)).some(s => s.email === binding.email)) throw new Error(i18n(\"state.orgsynccore.9eb8904e9896\"));\n      })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Revoke cloud drive {name} for {email}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -592,8 +708,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.revokeProject\", {name:repo.name,userId}), async () => {\n      const actual = (await api.members(\"projects\",repo.id,true)).find(m=>m.id===userId);\n      if (actual && (!member || actual.access_level > Math.min(member.access_level,40))) await setGitPermission(api,\"projects\",repo.id,userId,member ? member.access_level : null);\n    })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Revoke GitLab {name} / user {userId}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -608,8 +724,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.updateMember\"), () => setGitPermission(api, \"groups\", ref.groupId, intent.target!.userId, roleLevel(intent.target!.role)))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Update organization member",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -631,8 +747,8 @@
           "context": "attempt(i18n(\"state.orgsynccore.verifyProject\", {name:repo.name,userId}), () => setGitPermission(api, \"projects\", repo.id, userId, member ? member.access_level : null))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab {name} / user {userId}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -679,8 +795,8 @@
           "context": "schedule:i18n(\"state.quickaccess.2e3250329028\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -737,8 +853,8 @@
           "context": "return i18n(\"state.schedulewindow.0b97c851e4a7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All day",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -753,8 +869,8 @@
           "context": "new Error(i18n(\"state.seafile.0507dadfda6a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive is not connected: paste a token on the Cloud Drive page first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -769,8 +885,8 @@
           "context": "new Error(i18n(\"state.seafile.15e1ef41e215\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive is not connected: sign in on the Cloud Drive page first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -785,8 +901,8 @@
           "context": "new Error(i18n(\"state.seafile.2a15ea48f5c7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch to the cloud drive account that created this share before modifying or revoking it",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -821,8 +937,8 @@
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud drive not configured",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -847,8 +963,8 @@
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive is not connected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -863,8 +979,8 @@
           "context": "new Error(i18n(\"state.seafile.a84f939c0666\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive did not return the new library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -879,7 +995,7 @@
           "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
         }
       ],
-      "translation": "The cloud account has changed. Please try again.",
+      "translation": "The cloud drive account has changed. Please try again.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -900,8 +1016,8 @@
           "context": "showToast(i18nMsg(\"state.seafile.f206fb3a20d8\", { local: String(local) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded to: {local}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -916,8 +1032,8 @@
           "context": "showToast(i18nMsg(\"state.seafile.f423b2f16ab1\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uploaded to the cloud drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -932,8 +1048,8 @@
           "context": "new Error(i18n(\"state.seafile.f6d2148271ab\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect Tsinghua Cloud Drive first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -948,8 +1064,8 @@
           "context": "error: i18n(\"state.seafileauto.0b66b052d51d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Token not found on the profile page (unknown page layout; paste it manually once on the Cloud Drive page)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -964,8 +1080,8 @@
           "context": "error: i18n(\"state.seafileauto.6064f0dbf06e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Still not approved after direct unified authentication sign-in: sign in to your Tsinghua account again in Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -980,8 +1096,8 @@
           "context": "error: i18n(\"state.seafileauto.64be8fcebc0a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No access token on the cloud drive yet: generate one on the cloud drive settings page first, or connect from OneTHU via a browser window",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -996,8 +1112,8 @@
           "context": "error: i18n(\"state.seafileauto.789c9d831ceb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Direct unified authentication sign-in failed: sign in to your Tsinghua account again in Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1012,8 +1128,8 @@
           "context": "error: i18n(\"state.seafileauto.ab0d7338c8dd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The unified authentication session has expired: sign in to your Tsinghua account again in Settings, then connect the cloud drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1028,8 +1144,8 @@
           "context": "error: i18n(\"state.seafileauto.b096dd8cc73e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The unified authentication session has expired (no Tsinghua password in memory): sign in to your Tsinghua account again in Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1044,8 +1160,8 @@
           "context": "error: i18n(\"state.seafileauto.c82a95d8733d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "First-time authorization required: cloud drive sign-in uses Tsinghua OAuth. Open cloud.tsinghua.edu.cn once in a browser or the app and click \"Agree to authorize\" (afterwards it stays silent)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1060,8 +1176,8 @@
           "context": "error: i18n(\"state.seafileauto.d236f74b57c1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to confirm renewal with unified authentication. Please retry later.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1076,8 +1192,8 @@
           "context": "() =>\n  i18n(\"state.seafileauto.twoFactorRequired\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua unified authentication requires two-factor authentication: sign in to your Tsinghua account again in OneTHU and check \"Trust this device\"; the cloud drive will then connect automatically.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1213,8 @@
           "context": "new Error(i18n(\"state.sealedshare.09715736b21b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share key is corrupted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1113,8 +1229,8 @@
           "context": "new Error(i18n(\"state.sealedshare.2405c88b1056\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This is a private share. Connect Tsinghua Cloud Drive with the authorized email.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1129,8 +1245,8 @@
           "context": "new Error(i18n(\"state.sealedshare.3244eb7e5a7d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The shared content is malformed or too large",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1145,8 +1261,8 @@
           "context": "new Error(i18n(\"state.sealedshare.48c72cc17f20\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current cloud drive account has no access to this share, or the share has been revoked",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1161,8 +1277,8 @@
           "context": "new Error(i18n(\"state.sealedshare.627f3e9496d7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share content verification failed. Ask the sender to share again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1177,8 +1293,8 @@
           "context": "new Error(i18n(\"state.sealedshare.8246a8d4e7da\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The private share format is invalid",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1193,8 +1309,8 @@
           "context": "new Error(i18n(\"state.systemcal.1af23354d905\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system calendar settings file is invalid. Restore from a backup and retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1209,8 +1325,8 @@
           "context": "new Error(i18n(\"state.systemcal.30fb8d6869b0\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The academic calendar semester range is invalid; sync was aborted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1225,8 +1341,8 @@
           "context": "new Error(i18n(\"state.systemcal.3d8856ab74b0\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments for the current semester are not ready yet. Select the current semester in Web Learning and retry; the existing system calendar is unchanged",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1241,8 +1357,8 @@
           "context": "new Error(i18n(\"state.systemcal.5a93b270a6f9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Native system calendar sync is not supported on this platform",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1257,8 +1373,8 @@
           "context": "new Error(i18n(\"state.systemcal.746a9d1e0b2c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The schedule contains invalid start or end times; sync was aborted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1273,8 +1389,8 @@
           "context": "new Error(i18n(\"state.systemcal.854aca2c0e1f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Native system calendar sync is not supported on this platform; you can export a calendar file instead",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1294,8 +1410,8 @@
           "context": "new Error(i18n(\"state.systemcal.89e7b1c563d7\", { length: String(hit.data.entries.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full-semester fetch failed; keeping the complete cache of {length} entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1310,134 +1426,8 @@
           "context": "new Error(i18n(\"state.systemcal.8b3f14077824\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.ab1abc96899c",
-      "source": "外部作业源尚未完整加载，请刷新网络学堂后重试；已有系统日历保持不变",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 248,
-          "context": "new Error(i18n(\"state.systemcal.ab1abc96899c\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.ae887c4815af",
-      "source": "校历尚未就绪，请打开日程加载学期后重试；已有系统日历保持不变",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 240,
-          "context": "new Error(i18n(\"state.systemcal.ae887c4815af\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.b170ef2db7ca",
-      "source": "系统日历正在同步或移除中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 410,
-          "context": "new Error(i18n(\"state.systemcal.b170ef2db7ca\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.ce42fc5eaca8",
-      "source": "事件数 {length} 超出上限 {MAX_EVENTS}，已中止系统日历同步",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(events.length)"
-        },
-        {
-          "name": "MAX_EVENTS",
-          "expression": "String(MAX_EVENTS)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 326,
-          "context": "new Error(i18n(\"state.systemcal.ce42fc5eaca8\", { length: String(events.length), MAX_EVENTS: String(MAX_EVENTS) }))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.d2d00f793981",
-      "source": "未获得系统日历权限，请在系统设置中允许 OneTHU 访问日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 427,
-          "context": "new Error(i18n(\"state.systemcal.d2d00f793981\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.fb7404386af9",
-      "source": "正在移除系统日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 479,
-          "context": "new Error(i18n(\"state.systemcal.fb7404386af9\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.fe90aa1936ae",
-      "source": "同步已停止，已有系统日历保持不变",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 419,
-          "context": "new Error(i18n(\"state.systemcal.fe90aa1936ae\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 428,
-          "context": "new Error(i18n(\"state.systemcal.fe90aa1936ae\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full-semester data is incomplete; the existing system calendar content is kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

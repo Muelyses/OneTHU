@@ -1,7 +1,62 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.onboardinglessons.2d15ea7e97cf",
+      "source": "在 OneGO! 保存工作区，下次一键恢复。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 49
+        }
+      ],
+      "translation": "Save your workspace with OneGO! and restore it in one tap next time.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.2d32fc5fb4ab",
+      "source": "点待办查看详情，点课程进入课程内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 82
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 95
+        }
+      ],
+      "translation": "Tap a task to see details, or tap a course to open its content.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.2ef7a07ed1a6",
+      "source": "首页，只关心今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 81,
+          "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 94,
+          "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
+        }
+      ],
+      "translation": "Home, focused on today only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.onboardinglessons.2f58de82e70b",
       "source": "组件、一级功能区、标签栏、OneShot 可调。",
@@ -13,8 +68,8 @@
           "line": 64
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Widgets, main features, the tab bar and OneShot are all adjustable.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -28,8 +83,8 @@
           "line": 69
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Study: assignments, notices, files, grades and discussions.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -43,8 +98,8 @@
           "line": 74
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switching modes doesn't clear data, and you can export from Settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -59,8 +114,8 @@
           "context": "return i18n(\"lib.onboardinglessons.3d0109a1f308\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "More features: all the basics live here",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -75,8 +130,8 @@
           "context": "return i18n(\"lib.onboardinglessons.4766925e81fa\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "NFC-capable devices can tap to pass the share code; QR codes work too.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -91,8 +146,8 @@
           "context": "return i18n(\"lib.onboardinglessons.477ee6905e99\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to share: pass cards and content along",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -107,8 +162,8 @@
           "context": "return i18n(\"lib.onboardinglessons.481859b46c3d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Board and OnePage: the Home you arrange",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -123,8 +178,8 @@
           "context": "return i18n(\"lib.onboardinglessons.48ad9a755b42\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect your calendar and share content on demand, then continue on other devices.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -139,8 +194,8 @@
           "context": "return i18n(\"lib.onboardinglessons.4afe5510ffd6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The fifth slot, \"More features\", expands into a real directory; tap a name to open it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -155,8 +210,8 @@
           "context": "return i18n(\"lib.onboardinglessons.4c3730561869\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash: catch anything first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -171,8 +226,8 @@
           "context": "return i18n(\"lib.onboardinglessons.4f8b0079e9a7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the share entry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -187,8 +242,8 @@
           "context": "return i18n(\"lib.onboardinglessons.5179f2bbf334\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's tasks and your classes are right on Home, and all the basics remain available.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -203,8 +258,8 @@
           "context": "return i18n(\"lib.onboardinglessons.54b50ff31359\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Take a look at the Board",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -219,8 +274,8 @@
           "context": "return i18n(\"lib.onboardinglessons.579d6942635d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Study, life, reservations, cloud drive and GitLab, all in one place.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -235,8 +290,8 @@
           "context": "return i18n(\"lib.onboardinglessons.59899f30d40e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the workspace entry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -251,8 +306,8 @@
           "context": "return i18n(\"lib.onboardinglessons.5c0e2772ea36\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Study, Reservations, Life and Timetable sit on the bottom row by default; swap in your favorites.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -266,8 +321,8 @@
           "line": 69
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life: campus card, electricity and network fees, laundry, venues.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -281,8 +336,8 @@
           "line": 35
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Receiving still requires network access; if it isn't supported, fall back to a share code or QR code.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -296,8 +351,8 @@
           "line": 64
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "If a layout breaks, you can restore the default without touching your data.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -311,8 +366,8 @@
           "line": 49
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The tab bar can be horizontal or vertical; switch to match your habits.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -327,8 +382,8 @@
           "context": "return i18n(\"lib.onboardinglessons.65909de13b31\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Data and sync: continue across devices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -343,8 +398,8 @@
           "context": "return i18n(\"lib.onboardinglessons.6670a347d233\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -359,8 +414,8 @@
           "context": "return i18n(\"lib.onboardinglessons.6946e33b26a8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneGO!: global launcher and automation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -374,8 +429,8 @@
           "line": 35
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "On both devices choose NFC send and receive, then separate them after it succeeds.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -389,8 +444,8 @@
           "line": 74
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share codes and NFC pass content from device to device.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -404,8 +459,8 @@
           "line": 59
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your own creations can be published as a OnePage or a widget.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -420,8 +475,8 @@
           "context": "return i18n(\"lib.onboardinglessons.74b07795cf47\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organizations: people, files and projects in one place",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -436,8 +491,8 @@
           "context": "return i18n(\"lib.onboardinglessons.7a1d19ef38cd\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Five features, always within reach",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -452,8 +507,8 @@
           "context": "return i18n(\"lib.onboardinglessons.7afcd8d783a6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Theme, wallpaper, density and entry layout are all changeable.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -467,8 +522,8 @@
           "line": 105
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Entries you've swapped in are kept; switching modes doesn't affect the other mode's arrangement.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -482,8 +537,8 @@
           "line": 30
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A share you've issued can be re-scoped or revoked; received copies stay as they are.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -497,8 +552,8 @@
           "line": 35
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the share entry first, then tap \"Receive\" to see what your device supports.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -512,8 +567,8 @@
           "line": 40
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage members, repositories, projects and announcements inside an organization.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -527,8 +582,8 @@
           "line": 30
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm the box contents first, then create and copy the share code.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +597,8 @@
           "line": 69
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud drive, email, GitLab and Directions can be opened directly too.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +613,8 @@
           "context": "return i18n(\"lib.onboardinglessons.938cf6754eca\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Home is a free canvas; adjust widget position and size as you like.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +629,8 @@
           "context": "return i18n(\"lib.onboardinglessons.9521224b68f9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install plugins to extend widgets, themes and MCP tools.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -590,8 +645,8 @@
           "context": "return i18n(\"lib.onboardinglessons.96110462ab73\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open appearance settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +661,8 @@
           "context": "return i18n(\"lib.onboardinglessons.9697b3ac8ab8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the share entry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -621,8 +676,8 @@
           "line": 59
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Install and manage plugins on the Plugins page, and configure model sources for OH.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -637,8 +692,8 @@
           "context": "return i18n(\"lib.onboardinglessons.a2fc98611a51\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open it and see today's tasks and classes right away, no page arranging needed.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +708,8 @@
           "context": "return i18n(\"lib.onboardinglessons.a497b5391775\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open data settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -672,8 +727,8 @@
           "line": 95
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap \"Home\" in the top-left corner at any time to return to today.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -687,8 +742,8 @@
           "line": 25
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Long-press content and drag it into a box; schedules are stashed as snapshots, added as needed.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -703,8 +758,8 @@
           "context": "return i18n(\"lib.onboardinglessons.a77d0e6c7c2d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Four entries, arranged your way",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -718,8 +773,8 @@
           "line": 40
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "You can invite members with a share code and set an expiry date.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -734,8 +789,8 @@
           "context": "return i18n(\"lib.onboardinglessons.abeb15db61bc\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Appearance and workspace: everything is adjustable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -750,8 +805,8 @@
           "context": "return i18n(\"lib.onboardinglessons.b0e75e43d9da\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open Organizations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -766,8 +821,8 @@
           "context": "return i18n(\"lib.onboardinglessons.b262a001f2d3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Visit the Plugins page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -787,8 +842,8 @@
           "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "See today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -802,8 +857,8 @@
           "line": 40
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Membership identity and access permissions are confirmed by the server.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -817,8 +872,8 @@
           "line": 100
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Browse the directory by Study, Schedule, Life, Reservations and more, or just search.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -832,8 +887,8 @@
           "line": 25
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The Stash dock sits at the screen edge and can be dragged elsewhere.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -848,8 +903,8 @@
           "context": "return i18n(\"lib.onboardinglessons.bab05287556d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Expand more features",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -863,8 +918,8 @@
           "line": 49
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap the + in the top bar or search to open a new tab; drag to reorder.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -878,8 +933,8 @@
           "line": 95
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The OH search capsule is always available; fill in your own API in Settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -893,8 +948,8 @@
           "line": 87
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The OH search capsule is always available; you can enter your own API in Settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -908,8 +963,8 @@
           "line": 54
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Trigger on demand: manually, on a schedule, or by event.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -924,8 +979,8 @@
           "context": "return i18n(\"lib.onboardinglessons.d202897590a6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create a short share code and send it; the other side receives the bundle once online.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -940,8 +995,8 @@
           "context": "return i18n(\"lib.onboardinglessons.d66e6fe01e59\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "See the five bottom entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -956,8 +1011,8 @@
           "context": "return i18n(\"lib.onboardinglessons.d6dc9c00faa7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Adjust your frequent entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -972,8 +1027,8 @@
           "context": "return i18n(\"lib.onboardinglessons.d79d92647cba\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Go to the Study page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -988,8 +1043,8 @@
           "context": "return i18n(\"lib.onboardinglessons.da33da7edc5c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Creating an organization binds its card; members collaborate by permission.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1003,8 +1058,8 @@
           "line": 74
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule supports cloud calendar and system calendar sync.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1019,8 +1074,8 @@
           "context": "return i18n(\"lib.onboardinglessons.e225304e8091\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneGO! keeps your frequent pages, workspaces and OneFlows at hand.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1035,8 +1090,8 @@
           "context": "return i18n(\"lib.onboardinglessons.e27c03ed11b7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus services: the Full mode hub",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1051,8 +1106,8 @@
           "context": "return i18n(\"lib.onboardinglessons.e84b694246af\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open OneGO!",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1066,8 +1121,8 @@
           "line": 87
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life and Info gather campus services; the Timetable shows your time.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1082,8 +1137,8 @@
           "context": "return i18n(\"lib.onboardinglessons.eb8d4b7fd8d5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Every page is a tab, and a workspace saves a set of pages.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1152,8 @@
           "line": 105
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In \"More features\", tap the + on the right of a feature.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1112,8 +1167,8 @@
           "line": 20
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap \"+\" to add a widget; press and drag to reposition it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1127,8 +1182,8 @@
           "line": 30
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "To receive, paste a share code or scan a QR code; email-restricted shares require the matching account.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1142,8 +1197,8 @@
           "line": 20
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Double-tap notes and text to edit; a OnePage can also become its own Board.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1157,8 +1212,8 @@
           "line": 20
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Right-click or long-press a widget, then choose \"Resize\" or pin it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1172,8 +1227,8 @@
           "line": 64
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings → Appearance & layout: theme, wallpaper, font size.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1187,8 +1242,8 @@
           "line": 59
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "You can expose the OH MCP to apps on this machine (off by default).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1203,55 +1258,8 @@
           "context": "return i18n(\"lib.onboardinglessons.fd97d45a4baf\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.fdb99497532e",
-      "source": "学习、预约、生活、课表、信息，固定在底部。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
-          "context": "return i18n(\"lib.onboardinglessons.fdb99497532e\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.fe79c11b666f",
-      "source": "需要更多功能时，可在设置里切换模式。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 82
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.overlayandroid.2e072265be7f",
-      "source": "（没有回复）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/overlayAndroid.ts",
-          "line": 344,
-          "context": "String(r?.answer ?? r?.error ?? \"\").trim() || i18n(\"lib.overlayandroid.2e072265be7f\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Files stay on this machine first; connect the cloud drive only when you need to share.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

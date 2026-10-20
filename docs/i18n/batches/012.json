@@ -1,7 +1,60 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.filepreview.8f10dc147500",
+      "source": "压缩包",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FilePreview.tsx",
+          "line": 722,
+          "context": "return i18n(\"components.filepreview.8f10dc147500\");"
+        }
+      ],
+      "translation": "Archive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.filepreview.8f232ca70199",
+      "source": "未知 Office 格式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FilePreview.tsx",
+          "line": 712,
+          "context": "new Error(i18n(\"components.filepreview.8f232ca70199\"))"
+        }
+      ],
+      "translation": "Unknown Office format",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.filepreview.9016c463977d",
+      "source": "另存为…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FilePreview.tsx",
+          "line": 1602,
+          "context": "{i18n(\"components.filepreview.9016c463977d\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/FilePreview.tsx",
+          "line": 1675,
+          "context": "{i18n(\"components.filepreview.9016c463977d\")}"
+        }
+      ],
+      "translation": "Save as…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.filepreview.90f9253844e7",
       "source": "下载失败：",
@@ -14,8 +67,8 @@
           "context": "i18n(\"components.filepreview.90f9253844e7\") + errMsg(err)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download failed: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +88,8 @@
           "context": "{i18n(\"components.filepreview.92dd605fd2e1\", { msg: String(phase.msg) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview failed to load: {msg}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -60,8 +113,8 @@
           "context": "{i18nRich(\"components.filepreview.935b2f7ab1b8\", { fileCount: c.fileCount, value: fmtBytes(c.size) || \"0 B\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{fileCount} items · {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -76,8 +129,8 @@
           "context": "return i18n(\"components.filepreview.944af91cbe70\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Legacy .doc files are not previewable in the app. Download to view (save as .docx to preview)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -92,8 +145,8 @@
           "context": "{i18n(\"components.filepreview.984543357da4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Extracting this entry…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -108,8 +161,8 @@
           "context": "return i18n(\"components.filepreview.a43e55b6cb05\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Word document",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -124,8 +177,8 @@
           "context": "{i18n(\"components.filepreview.a460d9626d86\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The file may not be UTF-8 encoded (e.g. GBK); some characters may appear garbled.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -140,8 +193,8 @@
           "context": "return i18n(\"components.filepreview.a8bc71f002a9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Legacy .et files are not previewable in the app. Download to view (save as .xlsx to preview)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -161,8 +214,8 @@
           "context": "{i18n(\"components.filepreview.ac11eac9162f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fit width",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -186,8 +239,8 @@
           "context": "i18n(\"components.filepreview.acaec8a6eb85\", { no: String(no), value: String(e instanceof Error ? e.message : String(e)) }).slice"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to render page {no}: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -207,8 +260,8 @@
           "context": "{i18n(\"components.filepreview.adc54a4f33bc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No slide content could be parsed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -228,8 +281,8 @@
           "context": "{i18n(\"components.filepreview.b8784c8dd563\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -244,8 +297,8 @@
           "context": "k: i18n(\"components.filepreview.ba40014ff496\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Type",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -265,8 +318,8 @@
           "context": "notice: i18n(\"components.filepreview.bacf178278cb\", { value: String(errMsg(err)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Office preview failed ({value}); fell back to the internal file list. Download to view",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -286,8 +339,8 @@
           "context": "{i18n(\"components.filepreview.bca6b65eac1a\", { value: String(preview.err ?? i18n(\"components.filepreview.dcc94ae0dfce\")) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot preview inline: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -312,8 +365,8 @@
           "context": "dlBusy ? i18n(\"components.filepreview.bcc2333dc631\") : i18n(\"components.filepreview.39d3c1f968f9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -333,8 +386,8 @@
           "context": "{i18nRich(\"components.filepreview.bfe9a896b786\", { no: s.no })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Slide {no}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -354,8 +407,8 @@
           "context": "notice: i18n(\"components.filepreview.c02a57f4a039\", { value: String(errMsg(e)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Slide rendering failed ({value}); fell back to a text outline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -375,8 +428,8 @@
           "context": "{i18n(\"components.filepreview.c65d919b5dac\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachment info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -396,8 +449,8 @@
           "context": "path ? i18n(\"components.filepreview.c74977c63087\", { path: String(path) }) : i18n(\"components.filepreview.76aaf3b7cf23\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saved to: {path}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -412,8 +465,8 @@
           "context": "{i18n(\"components.filepreview.c9b9ae7a6144\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Previous page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -428,8 +481,8 @@
           "context": "{i18n(\"components.filepreview.d0293d2c6989\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloads a temporary file and opens it in the system PDF app",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -444,8 +497,8 @@
           "context": "return i18n(\"components.filepreview.d237b031345d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Excel spreadsheet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -460,8 +513,8 @@
           "context": "return i18n(\"components.filepreview.d24c10d37db0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Image",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -476,8 +529,8 @@
           "context": "return i18n(\"components.filepreview.d2909f1647e7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Other",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -497,8 +550,8 @@
           "context": "{i18nRich(\"components.filepreview.da406b05e4c8\", { raw: phase.raw })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Native return: {raw}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -518,8 +571,8 @@
           "context": "preview.err ?? i18n(\"components.filepreview.dcc94ae0dfce\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "An unknown problem occurred. Please reopen",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -534,8 +587,8 @@
           "context": "return i18n(\"components.filepreview.dd81861811e5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Text",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -550,8 +603,8 @@
           "context": "{i18n(\"components.filepreview.e4c43fc837a2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This worksheet is empty",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -566,8 +619,8 @@
           "context": "{i18n(\"components.filepreview.ee80f2c228b4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading file…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -592,8 +645,8 @@
           "context": "cur?.name || shown.name || i18n(\"components.filepreview.f3c5fe4dd2da\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "File preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -608,8 +661,8 @@
           "context": "{i18n(\"components.filepreview.f732edbb3c6e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The workbook has no displayable worksheets",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -624,8 +677,8 @@
           "context": "{i18n(\"components.filepreview.fb12af752240\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Content preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -640,8 +693,8 @@
           "context": "previewable ? i18n(\"components.filepreview.fbd923451d63\") : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Click to preview inline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -656,8 +709,8 @@
           "context": "return i18n(\"components.filepreview.ff385b113600\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "PowerPoint presentation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -672,8 +725,8 @@
           "context": "it.folded ? i18n(\"components.freeboard.00bd3960fea8\") : i18n(\"components.freeboard.84a07f292f1f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Expand",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -688,8 +741,8 @@
           "context": "{i18n(\"components.freeboard.03aadf165657\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add entry to folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -720,8 +773,8 @@
           "context": "{i18n(\"components.freeboard.05731b92ad31\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pen",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -736,8 +789,8 @@
           "context": "penOn ? i18n(\"components.freeboard.084cfc0311c3\") : i18n(\"components.freeboard.2a95e1939b68\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pen: off",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -752,8 +805,8 @@
           "context": "{i18n(\"components.freeboard.0a5eea295bf2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Main features",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -800,8 +853,8 @@
           "context": "picked ? i18n(\"components.freeboard.d13523826411\") : i18n(\"components.freeboard.153d487fec51\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -832,7 +885,7 @@
           "context": "label: i18n(\"components.freeboard.17eac802d3f7\")"
         }
       ],
-      "translation": "Send to vault",
+      "translation": "Add to Stash",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
@@ -869,8 +922,8 @@
           "context": "it.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.7230466e3998\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unpin",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -885,8 +938,8 @@
           "context": "plan.title || def?.title || i18n(\"components.freeboard.206359b4b54d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Board widgets",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -901,8 +954,8 @@
           "context": "i18n(\"components.freeboard.207cb94f4067\") + f.id"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courseware ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -933,8 +986,8 @@
           "context": "stack ? i18n(\"components.freeboard.2880a75c7f5f\") : i18n(\"components.freeboard.5b80d5358a4b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reading order: click \"Free layout\" on the right to drag and resize",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1002,8 @@
           "context": "{i18n(\"components.freeboard.290f68030501\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Zoom out",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -965,8 +1018,8 @@
           "context": "penOn ? i18n(\"components.freeboard.084cfc0311c3\") : i18n(\"components.freeboard.2a95e1939b68\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pen: on",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -981,8 +1034,8 @@
           "context": "it.folded ? i18n(\"components.freeboard.2de119793cb4\") : i18n(\"components.freeboard.84a07f292f1f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " Expand",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1018,8 +1071,8 @@
           "context": "{i18n(\"components.freeboard.3389965d46d4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bring to front (only covers widgets it overlaps)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1039,8 +1092,8 @@
           "context": "{i18n(\"components.freeboard.37979829426b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1055,8 +1108,8 @@
           "context": "{i18n(\"components.freeboard.38b74a1e40a3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search courses or file names",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1071,8 +1124,8 @@
           "context": "isNote ? i18n(\"components.freeboard.3a83db6cc546\") : i18n(\"components.freeboard.53684bb9137a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Note content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1087,8 +1140,8 @@
           "context": "{i18n(\"components.freeboard.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1103,8 +1156,8 @@
           "context": "i18n(\"components.freeboard.46090fa0d5a2\") + tpl.name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Template applied: ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1119,8 +1172,8 @@
           "context": "sayRef.current(i18n(\"components.freeboard.472cc80df106\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free layout: drag cards; select one, then drag a corner to resize",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1135,7 +1188,7 @@
           "context": "r.ok ? i18n(\"components.freeboard.4cfe5f20b9dd\") : r.reason === \"duplicate\" ? i18n(\"components.freeboard.910046f3ea83\") : i18n(\"components.freeboard.57ce97c584ca\")"
         }
       ],
-      "translation": "Sent to vault",
+      "translation": "Added to Stash",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1151,8 +1204,8 @@
           "context": "isNote ? i18n(\"components.freeboard.3a83db6cc546\") : i18n(\"components.freeboard.53684bb9137a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Text content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1167,7 +1220,7 @@
           "context": "r.reason === \"duplicate\" ? i18n(\"components.freeboard.910046f3ea83\") : i18n(\"components.freeboard.57ce97c584ca\")"
         }
       ],
-      "translation": "Vault is unavailable. Try again later.",
+      "translation": "Stash is temporarily unavailable. Try again later",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1183,8 +1236,8 @@
           "context": "i18n(\"components.freeboard.591cb2edcb7e\") + d.title"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Added: ",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1204,8 +1257,8 @@
           "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reading order",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1220,8 +1273,8 @@
           "context": "{i18n(\"components.freeboard.5adb904a905f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select a course file",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1236,8 +1289,8 @@
           "context": "stack ? i18n(\"components.freeboard.2880a75c7f5f\") : i18n(\"components.freeboard.5b80d5358a4b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag cards to arrange them; select one, then drag a corner to resize",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1252,8 +1305,8 @@
           "context": "{i18n(\"components.freeboard.62b95daecb7f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Template",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1268,8 +1321,8 @@
           "context": "{i18n(\"components.freeboard.6374c187518d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Note",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1316,8 +1369,8 @@
           "context": "it.pinned ? i18n(\"components.freeboard.70fba17fffb7\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unlock",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1332,8 +1385,8 @@
           "context": "it.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.7230466e3998\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pin position",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1356,54 +1409,6 @@
       "translation": "Apply template",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.freeboard.7779b244eef6",
-      "source": "这个 OnePage 已删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 168,
-          "context": "{i18n(\"components.freeboard.7779b244eef6\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.freeboard.783d638053ea",
-      "source": "组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1121,
-          "context": "{i18n(\"components.freeboard.783d638053ea\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.freeboard.7a8a11ead507",
-      "source": "添加",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 251,
-          "context": "{i18n(\"components.freeboard.7a8a11ead507\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

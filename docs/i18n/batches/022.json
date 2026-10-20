@@ -1,7 +1,60 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.simpleexperience.119099ab1bad",
+      "source": "今日课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/SimpleExperience.tsx",
+          "line": 38,
+          "context": "{i18n(\"components.simpleexperience.119099ab1bad\")}"
+        }
+      ],
+      "translation": "Today’s classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.simpleexperience.1db098f84eb2",
+      "source": "02 / 课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/SimpleExperience.tsx",
+          "line": 38,
+          "context": "{i18n(\"components.simpleexperience.1db098f84eb2\")}"
+        }
+      ],
+      "translation": "02 / Classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.simpleexperience.203c08e0d44a",
+      "source": "首页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/SimpleExperience.tsx",
+          "line": 31,
+          "context": "{i18n(\"components.simpleexperience.203c08e0d44a\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/SimpleExperience.tsx",
+          "line": 31,
+          "context": "{i18n(\"components.simpleexperience.203c08e0d44a\")}"
+        }
+      ],
+      "translation": "Home",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.simpleexperience.23530d9f428a",
       "source": "今日待办",
@@ -14,8 +67,8 @@
           "context": "{i18n(\"components.simpleexperience.23530d9f428a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today’s tasks",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -39,8 +92,8 @@
           "context": "{i18nRich(\"components.simpleexperience.2b44111dc54f\", { name: current.name, tag: current.tag })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current: {name} · {tag}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -55,8 +108,8 @@
           "context": "{i18n(\"components.simpleexperience.81544784bb3a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Where your next class is.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -71,8 +124,8 @@
           "context": "{i18n(\"components.simpleexperience.a77ab9efa020\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The mode only changes the display. Tabs, boards, and each mode’s shortcuts are all kept.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -87,8 +140,8 @@
           "context": "open?i18n(\"components.simpleexperience.afd4b783536b\"):i18n(\"components.simpleexperience.c5e8fe3d1aed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -103,8 +156,8 @@
           "context": "{i18n(\"components.simpleexperience.be835793d3f3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "01 / Tasks",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -119,8 +172,8 @@
           "context": "open?i18n(\"components.simpleexperience.afd4b783536b\"):i18n(\"components.simpleexperience.c5e8fe3d1aed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -135,8 +188,8 @@
           "context": "{i18n(\"components.simpleexperience.cc07d7402111\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Work through what you need to do, one item at a time.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -151,8 +204,8 @@
           "context": "{i18n(\"components.simpleexperience.df3d58c7d84b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -167,8 +220,8 @@
           "context": "{i18n(\"components.simpleexperience.f6f863ffb81b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Usage mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -183,8 +236,8 @@
           "context": "user?.displayName??i18n(\"components.simplesettings.0a01eee1cd37\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Signed in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -199,8 +252,8 @@
           "context": "showToast(i18nMsg(\"components.simplesettings.1fa9a1f5453b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Little OH is getting ready; please try again later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -215,8 +268,8 @@
           "context": "{i18n(\"components.simplesettings.230b7d15300f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Little OH · Your own API",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -231,8 +284,8 @@
           "context": "showToast(i18nMsg(\"components.simplesettings.36fe6819580c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rain Classroom connected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -247,7 +300,7 @@
           "context": "{i18n(\"components.simplesettings.38b9eabcae1b\")}"
         }
       ],
-      "translation": "Yuketang",
+      "translation": "Rain Classroom",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -263,8 +316,8 @@
           "context": "{i18n(\"components.simplesettings.3ab8cc15939f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign out",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -279,8 +332,8 @@
           "context": "{i18n(\"components.simplesettings.49454b147354\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose a mode again, or learn about the current one.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -295,8 +348,8 @@
           "context": "{i18n(\"components.simplesettings.553df7f47b1a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect your Tsinghua email calendar, or sync the timetable, assignments, and schedule to the system calendar.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -311,8 +364,8 @@
           "context": "{i18n(\"components.simplesettings.7c4b06e07cb4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -327,8 +380,8 @@
           "context": "showToast(i18nMsg(\"components.simplesettings.7ef3aed84e34\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "API configuration saved",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -343,8 +396,8 @@
           "context": "{i18n(\"components.simplesettings.950d624f5068\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scan to sync Rain Classroom assignments; you can connect later anytime.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -359,8 +412,8 @@
           "context": "{i18n(\"components.simplesettings.99e398c6de5c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unified authentication",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -375,8 +428,8 @@
           "context": "{i18n(\"components.simplesettings.a15f3b20eaec\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save API",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -391,8 +444,8 @@
           "context": "{i18n(\"components.simplesettings.ac794a015ee3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tour",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -407,8 +460,8 @@
           "context": "calendarOpen?i18n(\"components.simplesettings.afd4b783536b\"):i18n(\"components.simplesettings.d7d18c1f3213\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -423,8 +476,8 @@
           "context": "{i18n(\"components.simplesettings.b431a37597fc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Scan to connect",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -439,8 +492,8 @@
           "context": "showToast(i18nMsg(\"components.simplesettings.b975feac2d32\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please enter a valid API endpoint",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -455,8 +508,8 @@
           "context": "{i18n(\"components.simplesettings.bccf98c5f9fa\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Calendar sync",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -476,8 +529,8 @@
           "context": "{i18n(\"components.simplesettings.cb2f1709f983\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -492,8 +545,8 @@
           "context": "showToast(i18nMsg(\"components.simplesettings.cde6c2804c9d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please fill in the API key and model name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -508,8 +561,8 @@
           "context": "calendarOpen?i18n(\"components.simplesettings.afd4b783536b\"):i18n(\"components.simplesettings.d7d18c1f3213\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage sync",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -524,8 +577,8 @@
           "context": "{i18n(\"components.simplesettings.d94c3fb87662\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "API endpoint",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -540,8 +593,8 @@
           "context": "{i18n(\"components.simplesettings.f9ae83ae1e0f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "API endpoint (https://…/v1)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -561,8 +614,8 @@
           "context": "progress?.total\n              ? `${Math.round(pct)}%（${formatSize(progress.received)} / ${formatSize(progress.total)}）`\n              : i18n(\"components.softwareupdatesection.165defdf8038\", { value: String(progress ? formatSize(progress.received) : \"0\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -582,8 +635,8 @@
           "context": "res.fallbackReason ? i18n(\"components.softwareupdatesection.18697440c895\", { fallbackReason: String(res.fallbackReason) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\n(Switched source automatically: {fallbackReason})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -607,8 +660,8 @@
           "context": "{i18nRich(\"components.softwareupdatesection.1aec2113851b\", { version: version, value: PLATFORM_LABEL[plat] })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Official GitHub Releases source · on-campus Tsinghua Cloud Drive mirror; whichever is reachable is used (current v{version} · {value})",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -632,8 +685,8 @@
           "context": "{i18nRich(\"components.softwareupdatesection.1b6ff015b8a8\", { current: res.current, value: checkedAt ? i18n(\"components.softwareupdatesection.71ebab125a66\", { checkedAt: new Date(checkedAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" }) }) : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Already the latest version (v{current}{value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -657,8 +710,8 @@
           "context": "setMsg(i18n(\"components.softwareupdatesection.1e178bb2ba4b\", { path: String(d.path), value: String(inst.hint ?? i18n(\"components.softwareupdatesection.78ed0342345e\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded to {path}\n{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -673,8 +726,8 @@
           "context": "{i18n(\"components.softwareupdatesection.20f2c779de7a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the installer page again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -689,8 +742,8 @@
           "context": "{i18n(\"components.softwareupdatesection.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -714,8 +767,8 @@
           "context": "setMsg(i18n(\"components.softwareupdatesection.388289c18d09\", { value: String(d.size ? formatSize(d.size) : \"?\"), value2: String(d.verified ? i18n(\"components.softwareupdatesection.9957c2dd1877\") : \"\") }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download complete ({value}{value2}), opening the system installer…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -739,8 +792,8 @@
           "context": "setMsg(i18n(\"components.softwareupdatesection.3b98279a2021\", { latest: String(r.latest), current: String(r.current) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New version found v{latest} (current v{current})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -755,8 +808,8 @@
           "context": "res.hashAvailable\n      ? i18n(\"components.softwareupdatesection.3c0fc35e4fb6\")\n      : i18n(\"components.softwareupdatesection.e18465dcfa9e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "sha256: provided by the manifest and verified piece by piece during download (installation is refused on mismatch)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -771,8 +824,8 @@
           "context": "{i18n(\"components.softwareupdatesection.4370d1b15447\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restore the official dual sources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -796,8 +849,8 @@
           "context": "i18n(\"components.softwareupdatesection.d54a23c91b8f\", { latest: String(res.latest), value: String(res.releasedAt ? `（${res.releasedAt}）` : \"\") })\n            + `${srcLine ? `\\n${srcLine}` : \"\"}`\n            + `${res.fallbackReason ? i18n(\"components.softwareupdatesection.18697440c895\", { fallbackReason: String(res.fallbackReason) }) : \"\"}`\n            + i18n(\"components.softwareupdatesection.43e805b35d14\", { value: String(res.asset?.name ?? res.downloadName), value2: String(res.asset?.size ? ` · ${formatSize(res.asset.size)}` : \"\") })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\nInstaller: {value}{value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -812,8 +865,8 @@
           "context": "r.sourceLabel ?? i18n(\"components.softwareupdatesection.4d8c1c5b4283\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -828,8 +881,8 @@
           "context": "r.error ?? i18n(\"components.softwareupdatesection.4f6f06254d16\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Check failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -844,8 +897,8 @@
           "context": "d.cancelled ? i18n(\"components.softwareupdatesection.505052ea96fc\") : i18n(\"components.softwareupdatesection.6dd57693b44a\", { value: String(d.error ?? i18n(\"components.softwareupdatesection.a1a9da9ee6ed\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download canceled (no partial file was left behind)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -865,8 +918,8 @@
           "context": "res?.sourceLabel ? i18n(\"components.softwareupdatesection.5b6dd039fc20\", { sourceLabel: String(res.sourceLabel) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Source: {sourceLabel}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -886,8 +939,8 @@
           "context": "d.cancelled ? i18n(\"components.softwareupdatesection.505052ea96fc\") : i18n(\"components.softwareupdatesection.6dd57693b44a\", { value: String(d.error ?? i18n(\"components.softwareupdatesection.a1a9da9ee6ed\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -907,8 +960,8 @@
           "context": "checkedAt ? i18n(\"components.softwareupdatesection.71ebab125a66\", { checkedAt: new Date(checkedAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" }) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · checked at {checkedAt}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -923,8 +976,8 @@
           "context": "inst.hint ?? i18n(\"components.softwareupdatesection.78ed0342345e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system installer has been opened.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -939,8 +992,8 @@
           "context": "{i18n(\"components.softwareupdatesection.7e21bf73a0ef\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Advanced: custom update source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -955,8 +1008,8 @@
           "context": "phase === \"checking\" ? i18n(\"components.softwareupdatesection.fb11aa6f2982\") : i18n(\"components.softwareupdatesection.7f68ebad19ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Check for updates",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -971,8 +1024,8 @@
           "context": "{i18n(\"components.softwareupdatesection.8314625c2f52\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · cancel anytime",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -996,8 +1049,8 @@
           "context": "{i18nRich(\"components.softwareupdatesection.87c4f699e972\", { github: SOURCE_LABEL.github, cloud: SOURCE_LABEL.cloud })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Leave it blank to use the official dual sources ({github} → {cloud}).",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1012,8 +1065,8 @@
           "context": "d.verified ? i18n(\"components.softwareupdatesection.9957c2dd1877\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · sha256 verified",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1033,8 +1086,8 @@
           "context": "inst.error ?? i18n(\"components.softwareupdatesection.a1a9da9ee6ed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1049,8 +1102,8 @@
           "context": "{i18n(\"components.softwareupdatesection.abae77ee2a3f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Check with this source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1065,8 +1118,8 @@
           "context": "phase === \"error\" ? i18n(\"components.softwareupdatesection.ea0add721b8e\") : i18n(\"components.softwareupdatesection.ac69f68b7010\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download and install",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1081,8 +1134,8 @@
           "context": "{i18n(\"components.softwareupdatesection.b71ae82b4fba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "https://…/latest.json (manifest URL of your self-hosted source)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1150,8 @@
           "context": "{i18n(\"components.softwareupdatesection.b7d7aca618eb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Android install notes: after the download, the system installer takes over; on first install, allow this app to “install unknown apps” when the system prompts you (that permission applies only to this one install — OneTHU never installs anything silently).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1118,8 +1171,8 @@
           "context": "{i18nRich(\"components.softwareupdatesection.c692dd3f13e4\", { value: res?.ok && res.hasUpdate ? <span className=\"update-badge\">{i18n(\"components.softwareupdatesection.daedea385864\")}</span> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Software update{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1134,8 +1187,8 @@
           "context": "{i18n(\"components.softwareupdatesection.c748fafe62d1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Ignore this version",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1150,8 +1203,8 @@
           "context": "dismissed ? i18n(\"components.softwareupdatesection.cbb04a6052b1\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\nReminders for this version are ignored (this does not affect downloading and installing).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1171,8 +1224,8 @@
           "context": "res.belowMin ? i18n(\"components.softwareupdatesection.cffe690b5ead\", { minVersion: String(res.manifest?.minVersion) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\nNote: the current version is below the manifest’s required v{minVersion}; updating soon is recommended.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1196,8 +1249,8 @@
           "context": "i18n(\"components.softwareupdatesection.d54a23c91b8f\", { latest: String(res.latest), value: String(res.releasedAt ? `（${res.releasedAt}）` : \"\") })\n            + `${srcLine ? `\\n${srcLine}` : \"\"}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Version: v{latest}{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1212,8 +1265,8 @@
           "context": "{i18n(\"components.softwareupdatesection.daedea385864\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New version available",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1228,8 +1281,8 @@
           "context": "res.hashAvailable\n      ? i18n(\"components.softwareupdatesection.3c0fc35e4fb6\")\n      : i18n(\"components.softwareupdatesection.e18465dcfa9e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "sha256: not provided by this source (verified by file size)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1249,8 +1302,8 @@
           "context": "res.notes ? i18n(\"components.softwareupdatesection.e5958649985d\", { notes: String(res.notes) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\n\nRelease notes:\n{notes}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1265,8 +1318,8 @@
           "context": "phase === \"error\" ? i18n(\"components.softwareupdatesection.ea0add721b8e\") : i18n(\"components.softwareupdatesection.ac69f68b7010\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Retry: download and install",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1302,8 +1355,8 @@
           "context": "confirmOk(\n      i18nMsg(\"components.softwareupdatesection.f22fe456ba20\", { value: String(r.sourceLabel ?? i18n(\"components.softwareupdatesection.4d8c1c5b4283\")), latest: String(r.latest), value2: String(PLATFORM_LABEL[plat]), downloadName: String(r.downloadName), sizeText: String(sizeText) }),\n    )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The installer package will be downloaded from the update source and handed to the system installer:\n\nSource: {value}\nVersion: v{latest}\nPlatform: {value2}\nFile: {downloadName} ({sizeText})\nDestination: updates/ in the app cache directory\n\nTap “OK” to start the download; once it finishes, the system installer takes over (Android asks once more on the system page — nothing is installed silently).",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1318,8 +1371,8 @@
           "context": "asset?.size ? formatSize(asset.size) : i18n(\"components.softwareupdatesection.f8f5f153c20d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Size unknown",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1339,8 +1392,8 @@
           "context": "setMsg(i18n(\"components.softwareupdatesection.faa2f14dfa0b\", { downloadName: String(r.downloadName) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloading {downloadName}…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1355,8 +1408,8 @@
           "context": "{i18n(\"components.softwareupdatesection.fad86bf65f72\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download progress",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1371,8 +1424,8 @@
           "context": "phase === \"checking\" ? i18n(\"components.softwareupdatesection.fb11aa6f2982\") : i18n(\"components.softwareupdatesection.7f68ebad19ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Checking…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1396,56 +1449,8 @@
           "context": "setErr(i18n(\"components.softwareupdatesection.fe8283074c76\", { path: String(d.path), value: String(inst.error ?? i18n(\"components.softwareupdatesection.a1a9da9ee6ed\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tabmanagemodal.b36ae796d429",
-      "source": "勾选控制显示；↑↓ 调整顺序（即时生效并保存）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TabManageModal.tsx",
-          "line": 94,
-          "context": "{i18n(\"components.tabmanagemodal.b36ae796d429\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tabmanagemodal.ba2e93e73037",
-      "source": "恢复默认",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TabManageModal.tsx",
-          "line": 109,
-          "context": "{i18n(\"components.tabmanagemodal.ba2e93e73037\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.tabmanagemodal.c0b3fbff51cc",
-      "source": "完成",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TabManageModal.tsx",
-          "line": 110,
-          "context": "{i18n(\"components.tabmanagemodal.c0b3fbff51cc\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded to {path}, but opening the installer page failed: {value} (you can open the file manually)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

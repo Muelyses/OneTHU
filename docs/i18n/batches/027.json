@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.vaultpage.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultPage.tsx",
+          "line": 10,
+          "context": "{i18n(\"components.vault.vaultpage.804002a9c49a\")}"
+        }
+      ],
+      "translation": "Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultpage.ee747d4c47e2",
+      "source": "先收好，再打开、分享，或交给小OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultPage.tsx",
+          "line": 10,
+          "context": "{i18n(\"components.vault.vaultpage.ee747d4c47e2\")}"
+        }
+      ],
+      "translation": "Stash it first, then open, share, or hand it to OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultsheet.52f5d2fe6d3c",
+      "source": "在标签页打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultSheet.tsx",
+          "line": 35,
+          "context": "{i18n(\"components.vault.vaultsheet.52f5d2fe6d3c\")}"
+        }
+      ],
+      "translation": "Open in tab",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.vault.vaultsheet.804002a9c49a",
       "source": "暂存箱",
@@ -14,8 +62,8 @@
           "context": "{i18n(\"components.vault.vaultsheet.804002a9c49a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "{i18n(\"components.vault.vaultsheet.81e4bd9720a0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Entry position",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "{i18n(\"components.vault.vaulttextpreview.29636e43fdb4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy text",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaulttextpreview.654ba67673c8\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy failed; you can select the text and copy it manually",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaulttextpreview.cd78767c92e6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Text copied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "term ? i18n(\"components.vault.vaultworkspace.017799558da2\") : i18n(\"components.vault.vaultworkspace.2a6304d5346d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching content found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +168,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.01c3348965f5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New Stash",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -136,8 +184,8 @@
           "context": "new Error(i18n(\"components.vault.vaultworkspace.04393fb8fdca\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The original Stash has been deleted; please add the files again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -152,8 +200,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.04d78aa54101\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash item action menu",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,8 +216,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.0d0cbac2eee5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -189,8 +237,8 @@
           "context": "box.items.length ? i18n(\"components.vault.vaultworkspace.105a1b5daf4b\", { length: String(box.items.length) }) : i18n(\"components.vault.vaultworkspace.61924286426a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} items, ready whenever you need them",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -205,8 +253,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.124b06b7f26a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press and hold to stash · Drag onto the OH capsule to hand it to OH",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -221,8 +269,8 @@
           "context": "label: i18nMsg(\"components.vault.vaultworkspace.13a5f3ed956e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Target Stash",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -237,8 +285,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.17fa33d72406\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -253,8 +301,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.1cb589a18057\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The target Stash no longer exists; please try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -269,8 +317,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.21b57ecf4c6a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press and hold content, then drag it into a box; on a computer you can also drag files in directly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -285,8 +333,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.29636e43fdb4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy text",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -301,8 +349,8 @@
           "context": "term ? i18n(\"components.vault.vaultworkspace.017799558da2\") : i18n(\"components.vault.vaultworkspace.2a6304d5346d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Put it here first, deal with it later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -317,8 +365,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.31fe3c2b0bba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move to another box",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -333,8 +381,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.38d4ac4ea494\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Removed from Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -370,8 +418,8 @@
           "context": "{i18nRich(\"components.vault.vaultworkspace.42e970981c31\", { length: visible.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -386,8 +434,8 @@
           "context": "term ? i18n(\"components.vault.vaultworkspace.ab70eecb29dc\") : i18n(\"components.vault.vaultworkspace.45548176eb84\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Files, text, and page entries can all be stashed together.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -407,8 +455,8 @@
           "context": "confirmOk(i18nMsg(\"components.vault.vaultworkspace.496b211080c6\", { name: String(box.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete “{name}” and its contents? Issued share codes must be revoked separately.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -423,8 +471,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.4b409085c396\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Moved to the selected Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -439,8 +487,8 @@
           "context": "default: i18n(\"components.vault.vaultworkspace.4dc6d8e7a87a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -460,8 +508,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.4f17124dd970\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash actions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -476,8 +524,8 @@
           "context": "result.added ? i18nMsg(\"components.vault.vaultworkspace.51d8ab62786e\") : result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Placed on Home",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -492,8 +540,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.5259cc54976d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete this box",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -508,8 +556,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.5560decc5a07\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Place on Home",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -524,8 +572,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.564ff4ed9876\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash it first; open, share, or hand it to OH later when needed.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -540,8 +588,8 @@
           "context": "added ? i18nMsg(\"components.vault.vaultworkspace.d7ff9e26df0d\", { added: String(added), targetName: String(targetName) }) : i18nMsg(\"components.vault.vaultworkspace.57588aea6e6a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "These files are already in the box",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -556,8 +604,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.6135d4159e89\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -572,8 +620,8 @@
           "context": "box.items.length ? i18n(\"components.vault.vaultworkspace.105a1b5daf4b\", { length: String(box.items.length) }) : i18n(\"components.vault.vaultworkspace.61924286426a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Put the content you want to keep in here",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -588,8 +636,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.6726270958a4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -604,8 +652,8 @@
           "context": "error instanceof Error ? error.message : i18nMsg(\"components.vault.vaultworkspace.69cb3fb1fdd6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to read files; please try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -629,8 +677,8 @@
           "context": "confirmOk(i18nMsg(\"components.vault.vaultworkspace.704da93b664d\", { name: String(box.name), length: String(box.items.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear the {length} items in “{name}”? Issued share codes must be revoked separately.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -645,8 +693,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.7548dfb917ce\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My boxes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -661,8 +709,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.75d248782548\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect the cloud drive to share files and share codes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -677,8 +725,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.81ded76ddc48\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My Stash list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -693,8 +741,8 @@
           "context": "result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot be placed on Home right now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -709,8 +757,8 @@
           "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.9797d33f081b\"), [{ key: \"name\", label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\"), required: true, default: box.name }])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename Stash",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -725,8 +773,8 @@
           "context": "term ? i18n(\"components.vault.vaultworkspace.ab70eecb29dc\") : i18n(\"components.vault.vaultworkspace.45548176eb84\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Try other keywords, or view everything in the box.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -741,8 +789,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.abf541ded48d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy failed; open the content and copy it manually",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -757,8 +805,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.ad9daebe00dc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Add files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -773,8 +821,8 @@
           "context": "result.reason === \"duplicate\" ? i18nMsg(\"components.vault.vaultworkspace.b96760b70dab\") : i18nMsg(\"components.vault.vaultworkspace.918d44cf93b2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This item is already on Home",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -789,8 +837,8 @@
           "context": "label: i18n(\"components.vault.vaultworkspace.bc3dd14b898a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear contents",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -805,8 +853,8 @@
           "context": "openFormModal(i18nMsg(\"components.vault.vaultworkspace.c05d4e484881\"), [{ key: \"box\", label: i18nMsg(\"components.vault.vaultworkspace.13a5f3ed956e\"), kind: \"select\", options: doc.boxes.filter(entry => entry.id !== target.boxId).map(entry => ({ value: entry.id, label: entry.name })) }])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move stash item",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -826,8 +874,8 @@
           "context": "label: i18nMsg(\"components.vault.vaultworkspace.c95ed9f3eec2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Box name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -842,8 +890,8 @@
           "context": "showToast(i18nMsg(\"components.vault.vaultworkspace.cd78767c92e6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Text copied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -863,8 +911,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.d1cb5866d979\", { title: String(item.title) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "More actions: {title}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -888,8 +936,8 @@
           "context": "added ? i18nMsg(\"components.vault.vaultworkspace.d7ff9e26df0d\", { added: String(added), targetName: String(targetName) }) : i18nMsg(\"components.vault.vaultworkspace.57588aea6e6a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Added {added} files to “{targetName}”",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -904,8 +952,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.d9d455b6afd7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage Stash contents",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -920,8 +968,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.dad3c42e9d64\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash action menu",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -941,8 +989,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.e2d666e87d74\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search box contents",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -962,8 +1010,8 @@
           "context": "{i18nRich(\"components.vault.vaultworkspace.e4bbf7bc2d7e\", { name: box.name })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Release to drop into “{name}”",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -978,8 +1026,8 @@
           "context": "{i18n(\"components.vault.vaultworkspace.ee32f25f7050\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -999,8 +1047,8 @@
           "context": "desc: i18n(\"components.voicesettingssection.03e731b6fbf6\", { value: String(st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value}. You can install or enable a text-to-speech engine and Chinese voice data in System settings → Accessibility / Language → Text-to-speech, then come back and tap “Recheck”.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1020,8 +1068,8 @@
           "context": "{i18nRich(\"components.voicesettingssection.06c47ff40845\", { length: voices.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "  {length} voices available.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1036,8 +1084,8 @@
           "context": "st.reason ?? i18n(\"components.voicesettingssection.08ceb2822aa1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system has no available text-to-speech engine",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1052,8 +1100,8 @@
           "context": "title: i18n(\"components.voicesettingssection.0c278a68af8a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Engine not initialized",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1068,8 +1116,8 @@
           "context": "desc: i18n(\"components.voicesettingssection.1aa0e6cae35c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Wait a moment; preview and reading only produce sound after initialization finishes.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1084,8 +1132,8 @@
           "context": "title: i18n(\"components.voicesettingssection.1ead396a0d02\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reading",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1100,8 +1148,8 @@
           "context": "return i18n(\"components.voicesettingssection.20e403134d07\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Whether the current platform supports speech synthesis / Recheck",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1116,8 +1164,8 @@
           "context": "{i18n(\"components.voicesettingssection.2a015c420014\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Voice, speed, and pitch all return to default, and auto-read is turned off",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1132,8 +1180,8 @@
           "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1148,8 +1196,8 @@
           "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restore all defaults",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1164,8 +1212,8 @@
           "context": "return i18n(\"components.voicesettingssection.3e3b45ef84ac\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Engine status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1180,8 +1228,8 @@
           "context": "title: i18n(\"components.voicesettingssection.5e4df038f43b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preparing the reading engine…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1201,8 +1249,8 @@
           "context": "setMsg(i18n(\"components.voicesettingssection.5ffbeb114a74\", { value: String(lastTtsError() ?? i18n(\"components.voicesettingssection.f4b29bf393be\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1227,8 +1275,8 @@
           "context": "{i18n(\"components.voicesettingssection.6ab9d2bde92c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Voice",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1243,8 +1291,8 @@
           "context": "title: i18n(\"components.voicesettingssection.6e5d0cde3be6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Engine unavailable",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1259,8 +1307,8 @@
           "context": "desc: i18n(\"components.voicesettingssection.7603ae8c852e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system engine takes a second or two to initialize the first time.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1280,8 +1328,8 @@
           "context": "speaking ? i18n(\"components.voicesettingssection.ca4d973c0b00\") : i18n(\"components.voicesettingssection.7f0a0fda741c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1296,8 +1344,8 @@
           "context": "desc: i18n(\"components.voicesettingssection.82ee2ef744bf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap “Recheck” to trigger an initialization.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1312,8 +1360,8 @@
           "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system engine did not report any selectable Mandarin voices; the engine's default voice is used for reading.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1328,66 +1376,8 @@
           "context": "voices.length === 0\n              ? i18n(\"components.voicesettingssection.853dd990730b\")\n              : i18n(\"components.voicesettingssection.87e2903f67f2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.892033f846ab",
-      "source": "说完会自动停下。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 57,
-          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.892033f846ab\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.8c286c301431",
-      "source": "引擎就绪",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 53,
-          "context": "title: i18n(\"components.voicesettingssection.8c286c301431\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.voicesettingssection.8f463b50e0cb",
-      "source": "本机使用的引擎：{engine}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "engine",
-          "expression": "String(st.engine)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 54,
-          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.bd3bac24c982\")"
-        },
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 57,
-          "context": "st.engine ? i18n(\"components.voicesettingssection.8f463b50e0cb\", { engine: String(st.engine) }) : i18n(\"components.voicesettingssection.892033f846ab\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Different ROMs ship different voices (e.g. Celia, Xiao AI, and Google's Mandarin voices).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

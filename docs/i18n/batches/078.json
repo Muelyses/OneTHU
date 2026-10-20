@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.facade.cb7be7f22ff6",
+      "source": "结束时间早于开始时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1368,
+          "context": "new Error(i18n(\"plugins.facade.cb7be7f22ff6\"))"
+        }
+      ],
+      "translation": "End time is earlier than start time",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.d0deef545297",
+      "source": "仓库地址不认识（支持 user/repo、user/repo@dev、完整 URL）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1407,
+          "context": "new Error(i18n(\"plugins.facade.d0deef545297\"))"
+        }
+      ],
+      "translation": "Unrecognized repository address (supported: user/repo, user/repo@dev, full URL)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.d12b86e33757",
+      "source": "getTabRoot 仅限本插件注册的 tab",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 905,
+          "context": "new Error(i18n(\"plugins.facade.d12b86e33757\"))"
+        }
+      ],
+      "translation": "getTabRoot only applies to tabs registered by this plugin",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.d669b31a853f",
+      "source": "云盘未配置：请先在应用的「云盘」页连接（Seafile API Token）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 351,
+          "context": "new Error(i18n(\"plugins.facade.d669b31a853f\"))"
+        }
+      ],
+      "translation": "Cloud Drive not configured: connect on the app's \"Cloud Drive\" page first (Seafile API Token)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.d9ce17418be4",
+      "source": "校园网需要验证码登录：已自动打开校园网页面并展示验证码，请让用户在验证码面板输入图中字符完成登录，登录成功后重试本查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 2025,
+          "context": "new Error(\n      i18n(\"plugins.facade.d9ce17418be4\"),\n    )"
+        }
+      ],
+      "translation": "Campus network requires captcha sign-in: the campus network page has been opened automatically with the captcha shown. Ask the user to enter the characters in the image on the captcha panel to complete sign-in, then retry this query",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.d9e18ccca62c",
+      "source": "trigger 必须是 {kind:manual} / {kind:cron,everyMinutes} / {kind:event,event}",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 938,
+          "context": "new Error(i18n(\"plugins.facade.d9e18ccca62c\"))"
+        }
+      ],
+      "translation": "trigger must be {kind:manual} / {kind:cron,everyMinutes} / {kind:event,event}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.e17b179b14d7",
+      "source": "需要一个新名字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1068,
+          "context": "new Error(i18n(\"plugins.facade.e17b179b14d7\"))"
+        }
+      ],
+      "translation": "A new name is required",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.facade.ebf705292119",
       "source": "校园网需要验证码登录，请输入图中验证码",
@@ -14,8 +126,8 @@
           "context": "showToast(i18n(\"plugins.facade.ebf705292119\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus network requires captcha sign-in; enter the captcha shown in the image",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +142,8 @@
           "context": "new Error(i18n(\"plugins.facade.ef62cd3182c8\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot find this OnePage (wrong id or it has been deleted)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "new Error(i18n(\"plugins.facade.f4466b045d5f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Board or widget not found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +179,8 @@
           "context": "new Error(i18n(\"plugins.facade.f6746a5629b0\", { uid: String(uid) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule entry not found: {uid}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +195,8 @@
           "context": "new Error(i18n(\"plugins.facade.f6d1ef56c2ca\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Time must be in \"2026-10-14 09:00\" format or a millisecond timestamp",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +211,8 @@
           "context": "new Error(i18n(\"plugins.facade.fba49ea39197\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Board or widget not found (match ids against the board and widget ids from ext_onepage_list)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +232,8 @@
           "context": "new Error(i18n(\"plugins.facade.fba969e122d2\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OnePage not found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -152,8 +264,8 @@
           "context": "return i18n(\"plugins.loader.0c113f1913ec\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Multimodal (image input; supported by some models only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,8 +280,8 @@
           "context": "new Error(i18n(\"plugins.loader.125e05bb74f0\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Built-in plugins cannot be uninstalled — they are part of the OneTHU app",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -184,8 +296,8 @@
           "context": "return i18n(\"plugins.loader.155e1866a76a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Service address (OpenAI-compatible, ending with /v1)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -209,8 +321,8 @@
           "context": "new Error(i18n(\"plugins.loader.26133491e82f\", { pluginId: String(pluginId), cmdId: String(cmdId) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Command not registered or plugin not enabled: {pluginId}:{cmdId}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -225,8 +337,8 @@
           "context": "return i18n(\"plugins.loader.2a4b2f825848\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Off (faster and cheaper)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -241,8 +353,8 @@
           "context": "return i18n(\"plugins.loader.334583bcaa6f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "On (typewriter-style character-by-character display)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -257,8 +369,8 @@
           "context": "new Error(i18n(\"plugins.loader.343ed9a71667\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid plugin manifest: must export manifest { id, name, version, permissions[] }",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -273,8 +385,8 @@
           "context": "return i18n(\"plugins.loader.360864e1b0cd\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Output price (USD per million tokens; self-paid mode)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -289,8 +401,8 @@
           "context": "return i18n(\"plugins.loader.3eed177246c5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "MadModel free-tier pass (maintained automatically; do not edit)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -310,8 +422,8 @@
           "context": "new Error(i18n(\"plugins.loader.45a9f71f85ee\", { value: String(String(e).slice(0, 160)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load plugin module: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -326,8 +438,8 @@
           "context": "return i18n(\"plugins.loader.501704641ca5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Self-paid API (takes effect once the key and service address below are filled in)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -342,8 +454,8 @@
           "context": "return i18n(\"plugins.loader.52ff11b158fd\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default (automatic: uses the self-paid API when a key is set, MadModel otherwise)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -358,8 +470,8 @@
           "context": "return i18n(\"plugins.loader.5567681c1fcb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "An LLM-powered Tsinghua campus assistant (Rust backbone with an embedded core): chat to look up your timetable, schedule, grades, news, free classrooms, campus card, electricity bills, and campus network; cloud schedule sync (view/create/edit/delete); library seat and seminar room search and booking (two-step confirmation); a persistent chat panel at the bottom left; real-time progress with interrupt; multi-session history and chat export; usage and spending controls.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -374,8 +486,8 @@
           "context": "return i18n(\"plugins.loader.57ebfbd072d4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Off (images are sent as paths with a text preview only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -390,8 +502,8 @@
           "context": "return i18n(\"plugins.loader.5a56669687e7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "On (deep reasoning; slower and costlier)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -406,8 +518,8 @@
           "context": "return i18n(\"plugins.loader.656626d64486\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "MadModel issue time (maintained automatically; do not edit)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -422,8 +534,8 @@
           "context": "isTheme\n      ? i18n(\"plugins.loader.66e63df3fb0a\")\n      : i18n(\"plugins.loader.d87b3e6576de\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Theme plugins must export theme: ThemeDef (or additionally a default(ctx) to provide commands)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -438,8 +550,8 @@
           "context": "return i18n(\"plugins.loader.6ad329874813\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -454,8 +566,8 @@
           "context": "return i18n(\"plugins.loader.6d64fd9fb7c5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free-tier model (auto-synced from the site's model list; leave empty for the default)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -479,8 +591,8 @@
           "context": "new Error(i18n(\"plugins.loader.7c3e3fd1ed4c\", { what: String(what), perm: String(perm) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[PLUGIN] Permission not declared: {what} requires {perm}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -495,8 +607,8 @@
           "context": "return i18n(\"plugins.loader.7de097ef7288\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Thinking mode (on = deeper thinking, slower and costlier)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -511,8 +623,8 @@
           "context": "return i18n(\"plugins.loader.82022b3e8d52\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "On (images are fed to the model directly as an image modality)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -527,8 +639,8 @@
           "context": "return i18n(\"plugins.loader.845ea122cff3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Chat history budget (default 24000 ≈ 24k characters; older content is automatically condensed into key points when exceeded)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -543,8 +655,8 @@
           "context": "new Error(i18n(\"plugins.loader.85a66adff00c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rust plugin is missing a binary path",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -559,8 +671,8 @@
           "context": "return i18n(\"plugins.loader.86ebd904019e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model (for self-paid mode; the free tier defaults to DeepSeek-V4.1-Flash)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -575,8 +687,8 @@
           "context": "return i18n(\"plugins.loader.9da85b4807f2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "API key (for self-paid mode)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -591,8 +703,8 @@
           "context": "return i18n(\"plugins.loader.b761f4b378ca\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua MadModel free (campus network/VPN · auto-renewed)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -607,8 +719,8 @@
           "context": "return i18n(\"plugins.loader.c3b7ba70078b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Max tool-call steps per task (default 16)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -623,8 +735,8 @@
           "context": "return i18n(\"plugins.loader.c7689034a299\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show replies character by character (off = wait for the full reply and show it at once)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -639,8 +751,8 @@
           "context": "isTheme\n      ? i18n(\"plugins.loader.66e63df3fb0a\")\n      : i18n(\"plugins.loader.d87b3e6576de\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugins must export a default(ctx) activation function",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -655,8 +767,8 @@
           "context": "return i18n(\"plugins.loader.e7a25c627c2f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Input price (USD per million tokens; self-paid mode)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -676,8 +788,8 @@
           "context": "new Error(i18n(\"plugins.loader.e8ce81d059b5\", { id: String(id) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin not found: {id}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -692,8 +804,8 @@
           "context": "return i18n(\"plugins.loader.e9cbdd258b61\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default (DeepSeek-V4.1-Flash)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -708,8 +820,8 @@
           "context": "return i18n(\"plugins.loader.eb582a7f804c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Self-paid spending cap (USD; stops automatically when reached)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -724,8 +836,8 @@
           "context": "return i18n(\"plugins.loader.f5c252ff822a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Off (waits for the full reply and shows it at once)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -745,8 +857,8 @@
           "context": "String(def.title ?? def.pluginName ?? i18n(\"plugins.pluginwidgets.10243e85ea3c\")).trim() || i18n(\"plugins.pluginwidgets.10243e85ea3c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin widgets",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -770,8 +882,8 @@
           "context": "new Error(i18n(\"plugins.rust.d10deb8d0c0e\", { ns: String(ns), method: String(method) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown interface: onethu.{ns}.{method}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -796,8 +908,8 @@
           "context": "new Error(i18n(\"plugins.rust.e8ce81d059b5\", { id: String(id) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin not found: {id}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -812,8 +924,8 @@
           "context": "return i18n(\"plugins.types.01e0b2699c29\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Query and apply themes and join day/night scheduling (can change the global appearance)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -828,8 +940,8 @@
           "context": "return i18n(\"plugins.types.056ff6cc3d7e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -844,8 +956,8 @@
           "context": "return i18n(\"plugins.types.062675c673b0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin-private key-value storage (cleared on uninstall)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -860,8 +972,8 @@
           "context": "return i18n(\"plugins.types.08eccad108d6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read email",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -885,8 +997,8 @@
           "context": "super(i18n(\"plugins.types.0a267e07b231\", { permission: permission, action: what }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The plugin is not authorized for \"{permission}\" and cannot perform: {action}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -901,8 +1013,8 @@
           "context": "return i18n(\"plugins.types.0b0aeead7381\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua GitLab projects, repository files, issues, merge requests, and pipelines (read-only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -917,8 +1029,8 @@
           "context": "return i18n(\"plugins.types.0b73861126d5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Push notifications to the system notification center (all platforms); content and timing are decided by the plugin",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -933,8 +1045,8 @@
           "context": "return i18n(\"plugins.types.0dc09ebd6c0e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read campus card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1061,8 @@
           "context": "return i18n(\"plugins.types.0e3c0e14077d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Create/append/rewrite/archive OH memory (write operation, requires confirmation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -965,8 +1077,8 @@
           "context": "return i18n(\"plugins.types.1004769bdb4e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Book and cancel venues",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -981,8 +1093,8 @@
           "context": "return i18n(\"plugins.types.112f4f9c033a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Post to Web Learning",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -997,8 +1109,8 @@
           "context": "return i18n(\"plugins.types.14dceca5d51a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Query the library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1013,8 +1125,8 @@
           "context": "return i18n(\"plugins.types.1a2130a92d14\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Call other plugins",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1029,8 +1141,8 @@
           "context": "return i18n(\"plugins.types.1daf510cf2b5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read external assignment sources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1045,8 +1157,8 @@
           "context": "return i18n(\"plugins.types.1ff6bbfc90da\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read-only queries of the course selection catalog, selected courses, preferences, and community reviews",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1061,8 +1173,8 @@
           "context": "return i18n(\"plugins.types.2601413e9019\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Access any on-campus service",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1077,8 +1189,8 @@
           "context": "return i18n(\"plugins.types.27922c7aab59\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read course selection data",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1093,8 +1205,8 @@
           "context": "return i18n(\"plugins.types.27d28e1cb812\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read campus network account",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1125,8 +1237,8 @@
           "context": "return i18n(\"plugins.types.2cc9c0bad3d7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Book common spaces",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1141,8 +1253,8 @@
           "context": "return i18n(\"plugins.types.2f907548af0c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Call LLMs through the built-in Harness (Tsinghua free tier or your self-paid API)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1157,8 +1269,8 @@
           "context": "return i18n(\"plugins.types.33a65099fe72\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Theme control",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1173,8 +1285,8 @@
           "context": "return i18n(\"plugins.types.3821452a894a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read GitLab",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1189,8 +1301,8 @@
           "context": "return i18n(\"plugins.types.3c455efb9961\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Electricity balance/payment records/hygiene score (read-only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1205,8 +1317,8 @@
           "context": "return i18n(\"plugins.types.3fb5a1122255\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Book and cancel dorm common spaces (write operation, requires confirmation)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1221,8 +1333,8 @@
           "context": "return i18n(\"plugins.types.40a17d15ad1e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Trigger a network refresh of external assignment sources",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1237,120 +1349,8 @@
           "context": "return i18n(\"plugins.types.48ad7913a562\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.48e21aca2214",
-      "source": "上传/分享云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 69,
-          "context": "return i18n(\"plugins.types.48e21aca2214\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.4b9d52da5277",
-      "source": "跳转到应用的任意页面与子栏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 79,
-          "context": "return i18n(\"plugins.types.4b9d52da5277\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.4bcb26f88d39",
-      "source": "模型对话",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 91,
-          "context": "return i18n(\"plugins.types.4bcb26f88d39\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.50500d372141",
-      "source": "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 87,
-          "context": "return i18n(\"plugins.types.50500d372141\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.5171b9b529e4",
-      "source": "体育场馆预约与取消（写操作，需确认）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 61,
-          "context": "return i18n(\"plugins.types.5171b9b529e4\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.556c5fcee2ec",
-      "source": "从清华邮箱发信（写操作，需确认）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 67,
-          "context": "return i18n(\"plugins.types.556c5fcee2ec\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.584c7658f468",
-      "source": "余额与消费流水（只读，不含充值）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 74,
-          "context": "return i18n(\"plugins.types.584c7658f468\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab write operations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

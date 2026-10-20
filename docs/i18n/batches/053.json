@@ -1,7 +1,60 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.reservepage.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 86,
+          "context": "{i18n(\"pages.info.reservepage.352cdc807892\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 87,
+          "context": "{i18n(\"pages.info.reservepage.352cdc807892\")}"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.reservepage.3fbaca96ff24",
+      "source": "来访报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 36,
+          "context": "return i18n(\"pages.info.reservepage.3fbaca96ff24\");"
+        }
+      ],
+      "translation": "Visitor registration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.reservepage.5c82e963dbfd",
+      "source": "更多场馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 37,
+          "context": "return i18n(\"pages.info.reservepage.5c82e963dbfd\");"
+        }
+      ],
+      "translation": "More venues",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.reservepage.ab070d2bfaf1",
       "source": "游泳馆、健身房等陆续接入",
@@ -14,8 +67,8 @@
           "context": "{i18n(\"pages.info.reservepage.ab070d2bfaf1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Swimming pool, gym, and more venues coming soon",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +147,8 @@
           "context": "phoneOk ? i18n(\"pages.info.sportstab.08eb78cf3163\") : i18n(\"pages.info.sportstab.dbb234c0abe9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reserve (next: captcha)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +163,8 @@
           "context": "{i18n(\"pages.info.sportstab.0e9546c6723c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No bookable slots at this venue today (it may be closed or fully booked).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +179,8 @@
           "context": "booking ? i18n(\"pages.info.sportstab.18931020ad52\") : i18n(\"pages.info.sportstab.72944bf6d779\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +195,8 @@
           "context": "{i18n(\"pages.info.sportstab.1a558735ea57\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -175,8 +228,8 @@
           "context": "setNoticeMsg(i18n(\"pages.info.sportstab.208514882cd8\", { name: String(venue.name), date: String(date), timeSession: String(picked.timeSession), fieldName: String(picked.fieldName) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reserved: {name} · {date} · {timeSession} · {fieldName} (free venues need no payment; for paid venues please handle payment in the sports system)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -196,8 +249,8 @@
           "context": "isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n(\"pages.info.sportstab.210e2fea0238\", { value: String(tabErrorText(err)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation failed: {value} (tap the captcha image to refresh and try again)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -217,8 +270,8 @@
           "context": "isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n(\"pages.info.sportstab.2759ad2a6b6c\", { value: String(tabErrorText(err)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbooking failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -233,8 +286,8 @@
           "context": "{i18n(\"pages.info.sportstab.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -249,8 +302,8 @@
           "context": "{i18n(\"pages.info.sportstab.2f332d18c42d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "11-digit mobile number",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -281,8 +334,8 @@
           "context": "{i18n(\"pages.info.sportstab.35bc4552c921\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -297,8 +350,8 @@
           "context": "{i18n(\"pages.info.sportstab.4401db92a33a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unpaid/paid records (no payment flow; status display only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -313,8 +366,8 @@
           "context": "{i18n(\"pages.info.sportstab.4927a53bcc88\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -329,8 +382,8 @@
           "context": "unsubbing === r.bookId ? i18n(\"pages.info.sportstab.4e3d949d0cda\") : i18n(\"pages.info.sportstab.660aa1f65abc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbooking…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -345,8 +398,8 @@
           "context": "{i18n(\"pages.info.sportstab.56a0480f18eb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mobile number (used for reservation notifications)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -361,8 +414,8 @@
           "context": "res?.count ? i18n(\"pages.info.sportstab.d814910bfbc4\", { count: String(res.count) }) : i18n(\"pages.info.sportstab.5d220af4df4c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sports system · Online reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -377,8 +430,8 @@
           "context": "setPhoneMsg(i18n(\"pages.info.sportstab.5e119f7a81fe\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mobile number saved to the sports system",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -393,8 +446,8 @@
           "context": "{i18n(\"pages.info.sportstab.6320b4a8722a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -409,8 +462,8 @@
           "context": "r.cost === 0 ? i18n(\"pages.info.sportstab.649a0fc7237e\") : `¥${r.cost}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -425,8 +478,8 @@
           "context": "unsubbing === r.bookId ? i18n(\"pages.info.sportstab.4e3d949d0cda\") : i18n(\"pages.info.sportstab.660aa1f65abc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbook",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -441,8 +494,8 @@
           "context": "{i18n(\"pages.info.sportstab.6baa450e31c0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to refresh the captcha",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -457,8 +510,8 @@
           "context": "picked.cost ? ` · ¥${picked.cost}` : i18n(\"pages.info.sportstab.705fc6e91775\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -473,8 +526,8 @@
           "context": "closed ? i18n(\"pages.info.sportstab.70d143e6729b\") : undefined"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservations are not open right now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -489,8 +542,8 @@
           "context": "setPhoneMsg(i18n(\"pages.info.sportstab.722df4de2e57\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please enter a valid 11-digit mobile number",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -505,8 +558,8 @@
           "context": "booking ? i18n(\"pages.info.sportstab.18931020ad52\") : i18n(\"pages.info.sportstab.72944bf6d779\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Confirm reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -521,8 +574,8 @@
           "context": "picked?.resId === r.resId ? i18n(\"pages.info.sportstab.7ecf1cde6486\") : r.bookId ? i18n(\"pages.info.sportstab.82c6a357291a\") : r.locked ? i18n(\"pages.info.sportstab.ff9872a023e3\") : bookable(r) ? i18n(\"pages.info.sportstab.d1d50368fefe\") : i18n(\"pages.info.sportstab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Selected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -537,8 +590,8 @@
           "context": "{i18n(\"pages.info.sportstab.7fe8603c084e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fee",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -553,8 +606,8 @@
           "context": "setNoticeMsg(i18n(\"pages.info.sportstab.81ec63d2a4cc\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbooked.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +627,8 @@
           "context": "r.method || i18n(\"pages.info.sportstab.82c6a357291a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reserved",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -603,8 +656,8 @@
           "context": "globalThis.confirm?.(i18n(\"pages.info.sportstab.8353d850c8c6\", { name: String(r.name), field: String(r.field), time: String(r.time) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unbook \"{name} {field} {time}\"?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -619,8 +672,8 @@
           "context": "{i18n(\"pages.info.sportstab.965fb250e5fd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -635,8 +688,8 @@
           "context": "{i18n(\"pages.info.sportstab.9b0dac77aebd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save to the sports system to receive SMS notifications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -651,8 +704,8 @@
           "context": "phoneBusy ? i18n(\"pages.info.sportstab.ff509c9ba052\") : i18n(\"pages.info.sportstab.a3030bf8f16d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -672,8 +725,8 @@
           "context": "isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n(\"pages.info.sportstab.a3299407580e\", { value: String(tabErrorText(err)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -688,8 +741,8 @@
           "context": "bookable(r) ? i18n(\"pages.info.sportstab.d1d50368fefe\") : i18n(\"pages.info.sportstab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not bookable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -725,8 +778,8 @@
           "context": "{i18nRich(\"pages.info.sportstab.a4d97ae215ba\", { name: venue.name, date: date, timeSession: picked.timeSession, fieldName: picked.fieldName, value: picked.cost ? ` · ¥${picked.cost}` : i18n(\"pages.info.sportstab.705fc6e91775\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{name} · {date} · {timeSession} · {fieldName}{value}; tap the image on the right to refresh the captcha.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -741,8 +794,8 @@
           "context": "{i18n(\"pages.info.sportstab.aee887434131\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -757,8 +810,8 @@
           "context": "{i18n(\"pages.info.sportstab.b172e1bbb00d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservations are not open right now (open times follow the sports system); the following shows the current state only.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -778,8 +831,8 @@
           "context": "{i18n(\"pages.info.sportstab.bb015c60bafc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Captcha",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -794,8 +847,8 @@
           "context": "{i18n(\"pages.info.sportstab.c3b180cc0d49\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No reservations yet.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -810,8 +863,8 @@
           "context": "bookable(r) ? i18n(\"pages.info.sportstab.d1d50368fefe\") : i18n(\"pages.info.sportstab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bookable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -831,8 +884,8 @@
           "context": "{i18n(\"pages.info.sportstab.d328b0d4ae31\", { name: String(venue.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Slots and fields · {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -852,8 +905,8 @@
           "context": "res?.count ? i18n(\"pages.info.sportstab.d814910bfbc4\", { count: String(res.count) }) : i18n(\"pages.info.sportstab.5d220af4df4c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Up to {count} fields can be reserved",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -868,8 +921,8 @@
           "context": "{i18n(\"pages.info.sportstab.d851993c4e6a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reservation captcha",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -884,8 +937,8 @@
           "context": "phoneOk ? i18n(\"pages.info.sportstab.08eb78cf3163\") : i18n(\"pages.info.sportstab.dbb234c0abe9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please enter your 11-digit mobile number first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -900,8 +953,8 @@
           "context": "{i18n(\"pages.info.sportstab.ed8263515e2f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Venue and date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -921,8 +974,8 @@
           "context": "isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n(\"pages.info.sportstab.edb3f8bb40a5\", { value: String(tabErrorText(err)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch captcha: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -937,8 +990,8 @@
           "context": "phoneBusy ? i18n(\"pages.info.sportstab.ff509c9ba052\") : i18n(\"pages.info.sportstab.a3030bf8f16d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saving…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -953,8 +1006,8 @@
           "context": "r.locked ? i18n(\"pages.info.sportstab.ff9872a023e3\") : bookable(r) ? i18n(\"pages.info.sportstab.d1d50368fefe\") : i18n(\"pages.info.sportstab.a4c0233f1d6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Locked",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -969,8 +1022,8 @@
           "context": "\"TAB-HEAL \" + tag + i18n(\"pages.info.tabstates.434c664d445f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " Session rebuilt → auto refetch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -985,8 +1038,8 @@
           "context": "{i18n(\"pages.info.tabstates.7267860d1d4d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This service is temporarily unavailable (under maintenance). Please try again later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1001,8 +1054,8 @@
           "context": "return i18n(\"pages.info.tabstates.8536d6a0add0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your session has expired. Please sign in again and retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1017,8 +1070,8 @@
           "context": "return i18n(\"pages.info.thospage.0462a8aa7036\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Withdrawn",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1033,8 +1086,8 @@
           "context": "setError(i18n(\"pages.info.thospage.06f80187d7bf\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot reach the online service. Your session may have expired; please sign in again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1049,8 +1102,8 @@
           "context": "warnings.push(i18n(\"pages.info.thospage.0e41d094eba1\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The service list failed to load. Refresh and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1065,8 +1118,8 @@
           "context": "return i18n(\"pages.info.thospage.0eb3fb1deb49\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Returned · Changes needed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1081,8 +1134,8 @@
           "context": "{i18n(\"pages.info.thospage.11176caff12e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Online service categories",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1150,8 @@
           "context": "onlyFavorites\n              ? i18n(\"pages.info.thospage.12c57c59c0e5\")\n              : i18n(\"pages.info.thospage.6cec66ddc5bd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search common services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1113,8 +1166,8 @@
           "context": "item.department || i18n(\"pages.info.thospage.12ccb7addd30\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not provided by department",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1138,8 +1191,8 @@
           "context": "logLine(i18n(\"pages.info.thospage.140a1c482046\", { demo: String(demo), value: String(url.slice(0, 60)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[THOS-UI] openOfficial entry demo={demo} url={value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1170,8 +1223,8 @@
           "context": "return i18n(\"pages.info.thospage.1fbc49548f86\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pending action",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1186,8 +1239,8 @@
           "context": "return i18n(\"pages.info.thospage.25f4520c3f09\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Acknowledged",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1202,8 +1255,8 @@
           "context": "{i18n(\"pages.info.thospage.28ff471d9a22\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1218,8 +1271,8 @@
           "context": "return i18n(\"pages.info.thospage.2934c3ab3025\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "CC",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1234,8 +1287,8 @@
           "context": "{i18n(\"pages.info.thospage.29d3ecc76e82\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Signs in automatically with your account credentials, then opens the service hall where you can pick your business items.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1255,8 +1308,8 @@
           "context": "return i18n(\"pages.info.thospage.2a2fd29bd27a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Draft",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1271,8 +1324,8 @@
           "context": "tab === \"services\" && onlyFavorites && !query && complete\n                ? i18n(\"pages.info.thospage.2dd0064fe9e5\")\n                : query\n                  ? i18n(\"pages.info.thospage.8151e8704a7c\")\n                  : complete\n                    ? i18n(\"pages.info.thospage.994178605d6f\")\n                    : i18n(\"pages.info.thospage.497c85690c4c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No common services yet — go to \"All services\" and tap ★ to favorite",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1292,8 +1345,8 @@
           "context": "return i18n(\"pages.info.thospage.3229d61dcb0a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Completed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1308,8 +1361,8 @@
           "context": "{i18n(\"pages.info.thospage.331de2fc99b4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search online services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1324,8 +1377,8 @@
           "context": "onlyFavorites ? i18n(\"pages.info.thospage.33fa02daa93e\") : i18n(\"pages.info.thospage.df883956af9f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Common services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1340,66 +1393,8 @@
           "context": "item.kind === \"integration\" ? i18n(\"pages.info.thospage.4115d63bd549\") : i18n(\"pages.info.thospage.80b6b1b5c91c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.42e970981c31",
-      "source": "{length} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(serviceRows.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 397,
-          "context": "{i18n(\"pages.info.thospage.42e970981c31\", { length: String(serviceRows.length) })}"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 399,
-          "context": "{i18n(\"pages.info.thospage.42e970981c31\", { length: String(taskRows.length) })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.46591ce50306",
-      "source": "办结时间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 114,
-          "context": "return i18n(\"pages.info.thospage.46591ce50306\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.46f58ccc646a",
-      "source": "搜索事项（标题/节点/编号）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 375,
-          "context": "tab === \"services\"\n            ? onlyFavorites\n              ? i18n(\"pages.info.thospage.12c57c59c0e5\")\n              : i18n(\"pages.info.thospage.6cec66ddc5bd\")\n            : i18n(\"pages.info.thospage.46f58ccc646a\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Integrated",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

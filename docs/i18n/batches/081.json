@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.atoms.3e668eb1a6ae",
+      "source": "预约页 · 宿舍公共空间预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 254,
+          "context": "return i18n(\"state.atoms.3e668eb1a6ae\");"
+        }
+      ],
+      "translation": "Reservations · Dorm common space bookings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.3fb35cdc3085",
+      "source": "预约页 · 亲友来访报备与我的报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 256,
+          "context": "return i18n(\"state.atoms.3fb35cdc3085\");"
+        }
+      ],
+      "translation": "Reservations · Visitor registration and my registrations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.411769324590",
+      "source": "预约 · 研讨间申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 251,
+          "context": "return i18n(\"state.atoms.411769324590\");"
+        }
+      ],
+      "translation": "Reservations · Seminar room applications",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.41d497d6e07e",
+      "source": "卫生成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 244,
+          "context": "return i18n(\"state.atoms.41d497d6e07e\");"
+        }
+      ],
+      "translation": "Hygiene score",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.452f594e3f7c",
+      "source": "预约聚合页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 213,
+          "context": "return i18n(\"state.atoms.452f594e3f7c\");"
+        }
+      ],
+      "translation": "Reservations hub",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.4792ab1440aa",
+      "source": "校历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 236,
+          "context": "return i18n(\"state.atoms.4792ab1440aa\");"
+        }
+      ],
+      "translation": "Academic calendar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.499fc8e68d81",
+      "source": "座位 · 研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 312,
+          "context": "return i18n(\"state.atoms.499fc8e68d81\");"
+        }
+      ],
+      "translation": "Seats · Seminar rooms",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.atoms.4b6ded8a7f18",
       "source": "通知",
@@ -30,8 +142,8 @@
           "context": "return i18n(\"state.atoms.4c30e45ecab2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Inbox · Sent · Read mail · Search all mailboxes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "return i18n(\"state.atoms.4d8a9ed9bf01\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sort by start time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +174,8 @@
           "context": "return i18n(\"state.atoms.4df0d6b1cd95\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Water station ordering",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +190,8 @@
           "context": "meta?.title ?? i18n(\"state.atoms.4e2ebf869a50\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Inactive plugin favorite)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -110,8 +222,8 @@
           "context": "h.from || i18n(\"state.atoms.51c306bd3174\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(No sender)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,7 +238,7 @@
           "context": "return i18n(\"state.atoms.52fdbbaeda4c\");"
         }
       ],
-      "translation": "To-dos",
+      "translation": "Tasks",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -142,8 +254,8 @@
           "context": "return i18n(\"state.atoms.53090df93da8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Finance · Graduate assistant stipend",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -158,8 +270,8 @@
           "context": "return i18n(\"state.atoms.53646ecea274\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Handbook · Freshman guides and special topics",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -174,8 +286,8 @@
           "context": "return i18n(\"state.atoms.5531576bd063\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Exam schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -211,8 +323,8 @@
           "context": "return i18n(\"state.atoms.56c68de9eced\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Dorm electricity balance and top-up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -227,8 +339,8 @@
           "context": "sub: i18n(\"state.atoms.5c8d010fd9a3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Teaching building",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -243,8 +355,8 @@
           "context": "return i18n(\"state.atoms.5c9d7b5dddae\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's schedule map · Urgency markers · One-tap navigation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -259,8 +371,8 @@
           "context": "return i18n(\"state.atoms.5f2cfbfecf9f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Quick access",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -275,7 +387,7 @@
           "context": "return i18n(\"state.atoms.60458dfb4c14\");"
         }
       ],
-      "translation": "Trace",
+      "translation": "Directions",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -328,8 +440,8 @@
           "context": "return i18n(\"state.atoms.61a292c2a4a0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due date ascending · Tap to view details",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -344,8 +456,8 @@
           "context": "return i18n(\"state.atoms.62fd8d15cf0a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Web Learning search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -360,8 +472,8 @@
           "context": "sub: i18n(\"state.atoms.64050df899dd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Seminar room · Time slot booking",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -397,8 +509,8 @@
           "context": "n.source || i18n(\"state.atoms.6699d0be5ff8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus notices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -423,8 +535,8 @@
           "context": "sub: i18n(\"state.atoms.6aa71ddd8364\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab projects",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -455,8 +567,8 @@
           "context": "sub: i18n(\"state.atoms.70508e3eba69\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feeds · News updates",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -471,8 +583,8 @@
           "context": "return i18n(\"state.atoms.7132ae7d734a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unsubmitted assignments written to the cloud calendar (with reminder alarms; fully automatic in normal cases)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -487,8 +599,8 @@
           "context": "showToast(i18nMsg(\"state.atoms.716b8504f013\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This plugin feature page is not enabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -519,8 +631,8 @@
           "context": "return i18n(\"state.atoms.75ed5296c3b6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites home page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -535,8 +647,8 @@
           "context": "name || i18n(\"state.atoms.762ef1dd111f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Washer buildings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -551,8 +663,8 @@
           "context": "return i18n(\"state.atoms.7755e6257a48\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feeds first, fall back to latest",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -572,8 +684,8 @@
           "context": "showToast(i18nMsg(\"state.atoms.7af0a2bf2e39\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -588,8 +700,8 @@
           "context": "return i18n(\"state.atoms.7ca0b3673bc7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Subscription updates",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -604,8 +716,8 @@
           "context": "return i18n(\"state.atoms.7eacf1926832\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Service group directory",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -620,8 +732,8 @@
           "context": "i18n(\"state.atoms.7ecb4f45c64b\") + department"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Online services · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -645,8 +757,8 @@
           "context": "r.skipped ? i18n(\"state.atoms.8ae04d950861\", { value: String(r.written === 0 ? i18n(\"state.atoms.0ab15a1cb720\") : i18n(\"state.atoms.253f54401fa7\")) }) : i18n(\"state.atoms.7f2090267b41\", { written: String(r.written), removed: String(r.removed) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments synced: {written} written ({removed} old entries cleaned up)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -661,8 +773,8 @@
           "context": "return i18n(\"state.atoms.804002a9c49a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -677,8 +789,8 @@
           "context": "return i18n(\"state.atoms.838814f1139e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Finance · Salary deposits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -693,8 +805,8 @@
           "context": "sub: i18n(\"state.atoms.855afaa70605\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites · Tap to open",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -709,8 +821,8 @@
           "context": "return i18n(\"state.atoms.87a17e3b9851\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course selection · Selected courses and waitlist queue (favorites that cannot be split)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -725,8 +837,8 @@
           "context": "return i18n(\"state.atoms.88df420f8207\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exam schedule",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -746,8 +858,8 @@
           "context": "r.skipped ? i18n(\"state.atoms.8ae04d950861\", { value: String(r.written === 0 ? i18n(\"state.atoms.0ab15a1cb720\") : i18n(\"state.atoms.253f54401fa7\")) }) : i18n(\"state.atoms.7f2090267b41\", { written: String(r.written), removed: String(r.removed) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments not synced: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -762,8 +874,8 @@
           "context": "return i18n(\"state.atoms.8bb50166823f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unsubmitted assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -778,8 +890,8 @@
           "context": "return i18n(\"state.atoms.8bfa2692305a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Store anything · Mixed lists · Share codes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -794,8 +906,8 @@
           "context": "return i18n(\"state.atoms.8e46dccaa4fb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Life page · Account and data usage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -810,8 +922,8 @@
           "context": "return i18n(\"state.atoms.8efd83feacc8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Timeline and schedule list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -826,8 +938,8 @@
           "context": "return i18n(\"state.atoms.8fff9a5b021b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal hub page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -842,8 +954,8 @@
           "context": "(libName || \"\") + i18n(\"state.atoms.914722c592ca\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Seat floors",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -874,8 +986,8 @@
           "context": "return i18n(\"state.atoms.959f2f8d7f57\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Latest course notices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -890,8 +1002,8 @@
           "context": "return i18n(\"state.atoms.95ce4af97b93\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Grade history",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -906,8 +1018,8 @@
           "context": "return i18n(\"state.atoms.961b6374e9a5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Info portal · Student records",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -922,8 +1034,8 @@
           "context": "return i18n(\"state.atoms.99f047c591bb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Temporary visitor registration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -954,8 +1066,8 @@
           "context": "return i18n(\"state.atoms.9e6a260920fb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1002,8 +1114,8 @@
           "context": "(spName || \"\") + i18n(\"state.atoms.a40906b8e7b9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Public space rooms",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1018,8 +1130,8 @@
           "context": "return i18n(\"state.atoms.a43f6d78f983\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive · Libraries · Upload and download · Sharing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1034,7 +1146,7 @@
           "context": "return i18n(\"state.atoms.aa39cac2b409\");"
         }
       ],
-      "translation": "Learn",
+      "translation": "Web Learning",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1050,8 +1162,8 @@
           "context": "(r.spaceName || \"\") + i18n(\"state.atoms.aae558c4b8aa\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Public space",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1066,8 +1178,8 @@
           "context": "return i18n(\"state.atoms.ab8cff9a597a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Electricity",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1082,8 +1194,8 @@
           "context": "return i18n(\"state.atoms.ac7a24ae899f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mail · New message",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1098,8 +1210,8 @@
           "context": "return i18n(\"state.atoms.acbe926d0b5c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Academic calendar · Countdown to key school events",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1114,8 +1226,8 @@
           "context": "return i18n(\"state.atoms.aeddd0584371\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1130,8 +1242,8 @@
           "context": "i18n(\"state.atoms.b08512fcc283\") + teacher"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courses · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1183,8 +1295,8 @@
           "context": "return i18n(\"state.atoms.b208d9df4fca\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current board (use navigate board + boardId for a specific board)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1199,8 +1311,8 @@
           "context": "sub: i18n(\"state.atoms.b22b34bd6f57\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feeds · News",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1215,130 +1327,8 @@
           "context": "return i18n(\"state.atoms.b3ed0c353c77\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.b80e3dfb7fba",
-      "source": "讨论区板块",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 450,
-          "context": "name || i18n(\"state.atoms.b80e3dfb7fba\")"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 450,
-          "context": "(courseName ? courseName + \" · \" : \"\") + i18n(\"state.atoms.b80e3dfb7fba\")"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 724,
-          "context": "(b.courseName ? b.courseName + \" · \" : \"\") + i18n(\"state.atoms.b80e3dfb7fba\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.b9d8c8f7b02f",
-      "source": "全量扫描云端日程变化（etag 对账）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 172,
-          "context": "return i18n(\"state.atoms.b9d8c8f7b02f\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.bb7b63b39fd4",
-      "source": "本学期课程总览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 225,
-          "context": "return i18n(\"state.atoms.bb7b63b39fd4\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.bb8c939d0fcd",
-      "source": "订水",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 242,
-          "context": "return i18n(\"state.atoms.bb8c939d0fcd\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.bdac834d0ba2",
-      "source": "全部通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 227,
-          "context": "return i18n(\"state.atoms.bdac834d0ba2\");"
-        }
-      ],
-      "translation": "All notices",
+      "translation": "Web Learning · Assignment list",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.c0c6bb8b8618",
-      "source": "校园卡余额",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 311,
-          "context": "return i18n(\"state.atoms.c0c6bb8b8618\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.c141273da51a",
-      "source": "全局默认提醒时间 · 同步系统日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 231,
-          "context": "return i18n(\"state.atoms.c141273da51a\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

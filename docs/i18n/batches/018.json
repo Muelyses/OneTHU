@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.notifysettingssection.40ff6300f981",
+      "source": "诊断",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 214,
+          "context": "busy ? i18n(\"components.notifysettingssection.fb11aa6f2982\") : i18n(\"components.notifysettingssection.40ff6300f981\")"
+        }
+      ],
+      "translation": "Diagnostics",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.notifysettingssection.43726fd0c89d",
+      "source": "近期没有需要提醒的事项。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 268,
+          "context": "plan.length === 0\n            ? i18n(\"components.notifysettingssection.43726fd0c89d\")\n            : plan.slice(0, 3).map((it) => `${fmtAt(it.at)} ${it.title}`).join(\"；\") +\n              (plan.length > 3 ? i18n(\"components.notifysettingssection.2d0bc5924351\", { length: String(plan.length) }) : \"\")"
+        }
+      ],
+      "translation": "Nothing needs a reminder in the near future.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.notifysettingssection.44f704a819d7",
+      "source": "投递失败，请运行诊断查看原因",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
+          "line": 108,
+          "context": "st.granted ? i18n(\"components.notifysettingssection.44f704a819d7\") : i18n(\"components.notifysettingssection.e8b6b0ba7d86\")"
+        }
+      ],
+      "translation": "Delivery failed; run diagnostics to see why",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.notifysettingssection.4a6d7abd964b",
       "source": "测试失败：{value}",
@@ -24,8 +72,8 @@
           "context": "setMsg(i18n(\"components.notifysettingssection.4a6d7abd964b\", { value: String(String(e).slice(0, 80)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Test failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -40,8 +88,8 @@
           "context": "{i18n(\"components.notifysettingssection.4eb2834cf11f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Revoke all",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -56,8 +104,8 @@
           "context": "{i18n(\"components.notifysettingssection.5d932bda6083\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pushes classes, schedule, and assignment deadlines to system notifications, with adjustable lead time and quiet hours.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -72,8 +120,8 @@
           "context": "{i18n(\"components.notifysettingssection.5e0022a1e907\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send test notification",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -88,8 +136,8 @@
           "context": "{i18n(\"components.notifysettingssection.601739d6d696\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uses the “Deadline reminders” settings from Web Learning; reminders falling in quiet hours are sent just before quiet hours start.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -104,8 +152,8 @@
           "context": "{i18n(\"components.notifysettingssection.6160bb36e036\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Apply now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -130,8 +178,8 @@
           "context": "r.error ? i18n(\"components.notifysettingssection.62a0cf48abea\", { error: String(r.error) }) : i18n(\"components.notifysettingssection.ff1625eb34eb\", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rescheduling failed: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -146,8 +194,8 @@
           "context": "sent ? i18n(\"components.notifysettingssection.711abc74c394\") : i18n(\"components.notifysettingssection.4a6d7abd964b\", { value: String(st.granted ? i18n(\"components.notifysettingssection.44f704a819d7\") : i18n(\"components.notifysettingssection.e8b6b0ba7d86\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Test notification sent; if you don’t receive it, check the system notification settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -162,8 +210,8 @@
           "context": "{i18n(\"components.notifysettingssection.75d999ba8224\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reminds you ahead of timetable classes, exams, and custom schedule items.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -183,8 +231,8 @@
           "context": "setMsg(i18n(\"components.notifysettingssection.76bc5a31c67a\", { length: String(all.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Revoked {length} plugin notifications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -204,8 +252,8 @@
           "context": "{i18n(\"components.notifysettingssection.78c085c9614b\", { label: String(hint.action.label) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open: {label}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -220,8 +268,8 @@
           "context": "{i18n(\"components.notifysettingssection.7c9860a87f42\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin notifications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -236,8 +284,8 @@
           "context": "{i18n(\"components.notifysettingssection.8749b8afaa46\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Quiet hours",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -252,8 +300,8 @@
           "context": "{i18n(\"components.notifysettingssection.8f29b3132ccf\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reminders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -268,8 +316,8 @@
           "context": "{i18n(\"components.notifysettingssection.96ded56015c2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No reminders are sent during this period; reminders falling inside it are postponed until it ends.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -284,8 +332,8 @@
           "context": "{i18n(\"components.notifysettingssection.98790a2b6ade\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reminders master switch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -300,8 +348,8 @@
           "context": "{i18n(\"components.notifysettingssection.aee887434131\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -316,8 +364,8 @@
           "context": "{i18n(\"components.notifysettingssection.bfd7f2d9791f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Just paste this self-check result to me to pinpoint the issue (“probe cleanup” means the self-check left no stray notifications).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -332,8 +380,8 @@
           "context": "{i18n(\"components.notifysettingssection.c159d4097131\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notification permission",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -348,8 +396,8 @@
           "context": "sameDay ? i18n(\"components.notifysettingssection.d5f5a7a01073\") : `${d.getMonth() + 1}/${d.getDate()}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -364,8 +412,8 @@
           "context": "{i18n(\"components.notifysettingssection.dcf38337ab96\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Upcoming reminders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -380,8 +428,8 @@
           "context": "{i18n(\"components.notifysettingssection.e402488b7e96\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " The notifications above are managed by the plugin itself and are not affected by the master switch.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -396,8 +444,8 @@
           "context": "st.granted ? i18n(\"components.notifysettingssection.44f704a819d7\") : i18n(\"components.notifysettingssection.e8b6b0ba7d86\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notification permission is off; please enable it in System Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -412,8 +460,8 @@
           "context": "st.status === \"warn\" ? i18n(\"components.notifysettingssection.f56c6c82203b\") : i18n(\"components.notifysettingssection.1e9f2561b7cf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tip",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -428,8 +476,8 @@
           "context": "{i18n(\"components.notifysettingssection.f6ecd7571f77\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Class & schedule lead time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -444,8 +492,8 @@
           "context": "busy ? i18n(\"components.notifysettingssection.fb11aa6f2982\") : i18n(\"components.notifysettingssection.40ff6300f981\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Checking…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -460,8 +508,8 @@
           "context": "{i18n(\"components.notifysettingssection.fe593e7c8ef9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Daily briefing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -485,8 +533,8 @@
           "context": "r.error ? i18n(\"components.notifysettingssection.62a0cf48abea\", { error: String(r.error) }) : i18n(\"components.notifysettingssection.ff1625eb34eb\", { scheduled: String(r.scheduled), cancelled: String(r.cancelled) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rescheduled ({scheduled} scheduled / {cancelled} cancelled)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -501,8 +549,8 @@
           "context": "label: i18n(\"components.ohmodelsourcecard.23f0474b0502\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "School MadModel (free)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -517,8 +565,8 @@
           "context": "apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "API key configured; adjust the endpoint and model under “Little OH · Your own API” below.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -533,8 +581,8 @@
           "context": "return i18n(\"components.ohmodelsourcecard.2a0bbb86011e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Validity unknown (subject to the server)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -549,8 +597,8 @@
           "context": "showToast(i18nMsg(\"components.ohmodelsourcecard.2c8fd279faba\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "School sign-in status updated",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -565,8 +613,8 @@
           "context": "busy ? i18n(\"components.ohmodelsourcecard.35843c4cc623\") : i18n(\"components.ohmodelsourcecard.a2b21883b5f3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Renewing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -586,8 +634,8 @@
           "context": "isMad ? i18n(\"components.ohmodelsourcecard.760af7198e4d\", { model: String(model) }) : i18n(\"components.ohmodelsourcecard.54e8c9587c83\", { value: String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current: your own API · {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -602,8 +650,8 @@
           "context": "{i18n(\"components.ohmodelsourcecard.621e4cb3a245\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Switch to school MadModel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -623,8 +671,8 @@
           "context": "h >= 24 ? i18n(\"components.ohmodelsourcecard.68ec985f4e52\", { value: String(Math.floor(h / 24)) }) : i18n(\"components.ohmodelsourcecard.904cae8267a3\", { h: String(h) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Valid for about {value} days",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -644,8 +692,8 @@
           "context": "isMad ? i18n(\"components.ohmodelsourcecard.760af7198e4d\", { model: String(model) }) : i18n(\"components.ohmodelsourcecard.54e8c9587c83\", { value: String(model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current: school MadModel free tier · {model}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -665,8 +713,8 @@
           "context": "isMad\n            ? i18n(\"components.ohmodelsourcecard.7d44e665e640\", { value: String(expireText(token)) })\n            : apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value}. Please retry later if requests are rate-limited.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -686,8 +734,8 @@
           "context": "h >= 24 ? i18n(\"components.ohmodelsourcecard.68ec985f4e52\", { value: String(Math.floor(h / 24)) }) : i18n(\"components.ohmodelsourcecard.904cae8267a3\", { h: String(h) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Valid for about {h} hours",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -702,8 +750,8 @@
           "context": "model || i18n(\"components.ohmodelsourcecard.a0e70984b929\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No model set",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -718,8 +766,8 @@
           "context": "busy ? i18n(\"components.ohmodelsourcecard.35843c4cc623\") : i18n(\"components.ohmodelsourcecard.a2b21883b5f3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "One-click renew",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -734,8 +782,8 @@
           "context": "apiKey\n              ? i18n(\"components.ohmodelsourcecard.279475c2940d\")\n              : i18n(\"components.ohmodelsourcecard.b5ad43409b01\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enter the endpoint, key, and model of your own API under “Little OH · Your own API” below.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -750,8 +798,8 @@
           "context": "return i18n(\"components.ohmodelsourcecard.d11b082f9ce4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Expired · tap one-click renew",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -771,8 +819,8 @@
           "context": "showToast(i18nMsg(\"components.ohmodelsourcecard.d58d1914534e\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Renewal failed: {value} (you can switch to your own API)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -787,8 +835,8 @@
           "context": "label: i18n(\"components.ohmodelsourcecard.ef1b0e23a0a5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your own API",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -803,8 +851,8 @@
           "context": "{i18n(\"components.ohmodelsourcecard.f3230e3c122f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Little OH · Model source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -819,8 +867,8 @@
           "context": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Jumped to the system app settings page)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -835,8 +883,8 @@
           "context": "{i18n(\"components.ohsettingspage.0407dbdaf0dd\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open System Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -851,8 +899,8 @@
           "context": "{i18n(\"components.ohsettingspage.066c7402ec5f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model source, self-paid key, model name, and “Multimodal (image input)” are configured in place in the plugin’s settings panel — plugin page → OneTHU Harness → Advanced configuration.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -867,8 +915,8 @@
           "context": "{i18n(\"components.ohsettingspage.0e5b7545605e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH model configuration / spending cap",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -883,8 +931,8 @@
           "context": "return i18n(\"components.ohsettingspage.1dda1d69edf9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect external MCP servers",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -899,8 +947,8 @@
           "context": "return i18n(\"components.ohsettingspage.2613429ed9e3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model / quota budget / MCP / commands & logs / permissions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -915,8 +963,8 @@
           "context": "return i18n(\"components.ohsettingspage.26e02469dd36\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "When quota runs low or the token expires, tap renew once more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -931,8 +979,8 @@
           "context": "{i18n(\"components.ohsettingspage.359213279505\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "IM channels (advanced)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -947,8 +995,8 @@
           "context": "item(\"advanced\", i18n(\"components.ohsettingspage.36a045ebcc6d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Advanced configuration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -963,8 +1011,8 @@
           "context": "{i18n(\"components.ohsettingspage.3c02623c9a2b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep alive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -979,8 +1027,8 @@
           "context": "{i18n(\"components.ohsettingspage.3f0404bdc67a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model / MCP / logs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -995,8 +1043,8 @@
           "context": "{i18n(\"components.ohsettingspage.444fd1f85256\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model & multimodal",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1011,8 +1059,8 @@
           "context": "return i18n(\"components.ohsettingspage.465962a0ceba\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Let OH call tools on external MCP servers (add/remove on the plugin page’s advanced tier)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1027,8 +1075,8 @@
           "context": "{i18n(\"components.ohsettingspage.4f0d5e092ff1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free quota",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1043,8 +1091,8 @@
           "context": "return i18n(\"components.ohsettingspage.5a639744982a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Let other assistants on this device connect to OneTHU (off by default)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1059,8 +1107,8 @@
           "context": "return i18n(\"components.ohsettingspage.5ac4509019c2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Basic settings for OH and the entry to advanced configuration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1075,8 +1123,8 @@
           "context": "{i18n(\"components.ohsettingspage.605427ab6130\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model / spending cap / MCP / logs are configured in place on the plugin subpage — plugin page → OneTHU Harness → Advanced configuration.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1091,8 +1139,8 @@
           "context": "{i18n(\"components.ohsettingspage.675459adb527\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH configuration tier",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1107,8 +1155,8 @@
           "context": "item(\"basic\", i18n(\"components.ohsettingspage.692873ddd8f4\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Basic settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1123,8 +1171,8 @@
           "context": "{i18n(\"components.ohsettingspage.6d47abc2d3c7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "IM basics (scan to bind / unbind)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1139,8 +1187,8 @@
           "context": "return i18n(\"components.ohsettingspage.6e2846f3e5bb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Set app launch management to manual and allow auto-launch / associated launch / background activity",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1155,8 +1203,8 @@
           "context": "{i18n(\"components.ohsettingspage.72704d8e1e47\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Floating ball",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1171,8 +1219,8 @@
           "context": "return i18n(\"components.ohsettingspage.75be22d41cd1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU Harness / Little OH settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1192,8 +1240,8 @@
           "context": "{i18n(\"components.ohsettingspage.898487493b0d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH model / multimodal switch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1208,8 +1256,8 @@
           "context": "{i18n(\"components.ohsettingspage.89fcbbfdca16\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Voice",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1224,8 +1272,8 @@
           "context": "return i18n(\"components.ohsettingspage.9f8a1c12cbdf\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Model source, key, model name, and multimodal (image input)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1240,8 +1288,8 @@
           "context": "{i18n(\"components.ohsettingspage.a2b21883b5f3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "One-click renew",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1256,8 +1304,8 @@
           "context": "return i18n(\"components.ohsettingspage.af7a3fa54da7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH MCP servers",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1272,8 +1320,8 @@
           "context": "!madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Currently using a self-paid API; after switching model sources, check the free tier.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1293,8 +1341,8 @@
           "context": "{i18n(\"components.ohsettingspage.cccadd30d14d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open plugin settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1314,66 +1362,8 @@
           "context": "{i18n(\"components.ohsettingspage.d096e4516aa5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.d09e846cd4ab",
-      "source": "系统设置 → 应用 → 应用启动管理 → OneTHU 设「手动管理」，并允许自启动、关联启动、后台活动； 再把 OneTHU 加入电池优化白名单。设置完悬浮球与语音在后台才不会被系统掐掉。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 218,
-          "context": "{i18nRich(\"components.ohsettingspage.d09e846cd4ab\", { value: jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\" })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.d121e4ba4f4c",
-      "source": "正在续签…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
-          "context": "busy ? i18n(\"components.ohsettingspage.d121e4ba4f4c\") : checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.ohsettingspage.dc1d05f60500",
-      "source": "历史超长自动收成要点清单，重要内容不再丢",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 51,
-          "context": "return i18n(\"components.ohsettingspage.dc1d05f60500\");"
-        },
-        {
-          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 279,
-          "context": "{i18n(\"components.ohsettingspage.dc1d05f60500\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Background keep-alive (Huawei / HONOR)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

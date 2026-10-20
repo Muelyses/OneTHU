@@ -1,7 +1,54 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.onboardinglessons.fdb99497532e",
+      "source": "学习、预约、生活、课表、信息，固定在底部。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 86,
+          "context": "return i18n(\"lib.onboardinglessons.fdb99497532e\");"
+        }
+      ],
+      "translation": "Study, Reservations, Life, Timetable and Info, fixed at the bottom.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.fe79c11b666f",
+      "source": "需要更多功能时，可在设置里切换模式。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 82
+        }
+      ],
+      "translation": "When you need more features, switch modes in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.2e072265be7f",
+      "source": "（没有回复）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 344,
+          "context": "String(r?.answer ?? r?.error ?? \"\").trim() || i18n(\"lib.overlayandroid.2e072265be7f\")"
+        }
+      ],
+      "translation": "(No reply)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.overlayandroid.38793c1c1c23",
       "source": "相册",
@@ -14,8 +61,8 @@
           "context": "return i18n(\"lib.overlayandroid.38793c1c1c23\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Photo library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +82,8 @@
           "context": "text: i18n(\"lib.overlayandroid.4d46b1512ea6\", { value: String(name ?? i18n(\"lib.overlayandroid.89a7d926bd0e\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachment: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -51,8 +98,8 @@
           "context": "return i18n(\"lib.overlayandroid.6e3a10ade7c7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Take photo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +114,8 @@
           "context": "name ?? i18n(\"lib.overlayandroid.89a7d926bd0e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Untitled)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +130,8 @@
           "context": "return i18n(\"lib.overlayandroid.9e07e3c0532d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Upload",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -104,8 +151,8 @@
           "context": "text: i18n(\"lib.overlayandroid.c638cd4dde22\", { value: String(e instanceof Error ? e.message : String(e)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Error: {value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +167,8 @@
           "context": "ATTACH_LABEL[kind] ?? i18n(\"lib.overlayandroid.c7225dbf105e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachment",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -145,8 +192,8 @@
           "context": "text: i18n(\"lib.overlayandroid.d7111ec9e5c7\", { label: String(label), value: String(e instanceof Error ? e.message : String(e)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Failed to open {label}: {value})",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -166,8 +213,8 @@
           "context": "text: i18n(\"lib.overlayandroid.d873d782b371\", { value: String(e instanceof Error ? e.message : String(e)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Attachment failed to send: {value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -182,8 +229,8 @@
           "context": "reply || i18n(\"lib.overlayandroid.f11889f79829\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Attachment handed to OH)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -198,8 +245,8 @@
           "context": "new TypeError(i18n(\"lib.pdf.runtime.0c6ad6379eeb\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Math.sumPrecise: elements must be numbers",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -214,8 +261,8 @@
           "context": "return i18n(\"lib.pptxrender.311456c35da6\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Embedded content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -230,8 +277,8 @@
           "context": "new Error(i18n(\"lib.pptxrender.465bf7f89508\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "ppt/slides/slideN.xml not found in the archive (may not be a .pptx)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -246,8 +293,8 @@
           "context": "isDgm ? \"SmartArt\" : i18n(\"lib.pptxrender.53f92c063963\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Object",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -262,8 +309,8 @@
           "context": "known ? i18n(\"lib.pptxrender.5547406e74d1\") : i18n(\"lib.pptxrender.e957a1c1958c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Image too large, not rendered",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -278,8 +325,8 @@
           "context": "isChart ? i18n(\"lib.pptxrender.8cb443ab8379\") : isDgm ? \"SmartArt\" : i18n(\"lib.pptxrender.53f92c063963\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Chart",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -294,8 +341,8 @@
           "context": "new Error(i18n(\"lib.pptxrender.b5c59e63ba8f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No slides could be parsed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -310,8 +357,8 @@
           "context": "known ? i18n(\"lib.pptxrender.5547406e74d1\") : i18n(\"lib.pptxrender.e957a1c1958c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Image (format not supported)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -326,8 +373,8 @@
           "context": "new Error(i18n(\"lib.qrscan.b3a1f9364b8c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "QR code scanning isn't supported in this environment (a newer system WebView is required)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -342,8 +389,8 @@
           "context": "new Error(i18n(\"lib.shortcode.378968f3ae7e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive returned an unsupported share link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -358,8 +405,8 @@
           "context": "new Error(i18n(\"lib.shortcode.67ab8f79df50\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not a OneTHU short share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -374,8 +421,8 @@
           "context": "new Error(i18n(\"lib.shortcode.8421942a683e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The short share code contains unrecognized characters",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -390,8 +437,8 @@
           "context": "new Error(i18n(\"lib.shortcode.aef75cc315e1\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The short share code is incomplete",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -406,8 +453,8 @@
           "context": "new Error(i18n(\"lib.shortcode.bf3d8cf6fe66\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A short share code should be four groups of four characters; please copy it in full",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -422,8 +469,8 @@
           "context": "isAndroid\n    ? i18n(\"lib.speech.4eb4956de694\")\n    : i18n(\"lib.speech.1737f29c47c1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Native speech recognition isn't supported on desktop yet: tap \"Tap to input, hold to speak\" and type with the keyboard",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -438,8 +485,8 @@
           "context": "isAndroid\n    ? i18n(\"lib.speech.4eb4956de694\")\n    : i18n(\"lib.speech.1737f29c47c1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This device has no system speech recognition: enable \"Speech services\" in system settings first, then hold",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -454,8 +501,8 @@
           "context": "why: i18n(\"lib.suggest.132e3b256a4c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Similar to where you're working",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -470,8 +517,8 @@
           "context": "why: i18n(\"lib.suggest.548b0e407001\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Used daily by most people",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -486,8 +533,8 @@
           "context": "why: i18n(\"lib.suggest.c02a34b5141f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Worth a look",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -507,8 +554,8 @@
           "context": "showToast(i18nMsg(\"lib.thosopen.76024592a2c9\", { value: String(reason.slice(0, 80)) }), 9000)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to open in app: {value} (falling back to browser)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -523,8 +570,8 @@
           "context": "return i18n(\"lib.trace.3a8b5cef5790\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Walk",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -539,8 +586,8 @@
           "context": "return i18n(\"lib.trace.455ece81de56\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Baidu",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -555,8 +602,8 @@
           "context": "return i18n(\"lib.trace.50537dab7650\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Apple Maps",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -571,8 +618,8 @@
           "context": "return i18n(\"lib.trace.53874092e000\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tencent",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -587,8 +634,8 @@
           "context": "return i18n(\"lib.trace.7c25d6aa499e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Amap",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -603,8 +650,8 @@
           "context": "return i18n(\"lib.trace.7f21257362cb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -619,8 +666,8 @@
           "context": "return i18n(\"lib.trace.a02caf9878b5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "<1 min",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -644,8 +691,8 @@
           "context": "return i18n(\"lib.trace.c76e20944989\", { value: String(Math.floor(m / 60)), value2: String(m % 60) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} h {value2} min",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -665,8 +712,8 @@
           "context": "return i18n(\"lib.trace.d5b54d668a13\", { m: String(m) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{m} min",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -681,8 +728,8 @@
           "context": "return i18n(\"lib.trace.e81f910c0f2b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bike",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +753,8 @@
           "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Too many redirects ({maxHops}), last hop = {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -727,8 +774,8 @@
           "context": "new Error(i18n(\"lib.transport.81870141c552\", { value: networkLogUrl(url) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Request timed out (90s): {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -743,8 +790,8 @@
           "context": "return i18n(\"lib.transport.browserCors\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Browser preview can't connect to the campus network directly (blocked by CORS). Run the desktop app instead: pnpm tauri:dev.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +806,8 @@
           "context": "new DOMException(i18n(\"lib.transport.cancelled\"), \"AbortError\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Request cancelled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -784,8 +831,8 @@
           "context": "new Error(i18n(\"lib.transport.cd880977cdbd\", { value: String(guardMs / 1000), value2: networkLogUrl(url) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Request timed out ({value}s): {value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -807,8 +854,8 @@
           "context": "return i18n(\"lib.transport.fileTooLarge\", {size:mb(big[1]!),limit:mb(big[2]!)});"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "File is large ({size}); in-app preview is limited to {limit} — please use \"Download\" or \"Save as\" instead.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -823,8 +870,8 @@
           "context": "return i18n(\"lib.transport.noReason\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Operation failed (the native side gave no reason; check logs in \"Settings → Diagnostics\")",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -839,8 +886,8 @@
           "context": "advice = i18n(\"lib.transport.reloginAdvice\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pull down to refresh to retry; if this keeps happening, sign in again in \"Settings → Accounts\".",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -859,8 +906,8 @@
           "context": "return i18n(\"lib.transport.serverRejected\", {error:raw});"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{error}: the server rejected this request (login session expired, or no permission for this file)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -875,8 +922,8 @@
           "context": "return i18n(\"lib.transport.timeoutAdvice\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Network timed out: check that campus network / WebVPN is reachable.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -891,8 +938,8 @@
           "context": "() => i18n(\"lib.tts.305378ddd2b8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -907,8 +954,8 @@
           "context": "() => i18n(\"lib.tts.56b01b7faa9d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " (code omitted) ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -923,8 +970,8 @@
           "context": "return i18n(\"lib.tts.9138d2ecd64e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Engine default voice",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -939,8 +986,8 @@
           "context": "new Error(i18n(\"lib.tts.98f963cb664a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Empty text",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -955,8 +1002,8 @@
           "context": "(cut > max * 0.5 ? head.slice(0, cut + 1) : head) + i18n(\"lib.tts.c031b065a3a3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "… (the content is long; read the rest on screen)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -976,8 +1023,8 @@
           "context": "onToast(i18n(\"lib.update.c459fb3f09e6\", { version: rel.name }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New version {version} available: see \"Settings → About\" for details",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -997,8 +1044,8 @@
           "context": "return i18n(\"lib.updater.01e9ed6e0882\", { what: String(what) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{what} unreachable (403) — if the official endpoint changed, check the share-links API (this module uses the anonymous dirents endpoint)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1022,8 +1069,8 @@
           "context": "return i18n(\"lib.updater.072f4658615f\", { what: String(what), status: String(status) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{what} server error (HTTP {status}) — the cloud drive side is temporarily unavailable, try again later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1038,8 +1085,8 @@
           "context": "key === \"macos\" ? i18n(\"lib.updater.185680ad27cd\") : i18n(\"lib.updater.95bc488982b2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Opened with the system default: for a DMG, drag the app into \"Applications\" to finish the update.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1059,8 +1106,8 @@
           "context": "shareErr(i18n(\"lib.updater.194b24406399\", { path: String(path) }), r.status)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mirror directory {path}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1080,8 +1127,8 @@
           "context": "error: i18n(\"lib.updater.2985491184cc\", { detail: String(detail) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Could not fetch the manifest from either update source:\n{detail}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1096,8 +1143,8 @@
           "context": "res.status === 404 ? i18n(\"lib.updater.2d2cad3f99ea\") : `HTTP ${res.status}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "HTTP 404 (Releases doesn't have the latest.json asset yet)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1112,8 +1159,8 @@
           "context": "hint: i18n(\"lib.updater.2da47c897e30\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System install page opened: for first installation, allow \"Install unknown apps\" when the system prompts, then confirm on the system page.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1128,8 +1175,8 @@
           "context": "return i18n(\"lib.updater.2f939477c47e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Android",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1149,8 +1196,8 @@
           "context": "return i18n(\"lib.updater.361980a5e6ce\", { what: String(what) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{what} not found (404) — the file isn't on the mirror yet",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1165,8 +1212,8 @@
           "context": "error: i18n(\"lib.updater.3d383f5a5c29\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manifest is not valid JSON",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1181,8 +1228,8 @@
           "context": "r.hasUpdate ? i18n(\"lib.updater.daedea385864\") : i18n(\"lib.updater.4219a7449e26\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Already up to date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1197,8 +1244,8 @@
           "context": "error: i18n(\"lib.updater.42b98aa3fae8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No local installable path available",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1226,8 +1273,8 @@
           "context": "new Error(i18n(\"lib.updater.4bffec153a88\", { dir: String(dir), ext: String(ext), length: String(dirList.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No recognizable installer package in {dir}/ (expected OneTHU_<version>_<arch>.{ext}; the directory has {length} items)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1242,8 +1289,8 @@
           "context": "return i18n(\"lib.updater.71c70711a602\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitHub Releases (public internet)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1258,8 +1305,8 @@
           "context": "key === \"macos\" ? i18n(\"lib.updater.185680ad27cd\") : i18n(\"lib.updater.95bc488982b2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The installer package was opened with the system default.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1274,8 +1321,8 @@
           "context": "return i18n(\"lib.updater.9fa399af02de\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive (official mirror · reachable on campus)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1295,8 +1342,8 @@
           "context": "a.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown reason",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1320,8 +1367,8 @@
           "context": "fallbackReason: i18n(\"lib.updater.ab90d58874ee\", { label: String(failed.label), value: String(failed.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{label} unavailable: {value}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1350,8 +1397,8 @@
           "context": "new Error(i18n(\"lib.updater.b331bcbd6083\", { version: String(m.version), key: String(key) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manifest v{version} has no package for the current platform ({key})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1371,8 +1418,8 @@
           "context": "new Error(i18n(\"lib.updater.bf52642dd8c4\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Mirror directory unreachable: {value} (check your network off campus; this endpoint needs no sign-in)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1392,70 +1439,8 @@
           "context": "logLine(i18n(\"lib.updater.c57372e35f51\", { msg: String(msg) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.updater.cfc1ecb75eaf",
-      "source": "镜像目录返回的不是 JSON（{path}）——官方接口形态可能变了",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "path",
-          "expression": "String(path)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/updater.ts",
-          "line": 241,
-          "context": "new Error(i18n(\"lib.updater.cfc1ecb75eaf\", { path: String(path) }))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.updater.d7fb13f125e5",
-      "source": "自定义更新源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/updater.ts",
-          "line": 47,
-          "context": "return i18n(\"lib.updater.d7fb13f125e5\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.updater.dae2c06aec63",
-      "source": "{what} 失败（HTTP {status}）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "what",
-          "expression": "String(what)"
-        },
-        {
-          "name": "status",
-          "expression": "String(status)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/updater.ts",
-          "line": 214,
-          "context": "return i18n(\"lib.updater.dae2c06aec63\", { what: String(what), status: String(status) });"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[Update] Failed to open the install page: {msg}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

@@ -1,7 +1,64 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorer.oneshot.1a54c560b1aa",
+      "source": "入口 {value}：放{title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(i+1)"
+        },
+        {
+          "name": "title",
+          "expression": "String(placing.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 79,
+          "context": "{i18n(\"components.explorer.oneshot.1a54c560b1aa\", { value: String(i+1), title: String(placing.title) })}"
+        }
+      ],
+      "translation": "Entry {value}: place {title}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.oneshot.1d7e5eb9476d",
+      "source": "把 ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 84,
+          "context": "{i18n(\"components.explorer.oneshot.1d7e5eb9476d\")}"
+        }
+      ],
+      "translation": "Put ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.oneshot.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 84,
+          "context": "{i18n(\"components.explorer.oneshot.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.explorer.oneshot.2ecfbc3b523e",
       "source": "用「{title}」替换「{value}」",
@@ -23,8 +80,8 @@
           "context": "{i18n(\"components.explorer.oneshot.2ecfbc3b523e\", { title: String(placing.title), value: String(entries.find(e=>e.id===id)?.title??i18n(\"components.explorer.oneshot.822020149c34\")) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Replace \"{value}\" with \"{title}\"",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -39,8 +96,8 @@
           "context": "kind==='board'?'OnePage':i18n(\"components.explorer.oneshot.37979829426b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -55,8 +112,8 @@
           "context": "{i18n(\"components.explorer.oneshot.4a0d6803186f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " Where should it go?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -76,8 +133,8 @@
           "context": "{i18n(\"components.explorer.oneshot.4aac551ec544\", { value: String(i+1) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneShot shortcut {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -101,8 +158,8 @@
           "context": "showToast(i18nMsg(\"components.explorer.oneshot.4e4edc728921\", { value: String(i+1), title: String(placing.title) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Placed in entry {value} ({title})",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -117,8 +174,8 @@
           "context": "collapsed?i18n(\"components.explorer.oneshot.56c29685416d\"):i18n(\"components.explorer.oneshot.67b14a8bf539\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Quick entries: tap to expand; press and hold to drag up or down",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -133,8 +190,8 @@
           "context": "collapsed?i18n(\"components.explorer.oneshot.56c29685416d\"):i18n(\"components.explorer.oneshot.67b14a8bf539\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse quick entries; press and hold to drag up or down",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -149,8 +206,8 @@
           "context": "collapsed?i18n(\"components.explorer.oneshot.6880a01dd52e\"):i18n(\"components.explorer.oneshot.c01deadeb2db\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Expand quick entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -170,8 +227,8 @@
           "context": "entries.find(e=>e.id===id)?.title??i18n(\"components.explorer.oneshot.822020149c34\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This entry",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -186,7 +243,7 @@
           "context": "{i18n(\"components.explorer.oneshot.9c7a9fcee92f\")}"
         }
       ],
-      "translation": "More",
+      "translation": "More features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -207,8 +264,8 @@
           "context": "{i18n(\"components.explorer.oneshot.a20ba95091a1\", { value: String(i+1) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shortcut {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -223,8 +280,8 @@
           "context": "{i18n(\"components.explorer.oneshot.a2ef8a3a11b2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Expand all features; you can also swap frequently used features into the four entries on the left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -239,8 +296,8 @@
           "context": "kind==='page'?i18n(\"components.explorer.oneshot.ad25cadf8d13\"):kind==='board'?'OnePage':i18n(\"components.explorer.oneshot.37979829426b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Features and services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -255,8 +312,8 @@
           "context": "e?.title??i18n(\"components.explorer.oneshot.b5a39a6494bc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This quick entry was deleted. Choose a new one in \"More features\"",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -271,8 +328,8 @@
           "context": "collapsed?i18n(\"components.explorer.oneshot.6880a01dd52e\"):i18n(\"components.explorer.oneshot.c01deadeb2db\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse quick entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -287,8 +344,8 @@
           "context": "{i18n(\"components.explorer.oneshot.d9a8514e981d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Quick",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -335,8 +392,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.1954e6efaf49\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash, Contacts, Board, Plugins page and Xiaoda are Full mode features.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -356,8 +413,8 @@
           "context": "{i18nRich(\"components.explorer.practicalfeatures.42e970981c31\", { length: group.entries.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -372,8 +429,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.505ea9c9f199\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search features",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -388,8 +445,8 @@
           "context": "c === \"全部\" ? i18n(\"components.explorer.practicalfeatures.5c55a67935af\") : labelForId(c)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -404,8 +461,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.5ff9d327b5e0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search courses, campus card, seminar rooms…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -420,8 +477,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.67fec4a963ba\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open directly, or keep the ones you use nearby.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -441,8 +498,8 @@
           "context": "{i18nRich(\"components.explorer.practicalfeatures.6d53ec60808b\", { query: query })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Nothing found for \"{query}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -457,8 +514,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.7c6365b991ef\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bottom quick entries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -473,8 +530,8 @@
           "context": "e?.title??i18n(\"components.explorer.practicalfeatures.931b4c6458b9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Entry no longer valid",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -489,8 +546,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.97a5b0beb286\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Try another keyword, or view all features.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -505,7 +562,7 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.9c7a9fcee92f\")}"
         }
       ],
-      "translation": "More",
+      "translation": "More features",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -521,8 +578,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.a1963a64917e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feature categories",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +599,8 @@
           "context": "slot>=0?i18n(\"components.explorer.practicalfeatures.af335e1f813a\", { value: String(slot+1) }):i18n(\"components.explorer.practicalfeatures.0f6d4250e8fe\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Already in entry {value}; tap to change its position",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +615,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.c409f53e4604\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your campus toolbox",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -595,8 +652,8 @@
           "context": "{i18n(\"components.explorer.practicalfeatures.fa2ff3c379a7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View all",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -616,8 +673,8 @@
           "context": "setFailed(i18n(\"components.explorer.renderpage.23789dcd311a\", { message: String(lastTabError.message) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin render error: {message}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -637,8 +694,8 @@
           "context": "{i18nRich(\"components.explorer.renderpage.3892d4ae326b\", { pluginId: tab.pluginId })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "From plugin {pluginId}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +710,8 @@
           "context": "tab?.title ?? i18n(\"components.explorer.renderpage.419b9be906c8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin page",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -669,8 +726,8 @@
           "context": "setFailed(i18n(\"components.explorer.renderpage.c2c0a88238ce\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The plugin that owns this plugin tab is not installed or is disabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -685,8 +742,8 @@
           "context": "return i18n(\"components.explorer.settingsoverlay.487e926379fe\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -701,8 +758,8 @@
           "context": "{i18n(\"components.explorer.settingsoverlay.51f560817509\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close settings (Esc)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -717,8 +774,8 @@
           "context": "{i18n(\"components.explorer.settingsoverlay.77b17fc4a52a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -733,8 +790,8 @@
           "context": "{i18n(\"components.explorer.settingsoverlay.7f1d9dd04cd1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Me",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -749,8 +806,8 @@
           "context": "{i18n(\"components.explorer.settingsoverlay.b31841ccaf3d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -765,8 +822,8 @@
           "context": "return i18n(\"components.explorer.settingsoverlay.c2952a5ffcc3\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Personal settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -813,8 +870,8 @@
           "context": "label: i18n(\"components.explorer.tabdrawer.05cc68bdf7ae\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open workspace",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -829,8 +886,8 @@
           "context": "label: i18n(\"components.explorer.tabdrawer.0bd930dcb332\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Duplicate this tab",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -850,8 +907,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.0bfa64848a64\", { label: String(label) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move {label} up",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -866,8 +923,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.0f0e5de771d4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No workspaces yet. Save the current group of tabs so you can return to this working state in one tap; you can also use \"⋯\" on a single tab in the tab bar above to move it into a workspace.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -887,8 +944,8 @@
           "context": "{i18nRich(\"components.explorer.tabdrawer.179bb9615b50\", { name: w.name })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move into \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -908,8 +965,8 @@
           "context": "return i18n(\"components.explorer.tabdrawer.1bdf469558d6\", { value: String(Math.floor(d / 60_000)) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} minutes ago",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -924,8 +981,8 @@
           "context": "isHome ? i18n(\"components.explorer.tabdrawer.1cff7673a712\") : `${full} · ${relTime(tab.lastActiveAt)}`"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Home · cannot be closed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -940,8 +997,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.1f5c44171ba4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag to change height (half or full screen)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -997,8 +1054,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.22dc6ee0c645\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1013,8 +1070,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1029,8 +1086,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.35e7242f8826\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New workspace…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1050,8 +1107,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.37979829426b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1066,8 +1123,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1087,8 +1144,8 @@
           "context": "label: i18n(\"components.explorer.tabdrawer.40561d059752\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disband workspace (keep tabs)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1103,8 +1160,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.5c551062c8a5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disband",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1124,8 +1181,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.609072c18c11\", { label: String(label) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move {label} down",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1140,8 +1197,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.60dd2bf62494\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching tabs.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1156,8 +1213,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.6527f59a6589\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tab bar layout",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1172,8 +1229,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.7aa6d0ef5feb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete permanently",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1188,8 +1245,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.88d72ece7cf7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search results",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1204,8 +1261,8 @@
           "context": "label: i18n(\"components.explorer.tabdrawer.8bcb372db593\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove from workspace",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1225,8 +1282,8 @@
           "context": "{i18nRich(\"components.explorer.tabdrawer.8f82afeb9cd5\", { length: snap.tabs.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save current {length} as a workspace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1254,8 +1311,8 @@
           "context": "count > 0 ? i18n(\"components.explorer.tabdrawer.96163ffaeeac\", { count: String(count), preview: String(preview), value: String(count > 4 ? \"…\" : \"\") }) : i18n(\"components.explorer.tabdrawer.d12be229eea4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} tabs: {preview}{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1275,8 +1332,8 @@
           "context": "{i18nRich(\"components.explorer.tabdrawer.961f0edb859e\", { length: pageTabs.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} work tabs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1291,8 +1348,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.9b62e2597e5b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove (ungrouped)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1312,8 +1369,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.9da364f29a6e\", { label: String(label) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close {label}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1342,8 +1399,8 @@
           "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Permanently delete workspace \"{name}\" and its {count} tabs?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1358,8 +1415,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.a0fb6bc1d3c5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1374,8 +1431,8 @@
           "context": "{i18n(\"components.explorer.tabdrawer.a3030bf8f16d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1397,59 +1454,6 @@
       ],
       "translation": "Tabs",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.a7d2979413c2",
-      "source": "{value}天前",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(Math.floor(d / 86_400_000))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 613,
-          "context": "return i18n(\"components.explorer.tabdrawer.a7d2979413c2\", { value: String(Math.floor(d / 86_400_000)) });"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.ad235f51d8f9",
-      "source": "+ 新建标签页（回首页）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 1029,
-          "context": "{i18n(\"components.explorer.tabdrawer.ad235f51d8f9\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.b92d86f4f557",
-      "source": "关闭其他",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 995,
-          "context": "{i18n(\"components.explorer.tabdrawer.b92d86f4f557\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

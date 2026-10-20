@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.mailpage.2934c3ab3025",
+      "source": "抄送",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 130,
+          "context": "{i18n(\"pages.mailpage.2934c3ab3025\")}"
+        }
+      ],
+      "translation": "Cc",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 122,
+          "context": "{i18n(\"pages.mailpage.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.2dee7a19b009",
+      "source": "邮箱与云日历共用同一个清华邮箱，绑一次两处都能用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 289,
+          "context": "{i18n(\"pages.mailpage.2dee7a19b009\")}"
+        }
+      ],
+      "translation": "Mail and the cloud calendar share the same Tsinghua mailbox; bind it once and both work.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.307333307c28",
+      "source": "邮箱待配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 288,
+          "context": "{i18n(\"pages.mailpage.307333307c28\")}"
+        }
+      ],
+      "translation": "Mailbox not configured",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.346ff60e6c7c",
+      "source": "读取中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 191,
+          "context": "{i18n(\"pages.mailpage.346ff60e6c7c\")}"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.364970d8168c",
+      "source": "发送中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 123,
+          "context": "sending ? i18n(\"pages.mailpage.364970d8168c\") : i18n(\"pages.mailpage.edecf0ae6e51\")"
+        }
+      ],
+      "translation": "Sending…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.3d4a72366c0e",
+      "source": "搜索邮件（回车全箱搜）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 328,
+          "context": "{i18n(\"pages.mailpage.3d4a72366c0e\")}"
+        }
+      ],
+      "translation": "Search mail (press Enter to search all folders)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.mailpage.4927a53bcc88",
       "source": "加载中…",
@@ -19,8 +131,8 @@
           "context": "mail.loading ? i18n(\"pages.mailpage.4927a53bcc88\") : i18n(\"pages.mailpage.ad9a65f0c351\", { length: String(mail.heads.length), total: String(mail.total) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -40,8 +152,8 @@
           "context": "{i18n(\"pages.mailpage.4d0680f9efae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unread",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -56,8 +168,8 @@
           "context": "mail.loading ? i18n(\"pages.mailpage.4e2238b74ec7\") : i18n(\"pages.mailpage.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Syncing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -72,8 +184,8 @@
           "context": "{i18n(\"pages.mailpage.4ee153002e7b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search all folders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -93,8 +205,8 @@
           "context": "body.from || i18n(\"pages.mailpage.51c306bd3174\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(No sender)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -109,8 +221,8 @@
           "context": "{i18n(\"pages.mailpage.537352400c49\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Optional",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -130,8 +242,8 @@
           "context": "{i18nRich(\"pages.mailpage.54c015dde43f\", { to: body.to })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "To: {to}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -146,8 +258,8 @@
           "context": "{i18n(\"pages.mailpage.56a81f01d218\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "user@mails.tsinghua.edu.cn (separate multiple with commas)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -162,8 +274,8 @@
           "context": "body.text || i18n(\"pages.mailpage.57209d3256b5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "(Empty body)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -178,8 +290,8 @@
           "context": "{i18n(\"pages.mailpage.572cf45ba436\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Back",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -194,8 +306,8 @@
           "context": "searching ? i18n(\"pages.mailpage.8aaa866240c3\") : i18n(\"pages.mailpage.5ee87e65261b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exit search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -226,8 +338,8 @@
           "context": "{i18n(\"pages.mailpage.6b437e170641\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Body (plain text)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -242,8 +354,8 @@
           "context": "{i18n(\"pages.mailpage.6d4b7dce1ee6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bind mailbox",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -274,8 +386,8 @@
           "context": "{i18n(\"pages.mailpage.788db1cfec2a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Subject",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -290,8 +402,8 @@
           "context": "{i18n(\"pages.mailpage.7c930c7b544e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No mail",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -311,8 +423,8 @@
           "context": "{i18nRich(\"pages.mailpage.88a5ec063718\", { query: searchResult?.query })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No mail matching \"{query}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -327,8 +439,8 @@
           "context": "searching ? i18n(\"pages.mailpage.8aaa866240c3\") : i18n(\"pages.mailpage.5ee87e65261b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -343,8 +455,8 @@
           "context": "{i18n(\"pages.mailpage.93112c231d6a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Go to Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -359,8 +471,8 @@
           "context": "{i18n(\"pages.mailpage.9aa24002fe73\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Email body",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -384,8 +496,8 @@
           "context": "mail.loading ? i18n(\"pages.mailpage.4927a53bcc88\") : i18n(\"pages.mailpage.ad9a65f0c351\", { length: String(mail.heads.length), total: String(mail.total) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Showing the latest {length} of {total}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -400,8 +512,8 @@
           "context": "mail.loading ? i18n(\"pages.mailpage.4e2238b74ec7\") : i18n(\"pages.mailpage.aee887434131\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -429,8 +541,8 @@
           "context": "return i18n(\"pages.mailpage.b92d3082a65a\", { value: String(d.getFullYear()), value2: String(d.getMonth() + 1), value3: String(d.getDate()) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value2}/{value3}/{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -445,8 +557,8 @@
           "context": "{i18n(\"pages.mailpage.c237b665a6d8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "To",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -461,8 +573,8 @@
           "context": "{i18n(\"pages.mailpage.c3266e411ea3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Load earlier",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -482,8 +594,8 @@
           "context": "{i18nRich(\"pages.mailpage.c38db86e9aab\", { error: error })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to load: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -498,8 +610,8 @@
           "context": "searching ? \"…\" : i18n(\"pages.mailpage.c96e7731f214\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -514,8 +626,8 @@
           "context": "{i18n(\"pages.mailpage.cc50237edca2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Searching…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -530,8 +642,8 @@
           "context": "{i18n(\"pages.mailpage.d626dbe6715e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Email subject",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -546,8 +658,8 @@
           "context": "{i18n(\"pages.mailpage.d661c3d96d53\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Body",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -562,8 +674,8 @@
           "context": "{i18n(\"pages.mailpage.df7392cc96be\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reload",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -583,8 +695,8 @@
           "context": "{i18nRich(\"pages.mailpage.e26a7fcdf47b\", { length: results.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} search results",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -604,8 +716,8 @@
           "context": "{i18n(\"pages.mailpage.ed80f9723a5a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Compose",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -620,8 +732,8 @@
           "context": "sending ? i18n(\"pages.mailpage.364970d8168c\") : i18n(\"pages.mailpage.edecf0ae6e51\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Send",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -636,8 +748,8 @@
           "context": "label: i18nMsg(\"pages.organization.018a9cb5b40a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab organization name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -678,8 +790,8 @@
           "context": "label: i18n(\"pages.organization.069c0ecbf898\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Announcements",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -694,8 +806,8 @@
           "context": "label: i18nMsg(\"pages.organization.08008fa506a0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -710,8 +822,8 @@
           "context": "showToast(i18nMsg(\"pages.organization.08db6a07f7dd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid email format",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -726,8 +838,8 @@
           "context": "showToast(i18nMsg(\"pages.organization.096678f835a7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Joined the organization",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -742,8 +854,8 @@
           "context": "collabBusy?i18n(\"pages.organization.8be0ea36a9bb\"):i18n(\"pages.organization.0a071e483d36\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enable collaboration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -758,8 +870,8 @@
           "context": "preview?.data.kind === \"too-big\" ? i18n(\"pages.organization.aede3a1aba90\") : i18n(\"pages.organization.0a419ff6b3a9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Inline preview is not supported for this file type",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -774,8 +886,8 @@
           "context": "openRepo === repo.id ? i18n(\"pages.organization.0ae7312510f4\") : i18n(\"pages.organization.c73a21cff12c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse details",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -795,8 +907,8 @@
           "context": "{i18n(\"pages.organization.0e1a7040390f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New project",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -811,8 +923,8 @@
           "context": "k: i18n(\"pages.organization.0f29627f4bfb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "GitLab organization",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -827,8 +939,8 @@
           "context": "{i18n(\"pages.organization.10f106e00d20\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -843,8 +955,8 @@
           "context": "previewing === entry.name ? i18n(\"pages.organization.346ff60e6c7c\") : i18n(\"pages.organization.13d61fea9f17\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -859,8 +971,8 @@
           "context": "{i18n(\"pages.organization.14941cd30619\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete this organization",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -875,8 +987,8 @@
           "context": "new Error(i18n(\"pages.organization.15e1ef41e215\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive not connected: sign in on the Cloud Drive page first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -896,8 +1008,8 @@
           "context": "confirmOk(i18nMsg(\"pages.organization.15e315333695\", { name: String(org.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete organization \\\"{name}\\\"? The local record will be deleted (the Cloud Drive library and GitLab repository are untouched).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -912,7 +1024,7 @@
           "context": "n.pinned ? i18n(\"pages.organization.c92179b74af6\") : i18n(\"pages.organization.173f88d28ebf\")"
         }
       ],
-      "translation": "Bring to front",
+      "translation": "Pinned",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -928,8 +1040,8 @@
           "context": "p.owner || i18n(\"pages.organization.17bf181625e8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unassigned",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1061,8 @@
           "context": "confirmOk(i18nMsg(\"pages.organization.187853347221\", { name: String(member.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove \"{name}\" from the server and revoke access to the linked Library and GitLab repository?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -970,8 +1082,8 @@
           "context": "confirmOk(i18nMsg(\"pages.organization.18826c45fb28\", { name: String(repo.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unlink repository \"{name}\" from the organization? The repository on GitLab will not be deleted.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -986,8 +1098,8 @@
           "context": "label: i18nMsg(\"pages.organization.19ad97a6aca8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Description (optional)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1007,8 +1119,8 @@
           "context": "showToast(i18nMsg(\"pages.organization.1a11fb6c8b7d\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to create library: {value} (confirm sign-in on the Cloud Drive page and retry)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1028,8 +1140,8 @@
           "context": "{i18n(\"pages.organization.1a428fa57dd7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Join with share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1049,8 +1161,8 @@
           "context": "{i18n(\"pages.organization.1b6e4682502c\", { name: String(m.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Role of {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1065,8 +1177,8 @@
           "context": "r.ok ? i18nMsg(\"pages.organization.1cfd3b432295\") : i18nMsg(\"pages.organization.9e7804614304\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization card added to Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1081,8 +1193,8 @@
           "context": "{i18n(\"pages.organization.1da6f8b31270\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy member entry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1209,8 @@
           "context": "label: i18nMsg(\"pages.organization.1e0b8202b535\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization share code (ON-…)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1113,8 +1225,8 @@
           "context": "{i18n(\"pages.organization.1e7f3a3d7f2d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1129,8 +1241,8 @@
           "context": "{i18n(\"pages.organization.1e9c085e0a16\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect Cloud Drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1150,8 +1262,8 @@
           "context": "f.description || i18n(\"pages.organization.22ba5aac038e\", { name: String(target.name) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{name}'s organization repos",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1166,8 +1278,8 @@
           "context": "label:i18nMsg(\"pages.organization.22ea1db0cf4f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Member: edit projects and announcements",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1182,8 +1294,8 @@
           "context": "{i18n(\"pages.organization.23b3dcbdcd6a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open organization in browser",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1203,8 +1315,8 @@
           "context": "showToast(i18nMsg(\"pages.organization.24d39595abbf\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to copy member entry: {value} (confirm sign-in on the Cloud Drive page and retry)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1219,8 +1331,8 @@
           "context": "{i18n(\"pages.organization.26e515a6709d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Planned",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1240,8 +1352,8 @@
           "context": "showToast(i18nMsg(\"pages.organization.2a0551eb4c4e\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Member entry for \\\"{name}\\\" copied; requires sign-in and library access",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1261,8 +1373,8 @@
           "context": "showToast(i18nMsg(\"pages.organization.2a13fd852180\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to create GitLab organization/repo: {value} (check sign-in and name availability on the GitLab page)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1277,8 +1389,8 @@
           "context": "{i18n(\"pages.organization.2ad099f6be0b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This organization is no longer on this device.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1293,130 +1405,8 @@
           "context": "org.collaboration ? i18n(\"pages.organization.d71274370983\", { value: String(org.collaboration.lastReadAt ? i18n(\"pages.organization.893ebe28c87a\", { value: String(new Date(org.collaboration.lastReadAt).toLocaleTimeString(getUiLocale())) }) : \"\") }) : i18n(\"pages.organization.2ea3669be1b3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.2ed6ff817aa6",
-      "source": "还没绑定邮箱 · 点「编辑」补上",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 700,
-          "context": "m.email || i18n(\"pages.organization.2ed6ff817aa6\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.2f08b70b8cf9",
-      "source": "打开资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 747,
-          "context": "{i18n(\"pages.organization.2f08b70b8cf9\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.2f5f1d6fbfb0",
-      "source": "未设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 624,
-          "context": "owner ? `${owner.name}${owner.email ? ` · ${owner.email}` : \"\"}` : i18n(\"pages.organization.2f5f1d6fbfb0\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 628,
-          "context": "org.joinUrl || i18n(\"pages.organization.2f5f1d6fbfb0\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.2f9daa828907",
-      "source": "删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 828,
-          "context": "{i18n(\"pages.organization.2f9daa828907\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 848,
-          "context": "{i18n(\"pages.organization.2f9daa828907\")}"
-        }
-      ],
-      "translation": "Delete",
+      "translation": "Migrate existing projects and announcements into a private organization space. Historical member profiles are kept; a GitLab username must be linked again.",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.30c21284df4f",
-      "source": "1 天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 48,
-          "context": "return i18nMsg(\"pages.organization.30c21284df4f\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.346ff60e6c7c",
-      "source": "读取中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 212,
-          "context": "previewing === entry.name ? i18n(\"pages.organization.346ff60e6c7c\") : i18n(\"pages.organization.13d61fea9f17\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.35e9a0c6fbb2",
-      "source": "默认分支",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 265,
-          "context": "k: i18n(\"pages.organization.35e9a0c6fbb2\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

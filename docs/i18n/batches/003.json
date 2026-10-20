@@ -1,5 +1,5 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -14,8 +14,8 @@
           "context": "{i18n(\"components.boardcards.f9d072c4804c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "credits",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +30,8 @@
           "context": "{i18n(\"components.boarditempicker.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +46,8 @@
           "context": "{i18n(\"components.boarditempicker.4031b1da2311\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +62,8 @@
           "context": "searchHint ?? i18n(\"components.boarditempicker.a249f60ce7e8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +78,8 @@
           "context": "{i18n(\"components.boardpenlayer.05731b92ad31\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pen",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +94,8 @@
           "context": "{i18n(\"components.boardpenlayer.1ef3de06b32e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +110,8 @@
           "context": "i18n(\"components.boardpenlayer.82804abae46b\") + c"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pen color ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +126,8 @@
           "context": "{i18n(\"components.boardpenlayer.926a50b98ece\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Undo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +142,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.10fe7d28b16b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stop auto sync",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +163,8 @@
           "context": "setCalMsg(i18n(\"components.calendarsyncsettings.1b6ad181ca5c\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to disconnect: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -184,8 +184,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.1c3ab23e0178\", { error: String(cloud.error) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Calendar connection or sync did not finish: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -200,8 +200,8 @@
           "context": "setSysMsg(i18n(\"components.calendarsyncsettings.288e461f287f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Auto sync stopped. Calendars and events already written are kept.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -216,8 +216,8 @@
           "context": "setSysMsg(i18n(\"components.calendarsyncsettings.2cea6bae6985\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The \"OneTHU Schedule\" system calendar has been deleted.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +232,8 @@
           "context": "calBusy ? i18n(\"components.calendarsyncsettings.ee9ebe523d42\") : i18n(\"components.calendarsyncsettings.31c1468a6ea3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save and verify",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +248,8 @@
           "context": "setSysMsg(i18n(\"components.calendarsyncsettings.32b84144958b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The \"OneTHU Schedule\" system calendar has been written and will be kept up to date automatically",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -269,8 +269,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.35001df10d62\", { lastError: String(syscal.lastError) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Last sync failed: {lastError}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -285,8 +285,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.353bd3ca6478\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View on iPhone",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -306,8 +306,8 @@
           "context": "sysBusy || syscal.syncing ? i18n(\"components.calendarsyncsettings.4e2238b74ec7\") : i18n(\"components.calendarsyncsettings.36e7a43a1c67\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -322,8 +322,8 @@
           "context": "sysBusy ? i18n(\"components.calendarsyncsettings.c4d0edd8c65a\") : i18n(\"components.calendarsyncsettings.375bd11476d2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enable and sync",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -338,8 +338,8 @@
           "context": "r.skipped ? i18n(\"components.calendarsyncsettings.40012cfe27b0\") : i18n(\"components.calendarsyncsettings.8282a625a7e6\", { added: String(r.added), removed: String(r.removed) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Nothing changed; the system calendar is already up to date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -354,8 +354,8 @@
           "context": "syscal.enabled ? i18n(\"components.calendarsyncsettings.4414244c2645\") : i18n(\"components.calendarsyncsettings.e7f648da0ef4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System calendar sync · Enabled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -380,8 +380,8 @@
           "context": "setSysMsg(i18n(\"components.calendarsyncsettings.4d103a2b0e94\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -401,8 +401,8 @@
           "context": "sysBusy || syscal.syncing ? i18n(\"components.calendarsyncsettings.4e2238b74ec7\") : i18n(\"components.calendarsyncsettings.36e7a43a1c67\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Syncing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -426,8 +426,8 @@
           "context": "{i18nRich(\"components.calendarsyncsettings.579271d39631\", { email: cloud.email, value: calMsg ? <ErrorLine text={calMsg} tone=\"quiet\" /> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{email} · Schedules added manually are synced across devices through your Tsinghua email calendar (CalDAV); view and edit them on the \"Schedule\" page. Assignments and the timetable are synced through the system calendar below. {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -442,8 +442,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.593bb32ef7ef\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Full email address (e.g. someone@mails.tsinghua.edu.cn)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -458,8 +458,8 @@
           "context": "confirmOk(\n                      i18nMsg(\"components.calendarsyncsettings.5b156f4dffc5\"),\n                    )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete the \"OneTHU Schedule\" calendar from the system calendar?\n\nAll events written by OneTHU will be removed; schedules in the app and cloud sync are not affected.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -474,8 +474,8 @@
           "context": "cloud.configured ? i18n(\"components.calendarsyncsettings.f70b7f1642df\") : i18n(\"components.calendarsyncsettings.5dec8ac021d7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule cloud sync (Tsinghua email calendar)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -495,8 +495,8 @@
           "context": "setSysMsg(i18n(\"components.calendarsyncsettings.5e9e9ab95a7b\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to delete: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -516,8 +516,8 @@
           "context": "setCalMsg(i18n(\"components.calendarsyncsettings.65dcde5641da\", { value: String(cals.join(\"、\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connected. Calendars found: {value}.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -537,8 +537,8 @@
           "context": "{i18nRich(\"components.calendarsyncsettings.6db47a772acc\", { value: sysMsg ? <ErrorLine text={sysMsg} tone=\"quiet\" /> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Writes your timetable and schedules into a dedicated calendar \"OneTHU Schedule\" in the system calendar (your existing calendars are not touched). Once enabled, the timetable, unsubmitted assignments, and schedules are updated automatically. Classes and exams are reminded 15 minutes ahead; assignments follow the reminder settings. macOS calendars may sync to other devices with the system account. If a same-named calendar from an older version exists, review and clean it up yourself. {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -562,8 +562,8 @@
           "context": "r.skipped ? i18n(\"components.calendarsyncsettings.40012cfe27b0\") : i18n(\"components.calendarsyncsettings.8282a625a7e6\", { added: String(r.added), removed: String(r.removed) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Synced: wrote {added} entries (cleaned up {removed} old ones).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -583,8 +583,8 @@
           "context": "setSysMsg(i18n(\"components.calendarsyncsettings.9776893d3c55\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to enable: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -616,8 +616,8 @@
           "context": "{i18nRich(\"components.calendarsyncsettings.9e40f65d2856\", { value: syscal.lastSyncAt ? new Date(syscal.lastSyncAt).toLocaleString(getUiLocale()) : \"—\", lastCount: syscal.lastCount, value2: syscal.lastError ? <ErrorLine text={i18n(\"components.calendarsyncsettings.35001df10d62\", { lastError: String(syscal.lastError) })} tone=\"error\" /> : null, value3: sysMsg ? <ErrorLine text={sysMsg} tone=\"quiet\" /> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Calendar \"OneTHU Schedule\" · Last synced {value} · {lastCount} entries. Updates automatically when the timetable, unsubmitted assignments, or schedules change. Classes are reminded 15 minutes ahead; assignments follow the reminder settings. {value2}{value3}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -632,8 +632,8 @@
           "context": "(\n              i18n(\"components.calendarsyncsettings.a0813c42f2ad\")\n            )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This platform does not support writing directly to the system calendar; export an .ics from the \"Schedule\" page and import it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +653,8 @@
           "context": "{i18nRich(\"components.calendarsyncsettings.a1fe9e82901d\", { value: calMsg ? <ErrorLine text={calMsg} tone=\"quiet\" /> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Use your Tsinghua email's calendar service to sync manually added schedules across devices — schedules added in OneTHU appear in the system calendar / other devices signed in with the same account. To get an app password: webmail (mails.tsinghua.edu.cn) → Settings → client-specific password. {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -669,8 +669,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.a7ec7c813f57\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear system calendar",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -690,8 +690,8 @@
           "context": "setCalMsg(i18n(\"components.calendarsyncsettings.a8d9c61f394a\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to connect: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +706,8 @@
           "context": "sysBusy ? i18n(\"components.calendarsyncsettings.c4d0edd8c65a\") : i18n(\"components.calendarsyncsettings.375bd11476d2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enabling…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -722,8 +722,8 @@
           "context": "confirmOk(\n                      i18nMsg(\"components.calendarsyncsettings.e50242f6c79b\"),\n                    )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View schedules on iPhone / iPad (optional)\n\nIt is fine if OneTHU is not on your phone: your schedules are already in the cloud calendar of your Tsinghua email. Add the same email account on iPhone/iPad to see them:\n· Settings → Calendar → Accounts → Add Account → Other → CalDAV Account\n· Server: https://mails.tsinghua.edu.cn/coremail/dav/users/your-email/\n· Username: full email; Password: client-specific password (same as on this page)\n\nThis setup is not needed on this device — just turn on \"System calendar sync\" below and the app writes the system calendar directly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -743,8 +743,8 @@
           "context": "syscal.enabled ? i18n(\"components.calendarsyncsettings.4414244c2645\") : i18n(\"components.calendarsyncsettings.e7f648da0ef4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System calendar sync",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +759,8 @@
           "context": "calBusy ? i18n(\"components.calendarsyncsettings.ee9ebe523d42\") : i18n(\"components.calendarsyncsettings.31c1468a6ea3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connecting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -792,8 +792,8 @@
           "context": "setCalMsg(i18n(\"components.calendarsyncsettings.f0ba269cd55d\", { total: String(r.total), added: String(r.added), updated: String(r.updated), removed: String(r.removed) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Synced: {total} schedules in the cloud ({added} added, {updated} updated, {removed} removed).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -808,8 +808,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.f33ac04eece6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disconnect",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -824,8 +824,8 @@
           "context": "setCalMsg(i18n(\"components.calendarsyncsettings.f37e30c0f2b2\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disconnected. Cloud schedules are kept.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -840,8 +840,8 @@
           "context": "cloud.configured ? i18n(\"components.calendarsyncsettings.f70b7f1642df\") : i18n(\"components.calendarsyncsettings.5dec8ac021d7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule cloud sync · Connected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -856,8 +856,8 @@
           "context": "{i18n(\"components.calendarsyncsettings.f7da6974f7c9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Client-specific password",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -872,8 +872,8 @@
           "context": "{i18n(\"components.cardcovereditor.09422286308c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save card cover",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -893,8 +893,8 @@
           "context": "{i18n(\"components.cardcovereditor.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -909,8 +909,8 @@
           "context": "{i18n(\"components.cardcovereditor.313b55413b1c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag the card to adjust the crop; the text color switches between black and white automatically based on background brightness.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -930,8 +930,8 @@
           "context": "showToast(i18nMsg(\"components.cardcovereditor.3594f9ab39f6\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to set the card cover: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -946,8 +946,8 @@
           "context": "new Error(i18n(\"components.cardcovereditor.419afe6b5d6f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Image processing is not supported in this environment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -962,8 +962,8 @@
           "context": "[\"dark\", i18n(\"components.cardcovereditor.62ccb8635c09\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Black text",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -978,8 +978,8 @@
           "context": "[\"auto\", i18n(\"components.cardcovereditor.7eb336e42cb5\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Auto",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -994,8 +994,8 @@
           "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.975a35806bdc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose another photo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1010,8 +1010,8 @@
           "context": "new Error(i18n(\"components.cardcovereditor.9dc9d764371e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No file selected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1026,8 +1026,8 @@
           "context": "{i18n(\"components.cardcovereditor.9f99b5ddd3ae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pick a photo as your card cover: you can drag to reframe and zoom, and the text color switches between black and white automatically based on background brightness.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1042,8 +1042,8 @@
           "context": "new Error(i18n(\"components.cardcovereditor.b237570a2d05\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Could not read this image's dimensions. Try another one",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1058,8 +1058,8 @@
           "context": "{i18n(\"components.cardcovereditor.bc6b27e11f11\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Custom card cover",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1074,8 +1074,8 @@
           "context": "{i18n(\"components.cardcovereditor.c3c3600c04ea\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cover zoom",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1090,8 +1090,8 @@
           "context": "new Error(i18n(\"components.cardcovereditor.c747909af9bf\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Images only",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1106,8 +1106,8 @@
           "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.cae3ab4bfdb2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Choose photo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1127,8 +1127,8 @@
           "context": "{i18nRich(\"components.cardcovereditor.d2d826483315\", { value: shown?.zoom.toFixed(2) ?? \"1.00\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Zoom {value}×",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1148,8 +1148,8 @@
           "context": "busy ? i18n(\"components.cardcovereditor.d3d21191f32e\") : i18n(\"components.cardcovereditor.cae3ab4bfdb2\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Processing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1169,8 +1169,8 @@
           "context": "{i18n(\"components.cardcovereditor.de2e34c35fc6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Remove cover",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1185,8 +1185,8 @@
           "context": "{i18n(\"components.cardcovereditor.e5309c3b81d8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Text color:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1201,8 +1201,8 @@
           "context": "[\"light\", i18n(\"components.cardcovereditor.f5276534dcfe\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "White text",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1217,8 +1217,8 @@
           "context": "lit ? i18n(\"components.collect.825750d712cc\") : i18n(\"components.collect.009a73342eab\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save as OnePage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1233,8 +1233,8 @@
           "context": "lit ? i18n(\"components.collect.a0adbab10e0a\") : i18n(\"components.collect.0293d5e40498\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save to… (Home / an existing OnePage / new)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1249,8 +1249,8 @@
           "context": "{i18n(\"components.collect.0a90c17daa69\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clear keyword",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1274,8 +1274,8 @@
           "context": "confirmOk(\n      i18nMsg(\"components.collect.1831b25872ac\", { name: String(name), full: String(full) }),\n    )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete OnePage \"{name}\" ({full})?\nThe board and everything on it will be gone permanently!",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1290,8 +1290,8 @@
           "context": "{i18n(\"components.collect.1ea086c584c3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search any saved item: pages / widgets / courses / assignments / news / buildings / venues…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1322,8 +1322,8 @@
           "context": "view?.title ?? i18n(\"components.collect.21558137d9ce\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saved items",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1338,8 +1338,8 @@
           "context": "r.reason === \"duplicate\" ? i18n(\"components.collect.d73a6ca3de8c\") : i18n(\"components.collect.2435ae5dae6e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Could not place it (the target board does not exist)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1354,8 +1354,8 @@
           "context": "{i18n(\"components.collect.2a1b5ec13325\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save to favorites",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1370,8 +1370,8 @@
           "context": "{i18n(\"components.collect.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1386,8 +1386,8 @@
           "context": "{i18n(\"components.collect.35b079aaa129\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search and add saved items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1412,8 +1412,8 @@
           "context": "{i18n(\"components.collect.3b5439064adf\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save to…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1433,8 +1433,8 @@
           "context": "{i18n(\"components.collect.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1454,8 +1454,8 @@
           "context": "confirmOk(i18nMsg(\"components.collect.42c5be15d1a3\", { names: String(names) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "With its entry just removed, {names} became an empty board. Delete it too?\n(\"Cancel\" only removes the entry; the board stays)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

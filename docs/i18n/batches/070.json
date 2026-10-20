@@ -1,7 +1,124 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.settings.1354e42a5f65",
+      "source": "点胶囊默认进搜索还是 OH 对话",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 97,
+          "context": "return i18n(\"pages.settings.1354e42a5f65\");"
+        }
+      ],
+      "translation": "Whether tapping the pill opens search or an OH chat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.15047c91eb6c",
+      "source": "通知与提醒设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 106,
+          "context": "return i18n(\"pages.settings.15047c91eb6c\");"
+        }
+      ],
+      "translation": "Notifications & reminders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.16ca6dbf3de4",
+      "source": "极客模式已开启：设置里可下载探索浏览器（桌面端专属）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 819,
+          "context": "showToast(i18nMsg(\"pages.settings.16ca6dbf3de4\"))"
+        }
+      ],
+      "translation": "Geek mode on: the exploration browser can be downloaded in Settings (desktop only)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.188df41c178b",
+      "source": "恢复默认首页布局",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 348,
+          "context": "{i18n(\"pages.settings.188df41c178b\")}"
+        }
+      ],
+      "translation": "Restore default home layout",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.1cb15b820a0a",
+      "source": "诊断摘要",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 604,
+          "context": "{i18n(\"pages.settings.1cb15b820a0a\")}"
+        }
+      ],
+      "translation": "Diagnostics summary",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.1cb7f269cc24",
+      "source": "主题、标签栏、玻璃程度、取色等外观项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 91,
+          "context": "return i18n(\"pages.settings.1cb7f269cc24\");"
+        }
+      ],
+      "translation": "Appearance options: theme, tab bar, glass level, color picking, and more",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.1d08854948f4",
+      "source": "标签栏样式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 94,
+          "context": "return i18n(\"pages.settings.1d08854948f4\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 694,
+          "context": "{i18n(\"pages.settings.1d08854948f4\")}"
+        }
+      ],
+      "translation": "Tab bar style",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.settings.1d360021dfc2",
       "source": "将首页组件、排列和缩放恢复为默认版式，其他 OnePage 保留。",
@@ -14,8 +131,8 @@
           "context": "{i18n(\"pages.settings.1d360021dfc2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restore Home widgets, arrangement, and scaling to the default layout; other OnePages are kept.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +152,8 @@
           "context": "{i18nRich(\"pages.settings.1d6e1d3ecceb\", { value: snap.followSystem ? <>{i18nRich(\"pages.settings.f5d889222af1\", { value: snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\") })}</> : null })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "When enabled, switches automatically with the system dark mode: \"Light theme\" in light mode, \"Dark theme\" in dark mode. {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -60,8 +177,8 @@
           "context": "probe.browsers.length > 0\n                ? i18n(\"pages.settings.1e4072e67ba7\", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")) })\n                : i18n(\"pages.settings.4d85ccc9814b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} browsers available on this machine; playwright version{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -76,8 +193,8 @@
           "context": "{i18n(\"pages.settings.1eacd04cef79\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Light theme",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -92,8 +209,8 @@
           "context": "i18n(\"pages.settings.2a9010137d7b\") + parsed.order.length + i18n(\"pages.settings.1f0f8de12177\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " root favorites.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -108,8 +225,8 @@
           "context": "{i18n(\"pages.settings.1fa08e82bab2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "One for the whole window: drawn on the shell background, with panels and bars showing it through.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -124,8 +241,8 @@
           "context": "return i18n(\"pages.settings.1ffc3a676204\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current sign-in status and sign out",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -145,8 +262,8 @@
           "context": "where ? i18n(\"pages.settings.212735f5be92\", { where: String(where) }) : i18n(\"pages.settings.ce93302dab64\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exported: {where}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -161,8 +278,8 @@
           "context": "value3: i18n(\"pages.settings.2457458b07b5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " Enable / disable themes on the \"Plugins\" page.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -177,8 +294,8 @@
           "context": "dyn ? i18n(\"pages.settings.2579560d6e3d\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · System color picking active; turns off automatically after switching themes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -193,8 +310,8 @@
           "context": "dyn ? i18n(\"pages.settings.dfb8c7f65098\") : i18n(\"pages.settings.25bd968a4ec3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not supported by the current system; the \"Tsinghua Purple\" theme will be used after enabling.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -225,8 +342,8 @@
           "context": "i18n(\"pages.settings.2a9010137d7b\") + parsed.order.length"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Imported ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -241,8 +358,8 @@
           "context": "return i18n(\"pages.settings.2cc0a2c950df\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download directory location and cache cleanup",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -257,8 +374,8 @@
           "context": "{i18n(\"pages.settings.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -278,8 +395,8 @@
           "context": "setMessage(i18n(\"pages.settings.2e2f517b4d18\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -294,8 +411,8 @@
           "context": "return i18n(\"pages.settings.2e7fa452ef24\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Common tasks & guides",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -310,8 +427,8 @@
           "context": "{i18n(\"pages.settings.3268a6b55d67\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exploration browser",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -326,8 +443,8 @@
           "context": "probe\n              ? probe.browsers.length > 0\n                ? i18n(\"pages.settings.1e4072e67ba7\", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")) })\n                : i18n(\"pages.settings.4d85ccc9814b\")\n              : i18n(\"pages.settings.339da995c389\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Probing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -342,8 +459,8 @@
           "context": "return i18n(\"pages.settings.372fbc07354b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Saved passwords & security",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -358,8 +475,8 @@
           "context": "setFavMsg(i18n(\"pages.settings.376c845be416\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copy failed; use the import box below to verify instead",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -374,8 +491,8 @@
           "context": "{i18n(\"pages.settings.3ab8cc15939f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign out",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -390,8 +507,8 @@
           "context": "return i18n(\"pages.settings.3c23082caeac\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recompute site colors from wallpaper",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -416,8 +533,8 @@
           "context": "{i18n(\"pages.settings.3d5af6644ab2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Follow system color",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -432,8 +549,8 @@
           "context": "setEidMsg(i18n(\"pages.settings.3dc0bb7cf271\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Opened in your system browser; enter your username and password manually",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -448,8 +565,8 @@
           "context": "dynOk === false ? (\n            dyn ? i18n(\"pages.settings.dfb8c7f65098\") : i18n(\"pages.settings.25bd968a4ec3\")\n          ) : i18n(\"pages.settings.41efcb0b8b84\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recompute site-wide colors from the wallpaper; brand and background colors change together.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -464,8 +581,8 @@
           "context": "busy ? i18n(\"pages.settings.43312083da55\") : i18n(\"pages.settings.dfcf6a05ab29\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Copying…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -480,8 +597,8 @@
           "context": "return i18n(\"pages.settings.44e3feed902f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download directory & cache cleanup",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -509,8 +626,8 @@
           "context": "{i18nRich(\"pages.settings.45ef9193979e\", { value: themes.find((th) => (snap.effectiveId ?? \"\") === th.id)?.name ?? i18n(\"pages.settings.693f87cd2777\"), value2: dyn ? i18n(\"pages.settings.2579560d6e3d\") : \"\", value3: i18n(\"pages.settings.2457458b07b5\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current: {value}{value2}{value3}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -525,8 +642,8 @@
           "context": "return i18n(\"pages.settings.461301d93770\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Recent search history",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -541,8 +658,8 @@
           "context": "return i18n(\"pages.settings.46195ccac72d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exploration browser environment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -557,8 +674,8 @@
           "context": "return i18n(\"pages.settings.464f0207d4ff\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Opens by default when tapping the pill",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -594,8 +711,8 @@
           "context": "return i18n(\"pages.settings.46ec3a81bd34\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Whole-window wallpaper library, uploads, and dynamic wallpaper sound",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -610,8 +727,8 @@
           "context": "return i18n(\"pages.settings.47a5ccceaeca\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enable / disable theme plugins",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -626,8 +743,8 @@
           "context": "setFavMsg(i18n(\"pages.settings.47fcb97b9b6b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Import failed: wrong format; paste content exported by this app",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -642,8 +759,8 @@
           "context": "return i18n(\"pages.settings.48b3252fa3bf\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reconnect the cloud drive in one tap when the connection fails",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -658,8 +775,8 @@
           "context": "return i18n(\"pages.settings.4a944ac462b1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Lists enabled themes only; tap \"Apply\" to switch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -695,8 +812,8 @@
           "context": "return i18n(\"pages.settings.4b7a59bc4d83\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "If the cloud drive connection breaks, retry or re-authorize on the \"Schedule cloud sync\" card; there is no separate \"Cloud drive reconnect\" button (not needed while connected) — brought you to the \"Cloud sync\" section.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -711,8 +828,8 @@
           "context": "return i18n(\"pages.settings.4c2f3a5e0a01\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download / check Playwright browsers and a separate profile in one tap",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -727,8 +844,8 @@
           "context": "probe.browsers.length > 0\n                ? i18n(\"pages.settings.1e4072e67ba7\", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")) })\n                : i18n(\"pages.settings.4d85ccc9814b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No directly usable browser on this machine; download a dedicated build in one tap",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -743,8 +860,8 @@
           "context": "return i18n(\"pages.settings.4e66e6c598d5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Whether to allow sound when a video wallpaper has audio",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +876,8 @@
           "context": "r.port ? i18n(\"pages.settings.e389a150e32e\", { port: String(r.port) }) : i18n(\"pages.settings.4ef6221d6213\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Started",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -775,8 +892,8 @@
           "context": "{i18n(\"pages.settings.50efca8dcb36\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open electronic identity",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -791,8 +908,8 @@
           "context": "return i18n(\"pages.settings.52af44747494\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download / check are in the environment card below the \"Geek mode (browser exploration)\" row; brought you to the \"Geek mode\" section.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -828,8 +945,8 @@
           "context": "reset ? i18n(\"pages.settings.9c5584655501\") : i18n(\"pages.settings.52de8e2d0c2c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download location saved; takes effect on the next download.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -849,8 +966,8 @@
           "context": "{i18n(\"pages.settings.53b5c5c16016\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Geek mode (browser exploration)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -865,8 +982,8 @@
           "context": "setEidMsg(i18n(\"pages.settings.56a9e30d6963\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Electronic identity window is open; username and password auto-filled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -881,8 +998,8 @@
           "context": "{i18n(\"pages.settings.576d81bb0631\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Import",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -897,8 +1014,8 @@
           "context": "return i18n(\"pages.settings.590151cbdb54\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Light theme in light mode, dark theme in dark mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -918,8 +1035,8 @@
           "context": "{i18n(\"pages.settings.5aeb7a87addf\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage themes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -934,8 +1051,8 @@
           "context": "{i18n(\"pages.settings.61bf6fa12002\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The system browser (reusing local Chrome/Edge) or the dedicated exploration browser.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -950,8 +1067,8 @@
           "context": "confirmOk(i18nMsg(\"pages.settings.636849c8095c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete all user favorites and reset collapse state? Default top-level entries are unaffected.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -966,8 +1083,8 @@
           "context": "return i18n(\"pages.settings.63c3e2b4bea1\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "External assignment source account sign-in and refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -982,8 +1099,8 @@
           "context": "directory?.path || i18n(\"pages.settings.646c8247d71f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to read the download location; choose the folder again or restore the default.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -998,8 +1115,8 @@
           "context": "{i18n(\"pages.settings.66097d01fcac\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Web Learning attachments and cloud drive files are saved here; \"Save as\" can change the location temporarily.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1014,8 +1131,8 @@
           "context": "themes.find((th) => (snap.effectiveId ?? \"\") === th.id)?.name ?? i18n(\"pages.settings.693f87cd2777\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Default appearance",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1030,8 +1147,8 @@
           "context": "{i18n(\"pages.settings.6afd0ae3a811\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Launch method",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1046,8 +1163,8 @@
           "context": "{i18n(\"pages.settings.6b91ee3ad1f4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manage theme plugin enable / disable (per the new spec, enablement is managed only here)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1062,8 +1179,8 @@
           "context": "{i18n(\"pages.settings.6f3d8aba2f3c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Advanced option, off by default; fetch site features outside OneTHU with your signed-in session and build your own plugins. Uses a separate login profile that doesn't interfere with your own browser.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1094,8 +1211,8 @@
           "context": "return i18n(\"pages.settings.752d61201dda\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud drive reconnect",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1131,8 +1248,8 @@
           "context": "{i18n(\"pages.settings.788db1cfec2a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Theme",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1152,8 +1269,8 @@
           "context": "{i18n(\"pages.settings.78c3900fe08f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graphite · default",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1189,8 +1306,8 @@
           "context": "{i18n(\"pages.settings.79a6fb7736ce\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleting saved sign-in info or changing the password may sign OneTHU out",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1205,8 +1322,8 @@
           "context": "setEidMsg(i18n(\"pages.settings.7b994af5120a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Opened in your system browser (auto-fill is desktop only)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1221,8 +1338,8 @@
           "context": "{i18n(\"pages.settings.7ea56ac4a13f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restore default favorites",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1237,8 +1354,8 @@
           "context": "setFavMsg(i18n(\"pages.settings.7ec009b7a942\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restored to defaults.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1253,130 +1370,8 @@
           "context": "showToast(i18nMsg(\"pages.settings.7f10cbe7fe17\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.807f19bf853b",
-      "source": "下载目录 / 缓存清理",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 117,
-          "context": "return i18n(\"pages.settings.807f19bf853b\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.8502353c15ac",
-      "source": "GitHub 项目页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 275,
-          "context": "{i18n(\"pages.settings.8502353c15ac\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.853b03f039d3",
-      "source": "首页卡片显隐与排序",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 101,
-          "context": "return i18n(\"pages.settings.853b03f039d3\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.862754facf23",
-      "source": "风险自负：探索动作可能被站点风控计入本人账号；不喜欢冒险可通过 OH 建议官方收录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 854,
-          "context": "{i18n(\"pages.settings.862754facf23\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.865d7ae4c9e6",
-      "source": "玻璃程度",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 95,
-          "context": "return i18n(\"pages.settings.865d7ae4c9e6\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 711,
-          "context": "{i18n(\"pages.settings.865d7ae4c9e6\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.86a63f23a076",
-      "source": "外观",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 91,
-          "context": "return i18n(\"pages.settings.86a63f23a076\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 418,
-          "context": "{i18n(\"pages.settings.86a63f23a076\")}"
-        }
-      ],
-      "translation": "Appearance",
+      "translation": "Diagnostics summary copied; paste it directly into feedback",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.86b6d0d63062",
-      "source": "正在读取…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 541,
-          "context": "loading ? i18n(\"pages.settings.86b6d0d63062\") : directory?.path || i18n(\"pages.settings.646c8247d71f\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

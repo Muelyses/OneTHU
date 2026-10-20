@@ -1,7 +1,131 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.28ee8c1f603e",
+      "source": "{value}月{value2}日 – {value3}日",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(weekStart.getMonth() + 1)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(weekStart.getDate())"
+        },
+        {
+          "name": "value3",
+          "expression": "String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 812,
+          "context": "mode === \"timetable\"\n      ? i18n(\"pages.schedule.28ee8c1f603e\", { value: String(weekStart.getMonth() + 1), value2: String(weekStart.getDate()), value3: String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate()) })\n      : i18n(\"pages.schedule.0f02af2d5985\", { value: String(anchor.getFullYear()), value2: String(anchor.getMonth() + 1) })"
+        }
+      ],
+      "translation": "{value}/{value2} – {value3}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2961168962be",
+      "source": "周三",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "Wed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1321,
+          "context": "{i18n(\"pages.schedule.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.2f9daa828907",
+      "source": "删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1324,
+          "context": "{i18n(\"pages.schedule.2f9daa828907\")}"
+        }
+      ],
+      "translation": "Delete",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.302f7d04d98f",
+      "source": "考试详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1213,
+          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.302f7d04d98f\") : i18n(\"pages.schedule.22519a88484f\")"
+        }
+      ],
+      "translation": "Exam details",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.30fd49298c03",
+      "source": "下一年",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1078,
+          "context": "{i18n(\"pages.schedule.30fd49298c03\")}"
+        }
+      ],
+      "translation": "Next year",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.310a9aa08211",
+      "source": "本周暂无排课与日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 933,
+          "context": "winLoading ? i18n(\"pages.schedule.48cbf2cb0bd7\") : i18n(\"pages.schedule.310a9aa08211\")"
+        }
+      ],
+      "translation": "No classes or events this week",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.31da7d33b80d",
       "source": "下一周",
@@ -19,8 +143,8 @@
           "context": "mode === \"timetable\" ? i18n(\"pages.schedule.31da7d33b80d\") : i18n(\"pages.schedule.3e0b634699d4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next week",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +159,8 @@
           "context": "d.location ? i18n(\"pages.schedule.741addee8c05\", { location: String(d.location) }) : i18n(\"pages.schedule.32eb57893bcb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No location, can't get directions",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -76,8 +200,8 @@
           "context": "p.entry.src === \"hw\"\n                            ? i18n(\"pages.schedule.368cc0699764\", { courseName: String(p.entry.courseName), value: String(p.entry.location ?? \"\"), value2: String(hhmm(p.beginMin)), value3: String(hhmm(p.endMin)), value4: String(p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")), value5: String(p.entry.hwMeta?.ext ? p.entry.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\") : i18n(\"pages.schedule.aa39cac2b409\")) })\n                            : `${p.entry.courseName}${p.entry.teacher ? \" · \" + p.entry.teacher : \"\"}${\n                                p.entry.location ? \" @\" + p.entry.location : \"\"\n                       "
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{courseName} ({value}) DDL {value2}–{value3} · {value4} · {value5} · tap to view",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -101,8 +225,8 @@
           "context": "d.startSection ? i18n(\"pages.schedule.3a4fe1c0f0d6\", { startSection: String(d.startSection), value: String(d.endSection ?? d.startSection) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Periods {startSection}–{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -117,8 +241,8 @@
           "context": "detected ? i18n(\"pages.schedule.dba0129db99f\", { value: String(detected.sem.semesterName || detected.sem.semesterId), weekNo: String(detected.weekNo) }) : i18n(\"pages.schedule.3c3687e79a53\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Break (outside term)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -133,8 +257,8 @@
           "context": "{i18n(\"pages.schedule.3df7a207af75\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This is a repeating event; saving and deleting apply to the whole series.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -154,8 +278,8 @@
           "context": "mode === \"timetable\" ? i18n(\"pages.schedule.31da7d33b80d\") : i18n(\"pages.schedule.3e0b634699d4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next month",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -170,8 +294,8 @@
           "context": "{i18n(\"pages.schedule.3fd47edce45b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Close",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -186,8 +310,8 @@
           "context": "{i18n(\"pages.schedule.43cecd06c54d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Previous year",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -202,8 +326,8 @@
           "context": "[\"timetable\", i18n(\"pages.schedule.46005f62ee0e\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Timeline (week)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -218,8 +342,8 @@
           "context": "winLoading ? i18n(\"pages.schedule.48cbf2cb0bd7\") : i18n(\"pages.schedule.310a9aa08211\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fetching data from the academic system…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -239,8 +363,8 @@
           "context": "setMsg(i18n(\"pages.schedule.4d103a2b0e94\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -255,8 +379,8 @@
           "context": "{i18n(\"pages.schedule.4de047cb8209\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Week switching / filters / sync / new event",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -271,8 +395,8 @@
           "context": "cal.syncing ? i18n(\"pages.schedule.4e2238b74ec7\") : i18n(\"pages.schedule.07c9a15ad13f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Syncing…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -287,8 +411,8 @@
           "context": "isHw\n                    ? i18n(\"pages.schedule.70af7a03daec\", { value: String(simple ? \"\" : i18n(\"pages.schedule.efa33939d466\")) })\n                    : i18n(\"pages.schedule.4f8a1b346d71\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Courses and exams come from the academic system and can't be edited here; tap a self-created event to edit it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -303,8 +427,8 @@
           "context": "canCloud ? `${cal.email} · ${lastSyncText}` : i18n(\"pages.schedule.4f9f7bd42e5d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud sync not configured (enable it in Settings)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -319,8 +443,8 @@
           "context": "sd.uid ? i18n(\"pages.schedule.a3064785f1db\") : i18n(\"pages.schedule.5090d53a1cce\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New event",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -340,8 +464,8 @@
           "context": "cal.lastSyncAt ? i18n(\"pages.schedule.51fdbeb883e5\", { value: String(new Date(cal.lastSyncAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" })) }) : i18n(\"pages.schedule.e6618e00221b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Last synced {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -361,8 +485,8 @@
           "context": "{i18n(\"pages.schedule.537352400c49\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Optional",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -376,8 +500,8 @@
           "line": 69
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fri",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -392,8 +516,8 @@
           "context": "{i18n(\"pages.schedule.58dcda214bad\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Previous month",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -408,8 +532,8 @@
           "context": "{i18n(\"pages.schedule.5e6a5170f6ac\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "＋ Add event",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -429,8 +553,8 @@
           "context": "{i18n(\"pages.schedule.5e9a401745fa\", { winError: String(winError) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch this week's courses (events still shown): {winError}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -450,8 +574,8 @@
           "context": "setMsg(i18n(\"pages.schedule.5e9e9ab95a7b\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -466,7 +590,7 @@
           "context": "{i18n(\"pages.schedule.60458dfb4c14\")}"
         }
       ],
-      "translation": "Trace",
+      "translation": "Directions",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -525,8 +649,8 @@
           "context": "p.entry.src === \"cluster\"\n                          ? i18n(\"pages.schedule.62502d2d618b\", { courseName: String(p.entry.courseName), value: String(hhmm(p.beginMin)), value2: String(hhmm(p.endMin)), value3: String(p.entry.clusterItems?.map((m) => `${m.courseName}${m.location ? \"@\" + m.location : \"\"}`).join(\"；\")) })\n                          : p.entry.src === \"hw\"\n                            ? i18n(\"pages.schedule.368cc0699764\", { courseName: String(p.entry.courseName), value: String(p.entry.location ?? \"\"), value2: String(hhmm(p.beginMin)), value3: String(hhmm(p.endMin)), value4: String(p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")), valu"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{courseName} ({value}–{value2}): {value3} · tap to expand",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -541,8 +665,8 @@
           "context": "k: i18n(\"pages.schedule.6320b4a8722a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -557,8 +681,8 @@
           "context": "p.entry.src === \"cloud\" || p.entry.src === \"local\" ? i18n(\"pages.schedule.8fa104ed3b07\") : i18n(\"pages.schedule.6861d0375b15\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · tap to view",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -573,8 +697,8 @@
           "context": "{i18n(\"pages.schedule.6a9906c79f26\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -594,8 +718,8 @@
           "context": "{i18nRich(\"pages.schedule.6d338c4a9155\", { error: learn.error })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to refresh assignments: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -610,8 +734,8 @@
           "context": "{i18n(\"pages.schedule.702b1048fceb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Restore all day",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -631,8 +755,8 @@
           "context": "isHw\n                    ? i18n(\"pages.schedule.70af7a03daec\", { value: String(simple ? \"\" : i18n(\"pages.schedule.efa33939d466\")) })\n                    : i18n(\"pages.schedule.4f8a1b346d71\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments come from Web Learning / external sources; \"Open\" opens this assignment {value}.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -652,8 +776,8 @@
           "context": "d.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "External",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -673,8 +797,8 @@
           "context": "d.location ? i18n(\"pages.schedule.741addee8c05\", { location: String(d.location) }) : i18n(\"pages.schedule.32eb57893bcb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Directions {location}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -694,8 +818,8 @@
           "context": "{i18nRich(\"pages.schedule.7431d8a58c9b\", { location: d.location })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{location} · Several items overlap in this time slot, shown merged",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -715,8 +839,8 @@
           "context": "{i18n(\"pages.schedule.760506491eef\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Start date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -736,8 +860,8 @@
           "context": "setMsg(i18n(\"pages.schedule.77609a0fe15d\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to write to the system calendar: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -752,8 +876,8 @@
           "context": "{i18n(\"pages.schedule.79a4ef019e9c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Term",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -768,8 +892,8 @@
           "context": "setMsg(i18n(\"pages.schedule.7ab942d11ed6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -784,8 +908,8 @@
           "context": "new Error(i18n(\"pages.schedule.7e335ee498e8\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud sync account changed; reopen the schedule to edit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -810,8 +934,8 @@
           "context": "d.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not submitted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -840,8 +964,8 @@
           "context": "{i18n(\"pages.schedule.823ed2175ed0\", { date: String(ddl.date), time: String(ddl.time) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Due {date} {time}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -856,8 +980,8 @@
           "context": "mode === \"timetable\" ? i18n(\"pages.schedule.88a5267852f9\") : i18n(\"pages.schedule.c533aa41c064\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pick a date to jump to its teaching week",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -877,8 +1001,8 @@
           "context": "{i18n(\"pages.schedule.895cd52fbbb6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "End date",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -893,8 +1017,8 @@
           "context": "k: i18n(\"pages.schedule.8b6ff498515b\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -909,8 +1033,8 @@
           "context": "p.entry.src === \"cloud\" || p.entry.src === \"local\" ? i18n(\"pages.schedule.8fa104ed3b07\") : i18n(\"pages.schedule.6861d0375b15\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · tap to edit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -930,8 +1054,8 @@
           "context": "{i18n(\"pages.schedule.93cfacc290a0\", { value: String(canCloud ? i18n(\"pages.schedule.df071eb5a79b\") : i18n(\"pages.schedule.e046ece55b12\")) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync to cloud calendar{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -946,8 +1070,8 @@
           "context": "p.entry.src === \"hw\" ? i18n(\"pages.schedule.9b702fb32d62\") : i18n(\"pages.schedule.60db1afb4022\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignment due",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -978,8 +1102,8 @@
           "context": "busy ? i18n(\"pages.schedule.ff509c9ba052\") : i18n(\"pages.schedule.a3030bf8f16d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -994,8 +1118,8 @@
           "context": "sd.uid ? i18n(\"pages.schedule.a3064785f1db\") : i18n(\"pages.schedule.5090d53a1cce\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Edit event",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1015,8 +1139,8 @@
           "context": "setMsg(i18n(\"pages.schedule.a3299407580e\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Save failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1036,8 +1160,8 @@
           "context": "k: i18n(\"pages.schedule.a488e93d69cc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1052,8 +1176,8 @@
           "context": "k: i18n(\"pages.schedule.a6654120cbec\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Instructor",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1068,8 +1192,8 @@
           "context": "{i18n(\"pages.schedule.a80ca7344396\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open the calendar to jump to any year and month",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1089,7 +1213,7 @@
           "context": "d.hwMeta?.ext ? (d.hwMeta.source ?? i18n(\"pages.schedule.72d71f2db0b4\")) : i18n(\"pages.schedule.aa39cac2b409\")"
         }
       ],
-      "translation": "Learn",
+      "translation": "Web Learning",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1105,8 +1229,8 @@
           "context": "{i18n(\"pages.schedule.aa5750053364\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Some external assignments failed to refresh; check the connections on the Assignments page.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1121,8 +1245,8 @@
           "context": "sysNative === false ? i18n(\"pages.schedule.exportIcs\") : i18n(\"pages.schedule.ad6d92fd400c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sync to system calendar",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1137,8 +1261,8 @@
           "context": "[\"agenda\", i18n(\"pages.schedule.aedd6814ff8c\")]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "List",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1153,8 +1277,8 @@
           "context": "{i18n(\"pages.schedule.aee887434131\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1169,8 +1293,8 @@
           "context": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Exams",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1185,8 +1309,8 @@
           "context": "{i18n(\"pages.schedule.b0e3601510d8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Show on the desktop widget",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1201,8 +1325,8 @@
           "context": "new Error(i18n(\"pages.schedule.b179143d79a6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud sync account changed; reopen the schedule to delete",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1222,8 +1346,8 @@
           "context": "setMsg(i18n(\"pages.schedule.b2e93997a40b\", { courseName: String(d.courseName) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No Web Learning course matches \"{courseName}\"; the courses page is open — you can look for it there.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1238,8 +1362,8 @@
           "context": "{i18n(\"pages.schedule.b4c6c3eb0bce\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This week",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1264,8 +1388,8 @@
           "context": "d.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1280,8 +1404,8 @@
           "context": "{i18n(\"pages.schedule.bd2f0b059d14\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "What to do…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1301,8 +1425,8 @@
           "context": "{i18nRich(\"pages.schedule.be7a93a8502e\", { label: c.label })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All day · {label}",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1322,8 +1446,8 @@
           "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Previous week",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1338,8 +1462,8 @@
           "context": "{i18n(\"pages.schedule.c0eb0fdf8c4e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Next month",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1359,8 +1483,8 @@
           "context": "{i18nRich(\"pages.schedule.c1c41b33594e\", { value: d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Academic system{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1375,134 +1499,8 @@
           "context": "{i18n(\"pages.schedule.c3405f8c7d9d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.c430f4c12eaa",
-      "source": "周一",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 69
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.c533aa41c064",
-      "source": "选日期跳到该日期所在月份",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1103,
-          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.88a5267852f9\") : i18n(\"pages.schedule.c533aa41c064\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.c728528fbd8f",
-      "source": "作业刷新失败，当前截止时间可能不完整：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(learn.error ?? \"\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 868,
-          "context": "{i18n(\"pages.schedule.c728528fbd8f\", { value: String(learn.error ?? \"\") })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.c7b24e7997e9",
-      "source": "结束",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1356,
-          "context": "{i18n(\"pages.schedule.c7b24e7997e9\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.c8d7c83a9995",
-      "source": "学期 {value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(i + 1)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1151,
-          "context": "sm.semesterName || sm.semesterId || i18n(\"pages.schedule.c8d7c83a9995\", { value: String(i + 1) })"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.ce40d3d5810a",
-      "source": "最后一天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1342,
-          "context": "sd.allDay ? i18n(\"pages.schedule.ce40d3d5810a\") : i18n(\"pages.schedule.895cd52fbbb6\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.ce708f891fc3",
-      "source": "第 {w} 周",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "w",
-          "expression": "w"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1156,
-          "context": "{i18nRich(\"pages.schedule.ce708f891fc3\", { w: w })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Title",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

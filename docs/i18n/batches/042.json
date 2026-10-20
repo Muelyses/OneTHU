@@ -1,7 +1,64 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "native.widget.more.other",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "{count} more",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.two",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "{count} more",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.more.zero",
+      "source": "还有 {count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "{count} more",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "native.widget.ongoing",
       "source": "正在上课",
@@ -13,8 +70,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Class in progress",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -32,8 +89,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU plugin widget {slot}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -57,8 +114,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{day} {time} · {remaining}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -79,8 +136,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today, {month}/{day}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +151,8 @@
           "line": 1
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -123,8 +180,8 @@
           "context": "{i18nRich(\"pages.boardlistpage.00d53679d665\", { value: b.kind === \"system\" ? i18n(\"pages.boardlistpage.97778650b3ab\") : \"OnePage\", count: b.count, value2: b.active ? i18n(\"pages.boardlistpage.a983d701044a\") : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} · {count} widgets{value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -139,8 +196,8 @@
           "context": "openFormModal(i18nMsg(\"pages.boardlistpage.0c898fe25ba6\"), [{ key: \"name\", label: i18nMsg(\"pages.boardlistpage.6773310492a9\"), required: true, default: name }])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename OnePage",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -155,8 +212,8 @@
           "context": "r.reason === \"last-board\" ? i18n(\"pages.boardlistpage.ef42f401cbad\") : i18n(\"pages.boardlistpage.11de1b40f9d8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This OnePage does not exist",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -187,8 +244,8 @@
           "context": "say(i18n(\"pages.boardlistpage.3250dd5a9f03\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Created and opened",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -203,8 +260,8 @@
           "context": "i18n(\"pages.boardlistpage.35ac50715f79\") + name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -219,8 +276,8 @@
           "context": "i18n(\"pages.boardlistpage.3732febb39ac\") + name"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current OnePage:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -235,8 +292,8 @@
           "context": "label: i18n(\"pages.boardlistpage.3a32f6df621a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Set as current OnePage",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -251,8 +308,8 @@
           "context": "i18n(\"pages.boardlistpage.5cb3b8029a6e\") + (f.name ?? name)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Renamed:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -267,8 +324,8 @@
           "context": "{i18n(\"pages.boardlistpage.644bb757108b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Each one is a Board where you can arrange widgets freely",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -283,8 +340,8 @@
           "context": "label: i18nMsg(\"pages.boardlistpage.6773310492a9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -299,8 +356,8 @@
           "context": "{i18n(\"pages.boardlistpage.88e6da1b7129\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No OnePage yet. Create one and lay out your favorite widgets.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -315,8 +372,8 @@
           "context": "{i18n(\"pages.boardlistpage.8b9db911f1d9\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New OnePage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -331,8 +388,8 @@
           "context": "label: i18n(\"pages.boardlistpage.9201642820f0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change icon…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -347,8 +404,8 @@
           "context": "b.kind === \"system\" ? i18n(\"pages.boardlistpage.97778650b3ab\") : \"OnePage\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System boards",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -363,8 +420,8 @@
           "context": "i18n(\"pages.boardlistpage.9b3dcd2cedd1\") + String(rows.length + 1)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New OnePage ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -379,8 +436,8 @@
           "context": "b.active ? i18n(\"pages.boardlistpage.a983d701044a\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " · Current OnePage",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -395,8 +452,8 @@
           "context": "label: i18n(\"pages.boardlistpage.e75e8b4e5c97\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move down",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -411,8 +468,8 @@
           "context": "label: i18n(\"pages.boardlistpage.ec4cd05f5147\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -427,8 +484,8 @@
           "context": "r.reason === \"last-board\" ? i18n(\"pages.boardlistpage.ef42f401cbad\") : i18n(\"pages.boardlistpage.11de1b40f9d8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "At least one OnePage must be kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -443,8 +500,8 @@
           "context": "label: i18n(\"pages.boardlistpage.f853a70b1204\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move up",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -459,8 +516,8 @@
           "context": "r.reason === \"system-board\" ? i18n(\"pages.boardlistpage.fcd1b76ca897\") : r.reason === \"last-board\" ? i18n(\"pages.boardlistpage.ef42f401cbad\") : i18n(\"pages.boardlistpage.11de1b40f9d8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System boards cannot be deleted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -480,8 +537,8 @@
           "context": "{i18n(\"pages.cloudpage.01cf40e9becd\", { name: String(repo.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search file names in \"{name}\" (press Enter to search)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -496,8 +553,8 @@
           "context": "{i18n(\"pages.cloudpage.04ab7d823a20\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The access token is stored locally only and is used to connect to Tsinghua Cloud Drive.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -512,8 +569,8 @@
           "context": "placeholder: i18nMsg(\"pages.cloudpage.08008fa506a0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -533,8 +590,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.08fa97188ed8\", { value: String(String(e).slice(0, 80)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Upload failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -554,8 +611,8 @@
           "context": "batchBusy ? i18n(\"pages.cloudpage.d3d21191f32e\") : i18n(\"pages.cloudpage.14909c3a7b16\", { size: String(selSet.size) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download ({size})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -579,8 +636,8 @@
           "context": "return i18n(\"pages.cloudpage.1c6fcf296dce\", { value: String(d.getMonth() + 1), value2: String(d.getDate()) });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value}/{value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -595,8 +652,8 @@
           "context": "{i18n(\"pages.cloudpage.1c7ec14c5804\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "← Libraries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -621,8 +678,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.222abf42cbc2\", { value: String(String(e).slice(0, 80)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to create: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -642,8 +699,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.2597a8d4a801\", { value: String(String(e).slice(0, 90)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -658,8 +715,8 @@
           "context": "{i18n(\"pages.cloudpage.2cd0f3be8738\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -690,8 +747,8 @@
           "context": "{i18n(\"pages.cloudpage.346ff60e6c7c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -706,8 +763,8 @@
           "context": "e.kind === \"dir\" ? i18n(\"pages.cloudpage.39730c55dba6\") : i18n(\"pages.cloudpage.88f47860e77d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete folder (including all contents)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -738,8 +795,8 @@
           "context": "allSelected ? i18n(\"pages.cloudpage.f4d4bae588c4\") : i18n(\"pages.cloudpage.3a5040b68abf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select all",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -759,8 +816,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.3defb731c5ab\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Library \"{name}\" created",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -780,8 +837,8 @@
           "context": "{i18n(\"pages.cloudpage.3ea0e6e41518\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Empty folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -796,8 +853,8 @@
           "context": "label: i18n(\"pages.cloudpage.42ee2863b6d7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Root",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -812,8 +869,8 @@
           "context": "{i18n(\"pages.cloudpage.433bdcb25776\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Libraries",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -828,8 +885,8 @@
           "context": "{i18n(\"pages.cloudpage.437d26909512\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The first connection opens the cloud drive page in the app.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -844,7 +901,7 @@
           "context": "{i18n(\"pages.cloudpage.4673a2306165\")}"
         }
       ],
-      "translation": "Downloads",
+      "translation": "Download",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -860,8 +917,8 @@
           "context": "loading\n              ? i18n(\"pages.cloudpage.494c3b6d6039\")\n              : dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reading folder…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -881,8 +938,8 @@
           "context": "{i18nRich(\"pages.cloudpage.4c613b19b695\", { value: isSamePlace ? i18n(\"pages.cloudpage.bf7d41f4829b\") : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move here{value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -906,8 +963,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.4dfba9961d74\", { name: String(e.name), value: String(String(err).slice(0, 60)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to download \"{name}\": {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -931,8 +988,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.5709c3c3ceb9\", { done: String(done), length: String(items.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted {done}/{length} items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -947,8 +1004,8 @@
           "context": "selMode ? i18n(\"pages.cloudpage.571e8b9e66f2\") : i18n(\"pages.cloudpage.cb7707463c16\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exit bulk mode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -968,8 +1025,8 @@
           "context": "{i18n(\"pages.cloudpage.5c5e2637e7c9\", { name: String(repo.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search file names in \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -993,8 +1050,8 @@
           "context": "{i18nRich(\"pages.cloudpage.5e0fe9a8ad48\", { length: searchHits.length, value: (searchMeta.ms / 1000).toFixed(1) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} results · {value}s",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1014,8 +1071,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.5e9e9ab95a7b\", { value: String(String(err).slice(0, 80)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1030,8 +1087,8 @@
           "context": "{i18n(\"pages.cloudpage.5ee87e65261b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exit search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1055,8 +1112,8 @@
           "context": "isDir\n      ? i18nMsg(\"pages.cloudpage.baf5b6f85f76\", { name: String(e.name) })\n      : i18nMsg(\"pages.cloudpage.5f7afa5a8570\", { name: String(e.name), value: String(fmtSize(e.size)) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete file \"{name}\" ({value})?\n\nThis action cannot be undone.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1071,8 +1128,8 @@
           "context": "{i18n(\"pages.cloudpage.5ffbf89ecab8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot move into a folder inside itself",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1092,8 +1149,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.62673d92b525\", { name: String(entry.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Moved \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1108,8 +1165,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.62ddce2770ae\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share link copied (for 7-day expiry settings, use the web version)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1129,8 +1186,8 @@
           "context": "{i18nRich(\"pages.cloudpage.689231f769fb\", { size: selSet.size })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete ({size})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1145,8 +1202,8 @@
           "context": "{i18n(\"pages.cloudpage.6c50d3cbcf0b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "After sign-in, the existing access token is read; it is not generated or reset automatically.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1161,8 +1218,8 @@
           "context": "{i18n(\"pages.cloudpage.6dd388a191a4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Target library",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1186,8 +1243,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.714eeef6f823\", { value: String(i + 1), length: String(items.length) }), 1200)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloading {value}/{length}…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1202,8 +1259,8 @@
           "context": "isDir ? i18nMsg(\"pages.cloudpage.8ccac03bbf00\") : i18nMsg(\"pages.cloudpage.7349aa455665\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete files. Please confirm!",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1223,8 +1280,8 @@
           "context": "{i18n(\"pages.cloudpage.75f7ac5a5cca\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1244,8 +1301,8 @@
           "context": "e.kind === \"file\" ? fmtSize(e.size) : i18n(\"pages.cloudpage.7c7802d8adae\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Folders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1265,8 +1322,8 @@
           "context": "showToast(i18nMsg(\"pages.cloudpage.7dd967e63384\", { value: String(String(e).slice(0, 80)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1281,8 +1338,8 @@
           "context": "sharing === e.name ? \"…\" : i18n(\"pages.cloudpage.7e564575eb7d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1307,8 +1364,8 @@
           "context": "{i18n(\"pages.cloudpage.84244abc71de\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1323,8 +1380,8 @@
           "context": "e.kind === \"dir\" ? i18n(\"pages.cloudpage.39730c55dba6\") : i18n(\"pages.cloudpage.88f47860e77d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1356,8 +1413,8 @@
           "context": "logLine(i18n(\"pages.cloudpage.88f5cec04e1a\", { length: String(es.length), length2: String(onlyDirs.length), value: String(repoId.slice(0, 8)), path: String(path) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[CLOUD-MOVE] directory list ok: {length} items total, {length2} folders (repo={value}… path={path})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1372,8 +1429,8 @@
           "context": "{i18n(\"pages.cloudpage.8a7c214a2e53\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Target-level folders",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1393,8 +1450,8 @@
           "context": "{i18nRich(\"pages.cloudpage.8b66460804e7\", { size: selSet.size })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{size} selected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1414,8 +1471,8 @@
           "context": "{i18n(\"pages.cloudpage.8b9120013f48\", { name: String(entry.name) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move \"{name}\" to…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1435,66 +1492,9 @@
           "context": "title: i18nMsg(\"pages.cloudpage.8c74b8fa706e\", { length: String(items.length) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete {length} items. Please confirm!",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.cloudpage.8ccac03bbf00",
-      "source": "删除文件夹，请确认！",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 97,
-          "context": "isDir ? i18nMsg(\"pages.cloudpage.8ccac03bbf00\") : i18nMsg(\"pages.cloudpage.7349aa455665\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.8dba5236dfa7",
-      "source": "已下载 {ok}/{length} 个文件",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "ok",
-          "expression": "String(ok)"
-        },
-        {
-          "name": "length",
-          "expression": "String(items.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 322,
-          "context": "showToast(i18nMsg(\"pages.cloudpage.8dba5236dfa7\", { ok: String(ok), length: String(items.length) }))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.99b4882003c8",
-      "source": "没有可见的资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 623,
-          "context": "{i18n(\"pages.cloudpage.99b4882003c8\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

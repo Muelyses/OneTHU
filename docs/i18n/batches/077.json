@@ -1,7 +1,124 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.chatdock.723588bf300c",
+      "source": "重试这条消息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 831,
+          "context": "{i18n(\"plugins.chatdock.723588bf300c\")}"
+        }
+      ],
+      "translation": "Retry this message",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.76773f6ea0ce",
+      "source": "自动朗读已开启（点击改静音；长按进语音合成设置）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 2478,
+          "context": "prefs.autoSpeak ? i18n(\"plugins.chatdock.76773f6ea0ce\") : i18n(\"plugins.chatdock.1dfa6c369f2c\")"
+        }
+      ],
+      "translation": "Auto-read is on (tap to mute; long-press for text-to-speech settings)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.7742ad93c98a",
+      "source": "新建会话失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 1752,
+          "context": "r?.error ?? i18n(\"plugins.chatdock.7742ad93c98a\")"
+        }
+      ],
+      "translation": "Failed to create a session",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.7855f5a8df25",
+      "source": "设置 · {t}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "t",
+          "expression": "t"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 1061,
+          "context": "{i18nRich(\"plugins.chatdock.7855f5a8df25\", { t: t })}"
+        }
+      ],
+      "translation": "Settings · {t}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.7b376795bbca",
+      "source": "已取消导出",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 1831,
+          "context": "path ? i18n(\"plugins.chatdock.fe0342f05ca5\", { path: String(path) }) : i18n(\"plugins.chatdock.7b376795bbca\")"
+        }
+      ],
+      "translation": "Export cancelled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.8282ce4afe46",
+      "source": "(空响应)",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 1451,
+          "context": "typeof r?.answer === \"string\" ? r.answer : i18n(\"plugins.chatdock.8282ce4afe46\")"
+        }
+      ],
+      "translation": "(empty response)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.84bca22bedb3",
+      "source": "服务暂时限制了请求，请稍后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 826,
+          "context": "{i18n(\"plugins.chatdock.84bca22bedb3\")}"
+        }
+      ],
+      "translation": "The service is temporarily limiting requests. Please try again later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.chatdock.878d364bd67d",
       "source": "［附件］{summary}",
@@ -19,8 +136,8 @@
           "context": "text: i18n(\"plugins.chatdock.878d364bd67d\", { summary: String(summary) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "[Attachment] {summary}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -35,8 +152,8 @@
           "context": "showVoiceFail(i18n(\"plugins.chatdock.8a25b8a6fdfa\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiao OH is answering; long-press to speak again later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -51,8 +168,8 @@
           "context": "hardStop(i18n(\"plugins.chatdock.9ac692674bef\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin stopped",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -67,8 +184,8 @@
           "context": "showVoiceFail(i18n(\"plugins.chatdock.a37778f17c5f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cancelled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -83,8 +200,8 @@
           "context": "setNotice(i18n(\"plugins.chatdock.a59732772a1e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Voice settings: Plugins → OneTHU Harness → Basic settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -104,8 +221,8 @@
           "context": "cancelling && voice !== \"off\"\n    ? i18n(\"plugins.chatdock.a5e282527a63\")\n    : voice === \"off\" ? liveShown : voice === \"arming\" ? i18n(\"plugins.chatdock.16b38246ad63\") : liveShown || i18n(\"plugins.chatdock.584965ac8398\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Release to cancel",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -125,8 +242,8 @@
           "context": "{i18n(\"plugins.chatdock.a62acb184f47\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reasoning",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -141,8 +258,8 @@
           "context": "r.title ?? i18n(\"plugins.chatdock.a63280253f17\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sessions",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -162,8 +279,8 @@
           "context": "{i18n(\"plugins.chatdock.a8ca3c13eb75\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tool calls",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -187,8 +304,8 @@
           "context": "{i18n(\"plugins.chatdock.a9893c5944d2\", { messages: String(s.messages), value: String(fmtUsd(s.costUsd)) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Main chat · {messages} turns · {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -203,8 +320,8 @@
           "context": "mode === \"search\" ? i18n(\"plugins.chatdock.aee820d2a216\") : mode === \"xiaoda\" ? i18n(\"plugins.chatdock.634b2bf11df6\") : i18n(\"plugins.chatdock.19e77f892e70\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Release to search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -219,8 +336,8 @@
           "context": "{i18n(\"plugins.chatdock.af0d814e76d3\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiao OH",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -240,8 +357,8 @@
           "context": "{i18n(\"plugins.chatdock.afd4b783536b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collapse",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -272,8 +389,8 @@
           "context": "setNotice(i18n(\"plugins.chatdock.b6148dfbe0ee\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Xiao OH is not ready yet (Harness plugin not loaded) — chat requires the full desktop environment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -288,8 +405,8 @@
           "context": "{i18n(\"plugins.chatdock.baebe8674f72\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneTHU Harness chat",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -304,8 +421,8 @@
           "context": "prefs.autoSpeak ? i18n(\"plugins.chatdock.c82453139601\") : i18n(\"plugins.chatdock.bbd0a21c64ac\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enable auto-read",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -320,8 +437,8 @@
           "context": "r?.error ?? i18n(\"plugins.chatdock.c228558cf257\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -336,8 +453,8 @@
           "context": "error = i18n(\"plugins.chatdock.c4e133be6a12\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stop the current answer first; manage sessions after it finishes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -357,8 +474,8 @@
           "context": "{i18n(\"plugins.chatdock.c57c30bc05f7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New session",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -373,8 +490,8 @@
           "context": "prefs.autoSpeak ? i18n(\"plugins.chatdock.c82453139601\") : i18n(\"plugins.chatdock.bbd0a21c64ac\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disable auto-read",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -389,8 +506,8 @@
           "context": "{i18n(\"plugins.chatdock.c9c75c6484e1\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View service response",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -405,8 +522,8 @@
           "context": "{i18n(\"plugins.chatdock.cc50237edca2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Searching…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -421,8 +538,8 @@
           "context": "autoSpeak ? i18n(\"plugins.chatdock.cd3d72fa5906\") : i18n(\"plugins.chatdock.5c393fa3cd3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Read this message aloud (auto-read is on)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -437,8 +554,8 @@
           "context": "next ? i18n(\"plugins.chatdock.cd541524f944\") : i18n(\"plugins.chatdock.f070aa52d3bb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Auto-read enabled: OH replies will be read aloud",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -453,8 +570,8 @@
           "context": "setStatus(i18n(\"plugins.chatdock.d06cbeecdd5c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stopping the request…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -474,8 +591,8 @@
           "context": "showVoiceFail(i18n(\"plugins.chatdock.de18b251b0c9\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to start voice: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -495,8 +612,8 @@
           "context": "{i18n(\"plugins.chatdock.df3d58c7d84b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -511,8 +628,8 @@
           "context": "{i18n(\"plugins.chatdock.e205315fe020\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Jump to this settings section",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -536,8 +653,8 @@
           "context": "{i18n(\"plugins.chatdock.e3377323b554\", { messages: String(s.messages), value: String(fmtUsd(s.costUsd)) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{messages} turns · {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -552,8 +669,8 @@
           "context": "next ? i18n(\"plugins.chatdock.cd541524f944\") : i18n(\"plugins.chatdock.f070aa52d3bb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Muted: OH replies are no longer read aloud automatically",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -577,8 +694,8 @@
           "context": "open ? i18n(\"plugins.chatdock.3afccd0197f6\") : i18n(\"plugins.chatdock.f31c4b71e495\", { length: String(lines.length), total: String(total) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} messages · {total} characters",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -593,8 +710,8 @@
           "context": "setNotice(i18n(\"plugins.chatdock.f31c618bf73f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New session created",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -614,8 +731,8 @@
           "context": "path ? i18n(\"plugins.chatdock.fe0342f05ca5\", { path: String(path) }) : i18n(\"plugins.chatdock.7b376795bbca\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exported: {path}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -639,8 +756,8 @@
           "context": "r?.error != null\n      ? i18n(\"plugins.chatdock.feb95ed0fa91\", { value: String(partialAnswer ? partialAnswer + \"\\n\\n\" : \"\"), error: String(r.error) })\n      : typeof r?.answer === \"string\" ? r.answer : i18n(\"plugins.chatdock.8282ce4afe46\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{value} reply failed: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -655,8 +772,8 @@
           "context": "new Error(i18n(\"plugins.facade.015edb6a8f1a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Title cannot be empty",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -671,8 +788,8 @@
           "context": "new Error(i18n(\"plugins.facade.0a9a214b2734\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "url must start with http(s)://",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -687,8 +804,8 @@
           "context": "new Error(i18n(\"plugins.facade.168f93bc690d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites folder does not exist (create it on the Favorites page first)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -724,8 +841,8 @@
           "context": "new Error(i18n(\"plugins.facade.265965114fef\", { bid: String(bid) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No such Board: {bid} (get the board id via ext.onepage_list first; use page=\"boards\" on the list page)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -745,8 +862,8 @@
           "context": "new Error(i18n(\"plugins.facade.2d98325ea8eb\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Session does not exist",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -766,8 +883,8 @@
           "context": "new Error(i18n(\"plugins.facade.30c5627d3abc\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No such OneFlow",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -782,8 +899,8 @@
           "context": "new Error(i18n(\"plugins.facade.33db9bfbf0a0\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule entry requires a summary title",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -798,8 +915,8 @@
           "context": "new Error(i18n(\"plugins.facade.38273097f67a\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No remembered password on this device: enable \"Remember password\" and sign in again before using course selection",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -814,8 +931,8 @@
           "context": "new Error(i18n(\"plugins.facade.3f6e4c3f9ebd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Browser exploration is not available on mobile (desktop only).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -839,8 +956,8 @@
           "context": "new Error(i18n(\"plugins.facade.449acaed3d6f\", { label: String(label), value: String(ms / 1000) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{label} timed out ({value} s); the site may be rate-limiting. Try again later",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -860,8 +977,8 @@
           "context": "new Error(i18n(\"plugins.facade.4c822bdd81d6\", { uid: String(uid) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule entry not found: {uid} (get a recent uid via cal.agenda first)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -885,8 +1002,8 @@
           "context": "new Error(i18n(\"plugins.facade.532d892a16b6\", { courseId: String(courseId), semesterId: String(semesterId) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course {courseId} is not in the course list for semester {semesterId} (for cross-semester use, check semesterId)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -901,8 +1018,8 @@
           "context": "new Error(i18n(\"plugins.facade.536acdd7d116\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Navigation bridge not ready (app is starting)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -917,8 +1034,8 @@
           "context": "new Error(i18n(\"plugins.facade.5a9154403950\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This tab cannot be duplicated (Home or the tab does not exist)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -933,8 +1050,8 @@
           "context": "new Error(i18n(\"plugins.facade.6082f18ce536\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "webModal only supports https:// links",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1066,8 @@
           "context": "new Error(i18n(\"plugins.facade.667f8382b324\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "addAtom requires { kind: \"plugin:<plugin id>\", key }",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -965,8 +1082,8 @@
           "context": "new Error(i18n(\"plugins.facade.7241d265bd8c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Only built-in wallpapers are accepted for now (builtin:aurora/dusk/matcha/ink); upload local images from Settings → Wallpaper",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -981,8 +1098,8 @@
           "context": "new Error(i18n(\"plugins.facade.7437bebe3a97\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No such OneFlow (ids come from ext_flow_list)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -997,8 +1114,8 @@
           "context": "new Error(i18n(\"plugins.facade.74881d8fa852\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to create favorites folder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1013,8 +1130,8 @@
           "context": "new Error(i18n(\"plugins.facade.776c5600bcab\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "favorites.add requires a key",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1029,8 +1146,8 @@
           "context": "new Error(i18n(\"plugins.facade.777811e6adc7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "onTabReady only applies to tabs registered by this plugin",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1045,8 +1162,8 @@
           "context": "new Error(i18n(\"plugins.facade.7cc0a2460bf7\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In-page WebSocket connection failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1061,8 +1178,8 @@
           "context": "new Error(i18n(\"plugins.facade.807f0c9d0b04\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tool names must be in ns.method form (e.g. nav.go / ext.onePageAddAtom)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1077,8 +1194,8 @@
           "context": "new Error(i18n(\"plugins.facade.81accc7a976c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Wallpapers only support full screen (scope=\"global\"); the old \"per page\" option has been removed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1093,8 +1210,8 @@
           "context": "new Error(i18n(\"plugins.facade.8794c40bbdb4\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "In-page WebSocket connection timed out",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1109,8 +1226,8 @@
           "context": "new Error(i18n(\"plugins.facade.9649f0743b7b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "An icon key is required",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1125,8 +1242,8 @@
           "context": "new Error(i18n(\"plugins.facade.976be8e8ac76\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "atomKey looks like kind|key (e.g. course|123); get one from list_favorite_kinds or nav.searchAtoms",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1150,8 +1267,8 @@
           "context": "new Error(i18n(\"plugins.facade.98c18b06340b\", { id: String(id), value: String(dockable.slice(0, 40).join(\" / \")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown page: {id} (only top-level Home pages and local plugin feature pages can be docked; currently dockable: {value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1166,8 +1283,8 @@
           "context": "new Error(i18n(\"plugins.facade.995c7a402a02\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A OneFlow needs at least 1 step",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1182,8 +1299,8 @@
           "context": "new Error(i18n(\"plugins.facade.9ab26357bd06\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "dateYmd requires YYYY-MM-DD",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1198,8 +1315,8 @@
           "context": "new AuthRequiredError(i18n(\"plugins.facade.a31a8e09b143\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Could not establish the Tsinghua sign-in session: sign in again in OneTHU and try again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1214,8 +1331,8 @@
           "context": "new Error(i18n(\"plugins.facade.a80c49c4e2cd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown widget type or invalid reference; available: text / atom-link / custom",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1230,8 +1347,8 @@
           "context": "new Error(i18n(\"plugins.facade.aa0117c0a684\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Favorites folder does not exist",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1246,8 +1363,8 @@
           "context": "new Error(i18n(\"plugins.facade.aaf4a5ba16eb\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "atomKey cannot be empty: atom references look like kind|key (kind:key is also accepted)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1275,8 +1392,8 @@
           "context": "new Error(i18n(\"plugins.facade.b415f4b7d98e\", { m2: String(m2), ensured: String(ensured), value: String(InfoClient.libUserid || \"?\") }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{m2} (session rebuilt before retry: {ensured}; seat system uid={value})",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1291,8 +1408,8 @@
           "context": "new Error(i18n(\"plugins.facade.b7177e760cc6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "notify.send requires a title",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1307,120 +1424,8 @@
           "context": "error: i18n(\"plugins.facade.c50a68203b6c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.cb7be7f22ff6",
-      "source": "结束时间早于开始时间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1368,
-          "context": "new Error(i18n(\"plugins.facade.cb7be7f22ff6\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.d0deef545297",
-      "source": "仓库地址不认识（支持 user/repo、user/repo@dev、完整 URL）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1407,
-          "context": "new Error(i18n(\"plugins.facade.d0deef545297\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.d12b86e33757",
-      "source": "getTabRoot 仅限本插件注册的 tab",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 905,
-          "context": "new Error(i18n(\"plugins.facade.d12b86e33757\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.d669b31a853f",
-      "source": "云盘未配置：请先在应用的「云盘」页连接（Seafile API Token）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 351,
-          "context": "new Error(i18n(\"plugins.facade.d669b31a853f\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.d9ce17418be4",
-      "source": "校园网需要验证码登录：已自动打开校园网页面并展示验证码，请让用户在验证码面板输入图中字符完成登录，登录成功后重试本查询",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 2025,
-          "context": "new Error(\n      i18n(\"plugins.facade.d9ce17418be4\"),\n    )"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.d9e18ccca62c",
-      "source": "trigger 必须是 {kind:manual} / {kind:cron,everyMinutes} / {kind:event,event}",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 938,
-          "context": "new Error(i18n(\"plugins.facade.d9e18ccca62c\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.e17b179b14d7",
-      "source": "需要一个新名字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1068,
-          "context": "new Error(i18n(\"plugins.facade.e17b179b14d7\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No parsable cards on the detail page (page structure changed?)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

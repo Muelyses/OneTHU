@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.cloudcal.892291a664b5",
+      "source": "新位置已保存，原位置清理失败，两侧日程均保留；请同步后再清理重复项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 382,
+          "context": "new Error(i18n(\"state.cloudcal.892291a664b5\"))"
+        }
+      ],
+      "translation": "The new location was saved, but cleaning up the original location failed and both schedules are kept. Sync first, then clean up the duplicates.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.bd5ff99826df",
+      "source": "未找到日程，请先同步后再删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 336,
+          "context": "new Error(i18n(\"state.cloudcal.bd5ff99826df\"))"
+        }
+      ],
+      "translation": "Schedule not found. Sync first, then delete.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.e2f9152c9203",
+      "source": "学期信息无效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 458,
+          "context": "new Error(i18n(\"state.cloudcal.e2f9152c9203\"))"
+        }
+      ],
+      "translation": "Invalid semester info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.f3f8e2d173eb",
+      "source": "云同步配置已变更，本次验证结果未应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 247,
+          "context": "new Error(i18n(\"state.cloudcal.f3f8e2d173eb\"))"
+        }
+      ],
+      "translation": "The cloud sync configuration has changed; the verification result was not applied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.fc42ba627dce",
+      "source": "日程版本信息缺失，请先同步再删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 337,
+          "context": "new Error(i18n(\"state.cloudcal.fc42ba627dce\"))"
+        }
+      ],
+      "translation": "Schedule version info is missing. Sync first before deleting.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudcal.fe20ed20d492",
+      "source": "云日历缓存损坏，未覆盖已有日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudCal.ts",
+          "line": 146,
+          "context": "new Error(i18n(\"state.cloudcal.fe20ed20d492\"))"
+        }
+      ],
+      "translation": "The cloud calendar cache is corrupted; existing schedules were not overwritten",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.cloudexchange.388fc6c63ebe",
+      "source": "分享内容超过支持的大小",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/cloudExchange.ts",
+          "line": 157,
+          "context": "new Error(i18n(\"state.cloudexchange.388fc6c63ebe\"))"
+        }
+      ],
+      "translation": "The shared content exceeds the supported size",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.cloudexchange.46180de6589d",
       "source": "这份分享不包含可接收的 OneTHU 内容",
@@ -14,8 +126,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.46180de6589d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This share contains no OneTHU content that can be received",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +142,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.5dec5b6cd859\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The recipient email address is invalid",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.6e106dfb0757\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive did not return a share link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +174,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.8e54dc8b5387\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The original share cannot be read back right now. Please retry or choose to regenerate it.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +190,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.b8e6e9ca4525\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share version not supported",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +211,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.bcd2da321c5e\", { value: String(error instanceof Error?error.message:String(error)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The original share was not fully updated: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +232,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.e1239b54f9b2\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Could not read the share. Check your network, or ask the sender to confirm the share code has not expired or been revoked: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +248,8 @@
           "context": "new Error(i18n(\"state.cloudexchange.ee7944db0bd9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Revoking the old share did not finish. Please retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -166,8 +278,8 @@
           "context": "setToast(i18n(\"state.data.017029db358e\", { length: String(Object.keys(qd.map).length), length2: String(candidates.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Queue data refreshed · Remaining seats for {length} courses · {length2} courses in my queue",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -182,8 +294,8 @@
           "context": "globalThis.prompt?.(i18n(\"state.data.0f1ade7c641d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Paste exported draft JSON",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -203,8 +315,8 @@
           "context": "name: i18n(\"state.data.14fa0b5c5261\", { nm: String(nm) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{nm} classes begin",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -219,8 +331,8 @@
           "context": "setToast(i18n(\"state.data.1744c58d26ad\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No selected courses",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -235,8 +347,8 @@
           "context": "title: i18n(\"state.data.1788c736d7b1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Lab Manual.pdf",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -251,8 +363,8 @@
           "context": "new Error(i18n(\"state.data.1ad3aeaef070\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Missing courses",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -267,8 +379,8 @@
           "context": "note: i18n(\"state.data.21c05833ab53\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Checked in",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -283,8 +395,8 @@
           "context": "name: i18n(\"state.data.2785db8cbe3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notice on course selection arrangements this semester",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -299,8 +411,8 @@
           "context": "name: i18n(\"state.data.29a6e56cb5af\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "English Reading, Writing and Translation (1)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -315,8 +427,8 @@
           "context": "title: i18n(\"state.data.2ac5386c015e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notice on midterm exam arrangements",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -336,8 +448,8 @@
           "context": "label: i18n(\"state.data.2c990a5b9a06\", { cur: String(cur) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{cur} (current)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -357,8 +469,8 @@
           "context": "setToast(i18n(\"state.data.315af7fb0ae9\", { length: String(incoming.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Imported {length} courses into the staging area",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -378,8 +490,8 @@
           "context": "setToast(i18n(\"state.data.329fbface8f2\", { name: String(d.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Draft \"{name}\" exported to clipboard",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -399,8 +511,8 @@
           "context": "[\n      i18n(\"state.data.3361c2cc7a9e\", { count: kept }),\n      toAdd.length ? i18n(\"state.data.9d6825c38899\", { count: toAdd.length, courses: toAdd.map((c) => c.name).join(\"、\") }) : null,\n      toDrop.length ? i18n(\"state.data.661a5ba1d0ca\", { count: toDrop.length, courses: toDrop.map((c) => c.name).join(\"、\") }) : null,\n    ]"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Keep {count} (intersection of both sides, unchanged)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -415,8 +527,8 @@
           "context": "transactions === null ? i18n(\"state.data.35552730badd\") : null"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch transaction details; the last fetched details are shown",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -431,8 +543,8 @@
           "context": "name: i18n(\"state.data.3759fa0fb1c0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fundamentals of Programming",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -447,8 +559,8 @@
           "context": "name: i18n(\"state.data.38509e346ecf\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course dropping (Phase 1) ends",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -463,8 +575,8 @@
           "context": "title: i18n(\"state.data.3efc9adfbfb8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course dropping (Phase 1)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -492,8 +604,8 @@
           "context": "setToast(i18n(\"state.data.4375e66c768d\", { expected: String(expected), size: String(seen.size), deficit: String(deficit) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Incomplete fetch: the academic system has {expected} courses, {size} were fetched, {deficit} missing. Try refreshing or check back later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -508,8 +620,8 @@
           "context": "summary: i18n(\"state.data.444c4d808b3a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sample canteen",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -524,8 +636,8 @@
           "context": "title: i18n(\"state.data.49e6ad399f86\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "First short assignment",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -545,8 +657,8 @@
           "context": "setToast(i18n(\"state.data.4a297091d7e8\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Draft \"{name}\" saved",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -566,8 +678,8 @@
           "context": "setToast(i18n(\"state.data.4c24a526b2a0\", { length: String(added.length) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loaded {length} (interrupted midway; click continue to resume)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -587,8 +699,8 @@
           "context": "setToast(i18n(\"state.data.4f59a9588280\", { name: String(d.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"{name}\" is identical to the current selection; nothing to submit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -608,8 +720,8 @@
           "context": "setToast(i18n(\"state.data.579d5468a97a\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Import failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -624,8 +736,8 @@
           "context": "setToast(i18n(\"state.data.58302b53a63d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Export failed: clipboard unavailable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -653,8 +765,8 @@
           "context": "setToast(i18n(\"state.data.5a755838cd1f\", { locked: String(locked), length: String(merged.length), deficit: String(deficit) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Incomplete fetch: the academic system has {locked} courses, {length} were fetched, {deficit} missing. Try refreshing or check back later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -682,8 +794,8 @@
           "context": "confirmDanger(i18nMsg(\"state.data.5b1ff08354a0\", { name: String(toDrop[i]!.name), code: String(toDrop[i]!.code), value: String(toDrop[i]!.seq || \"0\") }), CONFIRM_DROP_COURSE)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"{name}\" ({code}_{value})\nDropping is a real course-drop action and takes effect immediately; seats freed during the add/drop phase may be taken instantly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -703,8 +815,8 @@
           "context": "setProgress(i18n(\"state.data.5e8ccd9c182a\", { name: String(toDrop[i]!.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Canceled: {name} was not dropped and the submission stopped (already executed steps are unaffected)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -728,8 +840,8 @@
           "context": "s === 2 ? i18n(\"state.data.606fee690bb1\", params) : i18n(\"state.data.99541445f961\", params)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{startYear}-{endYear} Spring",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -744,8 +856,8 @@
           "context": "setToast(i18n(\"state.data.654c0455ea1b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No courses in the staging area",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -769,8 +881,8 @@
           "context": "toDrop.length ? i18n(\"state.data.661a5ba1d0ca\", { count: toDrop.length, courses: toDrop.map((c) => c.name).join(\"、\") }) : null"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dropped {count}: {courses}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -785,8 +897,8 @@
           "context": "title: i18n(\"state.data.6e0521c2d6bc\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Lecture 1 Slides.pdf",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -810,8 +922,8 @@
           "context": "s === 1 ? i18n(\"state.data.6f0c2bbab1f6\", params)\n          : s === 2 ? i18n(\"state.data.606fee690bb1\", params) : i18n(\"state.data.99541445f961\", params)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{startYear}-{endYear} Fall",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -826,8 +938,8 @@
           "context": "title: i18n(\"state.data.6fb901c0f8f4\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workbook Chapter 2",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -842,8 +954,8 @@
           "context": "title: i18n(\"state.data.76d617dd1e96\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exercise Answer Key.pdf",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -858,8 +970,8 @@
           "context": "setToast(i18n(\"state.data.867cbd70a5b2\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This course is already in the staging area",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -879,8 +991,8 @@
           "context": "setToast(i18n(\"state.data.88fb2fce716c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Please enter an event name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -900,8 +1012,8 @@
           "context": "setToast(i18n(\"state.data.993d797826cc\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Selected courses saved as \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -925,8 +1037,8 @@
           "context": "s === 2 ? i18n(\"state.data.606fee690bb1\", params) : i18n(\"state.data.99541445f961\", params)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{startYear}-{endYear} Summer",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -950,8 +1062,8 @@
           "context": "toAdd.length ? i18n(\"state.data.9d6825c38899\", { count: toAdd.length, courses: toAdd.map((c) => c.name).join(\"、\") }) : null"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Newly selected {count}: {courses}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -966,8 +1078,8 @@
           "context": "name: i18n(\"state.data.9e6183684b78\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Undergraduate P/F grading option ends",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -987,8 +1099,8 @@
           "context": "setToast(i18n(\"state.data.a37778f17c5f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Canceled",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1003,8 +1115,8 @@
           "context": "name: i18n(\"state.data.a53fee1c4dbb\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notice on conducting teaching evaluations this semester",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1024,8 +1136,8 @@
           "context": "setToast(i18n(\"state.data.acb8456494a1\", { name: String(row.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Staged \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1040,8 +1152,8 @@
           "context": "summary: i18n(\"state.data.b5481d51eb1a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Bank card top-up",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1056,8 +1168,8 @@
           "context": "name: i18n(\"state.data.b5a0c9e5f04e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "College Physics B (1)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1072,8 +1184,8 @@
           "context": "title: i18n(\"state.data.c01840b9fd81\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notice on lab class rescheduling",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1097,8 +1209,8 @@
           "context": "confirmOk(i18nMsg(\"state.data.c49ed890d985\", { name: String(d.name), lines: String(lines) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit \"{name}\"? (Differential submission; will not drop all and reselect.)\n{lines}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1118,8 +1230,8 @@
           "context": "setToast(i18n(\"state.data.c6f1a8749849\", { size: String(seen.size) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "All {size} loaded",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1134,8 +1246,8 @@
           "context": "title: i18n(\"state.data.c9bb87027880\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Lab Report 1",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1150,8 +1262,8 @@
           "context": "title: i18n(\"state.data.ce63956984a9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Undergraduate P/F grading option",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1166,8 +1278,8 @@
           "context": "name: i18n(\"state.data.d4fa4ba858a6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Advanced Mathematics A (1)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1192,8 +1304,8 @@
           "context": "setToast(i18n(\"state.data.d7b50ed7e7b5\", { value: String(name.trim()) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Added \"{value}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1221,8 +1333,8 @@
           "context": "setProgress(i18n(\"state.data.d8141ccb27fe\", { value: String(i + 1), length: String(toDrop.length), name: String(toDrop[i]!.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dropping {value}/{length}: {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1250,8 +1362,8 @@
           "context": "setProgress(i18n(\"state.data.d84b6a7e9fbd\", { value: String(i + 1), length: String(toAdd.length), name: String(c.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Selecting {value}/{length}: {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1271,8 +1383,8 @@
           "context": "setToast(i18n(\"state.data.d92ad0ceef64\", { value: String(err instanceof Error ? err.message : String(err)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submission error (already executed steps are not rolled back): {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1292,8 +1404,8 @@
           "context": "setToast(i18n(\"state.data.e6d7b9ff838f\", { name: String(ev.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1325,8 +1437,8 @@
           "context": "setToast(i18n(\"state.data.e90750f742dd\", { name: String(d.name), length: String(toAdd.length), length2: String(toDrop.length), kept: String(kept) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"{name}\" differential submission complete: {length} newly selected, {length2} dropped, {kept} kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1346,8 +1458,8 @@
           "context": "name: i18n(\"state.data.e980f2b04637\", { nm: String(nm) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{nm} ends",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1362,8 +1474,8 @@
           "context": "name: i18n(\"state.data.f820fbf5072a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Adjusted library hours during holidays",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1378,8 +1490,8 @@
           "context": "name: i18n(\"state.data.f830684c231e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Linear Algebra",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1399,8 +1511,8 @@
           "context": "name: i18n(\"state.data.f9b45f6b66e0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sample student",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1415,8 +1527,8 @@
           "context": "setToast(i18n(\"state.data.fc8f70858d9c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch remaining seats and queue counts; you can retry later (your session was rebuilt automatically)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1432,123 +1544,6 @@
         }
       ],
       "translation": "Teaching evaluation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 254,
-          "context": "return i18n(\"state.explorer.15d208d1b4c9\");"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.203c08e0d44a",
-      "source": "首页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 175,
-          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
-        },
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 263,
-          "context": "return i18n(\"state.explorer.203c08e0d44a\");"
-        }
-      ],
-      "translation": "Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.22519a88484f",
-      "source": "课程详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 232,
-          "context": "return i18n(\"state.explorer.22519a88484f\");"
-        }
-      ],
-      "translation": "Course details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 237,
-          "context": "return i18n(\"state.explorer.231ff6cd9b63\");"
-        }
-      ],
-      "translation": "Switch semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.24be2018df29",
-      "source": "银行代发",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 257,
-          "context": "return i18n(\"state.explorer.24be2018df29\");"
-        }
-      ],
-      "translation": "Payroll",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.27b6154b3fd3",
-      "source": "文件详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 241,
-          "context": "return i18n(\"state.explorer.27b6154b3fd3\");"
-        }
-      ],
-      "translation": "File details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.2d3197fccc89",
-      "source": "网络学堂 · 搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 236,
-          "context": "return i18n(\"state.explorer.2d3197fccc89\");"
-        }
-      ],
-      "translation": "Learn · Search",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

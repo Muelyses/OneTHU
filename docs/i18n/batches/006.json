@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorer.onegobar.4cfe5f20b9dd",
+      "source": "已收进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 29,
+          "context": "r.ok?i18nMsg(\"components.explorer.onegobar.4cfe5f20b9dd\"):i18nMsg(\"components.explorer.onegobar.eaaa11207297\")"
+        }
+      ],
+      "translation": "Sent to Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.onegobar.810c7fbfef76",
+      "source": "更换图标…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 28,
+          "context": "label:i18n(\"components.explorer.onegobar.810c7fbfef76\")"
+        }
+      ],
+      "translation": "Change icon…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.onegobar.a1b27175f9e6",
+      "source": "收藏的 OnePage 和工作区会放在这里",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 35,
+          "context": "{i18n(\"components.explorer.onegobar.a1b27175f9e6\")}"
+        }
+      ],
+      "translation": "Saved OnePages and workspaces appear here",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.explorer.onegobar.c6d80849d9f5",
       "source": "编辑工作区…",
@@ -14,8 +62,8 @@
           "context": "label:i18n(\"components.explorer.onegobar.c6d80849d9f5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Edit workspace…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -30,8 +78,8 @@
           "context": "label:i18n(\"components.explorer.onegobar.c771248e511f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -51,8 +99,8 @@
           "context": "confirmOk(i18nMsg(\"components.explorer.onegobar.c98097f4a6d7\", { title: String(e.title) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete OnePage \"{title}\"?",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -67,8 +115,8 @@
           "context": "label:i18nMsg(\"components.explorer.onegobar.d44e9b3d3b31\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -83,8 +131,8 @@
           "context": "label:i18n(\"components.explorer.onegobar.e933dda58744\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Move to front",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -99,8 +147,8 @@
           "context": "r.ok?i18nMsg(\"components.explorer.onegobar.4cfe5f20b9dd\"):i18nMsg(\"components.explorer.onegobar.eaaa11207297\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Already in Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -115,8 +163,8 @@
           "context": "label:i18n(\"components.explorer.onegobar.ec4cd05f5147\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -136,8 +184,8 @@
           "context": "{i18n(\"components.explorer.onegobar.eef22ab3c4a8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "More favorites",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,8 +216,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.0552e329ccf8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -184,8 +232,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.05cc68bdf7ae\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open workspace",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -200,8 +248,8 @@
           "context": "b.kind === \"system\" ? i18n(\"components.explorer.onegosheet.08c9a0baa828\") : i18n(\"components.explorer.onegosheet.55add4b94983\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System board (today)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -216,8 +264,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.0a02de34e600\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organize your work",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +280,8 @@
           "context": "i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Every ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +296,8 @@
           "context": "openFormModal(i18nMsg(\"components.explorer.onegosheet.0c898fe25ba6\"), [\n      { key: \"name\", label: i18nMsg(\"components.explorer.onegosheet.6773310492a9\"), required: true, default: b.name },\n    ])"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename OnePage",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -280,8 +328,8 @@
           "context": "r.error ?? i18n(\"components.explorer.onegosheet.13a46616e16f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unknown error",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -296,8 +344,8 @@
           "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.191605f81453\") : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disabled · ",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -312,8 +360,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.1b1e801f448e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OnePage search results",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -328,8 +376,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.1e8cdaa51b97\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Clock · main dock · free canvas",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -344,8 +392,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.1f5c44171ba4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Drag to change height (half or full screen)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -376,8 +424,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.24fc53052dd6\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Feature catalog is on Home ↓",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -392,8 +440,8 @@
           "context": "activeTheme === t.id ? i18n(\"components.explorer.onegosheet.2ce3ff19d6ac\") : i18n(\"components.explorer.onegosheet.6630af4e3a3e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Active (tap again to restore default)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -408,8 +456,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.2ea06cb193ec\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash any item first, then organize it or create a share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -445,8 +493,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.2fffc7ba053b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename / change icon / reorder / delete in the list",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -470,8 +518,8 @@
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.30344364115f\", { name: String(name), value: String(r.error ?? i18n(\"components.explorer.onegosheet.13a46616e16f\")) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"{name}\" failed: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -491,8 +539,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.37979829426b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -507,8 +555,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.3a32f6df621a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Set as current OnePage",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -528,8 +576,8 @@
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.3c09b64b68ca\", { name: String(b.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete OnePage \"{name}\"?\nThe board and everything on it will be gone permanently!",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -544,8 +592,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.40561d059752\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disband workspace (keep tabs)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -560,8 +608,8 @@
           "context": "i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes + i18n(\"components.explorer.onegosheet.40de54344d22\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": " minutes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -576,8 +624,8 @@
           "context": "i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Last run failed. Tap this row to retry",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -592,8 +640,8 @@
           "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.f4f0ead1116b\") : i18n(\"components.explorer.onegosheet.4e6fd0e28c55\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -608,8 +656,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.50ef2f4cf6a4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -629,8 +677,8 @@
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.512385d31c57\", { name: String(f.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete OneFlow \"{name}\"? Its steps and run history will be deleted too.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -645,8 +693,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.51c73468645c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneGO! sections",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -666,8 +714,8 @@
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.54b5026aad0d\", { name: String(b.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Current OnePage: {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -682,7 +730,7 @@
           "context": "b.kind === \"system\" ? i18n(\"components.explorer.onegosheet.08c9a0baa828\") : i18n(\"components.explorer.onegosheet.55add4b94983\")"
         }
       ],
-      "translation": "Whiteboard",
+      "translation": "Board",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -698,8 +746,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.588a734ec8a5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search OnePages / workspaces…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -714,8 +762,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.5c551062c8a5\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disband",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -730,8 +778,8 @@
           "context": "activeTheme === t.id ? i18n(\"components.explorer.onegosheet.2ce3ff19d6ac\") : i18n(\"components.explorer.onegosheet.6630af4e3a3e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap to apply",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -746,8 +794,8 @@
           "context": "label: i18nMsg(\"components.explorer.onegosheet.6773310492a9\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Name",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -767,8 +815,8 @@
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.68070021bd6a\", { name: String(w.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Permanently delete workspace \"{name}\" and its tabs?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -783,8 +831,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.6afc8b735d6d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "User themes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -804,8 +852,8 @@
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.73e756dbfa1a\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Running \"{name}\"…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -820,8 +868,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.7825abf8e9da\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching OnePages or workspaces.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -836,8 +884,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.7aa6d0ef5feb\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete permanently",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -852,8 +900,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.804002a9c49a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -868,8 +916,8 @@
           "context": "f.lastRun ? (f.lastOk ? i18n(\"components.explorer.onegosheet.ef6db76ef5a8\") : i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")) : i18n(\"components.explorer.onegosheet.8d812d3abb5a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Never run",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -884,8 +932,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.9201642820f0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Change icon…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -900,8 +948,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.9385bfefca58\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My favorites",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -916,8 +964,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.940e1639d05d\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A OnePage is a board: press and hold a widget to move it; use the bottom-right corner to edit and add.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -932,8 +980,8 @@
           "context": "f.trigger.kind === \"manual\" ? i18n(\"components.explorer.onegosheet.962f41ef825b\") : f.trigger.kind === \"cron\" ? i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes + i18n(\"components.explorer.onegosheet.40de54344d22\") : i18n(\"components.explorer.onegosheet.c560201b331c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Manual",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -948,8 +996,8 @@
           "context": "b.kind === \"system\" ? i18n(\"components.explorer.onegosheet.97778650b3ab\") : \"OnePage\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "System boards",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -973,8 +1021,8 @@
           "context": "confirmOk(i18nMsg(\"components.explorer.onegosheet.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Permanently delete workspace \"{name}\" and its {count} tabs?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -989,8 +1037,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.a41b60d0727e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No OneFlows yet. Say \"create a flow\" in the OH chat to make one.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1005,8 +1053,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.b666a22dbc56\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "New OnePage name",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1021,8 +1069,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.b7c9f326f03e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No OnePages yet. Create one — it is a board where you can place widgets freely.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1037,8 +1085,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.c0b3fbff51cc\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Done",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1053,8 +1101,8 @@
           "context": "f.trigger.kind === \"cron\" ? i18n(\"components.explorer.onegosheet.0a97ef128fc4\") + f.trigger.everyMinutes + i18n(\"components.explorer.onegosheet.40de54344d22\") : i18n(\"components.explorer.onegosheet.c560201b331c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Events",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1069,8 +1117,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.c6d80849d9f5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Edit workspace…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1085,8 +1133,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.c771248e511f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1101,8 +1149,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.d4b82994b06a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete permanently: closes the workspace together with its tabs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1117,8 +1165,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.dc04bd26995b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Disband: removes only the grouping; tabs are kept",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1138,8 +1186,8 @@
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.dd85b3f9c981\", { name: String(name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "\"{name}\" finished running",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1159,8 +1207,8 @@
           "context": "showToast(i18nMsg(\"components.explorer.onegosheet.e6d7b9ff838f\", { name: String(f.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deleted \"{name}\"",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1175,8 +1223,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.e9a95effb2f5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Delete permanently (with tabs)",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1196,8 +1244,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.eb597c54b6b0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My OnePages",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1212,8 +1260,8 @@
           "context": "label: i18n(\"components.explorer.onegosheet.ec4cd05f5147\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rename…",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1228,8 +1276,8 @@
           "context": "f.lastOk ? i18n(\"components.explorer.onegosheet.ef6db76ef5a8\") : i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Last run OK",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1244,8 +1292,8 @@
           "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.f4f0ead1116b\") : i18n(\"components.explorer.onegosheet.4e6fd0e28c55\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1260,8 +1308,8 @@
           "context": "{i18n(\"components.explorer.onegosheet.fbf2cea571ab\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Workspace search results",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1281,8 +1329,8 @@
           "context": "{i18nRich(\"components.explorer.onegosheet.ff83dbf31107\", { length: w.tabs.length })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} tabs",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1302,8 +1350,8 @@
           "context": "{i18n(\"components.explorer.oneshot.03c9fecbdd66\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Entry deleted",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -1323,65 +1371,8 @@
           "context": "{i18n(\"components.explorer.oneshot.1446be782b50\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.oneshot.1a54c560b1aa",
-      "source": "入口 {value}：放{title}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(i+1)"
-        },
-        {
-          "name": "title",
-          "expression": "String(placing.title)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 79,
-          "context": "{i18n(\"components.explorer.oneshot.1a54c560b1aa\", { value: String(i+1), title: String(placing.title) })}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.explorer.oneshot.1d7e5eb9476d",
-      "source": "把 ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 84,
-          "context": "{i18n(\"components.explorer.oneshot.1d7e5eb9476d\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.oneshot.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 84,
-          "context": "{i18n(\"components.explorer.oneshot.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneShot quick launch",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

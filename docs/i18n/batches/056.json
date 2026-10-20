@@ -1,7 +1,124 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.visittab.af72f5d45ca1",
+      "source": "工作单位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 320,
+          "context": "{i18n(\"pages.info.visittab.af72f5d45ca1\")}"
+        }
+      ],
+      "translation": "Employer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.b0861c591f25",
+      "source": "来访区域",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 252,
+          "context": "{i18n(\"pages.info.visittab.b0861c591f25\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 253,
+          "context": "{i18n(\"pages.info.visittab.b0861c591f25\")}"
+        }
+      ],
+      "translation": "Visit area",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.b35fb6eff43f",
+      "source": "一句话说明来访目的",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 261,
+          "context": "{i18n(\"pages.info.visittab.b35fb6eff43f\")}"
+        }
+      ],
+      "translation": "Briefly state the visit purpose",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.b72e3073880e",
+      "source": "提交后学校系统会生成报备记录，来访亲友凭身份证件从所选校门入校。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 33,
+          "context": "() => i18n(\"pages.info.visittab.b72e3073880e\")"
+        }
+      ],
+      "translation": "After submission the university system generates a registration record; visiting family and friends enter through the selected campus entrance with their ID documents.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.c425e1cfd31d",
+      "source": "身份证号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 304,
+          "context": "{i18n(\"pages.info.visittab.c425e1cfd31d\")}"
+        }
+      ],
+      "translation": "ID card number",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.cc06059ac1bf",
+      "source": "稍后再试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 127,
+          "context": "e instanceof Error ? e.message : i18n(\"pages.info.visittab.cc06059ac1bf\")"
+        }
+      ],
+      "translation": "Try again later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.d8bd7eda6680",
+      "source": "再看看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 374,
+          "context": "{i18n(\"pages.info.visittab.d8bd7eda6680\")}"
+        }
+      ],
+      "translation": "Not now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.visittab.e22da1c2173d",
       "source": "报备已提交，学校系统会同步生成记录。",
@@ -10,12 +127,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 161,
-          "context": "setNote(i18n(\"pages.info.visittab.e22da1c2173d\"))"
+          "line": 39,
+          "context": "return i18n(\"pages.info.visittab.e22da1c2173d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Registration submitted. The university system will generate the record shortly.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -26,12 +143,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 326,
+          "line": 334,
           "context": "model?.confirmLabel || i18n(\"pages.info.visittab.eda19ba6e037\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "I confirm the family/friend relationship is genuine, the identity is real, and the visit purpose is reasonable.",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -42,12 +159,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 277,
+          "line": 285,
           "context": "{i18n(\"pages.info.visittab.f265a7b34089\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Passcode",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -58,12 +175,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 228,
+          "line": 236,
           "context": "{i18n(\"pages.info.visittab.f56c6c82203b\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tip",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -74,12 +191,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 36,
+          "line": 44,
           "context": "() => i18n(\"pages.info.visittab.f733797ef61a\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit this registration?",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -90,12 +207,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 329,
+          "line": 337,
           "context": "{i18n(\"pages.info.visittab.f7c356bbe1c2\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit registration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -106,12 +223,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 190,
+          "line": 198,
           "context": "{i18n(\"pages.info.visittab.fd9918edd55e\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sign in and read registration info",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -131,8 +248,8 @@
           "context": "w.updateTime ? i18n(\"pages.info.washertab.14f31582e7ec\", { updateTime: String(w.updateTime) }) : \"\""
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Updated {updateTime}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -147,8 +264,8 @@
           "context": "w.eta > 0 ? i18n(\"pages.info.washertab.4d5ffe182d08\", { eta: String(w.eta) }) : i18n(\"pages.info.washertab.1f0eb99b7ed0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Running",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -163,8 +280,8 @@
           "context": "sel ? sel.name : i18n(\"pages.info.washertab.20f1ae81c877\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Select building…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -184,8 +301,8 @@
           "context": "w.eta > 0 ? i18n(\"pages.info.washertab.4d5ffe182d08\", { eta: String(w.eta) }) : i18n(\"pages.info.washertab.1f0eb99b7ed0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{eta} min left",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -200,8 +317,8 @@
           "context": "text: i18n(\"pages.info.washertab.5a0cc6c04776\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Fault",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +349,8 @@
           "context": "{i18n(\"pages.info.washertab.883871884efe\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No matching building",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +365,8 @@
           "context": "text: i18n(\"pages.info.washertab.93e474c68ed5\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Status unknown",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -264,8 +381,8 @@
           "context": "{i18n(\"pages.info.washertab.a537eecd2300\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Search buildings…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -280,8 +397,8 @@
           "context": "text: i18n(\"pages.info.washertab.be1b4f3c6c1c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Offline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -296,8 +413,8 @@
           "context": "text: i18n(\"pages.info.washertab.bed4c87f1838\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Idle",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -312,8 +429,8 @@
           "context": "{i18n(\"pages.info.washertab.d98a7674edd7\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No device data for this building.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -328,8 +445,8 @@
           "context": "text: i18n(\"pages.info.washertab.dae661d17c2d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -344,8 +461,8 @@
           "context": "w.name || w.location || w.type || i18n(\"pages.info.washertab.e1506406a5bd\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Devices",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -360,8 +477,8 @@
           "context": "{i18n(\"pages.info.washertab.eb6e062fe2c4\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Data from three providers: Jiel · Haile Life · Xiaolan Smart",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -385,8 +502,8 @@
           "context": "{i18n(\"pages.info.washertab.f2ac9226cb38\", { length: String(f.washers.length), free: String(free) })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{length} devices · {free} free",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -401,8 +518,8 @@
           "context": "{i18n(\"pages.learn.0cebfcb94425\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignment deadline reminder settings",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -417,8 +534,8 @@
           "context": "{i18n(\"pages.learn.1236edf41da0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unsubmitted assignments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -433,8 +550,8 @@
           "context": "{i18n(\"pages.learn.2079ef6b94d0\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Rain Classroom and OJ assignment sync is configured in \"Settings → Data & Sync\" (after one sign-in, assignments are merged into \"All assignments\" automatically).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -449,8 +566,8 @@
           "context": "{i18n(\"pages.learn.2a81fbaa67a8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View all files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -465,8 +582,8 @@
           "context": "{i18n(\"pages.learn.2bb745fb2e6f\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Course files",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -481,8 +598,8 @@
           "context": "{i18n(\"pages.learn.4005ca86f6e8\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared by all assignments: reminder before deadline (written to the system calendar alarm; synced as soon as changed)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -497,8 +614,8 @@
           "context": "{i18n(\"pages.learn.41319c365478\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "To override for a single assignment → the bell on the assignment row/course detail page (overrides this default)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -529,8 +646,8 @@
           "context": "data ? i18n(\"pages.learn.c58fe880cfb6\", { value: String(semesterText(data.semester.id)), value2: String(data.courses.length + merge.unmatchedYkt.length) }) : i18n(\"pages.learn.4927a53bcc88\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Loading…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -545,8 +662,8 @@
           "context": "{i18n(\"pages.learn.568090ece667\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "View all notifications",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -582,8 +699,8 @@
           "context": "state === \"loading\" ? i18n(\"pages.learn.6ebc2dd26a23\") : i18n(\"pages.learn.6874ac8d6028\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No courses this semester, or the data is not ready.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -598,8 +715,8 @@
           "context": "{i18n(\"pages.learn.687d0d801e7a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Deadline reminder",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -614,8 +731,8 @@
           "context": "state === \"loading\" ? i18n(\"pages.learn.6ebc2dd26a23\") : i18n(\"pages.learn.6874ac8d6028\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reloading this semester's courses…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -630,8 +747,8 @@
           "context": "{i18n(\"pages.learn.79a4ef019e9c\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Semester",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -646,8 +763,8 @@
           "context": "{i18n(\"pages.learn.7bdd5ce1e298\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reload",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -662,8 +779,8 @@
           "context": "{i18n(\"pages.learn.aee887434131\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Refresh",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -678,8 +795,8 @@
           "context": "subBusy ? i18n(\"pages.learn.assignmentdetailpage.18931020ad52\") : i18n(\"pages.learn.assignmentdetailpage.08a85f4ab4ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submit",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -694,8 +811,8 @@
           "context": "label: i18n(\"pages.learn.assignmentdetailpage.13a5b5219771\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grading attachments",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -710,8 +827,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.13d61fea9f17\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Preview",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -726,8 +843,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.16f19a676cae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open on the web",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -742,8 +859,8 @@
           "context": "subBusy ? i18n(\"pages.learn.assignmentdetailpage.18931020ad52\") : i18n(\"pages.learn.assignmentdetailpage.08a85f4ab4ba\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitting…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -758,8 +875,8 @@
           "context": "label: i18n(\"pages.learn.assignmentdetailpage.1ebfdb88cf58\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "My submission",
+      "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
@@ -774,8 +891,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.1edb50ac35be\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "📷 Photo upload",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -790,8 +907,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.1faef135bf90\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This assignment requires an attachment: choose a file or take a photo before submitting.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -806,8 +923,8 @@
           "context": "setSubMsg(i18n(\"pages.learn.assignmentdetailpage.205dfc7ce8cd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submitted successfully",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -822,8 +939,8 @@
           "context": "h.completionType === 2 ? i18n(\"pages.learn.assignmentdetailpage.a51ed50447a4\") : i18n(\"pages.learn.assignmentdetailpage.2299fee95921\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Individual",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -838,8 +955,8 @@
           "context": "why || i18n(\"pages.learn.assignmentdetailpage.272f3e83a699\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submission failed. Please try again later",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -854,8 +971,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.2cf55742e084\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This assignment was not found; the data may have refreshed. Go back to the list and retry.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -875,8 +992,8 @@
           "context": "text: i18n(\"pages.learn.assignmentdetailpage.2d2ab24375ce\", { path: String(path) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Downloaded to: {path}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -896,8 +1013,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.3023aaec3376\", { value: String(subFile.name.includes(\".\") ? subFile.name.slice(subFile.name.lastIndexOf(\".\")) : \"\") })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Custom attachment name (keeps the {value} extension; can be empty)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -917,8 +1034,8 @@
           "context": "{i18nRich(\"pages.learn.assignmentdetailpage.36a5f279113f\", { name: page.submittedAttachment.name })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Uploaded: {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -933,8 +1050,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.39d0d9a70496\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Parsing attachment…",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -949,8 +1066,8 @@
           "context": "h.lateSubmission ? i18n(\"pages.learn.assignmentdetailpage.3aaa13c526ef\") : i18n(\"pages.learn.assignmentdetailpage.6bc352ca0ce0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Late submission deadline",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -980,8 +1097,8 @@
           "context": "a!.name || i18n(\"pages.learn.assignmentdetailpage.4010ecf7cd09\", { key: String(key) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Attachment {key}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -996,8 +1113,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.4262c45dc797\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Notes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1033,8 +1150,8 @@
           "context": "{i18nRich(\"pages.learn.assignmentdetailpage.4a01c31b199b\", { name: subFile.name })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Will upload: {name}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1049,8 +1166,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.5e883449e2fa\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The deadline has passed and submission is disabled (withdrawing attachments is still available).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1081,8 +1198,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.6320b4a8722a\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1097,8 +1214,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.6a250414e278\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Comments",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1113,8 +1230,8 @@
           "context": "h.lateSubmission ? i18n(\"pages.learn.assignmentdetailpage.3aaa13c526ef\") : i18n(\"pages.learn.assignmentdetailpage.6bc352ca0ce0\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Submission time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1129,8 +1246,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.7da05f7e2250\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Sends the withdrawal request directly to Web Learning; assignments requiring attachments will be rejected with a message",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1145,8 +1262,8 @@
           "context": "h.submitted ? i18n(\"pages.learn.assignmentdetailpage.bc37a6110a07\") : i18n(\"pages.learn.assignmentdetailpage.8032af4a590f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not submitted",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1161,8 +1278,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.81ce4f7cb8ae\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Open in system browser",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1177,8 +1294,8 @@
           "context": "i18n(\"pages.learn.assignmentdetailpage.90f9253844e7\") + explainNetworkError(err)"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Download failed:",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1193,8 +1310,8 @@
           "context": "{i18n(\"pages.learn.assignmentdetailpage.9bc9d4470d81\")}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Grading time",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1218,8 +1335,8 @@
           "context": "{i18nRich(\"pages.learn.assignmentdetailpage.9f7f10c2207d\", { value: fmtDateTime(h.publishTime), value2: h.lateDeadline ? i18n(\"pages.learn.assignmentdetailpage.b05aa8be7054\", { value: String(fmtDateTime(h.lateDeadline)) }) : \"\" })}"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Published {value}{value2}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1234,135 +1351,8 @@
           "context": "h.completionType === 2 ? i18n(\"pages.learn.assignmentdetailpage.a51ed50447a4\") : i18n(\"pages.learn.assignmentdetailpage.2299fee95921\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.aef634f6b580",
-      "source": "批改人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 334,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.aef634f6b580\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.af1ceaee5c87",
-      "source": "调起后置相机拍照，拍完与选文件一样先预览再提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 449,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.af1ceaee5c87\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b05aa8be7054",
-      "source": " · 补交截止 {value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(fmtDateTime(h.lateDeadline))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 312,
-          "context": "h.lateDeadline ? i18n(\"pages.learn.assignmentdetailpage.b05aa8be7054\", { value: String(fmtDateTime(h.lateDeadline)) }) : \"\""
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b18ae752b8e6",
-      "source": "我的提交正文",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 363,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.b18ae752b8e6\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b45762984aa4",
-      "source": "撤回未成功，请稍后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 272,
-          "context": "why || i18n(\"pages.learn.assignmentdetailpage.b45762984aa4\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b7d31b81f628",
-      "source": "本作业要求必须带附件：请选择文件或拍照上传后再提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 221,
-          "context": "setSubMsg(i18n(\"pages.learn.assignmentdetailpage.b7d31b81f628\"))"
-        },
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 240,
-          "context": "new Error(i18n(\"pages.learn.assignmentdetailpage.b7d31b81f628\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b8784c8dd563",
-      "source": "重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 353,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.b8784c8dd563\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 404,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.b8784c8dd563\")}"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Group",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

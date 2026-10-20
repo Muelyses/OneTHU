@@ -1,7 +1,119 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.vault.1fd167c6ae13",
+      "source": "应用对象",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 79,
+          "context": "return i18n(\"state.vault.1fd167c6ae13\");"
+        }
+      ],
+      "translation": "App objects",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vault.206359b4b54d",
+      "source": "白板组件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 82,
+          "context": "return i18n(\"state.vault.206359b4b54d\");"
+        }
+      ],
+      "translation": "Board widgets",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vault.39932f24fe11",
+      "source": "文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 81,
+          "context": "return i18n(\"state.vault.39932f24fe11\");"
+        }
+      ],
+      "translation": "Files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vault.5440f7424f28",
+      "source": "数据",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 83,
+          "context": "return i18n(\"state.vault.5440f7424f28\");"
+        }
+      ],
+      "translation": "Data",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.124e692f8b2a",
+      "source": "这条云分享口令没有分享链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 159,
+          "context": "new Error(i18n(\"state.vaultcloud.124e692f8b2a\"))"
+        }
+      ],
+      "translation": "This cloud share code has no share link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.20e701b06a1a",
+      "source": "改变接收范围需要重新生成分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 173,
+          "context": "new Error(i18n(\"state.vaultcloud.20e701b06a1a\"))"
+        }
+      ],
+      "translation": "Changing the recipient scope requires regenerating the share",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.21e554dce895",
+      "source": "没有可撤销的分享 token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 183,
+          "context": "new Error(i18n(\"state.vaultcloud.21e554dce895\"))"
+        }
+      ],
+      "translation": "No share token to revoke",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vaultcloud.33798ae55697",
       "source": "清华云盘未连接：到云盘页粘贴 token 后再生成云分享口令",
@@ -14,8 +126,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.33798ae55697\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua Cloud Drive is not connected: paste your token on the Cloud Drive page before creating a share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +142,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.5ce19f9c3d3c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid shared file path",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +158,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.6a07b0abd9b4\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This share has no writable directory",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +174,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.8adb5a5068bc\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unsupported cloud drive manifest format",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +190,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.9fc6ff2f9450\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to create the OneTHU library: the cloud drive did not return it",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -99,8 +211,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.aae73c7a3e65\", { name: String(f.name) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The file \"{name}\" has no readable content. Please add it again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -120,8 +232,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.ac986af5f7b3\", { value: String(String(error)) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cannot share the attachment directory: {value}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -136,8 +248,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.bd2fb4465b55\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shared file verification failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -152,8 +264,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.c71c20943dfd\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The sender's library of this share cannot be found. Please revoke it on the sending device",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -168,8 +280,8 @@
           "context": "new Error(i18n(\"state.vaultcloud.ccd9ad2a2fee\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This share is missing its cloud drive location (repoId)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -184,8 +296,8 @@
           "context": "reason: i18n(\"state.vaultcloud.notConnected\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Cloud drive not connected",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -200,8 +312,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.14947083ab6d\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Theme applied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -216,8 +328,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.18fb3a6dfa2c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The text preview cannot be opened right now. Please try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -232,8 +344,8 @@
           "context": "new Error(i18n(\"state.vaultregistry.191e4869147e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The file has not been saved. Please add it again from its source",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -248,8 +360,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.24ec304b41bb\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The file reference is missing. Please add it again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -264,8 +376,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.2808a4f9d0f0\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This item cannot be opened directly yet; you can keep it in the Stash for now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -280,8 +392,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.666f4160f861\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Wallpaper applied",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -296,8 +408,8 @@
           "context": "r.reason === \"duplicate\" ? i18n(\"state.vaultregistry.dcd9b29df966\") : i18n(\"state.vaultregistry.75aa9163a82e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This is your own card; it is already in My card",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -312,8 +424,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.7b3408d0e018\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The attachment link has expired; you can download it again from the original page",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -328,8 +440,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.94220dc7197e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The plugin page is open; the plugin reference stays in the Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -344,8 +456,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.a56851062d27\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This item is no longer valid (you may lack access, or it has been deleted). You can remove it and add it again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -360,8 +472,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.ab9c4ba06c08\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This setting item cannot be found in the current version",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -376,8 +488,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.c5d06fdd2936\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The card has been added to Contacts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -392,8 +504,8 @@
           "context": "r.reason === \"duplicate\" ? i18n(\"state.vaultregistry.dcd9b29df966\") : i18n(\"state.vaultregistry.75aa9163a82e\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This card is already in Contacts",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -408,8 +520,8 @@
           "context": "env.toast(i18n(\"state.vaultregistry.fe7d0003cf59\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive library is open; see the item details for the file location",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -424,8 +536,8 @@
           "context": "reason: i18n(\"state.vaultshare.00b9a4acaf92\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code has expired. Ask the sharer to create a new one",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -445,8 +557,8 @@
           "context": "reason: i18n(\"state.vaultshare.09cc0bb41763\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code content is corrupted (base64 decoding failed)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -466,8 +578,8 @@
           "context": "return i18n(\"state.vaultshare.1677a739e1a4\", { recipient: want });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This share code is restricted to {recipient}: connect to Tsinghua Cloud Drive with that email first, then open this share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -482,8 +594,8 @@
           "context": "e instanceof Error ? e.message : i18n(\"state.vaultshare.2fb90783488d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share code verification failed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -498,8 +610,8 @@
           "context": "new Error(i18n(\"state.vaultshare.388fc6c63ebe\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share content exceeds the supported size",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -514,8 +626,8 @@
           "context": "new Error(i18n(\"state.vaultshare.561b8b9a8f82\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Your Stash is still empty. Add some content first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -530,8 +642,8 @@
           "context": "new Error(i18n(\"state.vaultshare.5dec5b6cd859\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid recipient email format",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -546,8 +658,8 @@
           "context": "reason: i18n(\"state.vaultshare.63205c669579\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share code verification failed (it may have been tampered with or copied incompletely)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -562,8 +674,8 @@
           "context": "reason: i18n(\"state.vaultshare.65381bdff463\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The current cloud drive adapter does not support in-place updates. Please create a new share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -583,8 +695,8 @@
           "context": "reason: i18n(\"state.vaultshare.65841f3a49c8\", { error: e instanceof Error ? e.message : String(e) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to update the cloud drive manifest: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -599,8 +711,8 @@
           "context": "new Error(i18n(\"state.vaultshare.6e106dfb0757\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive did not return a share link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -620,8 +732,8 @@
           "context": "reason: i18n(\"state.vaultshare.716036f1e95d\", { error: e instanceof Error ? e.message : String(e) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to read from the cloud drive: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -636,8 +748,8 @@
           "context": "reason: i18n(\"state.vaultshare.7aa0c43fe053\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code content is not valid JSON",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -652,8 +764,8 @@
           "context": "reason: i18n(\"state.vaultshare.857b79bf69f3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect to Tsinghua Cloud Drive first (changing the share code requires updating the manifest on the drive)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -668,8 +780,8 @@
           "context": "reason: i18n(\"state.vaultshare.989f1cde10a3\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Share code verification failed (it may have been copied incompletely)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -684,8 +796,8 @@
           "context": "reason: i18n(\"state.vaultshare.9aa4c7ceb155\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive location of this share code cannot be found. Please create a new share code from the Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -700,8 +812,8 @@
           "context": "reason: i18n(\"state.vaultshare.9ae3c2acf2c1\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code format is incomplete",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -716,8 +828,8 @@
           "context": "reason: i18n(\"state.vaultshare.a473c3b43384\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "There is no Stash right now",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -737,8 +849,8 @@
           "context": "reason: i18n(\"state.vaultshare.ae3ba9170d2f\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code is too large (over 96KB), which is not normal for this app",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -753,8 +865,8 @@
           "context": "new Error(i18n(\"state.vaultshare.af175fd37c73\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "WebCrypto is not available in this environment; cannot generate the share code digest",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -769,8 +881,8 @@
           "context": "dec.reason ?? i18n(\"state.vaultshare.b149e6ae5817\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The old share code is no longer valid. Please create a new share",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -785,8 +897,8 @@
           "context": "reason: i18n(\"state.vaultshare.b2e333bd5624\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code version or structure is not supported",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -801,8 +913,8 @@
           "context": "reason: i18n(\"state.vaultshare.b37b72a03e7d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code manifest exceeds the limit (300 items)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -817,8 +929,8 @@
           "context": "reason: i18n(\"state.vaultshare.b431db21b7df\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This is an old local share code; its content is baked into the code and cannot be changed. Please create a new share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -833,8 +945,8 @@
           "context": "secured.reason??i18n(\"state.vaultshare.b713d28a9ae7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The upgraded share cannot be read",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -854,8 +966,8 @@
           "context": "reason: i18n(\"state.vaultshare.b8aeb1a1f261\", { error: e instanceof Error ? e.message : String(e) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to read the cloud drive manifest: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -875,8 +987,8 @@
           "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share code cannot be parsed",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -891,8 +1003,8 @@
           "context": "reason: i18n(\"state.vaultshare.c5479cb871fa\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid email format, like studentID@mails.tsinghua.edu.cn",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -907,8 +1019,8 @@
           "context": "upgraded.reason??i18n(\"state.vaultshare.c97b00b652fa\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This legacy private share has not been upgraded yet. Please try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -928,8 +1040,8 @@
           "context": "reason:i18n(\"state.vaultshare.cb2fdf85ee42\", { error: e instanceof Error?e.message:String(e) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Changing the recipient scope was not completed. Please try again: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -944,8 +1056,8 @@
           "context": "checked.reason || i18n(\"state.vaultshare.ced6988b78e7\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "There is nothing to receive in this share",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -960,8 +1072,8 @@
           "context": "new Error(i18n(\"state.vaultshare.d2880ea01ca6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect to Tsinghua Cloud Drive first, then share your Stash",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -985,8 +1097,8 @@
           "context": "return i18n(\"state.vaultshare.dd39d27f2eaf\", { recipient: want, currentAccount: mine });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This share code is restricted to {recipient}; the currently connected cloud drive account is {currentAccount}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1006,8 +1118,8 @@
           "context": "reason:i18n(\"state.vaultshare.de371c09cf24\", { error: e instanceof Error?e.message:String(e) })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Changing the recipient scope is still pending. Please try again: {error}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1022,8 +1134,8 @@
           "context": "reason: i18n(\"state.vaultshare.df690d6050a8\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not a OneTHU share code (it should start with ONV1.)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1038,8 +1150,8 @@
           "context": "new Error(i18n(\"state.vaultshare.e1b89010df35\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect to Tsinghua Cloud Drive first, then create a share code",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1054,8 +1166,8 @@
           "context": "reason: i18n(\"state.vaultshare.ee75d1a72727\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The share is missing a read link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1070,8 +1182,8 @@
           "context": "new Error(i18n(\"state.vaultshare.f6d2148271ab\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Connect to Tsinghua Cloud Drive first",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1086,8 +1198,8 @@
           "context": "new Error(i18n(\"state.vaultshare.fab167848c3e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The cloud drive did not return a new share link",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1107,8 +1219,8 @@
           "context": "parts ? i18n(\"state.vaultsharelog.f9aa135776f2\", { count: e.scope.total, contents: parts }) : i18n(\"state.vaultsharelog.7aec0d4e2435\", { count: e.scope.total })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} items",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1132,8 +1244,8 @@
           "context": "parts ? i18n(\"state.vaultsharelog.f9aa135776f2\", { count: e.scope.total, contents: parts }) : i18n(\"state.vaultsharelog.7aec0d4e2435\", { count: e.scope.total })"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "{count} items · {contents}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1148,8 +1260,8 @@
           "context": "error: i18n(\"state.wallpaper.17b2bd6e97e6\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The video is over 12MB. Trim it first and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1174,8 +1286,8 @@
           "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This image could not be processed. Try another one",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1195,8 +1307,8 @@
           "context": "return i18n(\"state.wallpaper.8bd1eebd6969\", { limit: LIBRARY_MAX });"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The wallpaper library is full ({limit} items). Remove one before adding a new wallpaper",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1211,8 +1323,8 @@
           "context": "showToast(i18nMsg(\"state.wallpaper.b1afa0df864c\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Not enough local space for this wallpaper. Delete a few old ones from the library and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1227,8 +1339,8 @@
           "context": "return i18n(\"state.wallpaper.b53cdead995f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Dusk",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1243,8 +1355,8 @@
           "context": "error: i18n(\"state.wallpaper.b7f2922f045c\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Wallpapers accept images or videos only",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1264,120 +1376,8 @@
           "context": "error: i18n(\"state.wallpaper.b900150b992d\")"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.c1ff4d488144",
-      "source": "极光",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 160,
-          "context": "return i18n(\"state.wallpaper.c1ff4d488144\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.cdc37c08fb5b",
-      "source": "动态壁纸只认 mp4 / webm",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 348,
-          "context": "error: i18n(\"state.wallpaper.cdc37c08fb5b\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.fa67a660d4b7",
-      "source": "抹茶",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 162,
-          "context": "return i18n(\"state.wallpaper.fa67a660d4b7\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.fe4786177622",
-      "source": "墨",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 163,
-          "context": "return i18n(\"state.wallpaper.fe4786177622\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.connectBeforeRestore",
-      "source": "云盘还没连接：先到「云盘」页连接后再恢复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 114,
-          "context": "msg: i18n(\"state.wallpsync.connectBeforeRestore\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.connectBeforeUpload",
-      "source": "云盘还没连接：先到「云盘」页连接后再同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 89,
-          "context": "msg: i18n(\"state.wallpsync.connectBeforeUpload\")"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.e00e3a63ff07",
-      "source": "OneTHU 资料库没有建出来",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 59,
-          "context": "new Error(i18n(\"state.wallpsync.e00e3a63ff07\"))"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "This video cannot be read. Try another one",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

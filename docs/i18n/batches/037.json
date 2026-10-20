@@ -1,7 +1,55 @@
 {
-  "sourceHash": "c5231a837ca552ba808e14026f732a594e6460eba0df507beb7ca732262b16a9",
+  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.dbeef2a162c4",
+      "source": "四六级准考证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 86,
+          "context": "return i18n(\"lib.infoapps.dbeef2a162c4\");"
+        }
+      ],
+      "translation": "CET-4/CET-6 Admission Ticket",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.dc76007ab4ef",
+      "source": "阳光长跑成绩查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 111,
+          "context": "return i18n(\"lib.infoapps.dc76007ab4ef\");"
+        }
+      ],
+      "translation": "Sunshine Run Results",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.dd367c7e92ef",
+      "source": "成果发布申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 173,
+          "context": "return i18n(\"lib.infoapps.dd367c7e92ef\");"
+        }
+      ],
+      "translation": "Achievement Release Application",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.de0384adfc92",
       "source": "成果披露",
@@ -14,8 +62,8 @@
           "context": "return i18n(\"lib.infoapps.de0384adfc92\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Achievement Disclosure",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -30,8 +78,8 @@
           "context": "return i18n(\"lib.infoapps.de277182b052\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Party Member Management",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -46,8 +94,8 @@
           "context": "return i18n(\"lib.infoapps.df7acb38e394\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Comprehensive Financial Information Search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -62,8 +110,8 @@
           "context": "return i18n(\"lib.infoapps.e041c31d4085\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "DeepSeek Service",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -78,8 +126,8 @@
           "context": "return i18n(\"lib.infoapps.e10d51b5bf4c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Temporary Network Account for Official Visitors",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -94,8 +142,8 @@
           "context": "return i18n(\"lib.infoapps.e19f1215fee4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "State-Owned Asset Management System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -110,8 +158,8 @@
           "context": "return i18n(\"lib.infoapps.e1a9bf6f3c14\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Government-Funded Patent Declaration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -126,8 +174,8 @@
           "context": "return i18n(\"lib.infoapps.e60180120750\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Online Payment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -142,8 +190,8 @@
           "context": "return i18n(\"lib.infoapps.e67ea2b230af\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Contract Acceptance (Technology Commercialization)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -158,8 +206,8 @@
           "context": "return i18n(\"lib.infoapps.e6e6bb3c6de2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Artwork Registration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -174,8 +222,8 @@
           "context": "return i18n(\"lib.infoapps.e74c4963cc5e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Survey System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -190,8 +238,8 @@
           "context": "return i18n(\"lib.infoapps.e7c9a5e81629\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Online Service System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -206,8 +254,8 @@
           "context": "return i18n(\"lib.infoapps.e7cc1c075023\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Reagent and Material Information Management System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -222,8 +270,8 @@
           "context": "return i18n(\"lib.infoapps.eb4da47dbfe9\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tsinghua University Media System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -238,8 +286,8 @@
           "context": "return i18n(\"lib.infoapps.ebda5b7d0824\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Security (Traffic) Contract Approval/Filing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -254,8 +302,8 @@
           "context": "return i18n(\"lib.infoapps.ec37ae91e8bf\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Domestic Student Housing Application and Adjustment",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -270,8 +318,8 @@
           "context": "return i18n(\"lib.infoapps.ec9c49a04979\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Student Activity Application",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -286,8 +334,8 @@
           "context": "return i18n(\"lib.infoapps.eccab981cd2c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization Registration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -302,8 +350,8 @@
           "context": "return i18n(\"lib.infoapps.ecec6dec6b5c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Admissions Travel and Reimbursement Application",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -318,8 +366,8 @@
           "context": "return i18n(\"lib.infoapps.ee301c121fb5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Comprehensive Finance Service Platform",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -334,8 +382,8 @@
           "context": "return i18n(\"lib.infoapps.ee3203f6bf85\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "General Education Lectures Attended",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -350,8 +398,8 @@
           "context": "return i18n(\"lib.infoapps.efa201bcf49c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Collective Household Registration Services",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -366,8 +414,8 @@
           "context": "return i18n(\"lib.infoapps.efec75bee1fc\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Shengyin Yuan No. 22 Reservation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -382,8 +430,8 @@
           "context": "return i18n(\"lib.infoapps.f00b4592e5d0\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Financial Aid Lookup",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -398,8 +446,8 @@
           "context": "return i18n(\"lib.infoapps.f04aef6ee24c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Government-Funded Project Registration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -414,8 +462,8 @@
           "context": "return i18n(\"lib.infoapps.f1b90b3f08f2\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "MIS Development Service Contract (Model Text)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -430,8 +478,8 @@
           "context": "return i18n(\"lib.infoapps.f255c9dd7ced\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Performance Contract Approval/Filing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -446,8 +494,8 @@
           "context": "return i18n(\"lib.infoapps.f3e39ed2ef53\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Paper Claim (Legacy)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -462,8 +510,8 @@
           "context": "return i18n(\"lib.infoapps.f500bd66534a\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "English Placement Levels 3-4 Exemption Application",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -478,8 +526,8 @@
           "context": "return i18n(\"lib.infoapps.f575a006f94b\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "University Administration Satisfaction Survey",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -494,8 +542,8 @@
           "context": "return i18n(\"lib.infoapps.f66fc156eba4\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Study Plan Completion Status",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -510,8 +558,8 @@
           "context": "return i18n(\"lib.infoapps.f6e69d684adb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "General Education Course Application Search",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -526,8 +574,8 @@
           "context": "return i18n(\"lib.infoapps.f78a23b61ab7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Industry-Sponsored Project Change",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -542,8 +590,8 @@
           "context": "return i18n(\"lib.infoapps.f9206110d4bb\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graduate Survey",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -558,8 +606,8 @@
           "context": "return i18n(\"lib.infoapps.fa1d7aa7deff\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Awards and Financial Aid Management System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -574,8 +622,8 @@
           "context": "return i18n(\"lib.infoapps.fb199e506f1e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Special Logo Filing Application",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -590,8 +638,8 @@
           "context": "return i18n(\"lib.infoapps.fb6f99449c19\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Undergraduate Practice Contract Approval/Filing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -606,8 +654,8 @@
           "context": "return i18n(\"lib.infoapps.fb838f099c08\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "eduroam Guest System",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -622,8 +670,8 @@
           "context": "return i18n(\"lib.infoapps.fc9bf6c5e218\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Organization Remittance Claim",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -638,8 +686,8 @@
           "context": "return i18n(\"lib.infoapps.fdaf772576f8\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Graduate Employment/Red Practice Base Contract Approval/Filing",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -654,8 +702,8 @@
           "context": "return i18n(\"lib.infoapps.ff8f6bf4a353\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Trade Secret Registration",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -670,8 +718,8 @@
           "context": "return i18n(\"lib.infoapps.ffb509a9002c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Exam-Free Graduate Admission Recommendation",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -686,8 +734,8 @@
           "context": "return i18n(\"lib.infolib.22a686a1c34c\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "TOTP Authenticator",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -702,8 +750,8 @@
           "context": "new Error(i18n(\"lib.infolib.2d49d13d15b6\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Login session not found",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -718,8 +766,8 @@
           "context": "return i18n(\"lib.infolib.f3943a7b3681\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "WeChat Work",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -734,8 +782,8 @@
           "context": "return i18n(\"lib.infolib.f87602bd9134\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "SMS",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -750,8 +798,8 @@
           "context": "showToast(i18nMsg(\"lib.infolib.fd1c426ab1aa\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Trusted device limit reached: this device won't be remembered after this sign-in. You can delete an old \"Trusted Browser\" at id.tsinghua.edu.cn and try again.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -766,8 +814,8 @@
           "context": "new Error(i18n(\"lib.market.124d3a9ddf47\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "A plugin in the repository is missing the manifest/version field",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -782,8 +830,8 @@
           "context": "new Error(i18n(\"lib.market.2240fbc106e2\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Missing owner/repo; example: https://github.com/user/repo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -803,8 +851,8 @@
           "context": "new Error(\n    i18n(\"lib.market.4101aa0579ae\", { value: String(tried.join(\"、\")) }),\n  )"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "No plugin entry found in the repository (tried: {value}). The repository must provide plugin.js at its root (or index.js / main.js, or an entry specified in the manifest).",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -819,8 +867,8 @@
           "context": "new Error(i18n(\"lib.market.5749fe713e6e\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Invalid market list format (missing plugins array)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -840,8 +888,8 @@
           "context": "new Error(i18n(\"lib.market.5903a3de41a1\", { status: String(res.status) }))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Failed to fetch the market list: HTTP {status}",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -856,8 +904,8 @@
           "context": "new Error(i18n(\"lib.market.6c1f697fcc8f\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "owner/repo contains invalid characters",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -872,8 +920,8 @@
           "context": "new Error(i18n(\"lib.market.90b62e711681\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Only GitHub repositories are supported (github.com)",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -888,8 +936,8 @@
           "context": "new Error(i18n(\"lib.market.b494102993b9\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unrecognized repository address; example: user/repo or a full GitHub URL",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -904,8 +952,8 @@
           "context": "new Error(i18n(\"lib.market.bde49d8534fa\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Enter a repository address, e.g. user/repo",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -920,8 +968,8 @@
           "context": "new Error(i18n(\"lib.market.d8323fde8c21\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Unrecognized repository address; example: user/repo or user/repo@dev",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -936,8 +984,8 @@
           "context": "new Error(i18n(\"lib.nfc.e83e7558d05b\"))"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The content is too large to transfer fully over NFC; share it with a share code instead, or shrink the card avatar and try again",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -952,8 +1000,8 @@
           "context": "return i18n(\"lib.onboardingcards.0e2791c8cc8e\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Today's classes, schedule reminders, timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -984,8 +1032,8 @@
           "context": "return i18n(\"lib.onboardingcards.21255f717947\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus life",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1000,8 +1048,8 @@
           "context": "return i18n(\"lib.onboardingcards.39d6f1dbd274\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugin market, news subscriptions, course selection",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1016,8 +1064,8 @@
           "context": "return i18n(\"lib.onboardingcards.43f852c7166f\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Assignments, notices, course files, grades",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1032,8 +1080,8 @@
           "context": "return i18n(\"lib.onboardingcards.5152a3e4e9a5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Schedule and timetable",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1048,8 +1096,8 @@
           "context": "return i18n(\"lib.onboardingcards.9246e2578b58\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Campus card, electricity, washers, reservations",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1064,8 +1112,8 @@
           "context": "return i18n(\"lib.onboardingcards.ffe12936b2e7\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugins and more",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1080,8 +1128,8 @@
           "context": "return i18n(\"lib.onboardinglessons.00548ebf0094\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "One short share code, one bundle of content",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1095,8 +1143,8 @@
           "line": 25
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tap a box to preview; swipe inward on mobile to open management.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1110,8 +1158,8 @@
           "line": 54
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Press ⌘/Ctrl+K to open search and jump straight to a page or content.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1125,8 +1173,8 @@
           "line": 54
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OneFlow turns a chain of actions into fixed steps.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1140,8 +1188,8 @@
           "line": 87
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Study covers courses and assignments; Reservations covers venues, seminar rooms and visitor registration.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1155,8 +1203,8 @@
           "line": 100
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Stash, Organizations, Board and plugins belong to Full mode; switch in Settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1170,8 +1218,8 @@
           "line": 105
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Pick one of the replaceable slots 1 to 4 and that feature stays pinned at the bottom.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1186,8 +1234,8 @@
           "context": "return i18n(\"lib.onboardinglessons.22953a2b1d3d\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Tabs and workspaces: multitask without clashes",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1201,8 +1249,8 @@
           "line": 59
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "The floating ball can be turned on or off in OH settings.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1216,8 +1264,8 @@
           "line": 59
         }
       ],
-      "translation": "",
-      "status": "pending",
+      "translation": "OH supports voice, multimodal input and IM access.",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
@@ -1232,63 +1280,8 @@
           "context": "return i18n(\"lib.onboardinglessons.2ae24bb56fc5\");"
         }
       ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.2d15ea7e97cf",
-      "source": "在 OneGO! 保存工作区，下次一键恢复。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 49
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.2d32fc5fb4ab",
-      "source": "点待办查看详情，点课程进入课程内容。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 82
-        },
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 95
-        }
-      ],
-      "translation": "",
-      "status": "pending",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.2ef7a07ed1a6",
-      "source": "首页，只关心今天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 81,
-          "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
-        },
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 94,
-          "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
-        }
-      ],
-      "translation": "",
-      "status": "pending",
+      "translation": "Plugins and OH: bring in more capabilities",
+      "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }
   ]

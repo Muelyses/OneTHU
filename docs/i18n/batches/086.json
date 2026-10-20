@@ -1,7 +1,308 @@
 {
-  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
+  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.navigation.fdcd1bd074c9",
+      "source": "成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 91,
+          "context": "return i18n(\"state.navigation.fdcd1bd074c9\");"
+        }
+      ],
+      "translation": "Grades",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.fe07d17e6d4b",
+      "source": "全部待办与提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 101,
+          "context": "return i18n(\"state.navigation.fe07d17e6d4b\");"
+        }
+      ],
+      "translation": "All Tasks and reminders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ff2ae006e964",
+      "source": "任何元素先收进来，再整理/分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 82,
+          "context": "return i18n(\"state.navigation.ff2ae006e964\");"
+        }
+      ],
+      "translation": "Collect any element first, then organize or share it",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ff3eca1db845",
+      "source": "汇总课程作业，按截止时间查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 84,
+          "context": "return i18n(\"state.navigation.ff3eca1db845\");"
+        }
+      ],
+      "translation": "All course assignments in one place, viewed by due date",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.09acfa2e9fc5",
+      "source": "已写入系统调度并可回读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 140,
+          "context": "seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\")"
+        }
+      ],
+      "translation": "Written to the system scheduler and readable back",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.0b1efad5cf18",
+      "source": "还没有快照（打开应用并刷新一次数据即可生成）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 113,
+          "context": "ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\")"
+        }
+      ],
+      "translation": "No snapshot yet (open the app and refresh data once to generate one)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.0c9fc2c91156",
+      "source": "无探针需要撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 148,
+          "context": "probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\")"
+        }
+      ],
+      "translation": "No probes to revoke",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.18be67a09527",
+      "source": "原生拒绝了排程：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 132,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.18be67a09527\", { value: String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")) }))"
+        }
+      ],
+      "translation": "The native side rejected scheduling: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.34fa93f1c10b",
+      "source": "排程写入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 132,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.18be67a09527\", { value: String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")) }))"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 138,
+          "context": "push(\n        \"schedule\",\n        i18n(\"state.notifydoctor.34fa93f1c10b\"),\n        seen ? \"ok\" : \"warn\",\n        seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\"),\n      )"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 144,
+          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.b28333fd00e3\", { value: String(String(e).slice(0, 100)) }))"
+        }
+      ],
+      "translation": "Schedule write",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.3644e9a2e134",
+      "source": "写入成功，但系统待投递列表里读不到（可能被系统限流或立即触发）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 140,
+          "context": "seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\")"
+        }
+      ],
+      "translation": "Write succeeded, but it cannot be read back in the system's pending delivery list (it may be rate-limited by the system or delivered immediately)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.3712f8280c0c",
+      "source": "平台后端",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 71,
+          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"fail\", i18n(\"state.notifydoctor.42ab62b890f5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 74,
+          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"ok\", st.backend)"
+        }
+      ],
+      "translation": "Platform backend",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.3d485e1438c5",
+      "source": "OneTHU 自检探针",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 127,
+          "context": "title: i18n(\"state.notifydoctor.3d485e1438c5\")"
+        }
+      ],
+      "translation": "OneTHU self-check probe",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.notifydoctor.3edfd112e604",
+      "source": "投递被拒绝（见上一步与权限状态）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 153,
+          "context": "sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\")"
+        }
+      ],
+      "translation": "Delivery was rejected (see the previous step and permission status)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.42ab62b890f5",
+      "source": "本平台没有通知后端，提醒不会发出（桌面端 Linux 等未接入平台属正常）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 71,
+          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"fail\", i18n(\"state.notifydoctor.42ab62b890f5\"))"
+        }
+      ],
+      "translation": "This platform has no notification backend, so reminders will not be sent (normal for desktop platforms like Linux that are not integrated yet)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.521e65ffc7d0",
+      "source": "已授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 81,
+          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"ok\", i18n(\"state.notifydoctor.521e65ffc7d0\"))"
+        }
+      ],
+      "translation": "Authorized",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.58f371818c4f",
+      "source": "已发出测试通知——若没看到，检查系统「勿扰」或通知分组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 153,
+          "context": "sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\")"
+        }
+      ],
+      "translation": "Test notification sent — if you don't see it, check the system Do Not Disturb setting or notification grouping",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.5e0a3ee20f6b",
+      "source": "可自选尺寸{k}={t}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "k",
+          "expression": "String(k)"
+        },
+        {
+          "name": "t",
+          "expression": "String(t)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 101,
+          "context": "([k, t]) => i18n(\"state.notifydoctor.5e0a3ee20f6b\", { k: String(k), t: String(t) })"
+        }
+      ],
+      "translation": "Optional sizes {k}={t}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.notifydoctor.60d7f4ea2680",
       "source": "槽位{k}:{v}",
@@ -1086,288 +1387,6 @@
         }
       ],
       "translation": "A GitLab Maintainer special permission exists in this organization, so it cannot be guaranteed that only Owners can change management content. Change it to Owner or regular member in GitLab first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.7bdb46eb7930",
-      "source": "当前 GitLab 账号尚未获得这个组织的访问权限，请让负责人先添加你的 GitLab 账号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 33,
-          "context": "new Error(i18n(\"state.orgsync.7bdb46eb7930\"))"
-        }
-      ],
-      "translation": "The current GitLab account does not have access to this organization yet. Ask an Owner to add your GitLab account first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.839d06db8102",
-      "source": "元数据项目必须是该组织内未向其他群组共享的私有项目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 120,
-          "context": "new Error(i18n(\"state.orgsync.839d06db8102\"))"
-        }
-      ],
-      "translation": "The metadata project must be a private project in this organization that is not shared with other groups",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.8d6293d606a5",
-      "source": "请由另一位负责人执行你的移除或降级",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 192,
-          "context": "new Error(i18n(\"state.orgsync.8d6293d606a5\"))"
-        }
-      ],
-      "translation": "Have another Owner perform your removal or downgrade",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.8defedbcd2a0",
-      "source": "组织协作地址不合法",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 18,
-          "context": "new Error(i18n(\"state.orgsync.8defedbcd2a0\"))"
-        }
-      ],
-      "translation": "The organization collaboration address is invalid",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.8f58376b6cc9",
-      "source": "组织元数据项目存在额外直接成员授权，请先在 GitLab 移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 37,
-          "context": "new Error(i18n(\"state.orgsync.8f58376b6cc9\"))"
-        }
-      ],
-      "translation": "The organization metadata project has extra direct member grants. Remove them in GitLab first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.9278a31bb0c8",
-      "source": "请先把群组中的 Maintainer 调整为负责人或普通成员，再初始化协作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 107,
-          "context": "new Error(i18n(\"state.orgsync.9278a31bb0c8\"))"
-        }
-      ],
-      "translation": "Change Maintainers in the group to Owners or regular members before initializing collaboration",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.a6cbed9d57aa",
-      "source": "未完成的权限变更期间，只能补充现有成员的云盘邮箱；角色与成员调整请先完成重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 181,
-          "context": "new Error(i18n(\"state.orgsync.a6cbed9d57aa\"))"
-        }
-      ],
-      "translation": "While a permission change is incomplete, you can only add Cloud Drive emails for existing members. Complete the retry before adjusting roles or members.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.ab3125f51556",
-      "source": "组织元数据项目被共享给其他群组，请先在 GitLab 移除额外群组授权",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 35,
-          "context": "new Error(i18n(\"state.orgsync.ab3125f51556\"))"
-        }
-      ],
-      "translation": "The organization metadata project is shared with other groups. Remove the extra group grants in GitLab first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.b4a14ad2c5e3",
-      "source": "组织分支 {name} 的服务器保护不满足要求，请负责人检查 GitLab 分支保护",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 23,
-          "context": "new Error(i18n(\"state.orgsync.b4a14ad2c5e3\", { name: String(name) }))"
-        }
-      ],
-      "translation": "Server-side protection for the organization branch {name} does not meet requirements. Ask an Owner to check the GitLab branch protection.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.b9043bc090ae",
-      "source": "更换 GitLab 账号请先移除旧成员，再添加新成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 189,
-          "context": "new Error(i18n(\"state.orgsync.b9043bc090ae\"))"
-        }
-      ],
-      "translation": "To change a GitLab account, remove the old member first, then add the new one.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.cannotEdit",
-      "source": "当前账号没有编辑组织内容的权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 66,
-          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
-        }
-      ],
-      "translation": "The current account has no permission to edit organization content",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.cd3d301c9ac0",
-      "source": "权限变更尚未完成：{value}。修正原因后点击重试，已完成的步骤不会重复授予。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(errors.join(\"；\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 221,
-          "context": "new Error(i18n(\"state.orgsync.cd3d301c9ac0\", { value: String(errors.join(\"；\")) }))"
-        }
-      ],
-      "translation": "The permission change is not finished: {value}. Fix the cause and click retry; completed steps will not be granted again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.d42bb89b365b",
-      "source": "分支保护规则过多，无法完整验证组织配置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 21,
-          "context": "new Error(i18n(\"state.orgsync.d42bb89b365b\"))"
-        }
-      ],
-      "translation": "There are too many branch protection rules to fully verify the organization configuration",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.e6793d4dc90e",
-      "source": "此协作项目已经属于另一个组织，不能用本机资料覆盖",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 138,
-          "context": "new Error(i18n(\"state.orgsync.e6793d4dc90e\"))"
-        }
-      ],
-      "translation": "This collaboration project already belongs to another organization and cannot be overwritten with local content",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.f1478672fcff",
-      "source": "请填写准确的 GitLab 用户名和清华云盘邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 170,
-          "context": "new Error(i18n(\"state.orgsync.f1478672fcff\"))"
-        }
-      ],
-      "translation": "Enter the exact GitLab username and Tsinghua Cloud Drive email",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.f9a3b8011053",
-      "source": "找不到组织",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 16,
-          "context": "new Error(i18n(\"state.orgsync.f9a3b8011053\"))"
-        }
-      ],
-      "translation": "Organization not found",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.fa0fdd1e567b",
-      "source": "找不到可用的 GitLab 用户名，请让对方在 GitLab 个人资料中确认",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 173,
-          "context": "new Error(i18n(\"state.orgsync.fa0fdd1e567b\"))"
-        }
-      ],
-      "translation": "No usable GitLab username was found. Ask the other person to confirm it in their GitLab profile.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

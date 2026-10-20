@@ -1,7 +1,289 @@
 {
-  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
+  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.seafileauto.c82a95d8733d",
+      "source": "需要首次授权：云盘登录走清华 OAuth，请先在浏览器/App 里打开一次 cloud.tsinghua.edu.cn 并点「同意授权」（之后即静默）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafileAuto.ts",
+          "line": 228,
+          "context": "error: i18n(\"state.seafileauto.c82a95d8733d\")"
+        }
+      ],
+      "translation": "First-time authorization required: cloud drive sign-in uses Tsinghua OAuth. Open cloud.tsinghua.edu.cn once in a browser or the app and click \"Agree to authorize\" (afterwards it stays silent)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafileauto.d236f74b57c1",
+      "source": "统一认证确认续用失败：请稍后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafileAuto.ts",
+          "line": 93,
+          "context": "error: i18n(\"state.seafileauto.d236f74b57c1\")"
+        }
+      ],
+      "translation": "Failed to confirm renewal with unified authentication. Please retry later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafileauto.twoFactorRequired",
+      "source": "清华统一认证要求二次认证：请在 OneTHU 里重新登录清华账号并勾选「信任此设备」，之后云盘会自动连接。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafileAuto.ts",
+          "line": 33,
+          "context": "() =>\n  i18n(\"state.seafileauto.twoFactorRequired\")"
+        }
+      ],
+      "translation": "Tsinghua unified authentication requires two-factor authentication: sign in to your Tsinghua account again in OneTHU and check \"Trust this device\"; the cloud drive will then connect automatically.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.sealedshare.09715736b21b",
+      "source": "分享密钥损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 64,
+          "context": "new Error(i18n(\"state.sealedshare.09715736b21b\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 67,
+          "context": "new Error(i18n(\"state.sealedshare.09715736b21b\"))"
+        }
+      ],
+      "translation": "The share key is corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.sealedshare.2405c88b1056",
+      "source": "这是私密分享，请用获授权的邮箱连接清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 54,
+          "context": "new Error(i18n(\"state.sealedshare.2405c88b1056\"))"
+        }
+      ],
+      "translation": "This is a private share. Connect Tsinghua Cloud Drive with the authorized email.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.sealedshare.3244eb7e5a7d",
+      "source": "分享内容格式不正确或过大",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 73,
+          "context": "new Error(i18n(\"state.sealedshare.3244eb7e5a7d\"))"
+        }
+      ],
+      "translation": "The shared content is malformed or too large",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.sealedshare.48c72cc17f20",
+      "source": "当前云盘账号无权读取这条分享，或分享已被撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 60,
+          "context": "new Error(i18n(\"state.sealedshare.48c72cc17f20\"))"
+        }
+      ],
+      "translation": "The current cloud drive account has no access to this share, or the share has been revoked",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.sealedshare.627f3e9496d7",
+      "source": "分享内容校验失败，请让发送者重新分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 78,
+          "context": "new Error(i18n(\"state.sealedshare.627f3e9496d7\"))"
+        }
+      ],
+      "translation": "Share content verification failed. Ask the sender to share again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.sealedshare.8246a8d4e7da",
+      "source": "私密分享格式不正确",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/sealedShare.ts",
+          "line": 50,
+          "context": "new Error(i18n(\"state.sealedshare.8246a8d4e7da\"))"
+        }
+      ],
+      "translation": "The private share format is invalid",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.1af23354d905",
+      "source": "系统日历设置文件无效，请恢复备份后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 120,
+          "context": "new Error(i18n(\"state.systemcal.1af23354d905\"))"
+        }
+      ],
+      "translation": "The system calendar settings file is invalid. Restore from a backup and retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.30fb8d6869b0",
+      "source": "校历学期范围无效，已中止同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 242,
+          "context": "new Error(i18n(\"state.systemcal.30fb8d6869b0\"))"
+        }
+      ],
+      "translation": "The academic calendar semester range is invalid; sync was aborted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.3d8856ab74b0",
+      "source": "当前学期作业尚未就绪，请在网络学堂选择当前学期后重试；已有系统日历保持不变",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 245,
+          "context": "new Error(i18n(\"state.systemcal.3d8856ab74b0\"))"
+        }
+      ],
+      "translation": "Assignments for the current semester are not ready yet. Select the current semester in Web Learning and retry; the existing system calendar is unchanged",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.5a93b270a6f9",
+      "source": "当前平台不支持系统日历原生同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 489,
+          "context": "new Error(i18n(\"state.systemcal.5a93b270a6f9\"))"
+        }
+      ],
+      "translation": "Native system calendar sync is not supported on this platform",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.746a9d1e0b2c",
+      "source": "日程包含无效起止时间，已中止同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 318,
+          "context": "new Error(i18n(\"state.systemcal.746a9d1e0b2c\"))"
+        }
+      ],
+      "translation": "The schedule contains invalid start or end times; sync was aborted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.854aca2c0e1f",
+      "source": "当前平台不支持系统日历原生同步，可导出日历文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 417,
+          "context": "new Error(i18n(\"state.systemcal.854aca2c0e1f\"))"
+        }
+      ],
+      "translation": "Native system calendar sync is not supported on this platform; you can export a calendar file instead",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.89e7b1c563d7",
+      "source": "整学期拉取失败，保留完整缓存 {length} 条",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(hit.data.entries.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 226,
+          "context": "new Error(i18n(\"state.systemcal.89e7b1c563d7\", { length: String(hit.data.entries.length) }))"
+        }
+      ],
+      "translation": "Full-semester fetch failed; keeping the complete cache of {length} entries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.systemcal.8b3f14077824",
+      "source": "整学期数据不完整，保留系统日历已有内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 229,
+          "context": "new Error(i18n(\"state.systemcal.8b3f14077824\"))"
+        }
+      ],
+      "translation": "Full-semester data is incomplete; the existing system calendar content is kept",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.systemcal.ab1abc96899c",
       "source": "外部作业源尚未完整加载，请刷新网络学堂后重试；已有系统日历保持不变",
@@ -1095,296 +1377,6 @@
         }
       ],
       "translation": "Share code verification failed (it may have been copied incompletely)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.corrupt",
-      "source": "口令内容损坏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 64,
-          "context": "reason: i18n(\"state.touch.corrupt\")"
-        }
-      ],
-      "translation": "The share code content is corrupted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.duplicateContact",
-      "source": "名片已在通讯录里（重复接收不会重复添加）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 140,
-          "context": "reason: i18n(\"state.touch.duplicateContact\")"
-        }
-      ],
-      "translation": "The card is already in Contacts (receiving it again will not add a duplicate)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.empty",
-      "source": "这个碰一碰口令里没有可导入的内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 141,
-          "context": "reason: i18n(\"state.touch.empty\")"
-        }
-      ],
-      "translation": "This Tap to share code contains nothing that can be imported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.from",
-      "source": "来自 {name}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 130,
-          "context": "p.from ? i18n(\"state.touch.from\", {name:p.from}) : \"\""
-        }
-      ],
-      "translation": "From {name}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.invalidJson",
-      "source": "口令内容不是合法 JSON",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 70,
-          "context": "reason: i18n(\"state.touch.invalidJson\")"
-        }
-      ],
-      "translation": "The share code content is not valid JSON",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.invalidPrefix",
-      "source": "不是 OneTHU 碰一碰口令（应以 ONTOUCH1. 开头）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 62,
-          "context": "reason: i18n(\"state.touch.invalidPrefix\")"
-        }
-      ],
-      "translation": "Not a OneTHU Tap to share code (must start with ONTOUCH1.)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.self",
-      "source": "我",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 113,
-          "context": "myName = i18n(\"state.touch.self\")"
-        }
-      ],
-      "translation": "Me",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.unreadable",
-      "source": "口令无法解析",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 118,
-          "context": "dec.reason ?? i18n(\"state.touch.unreadable\")"
-        }
-      ],
-      "translation": "The share code could not be parsed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.vaultImportFailed",
-      "source": "暂存箱口令无法导入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 126,
-          "context": "r.reason ?? i18n(\"state.touch.vaultImportFailed\")"
-        }
-      ],
-      "translation": "The Stash share code could not be imported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.touch.version",
-      "source": "口令版本不受支持",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/touch.ts",
-          "line": 68,
-          "context": "reason: i18n(\"state.touch.version\")"
-        }
-      ],
-      "translation": "Share code version not supported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.userext.1129baf5b637",
-      "source": "第 {step} 步失败：{error}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "step",
-          "expression": "i + 1"
-        },
-        {
-          "name": "error",
-          "expression": "e instanceof Error ? e.message : String(e)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/userext.ts",
-          "line": 339,
-          "context": "error: i18n(\"state.userext.1129baf5b637\", { step: i + 1, error: e instanceof Error ? e.message : String(e) })"
-        }
-      ],
-      "translation": "Step {step} failed: {error}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.userext.13a46616e16f",
-      "source": "未知错误",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/userext.ts",
-          "line": 291,
-          "context": "error ?? i18n(\"state.userext.13a46616e16f\")"
-        }
-      ],
-      "translation": "Unknown error",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.userext.1a687dba3c19",
-      "source": "没有这个工具",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/userext.ts",
-          "line": 347,
-          "context": "error: i18n(\"state.userext.1a687dba3c19\")"
-        }
-      ],
-      "translation": "No such tool",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.userext.30c5627d3abc",
-      "source": "没有这个 OneFlow",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/userext.ts",
-          "line": 354,
-          "context": "error: i18n(\"state.userext.30c5627d3abc\")"
-        }
-      ],
-      "translation": "No such OneFlow",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.userext.4614c2ea297e",
-      "source": "第 {step} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "step",
-          "expression": "i + 1"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/userext.ts",
-          "line": 334,
-          "context": "error: i18n(\"state.userext.4614c2ea297e\", { step: i + 1 })"
-        }
-      ],
-      "translation": "Step {step} failed: from can only map object parameters (array parameters are spread by position and cannot be injected by name)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.userext.ec5c92fecc0a",
-      "source": "执行器还没就绪（等插件加载完成再试）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/userext.ts",
-          "line": 368,
-          "context": "error: i18n(\"state.userext.ec5c92fecc0a\")"
-        }
-      ],
-      "translation": "The executor is not ready yet (wait for plugins to finish loading and try again)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vault.14b69bd6eeb0",
-      "source": "文字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vault.ts",
-          "line": 80,
-          "context": "return i18n(\"state.vault.14b69bd6eeb0\");"
-        }
-      ],
-      "translation": "Text",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

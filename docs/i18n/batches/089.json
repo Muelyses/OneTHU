@@ -1,7 +1,297 @@
 {
-  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
+  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.touch.corrupt",
+      "source": "口令内容损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 64,
+          "context": "reason: i18n(\"state.touch.corrupt\")"
+        }
+      ],
+      "translation": "The share code content is corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.duplicateContact",
+      "source": "名片已在通讯录里（重复接收不会重复添加）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 140,
+          "context": "reason: i18n(\"state.touch.duplicateContact\")"
+        }
+      ],
+      "translation": "The card is already in Contacts (receiving it again will not add a duplicate)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.empty",
+      "source": "这个碰一碰口令里没有可导入的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 141,
+          "context": "reason: i18n(\"state.touch.empty\")"
+        }
+      ],
+      "translation": "This Tap to share code contains nothing that can be imported",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.from",
+      "source": "来自 {name}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 130,
+          "context": "p.from ? i18n(\"state.touch.from\", {name:p.from}) : \"\""
+        }
+      ],
+      "translation": "From {name}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.invalidJson",
+      "source": "口令内容不是合法 JSON",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 70,
+          "context": "reason: i18n(\"state.touch.invalidJson\")"
+        }
+      ],
+      "translation": "The share code content is not valid JSON",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.invalidPrefix",
+      "source": "不是 OneTHU 碰一碰口令（应以 ONTOUCH1. 开头）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 62,
+          "context": "reason: i18n(\"state.touch.invalidPrefix\")"
+        }
+      ],
+      "translation": "Not a OneTHU Tap to share code (must start with ONTOUCH1.)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.self",
+      "source": "我",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 113,
+          "context": "myName = i18n(\"state.touch.self\")"
+        }
+      ],
+      "translation": "Me",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.unreadable",
+      "source": "口令无法解析",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 118,
+          "context": "dec.reason ?? i18n(\"state.touch.unreadable\")"
+        }
+      ],
+      "translation": "The share code could not be parsed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.vaultImportFailed",
+      "source": "暂存箱口令无法导入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 126,
+          "context": "r.reason ?? i18n(\"state.touch.vaultImportFailed\")"
+        }
+      ],
+      "translation": "The Stash share code could not be imported",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.touch.version",
+      "source": "口令版本不受支持",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 68,
+          "context": "reason: i18n(\"state.touch.version\")"
+        }
+      ],
+      "translation": "Share code version not supported",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.userext.1129baf5b637",
+      "source": "第 {step} 步失败：{error}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "step",
+          "expression": "i + 1"
+        },
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 339,
+          "context": "error: i18n(\"state.userext.1129baf5b637\", { step: i + 1, error: e instanceof Error ? e.message : String(e) })"
+        }
+      ],
+      "translation": "Step {step} failed: {error}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.userext.13a46616e16f",
+      "source": "未知错误",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 291,
+          "context": "error ?? i18n(\"state.userext.13a46616e16f\")"
+        }
+      ],
+      "translation": "Unknown error",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.userext.1a687dba3c19",
+      "source": "没有这个工具",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 347,
+          "context": "error: i18n(\"state.userext.1a687dba3c19\")"
+        }
+      ],
+      "translation": "No such tool",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.userext.30c5627d3abc",
+      "source": "没有这个 OneFlow",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 354,
+          "context": "error: i18n(\"state.userext.30c5627d3abc\")"
+        }
+      ],
+      "translation": "No such OneFlow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.userext.4614c2ea297e",
+      "source": "第 {step} 步失败：from 只能配对象参数（数组参数按位置展开，无法按名注入）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "step",
+          "expression": "i + 1"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 334,
+          "context": "error: i18n(\"state.userext.4614c2ea297e\", { step: i + 1 })"
+        }
+      ],
+      "translation": "Step {step} failed: from can only map object parameters (array parameters are spread by position and cannot be injected by name)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.userext.ec5c92fecc0a",
+      "source": "执行器还没就绪（等插件加载完成再试）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/userext.ts",
+          "line": 368,
+          "context": "error: i18n(\"state.userext.ec5c92fecc0a\")"
+        }
+      ],
+      "translation": "The executor is not ready yet (wait for plugins to finish loading and try again)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vault.14b69bd6eeb0",
+      "source": "文字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 80,
+          "context": "return i18n(\"state.vault.14b69bd6eeb0\");"
+        }
+      ],
+      "translation": "Text",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vault.1fd167c6ae13",
       "source": "应用对象",
@@ -1057,326 +1347,6 @@
         }
       ],
       "translation": "There is nothing to receive in this share",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.d2880ea01ca6",
-      "source": "请先连接清华云盘，再分享暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 355,
-          "context": "new Error(i18n(\"state.vaultshare.d2880ea01ca6\"))"
-        }
-      ],
-      "translation": "Connect to Tsinghua Cloud Drive first, then share your Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.dd39d27f2eaf",
-      "source": "这条口令限定给 {recipient} 接收；当前连接的云盘账号是 {currentAccount}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "recipient",
-          "expression": "want"
-        },
-        {
-          "name": "currentAccount",
-          "expression": "mine"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 536,
-          "context": "return i18n(\"state.vaultshare.dd39d27f2eaf\", { recipient: want, currentAccount: mine });"
-        }
-      ],
-      "translation": "This share code is restricted to {recipient}; the currently connected cloud drive account is {currentAccount}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.de371c09cf24",
-      "source": "更换接收范围仍待完成，请重试：{error}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "error",
-          "expression": "e instanceof Error?e.message:String(e)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 433,
-          "context": "reason:i18n(\"state.vaultshare.de371c09cf24\", { error: e instanceof Error?e.message:String(e) })"
-        }
-      ],
-      "translation": "Changing the recipient scope is still pending. Please try again: {error}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.df690d6050a8",
-      "source": "不是 OneTHU 分享口令（应以 ONV1. 开头）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 192,
-          "context": "reason: i18n(\"state.vaultshare.df690d6050a8\")"
-        }
-      ],
-      "translation": "Not a OneTHU share code (it should start with ONV1.)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.e1b89010df35",
-      "source": "请先连接清华云盘，再生成分享口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 310,
-          "context": "new Error(i18n(\"state.vaultshare.e1b89010df35\"))"
-        }
-      ],
-      "translation": "Connect to Tsinghua Cloud Drive first, then create a share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.ee75d1a72727",
-      "source": "分享缺少读取链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 370,
-          "context": "reason: i18n(\"state.vaultshare.ee75d1a72727\")"
-        }
-      ],
-      "translation": "The share is missing a read link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.f6d2148271ab",
-      "source": "请先连接清华云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 407,
-          "context": "new Error(i18n(\"state.vaultshare.f6d2148271ab\"))"
-        }
-      ],
-      "translation": "Connect to Tsinghua Cloud Drive first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.fab167848c3e",
-      "source": "云盘未返回新分享链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 486,
-          "context": "new Error(i18n(\"state.vaultshare.fab167848c3e\"))"
-        }
-      ],
-      "translation": "The cloud drive did not return a new share link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultsharelog.7aec0d4e2435",
-      "source": "{count} 项",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count",
-          "expression": "e.scope.total"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShareLog.ts",
-          "line": 94,
-          "context": "parts ? i18n(\"state.vaultsharelog.f9aa135776f2\", { count: e.scope.total, contents: parts }) : i18n(\"state.vaultsharelog.7aec0d4e2435\", { count: e.scope.total })"
-        }
-      ],
-      "translation": "{count} items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultsharelog.f9aa135776f2",
-      "source": "{count} 项 · {contents}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count",
-          "expression": "e.scope.total"
-        },
-        {
-          "name": "contents",
-          "expression": "parts"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShareLog.ts",
-          "line": 94,
-          "context": "parts ? i18n(\"state.vaultsharelog.f9aa135776f2\", { count: e.scope.total, contents: parts }) : i18n(\"state.vaultsharelog.7aec0d4e2435\", { count: e.scope.total })"
-        }
-      ],
-      "translation": "{count} items · {contents}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.17b2bd6e97e6",
-      "source": "视频超过 12MB，请先剪短再试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 349,
-          "context": "error: i18n(\"state.wallpaper.17b2bd6e97e6\")"
-        }
-      ],
-      "translation": "The video is over 12MB. Trim it first and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.47afb8f5d184",
-      "source": "这张图处理失败，换一张试试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 386,
-          "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
-        },
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 403,
-          "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
-        },
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 410,
-          "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
-        }
-      ],
-      "translation": "This image could not be processed. Try another one",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.8bd1eebd6969",
-      "source": "壁纸库满员（{limit} 张），删一张再入库",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "limit",
-          "expression": "LIBRARY_MAX"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 307,
-          "context": "return i18n(\"state.wallpaper.8bd1eebd6969\", { limit: LIBRARY_MAX });"
-        }
-      ],
-      "translation": "The wallpaper library is full ({limit} items). Remove one before adding a new wallpaper",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.b1afa0df864c",
-      "source": "本机存不下这份壁纸，请删几张库里旧的再试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 130,
-          "context": "showToast(i18nMsg(\"state.wallpaper.b1afa0df864c\"))"
-        }
-      ],
-      "translation": "Not enough local space for this wallpaper. Delete a few old ones from the library and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.b53cdead995f",
-      "source": "暮色",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 161,
-          "context": "return i18n(\"state.wallpaper.b53cdead995f\");"
-        }
-      ],
-      "translation": "Dusk",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.b7f2922f045c",
-      "source": "壁纸只认图片或视频",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 374,
-          "context": "error: i18n(\"state.wallpaper.b7f2922f045c\")"
-        }
-      ],
-      "translation": "Wallpapers accept images or videos only",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.b900150b992d",
-      "source": "这个视频读不出来，换一个试试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 367,
-          "context": "error: i18n(\"state.wallpaper.b900150b992d\")"
-        },
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 369,
-          "context": "error: i18n(\"state.wallpaper.b900150b992d\")"
-        }
-      ],
-      "translation": "This video cannot be read. Try another one",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

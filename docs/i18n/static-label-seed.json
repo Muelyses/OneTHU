@@ -251,6 +251,74 @@
     "pages.info.visittab.0b0682ac2f83": {
       "zh-CN": "提交没有成功：请检查填写内容后重试，或到官方页面提交。",
       "en-US": "Submission did not go through: check the fields and try again, or submit on the official page."
+    },
+    "pages.info.visittab.7c4768ed455b": {
+      "zh-CN": "登录状态已失效，请重新登录后再试",
+      "en-US": "Your session has expired. Sign in and try again."
+    },
+    "pages.info.visittab.488837fe85bd": {
+      "zh-CN": "请求未成功（编号 {value}）",
+      "en-US": "Request did not succeed (code {value})"
+    },
+    "pages.info.visittab.e3301e2db296": {
+      "zh-CN": "临时来访报备系统返回了无法识别的内容（HTTP {value}）",
+      "en-US": "The temporary visit registration system returned unrecognized content (HTTP {value})"
+    },
+    "pages.info.visittab.95f5bc49c2c0": {
+      "zh-CN": "临时来访报备系统没有下发登录令牌",
+      "en-US": "The temporary visit registration system did not issue a sign-in token"
+    },
+    "pages.info.visittab.fcafad5054ea": {
+      "zh-CN": "统一身份认证跳转次数过多，请稍后重试",
+      "en-US": "Too many identity-authentication redirects. Please try again later."
+    },
+    "pages.info.visittab.7a786a6f0ace": {
+      "zh-CN": "本机没有记住账号密码：请先在设置里记住密码，或打开官方页面手动登录一次",
+      "en-US": "No account or password remembered on this device: remember the password in Settings first, or sign in once on the official page."
+    },
+    "pages.info.visittab.0dc9677cab64": {
+      "zh-CN": "统一身份认证页面形态不认识（HTTP {value}）",
+      "en-US": "Unrecognized identity-authentication page (HTTP {value}). Please try again later."
+    },
+    "pages.info.visittab.7cfaed11d6a4": {
+      "zh-CN": "统一身份认证要求二次验证：请先到官方页面完成一次验证",
+      "en-US": "Identity authentication requires a second verification step: complete one verification on the official page first."
+    },
+    "pages.info.visittab.86889497e1c5": {
+      "zh-CN": "统一身份认证没有返回漫游票据，请稍后重试",
+      "en-US": "Identity authentication did not return a roaming ticket. Please try again later."
+    },
+    "pages.info.visittab.962b844284e8": {
+      "zh-CN": "表单预载没有返回模型标识",
+      "en-US": "The prefilled form did not return a model identifier"
+    },
+    "pages.info.visittab.48ea9c8f9a02": {
+      "zh-CN": "表单模型解析失败",
+      "en-US": "Failed to parse the form model"
+    },
+    "pages.info.visittab.8da17766bce7": {
+      "zh-CN": "请先勾选「本人确认」再提交",
+      "en-US": "Tick the “I confirm” box before submitting"
+    },
+    "pages.info.visittab.00afe7c5403e": {
+      "zh-CN": "请至少填写一位来访人后再提交",
+      "en-US": "Add at least one visitor before submitting"
+    },
+    "pages.info.visittab.f8a7bfe03fb8": {
+      "zh-CN": "来访人身份证号不能为空，请补齐后再提交",
+      "en-US": "A visitor ID number is empty. Fill it in and submit again."
+    },
+    "pages.info.visittab.9f2554ab6827": {
+      "zh-CN": "来访人手机号需要 11 位，请补齐后再提交",
+      "en-US": "A visitor phone number needs 11 digits. Fill it in and submit again."
+    },
+    "pages.info.visittab.47ae9eb80e64": {
+      "zh-CN": "这条报备需要先选流转分支：请打开官方页面完成这一步",
+      "en-US": "This registration needs a routing branch first: open the official page to complete this step."
+    },
+    "pages.info.visittab.34c680feb9c9": {
+      "zh-CN": "发送成功",
+      "en-US": "Sent"
     }
   }
 }

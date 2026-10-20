@@ -1,7 +1,304 @@
 {
-  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
+  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.organization.71d4aa440534",
+      "source": "把资料库共享给全体成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 689,
+          "context": "{i18n(\"pages.organization.71d4aa440534\")}"
+        }
+      ],
+      "translation": "Share the library with all members",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.735033d7d37f",
+      "source": "负责人：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "p.owner || i18n(\"pages.organization.17bf181625e8\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 820,
+          "context": "{i18nRich(\"pages.organization.735033d7d37f\", { value: p.owner || i18n(\"pages.organization.17bf181625e8\") })}"
+        }
+      ],
+      "translation": "Owner: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.7371988e7f6d",
+      "source": "关联已有仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 780,
+          "context": "{i18n(\"pages.organization.7371988e7f6d\")}"
+        }
+      ],
+      "translation": "Link existing repo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.74ab5e0d1e5f",
+      "source": "还没有 GitLab 组织：新建仓库时会先建组织并邀请成员。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 776,
+          "context": "{i18n(\"pages.organization.74ab5e0d1e5f\")}"
+        }
+      ],
+      "translation": "No GitLab organization yet: creating a repo will first create the organization and invite members.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.752caefd1bea",
+      "source": "{name}的进度",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(p.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 822,
+          "context": "{i18n(\"pages.organization.752caefd1bea\", { name: String(p.name) })}"
+        }
+      ],
+      "translation": "{name}'s progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.76e68f1e2fcd",
+      "source": "置顶 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 843,
+          "context": "n.pinned ? i18n(\"pages.organization.76e68f1e2fcd\") : \"\""
+        }
+      ],
+      "translation": "Pinned · ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.7725bcb29aa3",
+      "source": "项目说明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 545,
+          "context": "label:i18nMsg(\"pages.organization.7725bcb29aa3\")"
+        }
+      ],
+      "translation": "Project description",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.77cb6bdd9069",
+      "source": "（约 {value} KB）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.ceil(preview.data.size / 1024))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 226,
+          "context": "preview?.data.size ? i18n(\"pages.organization.77cb6bdd9069\", { value: String(Math.ceil(preview.data.size / 1024)) }) : \"\""
+        }
+      ],
+      "translation": "(about {value} KB)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.79a369a8de4f",
+      "source": "口令可起名，也可限定某个云盘邮箱才能接受",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 640,
+          "context": "{i18n(\"pages.organization.79a369a8de4f\")}"
+        }
+      ],
+      "translation": "Share codes can be named, and can be restricted to a specific Cloud Drive email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.79f326be4409",
+      "source": "项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 611,
+          "context": "label: i18n(\"pages.organization.79f326be4409\")"
+        }
+      ],
+      "translation": "Projects",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.7a73baf0ce9a",
+      "source": "公开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 266,
+          "context": "detail.visibility === \"internal\" ? i18n(\"pages.organization.6f225eb36d6d\") : i18n(\"pages.organization.7a73baf0ce9a\")"
+        }
+      ],
+      "translation": "Public",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.7c7802d8adae",
+      "source": "文件夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 207,
+          "context": "entry.kind === \"dir\" ? i18n(\"pages.organization.7c7802d8adae\") : `${Math.max(1, Math.ceil(entry.size / 1024))} KB`"
+        }
+      ],
+      "translation": "Folders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.7dc5266a2019",
+      "source": "复制口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 645,
+          "context": "{i18n(\"pages.organization.7dc5266a2019\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 863,
+          "context": "{i18n(\"pages.organization.7dc5266a2019\")}"
+        }
+      ],
+      "translation": "Copy share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.7e228d4688a2",
+      "source": "可见性",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 266,
+          "context": "k: i18n(\"pages.organization.7e228d4688a2\")"
+        }
+      ],
+      "translation": "Visibility",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.7fd872847a17",
+      "source": "{name} 资料库",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(target.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 424,
+          "context": "default: i18n(\"pages.organization.7fd872847a17\", { name: String(target.name) })"
+        }
+      ],
+      "translation": "{name} library",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.809f2cef23cc",
+      "source": "打开仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 797,
+          "context": "{i18n(\"pages.organization.809f2cef23cc\")}"
+        }
+      ],
+      "translation": "Open repo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.8131eafd0239",
+      "source": "简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 352,
+          "context": "label: i18nMsg(\"pages.organization.8131eafd0239\")"
+        }
+      ],
+      "translation": "Summary",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.organization.818c0ab5d9ee",
       "source": "本机组织资料已更新；启用多人协作后会上传",
@@ -417,7 +714,7 @@
           "context": "confirmOk(i18nMsg(\"pages.organization.959d1ad22dc2\", { name: String(lib.name) }))"
         }
       ],
-      "translation": "Unlink library \\\"{name}\\\" from the organization? The library in Cloud Drive will not be deleted.",
+      "translation": "Unlink library \"{name}\" from the organization? The library in Cloud Drive will not be deleted.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1111,278 +1408,6 @@
         }
       ],
       "translation": "{value}/{value2} {value3}:{value4}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.b838382181d9",
-      "source": "正在读取仓库…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 259,
-          "context": "{i18n(\"pages.organization.b838382181d9\")}"
-        }
-      ],
-      "translation": "Reading repos…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.b8e3e3e6c5e6",
-      "source": "任何人（拿到口令就能接受）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 859,
-          "context": "invite.allowEmail ?? i18n(\"pages.organization.b8e3e3e6c5e6\")"
-        }
-      ],
-      "translation": "Anyone (anyone who has the code can accept)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.b9dc0caf4b89",
-      "source": "修改云盘邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 399,
-          "context": "openFormModal(i18nMsg(\"pages.organization.b9dc0caf4b89\"), [{key:\"email\",label:i18nMsg(\"pages.organization.d095478efd68\", { username: String(member.username) }),default:member.email,required:true}])"
-        }
-      ],
-      "translation": "Edit Cloud Drive email",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.organization.bd1aee6959f6",
-      "source": "还没有公告。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 839,
-          "context": "{i18n(\"pages.organization.bd1aee6959f6\")}"
-        }
-      ],
-      "translation": "No announcements yet.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.be276e340929",
-      "source": "公告已同步给组织成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 564,
-          "context": "runRemote(async()=>{\n      try { await saveRemoteContent(target.id,\"announcements\",notice,{id:notice?.id??crypto.randomUUID(),title:f.title!,body:f.body!,pinned:notice?.pinned??false,updatedAt:Date.now()}); setRetainedDraft(null); }\n      catch(e) { setRetainedDraft({label:i18n(\"pages.organization.51902a13beff\"),text:JSON.stringify(f,null,2),reopen:()=>void editNotice(orgSnapshot().orgs.find(o=>o.id===target.id)??target,orgSnapshot().orgs.find(o=>o.id===target.id)?.announcements?.find(n=>n.id===notice?.id),f)}); throw e; }\n    },i18n(\"pages.organization.be276e340929\"))"
-        }
-      ],
-      "translation": "Announcement synced to organization members",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.organization.c04beb5908e7",
-      "source": "这个资料库还是空的：可以到云盘里上传文件，回来就能预览。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 200,
-          "context": "{i18n(\"pages.organization.c04beb5908e7\")}"
-        }
-      ],
-      "translation": "This library is still empty: upload files in Cloud Drive, then come back to preview them.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c1e0eabac88e",
-      "source": "重试未完成的权限变更",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 583,
-          "context": "{i18n(\"pages.organization.c1e0eabac88e\")}"
-        }
-      ],
-      "translation": "Retry incomplete permission changes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c29f7a1f09d0",
-      "source": "还没连接清华云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 722,
-          "context": "{i18n(\"pages.organization.c29f7a1f09d0\")}"
-        }
-      ],
-      "translation": "Tsinghua Cloud Drive not connected yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c47b54e84e79",
-      "source": "角色",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 390,
-          "context": "label:i18nMsg(\"pages.organization.c47b54e84e79\")"
-        }
-      ],
-      "translation": "Role",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.organization.c505be585240",
-      "source": "成员与关联资源权限已移除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 412,
-          "context": "runRemote(()=>changeRemoteMember(target.id,member.gitlabUserId,undefined,{email:member.email,role:member.role}),i18n(\"pages.organization.c505be585240\"))"
-        }
-      ],
-      "translation": "Member and linked-resource permissions removed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c56cd8e33248",
-      "source": "有效期（改了会换一条新口令）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 365,
-          "context": "label: i18nMsg(\"pages.organization.c56cd8e33248\")"
-        }
-      ],
-      "translation": "Validity (changing it issues a new share code)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.organization.c583a7142d40",
-      "source": "打开 GitLab",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 781,
-          "context": "{i18n(\"pages.organization.c583a7142d40\")}"
-        }
-      ],
-      "translation": "Open GitLab",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c697a5163f2d",
-      "source": "邀请口令无法识别",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 101,
-          "context": "r.reason ?? i18n(\"pages.organization.c697a5163f2d\")"
-        }
-      ],
-      "translation": "Invite share code not recognized",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c697f98ef8c1",
-      "source": "在 GitLab 组织下新建仓库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 508,
-          "context": "group ? i18nMsg(\"pages.organization.c697f98ef8c1\") : i18nMsg(\"pages.organization.472ef6d25612\")"
-        }
-      ],
-      "translation": "Create a repo under the GitLab organization",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c73a21cff12c",
-      "source": "预览项目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 798,
-          "context": "openRepo === repo.id ? i18n(\"pages.organization.0ae7312510f4\") : i18n(\"pages.organization.c73a21cff12c\")"
-        }
-      ],
-      "translation": "Preview project",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c771248e511f",
-      "source": "打开",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 139,
-          "context": "{i18n(\"pages.organization.c771248e511f\")}"
-        }
-      ],
-      "translation": "Open",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.c7a1e9997e12",
-      "source": "云盘里还没有资料库：先新建一个",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 443,
-          "context": "seafile.repos.length ? i18nMsg(\"pages.organization.9efd7e2871ec\") : i18nMsg(\"pages.organization.c7a1e9997e12\")"
-        }
-      ],
-      "translation": "No library in Cloud Drive yet: create one first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

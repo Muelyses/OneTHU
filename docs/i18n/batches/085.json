@@ -1,7 +1,309 @@
 {
-  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
+  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.madmodel.302ca473236a",
+      "source": "更新学校登录状态暂缓，请稍后重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 535,
+          "context": "freeTierHint(i18n(\"state.madmodel.302ca473236a\"))"
+        }
+      ],
+      "translation": "Updating the school session is deferred. Please retry later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.6aa588205779",
+      "source": "学校登录服务暂不可用（HTTP {status}），请稍后重试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "status",
+          "expression": "String(res.status)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 306,
+          "context": "new TemporaryMadModelError(i18n(\"state.madmodel.6aa588205779\", { status: String(res.status) }), retryAt(res))"
+        }
+      ],
+      "translation": "The school sign-in service is temporarily unavailable (HTTP {status}). Please retry later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.795ecc37977c",
+      "source": "统一认证暂不可用（HTTP {status}），请稍后重试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "status",
+          "expression": "String(res.status)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 330,
+          "context": "new TemporaryMadModelError(i18n(\"state.madmodel.795ecc37977c\", { status: String(res.status) }), retryAt(res))"
+        }
+      ],
+      "translation": "Unified authentication is temporarily unavailable (HTTP {status}). Please retry later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.93c04445723a",
+      "source": "学校模型暂不可用：{reason}。登录状态失效时请重新登录清华账号；网络或限流问题请稍后重试。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "reason",
+          "expression": "why"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 550,
+          "context": "return i18n(\"state.madmodel.93c04445723a\", { reason: why });"
+        }
+      ],
+      "translation": "The school model is temporarily unavailable: {reason}. If your session has expired, sign in to your Tsinghua account again; for network or rate-limit issues, retry later.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.a3642b461fee",
+      "source": "续签退避中（约 {value} 分钟后重试）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.max(1, Math.ceil((nextAt - Date.now()) / 60_000)))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 237,
+          "context": "new Error(i18n(\"state.madmodel.a3642b461fee\", { value: String(Math.max(1, Math.ceil((nextAt - Date.now()) / 60_000))) }))"
+        }
+      ],
+      "translation": "Backing off on renewal (retrying in about {value} minutes)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.c04cfb0974f5",
+      "source": "更新登录凭证失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 542,
+          "context": "e instanceof Error ? e.message : i18n(\"state.madmodel.c04cfb0974f5\")"
+        }
+      ],
+      "translation": "Failed to update sign-in credentials",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.cc4b425932b8",
+      "source": "学校登录状态已过期，暂时无法完成校验",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 529,
+          "context": "freeTierHint(i18n(\"state.madmodel.cc4b425932b8\"))"
+        }
+      ],
+      "translation": "Your school session has expired; verification cannot complete right now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.60823aaec73b",
+      "source": "已发送",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 37,
+          "context": "return i18n(\"state.mail.60823aaec73b\");"
+        }
+      ],
+      "translation": "Sent",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.63a5e7b73911",
+      "source": "收件箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 36,
+          "context": "return i18n(\"state.mail.63a5e7b73911\");"
+        }
+      ],
+      "translation": "Inbox",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.c7533b0c0d79",
+      "source": "请先绑定邮箱与客户端专用密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 149,
+          "context": "new Error(i18n(\"state.mail.c7533b0c0d79\"))"
+        }
+      ],
+      "translation": "Bind your email and an app-specific password first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.cacheWriteFailed",
+      "source": "邮件已更新，但本地缓存未能保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 180,
+          "context": "errorsByFolder[folder] = i18n(\"state.mail.cacheWriteFailed\")"
+        }
+      ],
+      "translation": "Mail was updated, but the local cache could not be saved",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.credentialsReadFailed",
+      "source": "邮箱连接信息读取失败，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 111,
+          "context": "message = i18n(\"state.mail.credentialsReadFailed\")"
+        }
+      ],
+      "translation": "Failed to read the mail connection info. Please retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.e405fef4c8cd",
+      "source": "收件人不能为空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 248,
+          "context": "new Error(i18n(\"state.mail.e405fef4c8cd\"))"
+        }
+      ],
+      "translation": "The recipient cannot be empty",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.mail.e9a7b9e11064",
+      "source": "邮箱账号已改变，请重新打开邮件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/mail.ts",
+          "line": 73,
+          "context": "new Error(i18n(\"state.mail.e9a7b9e11064\"))"
+        }
+      ],
+      "translation": "The mail account has changed. Please reopen your mail.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.namecard.6344e8e2c076",
+      "source": "名片 · {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(doc.personal.name || \"我\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/nameCard.ts",
+          "line": 240,
+          "context": "title: i18n(\"state.namecard.6344e8e2c076\", { value: String(doc.personal.name || \"我\") })"
+        }
+      ],
+      "translation": "Card · {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.namecard.e769cfbccd53",
+      "source": "组织名片 · {name}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(org.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/nameCard.ts",
+          "line": 244,
+          "context": "title: i18n(\"state.namecard.e769cfbccd53\", { name: String(org.name) })"
+        }
+      ],
+      "translation": "Organization card · {name}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.navigation.06657c279571",
+      "source": "通讯录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 80,
+          "context": "return i18n(\"state.navigation.06657c279571\");"
+        }
+      ],
+      "translation": "Contacts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.navigation.07a0fa11958e",
       "source": "体育预约",
@@ -1012,307 +1314,6 @@
         }
       ],
       "translation": "Course selection",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.fdcd1bd074c9",
-      "source": "成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 91,
-          "context": "return i18n(\"state.navigation.fdcd1bd074c9\");"
-        }
-      ],
-      "translation": "Grades",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.fe07d17e6d4b",
-      "source": "全部待办与提醒",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 101,
-          "context": "return i18n(\"state.navigation.fe07d17e6d4b\");"
-        }
-      ],
-      "translation": "All Tasks and reminders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.ff2ae006e964",
-      "source": "任何元素先收进来，再整理/分享",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 82,
-          "context": "return i18n(\"state.navigation.ff2ae006e964\");"
-        }
-      ],
-      "translation": "Collect any element first, then organize or share it",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.ff3eca1db845",
-      "source": "汇总课程作业，按截止时间查看",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 84,
-          "context": "return i18n(\"state.navigation.ff3eca1db845\");"
-        }
-      ],
-      "translation": "All course assignments in one place, viewed by due date",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.09acfa2e9fc5",
-      "source": "已写入系统调度并可回读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 140,
-          "context": "seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\")"
-        }
-      ],
-      "translation": "Written to the system scheduler and readable back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.0b1efad5cf18",
-      "source": "还没有快照（打开应用并刷新一次数据即可生成）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 113,
-          "context": "ws.hasSnapshot ? i18n(\"state.notifydoctor.f1e21a111247\", { value: String(fmtTime(ws.snapshotAt)) }) : i18n(\"state.notifydoctor.0b1efad5cf18\")"
-        }
-      ],
-      "translation": "No snapshot yet (open the app and refresh data once to generate one)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.0c9fc2c91156",
-      "source": "无探针需要撤销",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 148,
-          "context": "probeScheduled ? i18n(\"state.notifydoctor.ad16c86b6da1\") : i18n(\"state.notifydoctor.0c9fc2c91156\")"
-        }
-      ],
-      "translation": "No probes to revoke",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.18be67a09527",
-      "source": "原生拒绝了排程：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 132,
-          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.18be67a09527\", { value: String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")) }))"
-        }
-      ],
-      "translation": "The native side rejected scheduling: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.34fa93f1c10b",
-      "source": "排程写入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 132,
-          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.18be67a09527\", { value: String(r.reason ?? i18n(\"state.notifydoctor.a1a9da9ee6ed\")) }))"
-        },
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 138,
-          "context": "push(\n        \"schedule\",\n        i18n(\"state.notifydoctor.34fa93f1c10b\"),\n        seen ? \"ok\" : \"warn\",\n        seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\"),\n      )"
-        },
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 144,
-          "context": "push(\"schedule\", i18n(\"state.notifydoctor.34fa93f1c10b\"), \"fail\", i18n(\"state.notifydoctor.b28333fd00e3\", { value: String(String(e).slice(0, 100)) }))"
-        }
-      ],
-      "translation": "Schedule write",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.3644e9a2e134",
-      "source": "写入成功，但系统待投递列表里读不到（可能被系统限流或立即触发）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 140,
-          "context": "seen ? i18n(\"state.notifydoctor.09acfa2e9fc5\") : i18n(\"state.notifydoctor.3644e9a2e134\")"
-        }
-      ],
-      "translation": "Write succeeded, but it cannot be read back in the system's pending delivery list (it may be rate-limited by the system or delivered immediately)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.3712f8280c0c",
-      "source": "平台后端",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 71,
-          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"fail\", i18n(\"state.notifydoctor.42ab62b890f5\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 74,
-          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"ok\", st.backend)"
-        }
-      ],
-      "translation": "Platform backend",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.3d485e1438c5",
-      "source": "OneTHU 自检探针",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 127,
-          "context": "title: i18n(\"state.notifydoctor.3d485e1438c5\")"
-        }
-      ],
-      "translation": "OneTHU self-check probe",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.notifydoctor.3edfd112e604",
-      "source": "投递被拒绝（见上一步与权限状态）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 153,
-          "context": "sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\")"
-        }
-      ],
-      "translation": "Delivery was rejected (see the previous step and permission status)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.42ab62b890f5",
-      "source": "本平台没有通知后端，提醒不会发出（桌面端 Linux 等未接入平台属正常）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 71,
-          "context": "push(\"backend\", i18n(\"state.notifydoctor.3712f8280c0c\"), \"fail\", i18n(\"state.notifydoctor.42ab62b890f5\"))"
-        }
-      ],
-      "translation": "This platform has no notification backend, so reminders will not be sent (normal for desktop platforms like Linux that are not integrated yet)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.521e65ffc7d0",
-      "source": "已授权",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 81,
-          "context": "push(\"permission\", i18n(\"state.notifydoctor.6dfd9883ec6d\"), \"ok\", i18n(\"state.notifydoctor.521e65ffc7d0\"))"
-        }
-      ],
-      "translation": "Authorized",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.58f371818c4f",
-      "source": "已发出测试通知——若没看到，检查系统「勿扰」或通知分组",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 153,
-          "context": "sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\")"
-        }
-      ],
-      "translation": "Test notification sent — if you don't see it, check the system Do Not Disturb setting or notification grouping",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.5e0a3ee20f6b",
-      "source": "可自选尺寸{k}={t}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "k",
-          "expression": "String(k)"
-        },
-        {
-          "name": "t",
-          "expression": "String(t)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 101,
-          "context": "([k, t]) => i18n(\"state.notifydoctor.5e0a3ee20f6b\", { k: String(k), t: String(t) })"
-        }
-      ],
-      "translation": "Optional sizes {k}={t}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

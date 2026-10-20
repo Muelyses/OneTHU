@@ -44,6 +44,32 @@ const AUTO_SUBMIT_FROM_OH = "pages.info.visittab.65897f00fbc6";
 const CONFIRM_TITLE = () => i18n("pages.info.visittab.f733797ef61a");
 const LOAD_FAIL = () => i18n("pages.info.visittab.8d66f991153b");
 const SUBMIT_FAIL = () => i18n("pages.info.visittab.0b0682ac2f83");
+// App-generated error texts from the visit client are re-resolved at display time;
+// school-server messages are kept verbatim (external {reason}).
+
+
+// App-generated error texts from the visit client are re-resolved at display time;
+// school-server messages are kept verbatim (external {reason}).
+const localizeVisitError = (message: string): string => {
+  if (message === "登录状态已失效，请重新登录后再试") return i18n("pages.info.visittab.7c4768ed455b");
+  { const m1 = message.match(/^请求未成功（编号 (\d+)）$/); if (m1) return i18n("pages.info.visittab.488837fe85bd", { value: m1[1] }); }
+  { const m1 = message.match(/^临时来访报备系统返回了无法识别的内容（HTTP (\d+)）$/); if (m1) return i18n("pages.info.visittab.e3301e2db296", { value: m1[1] }); }
+  if (message === "临时来访报备系统没有下发登录令牌") return i18n("pages.info.visittab.95f5bc49c2c0");
+  if (message === "统一身份认证跳转次数过多，请稍后重试") return i18n("pages.info.visittab.fcafad5054ea");
+  if (message === "本机没有记住账号密码：请先在设置里记住密码，或打开官方页面手动登录一次") return i18n("pages.info.visittab.7a786a6f0ace");
+  { const m1 = message.match(/^统一身份认证页面形态不认识（HTTP (\d+)）$/); if (m1) return i18n("pages.info.visittab.0dc9677cab64", { value: m1[1] }); }
+  if (message === "统一身份认证要求二次验证：请先到官方页面完成一次验证") return i18n("pages.info.visittab.7cfaed11d6a4");
+  if (message === "统一身份认证没有返回漫游票据，请稍后重试") return i18n("pages.info.visittab.86889497e1c5");
+  if (message === "表单预载没有返回模型标识") return i18n("pages.info.visittab.962b844284e8");
+  if (message === "表单模型解析失败") return i18n("pages.info.visittab.48ea9c8f9a02");
+  if (message === "请先勾选「本人确认」再提交") return i18n("pages.info.visittab.8da17766bce7");
+  if (message === "请至少填写一位来访人后再提交") return i18n("pages.info.visittab.00afe7c5403e");
+  if (message === "来访人身份证号不能为空，请补齐后再提交") return i18n("pages.info.visittab.f8a7bfe03fb8");
+  if (message === "来访人手机号需要 11 位，请补齐后再提交") return i18n("pages.info.visittab.9f2554ab6827");
+  if (message === "这条报备需要先选流转分支：请打开官方页面完成这一步") return i18n("pages.info.visittab.47ae9eb80e64");
+  if (message === "发送成功") return i18n("pages.info.visittab.34c680feb9c9");
+  return message;
+};
 
 type Phase = "need_login" | "loading" | "ready" | "error";
 
@@ -124,21 +150,21 @@ export function VisitTab() {
         setRows(mine.rows);
       } catch (e) {
         setRows([]);
-        setMineNote(i18n("pages.info.visittab.727f5033a84b", { value: String(e instanceof Error ? e.message : i18n("pages.info.visittab.cc06059ac1bf")) }));
+        setMineNote(i18n("pages.info.visittab.727f5033a84b", { value: String(e instanceof Error ? localizeVisitError(e.message) : i18n("pages.info.visittab.cc06059ac1bf")) }));
       }
     } catch (e) {
       if (e instanceof VisitLoginError) {
         setPhase("need_login");
-        setNote(e.message);
+        setNote(localizeVisitError(e.message));
         return;
       }
       if (e instanceof VisitAuthRequiredError) {
         setPhase("need_login");
-        setNote(e.message);
+        setNote(localizeVisitError(e.message));
         return;
       }
       setPhase("error");
-      setError(e instanceof VisitApiError ? e.message : LOAD_FAIL());
+      setError(e instanceof VisitApiError ? localizeVisitError(e.message) : LOAD_FAIL());
       void logLine(i18n("pages.info.visittab.085419250804", { value: String(String(e)) }));
     }
   }, []);
@@ -172,7 +198,7 @@ export function VisitTab() {
       setRows(mine.rows);
       setMineNote(null);
     } catch (e) {
-      setError(e instanceof VisitApiError ? e.message : SUBMIT_FAIL());
+      setError(e instanceof VisitApiError ? localizeVisitError(e.message) : SUBMIT_FAIL());
     } finally {
       setBusy(false);
     }

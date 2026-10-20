@@ -1,7 +1,308 @@
 {
-  "sourceHash": "f83802abbb77aae97d884e0a38b5ab5e49471a14e7d4dcc025562a679c9b426f",
+  "sourceHash": "32031aabf0d59436f7bf1859bfb2f6ddbc1c551f396c8c6cf78521e10d805363",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.plugins.195f0f04971f",
+      "source": "执行中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 550,
+          "context": "setRunMsg(i18n(\"pages.plugins.195f0f04971f\"))"
+        }
+      ],
+      "translation": "Running…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.19658d9fa9aa",
+      "source": "安装中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1465,
+          "context": "busy ? i18n(\"pages.plugins.19658d9fa9aa\") : i18n(\"pages.plugins.e8f88f51ccb0\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1511,
+          "context": "busy ? i18n(\"pages.plugins.19658d9fa9aa\") : i18n(\"pages.plugins.e8f88f51ccb0\")"
+        }
+      ],
+      "translation": "Installing…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.19c2811cc125",
+      "source": "已安装并激活：{name} v{version}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(m.name)"
+        },
+        {
+          "name": "version",
+          "expression": "String(m.version)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1353,
+          "context": "text: i18n(\"pages.plugins.19c2811cc125\", { name: String(m.name), version: String(m.version) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1367,
+          "context": "text: i18n(\"pages.plugins.19c2811cc125\", { name: String(m.name), version: String(m.version) })"
+        }
+      ],
+      "translation": "Installed and activated: {name} v{version}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1b568ba90ae3",
+      "source": "选择插件文件夹内的 manifest.json",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1410,
+          "context": "title: i18n(\"pages.plugins.1b568ba90ae3\")"
+        }
+      ],
+      "translation": "Select manifest.json inside the plugin folder",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.1b70686b644a",
+      "source": "我的插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 266,
+          "context": "label: i18n(\"pages.plugins.1b70686b644a\")"
+        }
+      ],
+      "translation": "My plugins",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.1bd91a7d0c53",
+      "source": "已保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 984,
+          "context": "{i18n(\"pages.plugins.1bd91a7d0c53\")}"
+        }
+      ],
+      "translation": "Saved",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1c44993e8d35",
+      "source": "📢 插件公告",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 679,
+          "context": "{i18n(\"pages.plugins.1c44993e8d35\")}"
+        }
+      ],
+      "translation": "📢 Plugin announcements",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1cb64f961cac",
+      "source": "参数（空格分隔，含引号的项用单引号包裹）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 844,
+          "context": "label: i18nMsg(\"pages.plugins.1cb64f961cac\")"
+        }
+      ],
+      "translation": "Arguments (space-separated; wrap items containing spaces in single quotes)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.1d4986f12b94",
+      "source": "浏览器预览装不了 Rust 插件——请用 pnpm --filter @onethu/desktop tauri:dev 桌面壳",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1377,
+          "context": "new Error(i18n(\"pages.plugins.1d4986f12b94\"))"
+        }
+      ],
+      "translation": "Rust plugins can't be installed in browser preview — use the desktop shell via pnpm --filter @onethu/desktop tauri:dev",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1dda1d69edf9",
+      "source": "连接外部 MCP 服务器",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 885,
+          "context": "{i18n(\"pages.plugins.1dda1d69edf9\")}"
+        }
+      ],
+      "translation": "Connect external MCP servers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1e26db04d877",
+      "source": "停用主题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1174,
+          "context": "on ? i18n(\"pages.plugins.1e26db04d877\") : i18n(\"pages.plugins.336e65b39549\")"
+        }
+      ],
+      "translation": "Disable theme",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1ef3de06b32e",
+      "source": "清空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 789,
+          "context": "{i18n(\"pages.plugins.1ef3de06b32e\")}"
+        }
+      ],
+      "translation": "Clear",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1f0eb99b7ed0",
+      "source": "运行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 371,
+          "context": "{i18n(\"pages.plugins.1f0eb99b7ed0\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 511,
+          "context": "active ? i18n(\"pages.plugins.1f0eb99b7ed0\") : failed ? i18n(\"pages.plugins.d1d044826a45\") : i18n(\"pages.plugins.a8c3698b5b8c\")"
+        }
+      ],
+      "translation": "Running",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1f2f3c30d1fe",
+      "source": "— 尚无输出 · 发一次对话或执行一条命令试试 —",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1030,
+          "context": "{i18n(\"pages.plugins.1f2f3c30d1fe\")}"
+        }
+      ],
+      "translation": "— No output yet · Send a message or run a command to try it —",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.1feae7575687",
+      "source": "分类筛选按钮在插件市场列表上方；已带到市场视图。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 173,
+          "context": "return i18n(\"pages.plugins.1feae7575687\");"
+        }
+      ],
+      "translation": "Category filters are above the plugin market list; brought you to the market view.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.213723a5cadd",
+      "source": "MCP 名称不能为空：填个名字再保存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 857,
+          "context": "showToast(i18nMsg(\"pages.plugins.213723a5cadd\"))"
+        }
+      ],
+      "translation": "MCP name can't be empty: enter a name before saving.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.2def3dbabf90",
+      "source": "编辑 MCP 服务器 · {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(cur?.name ?? \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 841,
+          "context": "idx === -1 ? i18nMsg(\"pages.plugins.c52661984f93\") : i18nMsg(\"pages.plugins.2def3dbabf90\", { value: String(cur?.name ?? \"\") })"
+        }
+      ],
+      "translation": "Edit MCP server · {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.plugins.2e1eee4a9c24",
       "source": "本地 v{local} → 市场 v{version}",
@@ -1170,298 +1471,6 @@
         }
       ],
       "translation": "Changes take effect only after you click \"Save\"",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.8b76184a7d6e",
-      "source": "启动命令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 843,
-          "context": "label: i18nMsg(\"pages.plugins.8b76184a7d6e\")"
-        }
-      ],
-      "translation": "Start command",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.plugins.8db1cbd053a9",
-      "source": "未声明额外权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 325,
-          "context": "ohPerms.length > 0 ? ohPerms.map((p) => PLUGIN_PERMISSIONS.find((x) => x.id === p)?.label ?? p).join(\" · \") : i18n(\"pages.plugins.8db1cbd053a9\")"
-        }
-      ],
-      "translation": "No extra permissions declared",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.plugins.8fce5ea7e11b",
-      "source": "（尚未签发）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 967,
-          "context": "{i18n(\"pages.plugins.8fce5ea7e11b\")}"
-        }
-      ],
-      "translation": "(not issued yet)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.915ff99bde6d",
-      "source": "选择 .js 文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1447,
-          "context": "label: i18n(\"pages.plugins.915ff99bde6d\")"
-        }
-      ],
-      "translation": "Select a .js file",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.plugins.91d07ffe8162",
-      "source": "正在从插件本体仓库获取最新版本…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 516,
-          "context": "msg: i18n(\"pages.plugins.91d07ffe8162\")"
-        }
-      ],
-      "translation": "Fetching the latest version from the plugin's own repository…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.946d16b17a2b",
-      "source": "内置核心",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 373,
-          "context": "{i18n(\"pages.plugins.946d16b17a2b\")}"
-        }
-      ],
-      "translation": "Built-in core",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.95e35aabd9a9",
-      "source": "内置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 595,
-          "context": "{i18n(\"pages.plugins.95e35aabd9a9\")}"
-        }
-      ],
-      "translation": "Built-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.979a332955c8",
-      "source": "详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 144,
-          "context": "return i18n(\"pages.plugins.979a332955c8\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1284,
-          "context": "{i18n(\"pages.plugins.979a332955c8\")}"
-        }
-      ],
-      "translation": "Details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.9802c0baac66",
-      "source": "打开系统对话框…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1492,
-          "context": "busy ? i18n(\"pages.plugins.9802c0baac66\") : i18n(\"pages.plugins.4ec0d4869981\")"
-        }
-      ],
-      "translation": "Open system dialog…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a0bacec44f47",
-      "source": "更新中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 643,
-          "context": "repoCheck.busy ? i18n(\"pages.plugins.a0bacec44f47\") : i18n(\"pages.plugins.b59008384c66\", { value: String(repoCheck.remote || repoRemote) })"
-        }
-      ],
-      "translation": "Updating…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a13d0dd615ca",
-      "source": "在插件市场里按名字/说明搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 160,
-          "context": "return i18n(\"pages.plugins.a13d0dd615ca\");"
-        }
-      ],
-      "translation": "Search the plugin market by name / description",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a203f86cf6a6",
-      "source": "MCP 服务器",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 777,
-          "context": "mode === \"mcp\" ? i18n(\"pages.plugins.a203f86cf6a6\") : i18n(\"pages.plugins.fc08fa260979\")"
-        }
-      ],
-      "translation": "MCP servers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a25ad69e35b5",
-      "source": "在「我的插件」与「插件市场」两个视图间切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 151,
-          "context": "return i18n(\"pages.plugins.a25ad69e35b5\");"
-        }
-      ],
-      "translation": "Switch between the \"My plugins\" and \"Plugin market\" views",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a3030bf8f16d",
-      "source": "保存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 992,
-          "context": "{i18n(\"pages.plugins.a3030bf8f16d\")}"
-        }
-      ],
-      "translation": "Save",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a5ea8a597574",
-      "source": "插件市场搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 160,
-          "context": "return i18n(\"pages.plugins.a5ea8a597574\");"
-        }
-      ],
-      "translation": "Plugin market search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a8b6c39dcabf",
-      "source": "已安装",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 370,
-          "context": "{i18n(\"pages.plugins.a8b6c39dcabf\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1146,
-          "context": "{i18n(\"pages.plugins.a8b6c39dcabf\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1260,
-          "context": "{i18n(\"pages.plugins.a8b6c39dcabf\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1312,
-          "context": "{i18n(\"pages.plugins.a8b6c39dcabf\")}"
-        }
-      ],
-      "translation": "Installed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.a8c3698b5b8c",
-      "source": "已停用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 511,
-          "context": "failed ? i18n(\"pages.plugins.d1d044826a45\") : i18n(\"pages.plugins.a8c3698b5b8c\")"
-        }
-      ],
-      "translation": "Disabled",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

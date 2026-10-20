@@ -1,0 +1,707 @@
+{
+  "version": 1,
+  "capturedFrom": "Actual running OneTHU application DOM; no composited or drawn UI",
+  "assets": [
+    {
+      "filename": "appearance.png",
+      "sha256": "a6f24a2e159fe31fd12c0493996f710ed16079bde2dcbed66d577cbbd0b7b20c",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "entry": "openLessonTarget",
+      "target": "appearance",
+      "fixture": "isolated fake-cloud; sample courses and homework via production data hooks; actual production components and styles",
+      "pageText": "首页\n模板\n10月20日 星期二\n10:00\n把今天，安排好。\n一级功能区\n待办\n课程\n日程\n寻迹\n通讯录\n邮箱\n云盘\nGitLab\n清小搭\n更多功能\n详细功能\n今日待办\n高等数学\n第二章习题\n网络学堂\n<1 天\n就要截止 · 10-20 23:59\n查看全部待办 →\n今日课程\n今天没有课。\n看本周课表\n最新新闻\n暂无订阅新闻\n校园卡余额\n–\n生活页 · 流水与充值\n标签页\n(\nO\nH\n)\n搜索或问小OH\n学习\n预约\n生活\n信息\n课表\n(\nO\nH\n)\n搜索\nOH\n清小搭\n创造模式\n主对话需要完整桌面环境\n\n当前窗口没有 Harness 进程（浏览器预览或插件未加载），对话历史在这里不可用，发送也不会生效。\n\n搜索模式不受影响，可正常使用。到桌面端（tauri 桌面版）打开同一入口即可看到主对话。\n\n暂存箱\n0\n组件\n自由摆放\n我的名片\n个人设置\n插件\n(\nO\nH\n)\nHarness\n设置\n导览\n管理栏目\n使用模式\n当前：完整模式 · 自由组织\n切换模式\n账号\n通知与提醒\n桌面小组件\n外观与布局\n数据与同步\n下载与存储\n帮助\n关于\n外观与布局\n首页布局\n恢复默认首页布局\n清除首页卡片的排列、折叠与隐藏记录，回到默认版式。\n恢复默认布局\n工作空间\n搜索与胶囊\n底栏胶囊与悬浮球的二合一入口\n点击胶囊默认打开\n搜索模式可搜功能/作业/文件并直达；OH 模式直接进对话\n搜索\nOH\n最近搜索记录\n暂无记录\n清空记录\n收藏夹\n恢复默认收藏夹\n删除全部用户收藏夹与折叠记录（默认一级入口不受影响，永远在左侧栏）。 各功能仍在原来的页面，收藏夹只是跳转入口。\n导出（复制 JSON）\n导入\n恢复默认\n外观\n玻璃程度\n默认档是无玻璃的中性面；其余三档是三种玻璃取向。\n透彻\n无\n透光\n均衡\n主题\n当前：石墨 · 默认　启用 / 停用主题在「插件」页里。\n安装主题\n管理主题\n石墨 · 默认\n中性面阶、黑白主要动作与清晰文字层级\n使用中 ✓\n紫水晶\n紫罗兰纸面、深紫文字与紫色强调。\n应用\n清华紫\n清华紫强调、淡紫面阶与清晰墨色。\n应用\n青瓷\n青绿强调与清凉的浅绿纸面。\n应用\n暖沙\n温暖米色纸面、棕色文字与沙金强调。\n应用\n墨蓝夜航\n海军蓝强调与冷调浅蓝面阶。\n应用\n凝夜\n深色工作台与钢蓝强调色，可用于昼夜调度。\n应用\n跟随系统昼夜\n开启后按系统的深色模式自动切换：亮色用「白天主题」，深色用「黑夜主题」。\n跟随系统取色\n当前系统不支持，开启后改用「清华紫」主题。\n壁纸\n全窗共用一张：画在壳层底，面板与栏体透出它。\n上传入库…\n同步到云盘\n从云盘恢复\n极光\n暮色\n抹茶\n墨\n已收 0/12 张；自收录的壁纸右上角有 ✕ 可删，内置渐变不可删\n同步含库内图片与视频，恢复会覆盖本机\n动态壁纸声音\n默认静音；视频壁纸有声时才需手势放开（浏览器自动播放策略）。\nOneShot 快捷入口\n快捷按钮 1\n通讯录\n暂存箱\n学习\n全部作业\n全部通知\n全部课程文件\n网络学堂搜索\n学期切换\n雨课堂作业\nOJ 作业\n成绩\n课程信息\n考试安排\n教学评估\n选课\n清小搭\n待办\n生活\n课表\n寻迹\n校历\n校园卡\n宿舍电费\n洗衣机\n宿舍\n卫生成绩\n校园网\n电子发票\n银行代发\n研究生收入\n图书馆座位\n研讨间\n空教室\n体育预约\n公共空间\n临时来访人员报备\n邮箱\n云盘\nGitLab\n在线服务\n个人信息\n体测成绩\n新闻\nTHUBook\n其他 Info 应用\n插件系统\n开发者面板\n预约\n信息\n快捷按钮 2\n通讯录\n暂存箱\n学习\n全部作业\n全部通知\n全部课程文件\n网络学堂搜索\n学期切换\n雨课堂作业\nOJ 作业\n成绩\n课程信息\n考试安排\n教学评估\n选课\n清小搭\n待办\n生活\n课表\n寻迹\n校历\n校园卡\n宿舍电费\n洗衣机\n宿舍\n卫生成绩\n校园网\n电子发票\n银行代发\n研究生收入\n图书馆座位\n研讨间\n空教室\n体育预约\n公共空间\n临时来访人员报备\n邮箱\n云盘\nGitLab\n在线服务\n个人信息\n体测成绩\n新闻\nTHUBook\n其他 Info 应用\n插件系统\n开发者面板\n预约\n信息\n快捷按钮 3\n通讯录\n暂存箱\n学习\n全部作业\n全部通知\n全部课程文件\n网络学堂搜索\n学期切换\n雨课堂作业\nOJ 作业\n成绩\n课程信息\n考试安排\n教学评估\n选课\n清小搭\n待办\n生活\n课表\n寻迹\n校历\n校园卡\n宿舍电费\n洗衣机\n宿舍\n卫生成绩\n校园网\n电子发",
+      "key": "appearance",
+      "file": "appearance.png",
+      "sourceManifest": "manifest-extras.json",
+      "pixelDimensions": {
+        "width": 780,
+        "height": 1688
+      }
+    },
+    {
+      "key": "board-full",
+      "file": "board-full.png",
+      "viewport": {
+        "width": 1024,
+        "height": 620
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "homepage",
+      "entrySteps": [
+        "Open actual full-mode homepage"
+      ],
+      "url": "http://127.0.0.1:5180/?explorer-preview=home#/homepage",
+      "fixture": {
+        "campus": "isolated sample data through production data hooks",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited screenshot of real production app DOM; no inserted UI, redraw, status bar, or screenshot montage",
+      "sha256": "b1f269543c1eda0bffadd5db400f20d57919d882e350ba83e81c57da107e731b",
+      "sourceManifest": "capture-extra-manifest.json",
+      "pixelDimensions": {
+        "width": 1024,
+        "height": 620
+      }
+    },
+    {
+      "filename": "data.png",
+      "sha256": "5dffcb9d44f005e045085fc19220e0b26cca4932d7a1d09189f119984cc0934e",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "entry": "openLessonTarget",
+      "target": "data",
+      "fixture": "isolated fake-cloud; sample courses and homework via production data hooks; actual production components and styles",
+      "pageText": "首页\n模板\n10月20日 星期二\n10:00\n把今天，安排好。\n一级功能区\n待办\n课程\n日程\n寻迹\n通讯录\n邮箱\n云盘\nGitLab\n清小搭\n更多功能\n详细功能\n今日待办\n高等数学\n第二章习题\n网络学堂\n<1 天\n就要截止 · 10-20 23:59\n查看全部待办 →\n今日课程\n今天没有课。\n看本周课表\n最新新闻\n暂无订阅新闻\n校园卡余额\n–\n生活页 · 流水与充值\n标签页\n(\nO\nH\n)\n搜索或问小OH\n学习\n预约\n生活\n信息\n课表\n暂存箱\n0\n组件\n自由摆放\n我的名片\n个人设置\n插件\n(\nO\nH\n)\nHarness\n设置\n导览\n管理栏目\n使用模式\n当前：完整模式 · 自由组织\n切换模式\n账号\n通知与提醒\n桌面小组件\n外观与布局\n数据与同步\n下载与存储\n帮助\n关于\n数据与同步\n云同步\n日程云同步（清华邮箱日历）\n用清华邮箱的日历服务在多台设备间同步日程——OneTHU 里添加的日程会出现在系统日历 / 其他设备（添加同一账号）。 授权码获取：网页版邮箱（mails.tsinghua.edu.cn）→ 设置 → 客户端专用密码。\n保存并验证\n系统日历同步\n本平台不支持直写系统日历；可在「日程」页导出 .ics 再导入。\n外部作业源\n把各平台作业 DDL 合并到「全部作业」与「今日」；只读拉取（标题 / 课程 / 截止时间），不提交、 不抓题目。登录信息在本机加密保存，只用来读取作业。\n雨课堂\n雨课堂\n未登录\n微信扫码登录\n短信验证码（暂不可用）\n雨课堂已启用图形验证码，直接短信登录暂不可用；请用微信或雨豆APP 扫码登录。\nOJ 平台\n按个人情况登录\nOJ 平台登录\nTUOJ（AI 版） 未登录\nTUOJ（经典版） 未登录\nTyche 未登录\nDSA OJ 未登录\n点击展开登录\nTUOJ（AI 版）\n未登录\n统一认证登录\n▸账号密码\n自动登录未成功（Cannot read properties of undefined (reading 'invoke')）——可点「统一认证登录」重试。\nTUOJ（经典版）\n未登录\n统一认证登录\n▸账号密码\n自动登录未成功（Cannot read properties of undefined (reading 'invoke')）——可点「统一认证登录」重试。\nTyche\n未登录\n登录\nDSA OJ\n未登录\n登录\n抓取范围与刷新\n对所有源生效；已过期的作业仍显示。\n只保留未来\n天（已过期的仍显示）\n保存\n立即刷新\n▸高级：手动粘贴浏览器登录信息\n雨课堂：未登录 · 0 条\nTUOJ（AI 版）：未登录 · 0 条\nTUOJ（经典版）：未登录 · 0 条\nTyche：未登录 · 0 条\nDSA OJ：未登录 · 0 条",
+      "key": "data",
+      "file": "data.png",
+      "sourceManifest": "manifest-extras.json",
+      "pixelDimensions": {
+        "width": 780,
+        "height": 1688
+      }
+    },
+    {
+      "key": "full-home-mobile",
+      "file": "full-home-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "homepage",
+      "entrySteps": [
+        "Open actual full-mode homepage on phone"
+      ],
+      "url": "http://127.0.0.1:5180/?explorer-preview=home#/homepage",
+      "fixture": {
+        "campus": "isolated sample data through production data hooks",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited screenshot of real production app DOM; no inserted UI, redraw, status bar, or screenshot montage",
+      "sha256": "8cb6eaa2c6f93409bd2dd5c2baeefe336b0c3354b24b33b014170b1b846c6270",
+      "sourceManifest": "capture-extra-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "filename": "learn.png",
+      "sha256": "7f3a0e0816a1b807fc1b7c7e29dd38384fc470e492fec3362dfcc32c0c366d1b",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "entry": "OneShot 学习 button from neutral preview",
+      "target": "learn",
+      "fixture": "isolated fake-cloud; sample courses and homework via production data hooks; actual production components and styles",
+      "visibleEvidence": {
+        "heading": "课程",
+        "headingBounds": {
+          "x": 16,
+          "y": 64,
+          "width": 46.328125,
+          "height": 32,
+          "top": 64,
+          "right": 62.328125,
+          "bottom": 96,
+          "left": 16
+        },
+        "headingInViewport": true,
+        "hitPage": "learn",
+        "visiblePages": [
+          "learn"
+        ],
+        "hash": "#/learn"
+      },
+      "pageText": "课程\ndemo-2026 学年 · 2 门课程\n搜索\n学期\n刷新\n雨课堂与 OJ 的作业同步在「设置 → 数据与同步」里配置（登录一次后作业会自动并入「全部作业」）。\n1\n未交作业\n0\n课程通知\n0\n课程文件\n2 小时\nDDL 提醒\n高等数学\n示例教师 · demo-math-1\n六教 6A101\n网络学堂\n未交 1\n设计思维\n示例教师 · demo-design-1\n三教 3200\n网络学堂\n暂无动态\n1\n标签页\n(\nO\nH\n)\n搜索或问小OH\n学习\n预约\n生活\n信息\n课表\n暂存箱\n0",
+      "key": "learn",
+      "file": "learn.png",
+      "sourceManifest": "manifest-extras.json",
+      "pixelDimensions": {
+        "width": 780,
+        "height": 1688
+      }
+    },
+    {
+      "filename": "onego.png",
+      "sha256": "f2f00853e4850a1303304b1cfe8537b68a2d6b38a232eb50e72293c72a5f5869",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "entry": "openLessonTarget",
+      "target": "onego",
+      "fixture": "isolated fake-cloud; sample courses and homework via production data hooks; actual production components and styles",
+      "pageText": "首页\n模板\n10月20日 星期二\n10:00\n把今天，安排好。\n一级功能区\n待办\n课程\n日程\n寻迹\n通讯录\n邮箱\n云盘\nGitLab\n清小搭\n更多功能\n详细功能\n今日待办\n高等数学\n第二章习题\n网络学堂\n<1 天\n就要截止 · 10-20 23:59\n查看全部待办 →\n今日课程\n今天没有课。\n看本周课表\n最新新闻\n暂无订阅新闻\n校园卡余额\n–\n生活页 · 流水与充值\n标签页\n(\nO\nH\n)\n搜索或问小OH\n学习\n预约\n生活\n信息\n课表\n暂存箱\n0\n组件\n自由摆放\nOneGO!\n完成\n我的收藏\n工作区\n我的 OnePage\n首页\n时钟 · 一级程序坞 · 自由画布\n新建\n还没有 OnePage。新建一块，它就是一张可以随意摆组件的白板。\n所有 OnePage\n列表里改名 / 换图标 / 排序 / 删除\n暂存箱\n先把任意元素收进来，再整理或生成分享口令\nOnePage 是一张白板：长按组件换位，右下角进编辑与添加。\nOneFlow\n还没有 OneFlow，去 OH 对话说「创建一个流程」即可。\n功能目录在首页 ↓",
+      "key": "onego",
+      "file": "onego.png",
+      "sourceManifest": "manifest-extras.json",
+      "pixelDimensions": {
+        "width": 780,
+        "height": 1688
+      }
+    },
+    {
+      "key": "organization",
+      "file": "organization.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "org overview",
+      "entrySteps": [
+        "通讯录 → 新建组织",
+        "启用多人协作 against isolated fake organization server",
+        "成员 → 添加成员",
+        "概览"
+      ],
+      "url": "http://127.0.0.1:5180/?explorer-preview=home#/org",
+      "fixture": {
+        "campus": "isolated sample data through production data hooks",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "organization": "Isolated fake GitLab/Seafile services; actual organization UI and production synchronization flow",
+        "members": [
+          "fixture owner",
+          "fixture lisi"
+        ],
+        "hardwareOrLiveServiceClaim": false
+      },
+      "source": "Uncomposited screenshot of real production app DOM; no inserted UI, redraw, status bar, or screenshot montage",
+      "sha256": "63de27232ff76c9386a3be05b25d4b0fbb434176cf9d35b644ddda7812b698cd",
+      "sourceManifest": "capture-extra-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "filename": "plugins.png",
+      "sha256": "38336c748c30e135186920bbcb4d3dfd2c1a256272b8a6b8197705cc4b8f686c",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "entry": "openLessonTarget",
+      "target": "plugins",
+      "fixture": "isolated fake-cloud; sample courses and homework via production data hooks; actual production components and styles",
+      "pageText": "首页\n模板\n10月20日 星期二\n10:00\n把今天，安排好。\n一级功能区\n待办\n课程\n日程\n寻迹\n通讯录\n邮箱\n云盘\nGitLab\n清小搭\n更多功能\n详细功能\n今日待办\n高等数学\n第二章习题\n网络学堂\n<1 天\n就要截止 · 10-20 23:59\n查看全部待办 →\n今日课程\n今天没有课。\n看本周课表\n最新新闻\n暂无订阅新闻\n校园卡余额\n–\n生活页 · 流水与充值\n标签页\n(\nO\nH\n)\n搜索或问小OH\n学习\n预约\n生活\n信息\n课表\n暂存箱\n0\n组件\n自由摆放\n我的名片\n个人设置\n插件\n(\nO\nH\n)\nHarness\n插件\n经 onethu.* 公共接口扩展 OneTHU——权限门禁、会话自愈、 45s 超时由宿主统一承担\n我的插件\n插件市场\n安装插件\n已安装\n00\n运行中\n00\n空闲\n可用命令\n00\n内置核心\n00\n全部 0\n主题 0\n通用 0\n机架空空如也\n安装第一个插件，为 OneTHU 挂上新的能力模块。\n安装插件",
+      "key": "plugins",
+      "file": "plugins.png",
+      "sourceManifest": "manifest-extras.json",
+      "pixelDimensions": {
+        "width": 780,
+        "height": 1688
+      }
+    },
+    {
+      "key": "practical-home",
+      "file": "practical-home.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Set the real experience mode",
+        "Use the actual 首页 button"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 0
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "f4d5e4af0c94d512fc13c5deb2a4714ddee2ec5f9392d74011078b3885104144",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "practical-home-customized",
+      "file": "practical-home-customized.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "更多功能 → 把云盘放进快捷入口 → 入口1"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "customizedSlot": "1 = 云盘"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "3cdcf6414ca1d6ed5c9614db531292a0eef158231b9429c305c716c61685e5c9",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "practical-home-done",
+      "file": "practical-home-done.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Fixture reports one submitted assignment",
+        "Re-enter actual 首页"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 1,
+        "semantic": "Backend data fixture marks an assignment submitted; no nonexistent homepage checkbox is implied"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "210b156f9c00996cc770faacfedf975fbaf3655ac002e89ae76dde6bcd751aa2",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "practical-more",
+      "file": "practical-more.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage + 更多功能",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Tap actual OneShot 更多功能"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "f5d3a57630fb7864316380b354c63296b56c5b24ffa1005df5930b507b55a38f",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "schedule",
+      "file": "schedule.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "schedule",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Tap actual OneShot 课表"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "559c8417f21d00acaa039bf1862a230a67674488fc4fdd1eae3305c6aafb8427",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "simple-home",
+      "file": "simple-home.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "simple",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Set the real experience mode",
+        "Use the actual 首页 button"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 0
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "2d9db54dbaf0ebec38c0bae1a9880b395115260d4c0701b63ca67487dd5d1acf",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "simple-home-done",
+      "file": "simple-home-done.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "simple",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Fixture reports one submitted assignment",
+        "Re-enter actual 首页"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 1,
+        "semantic": "Backend data fixture marks an assignment submitted; no nonexistent homepage checkbox is implied"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "eea4471ecf319d81ad4e90eff686517c38a339395f2a05f25680f3ae53ef5359",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "vault",
+      "file": "vault.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Open actual VaultPage"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "vaultItems": [
+          "课程笔记",
+          "小组讨论安排",
+          "阅读清单"
+        ],
+        "storage": "isolated localStorage"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "0b1f3188964dc83075ac334a058f2043908d1df5a4a5429222dca1687f6db93b",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "vault-receive",
+      "file": "vault-receive.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 接收内容",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 接收",
+        "Fill the generated demo code"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "transport": "short code; NFC remains unsupported in browser"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "b05e3066c021574077c66494d5ed38489fb47d5787996ba379daa760dff014c4",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "vault-received",
+      "file": "vault-received.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 接收内容 success",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 接收口令",
+        "Wait for real import result and new vault"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "transport": "actual application code flow against fake-cloud",
+        "hardwareNfcSuccess": false
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "38eb904213fba1759d81de8c769fe48f2f2dcc666f07afa1edb444cf12887d3b",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "vault-send-code",
+      "file": "vault-send-code.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 分享内容 generated",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 生成分享口令",
+        "Wait for actual result component"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "cloud": "isolated fake-cloud transport",
+        "code": "generated demo code, invalid outside this local fixture"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "58c7366cdeeac16b276d24293e43c5a7d93037a1268eba47716d52737a07cb63",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "key": "vault-send-preview",
+      "file": "vault-send-preview.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 分享内容",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 分享口令"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "cloud": "installFakeCloud; no real account requests"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "8c50786266505eba101631f0a1c545b89486093a666686d7aa285e85be089923",
+      "sourceManifest": "capture-core-manifest.json",
+      "pixelDimensions": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "filename": "workspaces.png",
+      "sha256": "b18a1adc30f590f0be1a268325cba3d78ccda75dec51fdc7add3cd3d08b8a853",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "entry": "openLessonTarget",
+      "target": "workspaces",
+      "fixture": "isolated fake-cloud; sample courses and homework via production data hooks; actual production components and styles",
+      "pageText": "首页\n模板\n10月20日 星期二\n10:00\n把今天，安排好。\n一级功能区\n待办\n课程\n日程\n寻迹\n通讯录\n邮箱\n云盘\nGitLab\n清小搭\n更多功能\n详细功能\n今日待办\n高等数学\n第二章习题\n网络学堂\n<1 天\n就要截止 · 10-20 23:59\n查看全部待办 →\n今日课程\n今天没有课。\n看本周课表\n最新新闻\n暂无订阅新闻\n校园卡余额\n–\n生活页 · 流水与充值\n标签页\n(\nO\nH\n)\n搜索或问小OH\n学习\n预约\n生活\n信息\n课表\n暂存箱\n0\n组件\n自由摆放\nOneGO!\n完成\n我的收藏\n工作区\n工作区\n标签页的归属组合；恢复时按实例去重\n还没有工作区。把眼下的标签页组合存起来，下次一键回到这个工作状态；也可以在上面的标签行里用「⋯」把单个标签移入工作区。\n功能目录在首页 ↓",
+      "key": "workspaces",
+      "file": "workspaces.png",
+      "sourceManifest": "manifest-extras.json",
+      "pixelDimensions": {
+        "width": 780,
+        "height": 1688
+      }
+    }
+  ],
+  "captureRuns": [
+    {
+      "manifest": "capture-core-manifest.json",
+      "assets": 12,
+      "passed": true,
+      "naturalExitCode": 0,
+      "command": "node tools/capture-tour-real-ui.mjs"
+    },
+    {
+      "manifest": "capture-extra-manifest.json",
+      "assets": 3,
+      "passed": true,
+      "naturalExitCode": 0,
+      "command": "node tools/capture-tour-real-ui-workbench.mjs"
+    },
+    {
+      "manifest": "manifest-extras.json",
+      "assets": 6,
+      "passed": true,
+      "naturalExitCode": 0,
+      "command": "node tools/capture-tour-real-ui-extras.mjs",
+      "note": "learn.png was recaptured with neutral preview=onboarding and verified visible; other five PNGs unchanged"
+    }
+  ],
+  "limitations": [
+    "Sample campus data and isolated fake-cloud replace backend responses, not components or CSS.",
+    "Receive-success screen demonstrates actual shortcode import through a fake-cloud fixture, not NFC hardware success.",
+    "Viewport screenshots have no synthetic OS status bar. Browser safe-area insets are zero where recorded."
+  ]
+}

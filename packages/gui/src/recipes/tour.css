@@ -121,6 +121,8 @@ html:root .is-onboarding .is-selected .experience-mode-check { background:var(--
 @media (max-width:360px) {
   .experience-tour .tour-stage-canvas { height:calc(var(--og-tour-studio-h) - var(--og-space-10) - var(--og-space-5)); }
 }
+/* Single-phone chapters devote more room to the real screen; paired NFC keeps its framing. */
+.experience-tour .tour-stage[data-device="phone"] .tour-stage-canvas { height:min(var(--og-tour-phone-h),52svh); }
 @media (prefers-reduced-motion:reduce) {
   .tour-copy-heading,.tour-steps { animation:none; }
   html:root .is-onboarding .experience-mode-preview { transform:none; transition:none; }

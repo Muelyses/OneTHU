@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "date": "2026-10-20",
+  "passed": true,
+  "scope": "Automatic onboarding, actual application screenshot textures, final narrow phone bodies and larger single-phone framing. This index does not claim all earlier suites were rerun against the final appearance.",
+  "finalVisualEvidence": [
+    {
+      "report": "recordings-report.json",
+      "sha256": "100a496a3f5a9ecd2fca6529d77ae0f2edb4a4dd7461c8e3a705d6e392024131",
+      "scope": "Final frozen models/CSS: desktop/mobile automatic cycles, continuous/rapid chapter transitions, actual screenshot maps, CSS fallback, five recordings; process exit 0.",
+      "assertions": 78,
+      "passed": true,
+      "naturalCleanup": true
+    },
+    {
+      "report": "phone-framing-after.json",
+      "sha256": "b9d5abeb8c20c42e5a46df8c70f7e0bc95989fa38d8f2330538b4cdf78db30b7",
+      "scope": "Final narrow body and large single-phone framing at 1280x860, 390x844, 320x568, 844x390: actual projected geometry and reachable footer; process exit 0.",
+      "assertions": 23,
+      "passed": true,
+      "naturalCleanup": true
+    },
+    {
+      "report": "real-screen-model-report.json",
+      "sha256": "88a50a8d5665ce222b9426f78f52fde29e6503ced41f6432c77e2a13a659454b",
+      "scope": "Final model factory: 21 app screenshots, 48 model cases, geometry/material/texture ownership and disposal; process exit 0. Not GPU-driver memory measurement.",
+      "assertions": 984,
+      "passed": true,
+      "naturalCleanup": true
+    }
+  ],
+  "retainedFocusedEvidence": [
+    {
+      "report": "asset-gate-report.json",
+      "sha256": "00ff6a2f517cd29dc149e092d06bac59aef15505e3f70d87878b64cae72ad83c",
+      "scope": "Actual screenshot integration: delayed decode, failed-load fallback, GPU image sources; before final bezel/framing changes.",
+      "assertions": 8,
+      "passed": true,
+      "naturalCleanup": true
+    },
+    {
+      "report": "rapid-mode-report.json",
+      "sha256": "5cc3d671f7fde75303b392bec0403e152b02e417b94bbb71827dd1e6d0019c57",
+      "scope": "Actual screenshot integration: rapid practical/simple mode changes retain the right actor mode; before final bezel/framing changes.",
+      "assertions": 7,
+      "passed": true,
+      "naturalCleanup": true
+    }
+  ],
+  "retainedBehaviorBaseline": [
+    {
+      "report": "cycles-report.json",
+      "sha256": "1e082072d881cdee755f8996e9da36b94a27bf563d67e6e4b69b2c8ec85f92ca",
+      "scope": "Automatic mode/lesson/extra loops and real-data isolation; before replacement of drawn screens with actual screenshots.",
+      "assertions": 135,
+      "passed": true,
+      "naturalCleanup": true
+    },
+    {
+      "report": "lifecycle-report.json",
+      "sha256": "9d242176e359fc9b1dd776f11dc7bd77d80457eb8e3a5d6ffdd8495d31cd23d2",
+      "scope": "Pause/reduced/hidden/offscreen/context-loss/unmount; before replacement of drawn screens with actual screenshots.",
+      "assertions": 27,
+      "passed": true,
+      "naturalCleanup": true
+    },
+    {
+      "report": "chapter-transition-report.json",
+      "sha256": "9ef5b660e6893406a3f93342e34d2e29b8db32f38bceae0b1947c8886c9604e9",
+      "scope": "Earlier automatic/continuous exits; final exit behavior separately covered by recordings-report.json.",
+      "assertions": 24,
+      "passed": true,
+      "naturalCleanup": null,
+      "cleanupProvenance": "Agent reported natural exit 0; earlier JSON does not encode cleanup."
+    }
+  ],
+  "excludedHistoricalSuite": "Prior 902-assertion manual animation suite is historical only; not counted as autoplay acceptance.",
+  "finalRuntimeSummary": {
+    "recordingAssertions": 78,
+    "fourSizeFramingAssertions": 23,
+    "transitionSamples": 825,
+    "departingActors": 16,
+    "pageErrors": [],
+    "naturalCleanup": true
+  },
+  "actualAppAssets": {
+    "manifest": "apps/desktop/src/assets/tour/real-ui/manifest.json",
+    "sha256": "df0554daaad74aaf7c5c4516abc1c6271e8b265dfd5c812c64366eabafbd95a2",
+    "verifiedSha256Count": 21
+  },
+  "videos": [
+    {
+      "file": "recordings/1280x860-continuous-next.mp4",
+      "sha256": "dcec5617132d3f616dc48baa9350e60f357261262a81f813cef3d976e3bb85cb",
+      "viewport": {
+        "width": 1280,
+        "height": 860
+      },
+      "encodedDurationSeconds": 13.926,
+      "capturedDurationSeconds": 13.931384801864624,
+      "capturedFrameCount": 332,
+      "compositorViewport": {
+        "width": 1280,
+        "height": 860
+      },
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 860
+      },
+      "timestampsAndRepresentativeFrames": "recordings-report.json"
+    },
+    {
+      "file": "recordings/1280x860-nfc-autoplay.mp4",
+      "sha256": "f22556f8fed265c3fea9d4408b6f34ce1caf7168490801a663418577d5f9ad36",
+      "viewport": {
+        "width": 1280,
+        "height": 860
+      },
+      "encodedDurationSeconds": 5.475,
+      "capturedDurationSeconds": 5.4739649295806885,
+      "capturedFrameCount": 95,
+      "compositorViewport": {
+        "width": 1280,
+        "height": 860
+      },
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 860
+      },
+      "timestampsAndRepresentativeFrames": "recordings-report.json"
+    },
+    {
+      "file": "recordings/390x844-continuous-next.mp4",
+      "sha256": "0324408020ee863fd5224ded8b9cad2624ff0dd2df44ecfdfebb53bc22b9193f",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "encodedDurationSeconds": 13.698,
+      "capturedDurationSeconds": 13.69704818725586,
+      "capturedFrameCount": 333,
+      "compositorViewport": {
+        "width": 500,
+        "height": 844
+      },
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "timestampsAndRepresentativeFrames": "recordings-report.json"
+    },
+    {
+      "file": "recordings/390x844-nfc-autoplay.mp4",
+      "sha256": "e5a4df05fae447d144441e57fd3c0658430814286e02c357e33eb72e53c71cba",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "encodedDurationSeconds": 5.122,
+      "capturedDurationSeconds": 5.1212217807769775,
+      "capturedFrameCount": 101,
+      "compositorViewport": {
+        "width": 500,
+        "height": 844
+      },
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "timestampsAndRepresentativeFrames": "recordings-report.json"
+    },
+    {
+      "file": "recordings/mobile-single-phone.mp4",
+      "sha256": "8e1d18e9e437a36ec391a2f74f4eb6d2c6e8b368b60cad522a16adceea198b27",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "encodedDurationSeconds": 9.666,
+      "capturedDurationSeconds": 9.6651611328125,
+      "capturedFrameCount": 276,
+      "compositorViewport": {
+        "width": 500,
+        "height": 844
+      },
+      "crop": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "timestampsAndRepresentativeFrames": "recordings-report.json"
+    }
+  ],
+  "visualReview": {
+    "observed": [
+      "Desktop/mobile Next at 0.35 s: previous object moves out while the next enters; real material fading is checked numerically.",
+      "390 single-phone at 2.8 s: complete narrow device and actual home screenshot fit; footer stays visible.",
+      "Final desktop/simple, mobile/NFC and real-image CSS fallback screenshots viewed directly. NFC screen states do not claim hardware success."
+    ],
+    "screenshots": [
+      "after/1280x860-simple-real-screen.png",
+      "after/390x844-simple-real-screen.png",
+      "after/390x844-nfc-final-screen.png",
+      "after/real-screenshot-fallback.png"
+    ],
+    "reviewedVideoTimes": [
+      {
+        "file": "recordings/1280x860-continuous-next.mp4",
+        "seconds": 0.35
+      },
+      {
+        "file": "recordings/390x844-continuous-next.mp4",
+        "seconds": 0.35
+      },
+      {
+        "file": "recordings/mobile-single-phone.mp4",
+        "seconds": 2.8
+      }
+    ]
+  },
+  "limitations": [
+    "Chrome emulated mobile viewport/touch; no physical-phone or NFC hardware validation.",
+    "Actual app screenshots use isolated example data and fake-cloud transport.",
+    "CDP timestamps preserved; crop only excludes non-page window area. No generated motion frames. Capture overhead is not a frame-rate benchmark.",
+    "Pre-final visual screenshots removed; earlier behavior reports remain explicitly scoped."
+  ]
+}

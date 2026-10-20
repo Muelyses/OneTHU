@@ -1,0 +1,97 @@
+{
+  "passed": true,
+  "naturalCleanup": true,
+  "assets": [
+    {
+      "key": "board-full",
+      "file": "board-full.png",
+      "viewport": {
+        "width": 1024,
+        "height": 620
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "homepage",
+      "entrySteps": [
+        "Open actual full-mode homepage"
+      ],
+      "url": "http://127.0.0.1:5180/?explorer-preview=home#/homepage",
+      "fixture": {
+        "campus": "isolated sample data through production data hooks",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited screenshot of real production app DOM; no inserted UI, redraw, status bar, or screenshot montage",
+      "sha256": "b1f269543c1eda0bffadd5db400f20d57919d882e350ba83e81c57da107e731b"
+    },
+    {
+      "key": "full-home-mobile",
+      "file": "full-home-mobile.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "homepage",
+      "entrySteps": [
+        "Open actual full-mode homepage on phone"
+      ],
+      "url": "http://127.0.0.1:5180/?explorer-preview=home#/homepage",
+      "fixture": {
+        "campus": "isolated sample data through production data hooks",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited screenshot of real production app DOM; no inserted UI, redraw, status bar, or screenshot montage",
+      "sha256": "8cb6eaa2c6f93409bd2dd5c2baeefe336b0c3354b24b33b014170b1b846c6270"
+    },
+    {
+      "key": "organization",
+      "file": "organization.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "org overview",
+      "entrySteps": [
+        "通讯录 → 新建组织",
+        "启用多人协作 against isolated fake organization server",
+        "成员 → 添加成员",
+        "概览"
+      ],
+      "url": "http://127.0.0.1:5180/?explorer-preview=home#/org",
+      "fixture": {
+        "campus": "isolated sample data through production data hooks",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "organization": "Isolated fake GitLab/Seafile services; actual organization UI and production synchronization flow",
+        "members": [
+          "fixture owner",
+          "fixture lisi"
+        ],
+        "hardwareOrLiveServiceClaim": false
+      },
+      "source": "Uncomposited screenshot of real production app DOM; no inserted UI, redraw, status bar, or screenshot montage",
+      "sha256": "63de27232ff76c9386a3be05b25d4b0fbb434176cf9d35b644ddda7812b698cd"
+    }
+  ],
+  "errors": []
+}

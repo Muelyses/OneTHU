@@ -1,0 +1,63 @@
+{
+  "checks": [
+    "Initial actual Today scene uses practical-home",
+    "The old practical Today actor is still retiring while the requested mode is already simple",
+    "Reused Today actor checks its own creation mode",
+    "Every reactivated Today screen is rebuilt from simple screenshots",
+    "Actual texture image sources match simple mode rather than metadata alone",
+    "Rapid mode switch preserves the existing WebGL canvas",
+    "Rapid cross-mode return has no uncaught errors"
+  ],
+  "errors": [],
+  "passed": true,
+  "naturalCleanup": true,
+  "intermediate": {
+    "lesson": "mode-simple",
+    "retiringMode": "practical",
+    "retiringOpacity": 0.9348376952237525,
+    "retiringMatrix": [
+      0.9982808118119759,
+      0,
+      -0.058612462565757806,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.058612462565757806,
+      0,
+      0.9982808118119759,
+      0,
+      -0.398482948120761,
+      -0.006516230477624743,
+      -0.0781947657314972,
+      1
+    ]
+  },
+  "returning": {
+    "mode": "simple",
+    "opacity": 0.7802632417832885,
+    "matrix": [
+      0.9805085323665116,
+      0,
+      -0.19647650739075548,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.19647650739075548,
+      0,
+      0.9805085323665116,
+      0,
+      -1.3437423910243782,
+      -0.021973675821671146,
+      -0.2636841098600539,
+      1
+    ],
+    "screenKeys": [
+      "simple-home",
+      "simple-home-done"
+    ]
+  }
+}

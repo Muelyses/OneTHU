@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { selectStudioScreen, type StudioScreenAssets, type StudioScreenKey } from "./tourStudioScreens.js";
 
 /** Resolved OneGUI material colours. Each assembly owns and disposes its resources. */
 export interface StudioPalette {
@@ -19,7 +20,17 @@ const mix = THREE.MathUtils.lerp;
 const clamp = (value: number): number => THREE.MathUtils.clamp(value, 0, 1);
 
 /** Real bevelled solids under every face; canvas textures contain only typography/UI. */
-export function createStudioAssembly(lesson: string, palette: StudioPalette): StudioAssembly {
+export function createStudioAssembly(lesson: string, palette: StudioPalette, mode: "simple" | "practical" | "full" = "full", screens?: StudioScreenAssets): StudioAssembly {
+  if (!["organization", "code", "vault"].includes(lesson)) {
+    for (const after of [false, true]) {
+      const selection = selectStudioScreen(lesson, mode, after);
+      for (const source of [selection.primary, selection.secondary]) {
+        if (!source) continue;
+        const image = screens?.[source.key];
+        if (!image?.complete || !image.naturalWidth || !image.naturalHeight) throw new Error(`真实界面截图尚未就绪：${source.key}`);
+      }
+    }
+  }
   const group = new THREE.Group(); group.name = `studio-assembly-${lesson}`;
   const updateFaces: Array<(progress: number) => void> = [];
   const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
@@ -97,6 +108,23 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette): St
     materials.add(surface);
     return roundedFace(width, height, Math.min(.1, height / 6), surface);
   }
+  const screenMaterials = new Map<StudioScreenKey, THREE.MeshBasicMaterial>();
+  function screenshotFace(key: StudioScreenKey, maxWidth = 1.16, maxHeight = 2.51, radius = .075): THREE.Mesh {
+    const image = screens?.[key];
+    if (!image?.complete || !image.naturalWidth || !image.naturalHeight) throw new Error(`真实界面截图尚未就绪：${key}`);
+    let surface = screenMaterials.get(key);
+    if (!surface) {
+      const texture = new THREE.Texture(image); texture.colorSpace = THREE.SRGBColorSpace; texture.anisotropy = 4; texture.needsUpdate = true; textures.add(texture);
+      surface = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false }); materials.add(surface); screenMaterials.set(key, surface);
+    }
+    // Preserve the entire captured viewport. The small physical camera occupies
+    // its own top margin and must not cover real app controls.
+    const aspect = image.naturalWidth / image.naturalHeight;
+    const width = Math.min(maxWidth, maxHeight * aspect), height = width / aspect;
+    const face = roundedFace(width, height, radius, surface);
+    face.userData.studioScreen = { key, url: image.currentSrc || image.src, width: image.naturalWidth, height: image.naturalHeight };
+    return face;
+  }
   function card(width: number, height: number, content: FaceContent, name: string, depth = .065, afterContent?: FaceContent): THREE.Group {
     const result = new THREE.Group(); result.name = name;
     result.add(plate(width, height, depth, .085, paper));
@@ -105,22 +133,25 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette): St
     const rear = plate(width - .018, height - .018, .015, .075, ceramic); rear.position.z = -depth / 2; result.add(rear);
     return result;
   }
-  function phone(name: string, receiver = false, screenOverride?: { before: FaceContent; after?: FaceContent }): THREE.Group {
+  function phone(name: string, receiver = false): THREE.Group {
     const result = new THREE.Group(); result.name = name;
     const rearSurface = receiver ? material(palette.glass, { metalness: .35, roughness: .27, clearcoat: .75, clearcoatRoughness: .18 }) : ceramic;
     // A machined frame, ceramic back and glass display have separate thicknesses.
-    result.add(plate(1.28, 2.58, .16, .17, aluminium, `${name}-frame`));
-    const back = plate(1.23, 2.53, .055, .16, rearSurface, `${name}-back`); back.position.z = -.073; result.add(back);
-    const display = plate(1.21, 2.5, .045, .155, glass, `${name}-glass`); display.position.z = .082; result.add(display);
-    const screenContent: FaceContent = screenOverride?.before ?? { eyebrow: receiver ? "接收方" : "传送方", title: receiver ? "开启接收" : "准备内容", subtitle: "OneTHU · 内容接力", rows: receiver ? ["等待设备靠近"] : ["课程资料", "一段文字", "项目文件"], badge: receiver ? "等待接收" : "3 项内容已准备" };
-    const screenAfter: FaceContent | undefined = screenOverride?.after ?? (receiver ? { ...screenContent, title: "收到内容", rows: ["课程资料", "一段文字", "项目文件"], badge: "3 项内容已就位" } : undefined);
-    const screen = canvasFace(1.12, 2.37, { ...screenContent, background: palette.screen, display: true });
-    screen.name = `${name}-screen`; screen.position.set(0, -.015, .109); result.add(screen);
-    if (screenAfter) { const afterFace = canvasFace(1.12, 2.37, { ...screenAfter, background: palette.screen, display: true }); afterFace.name = `${name}-screen-after`; afterFace.position.copy(screen.position); result.add(afterFace); updateFaces.push(p => { screen.visible = p < .6; afterFace.visible = p >= .6; }); }
-    const reflection = roundedFace(1.12, 2.37, .1, material(palette.paper, { transparent: true, opacity: .025, depthWrite: false, metalness: 0, roughness: .15, clearcoat: .5, clearcoatRoughness: .14, specularIntensity: .25, envMapIntensity: .35 }));
-    reflection.name = `${name}-screen-reflection`; reflection.position.set(0, -.015, .112); reflection.castShadow = false; reflection.receiveShadow = false; reflection.userData.studioGlassOverlay = true; result.add(reflection);
-    const island = solid(.34, .075, .018, .008, ink, `${name}-front-camera`); island.position.set(0, 1.135, .123); result.add(island);
-    const home = solid(.34, .025, .008, .003, aluminium); home.position.set(0, -1.17, .123); result.add(home);
+    result.add(plate(1.2, 2.6, .16, .1, aluminium, `${name}-frame`));
+    const back = plate(1.15, 2.55, .055, .095, rearSurface, `${name}-back`); back.position.z = -.073; result.add(back);
+    const display = plate(1.18, 2.56, .045, .09, glass, `${name}-glass`); display.position.z = .082; result.add(display);
+    const before = selectStudioScreen(lesson, mode, false), after = selectStudioScreen(lesson, mode, true);
+    const beforeKey = (receiver ? before.secondary : before.primary)?.key;
+    const afterKey = (receiver ? after.secondary : after.primary)?.key;
+    if (!beforeKey || !afterKey) throw new Error("手机演示缺少真实界面截图");
+    const screen = screenshotFace(beforeKey); screen.name = `${name}-screen`; screen.position.set(0, 0, .109); result.add(screen);
+    if (afterKey !== beforeKey) {
+      const afterFace = screenshotFace(afterKey); afterFace.name = `${name}-screen-after`; afterFace.position.copy(screen.position); result.add(afterFace);
+      updateFaces.push(p => { screen.visible = p < .9; afterFace.visible = p >= .9; });
+    }
+    const reflection = roundedFace(1.16, 2.51, .075, material(palette.paper, { transparent: true, opacity: .025, depthWrite: false, metalness: 0, roughness: .15, clearcoat: .5, clearcoatRoughness: .14, specularIntensity: .25, envMapIntensity: .35 }));
+    reflection.name = `${name}-screen-reflection`; reflection.position.set(0, 0, .112); reflection.castShadow = false; reflection.receiveShadow = false; reflection.userData.studioGlassOverlay = true; result.add(reflection);
+    const island = solid(.16, .014, .012, .006, ink, `${name}-front-camera`); island.position.set(0, 1.275, .123); result.add(island);
     const bump = plate(.62, .76, .07, .13, rearSurface, `${name}-camera-island`); bump.position.set(.235, .81, -.13); result.add(bump);
     for (const [x, y] of [[.11, .98], [.35, .72]] as const) {
       const ring = new THREE.Mesh(keepGeometry(new THREE.TorusGeometry(.119, .018, 12, 32)), aluminium); ring.position.set(x, y, -.18); ring.castShadow = true; result.add(ring);
@@ -128,9 +159,8 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette): St
       const lens = new THREE.Mesh(keepGeometry(new THREE.SphereGeometry(.084, 24, 12)), glass); lens.scale.z = .18; lens.position.set(x, y, -.214); lens.name = `${name}-lens`; result.add(lens);
     }
     const flash = new THREE.Mesh(keepGeometry(new THREE.CircleGeometry(.038, 24)), paper); flash.rotation.y = Math.PI; flash.position.set(.4, 1.02, -.168); result.add(flash);
-    for (const [y, length] of [[.45, .23], [.08, .33]] as const) { const button = solid(.035, length, .07, .016, aluminium); button.position.set(-.65, y, 0); result.add(button); }
-    const power = solid(.035, .36, .07, .016, aluminium); power.position.set(.65, .3, 0); result.add(power);
-    const mark = canvasFace(.83, .22, { title: "OneTHU", background: receiver ? palette.glass : palette.body, foreground: receiver ? palette.muted : palette.ink, compact: true }); mark.rotation.y = Math.PI; mark.position.set(0, -.17, -.105); result.add(mark);
+    for (const [y, length] of [[.45, .23], [.08, .33]] as const) { const button = solid(.035, length, .07, .016, aluminium); button.position.set(-.61, y, 0); result.add(button); }
+    const power = solid(.035, .36, .07, .016, aluminium); power.position.set(.61, .3, 0); result.add(power);
     return result;
   }
   let applyPose: (progress: number) => void;
@@ -147,16 +177,12 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette): St
     const tablet = new THREE.Group(); tablet.name = "studio-board-tablet";
     tablet.add(plate(4.15, 2.6, .16, .2, aluminium));
     const bezel = plate(4.06, 2.51, .04, .18, glass); bezel.position.z = .085; tablet.add(bezel);
-    const face = canvasFace(3.91, 2.37, { eyebrow: "OneTHU", title: "首页", background: palette.screen, display: true }); face.position.z = .108; tablet.add(face); group.add(tablet);
-    const todo = card(1.75, 1.57, { eyebrow: "今日待办", title: "完成课程作业", rows: ["整理一份资料", "准备课堂讨论"] }, "studio-board-card-todo");
-    const note = card(1.47, .95, { eyebrow: "便笺", title: "记下刚想到的事", background: palette.note }, "studio-board-card-note");
-    const course = card(1.47, .58, { eyebrow: "下一节课", title: "14:00 · 教学楼", compact: true }, "studio-board-card-course");
-    group.add(todo, note, course);
+    const face = screenshotFace("board-full", 3.91, 2.37, .1);
+    face.name = "studio-board-screen"; face.position.z = .108; tablet.add(face); group.add(tablet);
     applyPose = progress => {
-      const p = clamp(progress); tablet.rotation.set(mix(.08, -.025, p), mix(-.13, -.035, p), mix(-.025, 0, p));
-      todo.position.set(mix(-.44, -.95, p), mix(-.08, -.19, p), mix(.45, .2, p)); todo.rotation.set(.04 * (1 - p), mix(.24, 0, p), mix(-.11, 0, p));
-      note.position.set(mix(.37, .86, p), mix(.16, .12, p), mix(.81, .22, p)); note.rotation.set(mix(-.1, 0, p), mix(-.35, 0, p), mix(.13, 0, p));
-      course.position.set(mix(.38, .86, p), mix(-.58, -.7, p), mix(.62, .22, p)); course.rotation.set(mix(.13, 0, p), mix(-.17, 0, p), mix(-.11, 0, p));
+      const p = clamp(progress);
+      tablet.position.z = mix(-.2, .08, p);
+      tablet.rotation.set(mix(.12, -.025, p), mix(-.25, .035, p), mix(-.04, 0, p));
     };
   } else if (lesson === "organization") {
     const identity = card(3.25, 1.23, { eyebrow: "名片与组织绑定", title: "同学工作室", subtitle: "成员 · 文件 · 项目 · 公告" }, "studio-org-identity", .11);
@@ -195,21 +221,12 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette): St
       parcels.forEach((parcel, index) => { const t = clamp((p - index * .11) / .76); parcel.visible = p > index * .11 && t < 1; parcel.position.set(mix(-1.34, 1.13, t), mix(.46 - index * .53, -.36, t) + Math.sin(t * Math.PI) * 1.75, mix(.25, -.03, t)); parcel.rotation.set(-t * .8, -.3 + t * .5, -.1 + Math.sin(t * Math.PI) * .25); });
     };
   } else {
-    const isExtra = ["explorer", "onego", "plugin", "customize", "campus", "data"].includes(lesson);
-    const titles: Record<string, string> = { explorer: "保存一组正在进行的事", onego: "从 OneGO! 接着做", plugin: "按需要扩展能力", customize: "换成习惯的样子", campus: "校园服务", data: "换台设备继续使用" };
-    const today: FaceContent = { eyebrow: "OneTHU", title: "今天", subtitle: "待办与课程，一眼看到", rows: ["整理课程笔记", "14:00 下一节课"], badge: "首页 · OH 搜索" };
-    const todayDone: FaceContent = { ...today, rows: ["课程笔记已完成", "14:00 下一节课"], completed: true, badge: "一件一件，轻松完成" };
-    let screenBefore = today, screenAfter = lesson === "today" ? todayDone : today;
-    if (lesson === "quick") { screenBefore = { eyebrow: "OneShot", title: "五个快捷入口", subtitle: "需要什么，直接点", rows: ["学习", "预约", "生活", "信息", "课表"] }; screenAfter = { eyebrow: "课表", title: "今天的课程", subtitle: "快捷入口始终在", rows: ["14:00 下一节课", "教学楼 · 提前出发"], badge: "学习 预约 生活 信息 课表" }; }
-    else if (lesson === "more" || lesson === "mode-practical") { screenBefore = lesson === "more" ? { ...today, badge: "更多功能" } : today; screenAfter = { eyebrow: "更多功能", title: "服务目录", subtitle: "按目录找到服务", rows: ["课程与作业", "场馆与研讨间", "校园生活", "云盘与邮箱"] }; }
-    else if (lesson === "swap") { screenBefore = { eyebrow: "常用入口", title: "安排快捷入口", subtitle: "第一格目前是学习", rows: ["学习", "预约", "生活", "课表"] }; screenAfter = { ...screenBefore, subtitle: "第一格换成云盘", rows: ["云盘", "预约", "生活", "课表"] }; }
-    else if (isExtra) { screenBefore = { eyebrow: "继续探索", title: titles[lesson]!, subtitle: "按需要打开", rows: lesson === "customize" ? ["主题与壁纸", "字号与入口"] : lesson === "data" ? ["同步日程", "导出与恢复"] : ["首页与搜索", "相关功能入口"] }; screenAfter = screenBefore; }
-    const device = phone("studio-phone-preview", false, { before: screenBefore, after: screenAfter }); device.position.set(-1.1, 0, -.1); group.add(device);
-    const title = isExtra ? titles[lesson]! : lesson === "more" ? "更多功能" : lesson === "swap" ? "调整快捷入口" : lesson === "quick" ? "学习 预约 生活 信息 课表" : "今天，从这一件开始";
-    const mainContent: FaceContent = { eyebrow: isExtra ? "继续探索" : "OneTHU", title, subtitle: isExtra ? "按需要打开，内容一直保留" : lesson === "more" ? "校园服务，按目录查找" : lesson === "quick" ? "五个入口，随时回到需要的功能" : "整理课程笔记 · 今日待办" };
-    const main = card(2.1, 1.13, mainContent, "studio-preview-main", .085, lesson === "today" ? { ...mainContent, title: "课程笔记已完成", subtitle: "今日待办完成 1 项", badge: "已完成" } : undefined);
-    const secondary = card(2.1, .7, { eyebrow: lesson === "swap" ? "第一格快捷入口" : "下一节课程", title: lesson === "swap" ? "学习" : "14:00 · 教学楼", compact: true }, "studio-preview-secondary", .065, lesson === "swap" ? { eyebrow: "第一格快捷入口", title: "云盘", compact: true } : undefined); group.add(main, secondary);
-    applyPose = progress => { const p = clamp(progress); device.rotation.set(-.035, mix(-.32, .12, p), mix(-.055, -.015, p)); main.position.set(mix(.7, 1.12, p), mix(.12, .45, p), mix(.32, .15, p)); main.rotation.set(.02, mix(-.24, -.08, p), mix(.06, 0, p)); secondary.position.set(mix(.76, 1.12, p), mix(-.34, -.6, p), mix(.48, .22, p)); secondary.rotation.set(-.02, mix(.12, -.08, p), mix(-.075, 0, p)); };
+    const device = phone("studio-phone-preview"); group.add(device);
+    applyPose = progress => {
+      const p = clamp(progress);
+      device.position.set(0, mix(-.02, .02, p), 0);
+      device.rotation.set(-.035, mix(-.32, .12, p), mix(-.055, -.015, p));
+    };
   }
   group.userData.studioLesson = lesson;
   const pose = (progress: number): void => { const p = clamp(progress); applyPose(p); for (const update of updateFaces) update(p); };
@@ -223,6 +240,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette): St
       for (const geometry of geometries) geometry.dispose();
       for (const surface of materials) surface.dispose();
       for (const texture of textures) texture.dispose();
+      geometries.clear(); materials.clear(); textures.clear(); screenMaterials.clear();
       group.clear();
     },
   };

@@ -1,16 +1,19 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { createStudioAssembly, type StudioPalette } from "./tourStudioModels.js";
+import { loadStudioScreenAssets, type StudioScreenAssets } from "./tourStudioScreens.js";
 
 export interface TourStudioSceneProps {
   lesson: string;
+  mode?: "simple" | "practical" | "full";
   after: boolean;
   running: boolean;
   reduced: boolean;
   replayKey: number | string;
   fallback?: ReactNode;
   onReady?: () => void;
+  onSettled?: (state: { lesson: string; after: boolean; replayKey: number | string }) => void;
 }
 type Spring = { value: number; velocity: number; target: number };
 const spring = (value: number, target = value): Spring => ({ value, velocity: 0, target });
@@ -27,7 +30,8 @@ function advance(value: Spring, dt: number, frequency = 6.2): boolean {
 }
 const settle = (value: Spring): void => { value.value = value.target; value.velocity = 0; };
 type Assembly = ReturnType<typeof createStudioAssembly>;
-type Actor = { lesson: string; assembly: Assembly; pose: Spring; weight: Spring; x: Spring; y: Spring; z: Spring; yaw: Spring; bounds: THREE.Box3 };
+type MaterialState = { material: THREE.Material; opacity: number; transparent: boolean; depthWrite: boolean };
+type Actor = { lesson: string; mode: NonNullable<TourStudioSceneProps["mode"]>; assembly: Assembly; materials: MaterialState[]; pose: Spring; weight: Spring; x: Spring; y: Spring; z: Spring; yaw: Spring; bounds: THREE.Box3; readingPoints: THREE.Vector3[] | null };
 type StudioCanvas = HTMLCanvasElement & { __tourStudioInspect?: () => unknown };
 const COLOR_ROLES: Record<keyof StudioPalette, string> = {
   body: "--og-studio-body", edge: "--og-studio-edge", glass: "--og-studio-glass", screen: "--og-studio-screen",
@@ -35,15 +39,34 @@ const COLOR_ROLES: Record<keyof StudioPalette, string> = {
   accentInk: "--og-media-ink-light", note: "--og-note-paper",
 };
 
-/** A finite studio take: one renderer, PBR assemblies, softbox reflections and reversible motion. */
 export function TourStudioScene(props: TourStudioSceneProps) {
+  const [screens, setScreens] = useState<StudioScreenAssets | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    void loadStudioScreenAssets().then(
+      loaded => { if (mounted) setScreens(loaded); },
+      () => { if (mounted) setFailed(true); },
+    );
+    return () => { mounted = false; };
+  }, []);
+  if (!screens) return <div className="tour-studio-scene" data-renderer={failed ? "fallback" : "loading"} data-context-state={failed ? "assets-unavailable" : "loading-assets"} data-scene-lesson={props.lesson}>
+    {failed ? props.fallback : <div className="tour-studio-loading" role="status">正在载入真实界面…</div>}
+  </div>;
+  return <StudioEngine {...props} screens={screens} />;
+}
+
+/** Decode once before mounting one renderer; chapter changes retain the physical scene. */
+function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAssets }) {
   const host = useRef<HTMLDivElement>(null), canvas = useRef<StudioCanvas>(null);
   const runtime = useRef<{ update: (next: TourStudioSceneProps) => void; paint: () => void } | null>(null);
   const [available, setAvailable] = useState(false);
   useLayoutEffect(() => {
     const element = host.current!, surface = canvas.current!;
-    let config = props, disposed = false, lost = false, visible = true, raf = 0, lastTime = 0;
+    let config: TourStudioSceneProps = props;
+    let disposed = false, lost = false, visible = true, raf = 0, lastTime = 0;
     let width = 1, height = 1, frames = 0, settled = false, readyReported = false, presented = false;
+    let round = 0, reportedRound = -1;
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({ canvas: surface, alpha: true, antialias: true, powerPreference: "low-power" });
@@ -90,25 +113,56 @@ export function TourStudioScene(props: TourStudioSceneProps) {
     let take: { kind: "intro" | "replay"; phase: "pullback" | "turn"; endYaw: number } | null = null;
     const actorSprings = (actor: Actor): Spring[] => [actor.pose, actor.weight, actor.x, actor.y, actor.z, actor.yaw];
     const targetAngle = (): number => (config.after ? .24 : -.22) + (config.lesson === "nfc" ? .05 : 0);
+    const prepareMaterials = (assembly: Assembly): MaterialState[] => {
+      const materials = new Set<THREE.Material>();
+      assembly.group.traverse(object => {
+        if (!(object instanceof THREE.Mesh)) return;
+        object.castShadow = !object.userData.studioGlassOverlay; object.receiveShadow = !object.userData.studioGlassOverlay;
+        for (const material of Array.isArray(object.material) ? object.material : [object.material]) materials.add(material);
+      });
+      return [...materials].map(material => ({ material, opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite }));
+    };
     const applyActor = (actor: Actor): void => {
       actor.assembly.pose(THREE.MathUtils.clamp(actor.pose.value, 0, 1));
       actor.assembly.group.position.set(actor.x.value, actor.y.value, actor.z.value);
       actor.assembly.group.rotation.y = actor.yaw.value;
+      const opacity = THREE.MathUtils.clamp(actor.weight.value, 0, 1), fading = opacity < .999;
+      for (const base of actor.materials) {
+        base.material.opacity = base.opacity * opacity;
+        const transparent = base.transparent || fading;
+        if (base.material.transparent !== transparent) { base.material.transparent = transparent; base.material.needsUpdate = true; }
+        base.material.depthWrite = base.depthWrite && !fading;
+      }
     };
     const removeActor = (actor: Actor): void => {
       scene.remove(actor.assembly.group); actor.assembly.dispose();
       const index = actors.indexOf(actor); if (index >= 0) actors.splice(index, 1);
     };
-    const createActor = (lesson: string, first = false): Actor => {
-      const assembly = createStudioAssembly(lesson, palette);
+    const measureAssembly = (assembly: Assembly): Pick<Actor, "bounds" | "readingPoints"> => {
       const bounds = new THREE.Box3();
+      const readingPoints: THREE.Vector3[] | null = assembly.group.getObjectByName("studio-phone-preview") ? [] : null;
       for (const progress of [0, .25, .5, .75, 1]) {
         assembly.pose(progress); assembly.group.updateMatrixWorld(true);
         bounds.union(new THREE.Box3().setFromObject(assembly.group));
+        if (readingPoints) assembly.group.traverse(object => {
+          if (!(object instanceof THREE.Mesh)) return;
+          object.geometry.computeBoundingBox();
+          const box = object.geometry.boundingBox;
+          if (!box) return;
+          for (let corner = 0; corner < 8; corner++) readingPoints.push(new THREE.Vector3(
+            (corner & 1 ? box.max : box.min).x,
+            (corner & 2 ? box.max : box.min).y,
+            (corner & 4 ? box.max : box.min).z,
+          ).applyMatrix4(object.matrixWorld));
+        });
       }
       assembly.pose(0);
-      assembly.group.traverse(object => { if (object instanceof THREE.Mesh) { object.castShadow = !object.userData.studioGlassOverlay; object.receiveShadow = !object.userData.studioGlassOverlay; } });
-      const actor = { lesson, assembly, pose: spring(0, config.after ? 1 : 0), weight: spring(first ? 1 : 0, 1), x: spring(first ? 0 : 4.2, 0), y: spring(first ? 0 : -.1, 0), z: spring(first ? 0 : -1.2, 0), yaw: spring(first ? 0 : -.7, 0), bounds };
+      return { bounds, readingPoints };
+    };
+    const createActor = (lesson: string, first = false): Actor => {
+      const mode = config.mode ?? "full", assembly = createStudioAssembly(lesson, palette, mode, props.screens);
+      const framing = measureAssembly(assembly);
+      const actor = { lesson, mode, assembly, materials: prepareMaterials(assembly), pose: spring(0, config.after ? 1 : 0), weight: spring(first ? 1 : 0, 1), x: spring(first ? 0 : 4.2, 0), y: spring(first ? 0 : -.1, 0), z: spring(first ? 0 : -1.2, 0), yaw: spring(first ? 0 : -.7, 0), ...framing };
       actors.push(actor); scene.add(assembly.group); applyActor(actor); return actor;
     };
     const turnDistance = (): number => {
@@ -124,6 +178,24 @@ export function TourStudioScene(props: TourStudioSceneProps) {
       const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       // Front and reverse poses share a framing envelope, including room for action and shadows.
       distance.target = Math.max(size.y / (2 * tan), size.x / (2 * tan * camera.aspect), 3.5) * 1.22 + size.z * .55;
+      if (active.readingPoints) {
+        // Fit the actual posed phone, not a rotated axis-aligned box inflated by
+        // unused corners. The front-view envelope leaves a small readable rim;
+        // turnDistance below still protects the full introductory/replay turn.
+        let readingDistance = 0;
+        const pitch = .19, sinPitch = Math.sin(pitch), cosPitch = Math.cos(pitch);
+        for (const yaw of [-.22, -.105, .01, .125, .24]) {
+          const sinYaw = Math.sin(yaw), cosYaw = Math.cos(yaw);
+          for (const point of active.readingPoints) {
+            const y = point.y - center.y;
+            const depth = point.x * sinYaw * cosPitch + y * sinPitch + point.z * cosYaw * cosPitch;
+            const across = point.x * cosYaw - point.z * sinYaw;
+            const up = -point.x * sinYaw * sinPitch + y * cosPitch - point.z * cosYaw * sinPitch;
+            readingDistance = Math.max(readingDistance, depth + Math.abs(up) / (tan * .95), depth + Math.abs(across) / (tan * camera.aspect * .9));
+          }
+        }
+        distance.target = readingDistance;
+      }
       if (take) distance.target = Math.max(distance.target, turnDistance());
       focusY.target = center.y;
     };
@@ -133,6 +205,11 @@ export function TourStudioScene(props: TourStudioSceneProps) {
       element.dataset.renderer = "fallback"; element.dataset.contextState = "initialization-failed"; element.dataset.settled = "true"; setAvailable(false); return;
     }
     const isRunning = (): boolean => config.running && !config.reduced && visible && !document.hidden && width > 1 && height > 1 && !lost && !disposed;
+    const notifySettled = (): void => {
+      if (!settled || !isRunning() || reportedRound === round || !config.onSettled) return;
+      reportedRound = round;
+      config.onSettled({ lesson: config.lesson, after: config.after, replayKey: config.replayKey });
+    };
     const report = (): void => {
       element.dataset.renderer = lost ? "fallback" : "webgl"; element.dataset.settled = String(settled);
       element.dataset.sceneLesson = active.lesson; element.dataset.running = String(isRunning()); element.dataset.frame = String(frames);
@@ -171,7 +248,7 @@ export function TourStudioScene(props: TourStudioSceneProps) {
         if (actor.yaw.value === actor.yaw.target && Math.abs(actor.yaw.value) >= Math.PI * 2) {
           actor.yaw.value %= Math.PI * 2; actor.yaw.target = actor.yaw.value;
         }
-        if (actor !== active && actor.weight.value === 0) removeActor(actor);
+        if (actor !== active && actor.weight.value < .002) removeActor(actor);
       }
       if (take?.phase === "pullback" && distance.value >= turnDistance() * .99 && Math.abs(active.x.value) < .02) {
         active.yaw.target = take.endYaw; take.phase = "turn"; moving = true;
@@ -179,6 +256,7 @@ export function TourStudioScene(props: TourStudioSceneProps) {
         take = null; fitCamera(); moving = true;
       }
       settled = !moving; draw();
+      if (settled) notifySettled();
       if (moving) raf = requestAnimationFrame(tick); else lastTime = 0;
     };
     const wake = (paint = true): void => {
@@ -218,8 +296,8 @@ export function TourStudioScene(props: TourStudioSceneProps) {
     const theme = new MutationObserver(() => {
       if (disposed || lost || !readPalette()) return;
       for (const actor of actors) {
-        scene.remove(actor.assembly.group); actor.assembly.dispose(); actor.assembly = createStudioAssembly(actor.lesson, palette);
-        actor.assembly.group.traverse(object => { if (object instanceof THREE.Mesh) { object.castShadow = !object.userData.studioGlassOverlay; object.receiveShadow = !object.userData.studioGlassOverlay; } });
+        scene.remove(actor.assembly.group); actor.assembly.dispose(); actor.assembly = createStudioAssembly(actor.lesson, palette, actor.mode, props.screens);
+        actor.materials = prepareMaterials(actor.assembly);
         scene.add(actor.assembly.group); applyActor(actor);
       }
       keyLight.color.set(palette.paper); fillLight.color.set(palette.paper); rimLight.color.set(palette.paper); floorMaterial.color.set(palette.ink); wake();
@@ -241,32 +319,51 @@ export function TourStudioScene(props: TourStudioSceneProps) {
               while (current) { effectiveVisible = effectiveVisible && current.visible; path.unshift(current.name || current.type); current = current.parent; }
               const materials = Array.isArray(object.material) ? object.material : [object.material];
               const textureIds = materials.map(material => "map" in material && material.map instanceof THREE.Texture ? material.map.uuid : null);
-              meshes.push({ name: object.name, path: path.join("/"), id: object.id, textureId: textureIds[0], textureIds, visible: effectiveVisible, min: bounds.min.toArray(), max: bounds.max.toArray(), matrixWorld: object.matrixWorld.toArray() });
+              const textureSources = materials.map(material => {
+                const image = "map" in material && material.map instanceof THREE.Texture ? material.map.image : null;
+                return image instanceof HTMLImageElement ? image.currentSrc || image.src : null;
+              });
+              meshes.push({ name: object.name, path: path.join("/"), id: object.id, textureId: textureIds[0], textureIds, textureSources, screen: object.userData.studioScreen ?? null, visible: effectiveVisible, materials: materials.map(material => ({ opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite })), min: bounds.min.toArray(), max: bounds.max.toArray(), matrixWorld: object.matrixWorld.toArray() });
             }
           });
-          return { lesson: actor.lesson, active: actor === active, progress: actor.pose.value, worldMatrix: actor.assembly.group.matrixWorld.toArray(), meshes };
+          return { lesson: actor.lesson, mode: actor.mode, active: actor === active, progress: actor.pose.value, opacity: actor.weight.value, worldMatrix: actor.assembly.group.matrixWorld.toArray(), meshes };
         }),
       };
     };
     runtime.current = { paint: draw, update(next) {
       const changed = next.lesson !== config.lesson, replayed = next.replayKey !== config.replayKey;
+      const modeChanged = (next.mode ?? "full") !== (config.mode ?? "full");
+      const newRound = changed || replayed || modeChanged || next.after !== config.after;
+      const sameMovement = !newRound && next.running === config.running && next.reduced === config.reduced;
       config = next;
+      if (newRound) round++;
+      if (sameMovement) { notifySettled(); return; }
       if (changed) {
         take = null;
         active = actors.find(actor => actor.lesson === next.lesson) ?? createActor(next.lesson);
         for (const actor of actors) {
           const current = actor === active;
-          actor.weight.target = current ? 1 : 0; actor.x.target = current ? 0 : -4.2; actor.y.target = current ? 0 : -.1; actor.z.target = current ? 0 : -1.2; actor.yaw.target = current ? 0 : .9;
-        }
-        // Repeated fast clicks cannot retain a queue of assemblies or allocate without bound.
-        while (actors.length > 3) {
-          const candidates = actors.filter(actor => actor !== active).sort((a, b) => a.weight.value - b.weight.value);
-          if (candidates[0]) removeActor(candidates[0]);
+          const halfView = Math.max(distance.value, distance.target) * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+          const radius = actor.bounds.getBoundingSphere(new THREE.Sphere()).radius;
+          actor.weight.target = current ? 1 : 0;
+          actor.x.target = current ? 0 : -(halfView + radius + 2);
+          actor.y.target = current ? 0 : -.1; actor.z.target = current ? 0 : -1.2; actor.yaw.target = current ? 0 : .9;
         }
         fitCamera();
       }
+      // A retiring actor may come from an earlier mode even when the immediately
+      // previous requested scene already used next.mode. Preserve its springs,
+      // but replace its screen assets using the actor's own provenance.
+      if (active.mode !== (next.mode ?? "full")) {
+        scene.remove(active.assembly.group); active.assembly.dispose();
+        active.assembly = createStudioAssembly(active.lesson, palette, next.mode, props.screens);
+        active.mode = next.mode ?? "full";
+        Object.assign(active, measureAssembly(active.assembly));
+        active.materials = prepareMaterials(active.assembly);
+        scene.add(active.assembly.group); applyActor(active); fitCamera();
+      }
       active.pose.target = next.after ? 1 : 0; angle.target = targetAngle();
-      if (replayed && !changed) {
+      if (replayed && !changed && !modeChanged) {
         take = { kind: "replay", phase: "pullback", endYaw: active.yaw.value + Math.PI * 2 };
         active.yaw.target = active.yaw.value; elevation.target = .19; fitCamera();
       }
@@ -293,7 +390,7 @@ export function TourStudioScene(props: TourStudioSceneProps) {
   // One renderer for the mounted stage; requested changes retarget the current physical pose.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useLayoutEffect(() => runtime.current?.update(props), [props.lesson, props.after, props.running, props.reduced, props.replayKey]);
+  useLayoutEffect(() => runtime.current?.update(props), [props.lesson, props.mode, props.after, props.running, props.reduced, props.replayKey, props.onSettled, props.onReady]);
   useLayoutEffect(() => { if (available) runtime.current?.paint(); }, [available]);
   return <div ref={host} className="tour-studio-scene" data-renderer={available ? "webgl" : "fallback"} data-scene-lesson={props.lesson}>
     <canvas ref={canvas} data-testid="tour-studio-canvas" aria-hidden="true" hidden={!available} />

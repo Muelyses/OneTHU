@@ -1,4 +1,5 @@
 import { t as i18n } from "../i18n/index.js";
+import { fullModeReceiveSession } from "../lib/fullModeReceive.js";
 /**
  * 组织：成员（真实邮箱）、共享资料库（清华云盘资料库/libraries）、GitLab 仓库、项目、公告。
  *
@@ -419,19 +420,30 @@ export async function currentOrgEmail(): Promise<string> {
 }
 
 export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ ok: boolean; orgId?: string; reason?: string }> {
+  const receiving = fullModeReceiveSession();
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   let resolved: string;
   try { resolved = await (await import("./cloudExchange.js")).resolveExchangeCode(code); }
   catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   const dec = decodeOrgInvite(resolved);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.org.c4591b5b1fe8") };
   const p = dec.payload;
   if (p.collaboration) {
-    try { return { ok: true, orgId: await (await import("./orgSync.js")).joinRemoteOrg(p.collaboration) }; }
+    try {
+      const remote = await import("./orgSync.js");
+      receiving.assertCurrent();
+      const orgId = await remote.joinRemoteOrg(p.collaboration);
+      receiving.assertCurrent();
+      return { ok: true, orgId };
+    }
     catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
   }
   /* 限定邮箱：组织邀请也能只让某个云盘账号接受。 */
   const email = await currentOrgEmail();
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   const denied = await (await import("./vaultShare.js")).shareAccessReason(p.allowEmail);
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   if (denied) return { ok: false, reason: denied };
   const exist = doc.orgs.find((o) => o.name === p.name && o.joinUrl === p.joinUrl);
   const org = exist ?? createOrg({ name: p.name, brief: p.brief, joinUrl: p.joinUrl, ownerName: p.inviter || "邀请人", ownerEmail: "" });

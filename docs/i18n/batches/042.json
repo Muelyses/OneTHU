@@ -1,7 +1,26 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "native.widget.classes.one",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "{count} class",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "native.widget.classes.other",
       "source": "{count} 节课",
@@ -1418,27 +1437,6 @@
         }
       ],
       "translation": "System boards cannot be deleted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.01cf40e9becd",
-      "source": "在「{name}」内搜文件名（回车搜索）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(repo.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 488,
-          "context": "{i18n(\"pages.cloudpage.01cf40e9becd\", { name: String(repo.name) })}"
-        }
-      ],
-      "translation": "Search file names in \"{name}\" (press Enter to search)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

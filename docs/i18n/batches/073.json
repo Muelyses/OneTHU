@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.taskspage.091a3375f53e",
+      "source": "返回生活 →",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/TasksPage.tsx",
+          "line": 315,
+          "context": "{i18n(\"pages.taskspage.091a3375f53e\")}"
+        }
+      ],
+      "translation": "Back to Life →",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.taskspage.0d1d9183d7d0",
       "source": "收起 ⤡",
@@ -1371,22 +1387,6 @@
         }
       ],
       "translation": "Contributors",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.xiaoda.xiaodapage.115f8a99ff8d",
-      "source": "直接输入问题即可；换智能体请到「智能体」页挑一个",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 338,
-          "context": "{i18n(\"pages.xiaoda.xiaodapage.115f8a99ff8d\")}"
-        }
-      ],
-      "translation": "Just type your question; to switch agents, pick one on the \"Agents\" page",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

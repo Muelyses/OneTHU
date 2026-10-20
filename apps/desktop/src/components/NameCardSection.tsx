@@ -16,7 +16,7 @@ import { useVaultReceive } from "../lib/useVaultReceive.js";
 import { IdentityCard } from "./IdentityCard.js";
 import { FriendInvitations } from "./FriendInvitations.js";
 import { publishFriendInvitation } from "../state/friendInbox.js";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import {
   Btn, Card, Chip, EmptyState, IconBtn, IconCamera, IconCloud, IconFile, IconIn, IconMail, IconPen,
   IconPlus, IconStar, IconTrash, Inline, KeyValue, List, Modal, Row, SearchField, Section, Segment,
@@ -45,6 +45,7 @@ import {
   refreshFriendMessages, sendFriendFile, sendFriendText, useFriendMessages,
 } from "../state/friendChannel.js";
 import { stageFromPicker } from "../lib/fileChannel.js";
+import { experienceMode, experienceRevision, subscribeExperience, useExperienceMode } from "../state/experienceMode.js";
 
 defineSearchRows([
   {
@@ -329,6 +330,8 @@ export function OrgCardsSection(): ReactNode {
 
 export function ContactCabinet(): ReactNode {
   const uiLocale = useUiLocale();
+  const full = useExperienceMode() === "full";
+  const modeRevision = useSyncExternalStore(subscribeExperience, experienceRevision, experienceRevision);
 
   const doc = useCards();
   const organizations = useOrgs();
@@ -354,15 +357,27 @@ export function ContactCabinet(): ReactNode {
   const channelMessages = useFriendMessages(channelId ?? "");
   const [channelError, setChannelError] = useState<string | null>(null);
   useEffect(() => {
-    if (!channelId) { setChannelError(null); return; }
+    // Preserve the cards, not their transient portals. Restoring a card modal
+    // while the mode picker is still open would cover Settings with its scrim.
+    setFocusedId(null);
+    setSelfOpen(false);
+    setRecvOpen(false);
+    setChannelId(null);
+    setChannelError(null);
+    shownRef.current = null;
+  }, [modeRevision]);
+  useEffect(() => {
+    if (!full || !channelId) { setChannelError(null); return; }
+    const revision = modeRevision;
+    const current = (): boolean => experienceMode() === "full" && experienceRevision() === revision;
     let alive = true;
     let running = false;
     const refresh = async (): Promise<void> => {
-      if (running || document.visibilityState !== "visible") return;
+      if (!alive || !current() || running || document.visibilityState !== "visible") return;
       running = true;
       try {
         const r = await refreshFriendMessages(channelId);
-        if (alive) setChannelError(r.ok ? null : r.reason ?? null);
+        if (alive && current()) setChannelError(r.ok ? null : r.reason ?? null);
       } finally { running = false; }
     };
     void refresh();
@@ -371,7 +386,7 @@ export function ContactCabinet(): ReactNode {
     window.addEventListener("focus", focus);
     document.addEventListener("visibilitychange", focus);
     return () => { alive = false; clearInterval(timer); window.removeEventListener("focus", focus); document.removeEventListener("visibilitychange", focus); };
-  }, [channelId]);
+  }, [channelId, full, modeRevision]);
 
   const toggleStar = useCallback((id: string): void => {
     setStarred((prev) => {
@@ -481,7 +496,7 @@ export function ContactCabinet(): ReactNode {
 
   return (
     <div className="contact-cabinet">
-      <FriendInvitations onConnected={(id) => { setFocusedId(id); setChannelId(id); }} />
+      {full && <FriendInvitations onConnected={(id) => { setFocusedId(id); setChannelId(id); }} />}
       <div className="contact-toolbar">
         <SearchField
           className="contact-search"
@@ -567,7 +582,7 @@ export function ContactCabinet(): ReactNode {
         />
       ) : null}
 
-      <Modal open={recvOpen} onClose={() => setRecvOpen(false)} title={i18n("components.namecardsection.365d7c6687b0")} size="sm">
+      <Modal open={full && recvOpen} onClose={() => setRecvOpen(false)} title={i18n("components.namecardsection.365d7c6687b0")} size="sm">
         <Stack gap={3}>
           <Text slot="micro" tone="faint">{i18n("components.namecardsection.a9f6d3616710")}</Text>
           <Inline gap={2} wrap>
@@ -579,7 +594,7 @@ export function ContactCabinet(): ReactNode {
       </Modal>
 
       {/* 我的名片大卡 */}
-      <Modal open={selfOpen} onClose={() => setSelfOpen(false)} title={i18n("components.namecardsection.487e926379fe")} className="contact-detail-modal" size="md">
+      <Modal open={full && selfOpen} onClose={() => setSelfOpen(false)} title={i18n("components.namecardsection.487e926379fe")} className="contact-detail-modal" size="md">
         <div className="contact-detail">
           <div className="contact-detail-stage">
             <IdentityCard card={personal} variant="detail" />
@@ -605,7 +620,7 @@ export function ContactCabinet(): ReactNode {
 
       {/* 联系人大卡：详情一律弹出，不塞回页面 */}
       <Modal
-        open={Boolean(focused)}
+        open={full && Boolean(focused)}
         onClose={closeDetail}
         title={shown ? i18n("components.namecardsection.a12513e5d0fd", { name: String(shown.name) }) : i18n("components.namecardsection.9e3899a169a0")}
         className="contact-detail-modal"

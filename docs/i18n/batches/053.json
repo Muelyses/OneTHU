@@ -1,7 +1,28 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.newstab.c10e686a2131",
+      "source": "附件（{length}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(detail.data.attachments.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 788,
+          "context": "{i18n(\"pages.info.newstab.c10e686a2131\", { length: String(detail.data.attachments.length) })}"
+        }
+      ],
+      "translation": "Attachments ({length})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.newstab.c23d1354916d",
       "source": "本页没有更多新闻了。",
@@ -1353,22 +1374,6 @@
         }
       ],
       "translation": "Mobile number saved to the sports system",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.6320b4a8722a",
-      "source": "状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 309,
-          "context": "{i18n(\"pages.info.sportstab.6320b4a8722a\")}"
-        }
-      ],
-      "translation": "Status",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

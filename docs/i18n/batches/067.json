@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.plugins.32c8d373afe0",
+      "source": "执行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 727,
+          "context": "{i18n(\"pages.plugins.32c8d373afe0\")}"
+        }
+      ],
+      "translation": "Run",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.plugins.336e65b39549",
       "source": "启用主题",
@@ -1427,22 +1443,6 @@
         }
       ],
       "translation": "via ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.b588afe533c6",
-      "source": "可更新 ↑",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 646,
-          "context": "{i18n(\"pages.plugins.b588afe533c6\")}"
-        }
-      ],
-      "translation": "Update available ↑",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

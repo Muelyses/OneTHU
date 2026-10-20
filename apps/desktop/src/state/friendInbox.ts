@@ -9,6 +9,7 @@ import { t } from "../i18n/index.js";
 import { ensureSeafileLoaded, getSeafileToken, getSeafileCredentialVersion,
   type SeafileAccount, type SeafileRepo } from "./seafile.js";
 import { attachFriendChannel, cardsSnapshot, setContactShare, type PersonalCard } from "./nameCard.js";
+import { experienceMode, experienceRevision, subscribeExperience } from "./experienceMode.js";
 
 const MANIFEST = "onethu-friend-channel.json";
 const RECEIPT = "onethu-friend-accepted.json";
@@ -70,11 +71,20 @@ export function clearFriendInbox(): void {
   negativeCache.clear();
   emit({ email: "", invitations: [], error: null, busy: false });
 }
-async function session() {
+async function session(receiving = false) {
+  const revision = experienceRevision();
+  const assertMode = (): void => {
+    if (receiving && (experienceMode() !== "full" || revision !== experienceRevision())) {
+      throw new Error(t("friends.modeChanged"));
+    }
+  };
+  assertMode();
   await ensureSeafileLoaded();
+  assertMode();
   const token = getSeafileToken(), version = getSeafileCredentialVersion();
   if (!token) throw new Error(t("friends.connectCloud"));
   const assertCurrent = (): void => {
+    assertMode();
     if (token !== getSeafileToken() || version !== getSeafileCredentialVersion()) throw new Error(t("state.seafile.accountChanged"));
   };
   const account = await invoke<SeafileAccount>("seafile_account", { token });
@@ -108,8 +118,17 @@ const negativeCache = new Map<string, { mtime: number; until: number }>();
 let pending: Promise<void> | null = null;
 let pendingIdentity = "";
 let generation = 0;
+// Full-mode tabs stay mounted while hidden. Invalidate their work synchronously,
+// without waiting for React effects to unmount the navigation monitor.
+subscribeExperience(() => {
+  if (experienceMode() !== "full") {
+    clearFriendInbox();
+    accepting.clear();
+  }
+});
 /** One shared-library listing per foreground check; missing manifests are cached for 5 minutes. */
 export function refreshFriendInvitations(force = false): Promise<void> {
+  if (experienceMode() !== "full") return Promise.resolve();
   const identity = `${getSeafileCredentialVersion()}:${getSeafileToken()}`;
   if (pending && pendingIdentity === identity) return pending;
   pendingIdentity = identity;
@@ -118,8 +137,9 @@ export function refreshFriendInvitations(force = false): Promise<void> {
     let current: Awaited<ReturnType<typeof session>> | undefined;
     try {
       if (!getSeafileToken()) await ensureSeafileLoaded();
+      if (experienceMode() !== "full" || epoch !== generation) return;
       if (!getSeafileToken()) { clearFriendInbox(); return; }
-      current = await session();
+      current = await session(true);
       const { token, email } = current;
       const assertCurrent = (): void => {
         current!.assertCurrent();
@@ -173,6 +193,7 @@ export function refreshFriendInvitations(force = false): Promise<void> {
         const shared = contact.shared;
         if (!shared?.channelId || shared.accountEmail !== email || shared.ownerEmail !== email || shared.acceptedAt) continue;
         try {
+          assertCurrent();
           const raw = await readJson(token, shared.repoId, join(shared.path, RECEIPT)) as Record<string, unknown>;
           assertCurrent();
           if (raw?.v === 1 && raw.channelId === shared.channelId && raw.recipientEmail === shared.peerEmail
@@ -264,12 +285,14 @@ export function publishFriendInvitation(contactId: string): Promise<void> {
 
 const accepting = new Map<string, Promise<string>>();
 export function acceptFriendInvitation(id: string, replaceExisting = false): Promise<string> {
+  if (experienceMode() !== "full") return Promise.reject(new Error(t("friends.modeChanged")));
   const previous = accepting.get(id);
   if (previous) return previous;
   const run = (async () => {
     const cached = state.invitations.find((x) => x.id === id);
     if (!cached) throw new Error(t("friends.invalidInvite"));
-    const { token, email, assertCurrent } = await session();
+    const { token, email, assertCurrent } = await session(true);
+    assertCurrent();
     const repos = await invoke<SeafileRepo[]>("seafile_repos", { token });
     assertCurrent();
     const repo = repos.find((r) => r.id === cached.repoId && r.repoType === "shared");

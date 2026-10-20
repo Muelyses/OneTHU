@@ -1,7 +1,28 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.cardtab.db0a5f3fe6c3",
+      "source": "余额预警",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 314,
+          "context": "{i18n(\"pages.info.cardtab.db0a5f3fe6c3\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 317,
+          "context": "{i18n(\"pages.info.cardtab.db0a5f3fe6c3\")}"
+        }
+      ],
+      "translation": "Balance alert",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.cardtab.de6785d99e02",
       "source": "刚刚",
@@ -1321,21 +1342,6 @@
         }
       ],
       "translation": "This academic year",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.examstab.51a75f4634df",
-      "source": "一",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ExamsTab.tsx",
-          "line": 12
-        }
-      ],
-      "translation": "Mon",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

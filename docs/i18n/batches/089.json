@@ -1,7 +1,28 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.systemcal.fe90aa1936ae",
+      "source": "同步已停止，已有系统日历保持不变",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 419,
+          "context": "new Error(i18n(\"state.systemcal.fe90aa1936ae\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 428,
+          "context": "new Error(i18n(\"state.systemcal.fe90aa1936ae\"))"
+        }
+      ],
+      "translation": "Sync stopped; the existing system calendar is unchanged",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.systemcal.ff52516e4a39",
       "source": "课表有 {skipped} 条无法解析的时段，已中止同步",
@@ -964,7 +985,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 65,
+          "line": 66,
           "context": "reason: i18n(\"state.touch.checksum\")"
         }
       ],
@@ -980,7 +1001,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 64,
+          "line": 65,
           "context": "reason: i18n(\"state.touch.corrupt\")"
         }
       ],
@@ -996,7 +1017,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 140,
+          "line": 146,
           "context": "reason: i18n(\"state.touch.duplicateContact\")"
         }
       ],
@@ -1012,7 +1033,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 141,
+          "line": 147,
           "context": "reason: i18n(\"state.touch.empty\")"
         }
       ],
@@ -1032,7 +1053,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 130,
+          "line": 135,
           "context": "p.from ? i18n(\"state.touch.from\", {name:p.from}) : \"\""
         }
       ],
@@ -1048,7 +1069,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 70,
+          "line": 71,
           "context": "reason: i18n(\"state.touch.invalidJson\")"
         }
       ],
@@ -1064,7 +1085,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 62,
+          "line": 63,
           "context": "reason: i18n(\"state.touch.invalidPrefix\")"
         }
       ],
@@ -1080,7 +1101,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 113,
+          "line": 114,
           "context": "myName = i18n(\"state.touch.self\")"
         }
       ],
@@ -1096,7 +1117,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 118,
+          "line": 122,
           "context": "dec.reason ?? i18n(\"state.touch.unreadable\")"
         }
       ],
@@ -1112,7 +1133,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 126,
+          "line": 131,
           "context": "r.reason ?? i18n(\"state.touch.vaultImportFailed\")"
         }
       ],
@@ -1128,7 +1149,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/touch.ts",
-          "line": 68,
+          "line": 69,
           "context": "reason: i18n(\"state.touch.version\")"
         }
       ],
@@ -1355,22 +1376,6 @@
         }
       ],
       "translation": "Changing the recipient scope requires regenerating the share",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultcloud.21e554dce895",
-      "source": "没有可撤销的分享 token",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultCloud.ts",
-          "line": 178,
-          "context": "new Error(i18n(\"state.vaultcloud.21e554dce895\"))"
-        }
-      ],
-      "translation": "No share token to revoke",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

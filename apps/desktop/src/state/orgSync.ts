@@ -5,6 +5,7 @@ import { cacheRemoteOrg, currentOrgEmail, markOrgRemote, orgSnapshot, type Org, 
 import { ADMIN_FILE, CONTENT_FILE, OrgConflictError, applyPermissionIntent, auditOrgResources, decodeOrgFile, errorText, levelRole, roleLevel, missingRemote, replaceSharedItem,
   type OrgPermissionGateway, type OrgPermissionIntent, type OrgRemoteAdmin, type OrgRemoteBinding, type OrgRemoteContent, type OrgRemoteRef, type OrgRemoteSnapshot } from "./orgSyncCore.js";
 import type { GitOrgProtection } from "@onethu/info-lib";
+import { fullModeReceiveSession } from "../lib/fullModeReceive.js";
 
 const snapshots = new Map<string, OrgRemoteSnapshot>();
 const initializing = new Map<string, Promise<void>>();
@@ -22,18 +23,22 @@ function checkProtection(protections: GitOrgProtection[], name: string, minimum:
   const matching = protections.filter(p => new RegExp("^" + p.name.split("*").map(part=>part.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join(".*") + "$").test(name));
   if (!matching.some(p => p.name === name) || matching.some(p => p.allow_force_push || [...p.push_access_levels, ...p.merge_access_levels].some(a => (a.access_level > 0 && a.access_level < minimum) || a.user_id != null || a.group_id != null || a.deploy_key_id != null))) throw new Error(i18n("state.orgsync.b4a14ad2c5e3", { name: String(name) }));
 }
-async function readSnapshot(ref: OrgRemoteRef): Promise<OrgRemoteSnapshot> {
+async function readSnapshot(ref: OrgRemoteRef, assertCurrent: () => void = () => {}): Promise<OrgRemoteSnapshot> {
+  assertCurrent();
   assertRef(ref);
   const api = await gitlabOrganizationApi();
+  assertCurrent();
   const [me, group, project, members, protections, af, cf] = await Promise.all([
     api.me(), api.group(ref.groupId), api.project(ref.projectId), api.members("groups", ref.groupId, true), api.protections(ref.projectId),
     api.file(ref.projectId, ref.adminBranch, ADMIN_FILE), api.file(ref.projectId, ref.contentBranch, CONTENT_FILE),
   ]);
+  assertCurrent();
   if (group.visibility !== "private" || group.parent_id || project.visibility !== "private" || project.namespace.id !== ref.groupId) throw new Error(i18n("state.orgsync.fc4f3897fb63"));
   if (!members.some(m => m.id === me.id && m.access_level >= 20)) throw new Error(i18n("state.orgsync.7bdb46eb7930"));
   if (members.some(m=>m.access_level===40)) throw new Error(i18n("state.orgsync.6ad659d36005"));
   if (project.shared_with_groups?.length) throw new Error(i18n("state.orgsync.ab3125f51556"));
   const direct = await api.members("projects",ref.projectId,false);
+  assertCurrent();
   if (direct.some(m=>!members.some(g=>g.id===m.id && g.access_level===50))) throw new Error(i18n("state.orgsync.8f58376b6cc9"));
   checkProtection(protections, ref.adminBranch, 40); checkProtection(protections, ref.contentBranch, 30);
   return { ref, me, members, group:{id:group.id,name:group.name,path:group.full_path,webUrl:group.web_url}, admin: decodeOrgFile<OrgRemoteAdmin>(af, "onethu-org-admin"), content: decodeOrgFile<OrgRemoteContent>(cf, "onethu-org-content") };
@@ -52,12 +57,24 @@ function cache(snapshot: OrgRemoteSnapshot, localId?: string): Org {
   cacheRemoteOrg(org); snapshots.set(id, snapshot); return org;
 }
 export async function refreshRemoteOrg(id: string): Promise<Org> {
+  const receiving = fullModeReceiveSession();
+  receiving.assertCurrent();
   const org = requireLocal(id); if (!org.collaboration) throw new Error(i18n("state.orgsync.5784fd684c09"));
-  try { return cache(await readSnapshot(org.collaboration), id); }
-  catch (e) { markOrgRemote(id, {...org.collaboration, status: "error", error: errorText(e), accessLevel: undefined}); throw e; }
+  try {
+    const snapshot = await readSnapshot(org.collaboration, receiving.assertCurrent);
+    receiving.assertCurrent();
+    return cache(snapshot, id);
+  } catch (e) {
+    // Leaving full mode pauses this read; it must not overwrite the cached organization with an error.
+    if (receiving.isCurrent()) markOrgRemote(id, {...org.collaboration, status: "error", error: errorText(e), accessLevel: undefined});
+    throw e;
+  }
 }
 export async function joinRemoteOrg(ref: OrgRemoteRef): Promise<string> {
-  const snapshot = await readSnapshot(ref);
+  const receiving = fullModeReceiveSession();
+  receiving.assertCurrent();
+  const snapshot = await readSnapshot(ref, receiving.assertCurrent);
+  receiving.assertCurrent();
   const previous = orgSnapshot().orgs.find(o => o.collaboration?.projectId === ref.projectId);
   return cache(snapshot, previous?.id).id;
 }

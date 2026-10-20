@@ -1,6 +1,6 @@
 import { getLocale as getUiLocale } from "../i18n/index.js";
 import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 /**
  * 组织主页（page=org，navParams.orgId）：组织是完整页面，不是一张卡片。
  *
@@ -37,6 +37,8 @@ import { openExternal } from "./info/openExternal.js";
 import { addToVault } from "../state/vault.js";
 import { assertOrgManager, changeRemoteMember, enableOrgCollaboration, refreshRemoteOrg, resolveOrgUser, retryOrgPermissions, saveRemoteContent, updateRemoteOrg, updateRemoteResources } from "../state/orgSync.js";
 import { orgCardCatch } from "../state/nameCard.js";
+import { experienceRevision, subscribeExperience, useExperienceMode } from "../state/experienceMode.js";
+import { fullModeReceiveSession } from "../lib/fullModeReceive.js";
 
 const ROLE_LABEL: Record<OrgRole, string> = { get owner() { return i18n("pages.organization.a525346277ed"); }, get member() { return i18n("pages.organization.6e6d6ddbb7c1"); }, get guest() { return i18n("pages.organization.8b358d0f9742"); } };
 
@@ -297,6 +299,8 @@ function OrgMissing(): ReactNode {
 
 export function OrganizationPage(): ReactNode {
   const uiLocale = useUiLocale();
+  const mode = useExperienceMode();
+  const revision = useSyncExternalStore(subscribeExperience, experienceRevision, experienceRevision);
 
   const { navParams } = useApp();
   const doc = useOrgs();
@@ -311,35 +315,53 @@ export function OrganizationPage(): ReactNode {
   const [collabBusy, setCollabBusy] = useState(false);
   const [collabError, setCollabError] = useState("");
   const [retainedDraft, setRetainedDraft] = useState<{label: string; text: string; reopen: () => void} | null>(null);
+  useEffect(() => {
+    setCollabBusy(false);
+    setInvite(null);
+    setOpenLib(null);
+    setOpenRepo(null);
+  }, [mode, revision]);
   const runRemote = async (action: () => Promise<void>, success?: string): Promise<void> => {
+    const receiving = fullModeReceiveSession();
+    if (!receiving.isCurrent()) return;
     setCollabBusy(true); setCollabError("");
-    try { await action(); if (success) showToast(success); }
-    catch (e) { setCollabError(e instanceof Error ? e.message : String(e)); }
-    finally { setCollabBusy(false); }
+    try { await action(); if (success && receiving.isCurrent()) showToast(success); }
+    catch (e) { if (receiving.isCurrent()) setCollabError(e instanceof Error ? e.message : String(e)); }
+    finally { if (receiving.isCurrent()) setCollabBusy(false); }
   };
   const needsCollaboration = (target: Org): boolean => {
     if (!target.collaboration) { setCollabError(i18n("pages.organization.a17ba20c4f4c")); return true; }
     return false;
   };
   useEffect(() => {
-    if (!orgId || !org?.collaboration || org.collaboration.status === "initializing") return;
-    const refresh = () => { if (document.visibilityState !== "hidden") void refreshRemoteOrg(orgId).catch(e => setCollabError(e instanceof Error ? e.message : String(e))); };
+    if (mode !== "full" || !orgId || !org?.collaboration || org.collaboration.status === "initializing") return;
+    let alive = true;
+    const receiving = fullModeReceiveSession();
+    const refresh = () => {
+      if (alive && receiving.isCurrent() && document.visibilityState !== "hidden") {
+        void refreshRemoteOrg(orgId).catch(e => {
+          if (alive && receiving.isCurrent()) setCollabError(e instanceof Error ? e.message : String(e));
+        });
+      }
+    };
     refresh();
     const timer = window.setInterval(refresh, 30000);
     window.addEventListener("focus", refresh);
-    return () => { window.clearInterval(timer); window.removeEventListener("focus", refresh); };
-  }, [orgId, Boolean(org?.collaboration)]);
+    return () => { alive = false; window.clearInterval(timer); window.removeEventListener("focus", refresh); };
+  }, [mode, revision, orgId, Boolean(org?.collaboration)]);
   /* 云盘配置是懒加载的：进组织页先把 token / 资料库列表拉起来，
      否则「新建资料库」会拿空 token 直接跳云盘页（用户观感=报错）。 */
   useEffect(() => {
+    if (mode !== "full") return;
     let alive = true;
+    const receiving = fullModeReceiveSession();
     void (async () => {
       await ensureSeafileLoaded();
-      if (!alive || !getSeafileToken()) return;
+      if (!alive || !receiving.isCurrent() || !getSeafileToken()) return;
       await refreshRepos();
     })();
     return () => { alive = false; };
-  }, []);
+  }, [mode, revision]);
   const noticeList = useMemo(
     () => [...(org?.announcements ?? [])].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.updatedAt - a.updatedAt),
     [uiLocale, org?.announcements],
@@ -359,12 +381,14 @@ export function OrganizationPage(): ReactNode {
 
   /* ── 邀请 ── */
   const makeInvite = async (target: Org): Promise<void> => {
+    const receiving = fullModeReceiveSession();
+    if (!receiving.isCurrent()) return;
     const f = await openFormModal(i18nMsg("pages.organization.addfc25ab35b"), [
       { key: "label", label: i18nMsg("pages.organization.daa75e1875bd"), default: target.invite?.label ?? "" },
       { key: "allowEmail", label: i18nMsg("pages.organization.aeeeb7431935"), default: target.invite?.allowEmail ?? "" },
       { key: "expireDays", label: i18nMsg("pages.organization.c56cd8e33248"), kind: "select", options: INVITE_EXPIRES, default: inviteExpireDays(target.invite) },
     ]);
-    if (!f) return;
+    if (!f || !receiving.isCurrent()) return;
     const email = (f.allowEmail ?? "").trim();
     if (email && !isEmail(email)) {
       showToast(i18nMsg("pages.organization.08db6a07f7dd"));
@@ -373,11 +397,16 @@ export function OrganizationPage(): ReactNode {
     const expireDays = Number(f.expireDays ?? "7") === 0 ? 0 : Number(f.expireDays ?? "7");
     try {
       const code = await orgInviteCode(target, "我", { label: f.label ?? "", allowEmail: email, expireDays });
+      if (!receiving.isCurrent()) return;
       setInvite({ code, ...(f.label ? { label: f.label } : {}), ...(email ? { allowEmail: email } : {}) });
       const lifetime = expireDays > 0 ? i18n("pages.organization.37d624a5b84e", { expireDays: String(expireDays) }) : i18n("pages.organization.8de1bb55709d");
-      await navigator.clipboard.writeText(code).then(() => showToast(i18nMsg("pages.organization.5f7f73143f0f", { lifetime: String(lifetime) }))).catch(() => showToast(i18nMsg("pages.organization.5f1d03317818", { lifetime: String(lifetime) })));
+      await navigator.clipboard.writeText(code).then(() => {
+        if (receiving.isCurrent()) showToast(i18nMsg("pages.organization.5f7f73143f0f", { lifetime: String(lifetime) }));
+      }).catch(() => {
+        if (receiving.isCurrent()) showToast(i18nMsg("pages.organization.5f1d03317818", { lifetime: String(lifetime) }));
+      });
     } catch (e) {
-      showToast(i18nMsg("pages.organization.4949eb791978", { value: String(e instanceof Error ? e.message : String(e)) }));
+      if (receiving.isCurrent()) showToast(i18nMsg("pages.organization.4949eb791978", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   };
 
@@ -750,7 +779,7 @@ export function OrganizationPage(): ReactNode {
                       <Btn size="sm" variant="ghost" onClick={() => setOpenLib(openLib === lib.repoId ? null : lib.repoId)}>{openLib === lib.repoId ? i18n("pages.organization.5aff278dfeb0") : i18n("pages.organization.96812fd51b93")}</Btn>
                       <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(i18nMsg("pages.organization.959d1ad22dc2", { name: String(lib.name) })).then((ok) => { if (ok) { void runRemote(()=>updateRemoteResources(org.id,"libraries",libraries,libraries.filter(x=>x.repoId!==lib.repoId)),i18n("pages.organization.ffaf3f2d7689")); } })}>{i18n("pages.organization.f48551f0b9c9")}</Btn>
                     </div>
-                    {openLib === lib.repoId ? <LibraryFiles repoId={lib.repoId} name={lib.name} /> : null}
+                    {mode === "full" && openLib === lib.repoId ? <LibraryFiles repoId={lib.repoId} name={lib.name} /> : null}
                   </Stack>
                 </Card>
               ))}
@@ -799,7 +828,7 @@ export function OrganizationPage(): ReactNode {
                       <Btn size="sm" variant="ghost" onClick={() => void openExternal(repo.webUrl ?? `https://git.tsinghua.edu.cn/${repo.path}`)}>{i18n("pages.organization.b231587899f3")}</Btn>
                       <Btn size="sm" variant="ghost" tone="error" onClick={() => void confirmOk(i18nMsg("pages.organization.18826c45fb28", { name: String(repo.name) })).then((ok) => { if (ok) { void runRemote(()=>updateRemoteResources(org.id,"gitlabRepos",gitlabRepos,gitlabRepos.filter(x=>x.id!==repo.id)),i18n("pages.organization.ffaf3f2d7689")); } })}>{i18n("pages.organization.f48551f0b9c9")}</Btn>
                     </div>
-                    {openRepo === repo.id ? <RepoPreview projectId={repo.id} /> : null}
+                    {mode === "full" && openRepo === repo.id ? <RepoPreview projectId={repo.id} /> : null}
                   </Stack>
                 </Card>
               ))}
@@ -853,7 +882,7 @@ export function OrganizationPage(): ReactNode {
         </Stack>
       ) : null}
 
-      <Modal open={Boolean(invite)} onClose={() => setInvite(null)} title={i18n("pages.organization.10f106e00d20")} size="sm">
+      <Modal open={mode === "full" && Boolean(invite)} onClose={() => setInvite(null)} title={i18n("pages.organization.10f106e00d20")} size="sm">
         {invite ? (
           <Stack gap={3}>
             <Text slot="micro" tone="faint">{i18nRich("pages.organization.6b3341c7022d", { value: invite.label ? `「${invite.label}」　` : "", value2: invite.allowEmail ?? i18n("pages.organization.b8e3e3e6c5e6"), value3: expireText(org.invite?.expiresAt) })}</Text>

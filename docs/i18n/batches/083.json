@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.atoms.c7811f3d9d70",
+      "source": "图书馆 · 座位与签到",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 553,
+          "context": "sub: i18n(\"state.atoms.c7811f3d9d70\")"
+        }
+      ],
+      "translation": "Library · Seats and check-in",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.atoms.c94cd3fab151",
       "source": " · Info 应用",
@@ -1369,22 +1385,6 @@
         }
       ],
       "translation": "The recipient email address is invalid",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudexchange.6e106dfb0757",
-      "source": "云盘没有返回分享链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudExchange.ts",
-          "line": 103,
-          "context": "new Error(i18n(\"state.cloudexchange.6e106dfb0757\"))"
-        }
-      ],
-      "translation": "The cloud drive did not return a share link",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

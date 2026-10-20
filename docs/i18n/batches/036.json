@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.5f62e09a2329",
+      "source": "开户许可证/财务报表/纳税证明/社保缴纳证明扫描件申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 225,
+          "context": "return i18n(\"lib.infoapps.5f62e09a2329\");"
+        }
+      ],
+      "translation": "Request for Copies of Account Opening License/Financial Statements/Tax Certificate/Social Insurance Certificate",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.5f8150e4c23b",
       "source": "培养方案及计划",
@@ -1263,22 +1279,6 @@
         }
       ],
       "translation": "Phone Directory",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.b17c58209bce",
-      "source": "就业信息(招聘信息)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 293,
-          "context": "return i18n(\"lib.infoapps.b17c58209bce\");"
-        }
-      ],
-      "translation": "Employment Information (Job Postings)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

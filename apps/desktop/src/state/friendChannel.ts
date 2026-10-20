@@ -8,6 +8,7 @@ import {
   type SeafileEntry,
 } from "./seafile.js";
 import { cardsSnapshot, subscribeCards, type PersonalCard } from "./nameCard.js";
+import { experienceMode, experienceRevision, useExperienceMode } from "./experienceMode.js";
 
 export interface FriendMessage {
   id: string;
@@ -48,12 +49,14 @@ export function subscribeFriendChannel(f: () => void): () => void {
 }
 export function friendChannelSnapshot(): ChannelDoc { return doc; }
 export function useFriendMessages(contactId: string): FriendMessage[] {
+  const mode = useExperienceMode();
   const snap = useSyncExternalStore(subscribeFriendChannel, friendChannelSnapshot, friendChannelSnapshot);
   // Subscribe to account changes as well as messages; a logout must hide private history.
   const { configured, account } = useSeafile();
   const cards = useSyncExternalStore(subscribeCards, cardsSnapshot, cardsSnapshot);
   const channelId = cards.contacts.find((c) => c.id === contactId)?.shared?.channelId;
   const email = normalizeEmail(account?.email ?? "");
+  if (mode !== "full") return [];
   return snap.messages.filter((m) => m.contactId === contactId && m.channelId === channelId && (
     m.accountEmail ? configured && m.accountEmail === email : !configured
   )).slice().sort((a, b) => a.at - b.at || a.id.localeCompare(b.id));
@@ -71,10 +74,11 @@ function peerEmail(contactId: string): string {
   return normalizeEmail(contact?.shared?.peerEmail ?? (contact?.card as PersonalCard | undefined)?.cloudEmail ?? "");
 }
 
-interface Session { token: string; version: number; accountEmail: string }
+interface Session { token: string; version: number; accountEmail: string; modeRevision: number }
 interface ChannelSession extends Session { contactId: string; repoId: string; path: string; channelId?: string; peerEmail: string }
 function sameSession(s: Session): boolean {
-  return s.version === getSeafileCredentialVersion() && s.token === getSeafileToken();
+  return experienceMode() === "full" && s.modeRevision === experienceRevision()
+    && s.version === getSeafileCredentialVersion() && s.token === getSeafileToken();
 }
 function sameChannel(s: ChannelSession): boolean {
   const shared = currentShare(s.contactId);
@@ -85,8 +89,13 @@ function assertChannel(s: ChannelSession): void {
   if (!sameChannel(s)) throw new Error(i18n("state.friendchannel.sessionChanged"));
 }
 async function session(): Promise<Session> {
+  // A full → compact → full switch still ends the old operation. Capture this
+  // before loading credentials so even its first awaited step cannot cross modes.
+  const modeRevision = experienceRevision();
+  if (experienceMode() !== "full") throw new Error(i18n("state.friendchannel.sessionChanged"));
   await ensureSeafileLoaded();
-  const s: Session = { token: getSeafileToken(), version: getSeafileCredentialVersion(), accountEmail: "" };
+  const s: Session = { token: getSeafileToken(), version: getSeafileCredentialVersion(), accountEmail: "", modeRevision };
+  if (!sameSession(s)) throw new Error(i18n("state.friendchannel.sessionChanged"));
   if (!s.token) throw new Error(i18n("state.friendchannel.a6e7bedde538"));
   if (!getSeafileAccount()) await refreshSeafileAccount();
   if (!sameSession(s)) throw new Error(i18n("state.friendchannel.sessionChanged"));
@@ -138,7 +147,7 @@ export async function openBidirectionalShare(contactId: string): Promise<{ ok: b
 export async function sendFriendText(contactId: string, text: string): Promise<{ ok: boolean; reason?: string }> {
   const value = String(text ?? "").trim().slice(0, 2000);
   if (!value) return { ok: false, reason: i18n("state.friendchannel.596d6dbf6630") };
-  let scope: Session = { token: getSeafileToken(), version: getSeafileCredentialVersion(), accountEmail: normalizeEmail(getSeafileAccount()?.email ?? "") };
+  let scope: Session = { token: getSeafileToken(), version: getSeafileCredentialVersion(), accountEmail: normalizeEmail(getSeafileAccount()?.email ?? ""), modeRevision: experienceRevision() };
   let active: ChannelSession | undefined;
   const message: FriendMessage = { id: newId(), contactId, channelId: currentShare(contactId)?.channelId, mine: true, kind: "text", text: value, at: Date.now() };
   try {
@@ -207,7 +216,7 @@ const seenFiles = new Map<string, string>();
 export async function refreshFriendMessages(contactId: string): Promise<FriendRefreshResult> {
   try {
     const active = channel(await session(), contactId);
-    const key = `${active.version}|${contactId}|${active.repoId}|${active.path}|${active.channelId ?? ""}`;
+    const key = `${active.modeRevision}|${active.version}|${contactId}|${active.repoId}|${active.path}|${active.channelId ?? ""}`;
     const running = pendingRefreshes.get(key);
     if (running) return await running;
     const operation = readMessages(active, key);

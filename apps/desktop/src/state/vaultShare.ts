@@ -12,6 +12,7 @@ import { t as i18n } from "../i18n/index.js";
 import { isShortCode, shortCodeForLink } from "../lib/shortCode.js";
 import type { VaultBox, VaultCatch, VaultItem } from "./vault.js";
 import { createVault, markVaultShared, replaceVaultItems, vaultSnapshot } from "./vault.js";
+import { fullModeReceiveSession } from "../lib/fullModeReceive.js";
 import { recordIssuedShare } from "./vaultShareLog.js";
 
 export const SHARE_PREFIX = "ONV1";
@@ -358,10 +359,14 @@ export async function shareCodeForBox(box: VaultBox): Promise<{ code: string; pa
 
 /** 解析后导入：旧入口默认替换当前箱；直接交换传 new，完整保留已有箱子。 */
 export async function importShareCodeAsCurrent(code: string, target: "current" | "new" = "current"): Promise<{ ok: boolean; imported?: number; reason?: string }> {
+  const receiving = fullModeReceiveSession();
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   const dec = await decodeShareAsync(code);
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.vaultshare.c4591b5b1fe8") };
   let payload = dec.payload;
   const denied = await shareAccessReason(payload.allowEmail);
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   if (denied) return { ok: false, reason: denied };
   if (!payload.items && payload.cloud) {
     try {
@@ -369,14 +374,17 @@ export async function importShareCodeAsCurrent(code: string, target: "current" |
       else {
         if (!payload.cloud.shareUrl) return { ok: false, reason: i18n("state.vaultshare.ee75d1a72727") };
         const text = await (await import("./seafile.js")).seafileShareRead(payload.cloud.shareUrl, payload.cloud.manifestName);
+        if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
         if (text.length > 2 * 1024 * 1024) throw new Error(i18n("state.vaultshare.388fc6c63ebe"));
         payload = await (await import("./sealedShare.js")).readSharedJson(text) as VaultSharePayload;
       }
       const checked = validatePayload(payload);
+      if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
       if (!checked.ok || !checked.payload?.items) return { ok: false, reason: checked.reason || i18n("state.vaultshare.ced6988b78e7") };
       payload = checked.payload;
       /* 云盘清单是权威：发送方后来改过限定邮箱，这里以清单为准再拦一次。 */
       const deniedLate = await shareAccessReason(payload.allowEmail);
+      if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
       if (deniedLate) return { ok: false, reason: deniedLate };
     } catch (e) {
       return { ok: false, reason: i18n("state.vaultshare.716036f1e95d", { error: e instanceof Error ? e.message : String(e) }) };

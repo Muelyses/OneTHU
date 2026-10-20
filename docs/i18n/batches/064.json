@@ -1,7 +1,28 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.organization.36f02dfa5d1b",
+      "source": "资料库「{name}」已创建、关联并核对成员权限",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(f.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 460,
+          "context": "showToast(i18nMsg(\"pages.organization.36f02dfa5d1b\", { name: String(f.name) }))"
+        }
+      ],
+      "translation": "Library \"{name}\" created, linked, and member access verified",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.organization.37d624a5b84e",
       "source": "{expireDays} 天有效",
@@ -15,7 +36,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 377,
+          "line": 402,
           "context": "expireDays > 0 ? i18n(\"pages.organization.37d624a5b84e\", { expireDays: String(expireDays) }) : i18n(\"pages.organization.8de1bb55709d\")"
         }
       ],
@@ -31,7 +52,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 557,
+          "line": 586,
           "context": "label:i18nMsg(\"pages.organization.37d9c73375dc\")"
         }
       ],
@@ -47,7 +68,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 49,
+          "line": 51,
           "context": "return i18nMsg(\"pages.organization.38eefacbb326\");"
         }
       ],
@@ -63,7 +84,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 290,
+          "line": 292,
           "context": "{i18n(\"pages.organization.3e679e9bcd2d\")}"
         }
       ],
@@ -79,7 +100,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 390,
+          "line": 419,
           "context": "label:i18nMsg(\"pages.organization.3f2bcd552c63\")"
         }
       ],
@@ -95,12 +116,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 84,
+          "line": 86,
           "context": "label: i18nMsg(\"pages.organization.3f38e493103b\")"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 351,
+          "line": 373,
           "context": "label: i18nMsg(\"pages.organization.3f38e493103b\")"
         }
       ],
@@ -116,7 +137,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 230,
+          "line": 232,
           "context": "{i18n(\"pages.organization.3fd47edce45b\")}"
         }
       ],
@@ -132,7 +153,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 269,
+          "line": 271,
           "context": "k: i18n(\"pages.organization.41f5cada11ed\")"
         }
       ],
@@ -148,7 +169,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 196,
+          "line": 198,
           "context": "path === \"/\" ? i18n(\"pages.organization.42ee2863b6d7\") : path"
         }
       ],
@@ -164,12 +185,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 609,
+          "line": 638,
           "context": "label: i18n(\"pages.organization.433bdcb25776\")"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 625,
+          "line": 654,
           "context": "k: i18n(\"pages.organization.433bdcb25776\")"
         }
       ],
@@ -185,7 +206,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 598,
+          "line": 627,
           "context": "{i18n(\"pages.organization.43831ecc8c21\")}"
         }
       ],
@@ -201,7 +222,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 268,
+          "line": 270,
           "context": "k: i18n(\"pages.organization.4389d4cfa276\")"
         }
       ],
@@ -217,7 +238,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 111,
+          "line": 113,
           "context": "{i18n(\"pages.organization.44b9531844c7\")}"
         }
       ],
@@ -246,7 +267,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 642,
+          "line": 671,
           "context": "{i18nRich(\"pages.organization.451e59f8953a\", { value: org.invite.label ? `「${org.invite.label}」` : i18n(\"pages.organization.51c549e1aeed\"), value2: org.invite.allowEmail ?? i18n(\"pages.organization.d8c9c482d09b\"), value3: expireText(org.invite.expiresAt) })}"
         }
       ],
@@ -262,7 +283,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 508,
+          "line": 537,
           "context": "group ? i18nMsg(\"pages.organization.c697f98ef8c1\") : i18nMsg(\"pages.organization.472ef6d25612\")"
         }
       ],
@@ -278,7 +299,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 286,
+          "line": 288,
           "context": "{i18n(\"pages.organization.4753aae92593\")}"
         }
       ],
@@ -299,7 +320,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 258,
+          "line": 260,
           "context": "{i18nRich(\"pages.organization.479be5a363f5\", { error: error })}"
         }
       ],
@@ -315,12 +336,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 446,
+          "line": 475,
           "context": "openFormModal(i18nMsg(\"pages.organization.47e4a946fb48\"), [\n      { key: \"repoId\", label: i18nMsg(\"pages.organization.a7345e453164\"), kind: \"select\", options: repos.map((r) => ({ value: r.id, label: r.name })) },\n    ])"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 729,
+          "line": 758,
           "context": "{i18n(\"pages.organization.47e4a946fb48\")}"
         }
       ],
@@ -341,7 +362,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 744,
+          "line": 773,
           "context": "org.collaboration ? i18n(\"pages.organization.92dcb4e03902\") : i18n(\"pages.organization.4899ad0eba7a\", { value: String(lib.sharedWith?.join(\"、\") || i18n(\"pages.organization.8e09dafb1ae1\")) })"
         }
       ],
@@ -362,7 +383,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 380,
+          "line": 409,
           "context": "showToast(i18nMsg(\"pages.organization.4949eb791978\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
@@ -378,7 +399,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 229,
+          "line": 231,
           "context": "{i18n(\"pages.organization.4b5220c396ed\")}"
         }
       ],
@@ -394,7 +415,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 582,
+          "line": 611,
           "context": "{i18n(\"pages.organization.4b5a3f828e24\")}"
         }
       ],
@@ -410,7 +431,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 666,
+          "line": 695,
           "context": "{i18n(\"pages.organization.4d0b00da0e94\")}"
         }
       ],
@@ -426,7 +447,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 260,
+          "line": 262,
           "context": "detail.last_activity_at ? new Date(detail.last_activity_at).toLocaleString(getUiLocale(), { hour12: false }) : i18n(\"pages.organization.4d8c1c5b4283\")"
         }
       ],
@@ -442,7 +463,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 691,
+          "line": 720,
           "context": "sharing === \"sync-all\" ? i18n(\"pages.organization.4e2238b74ec7\") : i18n(\"pages.organization.d39c271f5ef1\")"
         }
       ],
@@ -458,7 +479,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 627,
+          "line": 656,
           "context": "gitlabRepos.length ? gitlabRepos.map((r) => r.path).join(\"、\") : i18n(\"pages.organization.4f43cc1cd5a7\")"
         }
       ],
@@ -474,7 +495,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 563,
+          "line": 592,
           "context": "label:i18n(\"pages.organization.51902a13beff\")"
         }
       ],
@@ -490,12 +511,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 642,
+          "line": 671,
           "context": "org.invite.label ? `「${org.invite.label}」` : i18n(\"pages.organization.51c549e1aeed\")"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 684,
+          "line": 713,
           "context": "{i18n(\"pages.organization.51c549e1aeed\")}"
         }
       ],
@@ -511,7 +532,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 406,
+          "line": 435,
           "context": "runRemote(() => changeRemoteMember(target.id,member.gitlabUserId,{userId:member.gitlabUserId!,username:member.username!,name:member.name,email:member.email,role},{email:member.email,role:member.role}), i18n(\"pages.organization.51c72d5d47ff\"))"
         }
       ],
@@ -527,7 +548,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 543,
+          "line": 572,
           "context": "project ? i18nMsg(\"pages.organization.577feeefb88d\") : i18nMsg(\"pages.organization.0e1a7040390f\")"
         }
       ],
@@ -543,7 +564,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 750,
+          "line": 779,
           "context": "openLib === lib.repoId ? i18n(\"pages.organization.5aff278dfeb0\") : i18n(\"pages.organization.96812fd51b93\")"
         }
       ],
@@ -559,7 +580,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 652,
+          "line": 681,
           "context": "confirmOk(i18nMsg(\"pages.organization.5b5a9bdff428\"))"
         }
       ],
@@ -580,7 +601,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 185,
+          "line": 187,
           "context": "showToast(i18nMsg(\"pages.organization.5c52a6e0b15b\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
@@ -596,7 +617,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 654,
+          "line": 683,
           "context": "r.reason ?? i18n(\"pages.organization.5c94b0602337\")"
         }
       ],
@@ -612,7 +633,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 198,
+          "line": 200,
           "context": "{i18n(\"pages.organization.5d32479622a4\")}"
         }
       ],
@@ -633,7 +654,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 378,
+          "line": 406,
           "context": "showToast(i18nMsg(\"pages.organization.5f1d03317818\", { lifetime: String(lifetime) }))"
         }
       ],
@@ -654,7 +675,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 378,
+          "line": 404,
           "context": "showToast(i18nMsg(\"pages.organization.5f7f73143f0f\", { lifetime: String(lifetime) }))"
         }
       ],
@@ -670,7 +691,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 709,
+          "line": 738,
           "context": "{i18n(\"pages.organization.6135d4159e89\")}"
         }
       ],
@@ -686,7 +707,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 786,
+          "line": 815,
           "context": "{i18n(\"pages.organization.6205cceeeb30\")}"
         }
       ],
@@ -702,7 +723,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 291,
+          "line": 293,
           "context": "{i18n(\"pages.organization.625faadf7120\")}"
         }
       ],
@@ -718,7 +739,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 123,
+          "line": 125,
           "context": "{i18n(\"pages.organization.6469b14af6bb\")}"
         }
       ],
@@ -734,7 +755,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 356,
+          "line": 378,
           "context": "runRemote(() => updateRemoteOrg(target.id, {name:target.name,brief:target.brief,joinUrl:target.joinUrl}, {name:f.name!,brief:f.brief??\"\",joinUrl:f.joinUrl??\"\"}), i18n(\"pages.organization.66dbb2801a9d\"))"
         }
       ],
@@ -750,7 +771,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 787,
+          "line": 816,
           "context": "{i18n(\"pages.organization.670834ee8d02\")}"
         }
       ],
@@ -766,7 +787,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 593,
+          "line": 622,
           "context": "org.brief || i18n(\"pages.organization.6a0b2effbe54\")"
         }
       ],
@@ -782,7 +803,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 583,
+          "line": 612,
           "context": "runRemote(()=>retryOrgPermissions(org.id),i18n(\"pages.organization.6b02818a1d0f\"))"
         }
       ],
@@ -811,7 +832,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 859,
+          "line": 888,
           "context": "{i18nRich(\"pages.organization.6b3341c7022d\", { value: invite.label ? `「${invite.label}」　` : \"\", value2: invite.allowEmail ?? i18n(\"pages.organization.b8e3e3e6c5e6\"), value3: expireText(org.invite?.expiresAt) })}"
         }
       ],
@@ -827,7 +848,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 620,
+          "line": 649,
           "context": "{i18n(\"pages.organization.6c3e6b9444b7\")}"
         }
       ],
@@ -843,7 +864,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 398,
+          "line": 427,
           "context": "setCollabError(i18n(\"pages.organization.6d96e60ed4ea\"))"
         }
       ],
@@ -864,7 +885,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 229,
+          "line": 231,
           "context": "showToast(i18nMsg(\"pages.organization.6dd57693b44a\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ],
@@ -880,17 +901,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 41,
+          "line": 43,
           "context": "return i18n(\"pages.organization.6e6d6ddbb7c1\");"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 608,
+          "line": 637,
           "context": "label: i18n(\"pages.organization.6e6d6ddbb7c1\")"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 623,
+          "line": 652,
           "context": "k: i18n(\"pages.organization.6e6d6ddbb7c1\")"
         }
       ],
@@ -906,7 +927,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 597,
+          "line": 626,
           "context": "{i18n(\"pages.organization.6e7ecbfdeb6c\")}"
         }
       ],
@@ -922,7 +943,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 266,
+          "line": 268,
           "context": "detail.visibility === \"internal\" ? i18n(\"pages.organization.6f225eb36d6d\") : i18n(\"pages.organization.7a73baf0ce9a\")"
         }
       ],
@@ -938,7 +959,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 350,
+          "line": 372,
           "context": "openFormModal(i18nMsg(\"pages.organization.6fb2720ac3f3\"), [\n      { key: \"name\", label: i18nMsg(\"pages.organization.3f38e493103b\"), required: true, default: target.name },\n      { key: \"brief\", label: i18nMsg(\"pages.organization.8131eafd0239\"), kind: \"textarea\", default: target.brief },\n      { key: \"joinUrl\", label: i18nMsg(\"pages.organization.8992ab3202b4\"), default: target.joinUrl },\n    ])"
         }
       ],
@@ -954,7 +975,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 819,
+          "line": 848,
           "context": "p.description || i18n(\"pages.organization.71083097a94f\")"
         }
       ],
@@ -970,7 +991,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 689,
+          "line": 718,
           "context": "{i18n(\"pages.organization.71d4aa440534\")}"
         }
       ],
@@ -991,7 +1012,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 820,
+          "line": 849,
           "context": "{i18nRich(\"pages.organization.735033d7d37f\", { value: p.owner || i18n(\"pages.organization.17bf181625e8\") })}"
         }
       ],
@@ -1007,7 +1028,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 780,
+          "line": 809,
           "context": "{i18n(\"pages.organization.7371988e7f6d\")}"
         }
       ],
@@ -1023,7 +1044,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 776,
+          "line": 805,
           "context": "{i18n(\"pages.organization.74ab5e0d1e5f\")}"
         }
       ],
@@ -1044,7 +1065,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 822,
+          "line": 851,
           "context": "{i18n(\"pages.organization.752caefd1bea\", { name: String(p.name) })}"
         }
       ],
@@ -1060,7 +1081,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 843,
+          "line": 872,
           "context": "n.pinned ? i18n(\"pages.organization.76e68f1e2fcd\") : \"\""
         }
       ],
@@ -1076,7 +1097,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 545,
+          "line": 574,
           "context": "label:i18nMsg(\"pages.organization.7725bcb29aa3\")"
         }
       ],
@@ -1097,7 +1118,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 226,
+          "line": 228,
           "context": "preview?.data.size ? i18n(\"pages.organization.77cb6bdd9069\", { value: String(Math.ceil(preview.data.size / 1024)) }) : \"\""
         }
       ],
@@ -1113,7 +1134,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 640,
+          "line": 669,
           "context": "{i18n(\"pages.organization.79a369a8de4f\")}"
         }
       ],
@@ -1129,7 +1150,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 611,
+          "line": 640,
           "context": "label: i18n(\"pages.organization.79f326be4409\")"
         }
       ],
@@ -1145,7 +1166,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 266,
+          "line": 268,
           "context": "detail.visibility === \"internal\" ? i18n(\"pages.organization.6f225eb36d6d\") : i18n(\"pages.organization.7a73baf0ce9a\")"
         }
       ],
@@ -1161,7 +1182,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 207,
+          "line": 209,
           "context": "entry.kind === \"dir\" ? i18n(\"pages.organization.7c7802d8adae\") : `${Math.max(1, Math.ceil(entry.size / 1024))} KB`"
         }
       ],
@@ -1177,12 +1198,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 645,
+          "line": 674,
           "context": "{i18n(\"pages.organization.7dc5266a2019\")}"
         },
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 863,
+          "line": 892,
           "context": "{i18n(\"pages.organization.7dc5266a2019\")}"
         }
       ],
@@ -1198,7 +1219,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 266,
+          "line": 268,
           "context": "k: i18n(\"pages.organization.7e228d4688a2\")"
         }
       ],
@@ -1219,7 +1240,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 424,
+          "line": 453,
           "context": "default: i18n(\"pages.organization.7fd872847a17\", { name: String(target.name) })"
         }
       ],
@@ -1235,7 +1256,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 797,
+          "line": 826,
           "context": "{i18n(\"pages.organization.809f2cef23cc\")}"
         }
       ],
@@ -1251,7 +1272,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 352,
+          "line": 374,
           "context": "label: i18nMsg(\"pages.organization.8131eafd0239\")"
         }
       ],
@@ -1267,7 +1288,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 357,
+          "line": 379,
           "context": "showToast(i18nMsg(\"pages.organization.818c0ab5d9ee\"))"
         }
       ],
@@ -1283,7 +1304,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 558,
+          "line": 587,
           "context": "label:i18nMsg(\"pages.organization.81d7905bd513\")"
         }
       ],
@@ -1299,7 +1320,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 556,
+          "line": 585,
           "context": "notice ? i18nMsg(\"pages.organization.83163278a659\") : i18nMsg(\"pages.organization.d78a6a9cd030\")"
         }
       ],
@@ -1315,7 +1336,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 505,
+          "line": 534,
           "context": "group ? i18nMsg(\"pages.organization.838996610aeb\") : i18nMsg(\"pages.organization.b285a8665e40\")"
         }
       ],
@@ -1331,7 +1352,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 50,
+          "line": 52,
           "context": "return i18nMsg(\"pages.organization.84ad2952a308\");"
         }
       ],
@@ -1352,7 +1373,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 848,
+          "line": 877,
           "context": "confirmOk(i18nMsg(\"pages.organization.854c6ca1dc79\", { title: String(n.title) }))"
         }
       ],
@@ -1373,7 +1394,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 586,
+          "line": 615,
           "context": "{i18nRich(\"pages.organization.86481b9cae10\", { value: org.legacyMembers.map(m=>`${m.name} ${m.email}`).join(\"、\") })}"
         }
       ],
@@ -1389,27 +1410,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 544,
+          "line": 573,
           "context": "label:i18nMsg(\"pages.organization.867698fb7b0c\")"
         }
       ],
       "translation": "Project name",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.organization.86da79df695d",
-      "source": "关联 GitLab 仓库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 479,
-          "context": "openFormModal(i18nMsg(\"pages.organization.86da79df695d\"), [\n      { key: \"path\", label: i18nMsg(\"pages.organization.a5551da83869\"), required: true, placeholder: \"group/project\" },\n    ])"
-        }
-      ],
-      "translation": "Link GitLab repo",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

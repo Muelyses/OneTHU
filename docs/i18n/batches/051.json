@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.libroomtab.6087d10e5aec",
+      "source": "不可选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 323,
+          "context": "return i18n(\"pages.info.libroomtab.6087d10e5aec\");"
+        }
+      ],
+      "translation": "Unavailable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.libroomtab.6475e95b06ba",
       "source": "结束时间需晚于开始时间",
@@ -1410,22 +1426,6 @@
         }
       ],
       "translation": "Tap to refresh the captcha",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.6d9f04d2e157",
-      "source": "账号下每个静态 IP 计一个连接数，谨慎修改",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 323,
-          "context": "{i18n(\"pages.info.networktab.6d9f04d2e157\")}"
-        }
-      ],
-      "translation": "Each static IP under your account counts as one connection. Change with caution",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

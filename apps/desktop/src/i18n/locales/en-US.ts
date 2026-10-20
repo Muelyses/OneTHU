@@ -2365,6 +2365,7 @@ const locale = {
     "friends.inviteDetail": "Join the same shared cloud folder and friend channel. The sender will receive an acceptance receipt.",
     "friends.legacyChannel": "Cloud folder exists · send a join invitation",
     "friends.legacyLinkUnknown": "The old share link could not be identified. Revoke it in Cloud before retrying.",
+    "friends.modeChanged": "The mode has changed. Try again in full mode.",
     "friends.needPeerEmail": "First receive a card with your friend's Tsinghua Cloud email. You cannot invite yourself.",
     "friends.newInvites": "{count} friend channel invitations received. Open the envelope in navigation or go to Contacts.",
     "friends.openFiles": "Shared files",

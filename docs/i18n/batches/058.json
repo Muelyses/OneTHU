@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.learn.assignmentdetailpage.bcc2333dc631",
+      "source": "下载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
+          "line": 378,
+          "context": "dlBusy === key ? i18n(\"pages.learn.assignmentdetailpage.bcc2333dc631\") : i18n(\"pages.learn.assignmentdetailpage.4673a2306165\")"
+        }
+      ],
+      "translation": "Downloading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.assignmentdetailpage.bce2377283c2",
       "source": "清除",
@@ -1325,22 +1341,6 @@
         }
       ],
       "translation": "Course list",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.coursedetailpage.f25c0dd68e3b",
-      "source": "分组没有加载出来，请刷新后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/CourseDetailPage.tsx",
-          "line": 328,
-          "context": "groupsError || i18n(\"pages.learn.coursedetailpage.f25c0dd68e3b\")"
-        }
-      ],
-      "translation": "Groups failed to load, please refresh and try again",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

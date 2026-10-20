@@ -1,7 +1,28 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.thosopen.76024592a2c9",
+      "source": "应用内打开失败：{value}（改用浏览器）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(reason.slice(0, 80))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/thosOpen.ts",
+          "line": 47,
+          "context": "showToast(i18nMsg(\"lib.thosopen.76024592a2c9\", { value: String(reason.slice(0, 80)) }), 9000)"
+        }
+      ],
+      "translation": "Failed to open in app: {value} (falling back to browser)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.trace.3a8b5cef5790",
       "source": "步行",
@@ -1043,7 +1064,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 21,
+          "line": 37,
           "context": "!status.enabled ? i18n(\"lib.usenfcexchange.68f717a1ed08\") : i18n(\"lib.usenfcexchange.0ae6a92e95dc\")"
         }
       ],
@@ -1059,7 +1080,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 21,
+          "line": 37,
           "context": "!status.available ? i18n(\"lib.usenfcexchange.113392f6a1c6\") : !status.enabled ? i18n(\"lib.usenfcexchange.68f717a1ed08\") : i18n(\"lib.usenfcexchange.0ae6a92e95dc\")"
         }
       ],
@@ -1075,7 +1096,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 32,
+          "line": 52,
           "context": "new Error(i18n(\"lib.usenfcexchange.1f80dd1ff89a\"))"
         }
       ],
@@ -1091,7 +1112,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 21,
+          "line": 37,
           "context": "!status.enabled ? i18n(\"lib.usenfcexchange.68f717a1ed08\") : i18n(\"lib.usenfcexchange.0ae6a92e95dc\")"
         }
       ],
@@ -1107,7 +1128,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 27,
+          "line": 46,
           "context": "makeCode ? i18n(\"lib.usenfcexchange.ffc7745f39e3\") : i18n(\"lib.usenfcexchange.6e17251696e8\")"
         }
       ],
@@ -1123,7 +1144,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 35,
+          "line": 58,
           "context": "message: i18n(\"lib.usenfcexchange.7f8924faa4e5\")"
         }
       ],
@@ -1139,7 +1160,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 31,
+          "line": 51,
           "context": "new Error(i18n(\"lib.usenfcexchange.810417d87789\"))"
         }
       ],
@@ -1155,7 +1176,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 21,
+          "line": 37,
           "context": "!status ? i18n(\"lib.usenfcexchange.a4fb7d646812\") : !status.available ? i18n(\"lib.usenfcexchange.113392f6a1c6\") : !status.enabled ? i18n(\"lib.usenfcexchange.68f717a1ed08\") : i18n(\"lib.usenfcexchange.0ae6a92e95dc\")"
         }
       ],
@@ -1171,7 +1192,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 27,
+          "line": 46,
           "context": "makeCode ? i18n(\"lib.usenfcexchange.ffc7745f39e3\") : i18n(\"lib.usenfcexchange.6e17251696e8\")"
         }
       ],
@@ -1187,7 +1208,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useVaultReceive.ts",
-          "line": 14,
+          "line": 21,
           "context": "label: i18nMsg(\"lib.usevaultreceive.2d15367c7b10\")"
         }
       ],
@@ -1203,7 +1224,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useVaultReceive.ts",
-          "line": 14,
+          "line": 21,
           "context": "openFormModal(i18nMsg(\"lib.usevaultreceive.52099bc955e2\"), [{ key: 'code', label: i18nMsg(\"lib.usevaultreceive.2d15367c7b10\"), kind: 'textarea', required: true }])"
         }
       ],
@@ -1219,7 +1240,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useVaultReceive.ts",
-          "line": 24,
+          "line": 33,
           "context": "e instanceof Error ? e.message : i18n(\"lib.usevaultreceive.669e25e96db0\")"
         }
       ],
@@ -1235,7 +1256,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useVaultReceive.ts",
-          "line": 18,
+          "line": 25,
           "context": "e instanceof Error ? e.message : i18n(\"lib.usevaultreceive.f4fdedae07d4\")"
         }
       ],
@@ -1452,22 +1473,6 @@
         }
       ],
       "translation": "Added to Stash; caching failed: {value} (retry on desktop)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.vaultremote.b97fee010675",
-      "source": "没有拿到文件地址",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/vaultRemote.ts",
-          "line": 42,
-          "context": "new Error(i18n(\"lib.vaultremote.b97fee010675\"))"
-        }
-      ],
-      "translation": "No file URL was returned",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

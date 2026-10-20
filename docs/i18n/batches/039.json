@@ -1,7 +1,22 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.onboardinglessons.80a9c0e2e534",
+      "source": "换过的入口会保留；切换模式不改其他模式的安排。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 105
+        }
+      ],
+      "translation": "Entries you've swapped in are kept; switching modes doesn't affect the other mode's arrangement.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.onboardinglessons.8201b1567e8a",
       "source": "已发出口令可改接收范围或撤销；已接收副本保留。",
@@ -1270,27 +1285,6 @@
         }
       ],
       "translation": "Worth a look",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.thosopen.76024592a2c9",
-      "source": "应用内打开失败：{value}（改用浏览器）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(reason.slice(0, 80))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/thosOpen.ts",
-          "line": 47,
-          "context": "showToast(i18nMsg(\"lib.thosopen.76024592a2c9\", { value: String(reason.slice(0, 80)) }), 9000)"
-        }
-      ],
-      "translation": "Failed to open in app: {value} (falling back to browser)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

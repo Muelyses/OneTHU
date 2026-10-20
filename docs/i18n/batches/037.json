@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.b17c58209bce",
+      "source": "就业信息(招聘信息)",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 293,
+          "context": "return i18n(\"lib.infoapps.b17c58209bce\");"
+        }
+      ],
+      "translation": "Employment Information (Job Postings)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.b2b20ae99ca0",
       "source": "出版合同备案/审批",
@@ -1263,22 +1279,6 @@
         }
       ],
       "translation": "English Placement Levels 3-4 Exemption Application",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f575a006f94b",
-      "source": "校机关服务满意度调查",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 297,
-          "context": "return i18n(\"lib.infoapps.f575a006f94b\");"
-        }
-      ],
-      "translation": "University Administration Satisfaction Survey",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

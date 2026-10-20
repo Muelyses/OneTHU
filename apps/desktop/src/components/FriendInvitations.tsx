@@ -6,8 +6,9 @@ import { acceptFriendInvitation, clearFriendInbox, ignoreFriendInvitation,
   conflictingFriendChannel, refreshFriendInvitations, useFriendInbox } from "../state/friendInbox.js";
 import { useCards } from "../state/nameCard.js";
 import { confirmOk } from "../lib/confirm.js";
-import { showToast } from "../state/toast.js";
+import { hideToastIfCurrent, showToast } from "../state/toast.js";
 import { openTab } from "../state/explorer.js";
+import { experienceMode, experienceRevision, useExperienceMode } from "../state/experienceMode.js";
 
 /** Mounted once in the full-mode shell. Foreground only; never requests OS push permissions. */
 export function FriendInboxMonitor() {
@@ -17,7 +18,7 @@ export function FriendInboxMonitor() {
   useEffect(() => {
     let alive = true;
     const check = (): void => {
-      if (alive && document.visibilityState === "visible") void refreshFriendInvitations().catch(() => undefined);
+      if (alive && experienceMode() === "full" && document.visibilityState === "visible") void refreshFriendInvitations().catch(() => undefined);
     };
     check();
     const timer = setInterval(check, 30_000);
@@ -42,10 +43,13 @@ export function FriendInboxMonitor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [configured, account?.email]);
   useEffect(() => {
+    if (experienceMode() !== "full") return;
     const unseen = inbox.invitations.filter((i) => !notified.current.has(`${inbox.email}:${i.id}:${i.sentAt}`));
     if (!unseen.length) return;
     unseen.forEach((i) => notified.current.add(`${inbox.email}:${i.id}:${i.sentAt}`));
-    showToast(msg("friends.newInvites", { count: inbox.invitations.length }), 8000);
+    const notification = msg("friends.newInvites", { count: inbox.invitations.length });
+    showToast(notification, 8000);
+    return () => hideToastIfCurrent(notification);
   }, [inbox.email, inbox.invitations]);
   return null;
 }
@@ -54,7 +58,8 @@ export function FriendInboxMonitor() {
 export function FriendInboxButton() {
   useLocale();
   const inbox = useFriendInbox();
-  if (!inbox.invitations.length) return null;
+  const mode = useExperienceMode();
+  if (mode !== "full" || !inbox.invitations.length) return null;
   return <span className="friend-inbox-entry">
     <IconBtn label={t("friends.inviteCount", { count: inbox.invitations.length })}
       icon={<IconMail size="sm" />}
@@ -69,20 +74,30 @@ export function FriendInvitations({ onConnected }: { onConnected?: (contactId: s
   const inbox = useFriendInbox();
   const [busy, setBusy] = useState<string | null>(null);
   const { configured } = useSeafile();
-  useEffect(() => { void refreshFriendInvitations(true).catch(() => undefined); }, []);
+  const mode = useExperienceMode();
+  useEffect(() => {
+    setBusy(null);
+    if (mode === "full") void refreshFriendInvitations(true).catch(() => undefined);
+  }, [mode]);
   async function accept(id: string): Promise<void> {
+    const revision = experienceRevision();
+    const current = () => experienceMode() === "full" && experienceRevision() === revision;
+    if (!current()) return;
     const invitation = inbox.invitations.find((item) => item.id === id);
     if (!invitation) return;
     const replace = !!conflictingFriendChannel(invitation);
     if (replace && !await confirmOk(msg("friends.switchConfirm"))) return;
+    if (!current()) return;
     setBusy(id);
     try {
       const contactId = await acceptFriendInvitation(id, replace);
+      if (!current()) return;
       showToast(msg("friends.connected"));
       onConnected?.(contactId);
-    } catch (e) { showToast(e instanceof Error ? e.message : String(e), 6000); }
-    finally { setBusy(null); }
+    } catch (e) { if (current()) showToast(e instanceof Error ? e.message : String(e), 6000); }
+    finally { if (current()) setBusy(null); }
   }
+  if (mode !== "full") return null;
   return <Card className="friend-invitations">
     <Stack gap={3}>
       <Inline justify="between" gap={2} wrap>

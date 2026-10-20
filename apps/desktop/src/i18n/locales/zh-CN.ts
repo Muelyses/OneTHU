@@ -2365,6 +2365,7 @@ const locale = {
     "friends.inviteDetail": "邀请你使用同一个共享云盘和好友通道。接入后，对方会看到确认回执。",
     "friends.legacyChannel": "已有云盘，需补发接入邀请",
     "friends.legacyLinkUnknown": "无法识别旧分享链接，请先在云盘撤销它，再重试。",
+    "friends.modeChanged": "模式已切换，请在完整模式中重新操作。",
     "friends.needPeerEmail": "请先接收含有对方清华云盘邮箱的名片，不能向自己发起邀请。",
     "friends.newInvites": "收到 {count} 个好友通道邀请，点顶栏信封或进入通讯录查看。",
     "friends.openFiles": "打开共享文件",

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -362,7 +362,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 107,
+          "line": 122,
           "context": "conflictingFriendChannel(invite) ? t(\"friends.switchChannel\") : t(\"friends.accept\")"
         }
       ],
@@ -378,7 +378,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 83,
+          "line": 93,
           "context": "new Error(t(\"friends.accountUnknown\"))"
         }
       ],
@@ -394,12 +394,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 285,
+          "line": 308,
           "context": "new Error(t(\"friends.alreadyConnected\"))"
         },
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 293,
+          "line": 316,
           "context": "new Error(t(\"friends.alreadyConnected\"))"
         }
       ],
@@ -415,7 +415,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 627,
+          "line": 642,
           "context": "shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
@@ -431,7 +431,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 92,
+          "line": 107,
           "context": "inbox.busy ? t(\"friends.checking\") : t(\"friends.checkInvites\")"
         }
       ],
@@ -447,7 +447,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 92,
+          "line": 107,
           "context": "inbox.busy ? t(\"friends.checking\") : t(\"friends.checkInvites\")"
         }
       ],
@@ -463,12 +463,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 95,
+          "line": 110,
           "context": "configured ? t(\"friends.inboxHint\") : t(\"friends.connectCloud\")"
         },
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 76,
+          "line": 85,
           "context": "new Error(t(\"friends.connectCloud\"))"
         }
       ],
@@ -484,12 +484,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 81,
+          "line": 95,
           "context": "showToast(msg(\"friends.connected\"))"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 627,
+          "line": 642,
           "context": "shown.shared?.acceptedAt\n                    ? i18n(\"friends.connected\") : shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
@@ -505,7 +505,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 107,
+          "line": 122,
           "context": "busy === invite.id ? t(\"friends.connecting\") : conflictingFriendChannel(invite) ? t(\"friends.switchChannel\") : t(\"friends.accept\")"
         }
       ],
@@ -521,7 +521,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 644,
+          "line": 659,
           "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ],
@@ -537,7 +537,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 690,
+          "line": 705,
           "context": "{i18n(\"friends.download\")}"
         }
       ],
@@ -553,7 +553,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 102,
+          "line": 117,
           "context": "{t(\"friends.duplicateHint\")}"
         }
       ],
@@ -569,7 +569,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 688,
+          "line": 703,
           "context": "m.mine ? i18n(\"friends.fromMe\") : shown.name"
         }
       ],
@@ -585,7 +585,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 109,
+          "line": 124,
           "context": "{t(\"friends.ignore\")}"
         }
       ],
@@ -601,7 +601,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 95,
+          "line": 110,
           "context": "configured ? t(\"friends.inboxHint\") : t(\"friends.connectCloud\")"
         }
       ],
@@ -617,22 +617,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 88,
+          "line": 98,
           "context": "new Error(t(\"friends.invalidInvite\"))"
         },
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 271,
+          "line": 293,
           "context": "new Error(t(\"friends.invalidInvite\"))"
         },
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 276,
+          "line": 299,
           "context": "new Error(t(\"friends.invalidInvite\"))"
         },
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 279,
+          "line": 302,
           "context": "new Error(t(\"friends.invalidInvite\"))"
         }
       ],
@@ -652,12 +652,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 59,
+          "line": 64,
           "context": "{t(\"friends.inviteCount\", { count: inbox.invitations.length })}"
         },
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 89,
+          "line": 104,
           "context": "{t(\"friends.inviteCount\", { count: inbox.invitations.length })}"
         }
       ],
@@ -673,7 +673,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 101,
+          "line": 116,
           "context": "{t(\"friends.inviteDetail\")}"
         }
       ],
@@ -689,7 +689,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 628,
+          "line": 643,
           "context": "shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
@@ -705,11 +705,107 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 231,
+          "line": 252,
           "context": "new Error(t(\"friends.legacyLinkUnknown\"))"
         }
       ],
       "translation": "The old share link could not be identified. Revoke it in Cloud before retrying.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "friends.modeChanged",
+      "source": "模式已切换，请在完整模式中重新操作。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/fullModeReceive.ts",
+          "line": 9,
+          "context": "new Error(t(\"friends.modeChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 78,
+          "context": "new Error(t(\"friends.modeChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 288,
+          "context": "new Error(t(\"friends.modeChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 424,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 428,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 444,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 446,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 116,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 120,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 130,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/touch.ts",
+          "line": 141,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 363,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 365,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 369,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 377,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 382,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 387,
+          "context": "reason: i18n(\"friends.modeChanged\")"
+        }
+      ],
+      "translation": "The mode has changed. Try again in full mode.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -721,7 +817,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 208,
+          "line": 229,
           "context": "new Error(t(\"friends.needPeerEmail\"))"
         }
       ],
@@ -741,8 +837,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 48,
-          "context": "showToast(msg(\"friends.newInvites\", { count: inbox.invitations.length }), 8000)"
+          "line": 50,
+          "context": "notification = msg(\"friends.newInvites\", { count: inbox.invitations.length })"
         }
       ],
       "translation": "{count} friend channel invitations received. Open the envelope in navigation or go to Contacts.",
@@ -757,7 +853,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 638,
+          "line": 653,
           "context": "{i18n(\"friends.openFiles\")}"
         }
       ],
@@ -773,7 +869,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 223,
+          "line": 244,
           "context": "new Error(t(\"friends.ownerOnly\"))"
         }
       ],
@@ -789,7 +885,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 170,
+          "line": 190,
           "context": "failures ? t(\"friends.partialCheck\") : null"
         }
       ],
@@ -805,7 +901,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 212,
+          "line": 233,
           "context": "new Error(t(\"friends.peerChanged\"))"
         }
       ],
@@ -821,7 +917,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 206,
+          "line": 227,
           "context": "new Error(t(\"friends.personalOnly\"))"
         }
       ],
@@ -837,7 +933,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 408,
+          "line": 423,
           "context": "showToast(i18nMsg(\"friends.published\"), 7000)"
         }
       ],
@@ -853,12 +949,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 103,
+          "line": 118,
           "context": "{t(\"friends.readOnlyInvite\")}"
         },
         {
           "file": "apps/desktop/src/state/friendInbox.ts",
-          "line": 280,
+          "line": 303,
           "context": "new Error(t(\"friends.readOnlyInvite\"))"
         }
       ],
@@ -874,7 +970,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 673,
+          "line": 688,
           "context": "{i18n(\"friends.refreshMessages\")}"
         }
       ],
@@ -890,7 +986,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 644,
+          "line": 659,
           "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ],
@@ -906,7 +1002,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 107,
+          "line": 122,
           "context": "conflictingFriendChannel(invite) ? t(\"friends.switchChannel\") : t(\"friends.accept\")"
         }
       ],
@@ -922,7 +1018,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FriendInvitations.tsx",
-          "line": 77,
+          "line": 89,
           "context": "confirmOk(msg(\"friends.switchConfirm\"))"
         }
       ],
@@ -938,7 +1034,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 404,
+          "line": 419,
           "context": "confirmOk(i18nMsg(\"friends.upgradeLegacy\"))"
         }
       ],
@@ -1288,21 +1384,6 @@
         }
       ],
       "translation": "Loading",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.tabs.all",
-      "source": "全部标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "All tabs",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

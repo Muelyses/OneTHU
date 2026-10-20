@@ -20,6 +20,7 @@ const checksum = evaluate(codecFns.map(node => node.getText(share)).join("\n") +
 const calls = [];
 const imports = {
   "../i18n/index.js": { t: i18n },
+  "../lib/fullModeReceive.js": { fullModeReceiveSession: () => ({ isCurrent: () => true, assertCurrent: () => {} }) },
   "./cloudExchange.js": { resolveExchangeCode: async code => code },
   "./nameCard.js": { addContact: (_kind, card, note) => { calls.push(["contact", card, note]); return { ok: false, reason: "duplicate" }; } },
   "./org.js": { acceptOrgInvite: async (code, name) => { calls.push(["org", code, name]); return { ok: true }; } },

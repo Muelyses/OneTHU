@@ -64,6 +64,10 @@ export function hideToast(): void {
   clearTimers();
   beginExit();
 }
+/** Dismiss a notification owned by a departing feature, without hiding a newer toast. */
+export function hideToastIfCurrent(text: UiText): void {
+  if (current === text) hideToast();
+}
 export function useToastHost(): ToastState {
   const [state, setState] = useState<ToastState>({ msg: current, closing, center });
   useEffect(() => {

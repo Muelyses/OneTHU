@@ -9,6 +9,7 @@ import { addContact, cardsSnapshot, type OrgCard, type PersonalCard } from "./na
 import { acceptOrgInvite, orgInviteCode, orgSnapshot } from "./org.js";
 import { checksum, importShareCodeAsCurrent, shareCodeForBox } from "./vaultShare.js";
 import { activeVault } from "./vault.js";
+import { fullModeReceiveSession } from "../lib/fullModeReceive.js";
 
 export const TOUCH_PREFIX = "ONTOUCH1";
 
@@ -111,9 +112,12 @@ export interface TouchImportResult {
 
 /** 接收方：暂存箱按 vaultTarget 落库；名片进通讯录；组织邀请合并成员。 */
 export async function importTouchCode(code: string, myName = i18n("state.touch.self"), vaultTarget: "current" | "new" = "current"): Promise<TouchImportResult> {
+  const receiving = fullModeReceiveSession();
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   let resolved: string;
   try { resolved = await resolveExchangeCode(code); }
   catch (e) { return { ok: false, reason: e instanceof Error ? e.message : String(e) }; }
+  if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   const dec = decodeTouch(resolved);
   if (!dec.ok || !dec.payload) return { ok: false, reason: dec.reason ?? i18n("state.touch.unreadable") };
   const p = dec.payload;
@@ -123,6 +127,7 @@ export async function importTouchCode(code: string, myName = i18n("state.touch.s
   let duplicate = false;
   if (p.vaultCode) {
     const r = await importShareCodeAsCurrent(p.vaultCode, vaultTarget);
+    if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
     if (!r.ok) return { ok: false, reason: r.reason ?? i18n("state.touch.vaultImportFailed") };
     vault = true;
   }
@@ -133,6 +138,7 @@ export async function importTouchCode(code: string, myName = i18n("state.touch.s
   }
   if (p.orgCode && p.orgName) {
     const r = await acceptOrgInvite(p.orgCode, myName);
+    if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
     if (r.ok) org = true;
   }
   if (!vault && !contact && !org) {

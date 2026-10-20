@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.vaultcloud.21e554dce895",
+      "source": "没有可撤销的分享 token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 178,
+          "context": "new Error(i18n(\"state.vaultcloud.21e554dce895\"))"
+        }
+      ],
+      "translation": "No share token to revoke",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vaultcloud.33798ae55697",
       "source": "清华云盘未连接：到云盘页粘贴 token 后再生成云分享口令",
@@ -404,7 +420,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 146,
+          "line": 147,
           "context": "reason: i18n(\"state.vaultshare.00b9a4acaf92\")"
         }
       ],
@@ -420,12 +436,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 178,
+          "line": 179,
           "context": "reason: i18n(\"state.vaultshare.09cc0bb41763\")"
         },
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 198,
+          "line": 199,
           "context": "reason: i18n(\"state.vaultshare.09cc0bb41763\")"
         }
       ],
@@ -446,7 +462,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 535,
+          "line": 543,
           "context": "return i18n(\"state.vaultshare.1677a739e1a4\", { recipient: want });"
         }
       ],
@@ -462,7 +478,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 184,
+          "line": 185,
           "context": "e instanceof Error ? e.message : i18n(\"state.vaultshare.2fb90783488d\")"
         }
       ],
@@ -478,7 +494,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 372,
+          "line": 378,
           "context": "new Error(i18n(\"state.vaultshare.388fc6c63ebe\"))"
         }
       ],
@@ -494,7 +510,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 350,
+          "line": 351,
           "context": "new Error(i18n(\"state.vaultshare.561b8b9a8f82\"))"
         }
       ],
@@ -510,7 +526,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 303,
+          "line": 304,
           "context": "new Error(i18n(\"state.vaultshare.5dec5b6cd859\"))"
         }
       ],
@@ -526,7 +542,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 181,
+          "line": 182,
           "context": "reason: i18n(\"state.vaultshare.63205c669579\")"
         }
       ],
@@ -542,7 +558,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 455,
+          "line": 463,
           "context": "reason: i18n(\"state.vaultshare.65381bdff463\")"
         }
       ],
@@ -563,7 +579,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 500,
+          "line": 508,
           "context": "reason: i18n(\"state.vaultshare.65841f3a49c8\", { error: e instanceof Error ? e.message : String(e) })"
         }
       ],
@@ -579,7 +595,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 314,
+          "line": 315,
           "context": "new Error(i18n(\"state.vaultshare.6e106dfb0757\"))"
         }
       ],
@@ -600,7 +616,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 382,
+          "line": 390,
           "context": "reason: i18n(\"state.vaultshare.716036f1e95d\", { error: e instanceof Error ? e.message : String(e) })"
         }
       ],
@@ -616,7 +632,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 204,
+          "line": 205,
           "context": "reason: i18n(\"state.vaultshare.7aa0c43fe053\")"
         }
       ],
@@ -632,7 +648,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 454,
+          "line": 462,
           "context": "reason: i18n(\"state.vaultshare.857b79bf69f3\")"
         }
       ],
@@ -648,7 +664,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 200,
+          "line": 201,
           "context": "reason: i18n(\"state.vaultshare.989f1cde10a3\")"
         }
       ],
@@ -664,7 +680,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 461,
+          "line": 469,
           "context": "reason: i18n(\"state.vaultshare.9aa4c7ceb155\")"
         }
       ],
@@ -680,7 +696,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 176,
+          "line": 177,
           "context": "reason: i18n(\"state.vaultshare.9ae3c2acf2c1\")"
         }
       ],
@@ -696,7 +712,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 388,
+          "line": 396,
           "context": "reason: i18n(\"state.vaultshare.a473c3b43384\")"
         }
       ],
@@ -712,12 +728,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 174,
+          "line": 175,
           "context": "reason: i18n(\"state.vaultshare.ae3ba9170d2f\")"
         },
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 190,
+          "line": 191,
           "context": "reason: i18n(\"state.vaultshare.ae3ba9170d2f\")"
         }
       ],
@@ -733,7 +749,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 121,
+          "line": 122,
           "context": "new Error(i18n(\"state.vaultshare.af175fd37c73\"))"
         }
       ],
@@ -749,7 +765,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 330,
+          "line": 331,
           "context": "dec.reason ?? i18n(\"state.vaultshare.b149e6ae5817\")"
         }
       ],
@@ -765,7 +781,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 145,
+          "line": 146,
           "context": "reason: i18n(\"state.vaultshare.b2e333bd5624\")"
         }
       ],
@@ -781,7 +797,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 158,
+          "line": 159,
           "context": "reason: i18n(\"state.vaultshare.b37b72a03e7d\")"
         }
       ],
@@ -797,7 +813,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 449,
+          "line": 457,
           "context": "reason: i18n(\"state.vaultshare.b431db21b7df\")"
         }
       ],
@@ -813,7 +829,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 336,
+          "line": 337,
           "context": "secured.reason??i18n(\"state.vaultshare.b713d28a9ae7\")"
         }
       ],
@@ -834,7 +850,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 475,
+          "line": 483,
           "context": "reason: i18n(\"state.vaultshare.b8aeb1a1f261\", { error: e instanceof Error ? e.message : String(e) })"
         }
       ],
@@ -850,12 +866,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 362,
+          "line": 366,
           "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
         },
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 436,
+          "line": 444,
           "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
         }
       ],
@@ -871,7 +887,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 445,
+          "line": 453,
           "context": "reason: i18n(\"state.vaultshare.c5479cb871fa\")"
         }
       ],
@@ -887,7 +903,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 334,
+          "line": 335,
           "context": "upgraded.reason??i18n(\"state.vaultshare.c97b00b652fa\")"
         }
       ],
@@ -908,7 +924,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 494,
+          "line": 502,
           "context": "reason:i18n(\"state.vaultshare.cb2fdf85ee42\", { error: e instanceof Error?e.message:String(e) })"
         }
       ],
@@ -924,7 +940,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 376,
+          "line": 383,
           "context": "checked.reason || i18n(\"state.vaultshare.ced6988b78e7\")"
         }
       ],
@@ -940,7 +956,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 355,
+          "line": 356,
           "context": "new Error(i18n(\"state.vaultshare.d2880ea01ca6\"))"
         }
       ],
@@ -965,7 +981,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 536,
+          "line": 544,
           "context": "return i18n(\"state.vaultshare.dd39d27f2eaf\", { recipient: want, currentAccount: mine });"
         }
       ],
@@ -986,7 +1002,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 433,
+          "line": 441,
           "context": "reason:i18n(\"state.vaultshare.de371c09cf24\", { error: e instanceof Error?e.message:String(e) })"
         }
       ],
@@ -1002,7 +1018,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 192,
+          "line": 193,
           "context": "reason: i18n(\"state.vaultshare.df690d6050a8\")"
         }
       ],
@@ -1018,7 +1034,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 310,
+          "line": 311,
           "context": "new Error(i18n(\"state.vaultshare.e1b89010df35\"))"
         }
       ],
@@ -1034,7 +1050,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 370,
+          "line": 375,
           "context": "reason: i18n(\"state.vaultshare.ee75d1a72727\")"
         }
       ],
@@ -1050,7 +1066,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 407,
+          "line": 415,
           "context": "new Error(i18n(\"state.vaultshare.f6d2148271ab\"))"
         }
       ],
@@ -1066,7 +1082,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 486,
+          "line": 494,
           "context": "new Error(i18n(\"state.vaultshare.fab167848c3e\"))"
         }
       ],
@@ -1361,22 +1377,6 @@
         }
       ],
       "translation": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.noArchive",
-      "source": "云盘上还没有壁纸档案，请先在别的设备同步一次",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 115,
-          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
-        }
-      ],
-      "translation": "There is no wallpaper archive on the cloud drive yet. Sync from another device first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

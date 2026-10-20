@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.19b715e8e934",
+      "source": "照片查看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 73,
+          "context": "return i18n(\"lib.infoapps.19b715e8e934\");"
+        }
+      ],
+      "translation": "Photo Viewer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.19fd876a1bf3",
       "source": "校园参观团队预约",
@@ -1263,22 +1279,6 @@
         }
       ],
       "translation": "International Conference Held in China Summary Submission",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.5f62e09a2329",
-      "source": "开户许可证/财务报表/纳税证明/社保缴纳证明扫描件申请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 225,
-          "context": "return i18n(\"lib.infoapps.5f62e09a2329\");"
-        }
-      ],
-      "translation": "Request for Copies of Account Opening License/Financial Statements/Tax Certificate/Social Insurance Certificate",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

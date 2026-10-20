@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.venuesportstab.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 706,
+          "context": "{i18n(\"pages.info.venuesportstab.d5f5a7a01073\")}"
+        }
+      ],
+      "translation": "Today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.venuesportstab.de1b90c59aa7",
       "source": "上午（{value} 场）",
@@ -1349,22 +1365,6 @@
         }
       ],
       "translation": "Passcode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.visittab.f56c6c82203b",
-      "source": "提示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 266,
-          "context": "{i18n(\"pages.info.visittab.f56c6c82203b\")}"
-        }
-      ],
-      "translation": "Tip",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

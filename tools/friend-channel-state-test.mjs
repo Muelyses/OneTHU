@@ -10,7 +10,7 @@ const defer = () => { let resolve; const promise = new Promise(r => { resolve = 
 const tick = () => new Promise(r => setImmediate(r));
 function cloudFixture() { return { files: new Map(), dirs: new Set(), sequence: 0 }; }
 function fixture(cloud = cloudFixture(), { email = 'alice@fixture.invalid', root = '/Friend/Bob' } = {}) {
-  const storage = new Map(), calls = [], control = { email, token: email, version: 1, gate: null, reject: null, readFailures: new Set() };
+  const storage = new Map(), calls = [], control = { email, token: email, version: 1, mode: 'full', modeRevision: 0, credentialGate: null, gate: null, reject: null, readFailures: new Set() };
   const contact = { id: 'friend', card: { cloudEmail: 'wrong-profile@fixture.invalid' }, shared: { repoId: email, path: root, peerEmail: email === 'alice@fixture.invalid' ? 'bob@fixture.invalid' : 'alice@fixture.invalid' } };
   const cards = { contacts: [contact], personal: { cloudEmail: 'spoofed-profile@fixture.invalid' } };
   const canonical = (path) => { assert.ok(path === root || path.startsWith(root === '/' ? '/' : root + '/'), path); return root === '/' ? path : path.slice(root.length) || '/'; };
@@ -42,8 +42,12 @@ function fixture(cloud = cloudFixture(), { email = 'alice@fixture.invalid', root
     '../i18n/index.js': { t: key => key },
     react: { useSyncExternalStore: (_subscribe, snapshot) => snapshot() },
     '@tauri-apps/api/core': { invoke },
+    './experienceMode.js': {
+      experienceMode: () => control.mode, experienceRevision: () => control.modeRevision,
+      useExperienceMode: () => control.mode,
+    },
     './seafile.js': {
-      ensureSeafileLoaded: async () => {}, getSeafileToken: () => control.token, getSeafileCredentialVersion: () => control.version,
+      ensureSeafileLoaded: async () => { if (control.credentialGate) await control.credentialGate.promise; }, getSeafileToken: () => control.token, getSeafileCredentialVersion: () => control.version,
       getSeafileAccount: () => control.token ? { email: control.email } : null, refreshSeafileAccount: async () => {},
       seafileShareFolderToUser: async () => {}, useSeafile: () => ({ configured: !!control.token, account: control.token ? { email: control.email } : null }),
     },
@@ -52,7 +56,9 @@ function fixture(cloud = cloudFixture(), { email = 'alice@fixture.invalid', root
   };
   const exports = {};
   vm.runInNewContext(code, { exports, require: id => { assert.ok(id in imports, id); return imports[id]; }, console, Date, TextDecoder, TextEncoder, Uint8Array, atob, crypto: webcrypto, localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) } }, { filename: 'friend-channel.fixture.cjs' });
-  return { api: exports, cloud, control, contact, cards, storage, calls, messages: () => exports.friendChannelSnapshot().messages, switchAccount: (email, token = email) => { control.email = email; control.token = token; control.version++; } };
+  return { api: exports, cloud, control, contact, cards, storage, calls, messages: () => exports.friendChannelSnapshot().messages,
+    switchMode: mode => { if (mode !== control.mode) { control.mode = mode; control.modeRevision++; } },
+    switchAccount: (email, token = email) => { control.email = email; control.token = token; control.version++; } };
 }
 function wire(id, overrides = {}) {
   return JSON.stringify({ format: 'onethu.friend-message', v: 1, id, authorEmail: 'bob@fixture.invalid', at: Date.now(), kind: 'text', text: 'hello', ...overrides });
@@ -191,5 +197,60 @@ await test('Legacy unassigned history is hidden in a newly bound channel until t
   f.contact.shared.channelId = 'new-bound-channel'; assert.equal(f.api.useFriendMessages('friend').length, 0);
   await f.api.refreshFriendMessages('friend'); assert.equal(f.api.useFriendMessages('friend').length, 1);
   assert.equal(f.api.useFriendMessages('friend')[0].channelId, 'new-bound-channel');
+});
+await test('Simple and practical modes make no friend reads or sends and preserve existing history', async () => {
+  for (const mode of ['simple', 'practical']) {
+    const f = fixture(); put(f.cloud, 'fm.aaaaaaaa.json', wire('fm.aaaaaaaa'));
+    await f.api.refreshFriendMessages('friend');
+    const saved = f.storage.get('onethu.friendMsgs.v1');
+    f.switchMode(mode); f.calls.length = 0;
+    assert.equal((await f.api.refreshFriendMessages('friend')).ok, false);
+    assert.equal((await f.api.sendFriendText('friend', 'hidden send')).ok, false);
+    assert.equal((await f.api.sendFriendFile('friend', { name: 'a', localPath: '/tmp/a' })).ok, false);
+    assert.equal(f.calls.length, 0);
+    assert.equal(f.api.useFriendMessages('friend').length, 0);
+    assert.equal(f.storage.get('onethu.friendMsgs.v1'), saved);
+    assert.equal(f.messages().length, 1);
+    f.switchMode('full'); assert.equal(f.api.useFriendMessages('friend').length, 1);
+  }
+});
+await test('Switching to a compact mode while downloading discards late messages without touching storage', async () => {
+  for (const mode of ['simple', 'practical']) {
+    const f = fixture(), gate = defer(); put(f.cloud, 'fm.aaaaaaaa.json', wire('fm.aaaaaaaa'));
+    f.control.gate = { command: 'seafile_read_bytes', ...gate };
+    const loading = f.api.refreshFriendMessages('friend'); await tick();
+    f.switchMode(mode); gate.resolve();
+    assert.equal((await loading).ok, false); assert.equal(f.messages().length, 0);
+    assert.equal(f.storage.has('onethu.friendMsgs.v1'), false);
+    f.control.gate = null; f.switchMode('full');
+    assert.equal((await f.api.refreshFriendMessages('friend')).added, 1);
+  }
+});
+await test('Returning to full mode starts a new read without reusing the still-pending old read', async () => {
+  const f = fixture(), gate = defer(); put(f.cloud, 'fm.aaaaaaaa.json', wire('fm.aaaaaaaa'));
+  f.control.gate = { command: 'seafile_read_bytes', ...gate };
+  const oldRead = f.api.refreshFriendMessages('friend'); await tick();
+  f.switchMode('simple'); f.switchMode('full');
+  f.control.gate = null;
+  assert.equal((await f.api.refreshFriendMessages('friend')).added, 1);
+  const saved = f.storage.get('onethu.friendMsgs.v1');
+  gate.resolve();
+  assert.equal((await oldRead).ok, false);
+  assert.equal(f.storage.get('onethu.friendMsgs.v1'), saved);
+  assert.equal(f.messages().length, 1);
+});
+await test('A full to compact to full switch during credential loading prevents all network requests', async () => {
+  const f = fixture(), gate = defer(); f.control.credentialGate = gate;
+  const loading = f.api.refreshFriendMessages('friend'); await tick();
+  f.switchMode('practical'); f.switchMode('full'); gate.resolve();
+  assert.equal((await loading).ok, false);
+  assert.equal(f.calls.length, 0); assert.equal(f.messages().length, 0);
+});
+await test('Mode changes during sending cannot append late success or offline fallback drafts', async () => {
+  const f = fixture(), gate = defer(); f.control.gate = { command: 'seafile_upload_text', ...gate };
+  const sending = f.api.sendFriendText('friend', 'old mode'); await tick();
+  f.switchMode('simple'); f.switchMode('full'); gate.resolve();
+  assert.equal((await sending).ok, false);
+  assert.equal(f.messages().length, 0); assert.equal(f.storage.has('onethu.friendMsgs.v1'), false);
 });
 console.log(`Friend channel state: ${passed} checks passed`);

@@ -1,7 +1,22 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "gui.tabs.all",
+      "source": "全部标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "All tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "gui.tabs.close",
       "source": "关闭标签页",
@@ -1431,22 +1446,6 @@
         }
       ],
       "translation": "Deleted conversation number {arg}.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.registry.fe67e76559d3",
-      "source": "· /detail N [x-y] —— 查看编号 N 会话的第 x 到 y 轮（默认 1-5）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/registry.ts",
-          "line": 191,
-          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
-        }
-      ],
-      "translation": "· /detail N [x-y] —— view rounds x through y of conversation number N (defaults to 1-5)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

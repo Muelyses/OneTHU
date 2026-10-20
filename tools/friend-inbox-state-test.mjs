@@ -7,14 +7,16 @@ import { webcrypto } from 'node:crypto';
 const transpile = file => ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
 const inboxCode = transpile('apps/desktop/src/state/friendInbox.ts');
 const cardCode = transpile('apps/desktop/src/state/nameCard.ts');
+const modeCode = transpile('apps/desktop/src/state/experienceMode.ts');
 const defer = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const tick = () => new Promise(r => setImmediate(r));
 const manifestName = '/onethu-friend-channel.json';
 function manifest(overrides = {}) { return { v: 1, kind: 'onethu-friend-channel', id: 'channel-11111111', ownerEmail: 'alice@fixture.invalid', ownerName: 'Alice', recipientEmail: 'bob@fixture.invalid', createdAt: Date.now(), ...overrides }; }
 function card(id, email, shared) { return { id, kind: 'personal', name: email, card: { name: email, cloudEmail: email, avatar: '', website: '', social: '', phone: '', bio: '', updatedAt: 1 }, note: 'keep me', addedAt: 1, ...(shared ? { shared } : {}) }; }
-function fixture({ email = 'bob@fixture.invalid', contacts = [] } = {}) {
+function fixture({ email = 'bob@fixture.invalid', contacts = [], mode = 'full' } = {}) {
   const files = new Map(), repos = new Map(), storage = new Map(), calls = [];
   const control = { email, token: email, version: 1, gate: null, fail: null };
+  storage.set('onethu.experience.v1', mode);
   storage.set('onethu.cards.v1', JSON.stringify({ v: 1, personal: { name: 'Me', avatar: '', website: '', social: '', phone: '', bio: '', updatedAt: 1 }, contacts, orgs: [] }));
   const localStorage = { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) };
   const invoke = async (command, args) => {
@@ -38,12 +40,13 @@ function fixture({ email = 'bob@fixture.invalid', contacts = [] } = {}) {
   };
   const common = { '../i18n/index.js': { t: key => key }, react: { useSyncExternalStore: (_subscribe, snapshot) => snapshot() }, './seafile.js': { ensureSeafileLoaded: async () => {}, getSeafileToken: () => control.token, getSeafileCredentialVersion: () => control.version, getSeafileAccount: () => ({ email: control.email }) }, './data.js': { getCampusSnapshot: () => null }, './cloudCal.js': { getCloudCalEmail: () => '' }, '@tauri-apps/api/core': { invoke } };
   const evaluate = (code, imports) => { const exports = {}; vm.runInNewContext(code, { exports, require: id => { assert.ok(id in imports, id); return imports[id]; }, console, Date, TextDecoder, Uint8Array, atob, crypto: webcrypto, localStorage }, { filename: 'friend-inbox.fixture.cjs' }); return exports; };
-  const cards = evaluate(cardCode, common), api = evaluate(inboxCode, { ...common, './nameCard.js': cards });
+  const experience = evaluate(modeCode, common);
+  const cards = evaluate(cardCode, common), api = evaluate(inboxCode, { ...common, './nameCard.js': cards, './experienceMode.js': experience });
   function incoming({ id = 'incoming', owner = 'alice@fixture.invalid', recipient = control.email, data = manifest({ ownerEmail: owner, recipientEmail: recipient }), permission = 'rw', virtual = true } = {}) {
     const item = { id, name: 'shared-folder', repoType: 'shared', owner, permission, isVirtual: virtual, mtime: 1, size: 0 };
     repos.set(recipient, [...(repos.get(recipient) ?? []), item]); files.set(id + manifestName, JSON.stringify(data)); return item;
   }
-  return { api, cards, control, calls, files, repos, storage, incoming, snapshot: () => api.friendInboxSnapshot(), switchAccount: email => { control.email = email; control.token = email; control.version++; } };
+  return { api, cards, control, calls, files, repos, storage, incoming, experience, snapshot: () => api.friendInboxSnapshot(), switchAccount: email => { control.email = email; control.token = email; control.version++; } };
 }
 let passed = 0, failed = 0;
 async function test(name, run) { try { await run(); passed++; console.log('✓ ' + name); } catch (error) { failed++; console.error('✗ ' + name + ': ' + error.message); } }
@@ -182,5 +185,50 @@ await test('Explicit replacement does not overwrite a different channel selected
   f.cards.setContactShare('friend', { ...original, repoId: 'newer-selection', channelId: 'newer-channel' }); gate.resolve(); await assert.rejects(accepting);
   assert.equal(f.cards.cardsSnapshot().contacts[0].shared.repoId, 'newer-selection');
 });
+for (const mode of ['simple', 'practical']) {
+  await test(`${mode}: cold start and forced refresh do not contact the cloud or accept invitations`, async () => {
+    const f = fixture({ mode }); f.incoming();
+    const before = f.storage.get('onethu.cards.v1');
+    await f.api.refreshFriendInvitations(true);
+    await assert.rejects(f.api.acceptFriendInvitation('channel-11111111'), /friends.modeChanged/);
+    assert.equal(f.calls.length, 0);
+    assert.equal(f.snapshot().invitations.length, 0);
+    assert.equal(f.storage.get('onethu.cards.v1'), before);
+    f.experience.setExperienceMode('full'); await f.api.refreshFriendInvitations(true);
+    assert.equal(f.snapshot().invitations.length, 1);
+  });
+  await test(`${mode}: switching during account lookup stops before listing shared libraries`, async () => {
+    const f = fixture(), gate = defer(); f.incoming();
+    f.control.gate = { ...gate, match: cmd => cmd === 'seafile_account' };
+    const checking = f.api.refreshFriendInvitations(true); await tick();
+    f.experience.setExperienceMode(mode); gate.resolve(); await checking;
+    assert.equal(f.calls.some(c => c.command === 'seafile_repos'), false);
+    assert.equal(f.snapshot().error, null);
+    assert.equal(f.snapshot().busy, false);
+  });
+  await test(`${mode}: late manifests stay discarded even after immediately returning to full mode`, async () => {
+    const f = fixture(), gate = defer(); f.incoming();
+    f.control.gate = { ...gate, match: cmd => cmd === 'seafile_read_bytes' };
+    const checking = f.api.refreshFriendInvitations(true); await tick();
+    f.experience.setExperienceMode(mode); f.experience.setExperienceMode('full');
+    gate.resolve(); await checking;
+    assert.equal(f.snapshot().invitations.length, 0);
+    assert.equal(f.snapshot().error, null);
+    await f.api.refreshFriendInvitations(true);
+    assert.equal(f.snapshot().invitations.length, 1);
+  });
+  await test(`${mode}: switching during accept validation prevents a receipt and local friend creation`, async () => {
+    const f = fixture(), gate = defer(); f.incoming(); await f.api.refreshFriendInvitations(true);
+    f.control.gate = { ...gate, match: cmd => cmd === 'seafile_read_bytes' };
+    const accepting = f.api.acceptFriendInvitation('channel-11111111'); await tick();
+    f.experience.setExperienceMode(mode); f.experience.setExperienceMode('full');
+    gate.resolve(); await assert.rejects(accepting, /friends.modeChanged/);
+    assert.equal(f.calls.some(c => c.command === 'seafile_upload_text'), false);
+    assert.equal(f.cards.cardsSnapshot().contacts.length, 0);
+    await f.api.refreshFriendInvitations(true);
+    await f.api.acceptFriendInvitation('channel-11111111');
+    assert.equal(f.cards.cardsSnapshot().contacts.length, 1);
+  });
+}
 console.log(`Friend inbox state: ${passed} passed, ${failed} failed`);
 if (failed) process.exitCode = 1;

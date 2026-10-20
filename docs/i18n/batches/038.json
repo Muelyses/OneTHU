@@ -1,7 +1,23 @@
 {
-  "sourceHash": "e5e2113db9acc7a7ae6ae8445ecfc41bb492bbf45f48e62927cd3bf0d3889b2a",
+  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.f575a006f94b",
+      "source": "校机关服务满意度调查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 297,
+          "context": "return i18n(\"lib.infoapps.f575a006f94b\");"
+        }
+      ],
+      "translation": "University Administration Satisfaction Survey",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.f66fc156eba4",
       "source": "培养方案完成情况",
@@ -1262,21 +1278,6 @@
         }
       ],
       "translation": "Theme, wallpaper, density and entry layout are all changeable.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.80a9c0e2e534",
-      "source": "换过的入口会保留；切换模式不改其他模式的安排。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
-        }
-      ],
-      "translation": "Entries you've swapped in are kept; switching modes doesn't affect the other mode's arrangement.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

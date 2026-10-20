@@ -124,7 +124,7 @@ try {
   await p.getByRole('radio', { name: '概览', exact: true }).click();
   await p.waitForTimeout(400);
   await p.getByRole('button', { name: '删除口令', exact: true }).click();
-  await p.waitForSelector('.confirm-card');
+  await p.waitForSelector('.shared-confirm-modal');
   await p.getByRole('button', { name: '确定', exact: true }).click();
   await p.waitForTimeout(1200);
   org = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs[0]);
@@ -174,7 +174,7 @@ try {
   /* 删除组织：回通讯录，本机记录清空（云盘资料库不动） */
   await p.getByRole('radio', { name: '概览', exact: true }).click();
   await p.getByRole('button', { name: '删除这个组织', exact: true }).click();
-  await p.waitForSelector('.confirm-card');
+  await p.waitForSelector('.shared-confirm-modal');
   await p.getByRole('button', { name: '确定', exact: true }).click();
   await p.waitForTimeout(900);
   const left = await p.evaluate(() => JSON.parse(localStorage.getItem('onethu.orgs.v1')).orgs.length);

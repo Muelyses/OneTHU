@@ -281,12 +281,10 @@ export function replaceNav(frame: Omit<NavPageFrame, "kind">): NavPageFrame {
 /** 浮层入帧（返回键先关它） */
 export function openOverlayFrame(id: string, close: () => void): void {
   if (frames.some((f) => f.kind === "overlay" && f.id === id)) return;
-  const top = frames[frames.length - 1];
-  if (top?.kind === "page" || frames.length === 0) {
-    frames.push({ kind: "overlay", id, close });
-    trim();
-    notify();
-  }
+  // Drawers can open menus, forms and confirmations; each layer owns one Back.
+  frames.push({ kind: "overlay", id, close });
+  trim();
+  notify();
 }
 
 /** 浮层自行关闭（点 ✕ / 遮罩）时调用：把帧摘掉即可（没有历史条目要退） */

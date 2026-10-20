@@ -122,8 +122,8 @@ const confirmLib = read("apps/desktop/src/lib/confirm.tsx");
 // 措辞属于场景、不属于组件：组件只提供通用兜底，且标题/按钮都必须取自请求
 assert.ok(/export function confirmDanger\(\s*msg: string,\s*opts: \{ title\?: string; confirmText\?: string \} = \{\},\s*\)/.test(confirmLib),
   "confirmDanger 必须接受 { title, confirmText }");
-assert.ok(/cur\.title \?\? "此操作不可撤销，请确认"/.test(confirmLib), "标题取自请求，兜底为通用措辞");
-assert.ok(/cur\.confirmText \?\? "确认执行"/.test(confirmLib), "确认按钮文案同样取自请求（此前写死「确认退选」）");
+assert.ok(/shown\?\.title \?\? \(shown\?\.danger \? "此操作不可撤销，请确认"/.test(confirmLib), "标题取自请求的进退场快照，危险确认兜底为通用措辞");
+assert.ok(/shown\?\.confirmText \?\? \(shown\?\.danger \? "确认执行"/.test(confirmLib), "确认按钮文案同样取自请求快照（此前写死「确认退选」）");
 assert.ok(!/确认退选<\/button>/.test(confirmLib), "组件内不得再写死「确认退选」");
 assert.ok(/export const CONFIRM_DROP_COURSE = \{ title: "即将退选，请确认！", confirmText: "确认退选" \} as const;/.test(confirmLib),
   "退选措辞必须集中成场景预设");

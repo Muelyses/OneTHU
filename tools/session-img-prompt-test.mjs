@@ -83,12 +83,13 @@ assert.ok(
   "两个按钮文案必须必填——「取消 / 确定」在二选一里等于没说",
 );
 assert.ok(
-  confirm.includes('{cur.cancelText ?? "取消"}') && confirm.includes('{cur.confirmText ?? "确定"}'),
+  confirm.includes('{shown?.cancelText ?? "取消"}') && confirm.includes('{shown?.confirmText ?? (shown?.danger ? "确认执行" : "确定")}'),
   "非危险档要真的渲染两个自定义文案（不能只加字段不用）",
 );
 assert.ok(/confirmText: "重新登录", cancelText: "忽略"/.test(confirm), "预设必须是「重新登录 / 忽略」两个按钮");
 // 危险档（退选/忽略作业）不该被这次改动碰到：仍固定「取消」，不引入可自定义的次按钮
-assert.ok(/>取消<\/button>/.test(confirm), "危险档的次按钮仍是写死的「取消」（本次不动退选/忽略作业）");
+const dangerFn = confirm.slice(confirm.indexOf("export function confirmDanger("),confirm.indexOf("export function confirmChoice("));
+assert.ok(!dangerFn.includes("cancelText") && confirm.includes('{shown?.cancelText ?? "取消"}'), "危险档不接收自定义次按钮，仍使用「取消」兜底");
 
 /* ---------- [3] 取数形态守卫（2026-10-12 真机根因：直连 learn 域没有会话） ----------
  * 同一 URL 实测：直连 → 69 字节 `location.href="/"` 跳转页；webvpn 包装 + 原生通道 →

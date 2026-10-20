@@ -23,6 +23,11 @@ export interface BtnProps extends OneBase {
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
   onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void;
   onMouseUp?: (e: React.MouseEvent<HTMLElement>) => void;
+  /** Pointer gestures remain owned by the control, including touch and pen. */
+  onPointerDown?: (e: React.PointerEvent<HTMLElement>) => void;
+  onPointerMove?: (e: React.PointerEvent<HTMLElement>) => void;
+  onPointerUp?: (e: React.PointerEvent<HTMLElement>) => void;
+  onPointerCancel?: (e: React.PointerEvent<HTMLElement>) => void;
   onContextMenu?: (e: React.MouseEvent<HTMLElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
   onFocus?: (e: React.FocusEvent<HTMLElement>) => void;

@@ -1,14 +1,11 @@
-/**
- * 「已发出的口令」管理面板（暂存箱页）。
- *
- * 解决三件事：**保存**（发过的口令都留一条台账）、**删除**（逐条撤销分享，或只清记录）、
- * **授权范围**（这条口令到底能取到什么：箱子名、内容项数与类型分布、有效期）。
- */
-import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { Btn, Card, List, Row, Text } from "@onethu/gui";
+/** Secondary management of issued snapshots. Deleting a record never revokes a share. */
+import { useId, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { Btn, Menu, Modal, Segment, Stack, Text } from "@onethu/gui";
 import { confirmOk } from "../../lib/confirm.js";
 import { openFormModal } from "../../lib/formModal.js";
+import { openOverlayFrame, useOverlayBack } from "../../state/navStack.js";
 import { showToast } from "../../state/toast.js";
+import { subscribeVault, vaultSnapshot } from "../../state/vault.js";
 import { hasPendingShareRotation, revokeShare, updateShareMeta } from "../../state/vaultShare.js";
 import {
   forgetIssuedShare, issuedShareState, issuedShareTitle, issuedSharesSnapshot, markIssuedShareRevoked,
@@ -16,126 +13,118 @@ import {
 } from "../../state/vaultShareLog.js";
 
 const STATE_LABEL: Record<string, string> = { active: "有效", revoked: "已撤销", expired: "已过期" };
-
+const BUSY_LABEL = { copy: "正在复制…", rename: "正在更新名称…", restrict: "正在更新接收范围…", revoke: "正在撤销…", forget: "正在删除记录…" };
+type Action = keyof typeof BUSY_LABEL;
 function timeText(ms: number): string {
   const d = new Date(ms);
   return `${d.getMonth() + 1}月${d.getDate()}日 ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function IssuedSharesCard(): ReactNode {
+export function IssuedSharesCard({ boxId }: { boxId?: string } = {}): ReactNode {
   const log = useSyncExternalStore(subscribeIssuedShares, issuedSharesSnapshot, issuedSharesSnapshot);
-  const [busy, setBusy] = useState("");
+  const vaults = useSyncExternalStore(subscribeVault, vaultSnapshot, vaultSnapshot);
+  const [scope, setScope] = useState<"box" | "all">(boxId ? "box" : "all");
+  const allEntries = scope === "all" || !boxId;
+  const entries = allEntries ? log.entries : log.entries.filter(entry => entry.boxId === boxId);
+  const currentCount = boxId ? log.entries.filter(entry=>entry.boxId===boxId).length : log.entries.length;
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState<{ id: string; action: Action } | null>(null);
+  const [error, setError] = useState<{ id: string; message: string } | null>(null);
+  const [menu, setMenu] = useState<{ id: string; anchor: HTMLElement } | null>(null);
+  const pending = useRef(false);
+  const busyRef = useRef(false); busyRef.current = Boolean(busy);
+  const frameId = `vault-issued-${id}`;
+  const close = () => {
+    if (busyRef.current) { openOverlayFrame(frameId, close); return; }
+    setMenu(null); setOpen(false);
+  };
+  useOverlayBack(frameId, open, close);
+  useOverlayBack(`${frameId}-menu`, Boolean(menu), () => setMenu(null));
+  const selected = menu ? entries.find(entry => entry.id === menu.id) : undefined;
 
-  const revoke = async (e: IssuedShare): Promise<void> => {
-    if (!e.cloud?.shareToken) {
-      showToast("这条口令没有绑定云盘（旧版本地口令），只能删除记录");
-      return;
+  async function perform(entry: IssuedShare, action: Action, task: () => Promise<void>) {
+    if (pending.current) return;
+    pending.current = true; setBusy({ id: entry.id, action }); setError(null); setMenu(null);
+    try { await task(); }
+    catch (e) { setError({ id: entry.id, message: e instanceof Error ? e.message : String(e) }); }
+    finally { pending.current = false; setBusy(null); }
+  }
+  const revoke = (entry: IssuedShare) => perform(entry, "revoke", async () => {
+    if (!entry.cloud?.shareToken) throw new Error("这条旧口令没有云盘分享，只能删除记录。");
+    if (!await confirmOk(`撤销「${issuedShareTitle(entry)}」？对方将无法再次读取，已经接收的副本会保留。`)) return;
+    if (!await revokeShare(payloadOfIssuedShare(entry))) throw new Error("撤销未完成，请检查云盘连接后重试。");
+    markIssuedShareRevoked(entry.id); showToast("分享已撤销");
+  });
+  const rename = (entry: IssuedShare) => perform(entry, "rename", async () => {
+    const fields = await openFormModal("口令名称", [{ key: "label", label: "名称（留空使用箱子名）", default: entry.label ?? "" }]);
+    if (!fields) return;
+    const result = await updateShareMeta(entry.code, { label: fields.label ?? "" });
+    if (!result.ok) throw new Error(result.reason ?? "改名未完成，请重试。");
+    showToast("口令名称已更新");
+  });
+  const restrict = (entry: IssuedShare) => perform(entry, "restrict", async () => {
+    const fields = await openFormModal("接收范围", [{ key: "allowEmail", label: "清华云盘邮箱（留空允许持有口令的人接收）", default: entry.allowEmail ?? "" }]);
+    if (!fields) return;
+    const result = await updateShareMeta(entry.code, { allowEmail: (fields.allowEmail ?? "").trim() });
+    if (!result.ok) throw new Error(result.reason ?? "接收范围更新未完成，请重试。");
+    // A rotation must finish its real revocation before we offer the replacement code.
+    showToast(result.code ? "接收范围已更新，旧口令已撤销。请复制新口令发送。" : "接收范围已更新");
+  });
+  const copy = (entry: IssuedShare) => perform(entry, "copy", async () => {
+    let code = entry.code;
+    if (hasPendingShareRotation(code) || (entry.allowEmail && !entry.cloud?.keyRepoId)) {
+      const result = await updateShareMeta(code, entry.allowEmail && !entry.cloud?.keyRepoId ? { allowEmail: entry.allowEmail } : {});
+      if (!result.ok) throw new Error(result.reason ?? "分享升级未完成，请重试。");
+      code = result.code ?? code;
     }
-    if (!(await confirmOk(`撤销「${e.boxName}」的这条口令？撤销后对方将无法再读取。`))) return;
-    setBusy(e.id);
-    try {
-      const ok = await revokeShare(payloadOfIssuedShare(e));
-      if (ok) {
-        markIssuedShareRevoked(e.id);
-        showToast("分享已撤销");
-      } else {
-        showToast("撤销未完成：请先连接清华云盘");
-      }
-    } catch (err) {
-      showToast(`撤销失败：${err instanceof Error ? err.message : String(err)}`);
-    } finally {
-      setBusy("");
-    }
-  };
+    try { await navigator.clipboard.writeText(code); }
+    catch { throw new Error("无法写入剪贴板，请从「查看口令」中手动复制。"); }
+    showToast(code === entry.code ? "口令已复制" : "私密分享已升级，新口令已复制");
+  });
+  const forget = (entry: IssuedShare) => perform(entry, "forget", async () => {
+    if (issuedShareState(entry) === "active" && !await confirmOk("这条口令仍有效，删除记录不会撤销分享。确定只删除记录？")) return;
+    forgetIssuedShare(entry.id); showToast("记录已删除");
+  });
+  const [revealed, setRevealed] = useState<string | null>(null);
 
-  /** 改口令名：云盘清单就地更新，口令本身不变。 */
-  const rename = async (e: IssuedShare): Promise<void> => {
-    const f = await openFormModal("给这条口令起个名字", [
-      { key: "label", label: "口令名（留空 = 用箱子名）", default: e.label ?? "" },
-    ]);
-    if (!f) return;
-    setBusy(e.id);
-    try {
-      const r = await updateShareMeta(e.code, { label: f.label ?? "" });
-      showToast(r.ok ? (f.label ? `已改名为「${f.label}」` : "已恢复用箱子名") : r.reason ?? "改名失败：先连接清华云盘再试");
-    } finally {
-      setBusy("");
-    }
-  };
-
-  /** 限定接收邮箱：只有这个云盘账号能打开；留空 = 谁拿到都能收。 */
-  const restrict = async (e: IssuedShare): Promise<void> => {
-    const f = await openFormModal("限定接收邮箱", [
-      {
-        key: "allowEmail",
-        label: "只允许这个清华云盘邮箱接收（留空 = 不限制）",
-        default: e.allowEmail ?? "",
-      },
-    ]);
-    if (!f) return;
-    const email = (f.allowEmail ?? "").trim();
-    setBusy(e.id);
-    try {
-      const r = await updateShareMeta(e.code, { allowEmail: email });
-      if(r.ok&&r.code)await navigator.clipboard.writeText(r.code).catch(()=>undefined);
-      showToast(r.ok ? (r.code?"接收范围已更新，新口令已生成，旧口令已撤销":email ? `已限定为 ${email} 接收` : "已取消邮箱限制") : r.reason ?? "设置失败：先连接清华云盘再试");
-    } finally {
-      setBusy("");
-    }
-  };
-
-  const copy = async (entry:IssuedShare):Promise<void> => {
-    setBusy(entry.id);
-    try {
-      let code=entry.code;
-      if(hasPendingShareRotation(code)||(entry.allowEmail&&!entry.cloud?.keyRepoId)){
-        const result=await updateShareMeta(code,entry.allowEmail&&!entry.cloud?.keyRepoId?{allowEmail:entry.allowEmail}:{});
-        if(!result.ok){showToast(result.reason??"分享升级未完成，请重试");return;}
-        code=result.code??code;
-      }
-      await navigator.clipboard.writeText(code);
-      showToast(code===entry.code?"口令已复制":"私密分享已升级，新口令已复制");
-    }catch(error){showToast(error instanceof Error?error.message:"复制失败，请重试");}
-    finally{setBusy("");}
-  };
-
-  const forget = async (e: IssuedShare): Promise<void> => {
-    if (issuedShareState(e) === "active" && !(await confirmOk("这条口令还有效，删除记录后对方仍能读取。确定只删记录？"))) return;
-    forgetIssuedShare(e.id);
-    showToast("记录已删除");
-  };
-
-  return (
-    <Card>
-      <div className="vault-actions">
-        <Text slot="label">已发出的口令</Text>
-        <Text slot="micro" tone="faint">{log.entries.length ? `共 ${log.entries.length} 条` : "还没有发出过口令"}</Text>
-      </div>
-      {log.entries.length === 0 ? (
-        <Text slot="micro" tone="faint">生成后这里会留下记录：能取到哪些内容、限定谁接收、何时过期，也能逐条改名或撤销。</Text>
-      ) : (
-        <List divided>
-          {log.entries.map((e) => {
-            const st = issuedShareState(e);
-            return (
-              <Row
-                key={e.id}
-                title={`${issuedShareTitle(e)} · ${STATE_LABEL[st] ?? st}${e.label ? `（箱子「${e.boxName}」）` : ""}`}
-                sub={`能取到：${scopeLabel(e)}　接收人：${e.allowEmail ?? "任何人"}　生成于 ${timeText(e.issuedAt)}${e.expiresAt ? `　有效期至 ${timeText(e.expiresAt)}` : "　不过期"}`}
-                trailing={
-                  <>
-                    <Btn size="sm" variant="ghost" disabled={busy === e.id} onClick={() => void rename(e)}>改名</Btn>
-                    <Btn size="sm" variant="ghost" disabled={busy === e.id || st !== "active"} onClick={() => void restrict(e)}>限定邮箱</Btn>
-                    <Btn size="sm" variant="ghost" disabled={busy === e.id || st !== "active"} onClick={() => void copy(e)}>{e.allowEmail&&!e.cloud?.keyRepoId?"升级并复制":"复制"}</Btn>
-                    <Btn size="sm" variant="ghost" tone="error" disabled={busy === e.id || st !== "active"} onClick={() => void revoke(e)}>{busy === e.id ? "撤销中…" : "撤销"}</Btn>
-                    <Btn size="sm" variant="ghost" onClick={() => void forget(e)}>删除记录</Btn>
-                  </>
-                }
-              />
-            );
+  return <>
+    <Btn className="vault-issued-trigger" variant="ghost" onClick={() => { setError(null); setScope(boxId ? "box" : "all"); setOpen(true); }}>已发出口令{currentCount ? ` · ${currentCount}` : ""}</Btn>
+    <Modal open={open} onClose={close} title="已发出口令" size="md" className="vault-issued-modal">
+      <Stack gap={4}>
+        {boxId ? <Segment value={scope} onChange={value => { setScope(value as "box" | "all"); setMenu(null); setError(null); }} options={[{ value: "box", label: "当前箱" }, { value: "all", label: "全部口令" }]} /> : null}
+        <Text slot="micro" tone="faint">{allEntries ? "所有箱子" : "当前箱"}的分享快照。清空或删除箱子不会撤销已发口令。</Text>
+        {entries.length ? <div className="vault-issued-list">
+          {entries.map(entry => {
+            const state = issuedShareState(entry);
+            const working = busy?.id === entry.id;
+            return <section className="vault-issued-entry" key={entry.id} aria-label={`口令：${issuedShareTitle(entry)}`}>
+              <div className="vault-issued-heading">
+                <Text slot="label">{issuedShareTitle(entry)}</Text>
+                <Text slot="micro" tone={state === "active" ? "default" : "faint"}>{STATE_LABEL[state]}</Text>
+              </div>
+              {allEntries ? <Text slot="micro" tone="faint">来自「{entry.boxName}」{vaults.boxes.some(box=>box.id===entry.boxId) ? "" : " · 箱子已删除"}</Text> : null}
+              <Text slot="micro" tone="faint">{scopeLabel(entry)} · {entry.allowEmail ? `仅 ${entry.allowEmail}` : "持有口令即可接收"}</Text>
+              <Text slot="micro" tone="faint">{timeText(entry.issuedAt)} 发出 · {entry.expiresAt ? `${timeText(entry.expiresAt)} 到期` : "不过期"}</Text>
+              {revealed === entry.id ? <code className="vault-issued-code">{entry.code}</code> : null}
+              {error?.id === entry.id ? <div className="vault-issued-error" role="alert"><Text slot="micro">{error.message}</Text></div> : null}
+              <div className="vault-issued-actions">
+                {working ? <span role="status"><Text slot="micro" tone="faint">{BUSY_LABEL[busy.action]}</Text></span> : null}
+                <Btn size="sm" variant="outline" disabled={Boolean(busy) || state !== "active"} loading={working && busy.action === "copy"} onClick={() => void copy(entry)}>{entry.allowEmail && !entry.cloud?.keyRepoId ? "升级并复制" : "复制口令"}</Btn>
+                <Btn size="sm" variant="ghost" disabled={Boolean(busy)} aria-haspopup="menu" aria-expanded={menu?.id === entry.id} aria-label={`管理口令：${issuedShareTitle(entry)}`} onClick={event => setMenu({ id: entry.id, anchor: event.currentTarget })}>更多</Btn>
+              </div>
+            </section>;
           })}
-        </List>
-      )}
-    </Card>
-  );
+        </div> : <div className="vault-issued-empty"><Text slot="label">还没有发出口令</Text><Text slot="micro" tone="faint">{!allEntries && log.entries.length ? "其他箱子发出的分享，可以在「全部口令」中查看。" : "生成暂存箱分享后，会在这里留下记录。"}</Text></div>}
+      </Stack>
+    </Modal>
+    <Menu open={Boolean(selected && menu)} anchor={menu?.anchor} onClose={() => setMenu(null)} label="口令管理" title={selected ? issuedShareTitle(selected) : undefined} items={selected ? [
+      { id: "show", label: revealed === selected.id ? "收起口令" : "查看口令", disabled: issuedShareState(selected) !== "active" || hasPendingShareRotation(selected.code) || Boolean(selected.allowEmail && !selected.cloud?.keyRepoId), onSelect: () => setRevealed(revealed === selected.id ? null : selected.id) },
+      { id: "rename", label: "改名", disabled: issuedShareState(selected) !== "active", onSelect: () => void rename(selected) },
+      { id: "recipient", label: "限定邮箱", disabled: issuedShareState(selected) !== "active", onSelect: () => void restrict(selected) },
+      "separator",
+      { id: "revoke", label: "撤销分享", danger: true, disabled: issuedShareState(selected) !== "active", onSelect: () => void revoke(selected) },
+      { id: "forget", label: "删除记录", danger: true, onSelect: () => void forget(selected) },
+    ] : []} />
+  </>;
 }

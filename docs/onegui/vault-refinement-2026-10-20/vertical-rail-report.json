@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "checks": [
+    "固定展开 使用真实竖标签布局",
+    "固定展开 验收时竖栏实际展开",
+    "固定展开 左侧保存位置自动避开竖栏且入口可命中",
+    "固定展开 避障未篡改用户保存的left/40%",
+    "固定展开 预览不被展开竖栏遮住且完整在屏内",
+    "固定展开 整理按钮在竖栏展开时真实命中",
+    "固定展开 真实点击整理打开管理面板",
+    "固定展开 关闭管理后焦点回入口",
+    "悬停展开 使用真实竖标签布局",
+    "悬停展开 真实hover将竖栏展开",
+    "悬停展开 验收时竖栏实际展开",
+    "悬停展开 左侧保存位置自动避开竖栏且入口可命中",
+    "悬停展开 避障未篡改用户保存的left/40%",
+    "悬停展开 预览不被展开竖栏遮住且完整在屏内",
+    "悬停展开 整理按钮在竖栏展开时真实命中",
+    "悬停展开 真实点击整理打开管理面板",
+    "悬停展开 关闭管理后焦点回入口"
+  ],
+  "geometry": [
+    {
+      "mode": "固定展开",
+      "anchor": {
+        "x": 1210,
+        "y": 337.1875,
+        "width": 64,
+        "height": 48
+      },
+      "rail": {
+        "x": 0,
+        "y": 60,
+        "width": 232,
+        "height": 840
+      },
+      "preview": {
+        "x": 850,
+        "y": 228.875,
+        "width": 352,
+        "height": 378
+      },
+      "anchorHit": true,
+      "anchorOverlapsRail": false,
+      "previewOverlapsRail": false,
+      "saved": {
+        "side": "left",
+        "ratio": 0.4
+      }
+    },
+    {
+      "mode": "悬停展开",
+      "anchor": {
+        "x": 1210,
+        "y": 337.1875,
+        "width": 64,
+        "height": 48
+      },
+      "rail": {
+        "x": 0,
+        "y": 60,
+        "width": 232,
+        "height": 840
+      },
+      "preview": {
+        "x": 850,
+        "y": 228.875,
+        "width": 352,
+        "height": 378
+      },
+      "anchorHit": true,
+      "anchorOverlapsRail": false,
+      "previewOverlapsRail": false,
+      "saved": {
+        "side": "left",
+        "ratio": 0.4
+      }
+    }
+  ],
+  "input": "Playwright real mouse hover/click; 1280x900 desktop"
+}

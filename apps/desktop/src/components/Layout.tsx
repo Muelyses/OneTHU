@@ -48,7 +48,7 @@ import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
 import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
 import { OneShot } from "./explorer/OneShot.js";
 import { OneGoBar } from "./explorer/OneGoBar.js";
-import { VaultDropTarget, VaultButton } from "./vault/VaultDropTarget.js";
+import { VaultDropTarget } from "./vault/VaultDropTarget.js";
 import { VaultSheetHost } from "./vault/VaultSheet.js";
 import { useTabLayoutMode } from "../state/tabLayout.js";
 
@@ -222,7 +222,6 @@ function TopBar(): ReactNode {
       ) : layout === "h" ? (
         <IconBtn label="复制当前标签页（独立实例）" icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
       ) : null}
-      {phone ? <VaultButton /> : null}
       {layout === "h" && !phone ? <TabStrip /> : null}
       <span className="tb-spring" aria-hidden="true" />
       {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}

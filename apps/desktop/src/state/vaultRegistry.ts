@@ -31,7 +31,9 @@ export function openVaultItem(it: VaultItem, env: VaultOpenEnv): boolean {
     return true;
   }
   if (it.text) {
-    env.toast(it.text.length > 90 ? it.text.slice(0, 90) + "…" : it.text);
+    void import("../components/vault/VaultTextPreview.js")
+      .then(({ openVaultTextPreview }) => openVaultTextPreview(it.title, it.text!))
+      .catch(() => env.toast("文字预览暂时无法打开，请重试"));
     return true;
   }
   if (it.type === "file") {

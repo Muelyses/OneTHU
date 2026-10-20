@@ -1,13 +1,13 @@
 import { createPortal } from "react-dom";
-import { Input } from "@onethu/gui";
-import { Btn } from "@onethu/gui";
+import { Banner, Btn, Input, Modal, Text } from "@onethu/gui";
 /**
  * 应用内确认弹窗（Promise 化）——Tauri WKWebView 的原生 window.confirm
  * 静默返回 false（无对话框 UI），所有 confirm 门控的破坏性操作因此
  * 从未执行（暂存 ✕/清空/退选/草稿提交/场馆退订 2026-09-03 实录）。
  * 用 DOM 覆盖层替代，<ConfirmHost/> 挂在应用根部一次即可。
  */
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useOverlayBack } from "../state/navStack.js";
 
 type Pending = {
   msg: string;
@@ -128,6 +128,16 @@ export function answerPrompt(v: string | null): void {
   promptListeners.forEach((l) => l());
 }
 
+function PromptField({ request, value, onChange, onSubmit }: { request: PromptPending | null; value: string; onChange: (value: string) => void; onSubmit: () => void }): React.ReactNode {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Let Modal remember the invoking control before moving focus to the input.
+    const frame = requestAnimationFrame(() => ref.current?.querySelector("input")?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [request]);
+  return <div ref={ref}><Input aria-label={request?.title ?? "输入内容"} placeholder={request?.placeholder} value={value} onChange={onChange} onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); onSubmit(); } }} /></div>;
+}
+
 function PromptHost(): React.ReactNode {
   const cur = useSyncExternalStore(
     (l) => {
@@ -136,30 +146,24 @@ function PromptHost(): React.ReactNode {
     },
     () => promptPending,
   );
+  const last = useRef<PromptPending | null>(null);
+  if (cur) last.current = cur;
+  const shown = cur ?? last.current;
   const [val, setVal] = useState("");
   useEffect(() => {
-    setVal(cur?.initial ?? "");
+    if (cur) setVal(cur.initial);
   }, [cur]);
-  if (!cur) return null;
+  useOverlayBack("shared-prompt", Boolean(cur), () => answerPrompt(null));
   const submit = (): void => {
     const t = val.trim();
-    if (t) answerPrompt(t);
+    if (cur && t) answerPrompt(t);
   };
-  return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-confirm)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="confirm-card" style={{ background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-lg)", padding: "18px 18px 14px", maxWidth: 380, width: "100%" }}>
-        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{cur.title}</div>
-        <Input autoFocus placeholder={cur.placeholder} value={val} onChange={(value) => setVal(value)} onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
-            if (e.key === "Escape") answerPrompt(null);
-          }} />
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
-          <Btn variant="outline" onClick={() => answerPrompt(null)}>取消</Btn>
-          <Btn variant="outline" disabled={!val.trim()} onClick={submit}>确定</Btn>
-        </div>
-      </div>
-    </div>
-  );
+  return <Modal open={!!cur} onClose={() => answerPrompt(null)} title={shown?.title ?? "输入内容"} className="shared-prompt-modal" size="sm" foot={<div className="shared-confirm-actions">
+    <Btn variant="outline" onClick={() => answerPrompt(null)}>取消</Btn>
+    <Btn variant="solid" tone="brand" disabled={!cur || !val.trim()} onClick={submit}>确定</Btn>
+  </div>}>
+    <PromptField request={shown} value={val} onChange={setVal} onSubmit={submit} />
+  </Modal>;
 }
 
 function subscribe(l: () => void): () => void {
@@ -176,38 +180,14 @@ export function ConfirmHost(): React.ReactNode {
 
 function ConfirmBody(): React.ReactNode {
   const cur = useSyncExternalStore(subscribe, () => pending);
-  if (!cur) return null;
-  const glass: React.CSSProperties = {
-    background: "var(--og-accent-soft)",
-    backdropFilter: "blur(28px) saturate(180%)",
-    WebkitBackdropFilter: "blur(28px) saturate(180%)",
-    boxShadow: "var(--og-elev-3)",
-  };
-  if (cur.danger) {
-    return (
-      <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-confirm)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div className="confirm-card" style={{ ...glass, borderRadius: 20, padding: "26px 26px 20px", maxWidth: 440, width: "100%", textAlign: "center" }}>
-          <div style={{ fontSize: 46, lineHeight: 1, marginBottom: 14 }}>⚠️</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: "var(--og-error)", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "var(--og-content-2)" }}>{cur.msg}</div>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
-            <Btn variant="outline" onClick={() => answerConfirm(false)}>取消</Btn>
-            <Btn variant="outline" onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确认执行"}</Btn>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: "var(--og-z-confirm)", background: "var(--og-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="confirm-card" style={{ ...glass, borderRadius: "var(--og-radius-lg)", padding: "18px 18px 14px", maxWidth: 420, width: "100%" }}>
-        {cur.title ? <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>{cur.title}</div> : null}
-        <div style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{cur.msg}</div>
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
-          <Btn variant="outline" onClick={() => answerConfirm(false)}>{cur.cancelText ?? "取消"}</Btn>
-          <Btn variant="outline" onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确定"}</Btn>
-        </div>
-      </div>
-    </div>
-  );
+  const last = useRef<Pending | null>(null);
+  if (cur) last.current = cur;
+  const shown = cur ?? last.current;
+  useOverlayBack("shared-confirm", Boolean(cur), () => answerConfirm(false));
+  return <Modal open={!!cur} onClose={() => answerConfirm(false)} title={shown?.title ?? (shown?.danger ? "此操作不可撤销，请确认" : "请确认")} className={`shared-confirm-modal${shown?.danger ? " is-danger" : ""}`} size="sm" foot={<div className="shared-confirm-actions">
+    <Btn variant="outline" onClick={() => answerConfirm(false)}>{shown?.cancelText ?? "取消"}</Btn>
+    <Btn variant="solid" tone={shown?.danger ? "error" : "brand"} disabled={!cur} onClick={() => answerConfirm(true)}>{shown?.confirmText ?? (shown?.danger ? "确认执行" : "确定")}</Btn>
+  </div>}>
+    {shown?.danger ? <Banner tone="error" icon={<span className="shared-confirm-warning" aria-hidden="true">⚠</span>}><Text as="div" className="shared-confirm-message">{shown.msg}</Text></Banner> : <Text as="div" className="shared-confirm-message">{shown?.msg}</Text>}
+  </Modal>;
 }

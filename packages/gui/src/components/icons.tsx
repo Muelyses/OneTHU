@@ -175,6 +175,14 @@ export function IconIn({ size, className, title }: IconGlyphProps): ReactNode {
   );
 }
 
+/** 收纳箱：常驻入口用盒盖与把手，和「存入」动作的向下箭头区分。 */
+export function IconVault({ size, className, title }: IconGlyphProps): ReactNode {
+  return <Icon size={size} className={className} title={title}>
+    <rect x="3" y="4" width="18" height="5" rx="1.5" />
+    <path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6" />
+  </Icon>;
+}
+
 export function IconCheck({ size, className, title }: IconGlyphProps): ReactNode {
   return (
     <Icon size={size} className={className} title={title}>
@@ -563,6 +571,7 @@ export const ICONS: Record<string, (props: IconGlyphProps) => ReactNode> = {
   IconGitLab,
   IconMail,
   IconIn,
+  IconVault,
   IconCheck,
   IconChevron,
   IconSearch,

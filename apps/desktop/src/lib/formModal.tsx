@@ -9,6 +9,7 @@ import { Btn } from "@onethu/gui";
  */
 import { useMemo, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
+import { useOverlayBack } from "../state/navStack.js";
 
 export type FormField =
   | { key: string; label: string; kind?: "text" | "textarea" | "password"; placeholder?: string; default?: string; required?: boolean }
@@ -41,12 +42,13 @@ export function FormModalHost(): ReactNode {
     () => null,
   );
   const draft = useMemo<Record<string,string>>(()=>Object.fromEntries((pending?.fields??[]).map(f=>[f.key,f.default??(f.kind==="select"?f.options[0]?.value??"":"")])),[pending]);
-  if (!pending) return null;
   const close = (v: Record<string, string> | null): void => {
     pending?.resolve(v);
     pending = null;
     listeners.forEach((l) => l());
   };
+  useOverlayBack("shared-form-modal", Boolean(pending), () => close(null));
+  if (!pending) return null;
   const fields = pending.fields;
   const title = pending.title;
   return (

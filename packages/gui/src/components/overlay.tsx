@@ -247,7 +247,7 @@ function focusables(root: HTMLElement): HTMLElement[] {
 }
 
 /** 焦点契约：打开时把焦点送进浮层（autoFocus / 已有内部焦点的孩子优先），关闭时还给打开它的元素 */
-function useLayerFocus(open: boolean, ref: RefObject<HTMLElement | null>, trap?: boolean): void {
+function useLayerFocus(open: boolean, ref: RefObject<HTMLElement | null>, trap?: boolean, layerId?: string): void {
   const owner = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -270,7 +270,7 @@ function useLayerFocus(open: boolean, ref: RefObject<HTMLElement | null>, trap?:
   useEffect(() => {
     if (!open || !trap) return;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key !== "Tab") return;
+      if (e.key !== "Tab" || (layerId && !layerTop(layerId))) return;
       const el = ref.current;
       if (!el) return;
       const list = focusables(el);
@@ -295,7 +295,7 @@ function useLayerFocus(open: boolean, ref: RefObject<HTMLElement | null>, trap?:
     };
     document.addEventListener("keydown", onKey, true);
     return () => document.removeEventListener("keydown", onKey, true);
-  }, [open, ref, trap]);
+  }, [open, ref, trap, layerId]);
 }
 
 /* 模态族打开时锁文档滚动：计数叠加，最外层关闭才解锁。走根节点上的类，不写内联样式。 */
@@ -375,7 +375,8 @@ function Shell(p: ShellProps): ReactNode {
 
   useLayer(layerId, p.open);
   useEscape(p.open, layerId, p.onClose);
-  useLayerFocus(p.open, panelRef, true);
+  // Exit-phase mounting is deferred; acquire focus once the panel ref exists.
+  useLayerFocus(p.open && mounted, panelRef, true, layerId);
   useScrollLock(p.open);
 
   if (!mounted || typeof document === "undefined") return null;
@@ -715,7 +716,7 @@ function AnchoredMenu(p: AnchoredMenuProps): ReactNode {
   useLayer(layerId, p.open);
   useEscape(p.open, layerId, p.onClose);
   useDismiss(p.open, layerId, ref, p.onClose);
-  useLayerFocus(p.open, ref);
+  useLayerFocus(p.open && mounted, ref);
   useMenuKeys({ open: p.open, items: p.items, active, setActive, onPick: pick, listId, closeOnTab: true, onClose: p.onClose, layerId });
   useEffect(() => {
     if (p.open) setActive(null);
@@ -971,7 +972,7 @@ export function Popover({
   useLayer(layerId, open);
   useEscape(open, layerId, onClose);
   useDismiss(open, layerId, ref, onClose);
-  useLayerFocus(open, ref);
+  useLayerFocus(open && mounted, ref);
 
   if (!mounted || typeof document === "undefined") return null;
   return createPortal(

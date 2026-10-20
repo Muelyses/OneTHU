@@ -13,6 +13,7 @@ import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { installFakeCloud, freshClientState } from './lib/fake-cloud.mjs';
+import { closeTestBrowser } from './lib/onboarding-browser-steps.mjs';
 
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
 const out = 'docs/onegui/short-share-codes';
@@ -22,13 +23,14 @@ const errors = [];
 const results = [];
 const check = (cond, msg) => { assert.ok(cond, msg); checks++; results.push(msg); console.log('✓ ' + msg); };
 const SHORT = /^ON(-[0-9A-Z]{4}){4}$/;
-const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--disable-updater-scheduler'] });
 
 /* 两个「独立客户端」必须在同一个 BrowserContext 里（共享 localStorage 上的假云盘），
    但各自是完全独立的页面与本地状态——browser.newPage() 每次会开新 context，存储不互通。 */
 const context = await browser.newContext({ viewport: { width: 1280, height: 860 } });
 async function newPage(token) {
   const p = await context.newPage();
+  await p.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/, () => {});
   p.setDefaultTimeout(10000);
   p.on('pageerror', (e) => { if (!/reading 'invoke'/.test(e.message)) errors.push(e.message); });
   await installFakeCloud(p, { token });
@@ -56,7 +58,13 @@ const call = (p, path, name, args = []) => p.evaluate(async ({ path, name, args 
   return (await import(url))[name](...args);
 }, { path, name, args });
 const toast = (p, text) => p.locator('.toast-host').filter({ hasText: text }).first();
-const closeFeedback = async (p) => { const btn = p.locator('.exchange-feedback button'); if (await btn.count()) { await btn.first().click(); await p.waitForTimeout(300); } };
+const closeFeedback = async (p) => {
+  const receive = p.getByRole('dialog', { name: '接收内容', exact: true });
+  if (await receive.isVisible()) {
+    await receive.getByRole('button', { name: '完成', exact: true }).click();
+    await receive.waitFor({ state: 'hidden' });
+  }
+};
 const shareCount = (p) => p.evaluate(() => Object.keys(window.__cloud.shares).length);
 const cardOf = async (p, code) => {
   const resolved = await call(p, '/src/state/cloudExchange.ts', 'resolveExchangeCode', [code]);
@@ -80,20 +88,26 @@ try {
   const firstBoxId = (await call(a, '/src/state/vault.ts', 'activeVault')).id;
   const shareBtn = a.getByRole('button', { name: '分享口令', exact: true });
   await shareBtn.click();
-  const sendModal = a.getByRole('dialog', { name: '分享「我的暂存箱」' });
+  const sendModal = a.getByRole('dialog', { name: '分享内容', exact: true });
   await sendModal.waitFor();
-  await a.waitForTimeout(1000);
-  const code = (await a.locator('.vault-share-code').innerText()).trim();
+  check(await shareCount(a) === 0 && await sendModal.locator('.vault-exchange-code').count() === 0, '打开分享只预览，尚未发布到云盘');
+  await sendModal.getByRole('button', { name: '生成分享口令', exact: true }).click();
+  await sendModal.locator('.vault-exchange-code').waitFor();
+  const code = (await sendModal.locator('.vault-exchange-code').innerText()).trim();
   check(SHORT.test(code), '暂存箱口令是 22 字符短码：' + code);
-  check(await a.locator('.vault-qr svg').count() >= 1, '短码配二维码（NFC/扫码同码）');
-  check((await a.evaluate(() => window.__copied.at(-1))) === code, '生成后自动复制短码');
+  check(await sendModal.locator('.vault-exchange-qr svg').count() >= 1, '短码配二维码（NFC/扫码同码）');
+  check((await a.evaluate(() => window.__copied.length)) === 0, '生成后等待明确的复制动作');
+  await sendModal.getByRole('button', { name: '复制口令', exact: true }).click();
+  check((await a.evaluate(() => window.__copied.at(-1))) === code, '点击复制将完整短码写入剪贴板');
   const decoded = await call(a, '/src/state/vaultShare.ts', 'decodeShareAsync', [code]);
   check(decoded.ok && decoded.payload?.name === '我的暂存箱', '短码经云盘 manifest 解析回箱子名');
   check(!!decoded.payload?.cloud?.shareUrl && !!decoded.payload?.cloud?.shareToken, '解析结果带分享凭据（撤销可用）');
   await a.keyboard.press('Escape'); await a.waitForTimeout(400);
   const sharesAfterVault = await shareCount(a);
-  await shareBtn.click(); await sendModal.waitFor(); await a.waitForTimeout(900);
-  check((await a.locator('.vault-share-code').innerText()).trim() === code, '箱子没改：再点分享口令复用同一个短码');
+  await shareBtn.click(); await sendModal.waitFor();
+  await sendModal.getByRole('button', { name: '生成分享口令', exact: true }).click();
+  await sendModal.locator('.vault-exchange-code').waitFor();
+  check((await sendModal.locator('.vault-exchange-code').innerText()).trim() === code, '箱子没改：再点分享口令复用同一个短码');
   check(await shareCount(a) === sharesAfterVault, '箱子没改：不重复上传 manifest');
   await a.keyboard.press('Escape'); await a.waitForTimeout(400);
 
@@ -142,28 +156,32 @@ try {
   await b.reload({ waitUntil: 'domcontentloaded' });
   await b.waitForSelector('.explorer-shell');
   await b.waitForTimeout(1000);
-  check(await b.getByText('本版本要求连接清华盘').count() >= 1 || await b.getByText('本版本要求连接清华云盘').count() >= 1, 'B 未连接云盘：显示连接引导卡片');
+  await b.getByRole('button', { name: '连接云盘以分享文件与口令', exact: true }).waitFor();
+  check(true, 'B 未连接云盘：显示连接引导入口');
   check(await b.locator('.vault-action-row').last().getByRole('button', { name: '接收', exact: true }).count() === 1, 'B 的动作条上有统一「接收」入口');
 
-  /* 未连接不能生成新口令：空箱禁用 + 运行时会话守卫兜底 */
+  /* 空箱可以打开组合预览，但没有内容时不得生成；云盘守卫在真正生成时校验。 */
   const genBtn = b.getByRole('button', { name: '分享口令', exact: true });
-  check(await genBtn.isDisabled(), 'B 未连接云盘且箱子为空：分享口令按钮禁用');
-  await call(b, '/src/state/vault.ts', 'addToVault', [{ type: 'text', title: 'B 的条目', text: '有内容也发不出去' }]);
-  check(await genBtn.isEnabled(), 'B 有内容后按钮可点（守卫在点击时兜底）');
   await genBtn.click();
-  await toast(b, '请先连接清华云盘，再分享暂存箱').waitFor();
-  await b.keyboard.press('Escape'); await b.waitForTimeout(350);
-  if(await b.locator('.toast-host').count()) await b.locator('.toast-host').click();
-  check(await b.locator('.vault-share-code').count() === 0, 'B 未连接云盘时分享被拒绝，不产生口令');
+  const blockedSend = b.getByRole('dialog', { name: '分享内容', exact: true });
+  check(await blockedSend.getByRole('button', { name: '生成分享口令', exact: true }).isDisabled(), 'B 空箱且未选择名片：生成口令禁用');
+  await b.keyboard.press('Escape'); await blockedSend.waitFor({ state: 'hidden' });
+  await call(b, '/src/state/vault.ts', 'addToVault', [{ type: 'text', title: 'B 的条目', text: '有内容也发不出去' }]);
+  await genBtn.click();
+  check(await blockedSend.getByRole('button', { name: '生成分享口令', exact: true }).isEnabled(), 'B 有内容后生成按钮可点（守卫在发布时兜底）');
+  await blockedSend.getByRole('button', { name: '生成分享口令', exact: true }).click();
+  await blockedSend.getByRole('alert').waitFor();
+  check(/请先连接清华云盘/.test(await blockedSend.getByRole('alert').innerText()), 'B 未连接云盘时给出连接提示');
+  check(await blockedSend.locator('.vault-exchange-code').count() === 0, 'B 未连接云盘时分享被拒绝，不产生口令');
+  await b.keyboard.press('Escape'); await blockedSend.waitFor({ state: 'hidden' });
 
   /* B 通过真实 UI「接收 → 粘贴口令」（匿名读云盘 manifest）——暂存箱口令 */
   await b.getByRole('button', { name: '接收', exact: true }).click();
   const recvModal = b.getByRole('dialog', { name: '接收内容' });
   await recvModal.waitFor();
-  await recvModal.getByRole('button', { name: '粘贴口令' }).click();
-  await b.waitForSelector('.plg-form-modal');
-  await b.locator('.plg-form-modal textarea').fill(code);
-  await b.getByRole('button', { name: '提交' }).click();
+  await recvModal.getByLabel('收到的口令', { exact: true }).fill(code);
+  await recvModal.getByRole('button', { name: '接收口令', exact: true }).click();
+  await recvModal.getByRole('status').waitFor();
   await toast(b, '已收到 1 项内容').waitFor();
   await closeFeedback(b); /* 成功动效自带遮罩，先关掉再点下一个入口 */
   const bVault = await call(b, '/src/state/vault.ts', 'vaultSnapshot');
@@ -172,10 +190,9 @@ try {
 
   /* 同一个「导入口令」入口也要认名片口令——以前只会报「应以 ONV1. 开头」 */
   if(!await b.getByRole('dialog',{name:'接收内容'}).isVisible()) await b.getByRole('button',{name:'接收',exact:true}).click();
-  await b.getByRole('dialog',{name:'接收内容'}).getByRole('button',{name:'粘贴口令'}).click();
-  await b.waitForSelector('.plg-form-modal');
-  await b.locator('.plg-form-modal textarea').fill(cardCode1);
-  await b.getByRole('button', { name: '提交' }).click();
+  await recvModal.getByLabel('收到的口令', { exact: true }).fill(cardCode1);
+  await recvModal.getByRole('button', { name: '接收口令', exact: true }).click();
+  await recvModal.getByRole('status').waitFor();
   await toast(b, '个人名片').waitFor();
   await closeFeedback(b);
   check(JSON.stringify((await call(b, '/src/state/nameCard.ts', 'cardsSnapshot')).contacts).includes('改过的名片'), '导入口令贴上名片短码：名片进通讯录（入口不再挑口令类型）');
@@ -245,10 +262,11 @@ try {
   await call(a, '/src/state/vault.ts', 'setActiveVault', [firstBoxId]);
   await a.keyboard.press('Escape');await a.waitForTimeout(300);
   await a.getByRole('button',{name:'分享口令',exact:true}).click();
-  await a.locator('.vault-share-code').waitFor();
-  await a.waitForTimeout(600);
+  await sendModal.getByRole('button', { name: '生成分享口令', exact: true }).click();
+  await sendModal.locator('.vault-exchange-code').waitFor();
   await a.getByRole('button', { name: '撤销分享' }).click();
   await toast(a, '分享已撤销').waitFor();
+  await a.keyboard.press('Escape'); await sendModal.waitFor({ state: 'hidden' });
   await b.reload({ waitUntil: 'domcontentloaded' });
   await b.waitForSelector('.explorer-shell');
   await b.waitForTimeout(900);
@@ -265,20 +283,20 @@ try {
   await a.locator('.vault-radar').getByRole('button',{name:'接收',exact:true}).click();
   const radarReceive=a.getByRole('dialog',{name:'接收内容'});
   await radarReceive.waitFor();
-  check(await radarReceive.getByRole('button',{name:'粘贴口令'}).count()===1,'雷达接收面板有粘贴口令入口');
+  check(await radarReceive.getByLabel('收到的口令', { exact: true }).count() === 1 && await radarReceive.getByRole('button', { name: '粘贴剪贴板', exact: true }).count() === 1, '雷达接收面板有直接输入及粘贴口令入口');
   check(await radarReceive.getByRole('button',{name:'识别二维码'}).count()===1,'雷达接收面板有二维码入口');
-  await radarReceive.getByRole('button',{name:'粘贴口令'}).click();
-  await a.waitForSelector('.plg-form-modal');
-  await a.locator('.plg-form-modal textarea').fill(cardCode1);
-  await a.getByRole('button', { name: '提交' }).click();
+  await radarReceive.getByLabel('收到的口令', { exact: true }).fill(cardCode1);
+  await radarReceive.getByRole('button', { name: '接收口令', exact: true }).click();
+  await radarReceive.getByRole('status').waitFor();
   await toast(a, /个人名片|本地已有/).waitFor();
   check(true, '雷达「收口令」走通统一接收入口');
   await a.screenshot({ path: `${out}/radar-receive-entries.png` });
 
   check(errors.length === 0, '无新增运行时异常：' + errors.join(';'));
-  await a.close(); await b.close(); await context.close();
+  await a.unrouteAll({ behavior: 'ignoreErrors' });
+  await b.unrouteAll({ behavior: 'ignoreErrors' });
   writeFileSync(`${out}/report.json`, JSON.stringify({ checks, results, errors, cloud: '假云盘夹具（tools/lib/fake-cloud.mjs），不联网、不写真实云盘', clients: '发送方 A 已连接云盘；接收方 B 全新本地状态且完全没有云盘登录（同一 BrowserContext 两个页面，只共享假云盘）' }, null, 1));
-  console.log(checks + ' short-share assertions passed');
 } finally {
-  await browser.close();
+  await closeTestBrowser(browser);
 }
+console.log(checks + ' short-share assertions passed; browser cleanup complete');

@@ -55,7 +55,7 @@ export async function receiveExchangeCode(text: string, vaultTarget: 'current' |
   if (code.startsWith('ONORG1.')) {
     const r = await acceptOrgInvite(code, cardsSnapshot().personal.name || '我');
     if (!r.ok) throw new Error(r.reason || '组织邀请无法识别');
-    return '已加入组织（本地成员清单）';
+    return '组织已添加到通讯录；成员身份和访问权限由服务器确认。';
   }
   throw new Error('这不是有效的 OneTHU 分享口令');
 }

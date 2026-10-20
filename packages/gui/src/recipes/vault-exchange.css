@@ -1,0 +1,31 @@
+/* Vault exchange and issued snapshots: OneGUI surfaces, compact content-first layout. */
+.vault-exchange-actions,
+.vault-exchange-buttons { display:flex; flex-wrap:wrap; align-items:center; gap:var(--og-space-2); }
+.vault-exchange-actions > .og-btn { flex:1; }
+.vault-exchange-summary { display:grid; gap:var(--og-space-1); }
+.vault-exchange-options { border-block:1px solid var(--og-line-1); padding-block:var(--og-space-3); }
+.vault-exchange-options > summary { cursor:pointer; font-size:var(--og-text-label); color:var(--og-content-2); }
+.vault-exchange-options[open] > summary { margin-bottom:var(--og-space-3); }
+.vault-exchange-result { display:grid; justify-items:center; gap:var(--og-space-3); text-align:center; }
+.vault-exchange-code,
+.vault-issued-code { display:block; max-width:100%; overflow-wrap:anywhere; user-select:text; font-size:var(--og-text-label); letter-spacing:.04em; color:var(--og-content-1); }
+.vault-exchange-code { padding:var(--og-space-3) var(--og-space-4); border:1px solid var(--og-line-2); border-radius:var(--og-radius-control); background:var(--og-fill-chip); font-weight:var(--og-weight-semibold); }
+.vault-exchange-qr { padding:var(--og-space-3); border-radius:var(--og-radius-card); background:var(--og-media-ink-light); line-height:0; }
+.vault-exchange-qr svg { display:block; max-width:100%; height:auto; }
+.vault-exchange-alternatives { display:flex; flex-wrap:wrap; align-items:center; gap:var(--og-space-2); padding-top:var(--og-space-2); border-top:1px solid var(--og-line-1); }
+.vault-exchange-notice { display:flex; align-items:flex-start; gap:var(--og-space-2); padding:var(--og-space-3); border-radius:var(--og-radius-control); background:var(--og-fill-chip); }
+.vault-exchange-notice svg { flex:none; }
+.vault-exchange-notice.is-error,.vault-issued-error { color:var(--og-error); }
+.vault-exchange-notice.is-success { color:var(--og-content-1); }
+.vault-issued-list { display:grid; }
+.vault-issued-entry { display:grid; min-width:0; gap:var(--og-space-2); padding-block:var(--og-space-4); border-bottom:1px solid var(--og-line-1); }
+.vault-issued-entry:first-child { padding-top:0; }
+.vault-issued-entry:last-child { border-bottom:0; padding-bottom:0; }
+.vault-issued-entry .og-text { overflow-wrap:anywhere; }
+.vault-issued-heading { display:flex; align-items:baseline; justify-content:space-between; gap:var(--og-space-3); }
+.vault-issued-heading > :first-child { min-width:0; }
+.vault-issued-heading > :last-child { flex:none; }
+.vault-issued-actions { display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:var(--og-space-2); }
+.vault-issued-actions > .og-text { margin-right:auto; }
+.vault-issued-code { padding-block:var(--og-space-2); }
+.vault-issued-empty { display:grid; gap:var(--og-space-2); padding-block:var(--og-space-5); }

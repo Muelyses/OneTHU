@@ -168,7 +168,7 @@ console.log("[10] 各个角落的接线：微交互、页签、弹层、提示�
   const tabHits = tabs.map((f) => (src(f).match(/tab-anim/g) ?? []).length);
   ok(tabHits.every((n) => n > 0), `四个多页签页面都接了 tab-anim（${tabHits.join("/")}）`);
   ok(/tab-anim" : undefined/.test(src("pages/info/InfoPage.tsx")), "页签容器保持挂载（只切类名，不丢页签状态）");
-  ok(/confirm-mask/.test(confirm) && /confirm-card/.test(confirm), "确认框接了遮罩淡入 + 卡片弹簧");
+  ok(/<Modal open=\{!!cur\}/.test(confirm) && /shared-confirm-modal/.test(confirm) && /shared-prompt-modal/.test(confirm) && !/confirm-mask|confirm-card/.test(confirm), "确认与输入框复用 OneGUI Modal 的共用进退场");
   ok(/confirm-mask/.test(preview) && /confirm-card/.test(preview), "文件预览面板同款进场");
   ok(/is-closing/.test(app) && /\.toast-host\.is-closing/.test(css), "提示条有退出相位（不是瞬间消失）");
   ok(/EXIT_MS/.test(toast) && /beginExit/.test(toast), "退出相位由状态机驱动（先播动画再卸载）");

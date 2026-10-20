@@ -1,4 +1,6 @@
 import fs from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import assert from "node:assert/strict";
 import {readDataFile,slots,sourceCalls} from "./dictionary.mjs";
 import {inspectBatch} from "./batch.mjs";
@@ -63,7 +65,8 @@ const changed={...source,messages:{...source.messages,[paramKey]:"bad {unexpecte
 assert(checkDictionary(changed,source).some(x=>x.includes("placeholder")));
 assert(checkDictionary({...source,messages:{...source.messages,unregistered:"oops"}},source).some(x=>x.includes("Unknown key")));
 // The translator file is parsed before execution; even valid TS cannot run.
-const tmp=`/tmp/onethu-i18n-malicious-${process.pid}.ts`;
+const tempDir=fs.mkdtempSync(join(tmpdir(), "onethu-i18n-check-"));
+const tmp=join(tempDir, "malicious.ts");
 try{
   for(const syntax of [
     'export default {label:"x",messages:{a: (() => "executed")()}};',
@@ -71,7 +74,7 @@ try{
     'import fs from "node:fs"; export default {label:"x",messages:{}};',
     'export default {label:"x",messages:{get a(){return "executed"}}};',
   ]){fs.writeFileSync(tmp,syntax);assert.throws(()=>readDataFile(tmp));}
-}finally{fs.rmSync(tmp,{force:true})}
+}finally{fs.rmSync(tempDir,{recursive:true,force:true})}
 if(argument("--batch")){
   try{errors.push(...inspectBatch({path:argument("--batch"),locale:argument("--locale"),base:argument("--base"),source}));}
   catch(e){errors.push(e.message);}

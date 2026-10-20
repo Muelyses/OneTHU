@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.chatdock.8a25b8a6fdfa",
+      "source": "小OH 正在回答，稍后再长按说",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 2109,
+          "context": "showVoiceFail(i18n(\"plugins.chatdock.8a25b8a6fdfa\"))"
+        }
+      ],
+      "translation": "Xiao OH is answering; long-press to speak again later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.chatdock.9ac692674bef",
       "source": "插件已停止",
@@ -1399,22 +1415,6 @@
         }
       ],
       "translation": "Campus network requires captcha sign-in; enter the captcha shown in the image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.ef62cd3182c8",
-      "source": "找不到这块 OnePage（id 不对或已删除）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1035,
-          "context": "new Error(i18n(\"plugins.facade.ef62cd3182c8\"))"
-        }
-      ],
-      "translation": "Cannot find this OnePage (wrong id or it has been deleted)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

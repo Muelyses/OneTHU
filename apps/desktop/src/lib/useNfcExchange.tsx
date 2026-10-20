@@ -34,7 +34,8 @@ export function useNfcExchange(active = true) {
       window.removeEventListener('focus', refresh);
     };
   }, [enabled, revision]);
-  const hint = !status ? i18n("lib.usenfcexchange.a4fb7d646812") : !status.available ? i18n("lib.usenfcexchange.113392f6a1c6") : !status.enabled ? i18n("lib.usenfcexchange.68f717a1ed08") : i18n("lib.usenfcexchange.0ae6a92e95dc");
+  const statusHint = !status ? i18n("lib.usenfcexchange.a4fb7d646812") : !status.available ? i18n("lib.usenfcexchange.113392f6a1c6") : !status.enabled ? i18n("lib.usenfcexchange.68f717a1ed08") : i18n("lib.usenfcexchange.0ae6a92e95dc");
+  const hint = `${i18n("nfc.unstableNotice")} ${statusHint}`;
   const available = enabled && !!status?.available && status.enabled;
   const run = async (makeCode?: () => string | Promise<string>) => {
     const receiving = fullModeReceiveSession();

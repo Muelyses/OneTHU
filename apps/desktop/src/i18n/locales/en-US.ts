@@ -3341,6 +3341,7 @@ const locale = {
     "native.widget.relativeRow": "{day} {time} · {remaining}",
     "native.widget.title": "Today, {month}/{day}",
     "native.widget.today": "Today",
+    "nfc.unstableNotice": "NFC is currently unreliable. Please use a share code whenever possible.",
     "pages.boardlistpage.00d53679d665": "{value} · {count} widgets{value2}",
     "pages.boardlistpage.0c898fe25ba6": "Rename OnePage",
     "pages.boardlistpage.11de1b40f9d8": "This OnePage does not exist",

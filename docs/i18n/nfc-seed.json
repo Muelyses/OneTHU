@@ -1,0 +1,8 @@
+{
+  "messages": {
+    "nfc.unstableNotice": {
+      "zh-CN": "NFC 目前可用性不稳定，请尽量使用口令。",
+      "en-US": "NFC is currently unreliable. Please use a share code whenever possible."
+    }
+  }
+}

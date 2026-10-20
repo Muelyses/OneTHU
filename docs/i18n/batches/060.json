@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.learn.noticedetailpage.14d6bc26a4f0",
+      "source": "未找到该通知，可能数据已刷新，请返回列表重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/NoticeDetailPage.tsx",
+          "line": 187,
+          "context": "{i18n(\"pages.learn.noticedetailpage.14d6bc26a4f0\")}"
+        }
+      ],
+      "translation": "Notice not found. The data may have refreshed; go back to the list and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.noticedetailpage.16f19a676cae",
       "source": "网页端打开",
@@ -1413,27 +1429,6 @@
         }
       ],
       "translation": "Answered {externalProgress}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.shared.44b8133e76e9",
-      "source": "还剩 {hours} 小时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "hours",
-          "expression": "String(hours)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 83,
-          "context": "text: i18n(\"pages.learn.shared.44b8133e76e9\", { hours: String(hours) })"
-        }
-      ],
-      "translation": "{hours} hours left",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

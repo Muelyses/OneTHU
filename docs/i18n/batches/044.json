@@ -1,7 +1,33 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.cloudpage.deleteLibrary",
+      "source": "删除资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 277,
+          "context": "title: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 277,
+          "context": "confirmText: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 441,
+          "context": "{i18n(\"pages.cloudpage.deleteLibrary\")}"
+        }
+      ],
+      "translation": "Delete library",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.cloudpage.deleteLibraryConfirm",
       "source": "确定删除资料库「{name}」及其中的全部文件吗？这会删除云端资料库，所有共享给好友或组织成员的访问也会失效。",
@@ -1382,32 +1408,6 @@
         }
       ],
       "translation": "Sub-folder name…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.f853a70b1204",
-      "source": "上移",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 105,
-          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 437,
-          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 488,
-          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
-        }
-      ],
-      "translation": "Move up",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

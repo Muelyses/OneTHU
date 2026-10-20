@@ -68,7 +68,7 @@ export function HelpSection(): ReactNode {
   const { navigate } = useApp();
   return (
     <div style={{ display: "grid", gap: 10 }}>
-      <SettingsRow title={i18n("components.helpsection.5dadf7093a8f")} sub={i18n("components.helpsection.e4699249f613")} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.helpsection.eea78fdb74ce")}</Btn>}/>
+      <SettingsRow title={i18n("components.helpsection.5dadf7093a8f")} sub={`${i18n("components.helpsection.e4699249f613")} ${i18n("nfc.unstableNotice")}`} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.helpsection.eea78fdb74ce")}</Btn>}/>
       {TASKS.map((task) => {
         const entries = task.ids
           .map((id) => byId.get(id))

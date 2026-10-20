@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.zhjwxk.courses.ebc1a817b794",
+      "source": "正在加载课程简介…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 251,
+          "context": "{i18n(\"pages.zhjwxk.courses.ebc1a817b794\")}"
+        }
+      ],
+      "translation": "Loading course introduction…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.zhjwxk.courses.ec9205286c3d",
       "source": "未满足",
@@ -1456,22 +1472,6 @@
         }
       ],
       "translation": "[Attachment] {summary}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.8a25b8a6fdfa",
-      "source": "小OH 正在回答，稍后再长按说",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 2109,
-          "context": "showVoiceFail(i18n(\"plugins.chatdock.8a25b8a6fdfa\"))"
-        }
-      ],
-      "translation": "Xiao OH is answering; long-press to speak again later",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.learn.yktassignmentdetailpage.9556fef3b306",
+      "source": "将打开雨课堂官方作答页完成提交。\n\n页面内是雨课堂官方提交逻辑（含其自身的截止/次数校验与二次确认），请在其中确认后提交；关闭或返回后本页会自动刷新真实状态。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 377,
+          "context": "confirmOk(\n      i18nMsg(\"pages.learn.yktassignmentdetailpage.9556fef3b306\"),\n    )"
+        }
+      ],
+      "translation": "The official Rain Classroom answer page will open to complete the submission.\n\nInside that page is Rain Classroom's official submission logic (including its own deadline/attempt checks and confirmation). Please confirm and submit there; this page will automatically refresh the real status after you close or go back.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.yktassignmentdetailpage.972ea573d9c1",
       "source": "老师评语",
@@ -1358,27 +1374,6 @@
         }
       ],
       "translation": "Search mail (press Enter to search all folders)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.4927a53bcc88",
-      "source": "加载中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 339,
-          "context": "{i18n(\"pages.mailpage.4927a53bcc88\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 349,
-          "context": "mail.loading ? i18n(\"pages.mailpage.4927a53bcc88\") : i18n(\"pages.mailpage.ad9a65f0c351\", { length: String(mail.heads.length), total: String(mail.total) })"
-        }
-      ],
-      "translation": "Loading…",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

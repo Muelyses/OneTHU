@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.vaultcloud.20e701b06a1a",
+      "source": "改变接收范围需要重新生成分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 168,
+          "context": "new Error(i18n(\"state.vaultcloud.20e701b06a1a\"))"
+        }
+      ],
+      "translation": "Changing the recipient scope requires regenerating the share",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vaultcloud.21e554dce895",
       "source": "没有可撤销的分享 token",
@@ -1361,22 +1377,6 @@
         }
       ],
       "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.invalidArchive",
-      "source": "云盘上的壁纸档案读不出来，请先重新同步一次",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 109,
-          "context": "msg: i18n(\"state.wallpsync.invalidArchive\")"
-        }
-      ],
-      "translation": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

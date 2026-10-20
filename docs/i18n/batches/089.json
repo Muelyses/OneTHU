@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.systemcal.fb7404386af9",
+      "source": "正在移除系统日历",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/systemCal.ts",
+          "line": 479,
+          "context": "new Error(i18n(\"state.systemcal.fb7404386af9\"))"
+        }
+      ],
+      "translation": "Removing the system calendar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.systemcal.fe90aa1936ae",
       "source": "同步已停止，已有系统日历保持不变",
@@ -1360,22 +1376,6 @@
         }
       ],
       "translation": "This cloud share code has no share link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultcloud.20e701b06a1a",
-      "source": "改变接收范围需要重新生成分享",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultCloud.ts",
-          "line": 168,
-          "context": "new Error(i18n(\"state.vaultcloud.20e701b06a1a\"))"
-        }
-      ],
-      "translation": "Changing the recipient scope requires regenerating the share",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

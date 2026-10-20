@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.gitlabpage.e6f04ffbaa42",
+      "source": "代码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1596,
+          "context": "[\"code\", i18n(\"pages.gitlabpage.e6f04ffbaa42\"), \"\"]"
+        }
+      ],
+      "translation": "Code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.gitlabpage.e9dde8dd52ad",
       "source": "即将删除评论，请确认！",
@@ -1366,22 +1382,6 @@
         }
       ],
       "translation": "{value} days ago",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.cardtab.d4507373a0ce",
-      "source": "在浏览器打开收款页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/CardTab.tsx",
-          "line": 243,
-          "context": "channel === \"wechat\" && isAndroid ? i18n(\"pages.info.cardtab.4c6443bdcde7\") : i18n(\"pages.info.cardtab.d4507373a0ce\")"
-        }
-      ],
-      "translation": "Open the payment page in a browser",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

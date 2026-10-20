@@ -1,7 +1,32 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.venuesportstab.d342ec4e45d3",
+      "source": "场地：{siteName}{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "siteName",
+          "expression": "picked.site.siteName"
+        },
+        {
+          "name": "value",
+          "expression": "picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 822,
+          "context": "{i18nRich(\"pages.info.venuesportstab.d342ec4e45d3\", { siteName: picked.site.siteName, value: picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : \"\" })}"
+        }
+      ],
+      "translation": "Field: {siteName}{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.venuesportstab.d5f5a7a01073",
       "source": "今天",
@@ -1351,22 +1376,6 @@
       "translation": "I confirm the family/friend relationship is genuine, the identity is real, and the visit purpose is reasonable.",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.visittab.f265a7b34089",
-      "source": "口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 315,
-          "context": "{i18n(\"pages.info.visittab.f265a7b34089\")}"
-        }
-      ],
-      "translation": "Passcode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

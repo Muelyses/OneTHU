@@ -31,7 +31,7 @@ export const FULL_LESSONS: Lesson[] = [
     target: "vault", get action() { return i18n("lib.onboardinglessons.4f8b0079e9a7"); },
   },
   {
-    id: "nfc", get title() { return i18n("lib.onboardinglessons.477ee6905e99"); }, get lead() { return i18n("lib.onboardinglessons.4766925e81fa"); },
+    id: "nfc", get title() { return i18n("lib.onboardinglessons.477ee6905e99"); }, get lead() { return `${i18n("nfc.unstableNotice")} ${i18n("lib.onboardinglessons.4766925e81fa")}`; },
     get steps() { return i18nList(["lib.onboardinglessons.821c17e0cd8b","lib.onboardinglessons.6a2d23072180","lib.onboardinglessons.5d5e509cc246"]); },
     target: "vault", get action() { return i18n("lib.onboardinglessons.9697b3ac8ab8"); },
   },

@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.settings.8c01e1c26f88",
+      "source": "剪贴板不可用，请改用导入框核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 374,
+          "context": "setFavMsg(i18n(\"pages.settings.8c01e1c26f88\"))"
+        }
+      ],
+      "translation": "Clipboard unavailable; use the import box to verify instead",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.settings.8f655a35cb99",
       "source": "本机保存的登录密码（可清除）",
@@ -1383,22 +1399,6 @@
         }
       ],
       "translation": "Starting…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.taskspage.06389c978872",
-      "source": "今天该管的事",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/TasksPage.tsx",
-          "line": 200,
-          "context": "data ? semesterText(data.semester.id) : i18n(\"pages.taskspage.06389c978872\")"
-        }
-      ],
-      "translation": "What to handle today",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

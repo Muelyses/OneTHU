@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.gitlabpage.75dfaf262f47",
+      "source": "取消中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 106,
+          "context": "return i18n(\"pages.gitlabpage.75dfaf262f47\");"
+        }
+      ],
+      "translation": "Canceling",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.gitlabpage.7655c27b6519",
       "source": "{value} 时 {value2} 分",
@@ -1456,22 +1472,6 @@
         }
       ],
       "translation": "Branch / tag filter",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.e6f04ffbaa42",
-      "source": "代码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1596,
-          "context": "[\"code\", i18n(\"pages.gitlabpage.e6f04ffbaa42\"), \"\"]"
-        }
-      ],
-      "translation": "Code",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

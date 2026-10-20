@@ -3341,6 +3341,7 @@ const locale = {
     "native.widget.relativeRow": "{day} {time} · {remaining}",
     "native.widget.title": "今天 {month}月{day}日",
     "native.widget.today": "今天",
+    "nfc.unstableNotice": "NFC 目前可用性不稳定，请尽量使用口令。",
     "pages.boardlistpage.00d53679d665": "{value} · {count} 个组件{value2}",
     "pages.boardlistpage.0c898fe25ba6": "重命名 OnePage",
     "pages.boardlistpage.11de1b40f9d8": "没有这块 OnePage",

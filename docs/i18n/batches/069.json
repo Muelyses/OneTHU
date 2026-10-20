@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.32eb57893bcb",
+      "source": "没有地点，无法寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1231,
+          "context": "d.location ? i18n(\"pages.schedule.741addee8c05\", { location: String(d.location) }) : i18n(\"pages.schedule.32eb57893bcb\")"
+        }
+      ],
+      "translation": "No location, can't get directions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.368cc0699764",
       "source": "{courseName}（{value}）DDL {value2}–{value3} · {value4} · {value5} · 点击查看",
@@ -1480,22 +1496,6 @@
         }
       ],
       "translation": "Tue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.d2bb025a2e51",
-      "source": "开始",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1351,
-          "context": "{i18n(\"pages.schedule.d2bb025a2e51\")}"
-        }
-      ],
-      "translation": "Start",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

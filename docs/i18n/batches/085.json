@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.explorer.31c17158ebdb",
+      "source": "图书馆座位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/explorer.ts",
+          "line": 258,
+          "context": "return i18n(\"state.explorer.31c17158ebdb\");"
+        }
+      ],
+      "translation": "Library seats",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.explorer.336dbe5fd82f",
       "source": "研究生收入",
@@ -1358,22 +1374,6 @@
         }
       ],
       "translation": "Fill in course evaluations and teaching surveys",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 88,
-          "context": "return i18n(\"state.navigation.231ff6cd9b63\");"
-        }
-      ],
-      "translation": "Switch semester",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

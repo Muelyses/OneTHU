@@ -1,5 +1,5 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -897,7 +897,7 @@
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
           "line": 34,
-          "context": "return i18n(\"lib.onboardinglessons.4766925e81fa\");"
+          "context": "i18n(\"lib.onboardinglessons.4766925e81fa\")}`"
         }
       ],
       "translation": "NFC-capable devices can tap to pass the share code; QR codes work too.",

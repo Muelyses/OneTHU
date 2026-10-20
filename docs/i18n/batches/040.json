@@ -1,5 +1,5 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -1096,7 +1096,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 52,
+          "line": 53,
           "context": "new Error(i18n(\"lib.usenfcexchange.1f80dd1ff89a\"))"
         }
       ],
@@ -1128,7 +1128,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 46,
+          "line": 47,
           "context": "makeCode ? i18n(\"lib.usenfcexchange.ffc7745f39e3\") : i18n(\"lib.usenfcexchange.6e17251696e8\")"
         }
       ],
@@ -1144,7 +1144,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 58,
+          "line": 59,
           "context": "message: i18n(\"lib.usenfcexchange.7f8924faa4e5\")"
         }
       ],
@@ -1160,7 +1160,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 51,
+          "line": 52,
           "context": "new Error(i18n(\"lib.usenfcexchange.810417d87789\"))"
         }
       ],
@@ -1192,7 +1192,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/useNfcExchange.tsx",
-          "line": 46,
+          "line": 47,
           "context": "makeCode ? i18n(\"lib.usenfcexchange.ffc7745f39e3\") : i18n(\"lib.usenfcexchange.6e17251696e8\")"
         }
       ],

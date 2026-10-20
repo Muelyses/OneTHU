@@ -1,7 +1,28 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.thospage.a58e18d60b61",
+      "source": "取消常用 {name}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(item.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
+          "line": 435,
+          "context": "favorites.includes(item.id) ? i18n(\"pages.info.thospage.a58e18d60b61\", { name: String(item.name) }) : i18n(\"pages.info.thospage.ee51d7ac2424\", { name: String(item.name) })"
+        }
+      ],
+      "translation": "Remove {name} from common",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.thospage.a9b2c95f8b82",
       "source": "节点：{node}",
@@ -1418,31 +1439,6 @@
         }
       ],
       "translation": "No reservations yet.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.venuesportstab.d342ec4e45d3",
-      "source": "场地：{siteName}{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "siteName",
-          "expression": "picked.site.siteName"
-        },
-        {
-          "name": "value",
-          "expression": "picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
-          "line": 822,
-          "context": "{i18nRich(\"pages.info.venuesportstab.d342ec4e45d3\", { siteName: picked.site.siteName, value: picked.site.siteLocation?.location ? `（${picked.site.siteLocation.location}）` : \"\" })}"
-        }
-      ],
-      "translation": "Field: {siteName}{value}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -1076,6 +1076,37 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
+      "key": "nfc.unstableNotice",
+      "source": "NFC 目前可用性不稳定，请尽量使用口令。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExchangeFeedback.tsx",
+          "line": 7,
+          "context": "{i18n(\"nfc.unstableNotice\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 71,
+          "context": "i18n(\"nfc.unstableNotice\")}`"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 34,
+          "context": "i18n(\"nfc.unstableNotice\")} ${"
+        },
+        {
+          "file": "apps/desktop/src/lib/useNfcExchange.tsx",
+          "line": 38,
+          "context": "i18n(\"nfc.unstableNotice\")} ${"
+        }
+      ],
+      "translation": "NFC is currently unreliable. Please use a share code whenever possible.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
       "key": "pages.boardlistpage.00d53679d665",
       "source": "{value} · {count} 个组件{value2}",
       "kind": "rich",
@@ -1423,22 +1454,6 @@
       "translation": "Move up",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.boardlistpage.fcd1b76ca897",
-      "source": "系统板不能删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/BoardListPage.tsx",
-          "line": 63,
-          "context": "r.reason === \"system-board\" ? i18n(\"pages.boardlistpage.fcd1b76ca897\") : r.reason === \"last-board\" ? i18n(\"pages.boardlistpage.ef42f401cbad\") : i18n(\"pages.boardlistpage.11de1b40f9d8\")"
-        }
-      ],
-      "translation": "System boards cannot be deleted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

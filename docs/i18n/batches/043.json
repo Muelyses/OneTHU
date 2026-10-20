@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.boardlistpage.fcd1b76ca897",
+      "source": "系统板不能删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 63,
+          "context": "r.reason === \"system-board\" ? i18n(\"pages.boardlistpage.fcd1b76ca897\") : r.reason === \"last-board\" ? i18n(\"pages.boardlistpage.ef42f401cbad\") : i18n(\"pages.boardlistpage.11de1b40f9d8\")"
+        }
+      ],
+      "translation": "System boards cannot be deleted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.cloudpage.01cf40e9becd",
       "source": "在「{name}」内搜文件名（回车搜索）",
@@ -1539,32 +1555,6 @@
         }
       ],
       "translation": "Delete the following {length} items?\n\n{shown}\n\nThe selected files and folders (including contents) will be permanently deleted from the cloud drive. This action cannot be undone.",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.cloudpage.deleteLibrary",
-      "source": "删除资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 277,
-          "context": "title: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 277,
-          "context": "confirmText: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 441,
-          "context": "{i18n(\"pages.cloudpage.deleteLibrary\")}"
-        }
-      ],
-      "translation": "Delete library",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

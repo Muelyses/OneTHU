@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.networktab.6baa450e31c0",
+      "source": "点击刷新验证码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 233,
+          "context": "{i18n(\"pages.info.networktab.6baa450e31c0\")}"
+        }
+      ],
+      "translation": "Tap to refresh the captcha",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.networktab.6d9f04d2e157",
       "source": "账号下每个静态 IP 计一个连接数，谨慎修改",
@@ -1412,22 +1428,6 @@
         }
       ],
       "translation": "On campus",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.bcc2333dc631",
-      "source": "下载中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 802,
-          "context": "dlAtt === a.url ? i18n(\"pages.info.newstab.bcc2333dc631\") : i18n(\"pages.info.newstab.4673a2306165\")"
-        }
-      ],
-      "translation": "Downloading…",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

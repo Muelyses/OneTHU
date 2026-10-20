@@ -1,7 +1,23 @@
 {
-  "sourceHash": "faaa34d6f2bb6fc00695586ff280b5365bcfd3d0a7f26e748a20efad90dd5388",
+  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.sportstab.5e119f7a81fe",
+      "source": "手机号已保存到体育系统",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
+          "line": 168,
+          "context": "setPhoneMsg(i18n(\"pages.info.sportstab.5e119f7a81fe\"))"
+        }
+      ],
+      "translation": "Mobile number saved to the sports system",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.sportstab.6320b4a8722a",
       "source": "状态",
@@ -1376,27 +1392,6 @@
         }
       ],
       "translation": "In progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.a58e18d60b61",
-      "source": "取消常用 {name}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(item.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 435,
-          "context": "favorites.includes(item.id) ? i18n(\"pages.info.thospage.a58e18d60b61\", { name: String(item.name) }) : i18n(\"pages.info.thospage.ee51d7ac2424\", { name: String(item.name) })"
-        }
-      ],
-      "translation": "Remove {name} from common",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -2,9 +2,9 @@ import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn } from "@onethu/gui";
 import type { ExperienceMode } from "../state/experienceMode.js";
 export const MODE_OPTIONS=[
- {id:"simple",get name() { return i18n("components.experiencemodepicker.c89246ea218f"); },tag:"只留必需",get description() { return i18n("components.experiencemodepicker.32b0d50230a3"); },get detail() { return i18n("components.experiencemodepicker.5d3752839f3f"); }},
- {id:"practical",get name() { return i18n("components.experiencemodepicker.d8aa9757d2b3"); },tag:"常用在手边",get description() { return i18n("components.experiencemodepicker.cbe971c9e2fc"); },get detail() { return i18n("components.experiencemodepicker.26cbedbe0b4f"); }},
- {id:"full",get name() { return i18n("components.experiencemodepicker.413088d3b1a0"); },tag:"自由组织",get description() { return i18n("components.experiencemodepicker.7dbdf431adc5"); },get detail() { return i18n("components.experiencemodepicker.8dc9a2960ed1"); }},
+ {id:"simple",get name() { return i18n("components.experiencemodepicker.c89246ea218f"); },get tag() { return i18n("components.experiencemodepicker.463e4036289e"); },get description() { return i18n("components.experiencemodepicker.32b0d50230a3"); },get detail() { return i18n("components.experiencemodepicker.5d3752839f3f"); }},
+ {id:"practical",get name() { return i18n("components.experiencemodepicker.d8aa9757d2b3"); },get tag() { return i18n("components.experiencemodepicker.bc2310856d94"); },get description() { return i18n("components.experiencemodepicker.cbe971c9e2fc"); },get detail() { return i18n("components.experiencemodepicker.26cbedbe0b4f"); }},
+ {id:"full",get name() { return i18n("components.experiencemodepicker.413088d3b1a0"); },get tag() { return i18n("components.experiencemodepicker.96d67525c77e"); },get description() { return i18n("components.experiencemodepicker.7dbdf431adc5"); },get detail() { return i18n("components.experiencemodepicker.8dc9a2960ed1"); }},
 ] as const;
 export function ExperienceModePicker({value,onChange,variant="default"}:{value:ExperienceMode;onChange:(mode:ExperienceMode)=>void;variant?:"default"|"onboarding"}){
   const uiLocale = useUiLocale();

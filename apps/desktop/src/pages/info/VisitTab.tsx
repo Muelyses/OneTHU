@@ -31,11 +31,11 @@ const PAGE_HINT = () => i18n("pages.info.visittab.35ad08711b68");
 const LOGIN_HINT = () => i18n("pages.info.visittab.0a2bc74c4275");
 const LOGIN_HINT_2 = () => i18n("pages.info.visittab.861a76f9d065");
 const SUBMIT_HINT = () => i18n("pages.info.visittab.b72e3073880e");
-const DRAFT_FROM_OH = "已按你的说明填好草稿：核对后点「提交报备」。";
-const AUTO_SUBMIT_FROM_OH = "已按你的要求填好并自动提交报备。";
+const DRAFT_FROM_OH = () => i18n("pages.info.visittab.af16cc0b5325");
+const AUTO_SUBMIT_FROM_OH = () => i18n("pages.info.visittab.65897f00fbc6");
 const CONFIRM_TITLE = () => i18n("pages.info.visittab.f733797ef61a");
-const LOAD_FAIL = "读取报备信息失败：请点「重新加载」再试一次。";
-const SUBMIT_FAIL = "提交没有成功：请检查填写内容后重试，或到官方页面提交。";
+const LOAD_FAIL = () => i18n("pages.info.visittab.8d66f991153b");
+const SUBMIT_FAIL = () => i18n("pages.info.visittab.0b0682ac2f83");
 
 type Phase = "need_login" | "loading" | "ready" | "error";
 
@@ -82,7 +82,7 @@ export function VisitTab() {
       confirmed: wantAuto ? true : false,
       visitors: patch.visitors?.length ? patch.visitors : f.visitors,
     }));
-    setNote(wantAuto ? AUTO_SUBMIT_FROM_OH : DRAFT_FROM_OH);
+    setNote(wantAuto ? AUTO_SUBMIT_FROM_OH() : DRAFT_FROM_OH());
     if (wantAuto) setAutoSubmit(true);
     clearVisitDraft();
   }, [draftVersion]);
@@ -130,7 +130,7 @@ export function VisitTab() {
         return;
       }
       setPhase("error");
-      setError(e instanceof VisitApiError ? e.message : LOAD_FAIL);
+      setError(e instanceof VisitApiError ? e.message : LOAD_FAIL());
       void logLine(i18n("pages.info.visittab.085419250804", { value: String(String(e)) }));
     }
   }, []);
@@ -164,7 +164,7 @@ export function VisitTab() {
       setRows(mine.rows);
       setMineNote(null);
     } catch (e) {
-      setError(e instanceof VisitApiError ? e.message : SUBMIT_FAIL);
+      setError(e instanceof VisitApiError ? e.message : SUBMIT_FAIL());
     } finally {
       setBusy(false);
     }
@@ -209,7 +209,7 @@ export function VisitTab() {
     return (
       <Card>
         <Stack gap={2}>
-          <Text>{error ?? LOAD_FAIL}</Text>
+          <Text>{error ?? LOAD_FAIL()}</Text>
           <Inline gap={2}>
             <Btn variant="solid" onClick={() => void load()}>{i18n("pages.info.visittab.7bdd5ce1e298")}</Btn>
             <Btn onClick={() => void openExternal(VISIT_MOBILE_ENTRY)}>{i18n("pages.info.visittab.1ecea7d51b20")}</Btn>

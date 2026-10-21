@@ -142,15 +142,7 @@ def render(src, dst, vf):
 
 
 def sync_icons():
-    if not SRC_ICON.exists():
-        raise SystemExit("[fail] 找不到源图标 " + str(SRC_ICON))
-    changed = 0
-    for name, size in DENSITIES.items():
-        vf = "scale=%d:%d:flags=lanczos" % (size, size)
-        for target in ("ic_launcher.png", "ic_launcher_round.png"):
-            if render(SRC_ICON, RES / ("mipmap-" + name) / target, vf):
-                changed += 1
-    print("[ok] 正式版图标同步（源 " + SRC_ICON.name + "）: " + (str(changed) + " 个文件更新" if changed else "已是最新"))
+    subprocess.run([sys.executable, str(REPO / "tools/android-icons.py"), str(PROJ), "--repo", str(REPO)], check=True)
 
 
 def gen_dev_icons():

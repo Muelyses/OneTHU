@@ -1,6 +1,6 @@
 # 开发者构建（dev 版独立构建）
 
-> 最后更新：2026-09-23 19:50
+> 最后更新：2026-10-21
 
 开发者构建指同一份源码产出的第二套可安装产物：桌面端 `onethu-dev.exe`、Android 端
 `OneTHU-Dev` APK。两套产物共用源码，差别来自构建开关 `ONETHU_DEV=1`：正式版里不出现的
@@ -69,6 +69,10 @@ Android 变体：`tools/patch-android-dev.py` 幂等改写 `app/build.gradle.kts
 `AndroidManifest.xml`（`devBuild` 读 `-PonethuDev` 或 `ORG_GRADLE_PROJECT_onethuDev`），
 并从 `apps/desktop/src-tauri/icons/icon.png` 同步各密度图标，另生成反色 dev 图标。不传
 开关时 `applicationId`、应用名、图标与版本名与改动前一致。
+
+正式版与开发者版共用 `tools/android-icons.py` 同步原版 Logo，包含普通、圆形及 Android 8+
+自适应资源；需要 PATH 中有 FFmpeg。正式版构建在签名后使用 SDK 的 `aapt2` 核对最终 APK
+中各密度图标的像素与 Manifest/自适应引用，默认 Tauri 图标会阻断发布。不能只检查源目录。
 
 工程位置：Tauri 生成的 `src-tauri/gen/android` 不入库。`build-dev-apk.sh` 用
 `ONETHU_ANDROID_PROJ` 指向仓库外的工程目录并建立符号链接，脚本退出时恢复原链接；工程

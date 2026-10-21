@@ -123,6 +123,9 @@ if [ "$PREV_LINK" != "$PROJ_PRIMARY" ]; then
   echo "· gen/android → ${PROJ_PRIMARY}（原指向：${PREV_LINK:-无}）"
 fi
 
+# Android init 只生成一次图标；每次从原版 Logo 同步，不能依赖本机残留。
+python3 "$REPO/tools/android-icons.py" "$PROJ_PRIMARY" --repo "$REPO"
+
 # ④ 清干净（exFAT 时代残留的 ._ 与旧产物一并处理）
 rm -rf "$PROJ_PRIMARY/build" "$PROJ_PRIMARY/buildSrc/build" "$PROJ_PRIMARY/app/build" \
        "$PROJ_PRIMARY/.gradle" "$PROJ_PRIMARY/.kotlin"
@@ -193,3 +196,6 @@ hit = any(b"/assets/DevPanel-" in z.read(n) for n in z.namelist() if n.endswith(
 print("开发者面板: " + ("泄漏进正式包" if hit else "正式包中确认不存在"))
 sys.exit(1 if hit else 0)
 PY
+
+# 核对 AAPT 编译后的图标及 Manifest 引用，而非只看源目录。
+python3 "$REPO/tools/android-icons.py" --repo "$REPO" --verify-apk "$OUT" --aapt2 "$BT/aapt2"

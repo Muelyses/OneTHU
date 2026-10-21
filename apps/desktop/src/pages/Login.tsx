@@ -7,6 +7,7 @@ import { isTauri } from "../lib/transport.js";
 import { loadRemembered } from "../lib/clients.js";
 import { useApp } from "../state/context.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
+import { LanguageControl } from "../components/LanguageControl.js";
 
 function LoginErrorPanel({ error }: { error: string }) {
   const [copied, setCopied] = useState(false);
@@ -53,6 +54,7 @@ export function LoginPage() {
     <div className="login-wrap">
       <HardRefreshButton />
       <div className="login-card">
+        <LanguageControl compact />
         <div className="login-mark" style={{ flexDirection: "column", alignItems: "flex-start", gap: 12 }}>
           <BrandLogo size={30} />
           <Slogan size={13} />
@@ -152,6 +154,7 @@ export function TwoFactorPage() {
       <div className="login-wrap">
       <HardRefreshButton />
         <div className="login-card">
+          <LanguageControl compact />
           <div className="login-mark">
             <BrandLogo size={26} />
             <div>
@@ -175,7 +178,7 @@ export function TwoFactorPage() {
                   />
                   <span className="method-radio" aria-hidden />
                   <span className="method-text">
-                    <b>{m.name || nameOf(m.type)}</b>
+                    <b>{METHOD_NAMES[m.type] ?? m.name ?? m.type}</b>
                     {m.detail ? <i>{m.detail}</i> : null}
                   </span>
                 </label>
@@ -197,6 +200,7 @@ export function TwoFactorPage() {
     <div className="login-wrap">
       <HardRefreshButton />
       <div className="login-card">
+        <LanguageControl compact />
         <div className="login-mark">
           <BrandLogo size={26} />
           <div>

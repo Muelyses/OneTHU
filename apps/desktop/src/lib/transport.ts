@@ -455,6 +455,12 @@ export function lastErrorText(): string {
 export function explainNetworkError(err: unknown): string {
   const raw = redactNetworkLog(rawErrorText(err).trim());
   lastRawError = [loginFailureDiagnostic(err), raw].filter(Boolean).join(" | ");
+  return formatNetworkError(err);
+}
+
+/** Render-time localization without changing the last diagnostic failure. */
+export function formatNetworkError(err: unknown): string {
+  const raw = redactNetworkLog(rawErrorText(err).trim());
   const loginExplanation = explainLoginError(err);
   if (loginExplanation) return loginExplanation;
   if (!raw) return i18n("lib.transport.noReason");

@@ -77,7 +77,7 @@ async function setup(layout, scenario, locale = "zh-CN") {
       if (scenario.startsWith("two-factor")) return response(input.url, keyHtml, 200, "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/fixture/0");
       return response(input.url, "<main>Unexpected portal fixture</main>", 200, "https://id.tsinghua.edu.cn/fixture-unexpected");
     }
-    if (url.pathname === "/do/off/ui/auth/login/check") return response(input.url, "<p>二次认证</p>");
+    if (url.pathname === "/do/off/ui/auth/login/check") return response(input.url, '<html><head><title>二次认证</title></head><body><div id="root"></div><script src="/v2/dist/doubleauth/doubleAuth.bundle.js"></script></body></html>');
     if (url.pathname === "/b/doubleAuth/login") {
       const action = fields.get("action");
       if (action === "FIND_APPROACHES") return response(input.url, JSON.stringify({ result: "success", object: { hasWeChatBool: scenario !== "two-factor-totp", phone: null, hasTotp: scenario === "two-factor-totp" } }));
@@ -97,7 +97,7 @@ async function setup(layout, scenario, locale = "zh-CN") {
     return response(input.url, "{}");
   });
   await page.addInitScript(({ locale, layout }) => {
-    localStorage.setItem("onethu.locale", locale);
+    if (!localStorage.getItem("onethu.locale")) localStorage.setItem("onethu.locale", locale);
     Object.defineProperty(navigator, "platform", { value: layout === "phone" ? "Linux armv8l" : "Win32" });
     window.__TAURI_INTERNALS__ = {
       invoke: (command, args) => window.__loginRecoveryInvoke(command, args),
@@ -124,6 +124,12 @@ try {
       const fixture = await setup(layout, scenario);
       const { page, context, requests, logs } = fixture;
       if (scenario === "unknown") {
+        const language = page.getByRole("combobox", { name: "语言 / Language", exact: true });
+        check(await language.locator("option").count() >= 2, `${layout}: language can be selected before signing in`);
+        await language.selectOption("en-US");
+        await page.getByRole("button", { name: "Sign in", exact: true }).waitFor();
+        check(await page.locator("#username").inputValue() === "2099000000" && await page.locator("#password").inputValue() === "fixture-only-password", `${layout}: changing language preserves credential drafts`);
+        await language.selectOption("zh-CN");
         // Two synchronous native form submissions test the React ref gate before rerender.
         await page.locator("form").evaluate((form) => { form.requestSubmit(); form.requestSubmit(); });
         await page.waitForFunction(() => document.querySelector("form button[type=submit]")?.disabled);
@@ -144,6 +150,16 @@ try {
       check(!overflow, `${layout}/${scenario}: error text stays within viewport`);
       await page.screenshot({ path: `${out}/${layout}-${scenario}.png`, fullPage: true });
       if (scenario === "unknown") {
+        const language = page.getByRole("combobox", { name: "语言 / Language", exact: true });
+        const postCount = requests.filter(item => item.method === "POST").length;
+        await language.selectOption("en-US");
+        await page.locator(".login-error").filter({ hasText: "did not return a usable sign-in form" }).waitFor();
+        check(await page.locator("#password").inputValue() === "fixture-only-password" && requests.filter(item => item.method === "POST").length === postCount, `${layout}: existing errors change language without resubmitting credentials`);
+        if (layout === "phone") await page.setViewportSize({ width: 320, height: 720 });
+        check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${layout}: language control and English error fit the viewport`);
+        await page.screenshot({ path: `${out}/${layout}-login-language-en.png`, fullPage: true });
+        if (layout === "phone") await page.setViewportSize(layouts.phone.viewport);
+        await language.selectOption("zh-CN");
         await page.getByRole("button", { name: "复制诊断信息", exact: true }).click();
         let diagnostic;
         if (layout === "phone") {
@@ -159,7 +175,11 @@ try {
         // handshake and credential submissions; the probe is retained in the report.
         const mainAuthCount = () => requests.filter((item) => item.path === "/login" || (item.method === "POST" && item.path === "/do/off/ui/auth/login/check")).length;
         const before = mainAuthCount();
+        await language.selectOption("en-US");
         await Promise.all([page.waitForEvent("load"), page.locator(".hard-refresh-fab").click()]);
+        await page.getByRole("button", { name: "Sign in", exact: true }).waitFor();
+        check(await language.inputValue() === "en-US", `${layout}: login language persists after reloading`);
+        await language.selectOption("zh-CN");
         await page.locator("#username").fill("2099000000");
         await page.locator("#password").fill("fixture-only-password");
         await page.locator("form button[type=submit]").click();
@@ -172,32 +192,41 @@ try {
     }
   }
 
-  for (const scenario of ["two-factor", "two-factor-totp"]) {
-    const { page, context, requests, logs } = await setup("phone", scenario);
+  for (const layout of ["phone", "desktop"]) for (const scenario of ["two-factor", "two-factor-totp"]) {
+    const { page, context, requests, logs } = await setup(layout, scenario);
     await page.locator("form button[type=submit]").click();
     await page.locator(".method-item").first().click();
+    const language = page.getByRole("combobox", { name: "语言 / Language", exact: true });
+    await language.selectOption("en-US");
+    check(await page.locator(".login-title").innerText() === "Two-factor authentication" && await page.locator(".method-item input").first().isChecked(), `${layout}/${scenario}: method selection stays intact when switching language`);
+    await language.selectOption("zh-CN");
     await page.getByRole("button", { name: "下一步", exact: true }).click();
     if (scenario !== "two-factor-totp") await page.getByRole("button", { name: "发送验证码", exact: true }).click();
     await page.locator("#code").fill("123456");
+    await language.selectOption("en-US");
+    await page.getByRole("button", { name: "Verify and sign in", exact: true }).waitFor();
+    check(await page.locator("#code").inputValue() === "123456", `${layout}/${scenario}: language switch preserves entered verification code`);
+    await page.screenshot({ path: `${out}/${layout}-${scenario}-code-entry-en.png`, fullPage: true });
+    await language.selectOption("zh-CN");
     await page.getByRole("button", { name: "验证并登录", exact: true }).click();
     await page.waitForFunction(() => !document.querySelector("#code"), null, { timeout: 20_000 });
     await page.waitForFunction(() => !document.querySelector(".login-wrap"), null, { timeout: 20_000 });
-    check(requests.filter((item) => item.path === "/login").length === 1, `phone/${scenario}: one login chain covers selection, sending and verification`);
-    check(requests.filter((item) => item.path === "/do/off/ui/auth/login/check").length === 1, `phone/${scenario}: credentials are submitted once`);
+    check(requests.filter((item) => item.path === "/login").length === 1, `${layout}/${scenario}: one login chain covers selection, sending and verification`);
+    check(requests.filter((item) => item.path === "/do/off/ui/auth/login/check").length === 1, `${layout}/${scenario}: credentials are submitted once`);
     const actions = requests.filter((item) => item.action).map((item) => item.action);
     const verifyAction = scenario === "two-factor-totp" ? "VERITY_TOTP_CODE" : "VERITY_CODE";
-    check(JSON.stringify(actions) === JSON.stringify(["FIND_APPROACHES", "SEND_CODE", verifyAction]), `phone/${scenario}: verification reaches the code hook and is not rejected by the login cooldown`);
+    check(JSON.stringify(actions) === JSON.stringify(["FIND_APPROACHES", "SEND_CODE", verifyAction]), `${layout}/${scenario}: verification reaches the code hook and is not rejected by the login cooldown`);
     const verify = requests.find((item) => item.action === verifyAction);
     const loginStart = requests.find((item) => item.path === "/login");
-    check(verify.at - loginStart.at < 20_000, `phone/${scenario}: verification completed inside the 20-second full-login cooldown`);
-    check(logs.some((line) => line.includes("受信设备数达上限")) && logs.some((line) => line.includes("VERIFY-OK")), `phone/${scenario}: trust limit skips device saving while allowing this login to finish`);
-    check(!logs.some((line) => /2099000000|fixture-only-password/.test(line)), `phone/${scenario}: logs omit credentials`);
+    check(verify.at - loginStart.at < 20_000, `${layout}/${scenario}: verification completed inside the 20-second full-login cooldown`);
+    check(logs.some((line) => line.includes("受信设备数达上限")) && logs.some((line) => line.includes("VERIFY-OK")), `${layout}/${scenario}: trust limit skips device saving while allowing this login to finish`);
+    check(!logs.some((line) => /2099000000|fixture-only-password/.test(line)), `${layout}/${scenario}: logs omit credentials`);
     const trustNotice = page.locator(".toast-host.is-center").filter({ hasText: "受信设备数已达上限" });
     await trustNotice.waitFor();
-    check(await trustNotice.evaluate((node) => getComputedStyle(node).whiteSpace !== "nowrap" && node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1), `phone/${scenario}: trust-limit instructions wrap without clipping`);
-    check(!(await page.locator("body").innerText()).includes("本页出现问题"), `phone/${scenario}: completed login does not fall into the React error boundary`);
-    await page.screenshot({ path: `${out}/phone-${scenario}-trust-limit.png`, fullPage: true, animations: "disabled" });
-    summaries.push({ layout: "phone", scenario, requests });
+    check(await trustNotice.evaluate((node) => getComputedStyle(node).whiteSpace !== "nowrap" && node.scrollWidth <= node.clientWidth + 1 && node.scrollHeight <= node.clientHeight + 1), `${layout}/${scenario}: trust-limit instructions wrap without clipping`);
+    check(!(await page.locator("body").innerText()).includes("本页出现问题"), `${layout}/${scenario}: completed login does not fall into the React error boundary`);
+    await page.screenshot({ path: `${out}/${layout}-${scenario}-trust-limit.png`, fullPage: true, animations: "disabled" });
+    summaries.push({ layout, scenario, requests });
     await context.close();
   }
   {

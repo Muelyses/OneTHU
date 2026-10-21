@@ -2,7 +2,7 @@ import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /** 应用全局状态：登录（含 2FA）→ 会话 → 轻路由 */
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import * as clients from "../lib/clients.js";
-import { explainNetworkError } from "../lib/transport.js";
+import { explainNetworkError, formatNetworkError } from "../lib/transport.js";
 import type { TwoFactorMethod } from "@onethu/core";
 
 /** 轻路由：一级页（含选课系统 zhjwxk）+ 网络学堂子页（learnX 移植） */
@@ -234,7 +234,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [status, setStatus] = useState<SessionStatus>("booting");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Keep the cause until render so changing language also updates an existing
+  // application error. School-provided error details still pass through as-is.
+  const [errorCause, setErrorCause] = useState<unknown>(null);
+  const setError = useCallback((cause: unknown) => {
+    if (cause !== null) explainNetworkError(cause);
+    setErrorCause(cause);
+  }, []);
+  const error = errorCause === null ? null : formatNetworkError(errorCause);
   const [twoFactor, setTwoFactor] = useState<AppState["twoFactor"]>(null);
   const loginBusy = useRef(false);
   /* dev-explorer：page/navParams 不再是本地状态——直接派生自 explorer 活动标签页
@@ -335,7 +342,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         // Do not replay credentials for bad passwords, throttling or unknown pages.
         setStatus("logged-out");
-        setError(explainNetworkError(err));
+        setError(err);
       } finally {
         loginBusy.current = false;
       }
@@ -346,7 +353,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const send2FA = useCallback(async (type: string) => {
     setError(null);
     try { await clients.send2FA(type); }
-    catch (err) { setError(explainNetworkError(err)); throw err; }
+    catch (err) { setError(err); throw err; }
   }, []);
 
   const sendLearn2FA = useCallback(async (type: string) => {
@@ -378,7 +385,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setStatus("ready");
         navigate("homepage");
       } catch (err) {
-        setError(explainNetworkError(err));
+        setError(err);
       }
     },
     [twoFactor, navigate],

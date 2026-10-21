@@ -160,9 +160,21 @@ function loginPublicKey(html: string, stage: LoginPreparationStage): string | nu
     return key;
 }
 
+function isTwoFactorPage(html: string): boolean {
+    const $ = cheerio.load(html);
+    // The university's React 2FA shell can have an empty body: its only
+    // server-rendered marker is <title>二次认证</title>. Do not look inside
+    // scripts (the password page also loads shared doubleauth assets).
+    if ($("input[type='password'], input[name='i_pass'], input[name='password'], #sm2publicKey").length) return false;
+    const note = $("#msg_note").text().trim();
+    // An explicit school rejection must not be overridden by a page title.
+    if (note && !note.includes("二次认证")) return false;
+    return $("head > title").text().includes("二次认证") || visibleAuthText(html).includes("二次认证");
+}
+
 function isFinishedIdEntry(html: string, scheme: "i_user" | "username"): boolean {
     const text = visibleAuthText(html);
-    if (text.includes("二次认证")) return true;
+    if (isTwoFactorPage(html)) return true;
     if (scheme === "username") {
         return text.includes("账号设置") && !cheerio.load(html)("input[type='password'], input[name='password']").length;
     }
@@ -369,7 +381,7 @@ export const login = async (
                     entryHtml = await uFetch(idUrl);
                 }
                 let response = await idLoginResponse(helper, entryHtml, ID_LOGIN_URL, "i_user");
-                if (response.includes("二次认证")) {
+                if (isTwoFactorPage(response)) {
                     response = await twoFactorAuth(helper);
                 }
                 if (!response.includes("登录成功。正在重定向到")) {
@@ -479,7 +491,7 @@ export const roam = async (helper: InfoHelper, policy: RoamingPolicy, payload: s
             idLoginUrl,
             policy === "id_website" ? "username" : "i_user",
         );
-        if (response.includes("二次认证")) {
+        if (isTwoFactorPage(response)) {
             response = await twoFactorAuth(helper);
         }
         if (!response.includes(target)) {

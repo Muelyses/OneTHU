@@ -15,6 +15,8 @@ const INPUT_KEY = `<input id="sm2publicKey" value=" ${key} ">`;
 const CONFIRM = `<form action="/do/off/ui/auth/login/checkSingle"><input type="hidden" name="fingerPrint" value=""><input type="hidden" name="fingerGenPrint" value=""><input type="hidden" name="sig" value="fixture"></form>`;
 const SUCCESS = `登录成功。正在重定向到<a href="https://oauth.tsinghua.edu.cn/fixture-callback">继续</a>`;
 const ID_CHECK = "https://id.tsinghua.edu.cn/do/off/ui/auth/login/check";
+// School React shell: the body has no server-rendered verification text.
+const TWO_FACTOR_SHELL = '<html><head><title>二次认证</title></head><body><div id="root"></div><script src="/v2/dist/doubleauth/doubleAuth.bundle.js"></script></body></html>';
 const helper = () => ({
   trustBrowser: true, fingerprint: "fixture-fingerprint", fingerGenPrint: "fixture-trust",
   userId: "123456", password: "fixture-only", mocked: () => false,
@@ -113,6 +115,27 @@ await check("credential POST can enter 2FA without a second submission", async (
   setPlatformFetch(async url => { n++; return reply("<main>二次认证</main>", url); });
   assert.match(await idLoginResponse(helper(), KEY, ID_CHECK, "i_user"), /二次认证/);
   assert.equal(n, 1);
+});
+await check("title-only React 2FA shell is recognized before and after credentials", async () => {
+  for (const shell of [TWO_FACTOR_SHELL, TWO_FACTOR_SHELL.replace("二次认证", "&#20108;&#27425;&#35748;&#35777;")]) {
+    let posts = 0;
+    setPlatformFetch(async url => { posts++; return reply(shell, url); });
+    assert.equal(await idLoginResponse(helper(), shell, ID_CHECK, "i_user"), shell);
+    assert.equal(posts, 0);
+    assert.equal(await idLoginResponse(helper(), KEY, ID_CHECK, "i_user"), shell);
+    assert.equal(posts, 1);
+  }
+});
+await check("shared 2FA scripts, hidden text and password forms are not verification pages", async () => {
+  const scripts = '<script src="/v2/dist/doubleauth/doubleAuth.bundle.js"></script><script>const title="二次认证"</script><p hidden>二次认证</p><main>请登录</main>';
+  setPlatformFetch(async url => reply(scripts, url));
+  await assert.rejects(idLoginResponse(helper(), KEY, ID_CHECK, "i_user"), errorIs("unexpected-page"));
+  for (const page of [KEY + '<p>二次认证说明</p>', TWO_FACTOR_SHELL.replace('<div id="root"></div>', '<input name="i_pass">')]) {
+    setPlatformFetch(async url => reply(page, url));
+    await assert.rejects(idLoginResponse(helper(), KEY, ID_CHECK, "i_user"), errorIs(page.includes("sm2publicKey") ? "unexpected-page" : "missing-public-key"));
+  }
+  setPlatformFetch(async url => reply(TWO_FACTOR_SHELL.replace('<div id="root"></div>', '<p id="msg_note">密码错误</p>'), url));
+  await assert.rejects(idLoginResponse(helper(), KEY, ID_CHECK, "i_user"), e => e instanceof LoginError && e.message === "密码错误");
 });
 await check("malformed key is a safe classified failure", async () => {
   setPlatformFetch(async () => { throw new Error("must not send"); });
@@ -344,7 +367,7 @@ await check("full login keeps 2FA hooks, uses one OAuth entry and completes auth
   setPlatformFetch(async (url, init) => {
     calls.push({ url, ...init });
     if (url.includes("/login?oauth_login=true")) return reply(KEY, url);
-    if (url === ID_CHECK) return reply("<main>二次认证</main>", url);
+    if (url === ID_CHECK) return reply(TWO_FACTOR_SHELL.replace("二次认证", "&#20108;&#27425;&#35748;&#35777;"), url);
     if (url.endsWith("/b/doubleAuth/login")) {
       const action = new URLSearchParams(init.body).get("action"); actions.push(action);
       return reply(JSON.stringify({ result: "success", object: action === "FIND_APPROACHES" ? { hasTotp: true } : { redirectUrl: "/fixture-finish" } }), url);

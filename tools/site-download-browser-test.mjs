@@ -16,7 +16,8 @@ try{
   }
   await page.locator('.download-checksum').first().locator('summary').click();assert.ok(await page.locator('.download-checksum code').first().isVisible());
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Checksum overflows');
-  await page.evaluate(()=>{document.activeElement?.blur();scrollTo(0,0);});
+  await page.evaluate(()=>{document.activeElement?.blur();scrollTo({top:0,behavior:"instant"});});
+  await page.waitForFunction(()=>scrollY===0);
   await page.screenshot({path:out+'/'+(language?'en':'zh')+'-'+width+'.png',fullPage:true});report.push({width,language:language?'en':'zh',noJavaScript:true,passed:true});await context.close();
  }
 }finally{await browser.close();writeFileSync(out+'/report.json',JSON.stringify(report,null,2));}

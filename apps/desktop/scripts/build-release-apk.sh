@@ -24,7 +24,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"
 TAURI_DIR="$REPO/apps/desktop/src-tauri"
 GEN="$TAURI_DIR/gen/android"
-PROJ_PRIMARY="$HOME/onethu-android"
+PROJ_PRIMARY="${ONETHU_ANDROID_PROJ:-$HOME/onethu-android}"
 OUT_DIR="${ONETHU_APK_OUT:-$HOME/Desktop/OneTHU-builds}"
 # 编译盘探测（可选）：本机 SSD APFS 镜像；存在则优先（SDK/NDK/target 都在上面）
 ONETHU_BUILD_VOL="${ONETHU_BUILD_VOL:-/Volumes/OneTHUBuild}"
@@ -134,6 +134,9 @@ echo "· 开始构建（JDK $(java -version 2>&1 | head -1 | sed 's/.*"\(.*\)".*
 cd "$REPO/apps/desktop"
 mkdir -p "$OUT_DIR"
 LOG="$OUT_DIR/apk-build.log"
+# Rust 的增量指纹不总能感知 dist 变化；强制重展开 generate_context!，避免把旧前端
+# （例如上一版的导览图片）嵌入新 APK。只更新时间，不改变源码内容。
+touch "$TAURI_DIR/src/lib.rs"
 if ! npx tauri android build --apk --target aarch64 > "$LOG" 2>&1; then
   echo "✗ 构建失败，错误摘要："
   sed -n '/What went wrong/,/^\* Try:/p' "$LOG" | head -20
@@ -153,9 +156,9 @@ VERSION="$(python3 -c "import json,sys;print(json.load(open('$TAURI_DIR/tauri.co
 OUT="$OUT_DIR/OneTHU-$VERSION-$STAMP.apk"
 BT="$(ls -d "$ANDROID_HOME"/build-tools/* 2>/dev/null | tail -1)"
 "$BT/zipalign" -p -f 4 "$SRC" "$OUT"
-# 签名：默认用 debug keystore —— 与线上 Release（v0.9.0 资产）同证书（Android Debug），
-# 内测同学可直接覆盖升级。若要改用正式 keystore，给 ONETHU_KEYSTORE / ONETHU_KS_PASS /
-# ONETHU_KEY_PASS / ONETHU_KEY_ALIAS（注意：换证书后老用户必须卸载重装）。
+# 默认 debug keystore 仅供同证书本地测试包覆盖升级。GitHub 正式发布必须显式配置
+# ONETHU_KEYSTORE / ONETHU_KS_PASS / ONETHU_KEY_PASS / ONETHU_KEY_ALIAS，并与旧正式
+# Release 比较证书；不能把本地测试签名当作正式发布签名（换证书无法覆盖安装）。
 KS="${ONETHU_KEYSTORE:-$HOME/.android/debug.keystore}"
 KS_ALIAS="${ONETHU_KEY_ALIAS:-androiddebugkey}"
 KS_PASS="${ONETHU_KS_PASS:-android}"

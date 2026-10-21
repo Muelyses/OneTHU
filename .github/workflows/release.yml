@@ -1,8 +1,8 @@
 name: release
-# 打 tag（v*）自动构建三端安装包并挂到 GitHub Release：
+# 打 tag（v*）构建桌面安装包并保存到 Actions artifacts：
 #   macos-latest → .dmg（aarch64）
 #   windows-latest → .exe（NSIS x64）
-#   APK 不在 CI 构建：gen/android 不入库（本地签名管线），android job 已移除
+#   Android 使用本地正式构建与既有签名；三端验证齐全后统一上传 GitHub Release。
 on:
   push:
     tags: ["v*"]
@@ -84,6 +84,7 @@ jobs:
           RUSTC_WRAPPER: sccache
           SCCACHE_GHA_ENABLED: "true"
           TAURI_SIGNING_PRIVATE_KEY: ""
+          TRACE_AMAP_KEY: ${{ secrets.TRACE_AMAP_KEY }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

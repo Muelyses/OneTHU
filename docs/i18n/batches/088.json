@@ -1,7 +1,23 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.navigation.4ebe692f5dbb",
+      "source": "其他 Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 138,
+          "context": "return i18n(\"state.navigation.4ebe692f5dbb\");"
+        }
+      ],
+      "translation": "Other Info apps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.navigation.52f247fc75da",
       "source": "查询洗衣机和烘干机状态",
@@ -1366,22 +1382,6 @@
         }
       ],
       "translation": "System notification settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifystatus.571c1a7180e0",
-      "source": "Android 通知渠道 + 定时闹钟",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 30,
-          "context": "return i18n(\"state.notifystatus.571c1a7180e0\");"
-        }
-      ],
-      "translation": "Android notification channels + scheduled alarms",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

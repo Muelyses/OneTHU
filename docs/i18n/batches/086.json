@@ -1,7 +1,28 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.data.329fbface8f2",
+      "source": "草稿「{name}」已导出到剪贴板",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(d.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/data.ts",
+          "line": 1818,
+          "context": "setToast(i18n(\"state.data.329fbface8f2\", { name: String(d.name) }))"
+        }
+      ],
+      "translation": "Draft \"{name}\" exported to clipboard",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.data.3361c2cc7a9e",
       "source": "保留 {count} 门（两边的交集，不动）",
@@ -1499,22 +1520,6 @@
         }
       ],
       "translation": "Invoices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.explorer.ac9a3e2c965a",
-      "source": "所有白板",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/explorer.ts",
-          "line": 231,
-          "context": "return i18n(\"state.explorer.ac9a3e2c965a\");"
-        }
-      ],
-      "translation": "All boards",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

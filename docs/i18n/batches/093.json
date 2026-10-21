@@ -1,7 +1,23 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.weather.853385be3d5a",
+      "source": "雾",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 48,
+          "context": "return i18n(\"state.weather.853385be3d5a\");"
+        }
+      ],
+      "translation": "Fog",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.weather.86879622e5c9",
       "source": "冻雨",
@@ -1457,22 +1473,6 @@
         }
       ],
       "translation": "Grades from past years and your GPA. Requires sign-in.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgets.1511812d56b3",
-      "source": "研究生收入记录。需要登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 115,
-          "context": "return i18n(\"state.widgets.1511812d56b3\");"
-        }
-      ],
-      "translation": "Graduate income records. Requires sign-in.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

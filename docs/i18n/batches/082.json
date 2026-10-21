@@ -1,7 +1,22 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "settings.label.myPlugins",
+      "source": "我的插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "My plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "settings.label.notification",
       "source": "通知",
@@ -1358,26 +1373,6 @@
         }
       ],
       "translation": "Search skills by name or purpose",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "skills.version",
-      "source": "版本 {version}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "version"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
-          "line": 64,
-          "context": "{t(\"skills.version\", { version: detail.version })}"
-        }
-      ],
-      "translation": "Version {version}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

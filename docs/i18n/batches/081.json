@@ -1,7 +1,22 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "privacy.step",
+      "source": "第 −1 步 · 使用前请了解",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Step −1 · Before you begin",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "privacy.title",
       "source": "权限须知与免责声明",
@@ -25,7 +40,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 30,
+          "line": 31,
           "context": "{t(\"privacy.withdraw\")}"
         }
       ],
@@ -1270,21 +1285,6 @@
         }
       ],
       "translation": "Plugin marketplace",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.myPlugins",
-      "source": "我的插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "My plugins",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -198,3 +198,6 @@ html:root .tour-footer .tour-privacy-continue { min-width:0; max-width:100%; hei
 .privacy-permission > .og-switch { flex:none; }
 
 .privacy-save-error { padding:var(--og-space-4); border:1px solid var(--og-error); border-radius:var(--og-radius-lg); color:var(--og-error); overflow-wrap:anywhere; }
+
+.privacy-notice .privacy-read-carefully { color:var(--og-error); font-size:var(--og-text-subtitle); font-weight:var(--og-weight-bold); line-height:var(--og-text-body-lh); }
+.privacy-read-carefully [lang="en-US"] { color:inherit; }

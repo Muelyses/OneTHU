@@ -1,6 +1,6 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
-  "count": 7551,
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "count": 7552,
   "messages": [
     {
       "key": "app.08566a4b57a3",
@@ -92352,7 +92352,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 33,
+          "line": 34,
           "context": "{t(\"privacy.continue\")}"
         }
       ]
@@ -92504,6 +92504,18 @@
       ]
     },
     {
+      "key": "privacy.readCarefully",
+      "source": "请务必认真阅读，并在下方手动授权云盘和智能体服务。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
       "key": "privacy.replay",
       "source": "重新导览",
       "kind": "text",
@@ -92524,7 +92536,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 30,
+          "line": 31,
           "context": "{t(\"privacy.review\")}"
         }
       ]
@@ -92550,7 +92562,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 32,
+          "line": 33,
           "context": "showToast(t(\"privacy.saved\"))"
         }
       ]
@@ -92575,7 +92587,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 30,
+          "line": 31,
           "context": "{t(\"privacy.settings\")}"
         }
       ]
@@ -92612,7 +92624,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 30,
+          "line": 31,
           "context": "{t(\"privacy.withdraw\")}"
         }
       ]

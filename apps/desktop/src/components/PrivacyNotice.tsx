@@ -11,6 +11,7 @@ function Bilingual({part}: {part:string}) {
 }
 export function PrivacyNotice({value,onChange}: {value:PrivacyConsent;onChange:(v:PrivacyConsent)=>void}) {
   return <section className="privacy-notice" aria-labelledby="privacy-title">
+    <p className="privacy-read-carefully" role="note"><Bilingual part="readCarefully"/></p>
     <header><h2 id="privacy-title"><Bilingual part="title"/></h2><p><Bilingual part="lead"/></p></header>
     <div className="privacy-notice-sections">
       {["local","disclaimer","cloud","oh"].map(id=><section key={id}><h3><Bilingual part={id+"Title"}/></h3><p><Bilingual part={id+"Body"}/></p>{id === "cloud" ? <p><Bilingual part="revokeGuide"/></p> : null}

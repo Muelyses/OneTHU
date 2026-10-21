@@ -26,6 +26,11 @@ try {
   });
   await page.goto(base+'/?explorer-preview=onboarding');
   const tour=page.locator('.experience-tour'),privacy=tour.locator('[data-tour-phase="privacy"]');await privacy.waitFor();
+  const warning=privacy.locator('.privacy-read-carefully');
+  check((await warning.innerText()).includes('请务必认真阅读，并在下方手动授权云盘和智能体服务。'),width+' prominent warning uses the requested manual-authorization wording');
+  const warningStyle=await warning.evaluate(el=>({weight:Number(getComputedStyle(el).fontWeight),color:getComputedStyle(el).color,first:el.parentElement.firstElementChild===el,top:el.getBoundingClientRect().top,bodyTop:el.closest('.og-panel-body').getBoundingClientRect().top}));
+  check(warningStyle.first&&warningStyle.weight>=600&&warningStyle.top>=warningStyle.bodyTop,width+' warning is bold and first in the notice');
+  await page.screenshot({path:`${out}/warning-${width}.png`});
   check(await privacy.locator('[lang="zh-CN"]').count()>8&&await privacy.locator('[lang="en-US"]').count()>8,width+' bilingual notice before language');
   check(await privacy.getByRole('switch').count()===2,width+' independent cloud and OH controls');
   check(await privacy.getByRole('switch').evaluateAll(els=>els.every(e=>e.getAttribute('aria-checked')==='false')),width+' optional consent defaults off');

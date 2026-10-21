@@ -1131,6 +1131,10 @@
     "privacy.saveFailed": {
       "zh-CN": "权限选择未能保存，请稍后重试。未保存成功前，不会授予新的权限。",
       "en-US": "Your permission choices could not be saved. Please try again. No new permissions are granted until saving succeeds."
+    },
+    "privacy.readCarefully": {
+      "zh-CN": "请务必认真阅读，并在下方手动授权云盘和智能体服务。",
+      "en-US": "Please read carefully and manually authorize cloud drive and agent services below."
     }
   }
 }

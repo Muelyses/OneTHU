@@ -1,7 +1,23 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.notifystatus.571c1a7180e0",
+      "source": "Android 通知渠道 + 定时闹钟",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyStatus.ts",
+          "line": 30,
+          "context": "return i18n(\"state.notifystatus.571c1a7180e0\");"
+        }
+      ],
+      "translation": "Android notification channels + scheduled alarms",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.notifystatus.6fd3264bb821",
       "source": "允许精确提醒",
@@ -1318,29 +1334,6 @@
         }
       ],
       "translation": "Detach library {name} / {email}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsynccore.detachProject",
-      "source": "解除仓库 {name} / {username}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name"
-        },
-        {
-          "name": "username"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSyncCore.ts",
-          "line": 133,
-          "context": "attempt(i18n(\"state.orgsynccore.detachProject\", {name:repo.name,username:binding.username}), async () => {\n      const direct = (await api.members(\"projects\",repo.id,false)).find(m=>m.id===binding.userId);\n      if (direct) await api.removeMember(\"projects\",repo.id,binding.userId);\n      if ((await api.members(\"projects\",repo.id,false)).some(m=>m.id===binding.userId)) throw new Error(i18n(\"state.orgsynccore.f4efde7b447c\"));\n      // Group-inherited access belongs to the group itself, not this resource link.\n    })"
-        }
-      ],
-      "translation": "Detach repository {name} / {username}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -6396,6 +6396,7 @@ const locale = {
     "privacy.ohRequired": "OH 未授权。请先在「我的 → 权限与隐私」或导览中查看说明并开启。",
     "privacy.ohTitle": "OH、模型与插件",
     "privacy.ohToggle": "允许使用 OH 与所选模型服务",
+    "privacy.readCarefully": "请务必认真阅读，并在下方手动授权云盘和智能体服务。",
     "privacy.replay": "重新导览",
     "privacy.review": "查看与修改授权",
     "privacy.revokeGuide": "如果想要撤销授权，请前往设置重新导览。",

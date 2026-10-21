@@ -6396,6 +6396,7 @@ const locale = {
     "privacy.ohRequired": "OH is disabled. Review the notice and enable it in My → Permissions & privacy or in the guide.",
     "privacy.ohTitle": "OH, models & plugins",
     "privacy.ohToggle": "Allow OH and the selected model service",
+    "privacy.readCarefully": "Please read carefully and manually authorize cloud drive and agent services below.",
     "privacy.replay": "Replay the guide",
     "privacy.review": "Review permissions",
     "privacy.revokeGuide": "To withdraw consent, open Settings and replay the guide.",

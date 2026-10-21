@@ -1,7 +1,23 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.tabtitles.57c7c46977b9",
+      "source": "网络学堂 › 文件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/tabTitles.ts",
+          "line": 99,
+          "context": "course ? i18n(\"state.tabtitles.457de67c8142\", { course: String(course) }) : i18n(\"state.tabtitles.57c7c46977b9\")"
+        }
+      ],
+      "translation": "Web Learning › Files",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "state.tabtitles.5caea2aaeece",
       "source": "网络学堂 › 全部文件",
@@ -1340,22 +1356,6 @@
         }
       ],
       "translation": "Wallpaper applied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultregistry.75aa9163a82e",
-      "source": "这是你自己的名片，已在「我的名片」里",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultRegistry.ts",
-          "line": 77,
-          "context": "r.reason === \"duplicate\" ? i18n(\"state.vaultregistry.dcd9b29df966\") : i18n(\"state.vaultregistry.75aa9163a82e\")"
-        }
-      ],
-      "translation": "This is your own card; it is already in My card",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

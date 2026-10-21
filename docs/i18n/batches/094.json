@@ -1,7 +1,23 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.widgets.1511812d56b3",
+      "source": "研究生收入记录。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 115,
+          "context": "return i18n(\"state.widgets.1511812d56b3\");"
+        }
+      ],
+      "translation": "Graduate income records. Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.widgets.165423b667f9",
       "source": "银行代发记录。需要登录。",
@@ -1263,22 +1279,6 @@
         }
       ],
       "translation": "Open the capsule and search for features or campus content.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "tour.essentials.chapter",
-      "source": "搜索与 OH",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 28,
-          "context": "return i18n(\"tour.essentials.chapter\");"
-        }
-      ],
-      "translation": "Search & OH",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

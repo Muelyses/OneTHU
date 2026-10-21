@@ -1,7 +1,23 @@
 {
-  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.atoms.e642c7fc3df2",
+      "source": "GitLab 合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 731,
+          "context": "sub: i18n(\"state.atoms.e642c7fc3df2\")"
+        }
+      ],
+      "translation": "GitLab merge requests",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.atoms.e7028601e7da",
       "source": "信息",
@@ -1366,27 +1382,6 @@
         }
       ],
       "translation": "Imported {length} courses into the staging area",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.data.329fbface8f2",
-      "source": "草稿「{name}」已导出到剪贴板",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(d.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/data.ts",
-          "line": 1818,
-          "context": "setToast(i18n(\"state.data.329fbface8f2\", { name: String(d.name) }))"
-        }
-      ],
-      "translation": "Draft \"{name}\" exported to clipboard",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -240,6 +240,30 @@ const preserved = B.defaultBoardDoc({ ...deps, loadLayoutItems: () => PORTRAIT }
 ok(preserved.boards[0].cells.portrait.some(x => x.id === "today.homework" && x.collapsed), "旧布局保留原卡片和折叠状态");
 ok(preserved.homeLayoutVersion === 2, "旧布局补齐可编辑 chrome 并记录迁移版本");
 
+/* Old onboarding defaults must use the same first-run layout as tpl-home. */
+const legacyDefaults = [{id:"classes",col:"main",collapsed:false},{id:"notices",col:"rail",collapsed:false}];
+const starterDeps = {...deps, resolveLayout: saved => saved ?? legacyDefaults, loadLayoutItems: () => legacyDefaults};
+const generated = B.defaultBoardDoc(starterDeps);
+ok(JSON.stringify(generated.boards[0].cells.portrait) === JSON.stringify(B.homeStarterItems()), "旧导览写下的默认布局首次打开也必须直接使用首页模板");
+const oldGrid = {v:1, activeBoardId:B.SYSTEM_BOARD_ID, order:{mode:"auto",edited:false}, boards:[B.buildSystemBoard(starterDeps)]};
+for (const old of [oldGrid, B.purgeGridResidue(oldGrid), B.migrateHomeCanvas(oldGrid), B.migrateHomeCanvas(B.purgeGridResidue(oldGrid))]) {
+  const repaired = B.migrateUntouchedHome(old, starterDeps);
+  ok(JSON.stringify(repaired.boards[0].cells.portrait) === JSON.stringify(B.homeStarterItems()), "精确识别旧自动默认首页并修复窄侧栏");
+  ok(B.migrateUntouchedHome(repaired, starterDeps) === repaired, "首页默认迁移幂等");
+}
+const authoredOld = B.migrateHomeCanvas(oldGrid);
+const shiftedOld = structuredClone(authoredOld);
+shiftedOld.boards[0].cells.portrait.at(-1).rect.x += 1;
+ok(JSON.stringify(B.migrateUntouchedHome(shiftedOld, starterDeps).boards[0].cells.portrait) === JSON.stringify(shiftedOld.boards[0].cells.portrait), "即使只移动过1px也保留用户布局");
+const deletedOld = structuredClone(authoredOld);
+deletedOld.boards[0].cells.portrait.pop();
+ok(JSON.stringify(B.migrateUntouchedHome(deletedOld, starterDeps).boards[0].cells.portrait) === JSON.stringify(deletedOld.boards[0].cells.portrait), "删除过卡片的首页不得自动恢复");
+
+const mixedOld = structuredClone(oldGrid);
+mixedOld.boards[0].cells.landscape[0].collapsed = true;
+const mixedFixed = B.migrateUntouchedHome(mixedOld, starterDeps);
+ok(mixedFixed.boards[0].cells.portrait[0].id === "home.clock" && mixedFixed.boards[0].cells.landscape.some(it => it.id === "today.classes" && it.collapsed), "横竖屏分别识别默认布局，定制朝向保留折叠与历史chrome迁移");
+
 /* A note saved by the former outer-props path must remain recoverable. */
 const brokenSavedNote = { id: "note-legacy", spec: { kind: "custom", id: "note", props: { tone: "yellow", text: "older" } }, props: { text: "saved draft", extra: true }, cell: { x: 0, y: 0, w: 2, h: 2 } };
 ok(B.toPxItem(brokenSavedNote).spec.props.text === "saved draft", "旧便笺的外层 props 必须在渲染时恢复，不能丢掉已写内容");

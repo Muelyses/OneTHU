@@ -317,7 +317,13 @@ export function buildSystemBoard(deps: BoardDeps): Board {
 
 export function defaultBoardDoc(deps: BoardDeps): BoardDoc {
   const board = buildSystemBoard(deps);
-  const fresh = deps.loadLayoutItems("portrait") == null && deps.loadLayoutItems("landscape") == null;
+  // Older onboarding wrote the registry defaults before the board was opened.
+  // Those generated defaults are not an authored four-column layout.
+  const defaults = deps.resolveLayout(null);
+  const fresh = (["portrait", "landscape"] as const).every(o => {
+    const saved = deps.loadLayoutItems(o);
+    return saved == null || JSON.stringify(deps.resolveLayout(saved)) === JSON.stringify(defaults);
+  });
   if (fresh) for (const o of ["portrait", "landscape"] as const) board.cells[o] = homeStarterItems();
   const doc: BoardDoc = { v: 1, boards: [board], activeBoardId: board.id, order: deps.loadOrder(), homeLayoutVersion: fresh ? 2 : undefined };
   return migrateHomeCanvas(doc);
@@ -353,6 +359,41 @@ export function migrateHomeCanvas(doc: BoardDoc): BoardDoc {
     }
     return {...board, cells};
   })};
+}
+
+/** Upgrade only an exact, untouched old generated home; never infer intent from IDs alone. */
+export function migrateUntouchedHome(doc: BoardDoc, deps: BoardDeps): BoardDoc {
+  const order = doc.order as { edited?: boolean; mode?: string };
+  if (order?.edited || order?.mode === "manual") return doc;
+  const old: BoardDoc = { v: 1, activeBoardId: SYSTEM_BOARD_ID, order: doc.order, boards: [{
+    id: SYSTEM_BOARD_ID, name: "首页", icon: "today", kind: "system", cells: {
+      portrait: layoutToCells(deps.resolveLayout(null)),
+    },
+  }] };
+  // Both historical load orders existed: grid → chrome, and chrome → grid.
+  const variants = [old, purgeGridResidue(old), migrateHomeCanvas(old), migrateHomeCanvas(purgeGridResidue(old))]
+    .map(candidate => candidate.boards[0]!.cells.portrait!);
+  const matches = (items: BoardItem[], expected: BoardItem[]) => items.length > 0 && items.length === expected.length && items.every((it, i) => {
+    const seed = expected[i]!;
+    return it.id === seed.id && JSON.stringify(it.spec) === JSON.stringify(seed.spec)
+      && !!it.collapsed === !!seed.collapsed && !it.folded && !it.pinned && it.opacity === undefined
+      && !it.props && (it.rect ? !!seed.rect && sameRect(it.rect, seed.rect) : !seed.rect && sameCell(it.cell, seed.cell))
+      && it.manual === seed.manual;
+  });
+  let changed = false;
+  const upgraded = migrateHomeCanvas(doc);
+  const boards = upgraded.boards.map(board => {
+    if (board.id !== SYSTEM_BOARD_ID || board.kind !== "system") return board;
+    const original = doc.boards.find(b => b.id === board.id)!;
+    const cells = { ...board.cells };
+    for (const o of Object.keys(cells) as Orientation[]) {
+      if (!variants.some(candidate => matches(original.cells[o] ?? [], candidate))) continue;
+      cells[o] = homeStarterItems();
+      changed = true;
+    }
+    return changed ? { ...board, cells } : board;
+  });
+  return changed ? { ...doc, homeLayoutVersion: 2, boards } : doc;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -457,7 +498,7 @@ export function loadBoard(deps: BoardDeps): BoardDoc {
     saveBoard(fresh, deps);
     return fresh;
   }
-  const safe = repairOverlaps(migrateHomeCanvas(purgeGridResidue(parsed)));
+  const safe = repairOverlaps(migrateHomeCanvas(purgeGridResidue(migrateUntouchedHome(parsed, deps))));
   if (safe !== parsed) saveBoard(safe, deps);
   return safe;
 }

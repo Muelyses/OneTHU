@@ -441,8 +441,8 @@ export class XiaodaClient {
     return this.apiGet<XiaodaSkillOverview>("/api/skill/plaza/overview");
   }
 
-  async skillList(pageNum = 1, pageSize = 10): Promise<PageEnvelope<XiaodaSkillItem>> {
-    return this.apiGet<PageEnvelope<XiaodaSkillItem>>("/api/skill/plaza/list", { pageNum, pageSize });
+  async skillList(currentPage = 1, pageSize = 10): Promise<PageEnvelope<XiaodaSkillItem>> {
+    return this.apiGet<PageEnvelope<XiaodaSkillItem>>("/api/skill/plaza/list", { currentPage, pageSize });
   }
 
   async conversationPage(pageNum = 1, pageSize = 10): Promise<PageEnvelope<XiaodaConversation>> {

@@ -22,6 +22,9 @@ mod ws_bridge;
 mod plugins;
 mod native_security;
 mod plugin_package;
+mod skill_package;
+mod skill_runtime;
+mod skills;
 use std::collections::HashMap;
 use std::error::Error as _;
 use std::time::Duration;
@@ -4375,6 +4378,7 @@ tauri::Builder::default()
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            skills::skills_action, skills::skills_export,
             douyu_bridge::douyu_send_danmu,
             douyu_bridge::douyu_self_check,
             ws_bridge::ws_open,

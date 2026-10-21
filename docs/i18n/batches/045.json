@@ -1,7 +1,145 @@
 {
-  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.folderpage.d61319988ab5",
+      "source": "这个收藏项已经在桌面某块小组件上",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 166,
+          "context": "on ? i18n(\"pages.folderpage.d61319988ab5\") : i18n(\"pages.folderpage.a02c3f04e2cc\")"
+        }
+      ],
+      "translation": "This favorite is already on a home screen widget",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.d8aa0728e675",
+      "source": "」？\n其子收藏夹与收录的收藏项入口将一并删除（原功能不受影响）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 64,
+          "context": "i18n(\"pages.folderpage.26e0a9e64fed\") + folder.title + i18n(\"pages.folderpage.d8aa0728e675\")"
+        }
+      ],
+      "translation": "\"?\nIts sub-folders and collected favorite entries will be removed as well (the original features are not affected).",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.folderpage.d8f4406b527d",
+      "source": " 层收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 262,
+          "context": "i18n(\"pages.folderpage.c6807d67c7d9\") + FAVS_MAX_DEPTH + i18n(\"pages.folderpage.d8f4406b527d\")"
+        }
+      ],
+      "translation": " folder levels",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.de0b42d48b30",
+      "source": "上桌面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 150,
+          "context": "on ? i18n(\"pages.folderpage.4f9c7d13e1bc\") : i18n(\"pages.folderpage.de0b42d48b30\")"
+        }
+      ],
+      "translation": "Add to home screen",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.e3c22b9870e1",
+      "source": "栏目显隐与排序点右上「管理栏目」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 293,
+          "context": "isRoot ? i18n(\"pages.folderpage.86620776ee32\") : i18n(\"pages.folderpage.e3c22b9870e1\")"
+        }
+      ],
+      "translation": "Show, hide, or reorder sections via \"Manage sections\" in the top right.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.e6f0a1fa5326",
+      "source": "左侧栏顺序上移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 105,
+          "context": "{i18n(\"pages.folderpage.e6f0a1fa5326\")}"
+        }
+      ],
+      "translation": "Move up in sidebar order",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.e75e8b4e5c97",
+      "source": "下移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 106,
+          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 438,
+          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 489,
+          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
+        }
+      ],
+      "translation": "Move down",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.e9075f60449d",
+      "source": "子收藏夹名称…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 300,
+          "context": "{i18n(\"pages.folderpage.e9075f60449d\")}"
+        }
+      ],
+      "translation": "Sub-folder name…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.folderpage.f853a70b1204",
       "source": "上移",
@@ -1282,134 +1420,6 @@
         }
       ],
       "translation": "Download failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.6e764af4b09d",
-      "source": "已回复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 935,
-          "context": "showToast(i18nMsg(\"pages.gitlabpage.6e764af4b09d\"))"
-        }
-      ],
-      "translation": "Replied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.6f225eb36d6d",
-      "source": "内部",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1627,
-          "context": "project.visibility === \"internal\" ? i18n(\"pages.gitlabpage.6f225eb36d6d\") : i18n(\"pages.gitlabpage.7a73baf0ce9a\")"
-        }
-      ],
-      "translation": "Internal",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.6f40a77ec3f5",
-      "source": "加载更多讨论",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1006,
-          "context": "{i18n(\"pages.gitlabpage.6f40a77ec3f5\")}"
-        }
-      ],
-      "translation": "Load more discussions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.71e95b289aad",
-      "source": "已跳过",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 107,
-          "context": "return i18n(\"pages.gitlabpage.71e95b289aad\");"
-        }
-      ],
-      "translation": "Skipped",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.728a091b73ab",
-      "source": "搜索 Issue",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1319,
-          "context": "kind === \"issue\" ? i18n(\"pages.gitlabpage.728a091b73ab\") : i18n(\"pages.gitlabpage.bb1a195bd5e5\")"
-        }
-      ],
-      "translation": "Search issues",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.732bc792e373",
-      "source": "二进制文件不在应用内预览，请用浏览器打开。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 371,
-          "context": "{i18n(\"pages.gitlabpage.732bc792e373\")}"
-        }
-      ],
-      "translation": "Binary files cannot be previewed in the app; please open them in a browser.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.74af046075af",
-      "source": "讨论已解决",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 921,
-          "context": "next ? i18nMsg(\"pages.gitlabpage.74af046075af\") : i18nMsg(\"pages.gitlabpage.c25586638d22\")"
-        }
-      ],
-      "translation": "Discussion resolved",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.75b08c1d27d1",
-      "source": "项目不存在或无权访问",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1613,
-          "context": "detail.error ?? i18n(\"pages.gitlabpage.75b08c1d27d1\")"
-        }
-      ],
-      "translation": "The project does not exist or you have no access",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

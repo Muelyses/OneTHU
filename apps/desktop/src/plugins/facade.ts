@@ -92,6 +92,7 @@ import { getExtHwSnapshot, toHomework } from "../state/exthw.js";
 import { parseLearnTime } from "@onethu/core";
 import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
 import type { GitlabIssueState } from "../state/gitlab.js";
+import { computeSkill, readSkill, runSkill, searchSkills } from "../lib/skills.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -918,6 +919,26 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
      *  权限口径：本命名空间要求 ui 权限；步骤内部调用的其他 ns 不再逐 gate——
      *  OH 是受信执行体，用户在对话里对它下达的指令视同用户操作。 */
     ext: {
+      skillSearch: (query?: string): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillSearch");
+        return searchSkills(query);
+      },
+      skillCompute: (code: string, input: unknown): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillCompute");
+        return computeSkill(String(code), input);
+      },
+      skillRun: (id: string, path: string, input: unknown): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillRun");
+        return runSkill(String(id), String(path), input);
+      },
+      skillLoad: (id: string): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillLoad");
+        return readSkill(String(id));
+      },
+      skillReadFile: (id: string, path: string): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillReadFile");
+        return readSkill(String(id), String(path));
+      },
       toolCreate: (name: string, description: string, steps: unknown): void => {
         gate(perms, "ui", "ext.toolCreate");
         upsertTool({

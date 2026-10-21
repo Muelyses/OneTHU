@@ -24,7 +24,7 @@ import {
 import * as cheerio from "cheerio";
 import {InfoHelper} from "../index";
 import {clearCookies, getRedirectUrl, platformFetchWith, stringify, uFetch} from "../utils/network";
-import {IdAuthError, LibError, LoginError, UrlError} from "../utils/error";
+import {IdAuthError, LibError, LoginError, LoginPreparationError, UrlError} from "../utils/error";
 import {sm2} from "sm-crypto";
 
 // OneTHU 适配：OpenHarmony rtn-network-utils require 块已剔除（vite 静态解析会失败）
@@ -112,7 +112,7 @@ export const __idCredentialFormForTest = async (
         [scheme === "i_user" ? "i_user" : "username"]: helper.userId,
         [scheme === "i_user" ? "i_pass" : "password"]: SM2_MAGIC_NUMBER + sm2.doEncrypt(password, publicKey),
         fingerPrint: helper.fingerprint,
-        fingerGenPrint: "",
+        fingerGenPrint: helper.fingerGenPrint ?? "",
         i_captcha: "",
     };
     if (helper.trustBrowser) {
@@ -122,64 +122,141 @@ export const __idCredentialFormForTest = async (
     return form;
 };
 
-/**
- * 【移植自上游 v3.19.0】Logs in without a password, reusing the trusted-browser
- * state of a live ID session.
- *
- * 受信设备的 id 平台对登录入口回答的是自动提交表单（checkSingle 带
- * i_rememberme=on；/security_check 无附加字段）而不是凭据表单——提交体从页面
- * 自身构造（fingerPrint 用 helper 的），action 相对 id 主机解析（id 会话
- * cookie 在 id 主机上）。返回 null = 平台未给免密通道（调用方保持原行为）。
- */
+type LoginPreparationStage = "credential-entry" | "trusted-confirmation";
+
+function visibleAuthText(html: string): string {
+    const $ = cheerio.load(html);
+    $("script, style, template, noscript, [hidden], [aria-hidden='true']").remove();
+    return ($("#msg_note").text().trim() || $("body").text()).replace(/\s+/g, " ").trim();
+}
+
+function preparationFailure(html: string, stage: LoginPreparationStage): LoginPreparationError {
+    const text = visibleAuthText(html);
+    const trust = /信任|受信|认证因子|验证因子|设备|trusted|trust|device|factor/i;
+    const limit = /上限|过多|最大|已满|超出|超过|too many|maximum|limit|exceed/i;
+    if (trust.test(text) && limit.test(text)) return new LoginPreparationError("trust-limit", stage);
+    if (/访问过于频繁|请求过于频繁|访问受限|禁止访问|too many requests|access denied|temporarily blocked/i.test(text)) {
+        return new LoginPreparationError("access-restricted", stage);
+    }
+    if (!html.trim()) return new LoginPreparationError("empty-response", stage);
+    const $ = cheerio.load(html);
+    return new LoginPreparationError(
+        $("input[name='i_pass'], input[name='password'], #sm2publicKey").length ? "missing-public-key" : "unexpected-page",
+        stage,
+    );
+}
+
+function loginPublicKey(html: string, stage: LoginPreparationStage): string | null {
+    const keyElement = cheerio.load(html)("#sm2publicKey");
+    const key = (keyElement.text().trim() || keyElement.attr("value") || "").trim();
+    if (!key) return null;
+    // Standard uncompressed SM2 keys and compressed points supported by sm-crypto.
+    // Reject page markup/script snippets before the encryption library sees them.
+    let valid = false;
+    if (/^(?:04[\da-f]{128}|0[23][\da-f]{64})$/i.test(key)) {
+        try { valid = sm2.verifyPublicKey(key); } catch { /* Invalid curve point. */ }
+    }
+    if (!valid) throw new LoginPreparationError("invalid-public-key", stage);
+    return key;
+}
+
+function isFinishedIdEntry(html: string, scheme: "i_user" | "username"): boolean {
+    const text = visibleAuthText(html);
+    if (text.includes("二次认证")) return true;
+    if (scheme === "username") {
+        return text.includes("账号设置") && !cheerio.load(html)("input[type='password'], input[name='password']").length;
+    }
+    return text.includes("登录成功。正在重定向到") && !!cheerio.load(html)("a[href]").length;
+}
+
+/** Submit at most one recognized ID confirmation form. A returned password form is
+ * usable input for idLoginResponse, not a public-key failure. Transport errors
+ * retain their status/cause; an HTTP 429 must never become a missing-key error. */
 export const passwordlessEntry = async (helper: InfoHelper, entryHtml: string): Promise<string | null> => {
     if (!helper.trustBrowser) {
         return null;
     }
     const $ = cheerio.load(entryHtml);
     const form = $("form")
-        .filter((_i, f) => $(f).find("input[name='fingerPrint']").length > 0)
+        .filter((_i, f) => $(f).find("input[name='fingerPrint']").length > 0
+            || /checkSingle|security_check/.test($(f).attr("action") ?? ""))
         .first();
     const action = form.attr("action");
     if (action === undefined) {
         return null;
     }
-    const body: { [key: string]: string } = {};
+    let target: URL;
+    try { target = new URL(action, ID_HOST_URL); } catch {
+        throw new LoginPreparationError("unsafe-confirmation", "trusted-confirmation");
+    }
+    if (target.origin !== ID_HOST_URL || target.username || target.password
+        || !["/do/off/ui/auth/login/checkSingle", "/security_check"].includes(target.pathname)) {
+        throw new LoginPreparationError("unsafe-confirmation", "trusted-confirmation");
+    }
+    const body: { [key: string]: string } = Object.create(null);
     form.find("input[name]").each((_i, input) => {
         const name = $(input).attr("name")!;
-        body[name] = name === "fingerPrint" ? helper.fingerprint : $(input).attr("value") ?? "";
+        const type = ($(input).attr("type") ?? "hidden").toLowerCase();
+        if (type === "hidden") body[name] = $(input).attr("value") ?? "";
     });
-    let response: string;
-    try {
-        response = await uFetch(action.startsWith("/") ? ID_HOST_URL + action : action, body);
-    } catch {
-        return null;
+    body.fingerPrint = helper.fingerprint;
+    body.fingerGenPrint = helper.fingerGenPrint ?? "";
+    if (target.pathname.endsWith("/checkSingle")) {
+        body.i_rememberme = "on";
     }
-    return response.includes("sm2publicKey") ? null : response;
+    return await uFetch(target.toString(), body);
 };
 
 /**
  * 【移植自上游 v3.19.0】Obtains the login response for the unified ID system,
  * preferring the passwordless path when the live session is trusted.
- * `entryHtml` 无 sm2publicKey = 平台发了受信表单（无 key 可加密）。
+ * Entry pages may contain credentials, trusted confirmation, 2FA or an already
+ * successful session; missing a key alone does not distinguish those states.
  */
-const idLoginResponse = async (
+export const idLoginResponse = async (
     helper: InfoHelper,
     entryHtml: string,
     idLoginUrl: string,
     scheme: "i_user" | "username",
 ): Promise<string> => {
-    const sm2PublicKey = cheerio.load(entryHtml)("#sm2publicKey").text();
-    if (sm2PublicKey === "") {
-        const passwordless = await passwordlessEntry(helper, entryHtml);
-        if (passwordless === null) {
-            throw new LoginError("Failed to get public key.");
+    let html = entryHtml;
+    // At most one confirmation POST followed by at most one credential POST.
+    // Never recursively replay credentials when the school returns another form.
+    for (let confirmationCount = 0; confirmationCount <= 1; confirmationCount++) {
+        const stage: LoginPreparationStage = confirmationCount ? "trusted-confirmation" : "credential-entry";
+        const publicKey = loginPublicKey(html, stage);
+        if (publicKey !== null) {
+            const response = await uFetch(idLoginUrl, await __idCredentialFormForTest(helper, publicKey, helper.password, scheme));
+            if (isFinishedIdEntry(response, scheme)) return response;
+            const $ = cheerio.load(response);
+            const returnedKey = $("#sm2publicKey");
+            const hasKey = !!(returnedKey.text().trim() || returnedKey.attr("value")?.trim());
+            const failure = preparationFailure(response, stage);
+            if (!hasKey && (failure.reason === "trust-limit" || failure.reason === "access-restricted")) throw failure;
+            $("script, style, template, noscript, [hidden], [aria-hidden='true']").remove();
+            const note = $("#msg_note").text().trim();
+            if (note) throw new LoginError(note);
+            throw hasKey ? new LoginPreparationError("unexpected-page", stage) : failure;
         }
-        return passwordless;
+        if (isFinishedIdEntry(html, scheme)) return html;
+        const failure = preparationFailure(html, stage);
+        if (failure.reason === "trust-limit" || failure.reason === "access-restricted") throw failure;
+        if (confirmationCount === 1) {
+            if (cheerio.load(html)("form[action*='checkSingle'], form[action*='security_check']").length) {
+                throw new LoginPreparationError("confirmation-loop", stage);
+            }
+            throw failure;
+        }
+        const confirmed = await passwordlessEntry(helper, html);
+        if (confirmed === null) throw failure;
+        html = confirmed;
     }
-    return await uFetch(idLoginUrl, await __idCredentialFormForTest(helper, sm2PublicKey, helper.password, scheme));
+    throw new LoginPreparationError("confirmation-loop", "trusted-confirmation");
 };
 
 let outstandingLoginPromise: Promise<void> | undefined = undefined;
+let loginAttemptSequence = 0;
+let outstandingLoginIdentity: {attemptId: number; userId: string} | null = null;
 
 const twoFactorAuth = async (helper: InfoHelper): Promise<string> => {
     const { result: r1, msg: m1, object: o1 } = JSON.parse(await uFetch(DOUBLE_AUTH_URL, {
@@ -249,87 +326,106 @@ export const login = async (
     userId: string,
     password: string,
 ): Promise<void> => {
-    helper.userId = userId;
-    helper.password = password;
-    if (helper.userId === "" || helper.password === "") {
+    if (userId === "" || password === "") {
         const e = new LoginError("Please login.");
         helper.loginErrorHook && helper.loginErrorHook(e);
         throw e;
     }
-    if (!helper.userId.match(/^\d+$/)) {
+    if (!userId.match(/^\d+$/)) {
         const e = new LoginError("请输入学号。");
         helper.loginErrorHook && helper.loginErrorHook(e);
         throw e;
     }
+    if (outstandingLoginPromise !== undefined) {
+        if (outstandingLoginIdentity?.userId !== userId) {
+            throw Object.assign(new LoginError("Another account is already signing in."), {code: "AUTH_IN_PROGRESS"});
+        }
+        await outstandingLoginPromise;
+        return;
+    }
+    helper.userId = userId;
+    helper.password = password;
     if (!helper.mocked()) {
-        clearCookies();
-        await helper.clearCookieHandler();
         if (outstandingLoginPromise === undefined) {
-            outstandingLoginPromise = new Promise<void>((resolve, reject) => {
-                setTimeout(() => {
-                    reject(new LoginError("Login timeout."));
-                }, 3 * 60 * 1000);
-                (async () => {
-                    await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
-                    let entryHtml = "";
-                    if (getRedirectLocation) {
-                        // Patch for OpenHarmony
-                        const oauthUrl = await getRedirectLocation(WEB_VPN_OAUTH_LOGIN_URL);
-                        if (!oauthUrl) {
-                            throw new LoginError("Failed to get oauth url.");
-                        }
-                        await uFetch(oauthUrl);
-                        const idUrl = await getRedirectLocation(oauthUrl);
-                        if (!idUrl) {
-                            throw new LoginError("Failed to get id url.");
-                        }
-                        entryHtml = await uFetch(idUrl);
-                    } else {
-                        // OneTHU 适配（2026-09-17 定案）：库外层（infoLib.libLogin）
-                        // 已在登录前清空原生 cookie 仓——干净客户端总是走完整
-                        // OAuth 舞（表单带 sig → check → 302 webvpn/login?code=
-                        // → 铸真票）。带陈旧匿名票才会被 IP 续会拦成门户页。
-                        // v3.19.0 移植：无 key 可能是受信表单（passwordless），
-                        // 交给 idLoginResponse 处理而非直接报错。
-                        entryHtml = await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
+            let timer: ReturnType<typeof setTimeout>;
+            // Queue work after assigning outstandingLoginPromise. The admission
+            // hook can await storage/cookies without allowing another caller in.
+            const attempt = Promise.resolve().then(async () => {
+                await helper.beforeLoginAttemptHook?.();
+                clearCookies();
+                await helper.clearCookieHandler();
+                let entryHtml = await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
+                if (getRedirectLocation) {
+                    // Patch for OpenHarmony
+                    const oauthUrl = await getRedirectLocation(WEB_VPN_OAUTH_LOGIN_URL);
+                    if (!oauthUrl) {
+                        throw new LoginError("Failed to get oauth url.");
                     }
-                    let response = await idLoginResponse(helper, entryHtml, ID_LOGIN_URL, "i_user");
-                    if (response.includes("二次认证")) {
-                        response = await twoFactorAuth(helper);
+                    await uFetch(oauthUrl);
+                    const idUrl = await getRedirectLocation(oauthUrl);
+                    if (!idUrl) {
+                        throw new LoginError("Failed to get id url.");
                     }
-                    if (!response.includes("登录成功。正在重定向到")) {
-                        const $ = cheerio.load(response);
-                        const message = $("#msg_note").text().trim();
-                        throw new LoginError(message);
-                    }
-                    const callbackUrl = cheerio.load(response)("a").attr()!.href;
-                    const redirectUrl = await (getRedirectLocation ?? getRedirectUrl)(callbackUrl);
-                    if (redirectUrl === LOGIN_URL || redirectUrl == null) {
-                        throw new LoginError("登录失败，请稍后重试。");
-                    }
-                    if (getRedirectLocation) {
-                        await uFetch(redirectUrl);
-                    }
-                    await roam(helper, "id", "10000ea055dd8d81d09d5a1ba55d39ad");
-                    outstandingLoginPromise = undefined;
-                })().then(resolve, (e: any) => {
-                    helper.loginErrorHook && helper.loginErrorHook(e);
-                    outstandingLoginPromise = undefined;
-                    reject(e);
-                });
+                    entryHtml = await uFetch(idUrl);
+                }
+                let response = await idLoginResponse(helper, entryHtml, ID_LOGIN_URL, "i_user");
+                if (response.includes("二次认证")) {
+                    response = await twoFactorAuth(helper);
+                }
+                if (!response.includes("登录成功。正在重定向到")) {
+                    const $ = cheerio.load(response);
+                    const message = $("#msg_note").text().trim();
+                    throw new LoginError(message);
+                }
+                const callbackUrl = cheerio.load(response)("a").attr()!.href;
+                const redirectUrl = await (getRedirectLocation ?? getRedirectUrl)(callbackUrl);
+                if (redirectUrl === LOGIN_URL || redirectUrl == null) {
+                    throw new LoginError("登录失败，请稍后重试。");
+                }
+                if (getRedirectLocation) {
+                    await uFetch(redirectUrl);
+                }
+                await roam(helper, "id", "10000ea055dd8d81d09d5a1ba55d39ad");
             });
+            const timeout = new Promise<never>((_resolve, reject) => {
+                timer = setTimeout(() => reject(new LoginError("Login timeout.")), 3 * 60 * 1000);
+            });
+            const pending = Promise.race([attempt, timeout]).then(() => {
+                clearTimeout(timer);
+                if (outstandingLoginPromise === pending) {
+                    outstandingLoginPromise = undefined;
+                    outstandingLoginIdentity = null;
+                }
+            }, (e: any) => {
+                clearTimeout(timer);
+                if (outstandingLoginPromise === pending) {
+                    outstandingLoginPromise = undefined;
+                    outstandingLoginIdentity = null;
+                }
+                helper.loginErrorHook && helper.loginErrorHook(e);
+                throw e;
+            });
+            outstandingLoginPromise = pending;
+            outstandingLoginIdentity = {attemptId: ++loginAttemptSequence, userId};
         }
         await outstandingLoginPromise;
     }
 };
 
-/** OneTHU 适配（2026-09-17）：2FA 挂起的登录链（等验证码的 futures）永不清
- *  outstandingLoginPromise——后续 login() 全都 await 这具僵尸，3 分钟后集体
- *  "Login timeout"（真机实录：开机 need-2fa 后手点登录全部无响应）。
- *  外层每次发起全新 libLogin 前调用本函数弃掉旧链（旧 futures 无人等，可 GC）。 */
+/** Detach an abandoned login/2FA attempt. This does not cancel transport work;
+ * settling the detached attempt must never clear a newer attempt's pointer. */
 export const clearOutstandingLogin = (): void => {
     outstandingLoginPromise = undefined;
+    outstandingLoginIdentity = null;
 };
+
+/** Lets the UI adopt an already waiting background authentication flow. */
+export const hasOutstandingLogin = (): boolean => outstandingLoginPromise !== undefined;
+
+/** Snapshot only: UI bridges can bind their 2FA hooks to the exact active attempt.
+ * Credentials never leave the helper; callers cannot mutate the internal owner. */
+export const getOutstandingLoginIdentity = (): {attemptId: number; userId: string} | null =>
+    outstandingLoginIdentity ? {...outstandingLoginIdentity} : null;
 
 export const logout = async (helper: InfoHelper): Promise<void> => {
     if (!helper.mocked()) {
@@ -373,24 +469,18 @@ export const roam = async (helper: InfoHelper, policy: RoamingPolicy, payload: s
     case "id": {
         const idBaseUrl = policy === "card" ? ID_BASE_URL : policy === "id_website" ? ID_WEBSITE_BASE_URL : ID_BASE_URL;
         const idLoginUrl = policy === "card" ? ID_LOGIN_URL : policy === "id_website" ? ID_WEBSITE_LOGIN_URL : ID_LOGIN_URL;
-        let response = "";
         const target = policy === "id_website" ? "账号设置" : "登录成功。正在重定向到";
-        for (let i = 0; i < 2; i++) {
-            // v3.19.0 移植：受信设备的入口页是 checkSingle/security_check 表单
-            // （无 sm2publicKey）——idLoginResponse 走 passwordlessEntry 提交。
-            const entryHtml = await uFetch(policy === "cr" ? CR_LOGIN_HOME_URL : (idBaseUrl + payload));
-            response = await idLoginResponse(
-                helper,
-                entryHtml,
-                idLoginUrl,
-                policy === "id_website" ? "username" : "i_user",
-            );
-            if (response.includes("二次认证")) {
-                response = await twoFactorAuth(helper);
-            }
-            if (response.includes(target)) {
-                break;
-            }
+        // A credential rejection is final for this attempt. Repeating the same
+        // password automatically increases lockout/rate-limit risk.
+        const entryHtml = await uFetch(policy === "cr" ? CR_LOGIN_HOME_URL : (idBaseUrl + payload));
+        let response = await idLoginResponse(
+            helper,
+            entryHtml,
+            idLoginUrl,
+            policy === "id_website" ? "username" : "i_user",
+        );
+        if (response.includes("二次认证")) {
+            response = await twoFactorAuth(helper);
         }
         if (!response.includes(target)) {
             throw new IdAuthError();
@@ -512,13 +602,25 @@ export const verifyAndReLogin = async (helper: InfoHelper): Promise<boolean> => 
         if (object.ryh === helper.userId) {
             return false;
         }
-    } catch {
-        //
+    } catch (e) {
+        // A restricted session probe is not evidence that another password login
+        // should be attempted. Keep the original server/admission error.
+        if (stopAuthenticationRecovery(e)) throw e;
     }
     const {userId, password} = helper;
     await login(helper, userId, password);
     return true;
 };
+
+/** Credential rejection, explicit admission failure and server restrictions are
+ * final for this wrapper invocation. Retrying them can resend the same password. */
+function stopAuthenticationRecovery(error: unknown): boolean {
+    if (error instanceof LoginError) return true;
+    if (!error || typeof error !== "object") return false;
+    const detail = error as {status?: unknown; code?: unknown};
+    return detail.status === 429 || detail.status === 403
+        || (typeof detail.code === "string" && detail.code.startsWith("AUTH_"));
+}
 
 export const roamingWrapper = async <R>(
     helper: InfoHelper,
@@ -535,11 +637,13 @@ export const roamingWrapper = async <R>(
         if (policy) {
             try {
                 return await operation();
-            } catch {
+            } catch (e) {
+                if (stopAuthenticationRecovery(e)) throw e;
                 let result: string;
                 try {
                     result = await roam(helper, policy, payload);
-                } catch {
+                } catch (e) {
+                    if (stopAuthenticationRecovery(e)) throw e;
                     result = await roam(helper, policy, payload);
                 }
                 return await operation(result);
@@ -548,6 +652,7 @@ export const roamingWrapper = async <R>(
             return await operation();
         }
     } catch (e) {
+        if (stopAuthenticationRecovery(e)) throw e;
         if (await verifyAndReLogin(helper)) {
             if (policy) {
                 const result = await roam(helper, policy, payload);

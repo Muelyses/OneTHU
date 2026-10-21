@@ -1,7 +1,155 @@
 {
-  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.trace.d407c45a6be7",
+      "source": "用{appLabel}前往",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "appLabel",
+          "expression": "appLabel"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 471,
+          "context": "{i18nRich(\"pages.trace.d407c45a6be7\", { appLabel: appLabel })}"
+        }
+      ],
+      "translation": "Open with {appLabel}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.trace.d79b1d0e5c61",
+      "source": "已结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.d79b1d0e5c61\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"done\", i18n(\"pages.trace.d79b1d0e5c61\")]"
+        }
+      ],
+      "translation": "Ended",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.dc07c04f3fc3",
+      "source": "高德 Web 服务 Key 未配置：POI 定位与路程估算不可用（地图与今日日程仍可查看）。将 apps/desktop/src-tauri/.env.example 复制为同目录 .env，填入 TRACE_AMAP_KEY=<你的key> 后重启应用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 478,
+          "context": "{i18n(\"pages.trace.dc07c04f3fc3\")}"
+        }
+      ],
+      "translation": "Amap Web service key not configured: POI lookup and travel-time estimates are unavailable (map and today's events are still viewable). Copy apps/desktop/src-tauri/.env.example to .env in the same folder, fill in TRACE_AMAP_KEY=<your key>, then restart the app.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.dc9591e56d50",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.trace.dc9591e56d50\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 535,
+          "context": "[\"live\", i18n(\"pages.trace.dc9591e56d50\")]"
+        }
+      ],
+      "translation": "In progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.trace.e1be450ce158",
+      "source": "{label}地图",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "a.label"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Trace.tsx",
+          "line": 469,
+          "context": "{i18nRich(\"pages.trace.e1be450ce158\", { label: a.label })}"
+        }
+      ],
+      "translation": "{label} Maps",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.00376d744fbd",
+      "source": "平台模型",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 394,
+          "context": "{i18n(\"pages.xiaoda.xiaodapage.00376d744fbd\")}"
+        }
+      ],
+      "translation": "Platform model",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.09829d304017",
+      "source": "对话智能体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 387,
+          "context": "{i18n(\"pages.xiaoda.xiaodapage.09829d304017\")}"
+        }
+      ],
+      "translation": "Conversational agent",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.xiaoda.xiaodapage.0d46455d92d1",
+      "source": "清小搭功能仅供实验与参考，无法取代 OneTHU Harness。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 42,
+          "context": "() => i18n(\"pages.xiaoda.xiaodapage.0d46455d92d1\")"
+        }
+      ],
+      "translation": "Xiaoda features are experimental and for reference only; they do not replace the OneTHU Harness.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.xiaoda.xiaodapage.0dd5ba052d62",
       "source": "贡献者",
@@ -10,7 +158,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 603,
+          "line": 611,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.0dd5ba052d62\")}"
         }
       ],
@@ -26,7 +174,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 338,
+          "line": 339,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.115f8a99ff8d\")}"
         }
       ],
@@ -42,7 +190,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 480,
+          "line": 481,
           "context": "(c.query.split(\"\\n\")[0] ?? \"\").slice(0, 40) || i18n(\"pages.xiaoda.xiaodapage.1587a76a2d84\")"
         }
       ],
@@ -58,7 +206,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 338,
+          "line": 339,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.21fbaf3a4f57\")}"
         }
       ],
@@ -74,12 +222,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 72,
+          "line": 73,
           "context": "id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME : i18n(\"pages.xiaoda.xiaodapage.2df7697dbb61\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 135,
+          "line": 136,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.2df7697dbb61\")"
         }
       ],
@@ -95,7 +243,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 482,
+          "line": 483,
           "context": "c.isDeepResearch ? i18n(\"pages.xiaoda.xiaodapage.34d33c5a7a08\") : undefined"
         }
       ],
@@ -111,7 +259,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 144,
+          "line": 145,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.350d0be1b4e7\")}"
         }
       ],
@@ -127,7 +275,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 468,
+          "line": 469,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.47392b6dbaa8\")}"
         }
       ],
@@ -143,12 +291,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 493,
+          "line": 494,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 654,
+          "line": 657,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         }
       ],
@@ -164,7 +312,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 42,
+          "line": 43,
           "context": "() => i18n(\"pages.xiaoda.xiaodapage.49d451178263\")"
         }
       ],
@@ -180,27 +328,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 405,
+          "line": 406,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.4c279d27ac1e\")}"
         }
       ],
       "translation": "The agent cannot be changed once a conversation starts; tap \"New conversation\" first to switch.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.xiaoda.xiaodapage.4f79dada892b",
-      "source": "技能详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 616,
-          "context": "selectedSkill?.name ?? i18n(\"pages.xiaoda.xiaodapage.4f79dada892b\")"
-        }
-      ],
-      "translation": "Skill details",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -212,27 +344,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 608,
+          "line": 616,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.515559957fd3\")}"
         }
       ],
       "translation": "Category",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.xiaoda.xiaodapage.54b89f901274",
-      "source": "未分类",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 620,
-          "context": "selectedSkill.categoryName || i18n(\"pages.xiaoda.xiaodapage.54b89f901274\")"
-        }
-      ],
-      "translation": "Uncategorized",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -244,7 +360,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 626,
+          "line": 629,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.56fb269924d9\")}"
         }
       ],
@@ -269,7 +385,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 647,
+          "line": 650,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.5aa03810e659\", { value: String(s.downloadCount ?? 0), value2: String(s.authorName ?? \"\") })}"
         }
       ],
@@ -285,7 +401,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 325,
+          "line": 326,
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.5d44af892c1b\") : i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")"
         }
       ],
@@ -301,36 +417,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 484,
+          "line": 485,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.5e2031c13ffa\")}"
         }
       ],
       "translation": "Keep chatting",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.xiaoda.xiaodapage.6610f0b69218",
-      "source": "{value} · {value2} 次下载",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(selectedSkill.categoryName || i18n(\"pages.xiaoda.xiaodapage.54b89f901274\"))"
-        },
-        {
-          "name": "value2",
-          "expression": "String(selectedSkill.downloadCount ?? 0)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 620,
-          "context": "{i18n(\"pages.xiaoda.xiaodapage.6610f0b69218\", { value: String(selectedSkill.categoryName || i18n(\"pages.xiaoda.xiaodapage.54b89f901274\")), value2: String(selectedSkill.downloadCount ?? 0) })}"
-        }
-      ],
-      "translation": "{value} · {value2} downloads",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -342,7 +433,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 528,
+          "line": 529,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.69543fafadb1\")}"
         }
       ],
@@ -363,7 +454,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 326,
+          "line": 327,
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.6beb452a379a\", { name: String(who.name) }) : `${who.name}${modelName ? ` · ${modelName}` : \"\"}`"
         }
       ],
@@ -379,7 +470,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 133,
+          "line": 134,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.6bf6d3f3d626\")"
         }
       ],
@@ -395,7 +486,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 271,
+          "line": 272,
           "context": "new Error(i18n(\"pages.xiaoda.xiaodapage.6d4fec35ccbe\"))"
         }
       ],
@@ -411,7 +502,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 456,
+          "line": 457,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.7fbcbca49ec5\")}"
         }
       ],
@@ -432,7 +523,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 456,
+          "line": 457,
           "context": "total ? i18n(\"pages.xiaoda.xiaodapage.84f7f9dfd488\", { total: String(total) }) : undefined"
         }
       ],
@@ -448,7 +539,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 604,
+          "line": 612,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.93588c0a42ab\")}"
         }
       ],
@@ -464,7 +555,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 126,
+          "line": 127,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.957244cdb9f2\")}"
         }
       ],
@@ -480,7 +571,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 537,
+          "line": 538,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.9577e7464c1f\")}"
         }
       ],
@@ -496,34 +587,18 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 136,
+          "line": 137,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.99aea2f9131a\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 602,
+          "line": 610,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.99aea2f9131a\")}"
         }
       ],
       "translation": "Skills",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.xiaoda.xiaodapage.a21b64510d88",
-      "source": "暂时没有介绍",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 619,
-          "context": "selectedSkill.description || i18n(\"pages.xiaoda.xiaodapage.a21b64510d88\")"
-        }
-      ],
-      "translation": "No description yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     },
     {
       "key": "pages.xiaoda.xiaodapage.af90a08fec8e",
@@ -533,12 +608,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 493,
+          "line": 494,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 654,
+          "line": 657,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         }
       ],
@@ -554,7 +629,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 134,
+          "line": 135,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.b0385cfe4b42\")"
         }
       ],
@@ -570,7 +645,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 123,
+          "line": 124,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b1abb3dc2271\")}"
         }
       ],
@@ -586,12 +661,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 259,
+          "line": 260,
           "context": "me?.name ?? i18n(\"pages.xiaoda.xiaodapage.b70bb4acc048\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 342,
+          "line": 343,
           "context": "me?.name ?? i18n(\"pages.xiaoda.xiaodapage.b70bb4acc048\")"
         }
       ],
@@ -607,22 +682,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 147,
+          "line": 148,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 463,
+          "line": 464,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 532,
+          "line": 533,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 630,
+          "line": 633,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         }
       ],
@@ -643,7 +718,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 623,
+          "line": 625,
           "context": "total ? i18n(\"pages.xiaoda.xiaodapage.bf8875666acb\", { total: String(total) }) : undefined"
         }
       ],
@@ -659,7 +734,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 397,
+          "line": 398,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.c4084a277493\")}"
         }
       ],
@@ -675,7 +750,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 623,
+          "line": 625,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.c599990d6fb9\")}"
         }
       ],
@@ -691,7 +766,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 401,
+          "line": 402,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ca4d973c0b00\")}"
         }
       ],
@@ -707,7 +782,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 119,
+          "line": 120,
           "context": "me ? (me.zjh ? `${me.name} · ${me.zjh}` : me.name) : i18n(\"pages.xiaoda.xiaodapage.cbc3933d7f0a\")"
         }
       ],
@@ -723,7 +798,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 548,
+          "line": 549,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ce5b23a25653\")}"
         }
       ],
@@ -739,7 +814,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 358,
+          "line": 359,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.d4bdd78f6bb0\")}"
         }
       ],
@@ -755,7 +830,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 459,
+          "line": 460,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.d883a9b91e85\")}"
         }
       ],
@@ -771,7 +846,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 373,
+          "line": 374,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.de9e3ada6a80\")}"
         }
       ],
@@ -787,12 +862,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 325,
+          "line": 326,
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.5d44af892c1b\") : i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 330,
+          "line": 331,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")}"
         }
       ],
@@ -808,32 +883,16 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 378,
+          "line": 379,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.edecf0ae6e51\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 399,
+          "line": 400,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.edecf0ae6e51\")}"
         }
       ],
       "translation": "Send",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.xiaoda.xiaodapage.fa137f21519d",
-      "source": "清小搭社区",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 618,
-          "context": "selectedSkill.authorName || i18n(\"pages.xiaoda.xiaodapage.fa137f21519d\")"
-        }
-      ],
-      "translation": "Xiaoda community",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1408,64 +1467,6 @@
         }
       ],
       "translation": "Wed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2cb6ebd1ab1f",
-      "source": "{credits} 学分",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "credits",
-          "expression": "r.credits"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 977,
-          "context": "{i18nRich(\"pages.zhjwxk.courses.2cb6ebd1ab1f\", { credits: r.credits })}"
-        }
-      ],
-      "translation": "{credits} credits",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1550,
-          "context": "{i18n(\"pages.zhjwxk.courses.2cd0f3be8738\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1563,
-          "context": "{i18n(\"pages.zhjwxk.courses.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.2da0f8388f67",
-      "source": "搜索课程名称、教师、课程号…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 766,
-          "context": "{i18n(\"pages.zhjwxk.courses.2da0f8388f67\")}"
-        }
-      ],
-      "translation": "Search course name, teacher, course code…",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

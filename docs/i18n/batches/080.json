@@ -1,7 +1,55 @@
 {
-  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.types.556c5fcee2ec",
+      "source": "从清华邮箱发信（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 67,
+          "context": "return i18n(\"plugins.types.556c5fcee2ec\");"
+        }
+      ],
+      "translation": "Send email from your Tsinghua mailbox (write operation, requires confirmation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.584c7658f468",
+      "source": "余额与消费流水（只读，不含充值）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 74,
+          "context": "return i18n(\"plugins.types.584c7658f468\");"
+        }
+      ],
+      "translation": "Balance and spending records (read-only, no top-ups)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.5bbe605e0a01",
+      "source": "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 92,
+          "context": "return i18n(\"plugins.types.5bbe605e0a01\");"
+        }
+      ],
+      "translation": "Assignment snapshots from Rain Classroom / TUOJ / Tyche / DSA OJ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.types.5d78a4c234e1",
       "source": "预约图书馆",
@@ -916,7 +964,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 42,
+          "line": 37,
           "context": "announcements:t(\"profile.field.announcements\")"
         }
       ],
@@ -932,7 +980,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 40,
+          "line": 35,
           "context": "bio:t(\"profile.field.bio\")"
         }
       ],
@@ -948,7 +996,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 42,
+          "line": 37,
           "context": "body:t(\"profile.field.body\")"
         }
       ],
@@ -964,7 +1012,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 41,
+          "line": 36,
           "context": "brief:t(\"profile.field.brief\")"
         }
       ],
@@ -980,7 +1028,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 42,
+          "line": 37,
           "context": "description:t(\"profile.field.description\")"
         }
       ],
@@ -996,7 +1044,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 41,
+          "line": 36,
           "context": "email:t(\"profile.field.email\")"
         }
       ],
@@ -1012,7 +1060,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "gitlabRepos:t(\"profile.field.gitlabRepos\")"
         }
       ],
@@ -1028,22 +1076,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "avatar:t(\"profile.field.image\")"
         },
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "src:t(\"profile.field.image\")"
         },
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "cover:t(\"profile.field.image\")"
         },
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 58,
+          "line": 53,
           "context": "{t(\"profile.field.image\")}"
         }
       ],
@@ -1059,7 +1107,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "libraries:t(\"profile.field.libraries\")"
         }
       ],
@@ -1075,7 +1123,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 41,
+          "line": 36,
           "context": "members:t(\"profile.field.members\")"
         }
       ],
@@ -1091,7 +1139,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 40,
+          "line": 35,
           "context": "name:t(\"profile.field.name\")"
         }
       ],
@@ -1107,7 +1155,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 41,
+          "line": 36,
           "context": "note:t(\"profile.field.note\")"
         }
       ],
@@ -1123,7 +1171,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "owner:t(\"profile.field.owner\")"
         }
       ],
@@ -1139,7 +1187,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 40,
+          "line": 35,
           "context": "phone:t(\"profile.field.phone\")"
         }
       ],
@@ -1155,7 +1203,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 42,
+          "line": 37,
           "context": "projects:t(\"profile.field.projects\")"
         }
       ],
@@ -1171,7 +1219,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 41,
+          "line": 36,
           "context": "role:t(\"profile.field.role\")"
         }
       ],
@@ -1187,7 +1235,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 40,
+          "line": 35,
           "context": "social:t(\"profile.field.social\")"
         }
       ],
@@ -1203,7 +1251,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 43,
+          "line": 38,
           "context": "status:t(\"profile.field.status\")"
         }
       ],
@@ -1219,7 +1267,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 42,
+          "line": 37,
           "context": "title:t(\"profile.field.title\")"
         }
       ],
@@ -1235,7 +1283,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 40,
+          "line": 35,
           "context": "website:t(\"profile.field.website\")"
         }
       ],
@@ -1251,59 +1299,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 56,
+          "line": 51,
           "context": "guest:t(\"profile.role.guest\")"
         }
       ],
       "translation": "Guest",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.role.member",
-      "source": "成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 56,
-          "context": "member:t(\"profile.role.member\")"
-        }
-      ],
-      "translation": "Member",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.role.owner",
-      "source": "所有者",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 56,
-          "context": "owner:t(\"profile.role.owner\")"
-        }
-      ],
-      "translation": "Owner",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.status.active",
-      "source": "进行中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 56,
-          "context": "active:t(\"profile.status.active\")"
-        }
-      ],
-      "translation": "In progress",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

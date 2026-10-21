@@ -444,6 +444,7 @@ export const universalFetch: FetchLike = (url, init) =>
  */
 export { rawErrorText, isSessionExpiredError } from "./sessionErrors.js";
 import { rawErrorText } from "./sessionErrors.js";
+import { explainLoginError, loginFailureDiagnostic } from "./loginErrors.js";
 
 /** 最近一次界面报错的安全摘要（只随「复制诊断摘要」带出，不自动上报） */
 let lastRawError = "";
@@ -453,7 +454,9 @@ export function lastErrorText(): string {
 
 export function explainNetworkError(err: unknown): string {
   const raw = redactNetworkLog(rawErrorText(err).trim());
-  lastRawError = raw;
+  lastRawError = [loginFailureDiagnostic(err), raw].filter(Boolean).join(" | ");
+  const loginExplanation = explainLoginError(err);
+  if (loginExplanation) return loginExplanation;
   if (!raw) return i18n("lib.transport.noReason");
   // 原生侧的大小闸门：说清多大、该怎么办，而不是丢一个网络错误
   const big = /too-large:(\d+):(\d+)/.exec(raw);

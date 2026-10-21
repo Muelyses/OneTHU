@@ -349,6 +349,11 @@ export interface OnethuApi {
   };
   /** 用户扩展层（OH 元工具）：用户工具 / OneFlow / 用户生成组件 */
   ext: {
+    skillSearch(query?: string): Promise<unknown>;
+    skillCompute(code: string, input: unknown): Promise<unknown>;
+    skillRun(id: string, path: string, input: unknown): Promise<unknown>;
+    skillLoad(id: string): Promise<unknown>;
+    skillReadFile(id: string, path: string): Promise<unknown>;
     toolCreate(name: string, description: string, steps: unknown): void;
     toolList(): Array<{ id: string; name: string; description: string }>;
     toolRun(id: string): Promise<{ ok: boolean; error?: string }>;

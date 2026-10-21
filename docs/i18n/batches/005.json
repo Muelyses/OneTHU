@@ -1,5 +1,5 @@
 {
-  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -262,6 +262,16 @@
           "file": "apps/desktop/src/components/DevPanel.tsx",
           "line": 175,
           "context": "{i18n(\"components.devpanel.bbce140b7682\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/Login.tsx",
+          "line": 23,
+          "context": "copied ? i18n(\"components.devpanel.cce28dd1fcdf\") : i18n(\"components.devpanel.bbce140b7682\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Login.tsx",
+          "line": 24,
+          "context": "{i18n(\"components.devpanel.bbce140b7682\")}"
         }
       ],
       "translation": "Copy diagnostics",
@@ -278,6 +288,11 @@
           "file": "apps/desktop/src/components/DevPanel.tsx",
           "line": 113,
           "context": "what + i18n(\"components.devpanel.cce28dd1fcdf\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Login.tsx",
+          "line": 23,
+          "context": "copied ? i18n(\"components.devpanel.cce28dd1fcdf\") : i18n(\"components.devpanel.bbce140b7682\")"
         }
       ],
       "translation": "Copied to clipboard",

@@ -19,9 +19,10 @@ import {
   type TwoFactorMethod,
 } from "@onethu/core";
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
-import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
+import { loginCooldownLeftMs } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
 import { redactNetworkLog } from "./networkLog.js";
+import { loginFailureDiagnostic } from "./loginErrors.js";
 import { withPrivacy } from "./privacy.js";
 
 export type { TwoFactorMethod };
@@ -323,6 +324,8 @@ void (async () => {
 })();
 
 async function dumpDebug(err: unknown): Promise<void> {
+  const authDiagnostic = loginFailureDiagnostic(err);
+  if (authDiagnostic) await logLine(authDiagnostic);
   if (err instanceof Error && isTauri) {
     const debug = (err as Error & { debug?: string }).debug;
     await logLine("ERR " + err.message + (debug ? "\n" + debug : ""));
@@ -341,23 +344,40 @@ function retryTuojAfterTrust(): void {
  *  docs/INFOLIB-PIPELINE-REVIEW.md P2）。单一 webvpn 管线：不再有直连/webvpn
  *  降级舞蹈——webvpn 从校内校外都可达，拓扑唯一才是双环境适配的本质。
  *  opts.remember（默认 true）：成功后把密码混淆存本机，boot 恢复失败时静默重登。 */
-export async function login(
+type ClientLoginResult = { state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string };
+let clientLoginRequest: { username: string; p: Promise<ClientLoginResult> } | null = null;
+
+export function login(username: string, password: string, opts: { remember?: boolean } = {}): Promise<ClientLoginResult> {
+  if (clientLoginRequest) {
+    if (clientLoginRequest.username === username) return clientLoginRequest.p;
+    return Promise.reject(Object.assign(new Error("Another login is in progress."), { code: "AUTH_IN_PROGRESS" }));
+  }
+  const p = performLogin(username, password, opts);
+  clientLoginRequest = { username, p };
+  const clear = () => { if (clientLoginRequest?.p === p) clientLoginRequest = null; };
+  void p.then(clear, clear);
+  return p;
+}
+
+async function performLogin(
   username: string,
   password: string,
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
   void logLine("AUTH-PHASE import-login");
-  const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
+  const { libLogin, setLibFinger3, helper, assertLoginAccount } = await import("./infoLib.js");
+  assertLoginAccount(username, password);
   void logLine("AUTH-PHASE fingerprint-start");
   const fingerprint = await currentFingerprint();
+  session.fingerprint = fingerprint;
   void logLine("AUTH-PHASE fingerprint-ready");
   // （2026-09-18 决策）轮换实验撤除：强制 2FA 的链路被 keepalive/静默重登/
   // lib 僵尸链三面夹击，稳定性失控。回归简单：fp 固定，登录一次 2FA 到位；
   // finger3 缺失时选课靠死结自愈兜底（确认失败→清账直登，实测可用）。
   const remember = opts.remember ?? true;
-  pendingSecret = { username, password, remember };
   if (!remember) await clearRemembered().catch(() => undefined);
-
+  assertLoginAccount(username, password);
+  pendingSecret = { username, password, remember };
   setLibFinger3(session.finger3);
   helper.fingerprint = fingerprint;
   try {
@@ -371,6 +391,7 @@ export async function login(
         const fresh = getSelfFinger3() ||
           (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
         session.finger3 = fresh || session.finger3 || "";
+        setLibFinger3(session.finger3);
       }
       session.injectCredentials(username, password);
       await persist();
@@ -401,8 +422,6 @@ export async function login(
   } catch (err) {
     if (err instanceof Error) await dumpDebug(err);
     await logLine("LOGIN-ERR " + String(err));
-    // 封锁页特征（2026-09-17 实录）：下次 libLogin 前清原生仓换新身份
-    if (String(err).includes("public key")) markLoginFailedPublicKey();
     throw err;
   }
 }
@@ -430,7 +449,7 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 }
 
 export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
-  const { libVerify2FA, helper, getSelfFinger3 } = await import("./infoLib.js");
+  const { libVerify2FA, helper, getSelfFinger3, setLibFinger3 } = await import("./infoLib.js");
   try {
     await libVerify2FA(type, code, trust);
     session.state = "ready";
@@ -441,6 +460,7 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
       const fresh = getSelfFinger3() ||
         (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
       session.finger3 = fresh || session.finger3 || "";
+      setLibFinger3(session.finger3);
       await logLine(`FINGER3 verify 落盘 len=${session.finger3.length}`).catch(() => undefined);
     }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
@@ -490,10 +510,11 @@ export async function persist(): Promise<void> {
 
 export async function currentFingerprint(): Promise<string> {
   const saved = await store.loadSession();
-  if (saved?.fingerprint) return saved.fingerprint;
+  if (saved?.fingerprint) return session.fingerprint = saved.fingerprint;
   // 首次生成即落盘（demo 的 redux-persist 初值语义）：否则登录中途崩溃会
   // 重新随机，设备信任（fingerPrint 比对）永远建立不起来
   const fp = makeFingerprint();
+  session.fingerprint = fp;
   await store
     .saveSession({
       username: "",
@@ -532,6 +553,9 @@ export async function resumeSession(): Promise<boolean> {
       }
     }
   }
+  // Identity survives a failed first login and logout (both can have an empty jar).
+  if (saved?.fingerprint) session.fingerprint = saved.fingerprint;
+  if (saved?.finger3) session.finger3 = saved.finger3;
   if (!saved || !saved.cookiesJson || saved.cookiesJson === "{}") {
     await logLine("RESUME no-saved-session");
     return false;

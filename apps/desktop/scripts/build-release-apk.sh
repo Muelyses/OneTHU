@@ -48,6 +48,7 @@ export COPYFILE_DISABLE=1
 export PATH="$JAVA_HOME/bin:$PATH"
 
 TC="$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin"
+export BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android="--sysroot=${TC%/bin}/sysroot -I${TC%/bin}/sysroot/usr/include/aarch64-linux-android"
 export CC_aarch64_linux_android="$TC/aarch64-linux-android24-clang"
 export AR_aarch64_linux_android="$TC/llvm-ar"
 export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$TC/aarch64-linux-android24-clang"

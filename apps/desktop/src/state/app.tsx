@@ -1,6 +1,6 @@
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /** 应用全局状态：登录（含 2FA）→ 会话 → 轻路由 */
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import * as clients from "../lib/clients.js";
 import { explainNetworkError } from "../lib/transport.js";
 import type { TwoFactorMethod } from "@onethu/core";
@@ -236,6 +236,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [twoFactor, setTwoFactor] = useState<AppState["twoFactor"]>(null);
+  const loginBusy = useRef(false);
   /* dev-explorer：page/navParams 不再是本地状态——直接派生自 explorer 活动标签页
      （订阅同一份 store）；navigate = explorer 语义（首页内开新标签页 / 页标签内导航 /
      设置类走浮层）。全库 useApp() 调用点零改动。 */
@@ -312,6 +313,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (username: string, password: string, remember = true) => {
+      if (loginBusy.current) return;
+      loginBusy.current = true;
       void clients.logLine("AUTH-PHASE submit");
       setStatus("connecting");
       setError(null);
@@ -329,27 +332,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       try {
         const result = await clients.login(username, password, { remember });
         finish(result);
-      } catch (firstErr) {
-        // R21c：登录链半路断（校园网冷漫游，一跳 4-6s 是常态）≠ 凭据错——
-        // 用刚输入的同一凭据静默重试一次，两次都失败才回登录页；重试期间保持
-        // connecting 态（spinner），用户感知是「多转了一会儿」而不是「被踹出来」。
-        void import("../lib/clients.js")
-          .then(({ logLine }) => logLine(i18n("state.app.5ac30ce1e9bb", { value: String(String(firstErr).slice(0, 120)) })))
-          .catch(() => undefined);
-        try {
-          const second = await clients.login(username, password, { remember });
-          finish(second);
-        } catch (secondErr) {
-          setStatus("logged-out");
-          setError(explainNetworkError(secondErr));
-        }
+      } catch (err) {
+        // Do not replay credentials for bad passwords, throttling or unknown pages.
+        setStatus("logged-out");
+        setError(explainNetworkError(err));
+      } finally {
+        loginBusy.current = false;
       }
     },
     [navigate],
   );
 
   const send2FA = useCallback(async (type: string) => {
-    await clients.send2FA(type);
+    setError(null);
+    try { await clients.send2FA(type); }
+    catch (err) { setError(explainNetworkError(err)); throw err; }
   }, []);
 
   const sendLearn2FA = useCallback(async (type: string) => {
@@ -387,8 +384,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [twoFactor, navigate],
   );
 
-  const backToLogin = useCallback(() => {
+  const backToLogin = useCallback(async () => {
     if (PREVIEW_MODE) return; // 视觉自检：数据 effect 的「会话过期」误登出在无后端预览里必触发，屏蔽
+    const { libAbandonLogin } = await import("../lib/infoLib.js");
+    await libAbandonLogin();
     setTwoFactor(null);
     setError(null);
     setStatus("logged-out");

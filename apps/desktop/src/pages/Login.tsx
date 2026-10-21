@@ -8,6 +8,23 @@ import { loadRemembered } from "../lib/clients.js";
 import { useApp } from "../state/context.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 
+function LoginErrorPanel({ error }: { error: string }) {
+  const [copied, setCopied] = useState(false);
+  const [manual, setManual] = useState("");
+  useEffect(() => { setCopied(false); setManual(""); }, [error]);
+  const copyDiagnostics = async () => {
+    const { buildDiagnostics } = await import("../lib/diagnostics.js");
+    const text = await buildDiagnostics();
+    try { await navigator.clipboard.writeText(text); setCopied(true); }
+    catch { setManual(text); }
+  };
+  return <div className="login-error" role="alert">
+    <div>{error}</div>
+    <Btn variant="ghost" onClick={() => void copyDiagnostics()}>{copied ? i18n("components.devpanel.cce28dd1fcdf") : i18n("components.devpanel.bbce140b7682")}</Btn>
+    {manual ? <textarea aria-label={i18n("components.devpanel.bbce140b7682")} readOnly value={manual} onFocus={e => e.currentTarget.select()} style={{ width: "100%", minHeight: 120 }} /> : null}
+  </div>;
+}
+
 export function LoginPage() {
   const uiLocale = useUiLocale();
 
@@ -28,7 +45,7 @@ export function LoginPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password) return;
+    if (busy || !username.trim() || !password) return;
     void login(username.trim(), password, remember);
   };
 
@@ -44,11 +61,7 @@ export function LoginPage() {
         {!isTauri ? (
           <div className="browser-hint">{i18n("pages.login.294044d5d232")}</div>
         ) : null}
-        {error ? (
-          <div className="login-error" role="alert">
-            {error}
-          </div>
-        ) : null}
+        {error ? <LoginErrorPanel error={error} /> : null}
 
         <form onSubmit={onSubmit}>
           <div className="field">
@@ -120,6 +133,8 @@ export function TwoFactorPage() {
     try {
       await doSend(selected);
       setSent(true);
+    } catch {
+      // The app state exposes the localized error; do not mark an unsent code as sent.
     } finally {
       setSending(false);
     }
@@ -145,7 +160,7 @@ export function TwoFactorPage() {
             </div>
           </div>
 
-          {error ? <div className="login-error" role="alert">{error}</div> : null}
+          {error ? <LoginErrorPanel error={error} /> : null}
 
           <div className="field">
             <div className="method-list">
@@ -192,7 +207,7 @@ export function TwoFactorPage() {
           </div>
         </div>
 
-        {error ? <div className="login-error" role="alert">{error}</div> : null}
+        {error ? <LoginErrorPanel error={error} /> : null}
 
         <form onSubmit={onSubmit}>
           <div className="field">
@@ -216,8 +231,8 @@ export function TwoFactorPage() {
         </form>
 
         <div className="login-foot">
-          <Btn variant="ghost" onClick={() => { setStage("select"); setCode(""); setSent(false); }}>{i18n("pages.login.8875d1e9f0a3")}</Btn>
-          <Btn variant="ghost" onClick={backToLogin}>{i18n("pages.login.747b0f9082e6")}</Btn>
+          <Btn variant="ghost" disabled={submitting || sending} onClick={() => { setStage("select"); setCode(""); setSent(false); }}>{i18n("pages.login.8875d1e9f0a3")}</Btn>
+          <Btn variant="ghost" disabled={submitting || sending} onClick={backToLogin}>{i18n("pages.login.747b0f9082e6")}</Btn>
         </div>
       </div>
     </div>

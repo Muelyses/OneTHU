@@ -1,7 +1,55 @@
 {
-  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "profile.role.member",
+      "source": "成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 51,
+          "context": "member:t(\"profile.role.member\")"
+        }
+      ],
+      "translation": "Member",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.role.owner",
+      "source": "所有者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 51,
+          "context": "owner:t(\"profile.role.owner\")"
+        }
+      ],
+      "translation": "Owner",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.status.active",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 51,
+          "context": "active:t(\"profile.status.active\")"
+        }
+      ],
+      "translation": "In progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "profile.status.done",
       "source": "已完成",
@@ -10,7 +58,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 56,
+          "line": 51,
           "context": "done:t(\"profile.status.done\")"
         }
       ],
@@ -26,7 +74,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 56,
+          "line": 51,
           "context": "planned:t(\"profile.status.planned\")"
         }
       ],
@@ -42,7 +90,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 91,
+          "line": 85,
           "context": "{t(\"profile.sync.chooseVersion\")}"
         }
       ],
@@ -57,14 +105,13 @@
       "parameters": [],
       "locations": [
         {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 69,
-          "context": "label:t(\"profile.sync.combined\")"
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
         }
       ],
       "translation": "Both combined",
       "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
+      "limitHint": "Preserve meaning; do not truncate."
     },
     {
       "key": "profile.sync.confirmDelete",
@@ -74,8 +121,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 81,
-          "context": "data===null?t(\"profile.sync.confirmDelete\"):option.kind===\"merge\"?t(\"profile.sync.useCombined\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+          "line": 75,
+          "context": "data===null?t(\"profile.sync.confirmDelete\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
         }
       ],
       "translation": "Delete this record",
@@ -90,7 +137,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
+          "line": 32,
           "context": "conflict:t(\"profile.sync.conflict\")"
         }
       ],
@@ -106,7 +153,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 53,
+          "line": 48,
           "context": "return t(\"profile.sync.deleted\");"
         }
       ],
@@ -122,7 +169,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 75,
+          "line": 69,
           "context": "{t(\"profile.sync.deletedHere\")}"
         }
       ],
@@ -153,7 +200,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 81,
+          "line": 75,
           "context": "option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")"
         }
       ],
@@ -184,7 +231,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 81,
+          "line": 75,
           "context": "option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\")"
         }
       ],
@@ -199,9 +246,8 @@
       "parameters": [],
       "locations": [
         {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 91,
-          "context": "{t(\"profile.sync.later\")}"
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
         }
       ],
       "translation": "Decide later",
@@ -261,7 +307,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 54,
+          "line": 49,
           "context": "return t(\"profile.sync.notSet\");"
         }
       ],
@@ -277,7 +323,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 88,
+          "line": 82,
           "context": "{t(\"profile.sync.now\")}"
         }
       ],
@@ -293,7 +339,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
+          "line": 31,
           "context": "offline:t(\"profile.sync.offline\")"
         }
       ],
@@ -309,7 +355,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 67,
+          "line": 62,
           "context": "label:t(\"profile.sync.otherDevice\")"
         }
       ],
@@ -325,7 +371,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
+          "line": 32,
           "context": "paused:t(\"profile.sync.paused\")"
         }
       ],
@@ -341,7 +387,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
+          "line": 31,
           "context": "pending:t(\"profile.sync.pending\")"
         }
       ],
@@ -357,7 +403,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 89,
+          "line": 83,
           "context": "c.key===\"personal\"?t(\"profile.sync.personal\"):c.local.value?.name??c.remote.value?.name??t(\"profile.sync.record\")"
         }
       ],
@@ -388,7 +434,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 55,
+          "line": 50,
           "context": "return t(\"profile.sync.privateValue\");"
         }
       ],
@@ -404,22 +450,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 47,
+          "line": 42,
           "context": "fields[trail.split(\".\").at(-1)??\"\"]??t(\"profile.sync.record\")"
         },
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 59,
+          "line": 54,
           "context": "v.name??v.title??t(\"profile.sync.record\")"
         },
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 59,
+          "line": 54,
           "context": "value.name??value.title??t(\"profile.sync.record\")"
         },
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 89,
+          "line": 83,
           "context": "c.local.value?.name??c.remote.value?.name??t(\"profile.sync.record\")"
         }
       ],
@@ -450,7 +496,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 89,
+          "line": 83,
           "context": "{t(\"profile.sync.review\")}"
         }
       ],
@@ -466,7 +512,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
+          "line": 32,
           "context": "synced:t(\"profile.sync.synced\")"
         }
       ],
@@ -482,7 +528,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
+          "line": 31,
           "context": "syncing:t(\"profile.sync.syncing\")"
         }
       ],
@@ -498,7 +544,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 67,
+          "line": 62,
           "context": "label:t(\"profile.sync.thisDevice\")"
         }
       ],
@@ -513,9 +559,8 @@
       "parameters": [],
       "locations": [
         {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 81,
-          "context": "option.kind===\"merge\"?t(\"profile.sync.useCombined\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
         }
       ],
       "translation": "Keep both",
@@ -530,7 +575,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 81,
+          "line": 75,
           "context": "option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")"
         }
       ],
@@ -546,7 +591,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 81,
+          "line": 75,
           "context": "option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\")"
         }
       ],
@@ -577,7 +622,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 92,
+          "line": 86,
           "context": "{t(\"profile.sync.visualHelp\")}"
         }
       ],
@@ -1203,64 +1248,6 @@
         }
       ],
       "translation": "Workspace",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.language.description",
-      "source": "更改界面语言，保留当前页面和未完成的输入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LanguageControl.tsx",
-          "line": 11,
-          "context": "{t(\"settings.language.description\")}"
-        }
-      ],
-      "translation": "Change the interface language while keeping your current page and drafts.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.language.title",
-      "source": "语言",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/LanguageControl.tsx",
-          "line": 11,
-          "context": "{t(\"settings.language.title\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/LanguageControl.tsx",
-          "line": 12,
-          "context": "{t(\"settings.language.title\")}"
-        }
-      ],
-      "translation": "Language",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.accountsetup.88db247ca41b",
-      "source": "请输入账号与密码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/accountSetup.ts",
-          "line": 66,
-          "context": "new Error(i18n(\"state.accountsetup.88db247ca41b\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/accountSetup.ts",
-          "line": 76,
-          "context": "new Error(i18n(\"state.accountsetup.88db247ca41b\"))"
-        }
-      ],
-      "translation": "Enter your account and password",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

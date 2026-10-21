@@ -1,0 +1,40 @@
+import { t } from "../i18n/index.js";
+
+const reasons = new Set([
+  "missing-public-key", "invalid-public-key", "empty-response", "access-restricted",
+  "trust-limit", "unexpected-page", "unsafe-confirmation", "confirmation-loop",
+]);
+
+/** Stable library codes only. Never log page HTML, session IDs or server-provided attributes. */
+export function loginFailureDiagnostic(error: unknown): string {
+  if (!error || typeof error !== "object") return "";
+  const e = error as { code?: string; reason?: string; stage?: string };
+  if (e.code !== "AUTH_PREPARATION_FAILED" || !reasons.has(e.reason ?? "")) return "";
+  const stage = e.stage === "trusted-confirmation" ? "trusted-confirmation" : "credential-entry";
+  return `AUTH-FAIL reason=${e.reason} stage=${stage}`;
+}
+
+/** Null means this is not one of our authentication errors. */
+export function explainLoginError(error: unknown): string | null {
+  const e = error && typeof error === "object"
+    ? error as { code?: string; reason?: string; retryAfterMs?: number; status?: number; message?: string }
+    : {};
+  if (e.code === "AUTH_COOLDOWN") {
+    const seconds = Number.isFinite(e.retryAfterMs) ? Math.max(1, Math.ceil(e.retryAfterMs! / 1000)) : 20;
+    return t("login.error.cooldown", { seconds });
+  }
+  if (e.code === "AUTH_IN_PROGRESS") return t("login.error.inProgress");
+  if (e.code === "AUTH_2FA_RESTART") return t("login.error.restartVerification");
+  if (e.code === "AUTH_2FA_METHOD") return t("login.error.changeMethod");
+  if (e.status === 429) return t("login.error.restricted");
+  if (e.code === "AUTH_PREPARATION_FAILED") {
+    if (e.reason === "trust-limit") return t("login.error.trustLimit");
+    if (e.reason === "access-restricted") return t("login.error.restricted");
+    if (e.reason === "invalid-public-key" || e.reason === "unsafe-confirmation") return t("login.error.invalidForm");
+    if (e.reason === "confirmation-loop") return t("login.error.confirmationLoop");
+    return t("login.error.prepareFailed");
+  }
+  // Older library instances can still be alive during a development hot reload.
+  if ((e.message ?? error) === "Failed to get public key.") return t("login.error.prepareFailed");
+  return null;
+}

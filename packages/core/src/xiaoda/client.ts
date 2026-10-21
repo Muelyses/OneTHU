@@ -93,6 +93,7 @@ export interface XiaodaSkillItem {
   categoryName?: string;
   downloadCount?: number;
   authorName?: string;
+  version?: string;
 }
 
 export interface XiaodaSkillOverview {
@@ -443,6 +444,14 @@ export class XiaodaClient {
 
   async skillList(currentPage = 1, pageSize = 10): Promise<PageEnvelope<XiaodaSkillItem>> {
     return this.apiGet<PageEnvelope<XiaodaSkillItem>>("/api/skill/plaza/list", { currentPage, pageSize });
+  }
+
+  async skillSearch(keyword: string, page = 1, pageSize = 10): Promise<PageEnvelope<XiaodaSkillItem>> {
+    return this.apiGet<PageEnvelope<XiaodaSkillItem>>("/api/skill/plaza/search", { keyword, page, pageSize });
+  }
+
+  async skillDetail(id: string): Promise<XiaodaSkillItem> {
+    return this.apiGet<XiaodaSkillItem>(`/api/skill/plaza/detail/${encodeURIComponent(id)}`);
   }
 
   async conversationPage(pageNum = 1, pageSize = 10): Promise<PageEnvelope<XiaodaConversation>> {

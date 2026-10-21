@@ -39,6 +39,8 @@ tokio = { version = "1", features = ["process", "io-util", "sync", "time", "macr
 chrono = { version = "0.4", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "gzip", "brotli", "charset", "http2", "multipart", "json", "cookies"] }
 zip = { version = "2", default-features = false, features = ["deflate"] }
+# Portable, host-free JavaScript computation; no Node/system/network modules.
+rquickjs = { version = "=0.14.0", default-features = false, features = ["std"] }
 # 邮箱 tab（IMAP 收 / SMTP 发，复用日历的邮箱+授权码；全 rustls 纯 Rust，Android 可交叉编译）
 imap = { version = "2.4", default-features = false }
 rustls-connector = { version = "0.23", default-features = false, features = ["webpki-root-certs"] }
@@ -63,6 +65,8 @@ md-5 = "0.10"
 futures-util = "0.3"
 
 [target.'cfg(target_os = "android")'.dependencies]
+# Android bindings are generated with the NDK headers (upstream has no bundled Android bindings).
+rquickjs = { version = "=0.14.0", default-features = false, features = ["std", "bindgen"] }
 # Android：纯 rustls（保持可交叉编译，native-tls 无安卓后端）；指纹问题仅 macOS 网络栈实测
 tokio-tungstenite = { version = "0.24", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
 futures-util = "0.3"   # ws_bridge.rs 全平台 import（Android 交叉编译需要）

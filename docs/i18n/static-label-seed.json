@@ -595,6 +595,262 @@
     "profile.status.done": {
       "zh-CN": "已完成",
       "en-US": "Done"
+    },
+    "login.error.cooldown": {
+      "zh-CN": "刚刚已尝试登录，请等待 {seconds} 秒后再试。刷新不会缩短等待时间。",
+      "en-US": "A sign-in was just attempted. Wait {seconds} seconds before trying again. Refreshing will not shorten the wait."
+    },
+    "login.error.inProgress": {
+      "zh-CN": "已有登录正在进行，请完成验证，或返回登录页后再试。",
+      "en-US": "A sign-in is already in progress. Complete verification, or go back to the sign-in page to start again."
+    },
+    "login.error.prepareFailed": {
+      "zh-CN": "统一认证没有返回可用的登录表单。请稍等后重试；若仍失败，请复制诊断摘要协助排查。",
+      "en-US": "University authentication did not return a usable sign-in form. Wait before retrying; if it persists, copy the diagnostic summary for troubleshooting."
+    },
+    "login.error.trustLimit": {
+      "zh-CN": "统一认证提示信任设备数量已达上限。请到 id.tsinghua.edu.cn 管理旧的信任设备，再返回登录；验证时也可以不勾选「信任此设备」。",
+      "en-US": "University authentication reports that the trusted device limit has been reached. Manage old trusted devices at id.tsinghua.edu.cn, then sign in again. You can also leave “Trust this device” unchecked during verification."
+    },
+    "login.error.restricted": {
+      "zh-CN": "服务器暂时限制了请求，请稍等后再试，避免连续登录或刷新。",
+      "en-US": "The server is temporarily limiting requests. Wait before retrying, and avoid repeated sign-ins or refreshes."
+    },
+    "login.error.invalidForm": {
+      "zh-CN": "统一认证返回了无法安全处理的登录表单，已停止提交。请稍后重试；若仍失败，请复制诊断摘要。",
+      "en-US": "University authentication returned a sign-in form that cannot be processed safely. Submission was stopped. Try again later; if it persists, copy the diagnostic summary."
+    },
+    "login.error.confirmationLoop": {
+      "zh-CN": "统一认证反复要求确认设备，本次登录已停止。请稍等后重试；也可到 id.tsinghua.edu.cn 检查信任设备。",
+      "en-US": "University authentication repeatedly requested device confirmation, so this sign-in was stopped. Wait before retrying, or check trusted devices at id.tsinghua.edu.cn."
+    },
+    "skills.library": {
+      "zh-CN": "OH 技能库",
+      "en-US": "OH skill library"
+    },
+    "skills.runtime": {
+      "zh-CN": "电脑与手机共用的轻量环境",
+      "en-US": "A lightweight environment for desktop and mobile"
+    },
+    "skills.runtimeBody": {
+      "zh-CN": "内置资料阅读与 QuickJS 纯计算环境，电脑手机无需另装软件。先检查技能要求，再启用给 OH。",
+      "en-US": "Built-in reference reading and QuickJS computation need no extra installation on desktop or mobile. Check a skill’s requirements before enabling it in OH."
+    },
+    "skills.externalBody": {
+      "zh-CN": "需要 Python、Node、安装依赖或外部服务的技能，当前不能在 OH 运行。可保存完整技能文件，交给电脑上的 Agent 使用。",
+      "en-US": "Skills requiring Python, Node, package installation or external services cannot run in OH. Save the complete files for an agent on your computer."
+    },
+    "skills.empty": {
+      "zh-CN": "尚未导入技能。在下方广场选择技能，下载并检查。",
+      "en-US": "No imported skills yet. Choose a skill from the plaza below to download and inspect."
+    },
+    "skills.failed": {
+      "zh-CN": "技能操作未完成",
+      "en-US": "Skill action could not be completed"
+    },
+    "skills.enabled": {
+      "zh-CN": "OH 已启用",
+      "en-US": "Enabled in OH"
+    },
+    "skills.disabled": {
+      "zh-CN": "已导入，未启用",
+      "en-US": "Imported, not enabled"
+    },
+    "skills.external": {
+      "zh-CN": "需电脑 Agent",
+      "en-US": "Requires a desktop agent"
+    },
+    "skills.compatible": {
+      "zh-CN": "可用：文字与资料",
+      "en-US": "Available: text and references"
+    },
+    "skills.enable": {
+      "zh-CN": "启用给 OH",
+      "en-US": "Enable in OH"
+    },
+    "skills.disable": {
+      "zh-CN": "停止给 OH 使用",
+      "en-US": "Disable in OH"
+    },
+    "skills.enableBody": {
+      "zh-CN": "OH 可按需读取此技能的说明与资料。启用表示允许将这些内容发送给你选择的模型；技能不会获得额外权限。",
+      "en-US": "OH can read this skill’s instructions and references as needed. Enabling allows those contents to be sent to your chosen model; the skill gains no additional permissions."
+    },
+    "skills.export": {
+      "zh-CN": "保存给电脑 Agent",
+      "en-US": "Save for a desktop agent"
+    },
+    "skills.exportHelp": {
+      "zh-CN": "电脑：选择文件夹并保存完整技能目录。手机：保存 ZIP 到下载位置，传到电脑后解压。自行让 Agent 接入，不会自动安装依赖。",
+      "en-US": "Desktop: choose a folder for the complete skill directory. Mobile: save a ZIP to Downloads, then transfer and unpack it on your computer. Connect it to your agent yourself; dependencies are not installed automatically."
+    },
+    "skills.exported": {
+      "zh-CN": "已保存：{path}",
+      "en-US": "Saved to: {path}"
+    },
+    "skills.saved": {
+      "zh-CN": "已保存",
+      "en-US": "Saved"
+    },
+    "skills.delete": {
+      "zh-CN": "移除本机技能",
+      "en-US": "Remove from this device"
+    },
+    "skills.localOnly": {
+      "zh-CN": "技能和启用状态仅保存在此设备、当前账号下。更新包后需要重新启用。",
+      "en-US": "Skills and activation are local to this device and account. Updated packages need to be enabled again."
+    },
+    "skills.import": {
+      "zh-CN": "下载并检查",
+      "en-US": "Download and inspect"
+    },
+    "skills.importing": {
+      "zh-CN": "正在下载并检查…",
+      "en-US": "Downloading and inspecting…"
+    },
+    "skills.importBody": {
+      "zh-CN": "先下载完整技能包并检查内容，不执行脚本。下载上限 8 MB，解压后上限 32 MB。",
+      "en-US": "Download and inspect the complete package first. No scripts are executed. Limit: 8 MB download, 32 MB unpacked."
+    },
+    "skills.fileCount": {
+      "zh-CN": "{count} 个文件",
+      "en-US": "{count} files"
+    },
+    "skills.version": {
+      "zh-CN": "版本 {version}",
+      "en-US": "Version {version}"
+    },
+    "skills.requirement.python": {
+      "zh-CN": "Python 环境",
+      "en-US": "Python runtime"
+    },
+    "skills.requirement.node": {
+      "zh-CN": "Node / JS 依赖",
+      "en-US": "Node / JS dependencies"
+    },
+    "skills.requirement.native": {
+      "zh-CN": "系统命令或原生程序",
+      "en-US": "System commands or native programs"
+    },
+    "skills.requirement.installer": {
+      "zh-CN": "需额外安装",
+      "en-US": "Additional installation needed"
+    },
+    "skills.requirement.external-service": {
+      "zh-CN": "外部服务或密钥",
+      "en-US": "External services or keys"
+    },
+    "skills.requirement.unknown-file": {
+      "zh-CN": "待确认的文件类型",
+      "en-US": "Unverified file types"
+    },
+    "skills.error.login": {
+      "zh-CN": "请先登录 OneTHU 与清小搭，再重试。",
+      "en-US": "Sign in to OneTHU and Xiaoda, then try again."
+    },
+    "skills.error.download": {
+      "zh-CN": "技能包下载未完成，请稍后重试。",
+      "en-US": "The skill package could not be downloaded. Try again later."
+    },
+    "skills.error.large": {
+      "zh-CN": "技能包超过轻量环境的大小、文件数量或压缩比例限制。",
+      "en-US": "The skill exceeds the lightweight environment’s size, file-count or compression limits."
+    },
+    "skills.error.package": {
+      "zh-CN": "下载内容不是有效的技能 ZIP 包。",
+      "en-US": "The downloaded content is not a valid skill ZIP package."
+    },
+    "skills.error.manifest": {
+      "zh-CN": "技能包需要唯一的 SKILL.md 入口。",
+      "en-US": "The package needs a single unambiguous SKILL.md entry."
+    },
+    "skills.error.path": {
+      "zh-CN": "技能包含不安全或重复路径，已拒绝导入。",
+      "en-US": "The package contains unsafe or duplicate paths and was rejected."
+    },
+    "skills.error.disabled": {
+      "zh-CN": "此技能尚未启用给 OH。",
+      "en-US": "This skill is not enabled in OH."
+    },
+    "skills.error.fullMode": {
+      "zh-CN": "技能仅在完整模式中开放。",
+      "en-US": "Skills are available in Full mode only."
+    },
+    "login.error.restartVerification": {
+      "zh-CN": "本次验证流程已结束，请重新发送验证码，或返回登录页重新验证。",
+      "en-US": "This verification session has ended. Request a new code, or return to the sign-in page to verify again."
+    },
+    "skills.javascript": {
+      "zh-CN": "轻量 JavaScript 计算",
+      "en-US": "Lightweight JavaScript computation"
+    },
+    "skills.runtimeLimits": {
+      "zh-CN": "每次计算最多 2 秒、32 MB 内存；不接触网络、系统文件或账号凭据。不能当作 Node 环境使用。",
+      "en-US": "Each computation has a 2-second and 32 MB memory limit, with no access to the network, system files or account credentials. This is not a Node environment."
+    },
+    "skills.check": {
+      "zh-CN": "检查运行环境",
+      "en-US": "Check runtime"
+    },
+    "skills.checked": {
+      "zh-CN": "运行环境检查通过",
+      "en-US": "Runtime check passed"
+    },
+    "skills.error.runtime": {
+      "zh-CN": "运行环境检查失败，请更新并重启应用。",
+      "en-US": "The runtime check failed. Update and restart the app."
+    },
+    "skills.error.time": {
+      "zh-CN": "计算超过 2 秒，已停止。",
+      "en-US": "Computation stopped after exceeding 2 seconds."
+    },
+    "skills.error.script": {
+      "zh-CN": "脚本未能完成：可能需要此环境没有的功能，或超出内存、堆栈与输出限制。",
+      "en-US": "The script could not finish. It may need unavailable capabilities or exceed memory, stack or output limits."
+    },
+    "skills.error.code": {
+      "zh-CN": "代码、输入或输出超过 64 KB 限制。",
+      "en-US": "Code, input or output exceeds the 64 KB limit."
+    },
+    "login.error.changeMethod": {
+      "zh-CN": "当前验证码已绑定原验证方式。请返回登录页重新登录，再选择其他方式。",
+      "en-US": "The current code is tied to the original verification method. Return to sign-in and choose another method in a new verification session."
+    },
+    "skills.search": {
+      "zh-CN": "搜索技能名称或用途",
+      "en-US": "Search skills by name or purpose"
+    },
+    "skills.noResults": {
+      "zh-CN": "没有找到匹配的技能。",
+      "en-US": "No matching skills found."
+    },
+    "skills.error.notFound": {
+      "zh-CN": "找不到这个技能或文件，请刷新技能库。",
+      "en-US": "This skill or file was not found. Refresh the skill library."
+    },
+    "skills.error.input": {
+      "zh-CN": "计算输入无效，需要有效的 JSON 数据。",
+      "en-US": "Invalid computation input. Valid JSON data is required."
+    },
+    "skills.error.output": {
+      "zh-CN": "计算没有返回可用的 JSON 结果。",
+      "en-US": "The computation did not return a usable JSON result."
+    },
+    "skills.error.text": {
+      "zh-CN": "此文件不是可读取的 UTF-8 文本。请导出后用本地程序打开。",
+      "en-US": "This is not readable UTF-8 text. Export it and open it with a local application."
+    },
+    "skills.error.textSize": {
+      "zh-CN": "文本超过单次读取的 256 KB 限制，请导出后阅读。",
+      "en-US": "The text exceeds the 256 KB reading limit. Export it to read locally."
+    },
+    "skills.error.busy": {
+      "zh-CN": "技能库正忙，请稍后重试。",
+      "en-US": "The skill library is busy. Try again shortly."
+    },
+    "skills.error.generic": {
+      "zh-CN": "技能操作未能完成，请更新应用后重试。",
+      "en-US": "The skill action could not be completed. Update the app and try again."
     }
   }
 }

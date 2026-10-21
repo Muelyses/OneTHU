@@ -14,13 +14,14 @@ import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Avatar, Banner, Btn, Card, Chip, DataList, EmptyState, Inline, List, LoadingBlock, Page,
-  Row, SectionCard, Select, Spinner, Stack, StatTile, Surface, Tabs, Text, TextArea, Modal,
+  Row, SearchField, SectionCard, Select, Spinner, Stack, StatTile, Surface, Tabs, Text, TextArea, Modal,
 } from "@onethu/gui";
 import type {
   XiaodaAgentGroup, XiaodaChatMessage, XiaodaConversation, XiaodaModel, XiaodaSkillCategory,
   XiaodaSkillItem, XiaodaSkillOverview, XiaodaUser,
 } from "@onethu/core";
 import { xiaodaClient, xiaodaEnsureLogin } from "../../lib/xiaoda.js";
+import { SkillLibrary } from "./SkillLibrary.js";
 
 type Tab = "chat" | "history" | "agents" | "skills";
 /** 当前打开的对话（历史点开，或首次发送时新建） */
@@ -569,6 +570,9 @@ function SkillsTab(): ReactNode {
   const [total, setTotal] = useState(0);
   const [err, setErr] = useState("");
   const [loadingMore, setLoadingMore] = useState(false);
+  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const request = useRef(0);
 
   useEffect(() => {
     xiaodaClient.skillOverview().then(setOverview).catch(() => undefined);
@@ -576,23 +580,27 @@ function SkillsTab(): ReactNode {
   }, []);
 
   const load = useCallback(async (page: number) => {
+    const version = ++request.current;
     setLoadingMore(true);
     try {
-      const r = await xiaodaClient.skillList(page, 10);
+      const r = search ? await xiaodaClient.skillSearch(search, page, 10) : await xiaodaClient.skillList(page, 10);
+      if (version !== request.current) return;
       const list = r.dataList ?? [];
       setTotal(r.page?.totalCount ?? list.length);
-      setItems((prev) => (page === 1 ? list : [...prev, ...list]));
+      setItems((prev) => page === 1 ? list : [...new Map([...prev, ...list].map(item => [item.id, item])).values()]);
       setPageNum(page);
       setErr("");
     } catch (e) {
-      setErr(errText(e));
+      if (version === request.current) setErr(errText(e));
     } finally {
-      setLoadingMore(false);
+      if (version === request.current) setLoadingMore(false);
     }
-  }, []);
+  }, [search]);
 
   useEffect(() => {
+    setItems([]);
     void load(1);
+    return () => { request.current++; };
   }, [load]);
 
   return (
@@ -613,14 +621,9 @@ function SkillsTab(): ReactNode {
           </Inline>
         </Card>
       ) : null}
-      <Modal open={!!selectedSkill} onClose={() => setSelectedSkill(null)} title={selectedSkill?.name ?? i18n("pages.xiaoda.xiaodapage.4f79dada892b")}>
-        {selectedSkill ? <Stack gap={4}>
-          <Inline gap={3}><Avatar name={selectedSkill.name} src={selectedSkill.icon} /><Text>{selectedSkill.authorName || i18n("pages.xiaoda.xiaodapage.fa137f21519d")}</Text></Inline>
-          <Text>{selectedSkill.description || i18n("pages.xiaoda.xiaodapage.a21b64510d88")}</Text>
-          <Text tone="faint">{i18n("pages.xiaoda.xiaodapage.6610f0b69218", { value: String(selectedSkill.categoryName || i18n("pages.xiaoda.xiaodapage.54b89f901274")), value2: String(selectedSkill.downloadCount ?? 0) })}</Text>
-        </Stack> : null}
-      </Modal>
+      <SkillLibrary selected={selectedSkill} onClose={() => setSelectedSkill(null)} />
       <SectionCard title={i18n("pages.xiaoda.xiaodapage.c599990d6fb9")} sub={total ? i18n("pages.xiaoda.xiaodapage.bf8875666acb", { total: String(total) }) : undefined}>
+        <SearchField value={query} onChange={setQuery} onSearch={value => setSearch(value.trim())} placeholder={i18n("skills.search")} aria-label={i18n("skills.search")} />
         {err ? (
           <Stack gap={3}>
             <Banner tone="error" title={i18n("pages.xiaoda.xiaodapage.56fb269924d9")}>
@@ -631,7 +634,7 @@ function SkillsTab(): ReactNode {
             </Inline>
           </Stack>
         ) : null}
-        {items.length === 0 && !err ? <LoadingBlock rows={5} /> : null}
+        {items.length === 0 && !err ? loadingMore ? <LoadingBlock rows={5} /> : <Text tone="faint">{i18n("skills.noResults")}</Text> : null}
         {items.length > 0 ? (
           <Stack gap={3}>
             <DataList

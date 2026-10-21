@@ -264,6 +264,10 @@ export class InfoHelper {
     public clearCookieHandler = async () => {
     };
 
+    /** Admission/cooldown for every new authentication attempt, including roaming
+     * and silent re-login. Joining an outstanding attempt does not run it again. */
+    public beforeLoginAttemptHook: (() => Promise<void>) | undefined = undefined;
+
     /**
      * Invoked when a login error occurs.
      *
@@ -1261,6 +1265,9 @@ export class InfoHelper {
 export {roam, clearOutstandingLogin};
 /** 静默重登（info app 同源）：取用户信息比对 ryh 判活，死则用 helper 上的凭据重登 */
 export {verifyAndReLogin} from "./lib/core";
+export {hasOutstandingLogin, getOutstandingLoginIdentity} from "./lib/core";
 
 export { organizationGitApi } from "./lib/gitlab";
+export { LoginPreparationError } from "./utils/error";
+export type { LoginPreparationReason } from "./utils/error";
 export type { GitOrgMember, GitOrgGroup, GitOrgProject, GitOrgFile, GitOrgProtection } from "./lib/gitlab";

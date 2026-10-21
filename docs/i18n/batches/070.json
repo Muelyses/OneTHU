@@ -1,7 +1,148 @@
 {
-  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.c430f4c12eaa",
+      "source": "周一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "Mon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c533aa41c064",
+      "source": "选日期跳到该日期所在月份",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1103,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.88a5267852f9\") : i18n(\"pages.schedule.c533aa41c064\")"
+        }
+      ],
+      "translation": "Pick a date to jump to its month",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c728528fbd8f",
+      "source": "作业刷新失败，当前截止时间可能不完整：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(learn.error ?? \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 868,
+          "context": "{i18n(\"pages.schedule.c728528fbd8f\", { value: String(learn.error ?? \"\") })}"
+        }
+      ],
+      "translation": "Assignment refresh failed; current due dates may be incomplete: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c7b24e7997e9",
+      "source": "结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1356,
+          "context": "{i18n(\"pages.schedule.c7b24e7997e9\")}"
+        }
+      ],
+      "translation": "End",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c8d7c83a9995",
+      "source": "学期 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(i + 1)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1151,
+          "context": "sm.semesterName || sm.semesterId || i18n(\"pages.schedule.c8d7c83a9995\", { value: String(i + 1) })"
+        }
+      ],
+      "translation": "Term {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.ce40d3d5810a",
+      "source": "最后一天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1342,
+          "context": "sd.allDay ? i18n(\"pages.schedule.ce40d3d5810a\") : i18n(\"pages.schedule.895cd52fbbb6\")"
+        }
+      ],
+      "translation": "Last day",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.ce708f891fc3",
+      "source": "第 {w} 周",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "w",
+          "expression": "w"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1156,
+          "context": "{i18nRich(\"pages.schedule.ce708f891fc3\", { w: w })}"
+        }
+      ],
+      "translation": "Week {w}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.d1378a68e620",
+      "source": "周二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "Tue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.d2bb025a2e51",
       "source": "开始",
@@ -1254,139 +1395,6 @@
         }
       ],
       "translation": "Download location",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1354e42a5f65",
-      "source": "点胶囊默认进搜索还是 OH 对话",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 97,
-          "context": "return i18n(\"pages.settings.1354e42a5f65\");"
-        }
-      ],
-      "translation": "Whether tapping the pill opens search or an OH chat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.15047c91eb6c",
-      "source": "通知与提醒设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 106,
-          "context": "return i18n(\"pages.settings.15047c91eb6c\");"
-        }
-      ],
-      "translation": "Notifications & reminders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.16ca6dbf3de4",
-      "source": "极客模式已开启：设置里可下载探索浏览器（桌面端专属）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 819,
-          "context": "showToast(i18nMsg(\"pages.settings.16ca6dbf3de4\"))"
-        }
-      ],
-      "translation": "Geek mode on: the exploration browser can be downloaded in Settings (desktop only)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.188df41c178b",
-      "source": "恢复默认首页布局",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 348,
-          "context": "{i18n(\"pages.settings.188df41c178b\")}"
-        }
-      ],
-      "translation": "Restore default home layout",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1cb15b820a0a",
-      "source": "诊断摘要",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 604,
-          "context": "{i18n(\"pages.settings.1cb15b820a0a\")}"
-        }
-      ],
-      "translation": "Diagnostics summary",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1cb7f269cc24",
-      "source": "主题、标签栏、玻璃程度、取色等外观项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 91,
-          "context": "return i18n(\"pages.settings.1cb7f269cc24\");"
-        }
-      ],
-      "translation": "Appearance options: theme, tab bar, glass level, color picking, and more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1d08854948f4",
-      "source": "标签栏样式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 94,
-          "context": "return i18n(\"pages.settings.1d08854948f4\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 694,
-          "context": "{i18n(\"pages.settings.1d08854948f4\")}"
-        }
-      ],
-      "translation": "Tab bar style",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1d360021dfc2",
-      "source": "将首页组件、排列和缩放恢复为默认版式，其他 OnePage 保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 349,
-          "context": "{i18n(\"pages.settings.1d360021dfc2\")}"
-        }
-      ],
-      "translation": "Restore Home widgets, arrangement, and scaling to the default layout; other OnePages are kept.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -419,7 +419,7 @@ html:root.is-phone .home-services-widget .hs-dock-row { grid-row: 3; grid-templa
 html:root .free-item { touch-action: pan-y; }
 /* 手机「自由摆放」：条目就是可拖拽对象，垂直手势不能再交给页面滚动（否则只能横拖）。
    阅读顺序（默认）仍保留 pan-y，列表可以正常上下滚。 */
-html:root.is-phone .freeboard-wrap.phone-canvas .free-item { touch-action: none; }
+html:root.is-phone .freeboard-wrap.phone-canvas:not(.is-edit-locked) .free-item { touch-action: none; }
 html:root.is-phone .freeboard-wrap.phone-canvas .free-item.is-selected { cursor: grab; }
 html:root.is-phone .freeboard-wrap.phone-canvas .free-item.is-selected:active { cursor: grabbing; }
 html:root .free-item > .wg-card { flex: 1 1 auto; min-height: 0; padding: var(--og-space-3); overflow: auto; }
@@ -1020,7 +1020,7 @@ html.is-phone .og-settings-row-value { flex: 0 0 auto; }
    only the outer item allows a real vertical touch to cancel the drag. Reading
    order retains native card scrolling and the canvas gutters always pan. */
 html:root .freeboard-wrap:not(.is-reading) .free-item,
-html:root .freeboard-wrap:not(.is-reading) .free-item * { touch-action: none; }
+html:root .freeboard-wrap:not(.is-reading):not(.is-edit-locked) .free-item * { touch-action: none; }
 
 /* Corners stay at their exact screen coordinate at every canvas scale. The
    visible dot is small; the finger target is the shared large-control size. */
@@ -1057,3 +1057,9 @@ html:root .board-note {
   pointer-events: none;
 }
 html:root.is-phone .board-note { top: calc(var(--og-workbench-tabs-h) + var(--og-space-3)); }
+
+/* Mobile browsing must chain touch scrolling instead of arming layout gestures. */
+html:root.is-phone .freeboard-wrap.is-edit-locked .free-item { touch-action: pan-x pan-y; cursor: auto; }
+
+/* The mobile editor stays operable above the movable refresh/top buttons. */
+html:root.is-phone .board-viewport-tools.has-edit-toggle { z-index: var(--og-z-board-editor); }

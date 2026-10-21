@@ -1,4 +1,5 @@
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { useOverlayBack } from "../state/navStack.js";
 import { useIsSimpleLike } from "../state/experienceMode.js";
 /**
  * 自由图层白板（2026-10-13 定稿，霖：要可以互相重叠盖住的高级白板）。
@@ -363,6 +364,14 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const [port, setPort] = useState({ w: 0, h: 0 });
   const compact = useIsSimpleLike();
   const [toolsVisible, setToolsVisible] = useState(false);
+  // Mobile editing is a temporary capability, never a saved layout preference.
+  const phoneEditKey = boardId + "|" + orientation;
+  const [phoneEditScope, setPhoneEditScope] = useState<string | null>(null);
+  const phoneEditing = phoneEditScope === phoneEditKey;
+  useOverlayBack("board-edit:" + boardId, phoneUi && phoneEditing && toolsVisible, () => setPhoneEditScope(null));
+  const canEdit = !phoneUi || phoneEditing;
+  const canEditRef = useRef(canEdit);
+  canEditRef.current = canEdit;
   /* 手机竖屏默认阅读顺序（堆叠）；打开「自由摆放」切回真画布，可拖动/缩放（仅完整模式：compact 下不出现）。 */
   const PHONE_CANVAS_KEY = "onethu.board.phoneCanvas.v1";
   const [phoneCanvas, setPhoneCanvas] = useState<boolean>(() => {
@@ -405,6 +414,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     const raf = requestAnimationFrame(() => setToolsVisible(!!hostRef.current?.getClientRects().length));
     return () => cancelAnimationFrame(raf);
   }, [wsSnap.activeId, boardId]);
+  useEffect(() => {
+    setPhoneEditScope(null);
+  }, [boardId, orientation, wsSnap.activeId, phoneUi]);
   /* 笔迹变化要跟着重渲染（快照本身不用取：下面按笔键直接读） */
   useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const penKey = penKeyOf(boardId, orientation);
@@ -416,6 +428,24 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   liveRef.current = live;
   const pointerCleanup = useRef<(() => void) | null>(null);
   useEffect(() => () => { pointerCleanup.current?.(); pointerCleanup.current = null; }, []);
+
+  useEffect(() => {
+    if (canEdit) return;
+    pointerCleanup.current?.();
+    pointerCleanup.current = null;
+    liveRef.current = null;
+    setLive(null);
+    setSelected(null);
+    setEditingId(null);
+    setPenOn(false);
+    setAddOpen(false);
+    setResizeFor(null);
+    setTplOpen(false);
+    setPickFor(null);
+    setFolderPicker(null);
+    setAddAt(null);
+    menu.close();
+  }, [canEdit]);
 
   const rectOf = (it: FreeItem): Rect =>
     live && live.id === it.id ? live.rect : { x: it.x, y: it.y, w: it.w, h: it.h };
@@ -495,6 +525,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      folded 跳过（折叠态本来更小，不该被撑开）、写入口 `ops.fitHeight` 不置 manual（拟合是程序行为，
      不是用户动作）也不动 cell（契约层只随用户动作同步）。 */
   useLayoutEffect(() => {
+    if (!canEdit) return;
     const host = hostRef.current;
     if (!host) return;
     const cardOf = (el: HTMLElement): HTMLElement | null => {
@@ -540,7 +571,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       ro.disconnect();
       mo.disconnect();
     };
-  }, [items, ops]);
+  }, [canEdit, items, ops]);
 
   /* 视口尺寸（盒子/适配用）。**普通滚轮不抢**：滚动容器就是无限画布的"平移" ——
      用户第二轮点名「出了内容框就被截断，我们要的是没有那个隐形的 frame」：
@@ -569,7 +600,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     /* **必须原生非被动监听**：React 的 onWheel 挂在根上且是被动的，preventDefault() 不生效，
        捏合会一边缩放一边把页面滚走。 */
     const onWheel = (e: WheelEvent): void => {
-      if (!e.ctrlKey && !e.metaKey) return; // 普通滚轮 / 两指滑 → 交给滚动容器
+      if (!canEditRef.current || (!e.ctrlKey && !e.metaKey)) return; // 普通滚轮 / 两指滑 → 交给滚动容器
       e.preventDefault();
       setZoomRef.current(viewRef.current.z * Math.exp(-e.deltaY * 0.01));
     };
@@ -597,6 +628,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   /* 缩放（按钮 / 捏合 / 键盘共用）：落盘后把**滚动位置按同比例挪一下**，
      视线不会因为"内容整体缩小"而漂到别处（不这么做，缩完总得手动找回来）。 */
   const setZoom = useCallback((z: number): void => {
+    if (!canEditRef.current) return;
     const before = viewRef.current.z;
     const next = Math.min(ZOOM_MAX, Math.max(0.4, Number.isFinite(z) ? z : 1));
     if (next === before && hasSavedView(viewKey)) return;
@@ -616,15 +648,15 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     setZoomRef.current(1);
   }, []);
   useEffect(() => {
-    if (!compact && phonePortrait && phoneCanvas && !hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
-  }, [compact, phonePortrait, phoneCanvas, viewKey]);
+    if (canEdit && !compact && phonePortrait && phoneCanvas && !hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
+  }, [canEdit, compact, phonePortrait, phoneCanvas, viewKey]);
 
   useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释
 
   /* 键盘：Delete 删除选中、Esc 取消、方向键 8px 微调（输入框内不劫持） */
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (!hostRef.current?.getClientRects().length) return;
+      if (!canEditRef.current || !hostRef.current?.getClientRects().length) return;
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement | null)?.isContentEditable) return;
       /* 画布缩放（无边记同款手感）：⌘0 回到内容、⌘= / ⌘- 缩放 */
@@ -683,6 +715,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
   /** 条目右键 / 长按菜单（旧白板页的 openItemMenu，2026-10-15 搬到自由画布）。 */
   const openItemMenu = useCallback((item: FreeItem, x: number, y: number): void => {
+    if (!canEditRef.current) return;
     const view = viewOf(item);
     const plan = planForItem(view, defs);
     const def = defForSpec(item.spec, defs);
@@ -729,7 +762,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     id: string,
     mode: "move" | "se" | "ne" | "sw" | "nw" | "e" | "s",
   ): void => {
-    if (penOn || stack || e.button !== 0) return;
+    if (!canEditRef.current || penOn || stack || e.button !== 0) return;
     e.preventDefault();
     try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* Window listeners still track the gesture. */ }
     const it = itemsRef.current.find((x) => x.id === id);
@@ -838,7 +871,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       window.addEventListener("click", killClick, { capture: true, once: true });
       finishClickGuard();
       const cur = liveRef.current;
-      if (!transferred && ev.type === "pointerup" && cur && cur.id === id) {
+      if (canEditRef.current && !transferred && ev.type === "pointerup" && cur && cur.id === id) {
         const r = clampRect(cur.rect);
         if (mode === "move") ops.move(id, r.x, r.y);
         else ops.resize(id, r);
@@ -858,6 +891,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   };
 
   const applyTemplate = (tpl: BoardTemplate): void => {
+    if (!canEditRef.current) return;
     /* rect 是实际排版；cell 只保留兼容用途。不能把原生宽卡再压回旧四格，也不能一律伪装成手调尺寸。 */
     const next: BoardItem[] = tpl.id === "tpl-home" ? homeStarterItems() : templateItems(tpl);
     if (freeBoardOps(boardId, orientation).replace(next)) {
@@ -900,20 +934,23 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
 
   return (
     <div
-      className={"freeboard-wrap" + (stack ? " is-reading" : "") + (phoneUi && (phoneCanvas || landscape) ? " phone-canvas" : "")}
+      className={"freeboard-wrap" + (!canEdit ? " is-edit-locked" : "") + (stack ? " is-reading" : "") + (phoneUi && (phoneCanvas || landscape) ? " phone-canvas" : "")}
       data-coach="home-canvas"
+      data-board-editable={canEdit ? "true" : "false"}
     >
       {chrome ? (
         <PageHead
           title={chrome.title}
-          meta={i18n("components.freeboard.83d2e3f15c71")}
+          meta={!canEdit ? i18n("components.freeboard.editingHint") : i18n("components.freeboard.83d2e3f15c71")}
           menu={[
+            ...(canEdit ? [
             { key: "add-widget", label: i18n("components.freeboard.97dcf4348652"), onSelect: () => setAddOpen(true) },
             { key: "apply-tpl", label: i18n("components.freeboard.765be150d6cb"), onSelect: () => setTplOpen(true) },
             ...(phonePortrait && orientation === "portrait" && !compact
               ? [{ key: "phone-canvas", label: phoneCanvas ? i18n("components.freeboard.593f0f466b3e") : i18n("components.freeboard.f87eebfdca60"), onSelect: togglePhoneCanvas }]
               : []),
             { key: "pen", label: penOn ? i18n("components.freeboard.084cfc0311c3") : i18n("components.freeboard.2a95e1939b68"), onSelect: () => setPenOn((v) => !v) },
+            ] : []),
             /* 「所有 OnePage」：删掉旧白板页之后，这里是列表页在 UI 里的入口（另一条通路是 OneGO） */
             { key: "all-boards", label: i18n("components.freeboard.0f591af87c35"), onSelect: () => navigate("boards") },
           ]}
@@ -922,14 +959,14 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
         <div className="workbench-board-head">
           <div>
             <h2>{i18n("components.freeboard.203c08e0d44a")}</h2>
-            <span>{stack ? i18n("components.freeboard.2880a75c7f5f") : i18n("components.freeboard.5b80d5358a4b")}</span>
+            <span>{!canEdit ? i18n("components.freeboard.editingHint") : stack ? i18n("components.freeboard.2880a75c7f5f") : i18n("components.freeboard.5b80d5358a4b")}</span>
           </div>
           <div className="workbench-board-actions">
-            <Btn variant="ghost" onClick={() => setTplOpen(true)}>{i18n("components.freeboard.62b95daecb7f")}</Btn>
+            {canEdit ? <Btn variant="ghost" onClick={() => setTplOpen(true)}>{i18n("components.freeboard.62b95daecb7f")}</Btn> : null}
           </div>
         </div>
       )}
-      {chrome && items.length === 0 ? (
+      {chrome && items.length === 0 && canEdit ? (
         <Card>
           <Empty text={i18n("components.freeboard.9a3bd2de70be")} />
           {/* 空板引导：三套预制排版，点一下就有东西可看 */}
@@ -950,7 +987,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           if (!(e.target as HTMLElement).closest(".free-item")) setSelected(null);
         }}
         onContextMenu={(e) => {
-          if ((e.target as HTMLElement).closest(".free-item")) return;
+          if (!canEditRef.current || (e.target as HTMLElement).closest(".free-item")) return;
           e.preventDefault();
           e.stopPropagation();
           /* 右键空白与「＋」同一个组件选择器（缩略图 + 搜索）；右键记住落点。 */
@@ -971,15 +1008,15 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
             /* 档位排版钩子：CSS 是**无作用域**的 [data-size=...] 选择器（抽屉预览与画布同一条规则），
                所以自由画布上的条目也要带上它——统计卡/入口行的分档排版才不会只在抽屉里生效。 */
             const plan = planForItem(viewOf(it), defs);
-            const isSel = selected === it.id;
+            const isSel = canEdit && selected === it.id;
             const isNote = it.spec.kind === "custom" && it.spec.id === "note";
             const isText = it.spec.kind === "text";
-            const editingNow = editingId === it.id && (isNote || isText);
+            const editingNow = canEdit && editingId === it.id && (isNote || isText);
             return (
               <div
                 key={it.id}
                 data-item-id={it.id}
-                data-vault-catch={JSON.stringify({type:"board-item",title:plan.title,board:{boardId,itemId:it.id},source:"白板"})}
+                data-vault-catch={canEdit ? JSON.stringify({type:"board-item",title:plan.title,board:{boardId,itemId:it.id},source:"白板"}) : undefined}
                 data-widget={it.spec.kind === "custom" ? it.spec.id : it.spec.kind}
                 data-item={it.spec.kind}
                 data-note-tone={isNote && it.spec.kind === "custom" ? String(it.spec.props?.tone ?? "yellow") : undefined}
@@ -990,7 +1027,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 className={"free-item" + (isNote ? " is-note" : "") + (isSel ? " is-selected" : "") + (penOn ? " is-penlocked" : "") + (live && live.id === it.id ? " is-live" : "") + (it.pinned ? " is-pinned" : "")}
                 style={{ left: r.x, top: r.y, width: r.w, height: r.h, opacity: it.opacity ?? 1 }}
                 onPointerDown={(e) => {
-                  if (penOn || editingNow) return;
+                  if (!canEditRef.current || penOn || editingNow) return;
                   const target = e.target as HTMLElement;
                   if (target.closest(".free-handle, .free-toolbar, textarea, input, select, button, a, [role=button], [role=tab], .hw-carousel")) return;
                   /* 手机竖屏是阅读顺序投影（坐标被重排），点一下只负责选中；拖动/缩放只在桌面世界坐标里。 */
@@ -999,7 +1036,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 }}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
-                  if (isNote || isText) {
+                  if (canEditRef.current && (isNote || isText)) {
                     setSelected(it.id);
                     setEditingId(it.id);
                   }
@@ -1007,7 +1044,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                 onContextMenu={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (penOn) return;
+                  if (!canEditRef.current || penOn) return;
                   setSelected(it.id);
                   ops.bringToFront(it.id);
                   openItemMenu(it, e.clientX, e.clientY);
@@ -1044,8 +1081,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
                     defs={defs}
                     renderers={renderers}
                     onOpen={onOpen}
-                    onFolderAdd={() => setFolderPicker({ itemId: it.id })}
-                    onProps={(props) => ops.props(it.id, props)}
+                    onFolderAdd={() => { if (canEditRef.current) setFolderPicker({ itemId: it.id }); }}
+                    onProps={(props) => { if (canEditRef.current) ops.props(it.id, props); }}
                   />
                 )}
                 </>
@@ -1117,7 +1154,9 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
+        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (phoneUi ? " has-edit-toggle" : "") + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
+          {phoneUi ? <Btn size="sm" variant={phoneEditing ? "solid" : "outline"} data-coach="home-edit" aria-pressed={phoneEditing} onClick={() => setPhoneEditScope(phoneEditing ? null : phoneEditKey)}>{(phoneEditing ? i18n("components.freeboard.finishEdit") : i18n("components.freeboard.startEdit"))}</Btn> : null}
+          {canEdit ? <>
           <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>{i18n("components.freeboard.783d638053ea")}</Btn>
           {phonePortrait && orientation === "portrait" ? (
             <Btn variant="outline" size="sm" aria-pressed={phoneCanvas} onClick={togglePhoneCanvas}>
@@ -1142,6 +1181,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               />
             </div>
           ) : null}
+          </> : null}
         </div>, document.body) : null}
 
       </div>

@@ -3,6 +3,9 @@ import type { LocaleDef } from "../types.js";
 const locale = {
   "label": "English",
   "messages": {
+    "components.freeboard.editingHint": "Tap Edit board to arrange widgets",
+    "components.freeboard.startEdit": "Edit board",
+    "components.freeboard.finishEdit": "Done editing",
     "app.08566a4b57a3": "Cloud Drive connected automatically: {value}",
     "app.4d6e46fec3d4": "Restoring your sign-in session…",
     "common.cancel": "Cancel",
@@ -1604,7 +1607,7 @@ const locale = {
     "components.onboardingtourv3.dd3208ca2917": "Welcome to OneTHU",
     "components.onboardingtourv3.dde91a15ff1f": "Switch the tab bar between landscape and portrait anytime; it holds up even narrow.",
     "components.onboardingtourv3.e010e3f578cc": " steps",
-    "components.onboardingtourv3.e18fe8598d89": "All everyday gestures — there is no “edit mode” to enter or exit.",
+    "components.onboardingtourv3.e18fe8598d89": "Drag directly on desktop. On mobile, tap Edit board first, then Done editing when finished.",
     "components.onboardingtourv3.edaec615b68d": "Drag-and-drop practice",
     "components.onboardingtourv3.f3ff6e20abc7": "Press Ctrl+K on any page: type to search, press Enter to jump.",
     "components.onboardingtourv3.f73a8a19c591": "Settings → Plugins: switch anytime between “My plugins” and “Plugin marketplace”.",

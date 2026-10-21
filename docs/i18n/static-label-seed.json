@@ -1003,6 +1003,22 @@
     "enum.label.ojPlatforms": {
       "zh-CN": "OJ 平台",
       "en-US": "OJ platforms"
+    },
+    "components.freeboard.startEdit": {
+      "zh-CN": "编辑白板",
+      "en-US": "Edit board"
+    },
+    "components.freeboard.finishEdit": {
+      "zh-CN": "完成编辑",
+      "en-US": "Done editing"
+    },
+    "components.freeboard.editingHint": {
+      "zh-CN": "点「编辑白板」后可调整组件",
+      "en-US": "Tap Edit board to arrange widgets"
+    },
+    "components.onboardingtourv3.e18fe8598d89": {
+      "zh-CN": "电脑可直接拖放；手机先点「编辑白板」，完成后点「完成编辑」。",
+      "en-US": "Drag directly on desktop. On mobile, tap Edit board first, then Done editing when finished."
     }
   }
 }

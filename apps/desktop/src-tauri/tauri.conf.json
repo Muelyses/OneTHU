@@ -44,6 +44,9 @@
     },
     "resources": {
       "resources/plugins/": "plugins/"
+    },
+    "android": {
+      "versionCode": 11001
     }
   }
 }

@@ -160,6 +160,7 @@
   --og-z-rail: 30;
   --og-z-drawer: 40;
   --og-z-board-tools: 50;
+  --og-z-board-editor: 95;
   --og-board-tool-clearance: 100px;
   --og-board-mobile-tool-bottom: 76px;
   --og-z-overlay: 11000;

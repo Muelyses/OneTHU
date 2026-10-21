@@ -3,6 +3,9 @@ import type { LocaleDef } from "../types.js";
 const locale = {
   "label": "简体中文",
   "messages": {
+    "components.freeboard.editingHint": "点「编辑白板」后可调整组件",
+    "components.freeboard.startEdit": "编辑白板",
+    "components.freeboard.finishEdit": "完成编辑",
     "app.08566a4b57a3": "云盘已自动连接：{value}",
     "app.4d6e46fec3d4": "正在恢复登录状态…",
     "common.cancel": "取消",
@@ -1604,7 +1607,7 @@ const locale = {
     "components.onboardingtourv3.dd3208ca2917": "欢迎使用 OneTHU",
     "components.onboardingtourv3.dde91a15ff1f": "标签栏横竖随时切，窄一点也站得住。",
     "components.onboardingtourv3.e010e3f578cc": " 步",
-    "components.onboardingtourv3.e18fe8598d89": "全是常态手势，没有要进出的「编辑模式」。",
+    "components.onboardingtourv3.e18fe8598d89": "电脑可直接拖放；手机先点「编辑白板」，完成后点「完成编辑」。",
     "components.onboardingtourv3.edaec615b68d": "拖拽演练",
     "components.onboardingtourv3.f3ff6e20abc7": "任何页面按 Ctrl+K：输入即搜，回车直达。",
     "components.onboardingtourv3.f73a8a19c591": "设置 → 插件：「我的插件 / 插件市场」两个视图随时切。",

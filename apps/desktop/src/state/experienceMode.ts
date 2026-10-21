@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import type { LearnNav, Page } from "./app.js";
 export type ExperienceMode = "full" | "simple" | "practical";
+import { cloudAuthorized, subscribePrivacy } from "./privacyConsent.js";
 const KEY = "onethu.experience.v1";
 function read(): ExperienceMode {
   try {
@@ -14,7 +15,8 @@ let route: { page: Page; params: LearnNav | null } = { page: "homepage", params:
 const listeners = new Set<() => void>();
 export const subscribeExperience = (f: () => void) => { listeners.add(f); return () => listeners.delete(f); };
 function emit() { listeners.forEach(f => f()); }
-export const experienceMode = () => mode;
+export const experienceMode = (): ExperienceMode => mode === "full" && !cloudAuthorized() ? "practical" : mode;
+subscribePrivacy(() => { revision++; emit(); });
 /** Invalidates work started before a mode switch, including full → compact → full. */
 export const experienceRevision = () => revision;
 export const simpleRoute = () => route;
@@ -26,6 +28,7 @@ export function useIsSimpleLike(): boolean {
   return isSimpleLike(useExperienceMode());
 }
 export function setExperienceMode(next: ExperienceMode): void {
+  if (next === "full" && !cloudAuthorized()) return;
   if (next === mode) return;
   mode = next;
   revision++;

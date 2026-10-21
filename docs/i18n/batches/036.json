@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.5f62e09a2329",
+      "source": "开户许可证/财务报表/纳税证明/社保缴纳证明扫描件申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 225,
+          "context": "return i18n(\"lib.infoapps.5f62e09a2329\");"
+        }
+      ],
+      "translation": "Request for Copies of Account Opening License/Financial Statements/Tax Certificate/Social Insurance Certificate",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.5f8150e4c23b",
+      "source": "培养方案及计划",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 93,
+          "context": "return i18n(\"lib.infoapps.5f8150e4c23b\");"
+        }
+      ],
+      "translation": "Study Plan and Curriculum",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.6055ffcd5951",
+      "source": "学校外事系统人员登记",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 229,
+          "context": "return i18n(\"lib.infoapps.6055ffcd5951\");"
+        }
+      ],
+      "translation": "School International Affairs System Personnel Registration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.60574ce5f6b2",
       "source": "申请辅修学位",
@@ -1231,54 +1279,6 @@
         }
       ],
       "translation": "Phone Directory",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.b17c58209bce",
-      "source": "就业信息(招聘信息)",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 293,
-          "context": "return i18n(\"lib.infoapps.b17c58209bce\");"
-        }
-      ],
-      "translation": "Employment Information (Job Postings)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.b2b20ae99ca0",
-      "source": "出版合同备案/审批",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 155,
-          "context": "return i18n(\"lib.infoapps.b2b20ae99ca0\");"
-        }
-      ],
-      "translation": "Publishing Contract Filing/Approval",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.b3866ed61ff9",
-      "source": "校级科研条件平台能力体系系统",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 239,
-          "context": "return i18n(\"lib.infoapps.b3866ed61ff9\");"
-        }
-      ],
-      "translation": "University-Level Research Facility Platform Capability System",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

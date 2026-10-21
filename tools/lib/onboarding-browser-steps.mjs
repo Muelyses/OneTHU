@@ -1,5 +1,17 @@
 /** Advance the bilingual language step without changing the saved locale. */
+export async function advanceOnboardingPrivacy(page, {cloud=true, oh=true} = {}) {
+  const phase=page.locator('.experience-tour [data-tour-phase="privacy"]');
+  await phase.waitFor();
+  for (const [name,on] of [["允许 OneTHU 使用清华云盘",cloud],["允许使用 OH 与所选模型服务",oh]]) {
+    const control=phase.getByRole("switch",{name:new RegExp(name)});
+    if ((await control.getAttribute("aria-checked")) !== String(on)) await control.click();
+  }
+  await phase.getByRole("checkbox").check();
+  await page.locator(".tour-privacy-continue").click();
+  await page.locator('.experience-tour [data-tour-phase="language"]').waitFor();
+}
 export async function advanceOnboardingLanguage(page) {
+  await advanceOnboardingPrivacy(page);
   await page.locator('.experience-tour [data-tour-phase="language"]').waitFor();
   await page.locator('.experience-tour .tour-language-continue').click();
   await page.locator('.experience-tour [data-tour-phase="intro"]').waitFor();

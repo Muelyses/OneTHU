@@ -139,6 +139,7 @@ async function ensureRpcListener(): Promise<void> {
 export function bindRustApi(id: string, perms: Set<string>): OnethuApi {
   const api = buildApi(id, perms);
   rpcHandlers.set(id, async (ns, method, args) => {
+    if (id === "onethu.harness" && ns !== "settings") requireOhConsent();
     const target = (api as any)[ns];
     if (!target || typeof target[method] !== "function") {
       throw new Error(i18n("plugins.rust.d10deb8d0c0e", { ns: String(ns), method: String(method) }));
@@ -153,7 +154,10 @@ export function unbindRustApi(id: string): void {
   rpcHandlers.delete(id);
 }
 
+import { requireOhConsent } from "../state/privacyConsent.js";
+
 export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000, signal?: AbortSignal): Promise<unknown> {
+  if (id === "onethu.harness" && method === "run") requireOhConsent();
   const chat = method === "run" && (params as { command?: string } | null)?.command === "chat";
   const suppliedRunId = (params as { runId?: unknown } | null)?.runId;
   const runId = chat ? (typeof suppliedRunId === "string" && suppliedRunId ? suppliedRunId : crypto.randomUUID()) : undefined;

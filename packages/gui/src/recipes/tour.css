@@ -172,3 +172,29 @@ html:root .tour-language-option.is-selected { border-color:var(--og-content-1); 
 @media (max-height:500px) and (min-width:721px) {
   .experience-tour .tour-visual:has(.tour-stage[data-device="phone"]) { max-width:calc((100dvh - 180px) * 390 / 720); }
 }
+
+/* Permission prelude: bilingual reading layout; inherits the modal's real scroll area. */
+html:root .experience-tour.is-privacy.og-modal--lg { width:min(var(--og-page-max-narrow),100%); }
+.privacy-notice { display:grid; gap:var(--og-space-5); min-width:0; }
+.privacy-notice header,.privacy-notice-sections,.privacy-notice-sections > section { display:grid; gap:var(--og-space-3); }
+.privacy-notice h2,.privacy-notice h3,.privacy-notice p { margin:0; }
+.privacy-notice h2 { font-size:var(--og-text-title); }
+.privacy-notice h3 { font-size:var(--og-text-subtitle); }
+.privacy-notice [lang] { display:block; overflow-wrap:anywhere; }
+.privacy-notice [lang="en-US"] { margin-top:var(--og-space-2); color:var(--og-content-2); }
+.privacy-notice-sections > section { padding:var(--og-space-4); border:1px solid var(--og-line-2); border-radius:var(--og-radius-lg); background:var(--og-surface-1); }
+.privacy-notice p,.privacy-ack { font-size:var(--og-text-body); line-height:var(--og-text-body-lh); }
+.privacy-withdraw { color:var(--og-content-2); }
+.tour-privacy-continue { margin-left:auto; }
+.is-privacy .tour-header { flex-wrap:wrap; }
+.is-privacy .tour-counter { white-space:normal; }
+html:root .tour-footer .tour-privacy-continue { min-width:0; max-width:100%; height:auto; min-height:var(--og-ctl-h-lg); white-space:normal; padding-block:var(--og-space-3); }
+.tour-privacy-continue .og-btn-label { white-space:normal; overflow-wrap:anywhere; text-wrap:balance; }
+
+.privacy-permission { display:flex; align-items:flex-start; gap:var(--og-space-3); }
+.privacy-permission > div { flex:1; min-width:0; }
+.privacy-permission strong { font-size:var(--og-text-label); }
+.privacy-permission p { margin-top:var(--og-space-3); }
+.privacy-permission > .og-switch { flex:none; }
+
+.privacy-save-error { padding:var(--og-space-4); border:1px solid var(--og-error); border-radius:var(--og-radius-lg); color:var(--og-error); overflow-wrap:anywhere; }

@@ -61,7 +61,7 @@ assert.ok(/OhModelSourceCard/.test(read("apps/desktop/src/components/SimpleSetti
 const freeBoard = read("apps/desktop/src/components/FreeBoard.tsx");
 assert.ok(/onethu\.board\.phoneCanvas\.v1/.test(freeBoard), "手机白板自由摆放开关未持久化");
 assert.ok(/const stack = phonePortrait && orientation === "portrait" && !penOn && !phoneCanvas;/.test(freeBoard), "手机白板 stack 条件未接入自由摆放/横屏判定");
-assert.ok(/phone-canvas/.test(freeBoard) && /freeboard-wrap\.phone-canvas \.free-item \{ touch-action: none; \}/.test(wbCss), "手机自由摆放缺少 touch-action 规则");
+assert.ok(/phone-canvas/.test(freeBoard) && /freeboard-wrap\.phone-canvas:not\(\.is-edit-locked\) \.free-item \{ touch-action: none; \}/.test(wbCss), "手机自由摆放缺少 touch-action 规则");
 
 /* 横屏手机 = 桌面形态（用户 2026-10-19 拍板） */
 const platform = read("apps/desktop/src/state/platform.ts");

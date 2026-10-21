@@ -1,4 +1,5 @@
 import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
+import { PrivacySettings } from "./PrivacyNotice.js";
 import { CalendarSyncSettings } from "./CalendarSyncSettings.js";
 import { useState } from "react";
 import { Btn, Card, Input, Stack, Text, SettingsRow } from "@onethu/gui";
@@ -34,6 +35,7 @@ export function SimpleSettings() {
  return <div className="simple-settings"><Stack gap={4}>
  <ExperienceModeControl/>
  <LanguageControl/>
+ <PrivacySettings/>
  <OhModelSourceCard/>
  <Card><SettingsRow title={i18n("components.simplesettings.ac794a015ee3")} sub={i18n("components.simplesettings.49454b147354")} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.simplesettings.7c4b06e07cb4")}</Btn>}/>
  <SettingsRow title={i18n("components.simplesettings.99e398c6de5c")} sub={user?.displayName??i18n("components.simplesettings.0a01eee1cd37")} control={<Btn variant="ghost" onClick={()=>void logout()}>{i18n("components.simplesettings.3ab8cc15939f")}</Btn>}/></Card>

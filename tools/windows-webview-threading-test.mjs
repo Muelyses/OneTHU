@@ -22,3 +22,5 @@ assert.deepEqual(violations('pub fn overlay_drag_start() { ensure_window(&app)?;
 assert.deepEqual(violations('pub async fn overlay_show() { ensure_window(&app).await?; }'), []);
 assert.match(source, /pub fn overlay_drag_start\(/, 'macOS native drag must keep its synchronous mouse-event context');
 console.log('Windows WebView creation guard passed (including rejected synchronous regressions); native drag remains synchronous.');
+
+assert.match(source, /run_on_main_thread\(move \|\| macos_prevent_activation_on_main/, "Raw AppKit activation policy must be dispatched to the main thread");

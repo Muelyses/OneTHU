@@ -1,4 +1,5 @@
 import { msg as i18nMsg, t as i18n, useLocale as useUiLocale } from "./i18n/index.js";
+import { usePrivacyConsent } from "./state/privacyConsent.js";
 import { Shell } from "./components/Layout.js";
 import { isAndroidNavigator } from "./lib/androidHost.js";
 import { NotifyBridge } from "./components/NotifyBridge.js";
@@ -40,6 +41,7 @@ function Routed() {
   const uiLocale = useUiLocale();
 
   const { status } = useApp();
+  const privacy = usePrivacyConsent();
 
   // learnX 式后台更新：登录后每 30 分钟静默重拉 learn 数据（作业 DDL/提交状态
   // 变化 → 日历同步、灵动岛文案、挂载中的页面自动跟进）；启动 90 秒后先来一轮，
@@ -79,6 +81,7 @@ function Routed() {
 
   useEffect(() => {
     if (status !== "ready") return;
+    if (!privacy.cloud) return;
     // OH 记忆云盘同步 + 共享主对话同步 + 云盘自动连接
     void import("./memory/sync.js").then((m) => m.memoryBootSync()).catch(() => undefined);
     void import("./im/sessionSync.js").then((m) => m.sessionBootSync()).catch(() => undefined);
@@ -93,7 +96,7 @@ function Routed() {
         }
       })
       .catch(() => undefined);
-  }, [status]);
+  }, [status, privacy.cloud]);
 
   // Explorer hash 桥：外部深链/浏览器前进后退 → 开成独立标签页（本模块统一写 hash，
   // 自身写入经对账消费，不会误开标签页）。只注册一次。

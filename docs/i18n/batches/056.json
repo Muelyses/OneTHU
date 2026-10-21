@@ -1,7 +1,60 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.venuesportstab.bff83f250847",
+      "source": "费用：{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "yuan(picked.session.userFeeDetails?.chargingUnitPrice)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 822,
+          "context": "{i18nRich(\"pages.info.venuesportstab.bff83f250847\", { value: yuan(picked.session.userFeeDetails?.chargingUnitPrice) })}"
+        }
+      ],
+      "translation": "Fee: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.c0855d46556b",
+      "source": "统一身份认证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 621,
+          "context": "{i18n(\"pages.info.venuesportstab.c0855d46556b\")}"
+        }
+      ],
+      "translation": "Unified identity authentication",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.venuesportstab.c3b180cc0d49",
+      "source": "暂无预约记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
+          "line": 856,
+          "context": "{i18n(\"pages.info.venuesportstab.c3b180cc0d49\")}"
+        }
+      ],
+      "translation": "No reservations yet.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.venuesportstab.d342ec4e45d3",
       "source": "场地：{siteName}{value}",
@@ -1324,58 +1377,6 @@
       "translation": "Not now",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.visittab.e22da1c2173d",
-      "source": "报备已提交，学校系统会同步生成记录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 199,
-          "context": "setNote(msg(\"pages.info.visittab.e22da1c2173d\"))"
-        }
-      ],
-      "translation": "Registration submitted. The university system will generate the record shortly.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.visittab.e3301e2db296",
-      "source": "临时来访报备系统返回了无法识别的内容（HTTP {value}）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 45,
-          "context": "return i18n(\"pages.info.visittab.e3301e2db296\", { value: m1[1] });"
-        }
-      ],
-      "translation": "The temporary visit registration system returned unrecognized content (HTTP {value})",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.visittab.eda19ba6e037",
-      "source": "本人确认来访亲友关系属实、身份真实、来访事由合理。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 364,
-          "context": "model?.confirmLabel || i18n(\"pages.info.visittab.eda19ba6e037\")"
-        }
-      ],
-      "translation": "I confirm the family/friend relationship is genuine, the identity is real, and the visit purpose is reasonable.",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

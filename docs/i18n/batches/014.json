@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.helpsection.bd78a657da8a",
+      "source": "生活服务都在「生活」分组里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 32,
+          "context": "return i18n(\"components.helpsection.bd78a657da8a\");"
+        }
+      ],
+      "translation": "Life services are all in the \"Life\" group.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.cfab57dc28e1",
+      "source": "预约类的几项都归在「预约」分组。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 37,
+          "context": "return i18n(\"components.helpsection.cfab57dc28e1\");"
+        }
+      ],
+      "translation": "Reservation services are grouped under \"Reservations\".",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.helpsection.e4699249f613",
+      "source": "按模式查看导览，学习整理白板、暂存内容、分享短口令和 NFC 碰一碰，以及管理组织。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HelpSection.tsx",
+          "line": 71,
+          "context": "i18n(\"components.helpsection.e4699249f613\")} ${"
+        }
+      ],
+      "translation": "Browse the tour by mode to learn how to arrange the Board, stash content, share short codes and NFC Tap to share, and manage organizations.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.helpsection.ebaa5fad9de2",
       "source": "网络学堂、雨课堂、OJ 的作业都汇总在作业区；雨课堂要先扫码绑一次。",
@@ -1315,54 +1363,6 @@
         }
       ],
       "translation": "Unnamed organization",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.identitycard.f83c8237fcf6",
-      "source": "在清华，与你相遇。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/IdentityCard.tsx",
-          "line": 34,
-          "context": "person.bio || i18n(\"components.identitycard.f83c8237fcf6\")"
-        }
-      ],
-      "translation": "Meeting you at Tsinghua.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imagefiltersheet.0ecc16e7fa2c",
-      "source": "正在读取图片…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
-          "line": 164,
-          "context": "!loaded\n      ? i18n(\"components.imagefiltersheet.0ecc16e7fa2c\")\n      : busy\n        ? i18n(\"components.imagefiltersheet.5217984b59e5\")\n        : `${info?.hint ?? \"\"}${rotate ? i18n(\"components.imagefiltersheet.fc1f2c7428d8\", { rotate: String(rotate) }) : \"\"}${dirty ? \"\" : i18n(\"components.imagefiltersheet.e6a608674c0f\")}`"
-        }
-      ],
-      "translation": "Reading image…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.imagefiltersheet.1a9d08f722bd",
-      "source": "旋转 90°",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ImageFilterSheet.tsx",
-          "line": 204,
-          "context": "{i18n(\"components.imagefiltersheet.1a9d08f722bd\")}"
-        }
-      ],
-      "translation": "Rotate 90°",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

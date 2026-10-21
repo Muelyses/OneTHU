@@ -180,7 +180,7 @@ export async function installFakeCloud(page, { token = 'test-token' } = {}) {
       // Keep the bytes in fixture temps instead of dropping the attachment path.
       body = body.replace('!localPath && isTauri', '!localPath');
       /* 未连接云盘 = token 空串；getSeafileToken 改读夹具状态 */
-      body = body.replace('return cfg?.token ?? "";', 'return window.__cloud.token ?? cfg?.token ?? "";');
+      body = body.replace('return cloudAuthorized() ? cfg?.token ?? "" : "";', 'return cloudAuthorized() ? window.__cloud.token ?? cfg?.token ?? "" : "";');
       /* 让 seafile 模块认为自己已配置（cfg 是模块私有）：否则 seafileShareDelete 等
          会走「云盘未配置」分支，撤销链路在夹具里跑不到。 */
       body = body.replace('loaded = true;', 'loaded = true; cfg = { token: window.__cloud.token };');

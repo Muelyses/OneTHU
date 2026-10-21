@@ -1,7 +1,60 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.chatdock.a37778f17c5f",
+      "source": "已取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 2094,
+          "context": "showVoiceFail(i18n(\"plugins.chatdock.a37778f17c5f\"))"
+        }
+      ],
+      "translation": "Cancelled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.a59732772a1e",
+      "source": "语音设置：插件 → OneTHU Harness → 基础设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 2134,
+          "context": "setNotice(i18n(\"plugins.chatdock.a59732772a1e\"))"
+        }
+      ],
+      "translation": "Voice settings: Plugins → OneTHU Harness → Basic settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.chatdock.a5e282527a63",
+      "source": "松开取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 463,
+          "context": "return i18n(\"plugins.chatdock.a5e282527a63\");"
+        },
+        {
+          "file": "apps/desktop/src/plugins/ChatDock.tsx",
+          "line": 2367,
+          "context": "cancelling && voice !== \"off\"\n    ? i18n(\"plugins.chatdock.a5e282527a63\")\n    : voice === \"off\" ? liveShown : voice === \"arming\" ? i18n(\"plugins.chatdock.16b38246ad63\") : liveShown || i18n(\"plugins.chatdock.584965ac8398\")"
+        }
+      ],
+      "translation": "Release to cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.chatdock.a62acb184f47",
       "source": "思考过程",
@@ -545,7 +598,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 259,
+          "line": 260,
           "context": "new Error(i18n(\"plugins.facade.015edb6a8f1a\"))"
         }
       ],
@@ -561,7 +614,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1618,
+          "line": 1620,
           "context": "new Error(i18n(\"plugins.facade.0a9a214b2734\"))"
         }
       ],
@@ -577,7 +630,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1486,
+          "line": 1488,
           "context": "new Error(i18n(\"plugins.facade.168f93bc690d\"))"
         }
       ],
@@ -593,7 +646,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1282,
+          "line": 1284,
           "context": "title: i18n(\"plugins.facade.203c08e0d44a\")"
         }
       ],
@@ -614,7 +667,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 732,
+          "line": 734,
           "context": "new Error(i18n(\"plugins.facade.265965114fef\", { bid: String(bid) }))"
         }
       ],
@@ -630,12 +683,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1957,
+          "line": 1959,
           "context": "new Error(i18n(\"plugins.facade.2d98325ea8eb\"))"
         },
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1971,
+          "line": 1973,
           "context": "new Error(i18n(\"plugins.facade.2d98325ea8eb\"))"
         }
       ],
@@ -651,12 +704,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 981,
+          "line": 983,
           "context": "new Error(i18n(\"plugins.facade.30c5627d3abc\"))"
         },
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 987,
+          "line": 989,
           "context": "new Error(i18n(\"plugins.facade.30c5627d3abc\"))"
         }
       ],
@@ -672,7 +725,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1379,
+          "line": 1381,
           "context": "new Error(i18n(\"plugins.facade.33db9bfbf0a0\"))"
         }
       ],
@@ -688,7 +741,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 2006,
+          "line": 2008,
           "context": "new Error(i18n(\"plugins.facade.38273097f67a\"))"
         }
       ],
@@ -704,7 +757,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1611,
+          "line": 1613,
           "context": "new Error(i18n(\"plugins.facade.3f6e4c3f9ebd\"))"
         }
       ],
@@ -729,7 +782,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 2018,
+          "line": 2020,
           "context": "new Error(i18n(\"plugins.facade.449acaed3d6f\", { label: String(label), value: String(ms / 1000) }))"
         }
       ],
@@ -750,7 +803,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 298,
+          "line": 299,
           "context": "new Error(i18n(\"plugins.facade.4c822bdd81d6\", { uid: String(uid) }))"
         }
       ],
@@ -775,7 +828,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 535,
+          "line": 537,
           "context": "new Error(i18n(\"plugins.facade.532d892a16b6\", { courseId: String(courseId), semesterId: String(semesterId) }))"
         }
       ],
@@ -791,7 +844,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 737,
+          "line": 739,
           "context": "new Error(i18n(\"plugins.facade.536acdd7d116\"))"
         }
       ],
@@ -807,7 +860,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1299,
+          "line": 1301,
           "context": "new Error(i18n(\"plugins.facade.5a9154403950\"))"
         }
       ],
@@ -823,7 +876,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 867,
+          "line": 869,
           "context": "new Error(i18n(\"plugins.facade.6082f18ce536\"))"
         }
       ],
@@ -839,7 +892,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1478,
+          "line": 1480,
           "context": "new Error(i18n(\"plugins.facade.667f8382b324\"))"
         }
       ],
@@ -855,7 +908,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1313,
+          "line": 1315,
           "context": "new Error(i18n(\"plugins.facade.7241d265bd8c\"))"
         }
       ],
@@ -871,7 +924,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 992,
+          "line": 994,
           "context": "new Error(i18n(\"plugins.facade.7437bebe3a97\"))"
         }
       ],
@@ -887,7 +940,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1457,
+          "line": 1459,
           "context": "new Error(i18n(\"plugins.facade.74881d8fa852\"))"
         }
       ],
@@ -903,7 +956,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1451,
+          "line": 1453,
           "context": "new Error(i18n(\"plugins.facade.776c5600bcab\"))"
         }
       ],
@@ -919,7 +972,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 913,
+          "line": 915,
           "context": "new Error(i18n(\"plugins.facade.777811e6adc7\"))"
         }
       ],
@@ -935,7 +988,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1939,
+          "line": 1941,
           "context": "new Error(i18n(\"plugins.facade.7cc0a2460bf7\"))"
         }
       ],
@@ -951,7 +1004,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1887,
+          "line": 1889,
           "context": "new Error(i18n(\"plugins.facade.807f0c9d0b04\"))"
         }
       ],
@@ -967,7 +1020,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1310,
+          "line": 1312,
           "context": "new Error(i18n(\"plugins.facade.81accc7a976c\"))"
         }
       ],
@@ -983,7 +1036,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1937,
+          "line": 1939,
           "context": "new Error(i18n(\"plugins.facade.8794c40bbdb4\"))"
         }
       ],
@@ -999,7 +1052,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1097,
+          "line": 1099,
           "context": "new Error(i18n(\"plugins.facade.9649f0743b7b\"))"
         }
       ],
@@ -1015,7 +1068,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1185,
+          "line": 1187,
           "context": "new Error(i18n(\"plugins.facade.976be8e8ac76\"))"
         }
       ],
@@ -1040,7 +1093,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1221,
+          "line": 1223,
           "context": "new Error(i18n(\"plugins.facade.98c18b06340b\", { id: String(id), value: String(dockable.slice(0, 40).join(\" / \")) }))"
         }
       ],
@@ -1056,7 +1109,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 962,
+          "line": 964,
           "context": "new Error(i18n(\"plugins.facade.995c7a402a02\"))"
         }
       ],
@@ -1072,7 +1125,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 260,
+          "line": 261,
           "context": "new Error(i18n(\"plugins.facade.9ab26357bd06\"))"
         }
       ],
@@ -1088,7 +1141,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1647,
+          "line": 1649,
           "context": "new AuthRequiredError(i18n(\"plugins.facade.a31a8e09b143\"))"
         }
       ],
@@ -1104,7 +1157,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1038,
+          "line": 1040,
           "context": "new Error(i18n(\"plugins.facade.a80c49c4e2cd\"))"
         }
       ],
@@ -1120,7 +1173,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1463,
+          "line": 1465,
           "context": "new Error(i18n(\"plugins.facade.aa0117c0a684\"))"
         }
       ],
@@ -1136,7 +1189,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1179,
+          "line": 1181,
           "context": "new Error(i18n(\"plugins.facade.aaf4a5ba16eb\"))"
         }
       ],
@@ -1165,7 +1218,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 688,
+          "line": 690,
           "context": "new Error(i18n(\"plugins.facade.b415f4b7d98e\", { m2: String(m2), ensured: String(ensured), value: String(InfoClient.libUserid || \"?\") }))"
         }
       ],
@@ -1181,7 +1234,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1706,
+          "line": 1708,
           "context": "new Error(i18n(\"plugins.facade.b7177e760cc6\"))"
         }
       ],
@@ -1197,7 +1250,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 620,
+          "line": 622,
           "context": "error: i18n(\"plugins.facade.c50a68203b6c\")"
         }
       ],
@@ -1213,7 +1266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1389,
+          "line": 1391,
           "context": "new Error(i18n(\"plugins.facade.cb7be7f22ff6\"))"
         }
       ],
@@ -1229,7 +1282,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1428,
+          "line": 1430,
           "context": "new Error(i18n(\"plugins.facade.d0deef545297\"))"
         }
       ],
@@ -1245,7 +1298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 906,
+          "line": 908,
           "context": "new Error(i18n(\"plugins.facade.d12b86e33757\"))"
         }
       ],
@@ -1261,7 +1314,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 352,
+          "line": 354,
           "context": "new Error(i18n(\"plugins.facade.d669b31a853f\"))"
         }
       ],
@@ -1277,7 +1330,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 2046,
+          "line": 2048,
           "context": "new Error(\n      i18n(\"plugins.facade.d9ce17418be4\"),\n    )"
         }
       ],
@@ -1293,7 +1346,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 959,
+          "line": 961,
           "context": "new Error(i18n(\"plugins.facade.d9e18ccca62c\"))"
         }
       ],
@@ -1309,7 +1362,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1089,
+          "line": 1091,
           "context": "new Error(i18n(\"plugins.facade.e17b179b14d7\"))"
         }
       ],
@@ -1325,7 +1378,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 2042,
+          "line": 2044,
           "context": "showToast(i18n(\"plugins.facade.ebf705292119\"))"
         }
       ],
@@ -1341,7 +1394,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1056,
+          "line": 1058,
           "context": "new Error(i18n(\"plugins.facade.ef62cd3182c8\"))"
         }
       ],
@@ -1357,64 +1410,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1150,
+          "line": 1152,
           "context": "new Error(i18n(\"plugins.facade.f4466b045d5f\"))"
         }
       ],
       "translation": "Board or widget not found",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.f6746a5629b0",
-      "source": "日程不存在：{uid}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "uid",
-          "expression": "String(uid)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 286,
-          "context": "new Error(i18n(\"plugins.facade.f6746a5629b0\", { uid: String(uid) }))"
-        }
-      ],
-      "translation": "Schedule entry not found: {uid}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.f6d1ef56c2ca",
-      "source": "时间得是「2026-10-14 09:00」格式或毫秒数",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1384,
-          "context": "new Error(i18n(\"plugins.facade.f6d1ef56c2ca\"))"
-        }
-      ],
-      "translation": "Time must be in \"2026-10-14 09:00\" format or a millisecond timestamp",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.facade.fba49ea39197",
-      "source": "没找到这块板或这个组件（id 对照 ext_onepage_list 的板与组件 id）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/facade.ts",
-          "line": 1136,
-          "context": "new Error(i18n(\"plugins.facade.fba49ea39197\"))"
-        }
-      ],
-      "translation": "Board or widget not found (match ids against the board and widget ids from ext_onepage_list)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

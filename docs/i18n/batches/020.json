@@ -1,7 +1,52 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.onboardingtourmobile.6aebf4025ba6",
+      "source": "新建即得一块白板，跟首页同一套手势。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 82
+        }
+      ],
+      "translation": "A new tab is a fresh board, using the same gestures as Home.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.70297c6559a9",
+      "source": "长按 0.45 秒开始说话；松手直发，上划取消。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 87
+        }
+      ],
+      "translation": "Press and hold for 0.45 seconds to start speaking; release to send, swipe up to cancel.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourmobile.70bec8e88b2c",
+      "source": "按住 0.5 秒不动出菜单：聚焦、复制、关闭、解散工作区。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Press and hold for 0.5 seconds without moving to open the menu: focus, copy, close, disband workspace.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardingtourmobile.715ee9dc842f",
       "source": "开始使用",
@@ -1206,53 +1251,6 @@
         }
       ],
       "translation": "Back",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.dc819c398a78",
-      "source": "底栏「OneGO!」→ 我的 OnePage：起名后点「新建」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 86
-        }
-      ],
-      "translation": "Bottom bar “OneGO!” → My OnePage: name it, then tap “New”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.dd3208ca2917",
-      "source": "欢迎使用 OneTHU",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 63,
-          "context": "return i18n(\"components.onboardingtourv3.dd3208ca2917\");"
-        }
-      ],
-      "translation": "Welcome to OneTHU",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourv3.dde91a15ff1f",
-      "source": "标签栏横竖随时切，窄一点也站得住。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
-          "line": 80,
-          "context": "return i18n(\"components.onboardingtourv3.dde91a15ff1f\");"
-        }
-      ],
-      "translation": "Switch the tab bar between landscape and portrait anytime; it holds up even narrow.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

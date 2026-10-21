@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.f575a006f94b",
+      "source": "校机关服务满意度调查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 297,
+          "context": "return i18n(\"lib.infoapps.f575a006f94b\");"
+        }
+      ],
+      "translation": "University Administration Satisfaction Survey",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.f66fc156eba4",
+      "source": "培养方案完成情况",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 94,
+          "context": "return i18n(\"lib.infoapps.f66fc156eba4\");"
+        }
+      ],
+      "translation": "Study Plan Completion Status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.f6e69d684adb",
+      "source": "文化素质课申请查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 101,
+          "context": "return i18n(\"lib.infoapps.f6e69d684adb\");"
+        }
+      ],
+      "translation": "General Education Course Application Search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.f78a23b61ab7",
       "source": "横向项目变更",
@@ -1228,51 +1276,6 @@
         }
       ],
       "translation": "Open the share entry first, then tap \"Receive\" to see what your device supports.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.836d1b485b82",
-      "source": "在组织中管理成员、资料库、项目和公告。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 56
-        }
-      ],
-      "translation": "Manage members, repositories, projects and announcements inside an organization.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.860909859b77",
-      "source": "先确认箱内内容，再生成并复制分享口令。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 46
-        }
-      ],
-      "translation": "Confirm the box contents first, then create and copy the share code.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.91753f91e6a4",
-      "source": "云盘、邮箱、GitLab、寻迹也能直接打开。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 90
-        }
-      ],
-      "translation": "Cloud drive, email, GitLab and Directions can be opened directly too.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

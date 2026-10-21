@@ -1,6 +1,8 @@
 /* ⚠️ 必须第一条：认领父窗口的 Tauri 桥（竖屏取景框是同源 iframe，Tauri 只注入主 frame）。
    放在最前，后面所有模块 import 时的 `"__TAURI_INTERNALS__" in window` 判定才是对的。 */
 import "./lib/tauriBridge.js";
+import { initPrivacyConsent, ohAuthorized, subscribePrivacy } from "./state/privacyConsent.js";
+const privacyReady = initPrivacyConsent();
 import { StrictMode } from "react";
 import { logLine } from "./lib/clients.js";
 import { isPhoneViewport, platformOf } from "./state/platform.js";
@@ -41,7 +43,7 @@ void syncOverlayPreference();
 
 import { createRoot } from "react-dom/client";
 import { lazy, Suspense } from "react";
-import { activateInstalledPlugins, seedBuiltinHarness } from "./plugins/loader.js";
+import { activateInstalledPlugins, seedBuiltinHarness, refreshHarnessConsent } from "./plugins/loader.js";
 import "@onethu/ui/tokens.css";
 import { installAuthWatchdog, installKeepalive } from "./lib/reload.js";
 
@@ -114,6 +116,7 @@ if (PHONE_FRAME && PhoneFrame) {
     </Suspense>,
   );
 } else {
+void privacyReady.then(() => {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     {/* R24：根级错误边界——任何渲染期崩溃都变成可读卡片，不再整窗白屏 */}
@@ -130,6 +133,7 @@ createRoot(document.getElementById("root")!).render(
     </RootErrorBoundary>
   </StrictMode>,
 );
+});
 }
 // 动态取色（§3.4）：上次开着就重开；取色不可用会自动降级到「清华紫」主题。
 // 放在 CSS 导入之后：注入的 <style> 需要插在令牌样式之后（且自身特异性更高，顺序无关紧要）。
@@ -138,8 +142,17 @@ watchDynamicColor();
 
 // 恢复已装插件（异步，失败只落日志）
 void (async () => {
+  await privacyReady;
   await seedBuiltinHarness();
   await activateInstalledPlugins();
+  let ohAllowed = ohAuthorized();
+  subscribePrivacy(() => {
+    const next = ohAuthorized();
+    if (next === ohAllowed) return;
+    ohAllowed = next;
+    void refreshHarnessConsent().catch(() => undefined);
+  });
+  await refreshHarnessConsent();
 })().catch(() => undefined);
 
 declare const __APP_VERSION__: string;

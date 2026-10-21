@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.types.6dc54a9470ed",
+      "source": "读取体育场馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 60,
+          "context": "return i18n(\"plugins.types.6dc54a9470ed\");"
+        }
+      ],
+      "translation": "Read sports venues",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.6f73980048f5",
+      "source": "外部 WebSocket 连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 83,
+          "context": "return i18n(\"plugins.types.6f73980048f5\");"
+        }
+      ],
+      "translation": "External WebSocket connections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.7015255aa19b",
+      "source": "本地存储",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 81,
+          "context": "return i18n(\"plugins.types.7015255aa19b\");"
+        }
+      ],
+      "translation": "Local storage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.types.781fead7e82d",
       "source": "应用内跳转",
@@ -829,455 +877,8 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "profile.field.announcements",
-      "source": "公告",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
-          "context": "announcements:t(\"profile.field.announcements\")"
-        }
-      ],
-      "translation": "Announcements",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.bio",
-      "source": "个人简介",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 35,
-          "context": "bio:t(\"profile.field.bio\")"
-        }
-      ],
-      "translation": "Bio",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.body",
-      "source": "正文",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
-          "context": "body:t(\"profile.field.body\")"
-        }
-      ],
-      "translation": "Content",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.brief",
-      "source": "简介",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
-          "context": "brief:t(\"profile.field.brief\")"
-        }
-      ],
-      "translation": "Summary",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.description",
-      "source": "说明",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
-          "context": "description:t(\"profile.field.description\")"
-        }
-      ],
-      "translation": "Description",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.email",
-      "source": "邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
-          "context": "email:t(\"profile.field.email\")"
-        }
-      ],
-      "translation": "Email",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.gitlabRepos",
-      "source": "代码仓库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "gitlabRepos:t(\"profile.field.gitlabRepos\")"
-        }
-      ],
-      "translation": "Repositories",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.image",
-      "source": "图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "avatar:t(\"profile.field.image\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "src:t(\"profile.field.image\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "cover:t(\"profile.field.image\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 53,
-          "context": "{t(\"profile.field.image\")}"
-        }
-      ],
-      "translation": "Image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.libraries",
-      "source": "资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "libraries:t(\"profile.field.libraries\")"
-        }
-      ],
-      "translation": "Libraries",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.members",
-      "source": "成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
-          "context": "members:t(\"profile.field.members\")"
-        }
-      ],
-      "translation": "Members",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.name",
-      "source": "姓名 / 名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 35,
-          "context": "name:t(\"profile.field.name\")"
-        }
-      ],
-      "translation": "Name",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.note",
-      "source": "备注",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
-          "context": "note:t(\"profile.field.note\")"
-        }
-      ],
-      "translation": "Note",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.owner",
-      "source": "负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "owner:t(\"profile.field.owner\")"
-        }
-      ],
-      "translation": "Owner",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.phone",
-      "source": "手机号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 35,
-          "context": "phone:t(\"profile.field.phone\")"
-        }
-      ],
-      "translation": "Phone",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.projects",
-      "source": "项目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
-          "context": "projects:t(\"profile.field.projects\")"
-        }
-      ],
-      "translation": "Projects",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.role",
-      "source": "角色",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 36,
-          "context": "role:t(\"profile.field.role\")"
-        }
-      ],
-      "translation": "Role",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.social",
-      "source": "社交媒体",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 35,
-          "context": "social:t(\"profile.field.social\")"
-        }
-      ],
-      "translation": "Social media",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.status",
-      "source": "状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 38,
-          "context": "status:t(\"profile.field.status\")"
-        }
-      ],
-      "translation": "Status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.field.title",
-      "source": "标题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 37,
-          "context": "title:t(\"profile.field.title\")"
-        }
-      ],
-      "translation": "Title",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "profile.field.website",
-      "source": "个人网址",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 35,
-          "context": "website:t(\"profile.field.website\")"
-        }
-      ],
-      "translation": "Website",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.role.guest",
-      "source": "访客",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 51,
-          "context": "guest:t(\"profile.role.guest\")"
-        }
-      ],
-      "translation": "Guest",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.role.member",
-      "source": "成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 51,
-          "context": "member:t(\"profile.role.member\")"
-        }
-      ],
-      "translation": "Member",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.role.owner",
-      "source": "所有者",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 51,
-          "context": "owner:t(\"profile.role.owner\")"
-        }
-      ],
-      "translation": "Owner",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.status.active",
-      "source": "进行中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 51,
-          "context": "active:t(\"profile.status.active\")"
-        }
-      ],
-      "translation": "In progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.status.done",
-      "source": "已完成",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 51,
-          "context": "done:t(\"profile.status.done\")"
-        }
-      ],
-      "translation": "Done",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.status.planned",
-      "source": "待开始",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 51,
-          "context": "planned:t(\"profile.status.planned\")"
-        }
-      ],
-      "translation": "Planned",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.sync.chooseVersion",
-      "source": "选你想保留的内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 85,
-          "context": "{t(\"profile.sync.chooseVersion\")}"
-        }
-      ],
-      "translation": "Choose what to keep",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.sync.combined",
-      "source": "两边合在一起",
+      "key": "privacy.ack",
+      "source": "我已阅读以上说明，并按我的选择继续",
       "kind": "text",
       "parameters": [],
       "locations": [
@@ -1286,23 +887,396 @@
           "line": 1
         }
       ],
-      "translation": "Both combined",
+      "translation": "I have read the notice and wish to continue with my choices",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "profile.sync.confirmDelete",
-      "source": "确认删除这条记录",
+      "key": "privacy.cloudBody",
+      "source": "关闭时不自动连接你的云盘，也不进行云盘读写、个人资料与组织/好友同步、云端 OH 记忆或基于云盘的分享。授权后会读取账号、配额、资料库和所打开文件，并为同步、好友、组织、口令分享等功能创建或更新对应资料库与文件；主动上传、删除、共享操作也会修改云盘。不会因为同意本许可就清空或批量改动原有文件，授权也不等于允许 OH 随意操作文件。",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 75,
-          "context": "data===null?t(\"profile.sync.confirmDelete\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
         }
       ],
-      "translation": "Delete this record",
+      "translation": "When disabled, OneTHU does not automatically connect to your cloud account or perform cloud reads/writes, profile/organization/friend sync, cloud OH memory or cloud-based sharing. When enabled, it can read account details, quota, libraries and files you open, and create or update relevant libraries/files for sync, friends, organizations and passphrase sharing. Upload, deletion and sharing actions also change cloud data. Giving consent does not clear or bulk-modify existing files, nor authorize arbitrary OH file operations.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.cloudEffect",
+      "source": "可选。关闭后完整模式不可用；极简／实用模式保留，云盘及依赖它的功能停用。公开安装包下载不受影响。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Optional. Full mode requires this permission. Minimal / Practical remain available with cloud-dependent features disabled. Public installer downloads remain available.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.cloudRequired",
+      "source": "云盘未授权。请在「我的 → 权限与隐私」或导览中开启。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 412,
+          "context": "{i18n(\"privacy.cloudRequired\")}"
+        },
+        {
+          "file": "apps/desktop/src/state/privacyConsent.ts",
+          "line": 47,
+          "context": "new Error(t(\"privacy.cloudRequired\"))"
+        }
+      ],
+      "translation": "Cloud access is disabled. Enable it in My → Permissions & privacy or in the guide.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.cloudTitle",
+      "source": "清华云盘许可",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Tsinghua Cloud permission",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.cloudToggle",
+      "source": "允许 OneTHU 使用清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Allow OneTHU to access Tsinghua Cloud",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.continue",
+      "source": "保存选择并继续",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 33,
+          "context": "{t(\"privacy.continue\")}"
+        }
+      ],
+      "translation": "Save choices & continue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.disclaimerBody",
+      "source": "本项目为非官方辅助工具。学校接口、网络及第三方服务可能变化或不可用，数据可能延迟、遗漏或出错。作业截止、预约、费用及其他重要事项请以官方系统为准，并确认操作结果。请备份重要文件；本说明不排除法律规定的责任与权利。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "This is an unofficial assistance tool. University APIs, networks and third-party services may change or become unavailable; data may be delayed, incomplete or incorrect. Check deadlines, reservations, payments and other important matters in official systems, and verify action results. Back up important files. This notice does not exclude statutory rights or responsibilities.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.disclaimerTitle",
+      "source": "以官方信息为准",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Verify important actions with official services",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.fullRequired",
+      "source": "完整模式需要云盘授权。请先在权限须知中开启。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
+          "line": 16,
+          "context": "m.id === \"full\" && !privacy.cloud ? i18n(\"privacy.fullRequired\") : m.detail"
+        }
+      ],
+      "translation": "Full mode requires cloud permission. Enable it in Permissions & privacy first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.lead",
+      "source": "先了解数据去向，再决定授权。拒绝可选授权，也能使用极简与实用模式。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Understand where data goes, then choose permissions. Minimal and Practical modes work without optional consent.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.localBody",
+      "source": "OneTHU 没有自建的校园数据汇总后端，界面与业务主要在设备上运行，并通过原生网络层连接学校及你选择的服务。它并非离线软件，也不是所有处理都只发生在本机。账号会话、缓存、设置及选择记住的凭据会保存在设备上，请保护设备与导出的文件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OneTHU has no self-operated backend that aggregates campus data. Its interface and most application logic run on your device, with a native network layer connecting to university services and services you select. It is not offline, and not all processing stays on-device. Sessions, caches, settings and credentials you choose to remember are stored on your device. Protect your device and exported files.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.localTitle",
+      "source": "本地客户端，不是学校官方应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "A local client, not an official university app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.nativeUpdateRequired",
+      "source": "前端已更新，但当前 App 原生壳版本过旧，无法保存权限。开发预览请重新编译并重启 App；安装版请更新安装包。刷新页面无法修复。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "The interface is updated, but this app’s native host is too old to save permissions. Rebuild and restart the app for development previews, or install the updated app. Reloading the page cannot fix this.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohBody",
+      "source": "开启 OH 后，你发送的对话、附件，以及为回答而调用工具读取到的数据可能发往所选模型服务商、清小搭或你配置的 API／MCP／IM 服务，并适用对方政策。不要提供密码、验证码或无关的敏感数据。AI 可能出错；涉及提交、预约、删除、发送或分享等操作应先核对确认。网页、文件和技能中的指令不构成你的授权；仅安装可信插件与技能。云盘授权关闭时，OH 也无法绕过云盘限制。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "When OH is enabled, your messages, attachments and data read by tools to answer you may be sent to your chosen model provider, QingXiaoDa or configured API / MCP / IM services, under their policies. Do not provide passwords, verification codes or unrelated sensitive data. AI may be wrong. Review and confirm submissions, bookings, deletions, sending and sharing. Instructions in pages, files or skills are not your authorization. Install only trusted plugins and skills. OH cannot bypass disabled cloud permission.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohEffect",
+      "source": "可选。关闭后保留搜索与校园页面，OH 对话及智能体操作停用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Optional. When disabled, search and campus pages remain available, while OH conversations and agent actions are disabled.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohRequired",
+      "source": "OH 未授权。请先在「我的 → 权限与隐私」或导览中查看说明并开启。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/privacyConsent.ts",
+          "line": 48,
+          "context": "new Error(t(\"privacy.ohRequired\"))"
+        }
+      ],
+      "translation": "OH is disabled. Review the notice and enable it in My → Permissions & privacy or in the guide.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohTitle",
+      "source": "OH、模型与插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OH, models & plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohToggle",
+      "source": "允许使用 OH 与所选模型服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Allow OH and the selected model service",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.replay",
+      "source": "重新导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 214,
+          "context": "{i18n(\"privacy.replay\")}"
+        }
+      ],
+      "translation": "Replay the guide",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.review",
+      "source": "查看与修改授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 30,
+          "context": "{t(\"privacy.review\")}"
+        }
+      ],
+      "translation": "Review permissions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.revokeGuide",
+      "source": "如果想要撤销授权，请前往设置重新导览。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 214,
+          "context": "{i18n(\"privacy.revokeGuide\")}"
+        }
+      ],
+      "translation": "To withdraw consent, open Settings and replay the guide.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.saved",
+      "source": "授权选择已保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 32,
+          "context": "showToast(t(\"privacy.saved\"))"
+        }
+      ],
+      "translation": "Permission choices saved",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.saveFailed",
+      "source": "权限选择未能保存，请稍后重试。未保存成功前，不会授予新的权限。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Your permission choices could not be saved. Please try again. No new permissions are granted until saving succeeds.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.settings",
+      "source": "权限与隐私",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 30,
+          "context": "{t(\"privacy.settings\")}"
+        }
+      ],
+      "translation": "Permissions & privacy",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.step",
+      "source": "第 −1 步 · 使用前请了解",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Step −1 · Before you begin",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

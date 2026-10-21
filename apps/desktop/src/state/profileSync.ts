@@ -1,3 +1,4 @@
+import { cloudAuthorized } from "./privacyConsent.js";
 /** Private account profile replication, independent of public cards/invitations.
  * Every device writes only its own file. No credentials or API settings are read.
  */
@@ -6,7 +7,7 @@ import { logLine } from "../lib/clients.js";
 import { ensureOwnedCloudRepo } from "../lib/ownedCloudRepo.js";
 import { cardsSnapshot, restoreCardsFromSync, subscribeCards, type PersonalCard } from "./nameCard.js";
 import { orgSnapshot, restoreOrgsFromSync, subscribeOrgs } from "./org.js";
-import { ensureSeafileLoaded, getSeafileCredentialVersion, getSeafileToken, subscribeSeafile, type SeafileAccount, type SeafileEntry } from "./seafile.js";
+import { ensureSeafileLoaded, getSeafileIdentityVersion, getSeafileCredentialVersion, getSeafileToken, subscribeSeafile, type SeafileAccount, type SeafileEntry } from "./seafile.js";
 import { experienceMode, experienceRevision, subscribeExperience } from "./experienceMode.js";
 import { captureProfile, flattenProfile, materializeProfile, mergeProfile, newProfileState, parseProfileState, profileConflicts, profileConflictPaths, profileConflictId, resolveProfileConflict, PROFILE_MAX_BYTES, type ProfileState, type ProfileConflict } from "./profileSyncCore.js";
 
@@ -175,14 +176,16 @@ export function startProfileSync(): () => void {
       if (queued) { queued = false; schedule(); }
     }
   }
-  let watchedVersion = getSeafileCredentialVersion();
+  let watchedVersion = getSeafileIdentityVersion();
   const onAccount = () => {
-    const version = getSeafileCredentialVersion();
+    const version = getSeafileIdentityVersion();
     if (version === watchedVersion) return;
     watchedVersion = version;
     setConflicts([]);
     setStatus("offline");
     state = null;
+    // Revocation is not an account change: keep local profile, friends and organizations.
+    if (!cloudAuthorized()) return;
     // Keep the previous account's checkpoint, but never show/upload its index
     // under a newly connected account. A token rotation will restore its own copy.
     if (localStorage.getItem(OWNER_KEY)) {
@@ -196,6 +199,7 @@ export function startProfileSync(): () => void {
   };
   const onMode = () => {
     if (timer) clearTimeout(timer);
+    if (!cloudAuthorized()) { setConflicts([]); setStatus("offline"); }
     if (experienceMode() === "full") { setStatus("pending"); schedule(100); }
   };
   const onFocus = () => schedule(100);

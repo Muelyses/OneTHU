@@ -1,7 +1,60 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "native.widget.chooseContent",
+      "source": "点一下选择显示内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Tap to choose what to show",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.few",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "{count} classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "native.widget.classes.many",
+      "source": "{count} 节课",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "docs/i18n/native-widget-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "{count} classes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "native.widget.classes.one",
       "source": "{count} 节课",
@@ -1404,54 +1457,6 @@
         }
       ],
       "translation": "Move down",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.boardlistpage.ec4cd05f5147",
-      "source": "重命名…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/BoardListPage.tsx",
-          "line": 54,
-          "context": "label: i18n(\"pages.boardlistpage.ec4cd05f5147\")"
-        }
-      ],
-      "translation": "Rename…",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.boardlistpage.ef42f401cbad",
-      "source": "至少保留一块 OnePage",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/BoardListPage.tsx",
-          "line": 63,
-          "context": "r.reason === \"last-board\" ? i18n(\"pages.boardlistpage.ef42f401cbad\") : i18n(\"pages.boardlistpage.11de1b40f9d8\")"
-        }
-      ],
-      "translation": "At least one OnePage must be kept",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.boardlistpage.f853a70b1204",
-      "source": "上移",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/BoardListPage.tsx",
-          "line": 57,
-          "context": "label: i18n(\"pages.boardlistpage.f853a70b1204\")"
-        }
-      ],
-      "translation": "Move up",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

@@ -731,6 +731,7 @@ pub async fn harness_call(
     params: Value,
     timeout_ms: Option<u64>,
 ) -> Result<Value, String> {
+    if method == "run" { crate::privacy_consent::require_oh()?; }
     let live = state
         .live
         .lock()

@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.cloudtokenwebview.63c8ea2f536a",
+      "source": "应用内云盘登录仅能在 OneTHU 中使用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
+          "line": 40,
+          "context": "new Error(i18n(\"lib.cloudtokenwebview.63c8ea2f536a\"))"
+        }
+      ],
+      "translation": "In-app cloud drive sign-in only works inside OneTHU.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.cloudtokenwebview.cancelled",
+      "source": "已取消读取云盘访问口令。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
+          "line": 139,
+          "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
+        }
+      ],
+      "translation": "Reading the cloud drive access token was canceled.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.cloudtokenwebview.pageTimeout",
+      "source": "等待云盘页面超时，请确认已登录后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
+          "line": 139,
+          "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
+        }
+      ],
+      "translation": "Timed out waiting for the cloud drive page; confirm you are signed in and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.contentexchange.045720f46a17",
       "source": "这个口令里没有新内容",
@@ -1292,54 +1340,6 @@
         }
       ],
       "translation": "Washer",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.homecards.70d0c1b33626",
-      "source": "日期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/homeCards.ts",
-          "line": 110,
-          "context": "return i18n(\"lib.homecards.70d0c1b33626\");"
-        }
-      ],
-      "translation": "Date",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.homecards.7ca0b3673bc7",
-      "source": "信息门户 · 订阅动态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/homeCards.ts",
-          "line": 133,
-          "context": "return i18n(\"lib.homecards.7ca0b3673bc7\");"
-        }
-      ],
-      "translation": "Info portal · Subscriptions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.homecards.838814f1139e",
-      "source": "生活页 · 财务 · 工资到账",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/homeCards.ts",
-          "line": 146,
-          "context": "return i18n(\"lib.homecards.838814f1139e\");"
-        }
-      ],
-      "translation": "Life page · Finance · Salary deposits",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

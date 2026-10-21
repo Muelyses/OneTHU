@@ -20,6 +20,7 @@ import { logLine } from "../lib/clients.js";
 import { setSeafileToken, type SeafileAccount } from "./seafile.js";
 import type { TwoFactorMethod } from "@onethu/core";
 
+import { requireCloudConsent } from "./privacyConsent.js";
 const PROFILE_URL = "https://cloud.tsinghua.edu.cn/profile/";
 
 /** checkSingle 指纹确认页（id 会话活着，与 core/exthw/tuojCas.ts isCheckSinglePage 同判据） */
@@ -66,6 +67,7 @@ export interface AutoConnectResult {
 export async function autoConnectSeafile(
   opts: { allowRelogin?: boolean } = {},
 ): Promise<AutoConnectResult> {
+  requireCloudConsent();
   return autoConnectViaHttp(false, opts.allowRelogin !== false);
 }
 
@@ -75,6 +77,7 @@ export async function autoConnectSeafile(
  *  bundle 实锤的「显示口令」端点，纯只读）→ 40hex 口令 → setSeafileToken 落盘。
  *  全程零窗口零输入；幂等（已连接直接返回）。ConnectGate / 导览 / IM 指令共用。 */
 export async function silentConnectSeafile(): Promise<AutoConnectResult> {
+  requireCloudConsent();
   const log = (m: string) => void logLine(`[CLOUD-DIRECT] ${m}`).catch(() => undefined);
   try {
     const { getSeafileToken } = await import("./seafile.js");

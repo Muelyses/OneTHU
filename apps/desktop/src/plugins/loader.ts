@@ -7,6 +7,7 @@ import { isThemeEntry } from "../lib/market.js";
 import { registerPluginWidget, unregisterPluginWidgets } from "./pluginWidgets.js";
 import { bindRustApi, callRust, disposeRust, spawnRustPlugin, startHarnessEmbedded } from "./rust.js";
 import { refreshMadModelRoute, startMadModelPump } from "../state/madmodel.js";
+import { ohAuthorized } from "../state/privacyConsent.js";
 import { addPlugin, addRustPlugin, getPlugin, removePlugin, snapshot, subscribe, updatePlugin } from "./registry.js";
 import { registerPluginTab, unregisterPluginTabs } from "./tabs.js";
 /** ctx 方法的权限门禁：manifest.permissions 未声明即抛错（安装确认向用户说明过这些权限） */
@@ -159,6 +160,7 @@ function defaultsOf(m: PluginManifest): Record<string, string> {
 }
 
 async function activate(id: string, mod?: any, blobUrl?: string): Promise<void> {
+  if (id === "onethu.harness" && !ohAuthorized()) return;
   const rec = getPlugin(id);
   if (!rec) throw new Error(i18n("plugins.loader.e8ce81d059b5", { id: String(id) }));
   let m = mod;
@@ -374,6 +376,14 @@ export async function activateInstalledPlugins(): Promise<void> {
       await logLine(`[PLUGIN] 恢复失败 ${rec.manifest.id}：${String(e).slice(0, 140)}`);
     }
   }
+}
+
+let consentRuntimeTail = Promise.resolve();
+export function refreshHarnessConsent(): Promise<void> {
+  return consentRuntimeTail = consentRuntimeTail.catch(() => undefined).then(async () => {
+    await deactivate("onethu.harness").catch(() => undefined);
+    if (ohAuthorized() && getPlugin("onethu.harness")?.enabled) await activate("onethu.harness");
+  });
 }
 
 /* registry 订阅转发（UI 单一来源） */

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -721,7 +721,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1072,
+          "line": 1109,
           "context": "it.folded ? i18n(\"components.freeboard.00bd3960fea8\") : i18n(\"components.freeboard.84a07f292f1f\")"
         }
       ],
@@ -737,7 +737,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1155,
+          "line": 1195,
           "context": "{i18n(\"components.freeboard.03aadf165657\")}"
         }
       ],
@@ -753,7 +753,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 703,
+          "line": 736,
           "context": "label: i18n(\"components.freeboard.051836569928\")"
         }
       ],
@@ -769,7 +769,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1132,
+          "line": 1171,
           "context": "{i18n(\"components.freeboard.05731b92ad31\")}"
         }
       ],
@@ -785,7 +785,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 916,
+          "line": 952,
           "context": "penOn ? i18n(\"components.freeboard.084cfc0311c3\") : i18n(\"components.freeboard.2a95e1939b68\")"
         }
       ],
@@ -801,7 +801,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1172,
+          "line": 1212,
           "context": "{i18n(\"components.freeboard.0a5eea295bf2\")}"
         }
       ],
@@ -817,7 +817,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 918,
+          "line": 955,
           "context": "label: i18n(\"components.freeboard.0f591af87c35\")"
         }
       ],
@@ -833,7 +833,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 698,
+          "line": 731,
           "context": "label: i18n(\"components.freeboard.12e0be622c36\")"
         }
       ],
@@ -849,7 +849,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 693,
+          "line": 726,
           "context": "picked ? i18n(\"components.freeboard.d13523826411\") : i18n(\"components.freeboard.153d487fec51\")"
         }
       ],
@@ -865,7 +865,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 706,
+          "line": 739,
           "context": "label: i18n(\"components.freeboard.173f88d28ebf\")"
         }
       ],
@@ -881,7 +881,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 709,
+          "line": 742,
           "context": "label: i18n(\"components.freeboard.17eac802d3f7\")"
         }
       ],
@@ -897,7 +897,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 924,
+          "line": 961,
           "context": "{i18n(\"components.freeboard.203c08e0d44a\")}"
         }
       ],
@@ -913,12 +913,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 705,
+          "line": 738,
           "context": "item.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1083,
+          "line": 1120,
           "context": "it.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.7230466e3998\")"
         }
       ],
@@ -934,7 +934,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 713,
+          "line": 746,
           "context": "plan.title || def?.title || i18n(\"components.freeboard.206359b4b54d\")"
         }
       ],
@@ -950,7 +950,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 298,
+          "line": 299,
           "context": "i18n(\"components.freeboard.207cb94f4067\") + f.id"
         }
       ],
@@ -966,7 +966,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1064,
+          "line": 1101,
           "context": "{i18n(\"components.freeboard.22b32f301474\")}"
         }
       ],
@@ -982,7 +982,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 925,
+          "line": 962,
           "context": "stack ? i18n(\"components.freeboard.2880a75c7f5f\") : i18n(\"components.freeboard.5b80d5358a4b\")"
         }
       ],
@@ -998,7 +998,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1129,
+          "line": 1168,
           "context": "{i18n(\"components.freeboard.290f68030501\")}"
         }
       ],
@@ -1014,7 +1014,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 916,
+          "line": 952,
           "context": "penOn ? i18n(\"components.freeboard.084cfc0311c3\") : i18n(\"components.freeboard.2a95e1939b68\")"
         }
       ],
@@ -1030,7 +1030,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1076,
+          "line": 1113,
           "context": "it.folded ? i18n(\"components.freeboard.2de119793cb4\") : i18n(\"components.freeboard.84a07f292f1f\")"
         }
       ],
@@ -1046,12 +1046,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 722,
+          "line": 755,
           "context": "label: i18n(\"components.freeboard.2f9daa828907\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1084,
+          "line": 1121,
           "context": "{i18n(\"components.freeboard.2f9daa828907\")}"
         }
       ],
@@ -1067,7 +1067,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1068,
+          "line": 1105,
           "context": "{i18n(\"components.freeboard.3389965d46d4\")}"
         }
       ],
@@ -1083,12 +1083,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 216,
+          "line": 217,
           "context": "explorerSnapshot().workspaces.find((w) => w.id === en.wsId)?.name ?? i18n(\"components.freeboard.37979829426b\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1191,
+          "line": 1231,
           "context": "{i18n(\"components.freeboard.37979829426b\")}"
         }
       ],
@@ -1104,7 +1104,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 312,
+          "line": 313,
           "context": "{i18n(\"components.freeboard.38b74a1e40a3\")}"
         }
       ],
@@ -1120,7 +1120,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1028,
+          "line": 1065,
           "context": "isNote ? i18n(\"components.freeboard.3a83db6cc546\") : i18n(\"components.freeboard.53684bb9137a\")"
         }
       ],
@@ -1136,7 +1136,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1156,
+          "line": 1196,
           "context": "{i18n(\"components.freeboard.3fd47edce45b\")}"
         }
       ],
@@ -1152,7 +1152,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 866,
+          "line": 900,
           "context": "i18n(\"components.freeboard.46090fa0d5a2\") + tpl.name"
         }
       ],
@@ -1168,7 +1168,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 377,
+          "line": 386,
           "context": "sayRef.current(i18n(\"components.freeboard.472cc80df106\"))"
         }
       ],
@@ -1184,7 +1184,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 718,
+          "line": 751,
           "context": "r.ok ? i18n(\"components.freeboard.4cfe5f20b9dd\") : r.reason === \"duplicate\" ? i18n(\"components.freeboard.910046f3ea83\") : i18n(\"components.freeboard.57ce97c584ca\")"
         }
       ],
@@ -1200,7 +1200,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1028,
+          "line": 1065,
           "context": "isNote ? i18n(\"components.freeboard.3a83db6cc546\") : i18n(\"components.freeboard.53684bb9137a\")"
         }
       ],
@@ -1216,7 +1216,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 718,
+          "line": 751,
           "context": "r.reason === \"duplicate\" ? i18n(\"components.freeboard.910046f3ea83\") : i18n(\"components.freeboard.57ce97c584ca\")"
         }
       ],
@@ -1232,7 +1232,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1265,
+          "line": 1305,
           "context": "i18n(\"components.freeboard.591cb2edcb7e\") + d.title"
         }
       ],
@@ -1248,12 +1248,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 914,
+          "line": 950,
           "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1124,
+          "line": 1163,
           "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
         }
       ],
@@ -1269,7 +1269,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 311,
+          "line": 312,
           "context": "{i18n(\"components.freeboard.5adb904a905f\")}"
         }
       ],
@@ -1285,7 +1285,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 925,
+          "line": 962,
           "context": "stack ? i18n(\"components.freeboard.2880a75c7f5f\") : i18n(\"components.freeboard.5b80d5358a4b\")"
         }
       ],
@@ -1301,7 +1301,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 928,
+          "line": 965,
           "context": "{i18n(\"components.freeboard.62b95daecb7f\")}"
         }
       ],
@@ -1317,7 +1317,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1020,
+          "line": 1057,
           "context": "{i18n(\"components.freeboard.6374c187518d\")}"
         }
       ],
@@ -1333,7 +1333,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1065,
+          "line": 1102,
           "context": "{i18n(\"components.freeboard.68303cbc8d03\")}"
         }
       ],
@@ -1349,7 +1349,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1064,
+          "line": 1101,
           "context": "{i18n(\"components.freeboard.6cedd5ab1aa9\")}"
         }
       ],
@@ -1365,7 +1365,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1083,
+          "line": 1120,
           "context": "it.pinned ? i18n(\"components.freeboard.70fba17fffb7\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
         }
       ],
@@ -1381,7 +1381,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1083,
+          "line": 1120,
           "context": "it.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.7230466e3998\")"
         }
       ],
@@ -1397,12 +1397,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 912,
+          "line": 948,
           "context": "label: i18n(\"components.freeboard.765be150d6cb\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1213,
+          "line": 1253,
           "context": "{i18n(\"components.freeboard.765be150d6cb\")}"
         }
       ],

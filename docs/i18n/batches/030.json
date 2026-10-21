@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "enum.label.be67cc45b9f0",
+      "source": "考核安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 40,
+          "context": "return t(\"enum.label.be67cc45b9f0\");"
+        }
+      ],
+      "translation": "Assessment plan",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 58,
+          "context": "return t(\"enum.label.d39567b2b9f1\");"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.d4f7864690bb",
+      "source": "Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 51,
+          "context": "return t(\"enum.label.d4f7864690bb\");"
+        }
+      ],
+      "translation": "Info apps",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "enum.label.d7d6b21c2cf5",
       "source": "北外",
@@ -1336,51 +1384,6 @@
         }
       ],
       "translation": "Loading",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.tabs.all",
-      "source": "全部标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "All tabs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.tabs.close",
-      "source": "关闭标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Close tab",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "gui.tabs.label",
-      "source": "标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "packages/gui/src/locale.tsx",
-          "line": 1
-        }
-      ],
-      "translation": "Tabs",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1,7 +1,59 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.ce40d3d5810a",
+      "source": "最后一天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1342,
+          "context": "sd.allDay ? i18n(\"pages.schedule.ce40d3d5810a\") : i18n(\"pages.schedule.895cd52fbbb6\")"
+        }
+      ],
+      "translation": "Last day",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.ce708f891fc3",
+      "source": "第 {w} 周",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "w",
+          "expression": "w"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1156,
+          "context": "{i18nRich(\"pages.schedule.ce708f891fc3\", { w: w })}"
+        }
+      ],
+      "translation": "Week {w}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.d1378a68e620",
+      "source": "周二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 69
+        }
+      ],
+      "translation": "Tue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.d2bb025a2e51",
       "source": "开始",
@@ -1021,7 +1073,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 88,
+          "line": 89,
           "context": "return i18n(\"pages.settings.0240f8fe7f39\");"
         }
       ],
@@ -1037,7 +1089,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 103,
+          "line": 104,
           "context": "return i18n(\"pages.settings.02bd4c1bfaf2\");"
         }
       ],
@@ -1053,7 +1105,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 274,
+          "line": 275,
           "context": "{i18n(\"pages.settings.05662029b925\")}"
         }
       ],
@@ -1069,7 +1121,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 304,
+          "line": 305,
           "context": "{i18n(\"pages.settings.05b2d326099e\")}"
         }
       ],
@@ -1085,12 +1137,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 110,
+          "line": 111,
           "context": "return i18n(\"pages.settings.061246bd31e0\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 287,
+          "line": 288,
           "context": "{i18n(\"pages.settings.061246bd31e0\")}"
         }
       ],
@@ -1106,7 +1158,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 759,
+          "line": 761,
           "context": "{i18n(\"pages.settings.061d30212032\")}"
         }
       ],
@@ -1122,12 +1174,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 113,
+          "line": 114,
           "context": "return i18n(\"pages.settings.06f03258229a\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 212,
+          "line": 213,
           "context": "{i18n(\"pages.settings.06f03258229a\")}"
         }
       ],
@@ -1143,12 +1195,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 107,
+          "line": 108,
           "context": "return i18n(\"pages.settings.07812d003706\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 299,
+          "line": 300,
           "context": "{i18n(\"pages.settings.07812d003706\")}"
         }
       ],
@@ -1164,7 +1216,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 117,
+          "line": 118,
           "context": "return i18n(\"pages.settings.08a2cb9cf64f\");"
         }
       ],
@@ -1180,7 +1232,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 548,
+          "line": 550,
           "context": "{i18n(\"pages.settings.0d6fad8138e7\")}"
         }
       ],
@@ -1196,7 +1248,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 116,
+          "line": 117,
           "context": "return i18n(\"pages.settings.0d8ce603b616\");"
         }
       ],
@@ -1212,7 +1264,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 379,
+          "line": 380,
           "context": "i18n(\"pages.settings.fa7ee5600601\") + favs.data.order.length + i18n(\"pages.settings.0e6d36a185c2\")"
         }
       ],
@@ -1228,12 +1280,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 112,
+          "line": 113,
           "context": "return i18n(\"pages.settings.12526376d387\");"
         },
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 213,
+          "line": 214,
           "context": "{i18n(\"pages.settings.12526376d387\")}"
         }
       ],
@@ -1249,7 +1301,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 538,
+          "line": 540,
           "context": "{i18n(\"pages.settings.12e704c78ced\")}"
         }
       ],
@@ -1265,7 +1317,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 97,
+          "line": 98,
           "context": "return i18n(\"pages.settings.1354e42a5f65\");"
         }
       ],
@@ -1281,7 +1333,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 106,
+          "line": 107,
           "context": "return i18n(\"pages.settings.15047c91eb6c\");"
         }
       ],
@@ -1297,7 +1349,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 819,
+          "line": 821,
           "context": "showToast(i18nMsg(\"pages.settings.16ca6dbf3de4\"))"
         }
       ],
@@ -1313,7 +1365,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 348,
+          "line": 349,
           "context": "{i18n(\"pages.settings.188df41c178b\")}"
         }
       ],
@@ -1329,64 +1381,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 604,
+          "line": 606,
           "context": "{i18n(\"pages.settings.1cb15b820a0a\")}"
         }
       ],
       "translation": "Diagnostics summary",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1cb7f269cc24",
-      "source": "主题、标签栏、玻璃程度、取色等外观项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 91,
-          "context": "return i18n(\"pages.settings.1cb7f269cc24\");"
-        }
-      ],
-      "translation": "Appearance options: theme, tab bar, glass level, color picking, and more",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1d08854948f4",
-      "source": "标签栏样式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 94,
-          "context": "return i18n(\"pages.settings.1d08854948f4\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 694,
-          "context": "{i18n(\"pages.settings.1d08854948f4\")}"
-        }
-      ],
-      "translation": "Tab bar style",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1d360021dfc2",
-      "source": "将首页组件、排列和缩放恢复为默认版式，其他 OnePage 保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 349,
-          "context": "{i18n(\"pages.settings.1d360021dfc2\")}"
-        }
-      ],
-      "translation": "Restore Home widgets, arrangement, and scaling to the default layout; other OnePages are kept.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

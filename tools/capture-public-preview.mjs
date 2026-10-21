@@ -70,6 +70,7 @@ async function setup(width=390,height=844,mode='full',contextOptions={}) {
  await page.clock.setFixedTime(new Date('2026-10-21T02:00:00Z'));
  await page.addInitScript(({fixture,mode,captureLocale})=>{
   performance.setResourceTimingBufferSize(10000); window.__publicFixture=fixture;
+  localStorage.setItem('onethu.privacy.v1',JSON.stringify({acknowledged:true,cloud:true,oh:true}));
   localStorage.setItem('onethu.locale',captureLocale);localStorage.setItem('onethu.experience.v1',mode);
   localStorage.setItem('onethu.onboarded.flow4','1');localStorage.setItem('onethu.overlay.closed','1');
   localStorage.setItem('onethu.chatdock.open','0');localStorage.setItem('onethu.home.coach.v1','done');

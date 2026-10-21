@@ -1,7 +1,69 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.cloudpage.db7deecb6f3f",
+      "source": "当前层没有子文件夹——可直接点「移动到这里」",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 197,
+          "context": "dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
+        }
+      ],
+      "translation": "No subfolders at this level — you can tap \"Move here\" directly",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.dc342d1bfbd2",
+      "source": "没有匹配「{q}」的文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "q",
+          "expression": "String(searchMeta.q)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 560,
+          "context": "{i18n(\"pages.cloudpage.dc342d1bfbd2\", { q: String(searchMeta.q) })}"
+        }
+      ],
+      "translation": "No files match \"{q}\"",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.dcd9bc5583f5",
+      "source": "删除以下 {length} 项？\n\n{shown}\n\n所选文件与文件夹（含内容）将从云盘永久删除，此操作不可撤销。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(items.length)"
+        },
+        {
+          "name": "shown",
+          "expression": "String(shown)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 387,
+          "context": "confirmDanger(\n      i18nMsg(\"pages.cloudpage.dcd9bc5583f5\", { length: String(items.length), shown: String(shown) }),\n      { title: i18nMsg(\"pages.cloudpage.8c74b8fa706e\", { length: String(items.length) }), confirmText: i18nMsg(\"pages.cloudpage.a3ea3c17b401\") },\n    )"
+        }
+      ],
+      "translation": "Delete the following {length} items?\n\n{shown}\n\nThe selected files and folders (including contents) will be permanently deleted from the cloud drive. This action cannot be undone.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.cloudpage.deleteLibrary",
       "source": "删除资料库",
@@ -10,17 +72,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 277,
+          "line": 281,
           "context": "title: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
         },
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 277,
+          "line": 281,
           "context": "confirmText: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
         },
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 441,
+          "line": 449,
           "context": "{i18n(\"pages.cloudpage.deleteLibrary\")}"
         }
       ],
@@ -40,7 +102,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 276,
+          "line": 280,
           "context": "linked.length\n          ? i18nMsg(\"pages.cloudpage.deleteLibraryOrgConfirm\", {name: target.name, organizations: linked.map((org) => org.name).join(\"、\")})\n          : i18nMsg(\"pages.cloudpage.deleteLibraryConfirm\", {name: target.name})"
         }
       ],
@@ -60,7 +122,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 695,
+          "line": 704,
           "context": "{i18n(\"pages.cloudpage.deleteLibraryNamed\", {name: r.name})}"
         }
       ],
@@ -83,7 +145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 275,
+          "line": 279,
           "context": "linked.length\n          ? i18nMsg(\"pages.cloudpage.deleteLibraryOrgConfirm\", {name: target.name, organizations: linked.map((org) => org.name).join(\"、\")})\n          : i18nMsg(\"pages.cloudpage.deleteLibraryConfirm\", {name: target.name})"
         }
       ],
@@ -99,7 +161,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 380,
+          "line": 384,
           "context": "x.kind === \"dir\" ? i18n(\"pages.cloudpage.ecb80d06607e\") : \"\""
         }
       ],
@@ -115,7 +177,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 651,
+          "line": 660,
           "context": "{i18n(\"pages.cloudpage.ee9ebe523d42\")}"
         }
       ],
@@ -131,7 +193,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 473,
+          "line": 481,
           "context": "r[0] ?? i18n(\"pages.cloudpage.f2f02049468d\")"
         }
       ],
@@ -147,7 +209,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 675,
+          "line": 684,
           "context": "{i18n(\"pages.cloudpage.f369bd636d02\")}"
         }
       ],
@@ -163,7 +225,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 530,
+          "line": 538,
           "context": "allSelected ? i18n(\"pages.cloudpage.f4d4bae588c4\") : i18n(\"pages.cloudpage.3a5040b68abf\")"
         }
       ],
@@ -179,7 +241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 592,
+          "line": 600,
           "context": "{i18n(\"pages.cloudpage.f72a6bc6a957\")}"
         }
       ],
@@ -195,7 +257,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 415,
+          "line": 422,
           "context": "{i18n(\"pages.cloudpage.f77b9b7075b8\")}"
         }
       ],
@@ -211,7 +273,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 592,
+          "line": 600,
           "context": "{i18n(\"pages.cloudpage.fc6bb436b8ca\")}"
         }
       ],
@@ -231,7 +293,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 282,
+          "line": 286,
           "context": "showToast(i18nMsg(\"pages.cloudpage.libraryDeleted\", {name: target.name}))"
         }
       ],
@@ -1350,64 +1412,6 @@
         }
       ],
       "translation": "Show, hide, or reorder sections via \"Manage sections\" in the top right.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.e6f0a1fa5326",
-      "source": "左侧栏顺序上移",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 105,
-          "context": "{i18n(\"pages.folderpage.e6f0a1fa5326\")}"
-        }
-      ],
-      "translation": "Move up in sidebar order",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.e75e8b4e5c97",
-      "source": "下移",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 106,
-          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 438,
-          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 489,
-          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
-        }
-      ],
-      "translation": "Move down",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.e9075f60449d",
-      "source": "子收藏夹名称…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 300,
-          "context": "{i18n(\"pages.folderpage.e9075f60449d\")}"
-        }
-      ],
-      "translation": "Sub-folder name…",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

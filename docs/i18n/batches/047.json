@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.gitlabpage.e54829187e33",
+      "source": "评论已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 804,
+          "context": "showToast(i18nMsg(\"pages.gitlabpage.e54829187e33\"))"
+        }
+      ],
+      "translation": "Comment updated",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e5a3e02f4392",
+      "source": "差异过大，不在应用内展开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 722,
+          "context": "{i18n(\"pages.gitlabpage.e5a3e02f4392\")}"
+        }
+      ],
+      "translation": "The diff is too large and is not expanded in the app.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.e62ef48711b0",
+      "source": "分支 / 标签筛选",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1475,
+          "context": "{i18n(\"pages.gitlabpage.e62ef48711b0\")}"
+        }
+      ],
+      "translation": "Branch / tag filter",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.gitlabpage.e6f04ffbaa42",
       "source": "代码",
@@ -1329,59 +1377,6 @@
         }
       ],
       "translation": "Bank-card deposit",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.cardtab.bd957bc497aa",
-      "source": "分钟",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/CardTab.tsx",
-          "line": 355,
-          "context": "{i18n(\"pages.info.cardtab.bd957bc497aa\")}"
-        }
-      ],
-      "translation": "minutes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.cardtab.bf806b71ea83",
-      "source": "为准；若未到账请稍后在「最近消费」中查看圈存记录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/CardTab.tsx",
-          "line": 252,
-          "context": "{i18n(\"pages.info.cardtab.bf806b71ea83\")}"
-        }
-      ],
-      "translation": " balance; if the funds have not arrived, check the deposit record under \"Recent transactions\" later.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.cardtab.d262a8a8360c",
-      "source": "{value} 天前",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(Math.floor(h / 24))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/CardTab.tsx",
-          "line": 51,
-          "context": "return i18n(\"pages.info.cardtab.d262a8a8360c\", { value: String(Math.floor(h / 24)) });"
-        }
-      ],
-      "translation": "{value} days ago",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

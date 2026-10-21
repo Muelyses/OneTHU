@@ -12,6 +12,7 @@ mod notify_macos;
 mod notify_windows;
 mod mail;
 mod seafile;
+mod privacy_consent;
 mod memory_mirror;
 mod im_media;
 mod downloads;
@@ -996,8 +997,12 @@ pub(crate) async fn fetch_attachment(
     cookies: &str,
     fallback_name: &str,
 ) -> Result<(String, Vec<u8>), String> {
+    privacy_consent::check_url(&url.parse::<url::Url>().map_err(|e| e.to_string())?)?;
     let client = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::limited(10))
+        .redirect(reqwest::redirect::Policy::custom(|attempt| {
+            if attempt.previous().len() >= 10 { return attempt.error("Too many redirects"); }
+            match privacy_consent::check_url(attempt.url()) { Ok(()) => attempt.follow(), Err(e) => attempt.error(e) }
+        }))
         // 全部目标域均为 *.tsinghua.edu.cn，直连即可：强制绕过系统代理（reqwest 0.12
         // 默认读 Windows/ macOS 系统代理，全局模式梯子会把清华流量送出境触发风控）。
         // 仅救系统代理场景；TUN 网络层接管无解（参考 PR #2，user-A100）。
@@ -1193,13 +1198,17 @@ async fn fetch_binary(
     // 超时秒数（默认 12；文件预览传大一些，图片的超时对文件不够用）
     timeout_secs: Option<u64>,
 ) -> Result<BinaryOut, String> {
+    privacy_consent::check_url(&url.parse::<url::Url>().map_err(|e| e.to_string())?)?;
     // 共享 client + 超时（2026-09-13 用户实锤「其他服务变慢」：每调用新建
     // client 无连接复用（每次全量 TLS 握手）且无任何超时——校外不可达直连
     // 挂到 OS 级 75s TCP 超时，反复开关通知=悬挂连接与 async 任务堆积）。
     // once_cell 懒初始化：连接池复用，connect 5s / 总 12s 硬顶。
     static CLIENT: std::sync::LazyLock<reqwest::Client> = std::sync::LazyLock::new(|| {
         reqwest::Client::builder()
-            .redirect(reqwest::redirect::Policy::limited(10))
+            .redirect(reqwest::redirect::Policy::custom(|attempt| {
+                if attempt.previous().len() >= 10 { return attempt.error("Too many redirects"); }
+                match privacy_consent::check_url(attempt.url()) { Ok(()) => attempt.follow(), Err(e) => attempt.error(e) }
+            }))
             .no_proxy() // 同 download_file：清华域直连，绕系统代理（参考 PR #2）
             .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
             .connect_timeout(std::time::Duration::from_secs(5))
@@ -1407,7 +1416,16 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
 
     let mut url: reqwest::Url = input.url.parse().map_err(|e| format!("非法 URL: {e}"))?;
     native_security::http_url(&url)?;
+    privacy_consent::check_url(&url)?;
+    // Official release checks use an anonymous client, never the personal cloud jar.
+    let public_release = method == reqwest::Method::GET && privacy_consent::is_public_release(&url);
+    let client = if public_release {
+        reqwest::Client::builder().no_proxy().user_agent(SESSION_UA)
+            .redirect(reqwest::redirect::Policy::none()).build().map_err(|e| e.to_string())?
+    } else { client };
     let mut request_headers = input.headers.clone();
+    if public_release { request_headers.retain(|key, _| key.eq_ignore_ascii_case("accept")); }
+
     let mut method_cur = method;
     let mut body_bytes: Option<Vec<u8>> = if let Some(b64) = &input.body_b64 {
         use base64::Engine as _;
@@ -1420,6 +1438,8 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
         input.body.clone().map(|s| s.into_bytes())
     };
 
+    if public_release { body_bytes = None; }
+
     let mut hops_out: Vec<(String, String)> = Vec::new();
     let mut final_status = reqwest::StatusCode::OK;
     let mut final_headers: HashMap<String, String> = HashMap::new();
@@ -1428,6 +1448,9 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
     let mut final_url = url.to_string();
 
     for _hop in 0..=25u32 {
+        if public_release {
+            if !privacy_consent::public_release_destination(&url) { return Err("Unexpected public release redirect".into()); }
+        } else { privacy_consent::check_url(&url)?; }
         let mut req = client.request(method_cur.clone(), url.clone())
             .timeout(Duration::from_millis(input.timeout_ms.unwrap_or(60_000).clamp(1, 300_000)));
         for (k, v) in &request_headers {
@@ -2222,6 +2245,7 @@ async fn thos_open_portal(
 
 #[tauri::command]
 async fn http_request(input: HttpInput) -> Result<HttpOutput, String> {
+    privacy_consent::check_url(&input.url.parse::<url::Url>().map_err(|e| e.to_string())?)?;
     let method: reqwest::Method = input
         .method
         .to_uppercase()
@@ -2679,6 +2703,7 @@ async fn cloud_webvpn_profile(
     username: Option<String>,
     password: Option<String>,
 ) -> Result<CloudWebvpnProfile, String> {
+    privacy_consent::require_cloud()?;
     let _ = &app;
     let client = NATIVE_CLIENT.read().unwrap().clone();
     let mut url: url::Url = "https://cloud.tsinghua.edu.cn/profile/"
@@ -2950,6 +2975,7 @@ async fn open_cloud_token_window(
     password: Option<String>,
     target_url: Option<String>,
 ) -> Result<String, String> {
+    privacy_consent::require_cloud()?;
     use tauri::webview::{Cookie, WebviewWindowBuilder};
     use tauri::{Emitter, WebviewUrl};
     let label = "cloudtoken";
@@ -4260,6 +4286,7 @@ async fn open_cloud_token_window(
     password: Option<String>,
     target_url: Option<String>,
 ) -> Result<serde_json::Value, String> {
+    privacy_consent::require_cloud()?;
     let handle = app
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
         .0
@@ -4314,6 +4341,7 @@ tauri::Builder::default()
             });
         })
         .setup(|app| {
+            privacy_consent::init(app.handle());
             let _ = LOG_APP.set(app.handle().clone());
             // R21 网络诊断：解析结果落日志（v4/v6 混合与否是「校内每请求 5s」的
             // 关键证据——IPv6 先超时再回落 v4 的连接 stall 每条新连接付一次）
@@ -4378,6 +4406,7 @@ tauri::Builder::default()
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            privacy_consent::privacy_consent_read, privacy_consent::privacy_consent_write,
             skills::skills_action, skills::skills_export,
             douyu_bridge::douyu_send_danmu,
             douyu_bridge::douyu_self_check,

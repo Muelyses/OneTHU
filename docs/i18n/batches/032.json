@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "im.registry.fe67e76559d3",
+      "source": "· /detail N [x-y] —— 查看编号 N 会话的第 x 到 y 轮（默认 1-5）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/registry.ts",
+          "line": 191,
+          "context": "[\n          i18n(\"im.registry.d114e94fa699\"),\n          \"/list · /new · /switch N · /detail N [x-y] · /delete N · /search 关键词\",\n          \"/bind 码（绑定主人）· /status（通道状态）\",\n          \"\",\n          i18n(\"im.registry.a6317abbaa8b\"),\n          i18n(\"im.registry.1d40e0790123\"),\n          i18n(\"im.registry.0894809f5000\"),\n          i18n(\"im.registry.fe67e76559d3\"),\n          i18n(\"im.registry.c4b26873708a\"),\n          i18n(\"im.registry.c7900a839486\"),\n          \"\",\n          i18n(\"im.registry.e64bb18a2933\"),\n          i18n(\"im.registry.8b9c82d7f5dc\"),\n        ]"
+        }
+      ],
+      "translation": "· /detail N [x-y] —— view rounds x through y of conversation number N (defaults to 1-5)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.4c408d3226a4",
+      "source": "未扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 46,
+          "context": "new Error(i18n(\"im.wechat.4c408d3226a4\"))"
+        }
+      ],
+      "translation": "Not signed in by QR scan",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.c383c734a8c7",
+      "source": "二维码已过期，请重新发起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 149,
+          "context": "note: i18n(\"im.wechat.c383c734a8c7\")"
+        }
+      ],
+      "translation": "The QR code has expired; please start again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "im.wechat.channelLabel",
       "source": "微信（iLink 官方 Bot）",
@@ -1426,54 +1474,6 @@
         }
       ],
       "translation": "The cloud drive page returned no valid content; try again or paste the access token manually.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudtokenwebview.63c8ea2f536a",
-      "source": "应用内云盘登录仅能在 OneTHU 中使用。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 40,
-          "context": "new Error(i18n(\"lib.cloudtokenwebview.63c8ea2f536a\"))"
-        }
-      ],
-      "translation": "In-app cloud drive sign-in only works inside OneTHU.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudtokenwebview.cancelled",
-      "source": "已取消读取云盘访问口令。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
-          "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
-        }
-      ],
-      "translation": "Reading the cloud drive access token was canceled.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.cloudtokenwebview.pageTimeout",
-      "source": "等待云盘页面超时，请确认已登录后重试。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
-          "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
-        }
-      ],
-      "translation": "Timed out waiting for the cloud drive page; confirm you are signed in and try again.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

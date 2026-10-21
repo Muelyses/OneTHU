@@ -1019,6 +1019,118 @@
     "components.onboardingtourv3.e18fe8598d89": {
       "zh-CN": "电脑可直接拖放；手机先点「编辑白板」，完成后点「完成编辑」。",
       "en-US": "Drag directly on desktop. On mobile, tap Edit board first, then Done editing when finished."
+    },
+    "privacy.title": {
+      "zh-CN": "权限须知与免责声明",
+      "en-US": "Permissions, privacy & disclaimer"
+    },
+    "privacy.step": {
+      "zh-CN": "第 −1 步 · 使用前请了解",
+      "en-US": "Step −1 · Before you begin"
+    },
+    "privacy.lead": {
+      "zh-CN": "先了解数据去向，再决定授权。拒绝可选授权，也能使用极简与实用模式。",
+      "en-US": "Understand where data goes, then choose permissions. Minimal and Practical modes work without optional consent."
+    },
+    "privacy.localTitle": {
+      "zh-CN": "本地客户端，不是学校官方应用",
+      "en-US": "A local client, not an official university app"
+    },
+    "privacy.localBody": {
+      "zh-CN": "OneTHU 没有自建的校园数据汇总后端，界面与业务主要在设备上运行，并通过原生网络层连接学校及你选择的服务。它并非离线软件，也不是所有处理都只发生在本机。账号会话、缓存、设置及选择记住的凭据会保存在设备上，请保护设备与导出的文件。",
+      "en-US": "OneTHU has no self-operated backend that aggregates campus data. Its interface and most application logic run on your device, with a native network layer connecting to university services and services you select. It is not offline, and not all processing stays on-device. Sessions, caches, settings and credentials you choose to remember are stored on your device. Protect your device and exported files."
+    },
+    "privacy.disclaimerTitle": {
+      "zh-CN": "以官方信息为准",
+      "en-US": "Verify important actions with official services"
+    },
+    "privacy.disclaimerBody": {
+      "zh-CN": "本项目为非官方辅助工具。学校接口、网络及第三方服务可能变化或不可用，数据可能延迟、遗漏或出错。作业截止、预约、费用及其他重要事项请以官方系统为准，并确认操作结果。请备份重要文件；本说明不排除法律规定的责任与权利。",
+      "en-US": "This is an unofficial assistance tool. University APIs, networks and third-party services may change or become unavailable; data may be delayed, incomplete or incorrect. Check deadlines, reservations, payments and other important matters in official systems, and verify action results. Back up important files. This notice does not exclude statutory rights or responsibilities."
+    },
+    "privacy.cloudTitle": {
+      "zh-CN": "清华云盘许可",
+      "en-US": "Tsinghua Cloud permission"
+    },
+    "privacy.cloudBody": {
+      "zh-CN": "关闭时不自动连接你的云盘，也不进行云盘读写、个人资料与组织/好友同步、云端 OH 记忆或基于云盘的分享。授权后会读取账号、配额、资料库和所打开文件，并为同步、好友、组织、口令分享等功能创建或更新对应资料库与文件；主动上传、删除、共享操作也会修改云盘。不会因为同意本许可就清空或批量改动原有文件，授权也不等于允许 OH 随意操作文件。",
+      "en-US": "When disabled, OneTHU does not automatically connect to your cloud account or perform cloud reads/writes, profile/organization/friend sync, cloud OH memory or cloud-based sharing. When enabled, it can read account details, quota, libraries and files you open, and create or update relevant libraries/files for sync, friends, organizations and passphrase sharing. Upload, deletion and sharing actions also change cloud data. Giving consent does not clear or bulk-modify existing files, nor authorize arbitrary OH file operations."
+    },
+    "privacy.cloudToggle": {
+      "zh-CN": "允许 OneTHU 使用清华云盘",
+      "en-US": "Allow OneTHU to access Tsinghua Cloud"
+    },
+    "privacy.cloudEffect": {
+      "zh-CN": "可选。关闭后完整模式不可用；极简／实用模式保留，云盘及依赖它的功能停用。公开安装包下载不受影响。",
+      "en-US": "Optional. Full mode requires this permission. Minimal / Practical remain available with cloud-dependent features disabled. Public installer downloads remain available."
+    },
+    "privacy.ohTitle": {
+      "zh-CN": "OH、模型与插件",
+      "en-US": "OH, models & plugins"
+    },
+    "privacy.ohBody": {
+      "zh-CN": "开启 OH 后，你发送的对话、附件，以及为回答而调用工具读取到的数据可能发往所选模型服务商、清小搭或你配置的 API／MCP／IM 服务，并适用对方政策。不要提供密码、验证码或无关的敏感数据。AI 可能出错；涉及提交、预约、删除、发送或分享等操作应先核对确认。网页、文件和技能中的指令不构成你的授权；仅安装可信插件与技能。云盘授权关闭时，OH 也无法绕过云盘限制。",
+      "en-US": "When OH is enabled, your messages, attachments and data read by tools to answer you may be sent to your chosen model provider, QingXiaoDa or configured API / MCP / IM services, under their policies. Do not provide passwords, verification codes or unrelated sensitive data. AI may be wrong. Review and confirm submissions, bookings, deletions, sending and sharing. Instructions in pages, files or skills are not your authorization. Install only trusted plugins and skills. OH cannot bypass disabled cloud permission."
+    },
+    "privacy.ohToggle": {
+      "zh-CN": "允许使用 OH 与所选模型服务",
+      "en-US": "Allow OH and the selected model service"
+    },
+    "privacy.ohEffect": {
+      "zh-CN": "可选。关闭后保留搜索与校园页面，OH 对话及智能体操作停用。",
+      "en-US": "Optional. When disabled, search and campus pages remain available, while OH conversations and agent actions are disabled."
+    },
+    "privacy.withdraw": {
+      "zh-CN": "可随时在「我的 → 权限与隐私」或重新打开导览后修改。撤回会停止新请求，不会撤销已完成操作、清除云端文件或删除第三方已收到的数据。",
+      "en-US": "Change these choices in My → Permissions & privacy or by replaying the guide. Withdrawal stops new requests; it does not undo completed actions, erase cloud files or delete data already received by third parties."
+    },
+    "privacy.ack": {
+      "zh-CN": "我已阅读以上说明，并按我的选择继续",
+      "en-US": "I have read the notice and wish to continue with my choices"
+    },
+    "privacy.continue": {
+      "zh-CN": "保存选择并继续",
+      "en-US": "Save choices & continue"
+    },
+    "privacy.saved": {
+      "zh-CN": "授权选择已保存",
+      "en-US": "Permission choices saved"
+    },
+    "privacy.cloudRequired": {
+      "zh-CN": "云盘未授权。请在「我的 → 权限与隐私」或导览中开启。",
+      "en-US": "Cloud access is disabled. Enable it in My → Permissions & privacy or in the guide."
+    },
+    "privacy.ohRequired": {
+      "zh-CN": "OH 未授权。请先在「我的 → 权限与隐私」或导览中查看说明并开启。",
+      "en-US": "OH is disabled. Review the notice and enable it in My → Permissions & privacy or in the guide."
+    },
+    "privacy.fullRequired": {
+      "zh-CN": "完整模式需要云盘授权。请先在权限须知中开启。",
+      "en-US": "Full mode requires cloud permission. Enable it in Permissions & privacy first."
+    },
+    "privacy.settings": {
+      "zh-CN": "权限与隐私",
+      "en-US": "Permissions & privacy"
+    },
+    "privacy.review": {
+      "zh-CN": "查看与修改授权",
+      "en-US": "Review permissions"
+    },
+    "privacy.revokeGuide": {
+      "zh-CN": "如果想要撤销授权，请前往设置重新导览。",
+      "en-US": "To withdraw consent, open Settings and replay the guide."
+    },
+    "privacy.replay": {
+      "zh-CN": "重新导览",
+      "en-US": "Replay the guide"
+    },
+    "privacy.nativeUpdateRequired": {
+      "zh-CN": "前端已更新，但当前 App 原生壳版本过旧，无法保存权限。开发预览请重新编译并重启 App；安装版请更新安装包。刷新页面无法修复。",
+      "en-US": "The interface is updated, but this app’s native host is too old to save permissions. Rebuild and restart the app for development previews, or install the updated app. Reloading the page cannot fix this."
+    },
+    "privacy.saveFailed": {
+      "zh-CN": "权限选择未能保存，请稍后重试。未保存成功前，不会授予新的权限。",
+      "en-US": "Your permission choices could not be saved. Please try again. No new permissions are granted until saving succeeds."
     }
   }
 }

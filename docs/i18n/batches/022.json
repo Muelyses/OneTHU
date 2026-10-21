@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.searchlandingselfcheck.0a14c8794160",
+      "source": "行级首位不是自己",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
+          "line": 176,
+          "context": "x.hit !== \"hit\" ? i18n(\"components.searchlandingselfcheck.0a14c8794160\") : i18n(\"components.searchlandingselfcheck.5fd19b4a8cd3\")"
+        }
+      ],
+      "translation": "Row’s first hit is not itself",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.searchlandingselfcheck.33c5797b2af7",
+      "source": "检索落点自查中（45 行逐条点击）… 结果会打印在 console 并出现在这张卡里。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
+          "line": 159,
+          "context": "{i18n(\"components.searchlandingselfcheck.33c5797b2af7\")}"
+        }
+      ],
+      "translation": "Running the search-landing self-check (clicking all 45 rows one by one)… Results are printed to the console and shown on this card.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.searchlandingselfcheck.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
+          "line": 170,
+          "context": "{i18n(\"components.searchlandingselfcheck.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.searchlandingselfcheck.45a7e2e27035",
       "source": "自查报告已复制（Markdown 表）",
@@ -479,7 +527,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 39,
+          "line": 41,
           "context": "user?.displayName??i18n(\"components.simplesettings.0a01eee1cd37\")"
         }
       ],
@@ -495,7 +543,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 45,
+          "line": 47,
           "context": "showToast(i18nMsg(\"components.simplesettings.1fa9a1f5453b\"))"
         }
       ],
@@ -511,7 +559,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 40,
+          "line": 42,
           "context": "{i18n(\"components.simplesettings.230b7d15300f\")}"
         }
       ],
@@ -527,7 +575,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 21,
+          "line": 22,
           "context": "showToast(i18nMsg(\"components.simplesettings.36fe6819580c\"))"
         }
       ],
@@ -543,7 +591,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 20,
+          "line": 21,
           "context": "{i18n(\"components.simplesettings.38b9eabcae1b\")}"
         }
       ],
@@ -559,7 +607,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 39,
+          "line": 41,
           "context": "{i18n(\"components.simplesettings.3ab8cc15939f\")}"
         }
       ],
@@ -575,7 +623,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 38,
+          "line": 40,
           "context": "{i18n(\"components.simplesettings.49454b147354\")}"
         }
       ],
@@ -591,7 +639,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 50,
+          "line": 52,
           "context": "{i18n(\"components.simplesettings.553df7f47b1a\")}"
         }
       ],
@@ -607,7 +655,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 38,
+          "line": 40,
           "context": "{i18n(\"components.simplesettings.7c4b06e07cb4\")}"
         }
       ],
@@ -623,7 +671,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 48,
+          "line": 50,
           "context": "showToast(i18nMsg(\"components.simplesettings.7ef3aed84e34\"))"
         }
       ],
@@ -639,7 +687,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 20,
+          "line": 21,
           "context": "{i18n(\"components.simplesettings.950d624f5068\")}"
         }
       ],
@@ -655,7 +703,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 39,
+          "line": 41,
           "context": "{i18n(\"components.simplesettings.99e398c6de5c\")}"
         }
       ],
@@ -671,7 +719,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 49,
+          "line": 51,
           "context": "{i18n(\"components.simplesettings.a15f3b20eaec\")}"
         }
       ],
@@ -687,7 +735,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 38,
+          "line": 40,
           "context": "{i18n(\"components.simplesettings.ac794a015ee3\")}"
         }
       ],
@@ -703,7 +751,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 50,
+          "line": 52,
           "context": "calendarOpen?i18n(\"components.simplesettings.afd4b783536b\"):i18n(\"components.simplesettings.d7d18c1f3213\")"
         }
       ],
@@ -719,7 +767,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 20,
+          "line": 21,
           "context": "{i18n(\"components.simplesettings.b431a37597fc\")}"
         }
       ],
@@ -735,7 +783,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 46,
+          "line": 48,
           "context": "showToast(i18nMsg(\"components.simplesettings.b975feac2d32\"))"
         }
       ],
@@ -751,7 +799,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 50,
+          "line": 52,
           "context": "{i18n(\"components.simplesettings.bccf98c5f9fa\")}"
         }
       ],
@@ -767,12 +815,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 43,
+          "line": 45,
           "context": "{i18n(\"components.simplesettings.cb2f1709f983\")}"
         },
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 43,
+          "line": 45,
           "context": "{i18n(\"components.simplesettings.cb2f1709f983\")}"
         }
       ],
@@ -788,7 +836,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 47,
+          "line": 49,
           "context": "showToast(i18nMsg(\"components.simplesettings.cde6c2804c9d\"))"
         }
       ],
@@ -804,7 +852,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 50,
+          "line": 52,
           "context": "calendarOpen?i18n(\"components.simplesettings.afd4b783536b\"):i18n(\"components.simplesettings.d7d18c1f3213\")"
         }
       ],
@@ -820,7 +868,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 41,
+          "line": 43,
           "context": "{i18n(\"components.simplesettings.d94c3fb87662\")}"
         }
       ],
@@ -836,7 +884,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SimpleSettings.tsx",
-          "line": 41,
+          "line": 43,
           "context": "{i18n(\"components.simplesettings.f9ae83ae1e0f\")}"
         }
       ],
@@ -1366,59 +1414,6 @@
         }
       ],
       "translation": "Download and install",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.softwareupdatesection.b71ae82b4fba",
-      "source": "https://…/latest.json（自建源的清单地址）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 198,
-          "context": "{i18n(\"components.softwareupdatesection.b71ae82b4fba\")}"
-        }
-      ],
-      "translation": "https://…/latest.json (manifest URL of your self-hosted source)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.softwareupdatesection.b7d7aca618eb",
-      "source": "安卓安装说明：下载完成后由系统安装器接手；首次安装需在系统提示里允许本应用「安装未知应用」 （该授权只影响这一次安装，OneTHU 不会静默安装任何东西）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 192,
-          "context": "{i18n(\"components.softwareupdatesection.b7d7aca618eb\")}"
-        }
-      ],
-      "translation": "Android install notes: after the download, the system installer takes over; on first install, allow this app to “install unknown apps” when the system prompts you (that permission applies only to this one install — OneTHU never installs anything silently).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.softwareupdatesection.c692dd3f13e4",
-      "source": "软件更新{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "res?.ok && res.hasUpdate ? <span className=\"update-badge\">{i18n(\"components.softwareupdatesection.daedea385864\")}</span> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 137,
-          "context": "{i18nRich(\"components.softwareupdatesection.c692dd3f13e4\", { value: res?.ok && res.hasUpdate ? <span className=\"update-badge\">{i18n(\"components.softwareupdatesection.daedea385864\")}</span> : null })}"
-        }
-      ],
-      "translation": "Software update{value}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

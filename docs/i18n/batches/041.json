@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.venue.93692dc0f921",
+      "source": "二次认证接口返回异常",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 346,
+          "context": "new VenueApiError(i18n(\"lib.venue.93692dc0f921\"), \"2FA\")"
+        }
+      ],
+      "translation": "Second-factor authentication endpoint returned an error",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.venue.9ae22ae4d71c",
+      "source": "该账号需要二次认证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 37,
+          "context": "super(i18n(\"lib.venue.9ae22ae4d71c\"))"
+        }
+      ],
+      "translation": "This account requires second-factor authentication",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.venue.cb8fdb80eef2",
+      "source": "二次认证未返回跳转地址",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/venue.ts",
+          "line": 350,
+          "context": "new VenueApiError(i18n(\"lib.venue.cb8fdb80eef2\"), \"2FA\")"
+        }
+      ],
+      "translation": "Second-factor authentication didn't return a redirect URL",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.xkai.424cb0668f46",
       "source": "AI 返回为空",
@@ -1357,59 +1405,6 @@
         }
       ],
       "translation": "Tap to choose",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.chooseContent",
-      "source": "点一下选择显示内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Tap to choose what to show",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.classes.few",
-      "source": "{count} 节课",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} classes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "native.widget.classes.many",
-      "source": "{count} 节课",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "count"
-        }
-      ],
-      "locations": [
-        {
-          "file": "docs/i18n/native-widget-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "{count} classes",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -39,6 +39,7 @@ import { installedPlugins, subscribe as subscribePlugins } from "../plugins/load
 import { requestPluginsView } from "./Plugins.js";
 import { isThemeEntry } from "../lib/market.js";
 import { ThemePickerModal } from "../components/ThemePickerModal.js";
+import { PrivacySettings } from "../components/PrivacyNotice.js";
 import { HelpSection } from "../components/HelpSection.js";
 import { parseFavs, resetFavs } from "../state/favorites.js";
 import { confirmOk } from "../lib/confirm.js";
@@ -448,6 +449,7 @@ export function SettingsPage() {
           （基础设置 / 高级配置）——分节与页签都已从这里移除，见 pages/Plugins.tsx 的 OH 入口。 */}
       </SettingsGroup>
       <SettingsGroup tab="账号" active={tab} section="安全">
+      <PrivacySettings/>
       <SectionHead id="row-set-security" title={i18n("pages.settings.afb63a620bdc")} />
       <Card>
         <SettingsRow id="row-set-saved-pwd"

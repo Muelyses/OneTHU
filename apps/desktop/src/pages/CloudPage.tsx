@@ -19,6 +19,8 @@ import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale }
  * .cloud-search-result-head/.cloud-row.skeleton-row 私有 CSS；
  * .cloud-list/.cloud-row/.cloud-kind/.cloud-name/.cloud-meta 仍被 GitLabPage 共用，待其迁移再烧。
  */
+import { usePrivacyConsent } from "../state/privacyConsent.js";
+import { replayOnboarding } from "../components/OnboardingTour.js";
 import { vaultCatchCloudFile } from "../lib/vaultCatch.js";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { invoke } from "@tauri-apps/api/core";
@@ -208,6 +210,8 @@ export default function CloudPage(): ReactNode {
   const uiLocale = useUiLocale();
 
   const { navParams } = useApp();
+  const privacy = usePrivacyConsent();
+  const permissionNote = <Inline gap={2} wrap><Text slot="micro" tone="faint">{i18n("privacy.revokeGuide")}</Text><Btn variant="ghost" onClick={replayOnboarding}>{i18n("privacy.replay")}</Btn></Inline>;
   const { configured, account, repos, busy, lastError } = useSeafile();
   const missingOwnershipMetadata = repos.some((entry) => !hasSeafileRepoOwnershipMetadata(entry));
   const [bindOpen, setBindOpen] = useState(false); // §4.3：口令输入统一走 ConnectGate
@@ -405,10 +409,13 @@ export default function CloudPage(): ReactNode {
   };
 
   /* ── 未配置：引导页 ── */
+  if (!privacy.cloud) return <Stack gap={3}><Text slot="title" as="h2">{i18n("pages.cloudpage.75f7ac5a5cca")}</Text><Card><Stack gap={3}><Text as="p">{i18n("privacy.cloudRequired")}</Text>{permissionNote}</Stack></Card></Stack>;
+
   if (!configured) {
     return (
       <Stack gap={3}>
         <Text slot="title" as="h2">{i18n("pages.cloudpage.75f7ac5a5cca")}</Text>
+        {permissionNote}
         <div style={{ maxWidth: "520px" }}>
           <Card>
             <Stack gap={2}>
@@ -434,6 +441,7 @@ export default function CloudPage(): ReactNode {
     const allSelected = entries.length > 0 && entries.every((e) => selSet.has(e.name));
     return (
       <Stack gap={2}>
+        {permissionNote}
         <Inline gap={2} wrap>
           <Btn variant="outline" onClick={() => { setRepo(null); setPath("/"); setSearchHits(null); setSearchText(""); exitSel(); }}>{i18n("pages.cloudpage.1c7ec14c5804")}</Btn>
           {(canDeleteSeafileRepo(repo, account?.email) || !hasSeafileRepoOwnershipMetadata(repo)) && <Btn variant="ghost" tone="error" icon={<IconTrash size="sm" />}
@@ -641,6 +649,7 @@ export default function CloudPage(): ReactNode {
   /* ── 资料库网格 ── */
   return (
     <Stack gap={3}>
+      {permissionNote}
       <Inline gap={2} wrap>
         <Text slot="title" as="h2">{i18n("pages.cloudpage.75f7ac5a5cca")}</Text>
         {account ? (

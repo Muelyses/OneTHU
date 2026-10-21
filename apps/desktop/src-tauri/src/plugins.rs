@@ -257,6 +257,7 @@ pub async fn plugin_call(
     params: Value,
     timeout_ms: Option<u64>,
 ) -> Result<Value, String> {
+    if plugin_id == "onethu.harness" && method == "run" { crate::privacy_consent::require_oh()?; }
     let proc = state
         .procs
         .lock()

@@ -1,7 +1,59 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.visittab.e22da1c2173d",
+      "source": "报备已提交，学校系统会同步生成记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 199,
+          "context": "setNote(msg(\"pages.info.visittab.e22da1c2173d\"))"
+        }
+      ],
+      "translation": "Registration submitted. The university system will generate the record shortly.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.e3301e2db296",
+      "source": "临时来访报备系统返回了无法识别的内容（HTTP {value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 45,
+          "context": "return i18n(\"pages.info.visittab.e3301e2db296\", { value: m1[1] });"
+        }
+      ],
+      "translation": "The temporary visit registration system returned unrecognized content (HTTP {value})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.eda19ba6e037",
+      "source": "本人确认来访亲友关系属实、身份真实、来访事由合理。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 364,
+          "context": "model?.confirmLabel || i18n(\"pages.info.visittab.eda19ba6e037\")"
+        }
+      ],
+      "translation": "I confirm the family/friend relationship is genuine, the identity is real, and the visit purpose is reasonable.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.info.visittab.f265a7b34089",
       "source": "口令",
@@ -1304,64 +1356,6 @@
         }
       ],
       "translation": "My submission body",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b45762984aa4",
-      "source": "撤回未成功，请稍后重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 272,
-          "context": "why || i18n(\"pages.learn.assignmentdetailpage.b45762984aa4\")"
-        }
-      ],
-      "translation": "Withdrawal failed. Please try again later",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b7d31b81f628",
-      "source": "本作业要求必须带附件：请选择文件或拍照上传后再提交",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 221,
-          "context": "setSubMsg(i18n(\"pages.learn.assignmentdetailpage.b7d31b81f628\"))"
-        },
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 240,
-          "context": "new Error(i18n(\"pages.learn.assignmentdetailpage.b7d31b81f628\"))"
-        }
-      ],
-      "translation": "This assignment requires an attachment: choose a file or take a photo before submitting",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.assignmentdetailpage.b8784c8dd563",
-      "source": "重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 353,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.b8784c8dd563\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
-          "line": 404,
-          "context": "{i18n(\"pages.learn.assignmentdetailpage.b8784c8dd563\")}"
-        }
-      ],
-      "translation": "Retry",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

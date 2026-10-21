@@ -1,7 +1,60 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.layout.7f1d9dd04cd1",
+      "source": "我的",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 154,
+          "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 241,
+          "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
+        }
+      ],
+      "translation": "Me",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.9f07d2ce4115",
+      "source": "更多操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 877,
+          "context": "{i18n(\"components.layout.9f07d2ce4115\")}"
+        }
+      ],
+      "translation": "More actions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.a14f23af7016",
+      "source": "日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 104,
+          "context": "return i18n(\"components.layout.a14f23af7016\");"
+        }
+      ],
+      "translation": "Schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.layout.a626aad412b7",
       "source": "标签页",
@@ -1343,59 +1396,6 @@
         }
       ],
       "translation": "Search friends, organizations, or bios",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6e7ecbfdeb6c",
-      "source": "编辑资料",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 243,
-          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 613,
-          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
-        }
-      ],
-      "translation": "Edit profile",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6ebb64384907",
-      "source": "识别二维码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 591,
-          "context": "{i18n(\"components.namecardsection.6ebb64384907\")}"
-        }
-      ],
-      "translation": "Scan QR code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6eeeec8e5551",
-      "source": "还没有收到别人的名片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 569,
-          "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
-        }
-      ],
-      "translation": "No cards received yet",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

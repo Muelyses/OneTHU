@@ -1,7 +1,55 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.tourillustration.8173df51f2a7",
+      "source": "首页会把今日待办和下一节课整理清楚。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 31,
+          "context": "return i18n(\"components.tourillustration.8173df51f2a7\");"
+        }
+      ],
+      "translation": "Home lays out today’s tasks and the next class clearly.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.81a9402f9808",
+      "source": "仅为操作示意，不会修改你的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 171,
+          "context": "{i18n(\"components.tourillustration.81a9402f9808\")}"
+        }
+      ],
+      "translation": "For demonstration only; your content will not be modified",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.tourillustration.88f643c1b98a",
+      "source": "保存一组正在进行的事",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 41,
+          "context": "return i18n(\"components.tourillustration.88f643c1b98a\");"
+        }
+      ],
+      "translation": "Keep a set of work in progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.tourillustration.8d12fc0d4eb2",
       "source": "暂停",
@@ -1263,64 +1311,6 @@
       "translation": "Anyone holding the share code can receive",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.5c07ccfd4b6e",
-      "source": "已发出口令{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "currentCount ? ` · ${currentCount}` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 95,
-          "context": "{i18nRich(\"components.vault.issuedsharescard.5c07ccfd4b6e\", { value: currentCount ? ` · ${currentCount}` : \"\" })}"
-        }
-      ],
-      "translation": "Share codes issued{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.5e43012c5ebe",
-      "source": "这条口令仍有效，删除记录不会撤销分享。确定只删除记录？",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 89,
-          "context": "confirmOk(i18nMsg(\"components.vault.issuedsharescard.5e43012c5ebe\"))"
-        }
-      ],
-      "translation": "This share code is still valid, and deleting the record will not revoke the share. Delete the record only?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.6d2ce5e21b2a",
-      "source": "当前箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 98,
-          "context": "label: i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 99,
-          "context": "allEntries ? i18n(\"components.vault.issuedsharescard.cc7232862b97\") : i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
-        }
-      ],
-      "translation": "Current box",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

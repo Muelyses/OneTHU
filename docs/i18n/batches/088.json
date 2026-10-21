@@ -1,7 +1,503 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.navigation.52f247fc75da",
+      "source": "查询洗衣机和烘干机状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 110,
+          "context": "return i18n(\"state.navigation.52f247fc75da\");"
+        }
+      ],
+      "translation": "Check washer and dryer status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.52fdbbaeda4c",
+      "source": "待办",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 101,
+          "context": "return i18n(\"state.navigation.52fdbbaeda4c\");"
+        }
+      ],
+      "translation": "Tasks",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.60458dfb4c14",
+      "source": "寻迹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 104,
+          "context": "return i18n(\"state.navigation.60458dfb4c14\");"
+        }
+      ],
+      "translation": "Directions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.62fd8d15cf0a",
+      "source": "网络学堂搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 87,
+          "context": "return i18n(\"state.navigation.62fd8d15cf0a\");"
+        }
+      ],
+      "translation": "Web Learning search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.640803d89773",
+      "source": "个人信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 134,
+          "context": "return i18n(\"state.navigation.640803d89773\");"
+        }
+      ],
+      "translation": "Personal info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.69102d38703b",
+      "source": "查看雨课堂作业与提交情况",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 89,
+          "context": "return i18n(\"state.navigation.69102d38703b\");"
+        }
+      ],
+      "translation": "View Rain Classroom assignments and submissions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.6acfa1db6a62",
+      "source": "洗衣机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 110,
+          "context": "return i18n(\"state.navigation.6acfa1db6a62\");"
+        }
+      ],
+      "translation": "Washer",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.73075237fd0f",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 130,
+          "context": "return i18n(\"state.navigation.73075237fd0f\");"
+        }
+      ],
+      "translation": "Mail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 82,
+          "context": "return i18n(\"state.navigation.804002a9c49a\");"
+        }
+      ],
+      "translation": "Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.88df420f8207",
+      "source": "考试安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 93,
+          "context": "return i18n(\"state.navigation.88df420f8207\");"
+        }
+      ],
+      "translation": "Exam schedule",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.90b4e4c67fc9",
+      "source": "插件功能页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 180,
+          "context": "note: i18n(\"state.navigation.90b4e4c67fc9\")"
+        }
+      ],
+      "translation": "Plugin feature pages",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.92341cf02c56",
+      "source": "电子发票",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 114,
+          "context": "return i18n(\"state.navigation.92341cf02c56\");"
+        }
+      ],
+      "translation": "Invoices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.934dc85b3ca3",
+      "source": "开发者面板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 142,
+          "context": "return i18n(\"state.navigation.934dc85b3ca3\");"
+        }
+      ],
+      "translation": "Developer panel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.99f047c591bb",
+      "source": "临时来访人员报备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 127,
+          "context": "return i18n(\"state.navigation.99f047c591bb\");"
+        }
+      ],
+      "translation": "Temporary visitor registration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.9b1dc46aaa51",
+      "source": "查看选课、退课与候补",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 95,
+          "context": "return i18n(\"state.navigation.9b1dc46aaa51\");"
+        }
+      ],
+      "translation": "View course selection, dropping, and waitlist",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1c24c7d5716",
+      "source": "亲友来访报备 · 我的报备 · 来访人登记",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 127,
+          "context": "return i18n(\"state.navigation.a1c24c7d5716\");"
+        }
+      ],
+      "translation": "Visitor registration for family and friends · My registrations · Visitor check-in",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1cabc0664cf",
+      "source": "全部作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 84,
+          "context": "return i18n(\"state.navigation.a1cabc0664cf\");"
+        }
+      ],
+      "translation": "All assignments",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a1e8f8681634",
+      "source": "按时间查看课程与日程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 103,
+          "context": "return i18n(\"state.navigation.a1e8f8681634\");"
+        }
+      ],
+      "translation": "View courses and schedule by time",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.a24d34354353",
+      "source": "查询宿舍用电与电费余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 109,
+          "context": "return i18n(\"state.navigation.a24d34354353\");"
+        }
+      ],
+      "translation": "Check dorm electricity usage and balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.aa39cac2b409",
+      "source": "网络学堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 83,
+          "context": "return i18n(\"state.navigation.aa39cac2b409\");"
+        }
+      ],
+      "translation": "Web Learning",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.b1abb3dc2271",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 98,
+          "context": "return i18n(\"state.navigation.b1abb3dc2271\");"
+        }
+      ],
+      "translation": "Xiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.bb7b63b39fd4",
+      "source": "本学期课程总览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 83,
+          "context": "return i18n(\"state.navigation.bb7b63b39fd4\");"
+        }
+      ],
+      "translation": "This semester's course overview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.bdac834d0ba2",
+      "source": "全部通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 85,
+          "context": "return i18n(\"state.navigation.bdac834d0ba2\");"
+        }
+      ],
+      "translation": "All notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 108,
+          "context": "return i18n(\"state.navigation.caf1f095b108\");"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.d39567b2b9f1",
+      "source": "新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 136,
+          "context": "return i18n(\"state.navigation.d39567b2b9f1\");"
+        }
+      ],
+      "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.dd94488f5269",
+      "source": "校园网",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 113,
+          "context": "return i18n(\"state.navigation.dd94488f5269\");"
+        }
+      ],
+      "translation": "Campus network",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 120,
+          "context": "return i18n(\"state.navigation.e4d40b4d6759\");"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 123,
+          "context": "return i18n(\"state.navigation.e81059e1a712\");"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ecc11c8afea8",
+      "source": "空教室",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 121,
+          "context": "return i18n(\"state.navigation.ecc11c8afea8\");"
+        }
+      ],
+      "translation": "Empty classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.ecc33b3339e6",
+      "source": "查找校内办事与在线申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 133,
+          "context": "return i18n(\"state.navigation.ecc33b3339e6\");"
+        }
+      ],
+      "translation": "Find campus services and apply online",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.f0cd4338679e",
+      "source": "雨课堂作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 89,
+          "context": "return i18n(\"state.navigation.f0cd4338679e\");"
+        }
+      ],
+      "translation": "Rain Classroom assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.navigation.f0fc61f517f5",
       "source": "校园 AI 学伴：聊天 · 历史 · 智能体 · 技能广场",
@@ -886,507 +1382,6 @@
         }
       ],
       "translation": "Android notification channels + scheduled alarms",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifystatus.6fd3264bb821",
-      "source": "允许精确提醒",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 52,
-          "context": "label: i18n(\"state.notifystatus.6fd3264bb821\")"
-        }
-      ],
-      "translation": "Allow exact alarms",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.notifystatus.8533a6995d6d",
-      "source": "本平台暂未接入系统通知，提醒不会发出（应用内仍可看到待办）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 39,
-          "context": "text: i18n(\"state.notifystatus.8533a6995d6d\")"
-        }
-      ],
-      "translation": "System notifications are not integrated on this platform yet, so reminders will not be sent (Tasks are still visible in the app).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifystatus.8657a95fc74c",
-      "source": "通知渠道设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 58,
-          "context": "s.backend === \"android\" ? i18n(\"state.notifystatus.8657a95fc74c\") : i18n(\"state.notifystatus.13632693e676\")"
-        }
-      ],
-      "translation": "Notification channel settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifystatus.94b0e03aba0d",
-      "source": "Windows 通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 32,
-          "context": "return i18n(\"state.notifystatus.94b0e03aba0d\");"
-        }
-      ],
-      "translation": "Windows notifications",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifystatus.a9c6ad5d54e8",
-      "source": "通知已就绪（{label}）。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "label",
-          "expression": "String(label)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 57,
-          "context": "text: i18n(\"state.notifystatus.a9c6ad5d54e8\", { label: String(label) })"
-        }
-      ],
-      "translation": "Notifications are ready ({label}).",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.notifystatus.b19160883cfe",
-      "source": "去系统设置授权",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 45,
-          "context": "label: i18n(\"state.notifystatus.b19160883cfe\")"
-        }
-      ],
-      "translation": "Authorize in system settings",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.notifystatus.ca8b58ed4c71",
-      "source": "macOS 通知中心",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 31,
-          "context": "return i18n(\"state.notifystatus.ca8b58ed4c71\");"
-        }
-      ],
-      "translation": "macOS Notification Center",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifystatus.cef529305e3b",
-      "source": "通知已可用；「精确提醒」还没允许，系统可能略有延迟（不影响送达）。可在系统设置的「闹钟与提醒」里允许精确提醒。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyStatus.ts",
-          "line": 51,
-          "context": "text: i18n(\"state.notifystatus.cef529305e3b\")"
-        }
-      ],
-      "translation": "Notifications are available; \"Exact alarms\" is not allowed yet, so delivery may be slightly delayed (delivery itself is unaffected). You can allow exact alarms in system settings under \"Alarms & reminders\".",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.00b2d49ca0de",
-      "source": "信息大师",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 163,
-          "context": "return i18n(\"state.onboarding.00b2d49ca0de\");"
-        }
-      ],
-      "translation": "Info master",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.088b27d0ed00",
-      "source": "完整",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 139,
-          "context": "return i18n(\"state.onboarding.088b27d0ed00\");"
-        }
-      ],
-      "translation": "Full",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.1052251daaf7",
-      "source": "只留首页、网络学堂、信息、生活、在线服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 148,
-          "context": "return i18n(\"state.onboarding.1052251daaf7\");"
-        }
-      ],
-      "translation": "Keep only Home, Web Learning, Info, Life, and Online services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.257c80cc4f44",
-      "source": "预约狂人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 155,
-          "context": "return i18n(\"state.onboarding.257c80cc4f44\");"
-        }
-      ],
-      "translation": "Reservation pro",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.2e67474d8dad",
-      "source": "极简",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 147,
-          "context": "return i18n(\"state.onboarding.2e67474d8dad\");"
-        }
-      ],
-      "translation": "Minimal",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.42803ef36875",
-      "source": "日程、预约、场馆与宿舍设备为主",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 156,
-          "context": "return i18n(\"state.onboarding.42803ef36875\");"
-        }
-      ],
-      "translation": "Focused on schedule, reservations, venues, and dorm facilities",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.524a5d266a8f",
-      "source": "成绩、考试、学籍、新闻与网络学堂全在",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 164,
-          "context": "return i18n(\"state.onboarding.524a5d266a8f\");"
-        }
-      ],
-      "translation": "Grades, exams, student records, news, and Web Learning all included",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.onboarding.8c45a98b34de",
-      "source": "所有功能都在侧栏，适合想一次看全的人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/onboarding.ts",
-          "line": 140,
-          "context": "return i18n(\"state.onboarding.8c45a98b34de\");"
-        }
-      ],
-      "translation": "All features are in the sidebar, for those who want everything at a glance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.1e4404a53a1d",
-      "source": "口令版本不受支持",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 406,
-          "context": "reason: i18n(\"state.org.1e4404a53a1d\")"
-        }
-      ],
-      "translation": "Share code version not supported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.1f5874fd9b2a",
-      "source": "不是 OneTHU 组织邀请口令（应以 ONORG1. 开头）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 400,
-          "context": "reason: i18n(\"state.org.1f5874fd9b2a\")"
-        }
-      ],
-      "translation": "Not a OneTHU organization invite share code (must start with ONORG1.)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.22f86a2a8ff2",
-      "source": "当前没有可删除的邀请口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 386,
-          "context": "reason: i18n(\"state.org.22f86a2a8ff2\")"
-        }
-      ],
-      "translation": "There are no invite share codes to delete",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.3dc0aa93b10c",
-      "source": "口令内容损坏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 402,
-          "context": "reason: i18n(\"state.org.3dc0aa93b10c\")"
-        }
-      ],
-      "translation": "The share code content is corrupted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.7aa0c43fe053",
-      "source": "口令内容不是合法 JSON",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 417,
-          "context": "reason: i18n(\"state.org.7aa0c43fe053\")"
-        }
-      ],
-      "translation": "The share code content is not valid JSON",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.989f1cde10a3",
-      "source": "口令校验失败（可能复制不完整）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 403,
-          "context": "reason: i18n(\"state.org.989f1cde10a3\")"
-        }
-      ],
-      "translation": "Share code verification failed (it may have been copied incompletely)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.c4591b5b1fe8",
-      "source": "口令无法解析",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 445,
-          "context": "dec.reason ?? i18n(\"state.org.c4591b5b1fe8\")"
-        }
-      ],
-      "translation": "The share code could not be parsed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.org.c6b6912e4bd5",
-      "source": "本地记录已删除；云盘分享撤销未成功（可能已过期）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 394,
-          "context": "reason: i18n(\"state.org.c6b6912e4bd5\")"
-        }
-      ],
-      "translation": "The local record was deleted; revoking the cloud drive share did not succeed (it may have expired)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.0ed5ca0bc425",
-      "source": "这个 GitLab 账号已经是组织成员，请使用编辑或角色菜单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 200,
-          "context": "new Error(i18n(\"state.orgsync.0ed5ca0bc425\"))"
-        }
-      ],
-      "translation": "This GitLab account is already an organization member. Use the edit or role menu instead.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.1345eb189bbb",
-      "source": "未完成的权限变更期间只能解除资源关联，请先完成重试再添加资源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 245,
-          "context": "new Error(i18n(\"state.orgsync.1345eb189bbb\"))"
-        }
-      ],
-      "translation": "While a permission change is incomplete, you can only detach resources. Complete the retry before adding resources.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.15f11e1c75da",
-      "source": "至少保留一位服务器上的组织负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 208,
-          "context": "new Error(i18n(\"state.orgsync.15f11e1c75da\"))"
-        }
-      ],
-      "translation": "Keep at least one organization Owner on the server",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.275a305b9f8b",
-      "source": "这个云盘邮箱已经绑定其他组织成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 212,
-          "context": "new Error(i18n(\"state.orgsync.275a305b9f8b\"))"
-        }
-      ],
-      "translation": "This Cloud Drive email is already bound to another organization member",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.2da1ab0ba765",
-      "source": "当前 GitLab 账号不是这个群组的负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 125,
-          "context": "new Error(i18n(\"state.orgsync.2da1ab0ba765\"))"
-        }
-      ],
-      "translation": "The current GitLab account is not an Owner of this group",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.43f661af3a74",
-      "source": "核对全部权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 225,
-          "context": "label:i18n(\"state.orgsync.43f661af3a74\")"
-        }
-      ],
-      "translation": "Verify all permissions",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsync.47b018369530",
-      "source": "上一次权限变更尚未完成，请先重试并完成它",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 84,
-          "context": "new Error(i18n(\"state.orgsync.47b018369530\"))"
-        }
-      ],
-      "translation": "The previous permission change is not finished yet. Retry and complete it first.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

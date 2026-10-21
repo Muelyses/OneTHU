@@ -46,10 +46,12 @@ for (const w of [{}, { name: '一号机' }, { location: '二楼' }, { type: '烘
   }
   check(keys[0] === keys[1], 'Locale switch does not change a washer AtomRef identity');
 }
-for (const [path, name, raw] of [['state/systemCal.ts', 'CALENDAR_TITLE', 'OneTHU 日程'], ['plugins/XiaodaPane.tsx', 'AGENT_NAME', '清小搭'], ['pages/xiaoda/XiaodaPage.tsx', 'DEFAULT_AGENT_NAME', '清小搭']]) {
+for (const [path, name, raw] of [['state/systemCal.ts', 'CALENDAR_TITLE', 'OneTHU 日程'], ['plugins/XiaodaPane.tsx', 'AGENT_NAME', '清小搭'], ['pages/xiaoda/XiaodaPage.tsx', 'DEFAULT_AGENT_ID', '9999']]) {
   const ast = source(path);
   for (const language of ['zh', 'en']) { locale = language; check(evaluate(`${declaration(ast, name)}\n${name};`) === raw, `${language}: ${name} remains stable wire/native metadata`); }
 }
+const agentDisplay = source('pages/xiaoda/XiaodaPage.tsx');
+for (const language of ['zh','en']) { locale=language; check(evaluate(`${declaration(agentDisplay,'DEFAULT_AGENT_NAME')}\nDEFAULT_AGENT_NAME();`).startsWith(language+':'), `${language}: default agent display name follows locale while its ID remains stable`); }
 const courses = source('pages/zhjwxk/Courses.tsx');
 const queries = find(courses, n => ts.isPropertyAssignment(n) && n.name.getText(courses) === 'infoNewsQuery');
 check(queries.length === 3, 'All three external university notice links are covered');

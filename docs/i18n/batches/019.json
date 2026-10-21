@@ -1,7 +1,60 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.ohsettingspage.fbf9575ea3c9",
+      "source": "上下文记忆模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 51,
+          "context": "return i18n(\"components.ohsettingspage.fbf9575ea3c9\");"
+        },
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 278,
+          "context": "{i18n(\"components.ohsettingspage.fbf9575ea3c9\")}"
+        }
+      ],
+      "translation": "Context memory mode",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.ohsettingspage.fc7d3e679982",
+      "source": "学校登录状态会在到期前自动更新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OhSettingsPage.tsx",
+          "line": 172,
+          "context": "warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
+        }
+      ],
+      "translation": "School sign-in status renews automatically before expiry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardinglanguage.continue",
+      "source": "继续",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingLanguageStep.tsx",
+          "line": 13,
+          "context": "continue: msg(\"components.onboardinglanguage.continue\")"
+        }
+      ],
+      "translation": "Continue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardinglanguage.hint",
       "source": "之后可在设置中更改。",
@@ -154,7 +207,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 100,
+          "line": 106,
           "context": "{i18n(\"components.onboardingtour.069d9b73883f\")}"
         }
       ],
@@ -170,7 +223,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 117,
+          "line": 123,
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ],
@@ -186,7 +239,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 102,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.0e633d7479ee\")}"
         }
       ],
@@ -207,7 +260,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 116,
+          "line": 122,
           "context": "{i18n(\"components.onboardingtour.19f469fec604\", { title: String(item.title) })}"
         }
       ],
@@ -223,7 +276,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 127,
+          "line": 133,
           "context": "last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
@@ -239,7 +292,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 116,
+          "line": 122,
           "context": "{i18n(\"components.onboardingtour.1b47dc7fdca4\")}"
         }
       ],
@@ -255,7 +308,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 114,
           "context": "{i18n(\"components.onboardingtour.20fe3342156f\")}"
         }
       ],
@@ -271,7 +324,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 122,
+          "line": 128,
           "context": "{i18n(\"components.onboardingtour.24e75cb57392\")}"
         }
       ],
@@ -287,7 +340,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 119,
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ],
@@ -303,7 +356,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 117,
+          "line": 123,
           "context": "{i18n(\"components.onboardingtour.307ebc489657\")}"
         }
       ],
@@ -319,7 +372,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 118,
           "context": "{i18n(\"components.onboardingtour.368669b4e8f4\")}"
         }
       ],
@@ -335,7 +388,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 117,
+          "line": 123,
           "context": "mcpOn?i18n(\"components.onboardingtour.09c7b2e4141f\"):i18n(\"components.onboardingtour.3c442701f378\")"
         }
       ],
@@ -351,7 +404,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 117,
+          "line": 123,
           "context": "{i18n(\"components.onboardingtour.427f33ee91af\")}"
         }
       ],
@@ -367,7 +420,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 118,
           "context": "{i18n(\"components.onboardingtour.4d572d8843d7\")}"
         }
       ],
@@ -383,12 +436,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 101,
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 101,
           "context": "{i18n(\"components.onboardingtour.715ee9dc842f\")}"
         }
       ],
@@ -404,7 +457,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 54,
+          "line": 60,
           "context": "showToast(i18nMsg(\"components.onboardingtour.7d38695ada28\"))"
         }
       ],
@@ -420,7 +473,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 113,
+          "line": 119,
           "context": "connect?i18n(\"components.onboardingtour.7f93bdddc69a\"):i18n(\"components.onboardingtour.28f2aed32976\")"
         }
       ],
@@ -436,7 +489,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 91,
+          "line": 97,
           "context": "{i18n(\"components.onboardingtour.8dc51de059fe\")}"
         }
       ],
@@ -452,7 +505,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 114,
           "context": "{i18n(\"components.onboardingtour.9352315ee32a\")}"
         }
       ],
@@ -468,17 +521,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 99,
+          "line": 105,
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 116,
+          "line": 122,
           "context": "{i18n(\"components.onboardingtour.a8ab98831f5c\")}"
         },
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 120,
+          "line": 126,
           "context": "extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${String(step+1).padStart(2,\"0\")} / ${modeName}`"
         }
       ],
@@ -494,7 +547,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 101,
           "context": "intro?i18n(\"components.onboardingtour.aa4142e144b8\"):last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ],
@@ -510,7 +563,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 99,
+          "line": 105,
           "context": "{i18n(\"components.onboardingtour.ac794a015ee3\")}"
         }
       ],
@@ -526,7 +579,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 88,
+          "line": 94,
           "context": "showToast(i18nMsg(\"components.onboardingtour.acb7923e4be1\"))"
         }
       ],
@@ -542,7 +595,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 95,
+          "line": 101,
           "context": "last?i18n(\"components.onboardingtour.715ee9dc842f\"):i18n(\"components.onboardingtour.acfc4e74a650\")"
         }
       ],
@@ -558,7 +611,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 110,
+          "line": 116,
           "context": "{i18n(\"components.onboardingtour.b92a02095b87\")}"
         }
       ],
@@ -574,7 +627,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 93,
+          "line": 99,
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ],
@@ -595,7 +648,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 101,
+          "line": 107,
           "context": "{i18n(\"components.onboardingtour.bfd00f0d13de\", { value: String(CHAPTERS[item.id]) })}"
         }
       ],
@@ -611,7 +664,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 102,
+          "line": 108,
           "context": "{i18n(\"components.onboardingtour.c0b3fbff51cc\")}"
         }
       ],
@@ -627,7 +680,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 99,
+          "line": 105,
           "context": "intro?i18n(\"components.onboardingtour.ccc045ffd9b7\"):extra?i18n(\"components.onboardingtour.a8ab98831f5c\"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`"
         }
       ],
@@ -643,7 +696,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.board\");"
         }
       ],
@@ -659,7 +712,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.campus\");"
         }
       ],
@@ -675,7 +728,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.code\");"
         }
       ],
@@ -691,7 +744,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.customize\");"
         }
       ],
@@ -707,7 +760,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.data\");"
         }
       ],
@@ -723,7 +776,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.explorer\");"
         }
       ],
@@ -739,7 +792,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.more\");"
         }
       ],
@@ -755,7 +808,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.nfc\");"
         }
       ],
@@ -771,7 +824,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.onego\");"
         }
       ],
@@ -787,7 +840,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.organization\");"
         }
       ],
@@ -803,7 +856,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.plugin\");"
         }
       ],
@@ -819,7 +872,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.quick\");"
         }
       ],
@@ -835,7 +888,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.swap\");"
         }
       ],
@@ -851,7 +904,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.today\");"
         }
       ],
@@ -867,7 +920,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.onboardingtour.chapter.vault\");"
         }
       ],
@@ -883,7 +936,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 108,
+          "line": 114,
           "context": "{i18n(\"components.onboardingtour.d4208c3cace4\")}"
         }
       ],
@@ -899,7 +952,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 94,
+          "line": 100,
           "context": "{i18n(\"components.onboardingtour.d69e80a19484\")}"
         }
       ],
@@ -915,7 +968,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 93,
+          "line": 99,
           "context": "extra?i18n(\"components.onboardingtour.bfa8ac132dd5\"):i18n(\"components.onboardingtour.da336fdc0dbd\")"
         }
       ],
@@ -931,7 +984,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 27,
+          "line": 29,
           "context": "return i18n(\"components.onboardingtour.e2ee720ea747\");"
         }
       ],
@@ -947,7 +1000,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 105,
+          "line": 111,
           "context": "intro?MODE_INTRO[chosen]:i18n(\"components.onboardingtour.f1804844a899\")"
         }
       ],
@@ -963,7 +1016,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 112,
+          "line": 118,
           "context": "{i18n(\"components.onboardingtour.f60b58eb72b6\")}"
         }
       ],
@@ -979,7 +1032,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 127,
+          "line": 133,
           "context": "intro?i18n(\"components.onboardingtour.fa24c12c5962\"):last?i18n(\"components.onboardingtour.1ad7fe0f57e3\"):lesson!.title"
         }
       ],
@@ -995,7 +1048,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 27,
+          "line": 29,
           "context": "return i18n(\"components.onboardingtour.modeintro.practical\");"
         }
       ],
@@ -1011,7 +1064,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OnboardingTour.tsx",
-          "line": 27,
+          "line": 29,
           "context": "return i18n(\"components.onboardingtour.modeintro.simple\");"
         }
       ],
@@ -1250,51 +1303,6 @@
         }
       ],
       "translation": "Tap once: a half-screen search panel grows from the bottom; you can stretch it to full screen.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.6aebf4025ba6",
-      "source": "新建即得一块白板，跟首页同一套手势。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 82
-        }
-      ],
-      "translation": "A new tab is a fresh board, using the same gestures as Home.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.70297c6559a9",
-      "source": "长按 0.45 秒开始说话；松手直发，上划取消。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 87
-        }
-      ],
-      "translation": "Press and hold for 0.45 seconds to start speaking; release to send, swipe up to cancel.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.onboardingtourmobile.70bec8e88b2c",
-      "source": "按住 0.5 秒不动出菜单：聚焦、复制、关闭、解散工作区。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/OnboardingTourMobile.tsx",
-          "line": 70
-        }
-      ],
-      "translation": "Press and hold for 0.5 seconds without moving to open the menu: focus, copy, close, disband workspace.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

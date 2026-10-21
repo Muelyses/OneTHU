@@ -15,6 +15,7 @@ use serde_json::Value;
 const BASE: &str = "https://cloud.tsinghua.edu.cn";
 
 fn client() -> Result<reqwest::Client, String> {
+    crate::privacy_consent::require_cloud()?;
     reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::limited(10))
         // 清华域直连：绕系统代理（同 lib.rs download_file，全局模式梯子会触发风控）

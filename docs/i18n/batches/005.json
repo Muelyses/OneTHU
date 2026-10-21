@@ -1,5 +1,5 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -582,7 +582,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 6,
+          "line": 7,
           "context": "return i18n(\"components.experiencemodepicker.26cbedbe0b4f\");"
         }
       ],
@@ -598,7 +598,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 5,
+          "line": 6,
           "context": "return i18n(\"components.experiencemodepicker.32b0d50230a3\");"
         }
       ],
@@ -614,7 +614,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 7,
+          "line": 8,
           "context": "return i18n(\"components.experiencemodepicker.413088d3b1a0\");"
         }
       ],
@@ -630,7 +630,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 5,
+          "line": 6,
           "context": "return i18n(\"components.experiencemodepicker.463e4036289e\");"
         }
       ],
@@ -646,7 +646,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 5,
+          "line": 6,
           "context": "return i18n(\"components.experiencemodepicker.5d3752839f3f\");"
         }
       ],
@@ -662,7 +662,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 7,
+          "line": 8,
           "context": "return i18n(\"components.experiencemodepicker.7dbdf431adc5\");"
         }
       ],
@@ -678,7 +678,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 7,
+          "line": 8,
           "context": "return i18n(\"components.experiencemodepicker.8dc9a2960ed1\");"
         }
       ],
@@ -694,7 +694,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 7,
+          "line": 8,
           "context": "return i18n(\"components.experiencemodepicker.96d67525c77e\");"
         }
       ],
@@ -710,7 +710,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 6,
+          "line": 7,
           "context": "return i18n(\"components.experiencemodepicker.bc2310856d94\");"
         }
       ],
@@ -726,7 +726,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 5,
+          "line": 6,
           "context": "return i18n(\"components.experiencemodepicker.c89246ea218f\");"
         }
       ],
@@ -742,7 +742,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 6,
+          "line": 7,
           "context": "return i18n(\"components.experiencemodepicker.cbe971c9e2fc\");"
         }
       ],
@@ -758,7 +758,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 6,
+          "line": 7,
           "context": "return i18n(\"components.experiencemodepicker.d8aa9757d2b3\");"
         }
       ],

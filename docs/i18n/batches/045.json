@@ -1,7 +1,65 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.folderpage.e6f0a1fa5326",
+      "source": "左侧栏顺序上移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 105,
+          "context": "{i18n(\"pages.folderpage.e6f0a1fa5326\")}"
+        }
+      ],
+      "translation": "Move up in sidebar order",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.e75e8b4e5c97",
+      "source": "下移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 106,
+          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 438,
+          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 489,
+          "context": "{i18n(\"pages.folderpage.e75e8b4e5c97\")}"
+        }
+      ],
+      "translation": "Move down",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.folderpage.e9075f60449d",
+      "source": "子收藏夹名称…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 300,
+          "context": "{i18n(\"pages.folderpage.e9075f60449d\")}"
+        }
+      ],
+      "translation": "Sub-folder name…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.folderpage.f853a70b1204",
       "source": "上移",
@@ -1362,54 +1420,6 @@
         }
       ],
       "translation": "Search issues",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.732bc792e373",
-      "source": "二进制文件不在应用内预览，请用浏览器打开。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 371,
-          "context": "{i18n(\"pages.gitlabpage.732bc792e373\")}"
-        }
-      ],
-      "translation": "Binary files cannot be previewed in the app; please open them in a browser.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.74af046075af",
-      "source": "讨论已解决",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 921,
-          "context": "next ? i18nMsg(\"pages.gitlabpage.74af046075af\") : i18nMsg(\"pages.gitlabpage.c25586638d22\")"
-        }
-      ],
-      "translation": "Discussion resolved",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.75b08c1d27d1",
-      "source": "项目不存在或无权访问",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1613,
-          "context": "detail.error ?? i18n(\"pages.gitlabpage.75b08c1d27d1\")"
-        }
-      ],
-      "translation": "The project does not exist or you have no access",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

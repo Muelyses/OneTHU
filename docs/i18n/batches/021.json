@@ -1,7 +1,54 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.onboardingtourv3.dc819c398a78",
+      "source": "底栏「OneGO!」→ 我的 OnePage：起名后点「新建」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 86
+        }
+      ],
+      "translation": "Bottom bar “OneGO!” → My OnePage: name it, then tap “New”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.dd3208ca2917",
+      "source": "欢迎使用 OneTHU",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 63,
+          "context": "return i18n(\"components.onboardingtourv3.dd3208ca2917\");"
+        }
+      ],
+      "translation": "Welcome to OneTHU",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.dde91a15ff1f",
+      "source": "标签栏横竖随时切，窄一点也站得住。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 80,
+          "context": "return i18n(\"components.onboardingtourv3.dde91a15ff1f\");"
+        }
+      ],
+      "translation": "Switch the tab bar between landscape and portrait anytime; it holds up even narrow.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardingtourv3.e010e3f578cc",
       "source": " 步",
@@ -30,7 +77,7 @@
           "context": "return i18n(\"components.onboardingtourv3.e18fe8598d89\");"
         }
       ],
-      "translation": "All everyday gestures — there is no “edit mode” to enter or exit.",
+      "translation": "Drag directly on desktop. On mobile, tap Edit board first, then Done editing when finished.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1297,54 +1344,6 @@
         }
       ],
       "translation": "goSearchRow error: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.searchlandingselfcheck.0a14c8794160",
-      "source": "行级首位不是自己",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
-          "line": 176,
-          "context": "x.hit !== \"hit\" ? i18n(\"components.searchlandingselfcheck.0a14c8794160\") : i18n(\"components.searchlandingselfcheck.5fd19b4a8cd3\")"
-        }
-      ],
-      "translation": "Row’s first hit is not itself",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.searchlandingselfcheck.33c5797b2af7",
-      "source": "检索落点自查中（45 行逐条点击）… 结果会打印在 console 并出现在这张卡里。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
-          "line": 159,
-          "context": "{i18n(\"components.searchlandingselfcheck.33c5797b2af7\")}"
-        }
-      ],
-      "translation": "Running the search-landing self-check (clicking all 45 rows one by one)… Results are printed to the console and shown on this card.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.searchlandingselfcheck.3fd47edce45b",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
-          "line": 170,
-          "context": "{i18n(\"components.searchlandingselfcheck.3fd47edce45b\")}"
-        }
-      ],
-      "translation": "Close",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

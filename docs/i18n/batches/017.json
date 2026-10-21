@@ -1,7 +1,60 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.namecardsection.6e7ecbfdeb6c",
+      "source": "编辑资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 243,
+          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 613,
+          "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
+        }
+      ],
+      "translation": "Edit profile",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6ebb64384907",
+      "source": "识别二维码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 591,
+          "context": "{i18n(\"components.namecardsection.6ebb64384907\")}"
+        }
+      ],
+      "translation": "Scan QR code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.namecardsection.6eeeec8e5551",
+      "source": "还没有收到别人的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 569,
+          "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
+        }
+      ],
+      "translation": "No cards received yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.namecardsection.6f52cc94db65",
       "source": "手机号",
@@ -1418,54 +1471,6 @@
         }
       ],
       "translation": "Pushes classes, schedule, and assignment deadlines to system notifications, with adjustable lead time and quiet hours.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.5e0022a1e907",
-      "source": "发送测试通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 212,
-          "context": "{i18n(\"components.notifysettingssection.5e0022a1e907\")}"
-        }
-      ],
-      "translation": "Send test notification",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.601739d6d696",
-      "source": "沿用网络学堂的「DDL 提醒」设置；静默时段内会提前到静默开始前发出。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 169,
-          "context": "{i18n(\"components.notifysettingssection.601739d6d696\")}"
-        }
-      ],
-      "translation": "Uses the “Deadline reminders” settings from Web Learning; reminders falling in quiet hours are sent just before quiet hours start.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.notifysettingssection.6160bb36e036",
-      "source": "立即应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NotifySettingsSection.tsx",
-          "line": 284,
-          "context": "{i18n(\"components.notifysettingssection.6160bb36e036\")}"
-        }
-      ],
-      "translation": "Apply now",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

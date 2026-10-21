@@ -12,6 +12,8 @@ import { fileRead, fileWrite, fileDelete, obfuscateSecret, deobfuscateSecret } f
 import { showToast } from "./toast.js";
 import { ensureOwnedCloudRepo, hasOwnedRepoMetadata } from "../lib/ownedCloudRepo.js";
 
+import { cloudAuthorized, requireCloudConsent, subscribePrivacy } from "./privacyConsent.js";
+
 const CFG_FILE = "seafile.cfg";
 /** 旧版（fileWrite 自动补 .json）写成了 seafile.cfg.json.json——读取迁移用 */
 const CFG_FILE_LEGACY = "seafile.cfg.json"; // Rust state_read/write 自动补 .json → 旧文件实为 seafile.cfg.json.json
@@ -30,6 +32,7 @@ let cfg: { token: string } | null = null;
 let loaded = false;
 let loadPending: Promise<void> | null = null;
 let credentialVersion = 0;
+let identityVersion = 0;
 let persistenceTail: Promise<void> = Promise.resolve();
 const listeners = new Set<() => void>();
 export function subscribeSeafile(listener: () => void): () => void {
@@ -37,6 +40,7 @@ export function subscribeSeafile(listener: () => void): () => void {
   return () => { listeners.delete(listener); };
 }
 const emit = (): void => listeners.forEach((fn) => fn());
+subscribePrivacy(() => { credentialVersion++; resetAccountCache(); emit(); });
 const changedAccount = (): Error => new Error(i18n("state.seafile.accountChanged"));
 
 /** Serialize disk writes so an older connect can never finish after a newer logout. */
@@ -85,6 +89,8 @@ export function ensureSeafileLoaded(): Promise<void> {
 
 /** Validate before committing; a later clear/connect supersedes this request. */
 export async function setSeafileToken(token: string): Promise<SeafileAccount> {
+  requireCloudConsent();
+  identityVersion++;
   const version = ++credentialVersion;
   const verified = await invoke<SeafileAccount>("seafile_account", { token });
   if (version !== credentialVersion) throw changedAccount();
@@ -97,6 +103,7 @@ export async function setSeafileToken(token: string): Promise<SeafileAccount> {
 }
 
 export async function clearSeafileToken(): Promise<void> {
+  identityVersion++;
   const version = ++credentialVersion;
   cfg = null; loaded = true;
   resetAccountCache();
@@ -109,10 +116,11 @@ export function seafileRepoName(id: string): string | null {
   return repos.find((r) => r.id === id)?.name ?? null;
 }
 
+export function getSeafileIdentityVersion(): number { return identityVersion; }
 export function getSeafileCredentialVersion(): number { return credentialVersion; }
 
 export function getSeafileToken(): string {
-  return cfg?.token ?? "";
+  return cloudAuthorized() ? cfg?.token ?? "" : "";
 }
 
 /* ── 数据面（内存缓存） ── */
@@ -135,7 +143,7 @@ export function getSeafileAccount(): SeafileAccount | null {
 
 /** 账号信息（含配额）——进页刷新一次 */
 export async function refreshSeafileAccount(): Promise<void> {
-  if (!cfg) return;
+  if (!cfg || !cloudAuthorized()) return;
   const version = credentialVersion;
   const next = await invoke<SeafileAccount>("seafile_account", { token: cfg.token });
   if (version !== credentialVersion) return;
@@ -143,7 +151,7 @@ export async function refreshSeafileAccount(): Promise<void> {
 }
 
 export async function refreshRepos(): Promise<void> {
-  if (!cfg) return;
+  if (!cfg || !cloudAuthorized()) return;
   const version = credentialVersion;
   const request = ++reposVersion;
   busy = true;
@@ -172,6 +180,7 @@ export function hasSeafileRepoOwnershipMetadata(repo: SeafileRepo): boolean {
 }
 
 export async function deleteSeafileRepo(repoId: string): Promise<void> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
   const version = credentialVersion;
   const token = cfg.token;
@@ -202,7 +211,7 @@ export async function deleteSeafileRepo(repoId: string): Promise<void> {
 
 /** 目录列表（缓存优先，force 强刷） */
 export async function openDir(repoId: string, path: string, force = false): Promise<SeafileEntry[]> {
-  if (!cfg) return [];
+  if (!cfg || !cloudAuthorized()) return [];
   const version = credentialVersion;
   const key = `${repoId}|${path}`;
   const hit = dirs.get(key);
@@ -233,6 +242,7 @@ const TEXT_EXT = new Set(["txt", "md", "markdown", "json", "csv", "tsv", "yml", 
 
 /** 组织页内联预览：小文件读进内存（不落盘），文本/图片直接显示，其余给下载。 */
 export async function seafilePreview(repoId: string, path: string, maxBytes = 512 * 1024): Promise<SeafilePreview> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.15e1ef41e215"));
   const version = credentialVersion;
   const ext = (path.split(".").pop() ?? "").toLowerCase();
@@ -265,6 +275,7 @@ export async function seafilePreview(repoId: string, path: string, maxBytes = 51
 }
 
 export async function seafileDownload(repoId: string, path: string): Promise<string> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
   const local = await invoke<string>("seafile_download", { token: cfg.token, repoId, path });
   showToast(i18nMsg("state.seafile.f206fb3a20d8", { local: String(local) }));
@@ -272,6 +283,7 @@ export async function seafileDownload(repoId: string, path: string): Promise<str
 }
 
 export async function seafileUpload(repoId: string, parentDir: string, localPath: string, replace: boolean): Promise<void> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
   await invoke("seafile_upload", { token: cfg.token, repoId, parentDir, localPath, replace });
   await openDir(repoId, parentDir, true);
@@ -279,6 +291,7 @@ export async function seafileUpload(repoId: string, parentDir: string, localPath
 }
 
 export async function seafileShare(repoId: string, path: string, expireDays: number): Promise<string> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
   const r = await invoke<{ link: string }>("seafile_share", { token: cfg.token, repoId, path, expireDays, password: "" });
   return r.link;
@@ -286,12 +299,14 @@ export async function seafileShare(repoId: string, path: string, expireDays: num
 
 /** 删除分享链接（云盘侧撤销；token 来自 seafile_share 返回的 token，或从链接反查）。 */
 export async function seafileShareDelete(shareToken: string): Promise<void> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
   await invoke("seafile_share_delete", { token: cfg.token, shareToken });
 }
 
 /** 匿名读取分享链接根目录的清单文件（接收端无需登录；只返回 UTF-8 文本）。 */
 export async function seafileShareRead(link: string, name?: string): Promise<string> {
+  requireCloudConsent();
   return invoke<string>("seafile_share_read", { link, name: name ?? null });
 }
 
@@ -332,6 +347,7 @@ export async function seafileShareRepo(repoId: string, expireDays = 7): Promise<
 }
 
 export async function seafileSearch(repoId: string, query: string): Promise<SeafileEntry[]> {
+  requireCloudConsent();
   if (!cfg) throw new Error(i18n("state.seafile.96e4aa1ffce5"));
   return invoke<SeafileEntry[]>("seafile_search", { token: cfg.token, repoId, query });
 }
@@ -346,7 +362,7 @@ export function useSeafile() {
     return () => { listeners.delete(fn); };
   }, []);
   return {
-    configured: !!cfg?.token,
+    configured: cloudAuthorized() && !!cfg?.token,
     account,
     repos,
     busy,

@@ -1,7 +1,59 @@
 {
-  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.libroomtab.4c3802fbc5ba",
+      "source": " · 已约 {length} 段",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(r.usage.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 829,
+          "context": "r.usage.length > 0 ? i18n(\"pages.info.libroomtab.4c3802fbc5ba\", { length: String(r.usage.length) }) : \"\""
+        }
+      ],
+      "translation": " · {length} slots reserved",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.54dfc521d801",
+      "source": "该房型当日暂无可约房间。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 803,
+          "context": "{i18n(\"pages.info.libroomtab.54dfc521d801\")}"
+        }
+      ],
+      "translation": "No bookable rooms of this type today.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.libroomtab.572388f3b096",
+      "source": "周五",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
+          "line": 111
+        }
+      ],
+      "translation": "Fri",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.libroomtab.598f9049c774",
       "source": "提交预约",
@@ -1368,64 +1420,6 @@
         }
       ],
       "translation": "New password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.6320b4a8722a",
-      "source": "状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 80,
-          "context": "[i18n(\"pages.info.networktab.6320b4a8722a\"), a.status || \"–\"]"
-        }
-      ],
-      "translation": "Status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.63d5dc2e839a",
-      "source": "登录 {loggedAt}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "loggedAt",
-          "expression": "String(d.loggedAt)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 296,
-          "context": "d.loggedAt ? i18n(\"pages.info.networktab.63d5dc2e839a\", { loggedAt: String(d.loggedAt) }) : \"\""
-        }
-      ],
-      "translation": "Signed in at {loggedAt}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.networktab.66265029155c",
-      "source": "{length} 台 · 可下线",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(devices.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
-          "line": 285,
-          "context": "{i18n(\"pages.info.networktab.66265029155c\", { length: String(devices.length) })}"
-        }
-      ],
-      "translation": "{length} devices · Can go offline",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

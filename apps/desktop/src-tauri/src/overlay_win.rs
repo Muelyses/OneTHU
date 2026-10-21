@@ -478,6 +478,16 @@ fn apply_geo(win: &WebviewWindow, g: Geo) -> Result<(), String> {
 // 私有 API，但先用 respondsToSelector 探针，符号不在（未来系统）就跳过并落日志，不会崩。
 #[cfg(target_os = "macos")]
 fn macos_prevent_activation(win: &WebviewWindow) {
+    // overlay_show is async IPC. Raw AppKit mutations must not run on its Tokio
+    // worker: macOS 26 traps in NSWMWindowCoordinator instead of returning an error.
+    let target = win.clone();
+    if let Err(error) = win.run_on_main_thread(move || macos_prevent_activation_on_main(&target)) {
+        log(&format!("无法在主线程设置悬浮窗激活策略：{error}"));
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn macos_prevent_activation_on_main(win: &WebviewWindow) {
     use objc2::runtime::{AnyObject, Bool};
     // 两处坑（都是 Android 交叉编译查不到的 macOS-only 分支，2026-10-11 用户跑 tauri:dev 炸的就是这里）：
     // ① ns_window() 定义在 `WebviewWindow` 上（不是 `Webview`，不要写 `as_ref().ns_window()`）；

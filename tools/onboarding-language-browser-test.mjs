@@ -4,7 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { closeTestBrowser } from './lib/onboarding-browser-steps.mjs';
+import { closeTestBrowser, advanceOnboardingPrivacy } from './lib/onboarding-browser-steps.mjs';
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
 const browser = await chromium.launch({
   executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -30,6 +30,7 @@ async function setup(width,height,third=false) {
     localStorage.setItem('onethu.experience.v1','full');
   });
   await page.goto(base+'/?explorer-preview=onboarding&tour=1');
+  await advanceOnboardingPrivacy(page);
   await tour(page).locator('[data-tour-phase="language"]').waitFor().catch(async error=>{console.error('SETUP',errors,await page.locator('body').innerText());throw error;});
   return {context,page,errors};
 }
@@ -78,6 +79,7 @@ try {
       check(await page.evaluate(()=>localStorage.getItem('onethu.experience.v1'))==='full','Language choice does not change the experience mode');
       // Refreshing before completion returns to step zero with the saved selection.
       await page.reload();
+      await advanceOnboardingPrivacy(page);
       await tour(page).locator('[data-tour-phase="language"]').waitFor();
       check(await tour(page).locator('input[value="en-US"]').isChecked(),'Refresh restores the selected language');
       check(await tour(page).getByText('你想使用哪种语言？',{exact:true}).isVisible(),'Question remains bilingual even after selecting English');
@@ -100,6 +102,7 @@ try {
       check(!/[\u3400-\u9fff]/u.test(await tour(page).locator('.tour-chapters').innerText()),'All chapter navigation follows English');
       await tour(page).getByRole('button',{name:'Skip tour',exact:true}).click();
       await page.evaluate(()=>window.dispatchEvent(new Event('onethu.onboarding.replay')));
+      await advanceOnboardingPrivacy(page);
       await tour(page).locator('[data-tour-phase="language"]').waitFor();
       check(await tour(page).locator('input[value="en-US"]').isChecked(),'Replay starts at step zero with the saved language');
       await choose(page,'zh-CN');
@@ -118,7 +121,7 @@ try {
   await tour(page).getByRole('heading',{name:'FR · How would you like to use OneTHU?',exact:true}).waitFor();checks++;
   await tour(page).getByRole('button',{name:'FR · Full mode',exact:true}).click();
   await tour(page).getByRole('button',{name:'FR · Start with this mode',exact:true}).click();
-  await tour(page).getByRole('heading',{name:'FR · Board and OnePage: the Home you arrange',exact:true}).waitFor();checks++;
+  await tour(page).getByRole('heading',{name:'FR · Search, OH and plugins',exact:true}).waitFor();checks++;
   check((await tour(page).locator('.tour-chapters').innerText()).includes('FR · Board'),'Third-language chapters use the new dictionary');
   check(errors.length===0,errors.join('; '));
   await context.close();

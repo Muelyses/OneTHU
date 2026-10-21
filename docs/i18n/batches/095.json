@@ -1,0 +1,502 @@
+{
+  "sourceHash": "a110d924e8e692d91516a51e722f328e4f3fa7946e0d4d59cdc2882eb07f1c9b",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "tour.essentials.lead.compact",
+      "source": "搜索和 OneTHU Harness（小 OH）都保留；插件扩展可在完整模式使用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 21,
+          "context": "full ? i18n(\"tour.essentials.lead.full\") : i18n(\"tour.essentials.lead.compact\")"
+        }
+      ],
+      "translation": "Search and OneTHU Harness (OH) remain available. Switch to Full mode to use plugin extensions.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.lead.full",
+      "source": "从搜索胶囊找到功能，再用 OneTHU Harness（小 OH）和插件扩展能力。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 21,
+          "context": "full ? i18n(\"tour.essentials.lead.full\") : i18n(\"tour.essentials.lead.compact\")"
+        }
+      ],
+      "translation": "Find features in the search capsule, then do more with OneTHU Harness (OH) and plugins.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.oh.compact",
+      "source": "OH：保留对话与自填 API，也可扫码连接微信、飞书。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ],
+      "translation": "OH: chat with your own API provider, or scan to connect WeChat and Feishu.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.oh.full",
+      "source": "OH：切到小 OH 描述任务，由工具读取实际数据。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ],
+      "translation": "OH: switch to the assistant and describe your task. Tools retrieve actual data.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.openMode",
+      "source": "查看使用模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 26,
+          "context": "full ? i18n(\"tour.essentials.openPlugins\") : i18n(\"tour.essentials.openMode\")"
+        }
+      ],
+      "translation": "View modes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.openOh",
+      "source": "打开小 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 25,
+          "context": "action: i18n(\"tour.essentials.openOh\")"
+        }
+      ],
+      "translation": "Open OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.openPlugins",
+      "source": "打开插件页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 26,
+          "context": "full ? i18n(\"tour.essentials.openPlugins\") : i18n(\"tour.essentials.openMode\")"
+        }
+      ],
+      "translation": "Open plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.openSearch",
+      "source": "试试搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 23,
+          "context": "return i18n(\"tour.essentials.openSearch\");"
+        }
+      ],
+      "translation": "Try search",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.plugins.compact",
+      "source": "插件可增加主题和功能；在设置切到完整模式后使用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ],
+      "translation": "Plugins add themes and features. Switch to Full mode in settings to use them.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.plugins.full",
+      "source": "插件：在「我的」管理扩展、主题与插件功能页。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ],
+      "translation": "Plugins: manage extensions, themes and plugin pages from My.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.search",
+      "source": "搜索：在胶囊输入名称，找当前模式的功能与内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ],
+      "translation": "Search: type in the capsule to find features and content available in this mode.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.essentials.title",
+      "source": "搜索、OH 与插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 24,
+          "context": "return i18n(\"tour.essentials.title\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 20,
+          "context": "return i18n(\"tour.essentials.title\");"
+        }
+      ],
+      "translation": "Search, OH and plugins",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "tour.vault.drag.after",
+      "source": "拖进高亮区域松手，再打开箱子查看内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 27,
+          "context": "return i18n(\"tour.vault.drag.after\");"
+        }
+      ],
+      "translation": "Release inside the highlighted area, then open the box to view the item.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.before",
+      "source": "按住示例作业，等待提起，再向暂存箱移动。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 27,
+          "context": "return i18n(\"tour.vault.drag.before\");"
+        }
+      ],
+      "translation": "Hold the example assignment until it lifts, then drag toward the staging box.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.drop",
+      "source": "拖到暂存箱按钮的高亮区域，松手完成收纳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ],
+      "translation": "Drag into the highlighted area around the staging button and release.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.hold",
+      "source": "长按作业、文件或白板组件，提起后开始移动。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ],
+      "translation": "Hold an assignment, file or whiteboard component, then lift and drag.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.lead",
+      "source": "长按支持拖动的内容，移到暂存箱按钮后松手；先在本机收纳，再按需分享。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 40,
+          "context": "return i18n(\"tour.vault.drag.lead\");"
+        }
+      ],
+      "translation": "Hold a supported item, drag it onto the staging button, then release. Collect locally and share when needed.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.limit",
+      "source": "只有已接入拖动的内容可收纳；远端文件可能需要先缓存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ],
+      "translation": "Only integrated drag sources are supported. Remote files may need caching first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.more",
+      "source": "邮件、云盘、GitLab 项目及已接入的设置条目也可收纳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ],
+      "translation": "Mail, cloud items, GitLab projects and integrated settings entries can also be collected.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.sources",
+      "source": "还支持标签页、工作区、搜索结果、日程与名片。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ],
+      "translation": "Tabs, workspaces, search results, events and cards are also supported.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.vault.drag.title",
+      "source": "暂存箱：长按、拖入、再分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 40,
+          "context": "return i18n(\"tour.vault.drag.title\");"
+        }
+      ],
+      "translation": "Staging box: hold, drag and share",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "tour.xiaoda.action",
+      "source": "打开清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 62,
+          "context": "return i18n(\"tour.xiaoda.action\");"
+        }
+      ],
+      "translation": "Open Qingxiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.after",
+      "source": "在技能页检查兼容性，再启用给 OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"tour.xiaoda.after\");"
+        }
+      ],
+      "translation": "Check compatibility in Skills, then enable the skill for OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.agents",
+      "source": "智能体：按任务选助手，点「找它聊」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 61
+        }
+      ],
+      "translation": "Agents: choose an assistant for your task and select “Chat with it”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.before",
+      "source": "从清小搭对话开始，也可选择专用智能体。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"tour.xiaoda.before\");"
+        }
+      ],
+      "translation": "Start a Qingxiaoda conversation, or choose a specialist agent.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.chapter",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 28,
+          "context": "return i18n(\"tour.xiaoda.chapter\");"
+        }
+      ],
+      "translation": "Qingxiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.chat",
+      "source": "对话：选择模型提问，历史记录可接着聊。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 61
+        }
+      ],
+      "translation": "Chat: choose a model and ask. Continue earlier conversations from History.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.lead",
+      "source": "在 OneTHU 里使用清小搭、专用智能体，也能把兼容的轻量技能交给 OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 60,
+          "context": "return i18n(\"tour.xiaoda.lead\");"
+        }
+      ],
+      "translation": "Chat with Qingxiaoda, choose a specialist agent, and enable compatible lightweight skills for OH, all in OneTHU.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.limits",
+      "source": "需 Python、Node 或外部服务？保存给电脑 Agent。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 61
+        }
+      ],
+      "translation": "Skills needing Python, Node or external services can be saved for an agent on your computer.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.skills",
+      "source": "技能：导入并检查，兼容的轻量技能可启用给 OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 61
+        }
+      ],
+      "translation": "Skills: import and check a package, then enable compatible lightweight skills for OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.title",
+      "source": "清小搭 in OneTHU",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"tour.xiaoda.title\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 60,
+          "context": "return i18n(\"tour.xiaoda.title\");"
+        }
+      ],
+      "translation": "Qingxiaoda in OneTHU",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    }
+  ]
+}

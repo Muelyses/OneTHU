@@ -407,6 +407,7 @@ export const login = async (
                 if (outstandingLoginPromise === pending) {
                     outstandingLoginPromise = undefined;
                     outstandingLoginIdentity = null;
+                    helper.afterLoginSuccessHook?.();
                 }
             }, (e: any) => {
                 clearTimeout(timer);

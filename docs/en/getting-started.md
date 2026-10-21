@@ -2,9 +2,11 @@
 
 [中文](../getting-started.md) · English
 
-Install the package for macOS, Windows or Android from the [release page](https://github.com/smartThise/OneTHU/releases/latest). The [cloud mirror](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/) may lag behind a release; check version and timestamp.
+Install the package for macOS, Windows or Android from the [download page](https://onethu.github.io/en/download.html), which provides direct cloud downloads, GitHub alternatives, versions and SHA256 verification. Packages are also available on the [release page](https://github.com/smartThise/OneTHU/releases/latest).
 
-First choose a language, then minimal, practical or full mode. All three guides explain search, OH and plugin availability. Full mode additionally introduces whiteboards, staging, short codes, NFC, organizations and Xiaoda. Guide actions open the real destination and provide a return control. Simulations contain fictional data.
+Choose your language using **语言 / Language** above the sign-in form. The same control is available when choosing a verification method or entering a code. Switching languages retains your input without restarting authentication, and your preference survives a reload. Application errors update immediately; university-provided error details remain in their original language.
+
+The guide starts with a bilingual permissions notice. Cloud storage and OH require separate manual consent and are off by default; full mode requires cloud consent. Then choose the guide language and minimal, practical or full mode. All three guides explain search, OH and plugin availability. Full mode additionally introduces whiteboards, staging, short codes, NFC, organizations and Xiaoda. Guide actions open the real destination and provide a return control. Simulations contain fictional data.
 
 Use university authentication and complete second-factor verification when requested. Keep the same challenge session; avoid repeated refreshes and resends. Mail, calendars, cloud storage and model services can require separate authorization. An account-side trusted-factor limit may need university account management; retrying public-key retrieval cannot fix it.
 

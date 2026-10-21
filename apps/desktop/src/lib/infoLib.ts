@@ -15,7 +15,7 @@ import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
  * - 登录/验证/登出/会话守卫（libEnsureSession：lib verifyAndReLogin 语义）
  */
 import { nativeFetch, nativeCookieClear, nativeSeedCookies } from "./transport.js";
-import { markLoginAttempt, loginCooldownLeftMs } from "./loginGate.js";
+import { markLoginAttempt, markLoginSucceeded, loginCooldownLeftMs } from "./loginGate.js";
 import { networkLogUrl } from "./networkLog.js";
 import { http } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies, uFetch } from "@onethu/info-lib/network";
@@ -162,6 +162,10 @@ helper.beforeLoginAttemptHook = async () => {
   void log("AUTH-PHASE cookie-clear-start");
   await nativeCookieClear();
   void log("AUTH-PHASE cookie-clear-done");
+};
+helper.afterLoginSuccessHook = () => {
+  markLoginSucceeded();
+  void log("AUTH-PHASE session-established");
 };
 
 /* ═══════════ GitLab 会话票：跨进程保活 ═══════════

@@ -114,6 +114,7 @@ const memoryStorage = () => {
     entries,
     getItem: (key) => entries.get(key) ?? null,
     setItem: (key, value) => entries.set(key, String(value)),
+    removeItem: (key) => entries.delete(key),
   };
 };
 
@@ -144,6 +145,15 @@ try {
   now += 1;
   reloaded.markLoginAttempt();
   check("a new attempt is allowed at the exact expiry", () => assert.equal(reloaded.loginCooldownLeftMs(), 20_000));
+  reloaded.markLoginSucceeded();
+  check("verified success immediately clears this attempt's cooldown", () => {
+    assert.equal(reloaded.loginCooldownLeftMs(), 0);
+    assert.equal(storage.getItem(storageKey), null);
+  });
+  const afterSuccess = await loadGate();
+  check("refresh after successful login does not resurrect its old cooldown", () => assert.equal(afterSuccess.loginCooldownLeftMs(), 0));
+  afterSuccess.markLoginAttempt();
+  check("a subsequent failed attempt is still guarded", () => assert.equal(afterSuccess.loginCooldownLeftMs(), 20_000));
 
   for (const corrupt of ["broken", "NaN", "Infinity", "-1", "0", "", String(now + 60_000), String(now - 60_000)]) {
     const corruptStorage = memoryStorage();

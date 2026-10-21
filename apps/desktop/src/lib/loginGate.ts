@@ -29,3 +29,9 @@ export function markLoginAttempt(): void {
   // Survives refresh in this WebView; no credentials or account identifier.
   try { globalThis.sessionStorage?.setItem(STORAGE_KEY, String(lastLoginAttemptAt)); } catch { /* memory fallback */ }
 }
+
+/** A verified completed login is not a failed attempt awaiting another password. */
+export function markLoginSucceeded(): void {
+  lastLoginAttemptAt = 0;
+  try { globalThis.sessionStorage?.removeItem(STORAGE_KEY); } catch { /* memory fallback */ }
+}

@@ -515,6 +515,10 @@ export class LearnClient {
       } catch (e) {
         this.#http.debug?.("LEARN-SILENT 路径零异常");
       }
+      // An installed host owns authentication, including its admission gate and
+      // 2FA context. Never replay credentials through the legacy standalone path
+      // when the host could not establish this service's session.
+      return false;
     }
     // 路径一：/f/login 是 learn 的服务端 302 CAS 入口
     try {

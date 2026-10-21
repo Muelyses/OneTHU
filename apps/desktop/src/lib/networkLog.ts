@@ -4,7 +4,8 @@ export function networkLogUrl(raw: string): string {
     const url = new URL(raw);
     if (url.protocol !== "http:" && url.protocol !== "https:") return "[non-http URL]";
     // OAuth/CAS codes, signed URLs and fragments must not become persistent log data.
-    return url.origin + url.pathname;
+    // Java servers also place live sessions in path matrix parameters.
+    return url.origin + url.pathname.replace(/(?:;|%3b)[^/]*/gi, "");
   } catch { return "[invalid URL]"; }
 }
 
@@ -24,6 +25,6 @@ export function redactNetworkLog(text: string): string {
     .replace(/https?:\/\/[^\s<>"']+/gi, networkLogUrl)
     .replace(/(\b(?:body(?:\(\d+\))?|schooldata|submittedContent)\s*[:=]\s*)[^\r\n]*/gi, "$1[omitted body]")
     .replace(/(^|[\r\n])([ \t]*(?:authorization|proxy-authorization|cookie|set-cookie)[ \t]*[:=])[^\r\n]*/gi, "$1$2 [redacted]")
-    .replace(/(["']?(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|refresh[_-]?token|token|ticket|_csrf|authorization|cookie|set-cookie|username|studentId)["']?\s*[:=]\s*)("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\s,;}]+)/gi, "$1[redacted]")
+    .replace(/(["']?(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|refresh[_-]?token|token|ticket|_csrf|jsessionid|authorization|cookie|set-cookie|username|studentId)["']?\s*[:=]\s*)("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|[^\s,;}]+)/gi, "$1[redacted]")
     .replace(/\bBearer\s+[A-Za-z0-9._~+\/=\-]+/gi, "Bearer [redacted]");
 }

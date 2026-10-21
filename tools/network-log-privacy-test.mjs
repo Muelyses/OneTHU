@@ -4,6 +4,8 @@ import {networkLogUrl,networkLogCookieNames,redactNetworkLog} from '../apps/desk
 let passed=0;const check=(v,name)=>{assert.ok(v,name);passed++;console.log('✓ '+name)};
 check(networkLogUrl('https://name:fake-password@example.invalid/callback?code=fake-code&ticket=fake-ticket#fake-fragment')==='https://example.invalid/callback','Redirect logs retain route but omit URL credentials, query and fragment');
 check(networkLogUrl('not a URL fake-secret')==='[invalid URL]'&&networkLogUrl('file:///private/demo')==='[non-http URL]','Invalid and local URLs never echo raw input');
+check(networkLogUrl('https://example.invalid/timeout.jsp;jsessionid=fake-secret')==='https://example.invalid/timeout.jsp','Java path sessions are omitted');
+check(networkLogUrl('https://example.invalid/a%3Bjsessionid%3Dfake-secret/b;token=fake-secret')==='https://example.invalid/a/b','Encoded and multiple path matrix sessions are omitted');
 check(networkLogCookieNames(['session=fake-session-value; Path=/; Secure','csrftoken=fake-csrf; SameSite=Lax'])==='session,csrftoken','Only new cookie names are retained');
 check(!networkLogCookieNames(['fake-secret-without-delimiter']).includes('fake-secret'),'Malformed cookie input is not logged');
 for(const example of [
@@ -14,6 +16,7 @@ for(const example of [
  "token='fake-secret' status=ok",
  'failure https://example.invalid/oauth?ticket=fake-secret',
  'debug Bearer fake-secret',
+ 'jsessionid=fake-secret',
  '<html><input type="hidden" value="fake-secret"></html>',
  'status=200 body={"schooldata":"fake-secret"}',
  '[HTTP-WENGINE] body(500)=fake-secret ...TAIL... fake-secret',

@@ -133,7 +133,7 @@ const CAMPUS_KEY = "campus";
 const CAMPUS_TTL = 3 * 60 * 1000;
 
 export function useCampusData() {
-  const { status, backToLogin } = useApp();
+  const { status } = useApp();
   const [data, setData] = useState<CampusData | null>(() => cacheGet<CampusData>(CAMPUS_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<CampusData>(CAMPUS_KEY) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
@@ -149,7 +149,7 @@ export function useCampusData() {
       setState("ready");
       notifyCampusData(fresh);
     } catch (err) {
-      // 会话真死了（AuthRequiredError）：先免密重漫游一次，仍失败才送回登录页
+      // Learning-service errors recover locally; they do not invalidate main login.
       if (err instanceof Error && err.name === "AuthRequiredError") {
         logPageError("CAMPUS-AUTH", err);
         const reRoamed = await relearnRoamOnce();
@@ -162,8 +162,8 @@ export function useCampusData() {
           await load(silent);
           return;
         }
-        backToLogin();
-        return;
+        // Failure to recover one campus service is not proof that the main
+        // authenticated session is invalid. Keep the shell and show its error.
       }
       logPageError("CAMPUS", err);
       // 已有旧数据（缓存/上次成功）时不闪红：SWR 语义，保留旧值下轮挂载再重验证
@@ -173,7 +173,7 @@ export function useCampusData() {
       setState("error");
       setError(explainNetworkError(err));
     }
-  }, [status, backToLogin, data]);
+  }, [status, data]);
 
   useEffect(() => {
     if (status !== "ready") return;
@@ -245,12 +245,12 @@ export function invalidateLearnCache(): void {
   invalidateLearnSelection();
 }
 
-/** 会话失效后的免密重建去重：lib 单管线里 learn 经 wengine 透明 SSO，无独立
- *  「漫游」可重做——会话死即整条 webvpn 死，走 lib 会话守卫（探活+静默重登）。
- *  同一时刻多个数据钩子一起撞上 AuthRequiredError 时只重建一次。 */
+/** Share the same scoped recovery among all hooks before applying retry throttling.
+ * A missing learning session is not evidence that every campus session is dead. */
 let roamInflight: Promise<boolean> | null = null;
 let lastRelearnAt = 0;
 function relearnRoamOnce(): Promise<boolean> {
+  if (roamInflight) return roamInflight;
   // 20s 节流（2026-09-17）：恢复环每秒一轮 learn 重链（/f/login+账密全链）
   // 也是风暴源——与 softRecover 同窗口；loginGate 冷却只管 libLogin 本身。
   if (Date.now() - lastRelearnAt < 20_000) return Promise.resolve(false);
@@ -470,7 +470,7 @@ export function stopLearnAutoRefresh(): void {
 }
 
 export function useLearnData() {
-  const { status, backToLogin } = useApp();
+  const { status } = useApp();
   const [data, setData] = useState<LearnBundle | null>(() => cache?.data ?? null);
   const [state, setState] = useState<DataState>(cache?.data ? "ready" : "loading");
   const [error, setError] = useState<string | null>(null);
@@ -521,8 +521,7 @@ export function useLearnData() {
       notifyLearnData();
     } catch (err) {
       if (!active()) return;
-      // 会话失效（AuthRequiredError）：先用持久化 id 主会话重漫游一次（learn 漫游会话
-      // 约 8 分钟过期是常态，免密可重建）；仍失败才送回登录页
+      // Recover the learning service once and retain the authenticated shell on failure.
       if (err instanceof Error && err.name === "AuthRequiredError") {
         logPageError("LEARN-AUTH", err);
         if (cache) cache.ts = 0;
@@ -532,14 +531,13 @@ export function useLearnData() {
           await load(); // 递归一次：缓存已清，重走数据链；再失败走下一轮分支
           return;
         }
-        backToLogin();
-        return;
+        // Keep the authenticated shell while the learning service is unavailable.
       }
       logPageError("LEARN", err);
       setState("error");
       setError(explainNetworkError(err));
     }
-  }, [status, backToLogin]);
+  }, [status]);
 
   useEffect(() => {
     /* 预览模式（抽屉里的组件预览）跳过：这条 hook 是「挂载即拉」，不跳过就会现爬数据 */
@@ -570,7 +568,7 @@ const SEM_KEY = "semesters";
 const SEM_TTL = 30 * 60 * 1000;
 
 export function useSemesters() {
-  const { status, backToLogin } = useApp();
+  const { status } = useApp();
   const cachedSem = cacheGet<{ list: string[]; current: string | null }>(SEM_KEY)?.data;
   const [list, setList] = useState<string[] | null>(() => cachedSem?.list ?? null);
   const [current, setCurrent] = useState<string | null>(() => cachedSem?.current ?? null);
@@ -592,14 +590,10 @@ export function useSemesters() {
       setCurrent(cur?.id ?? null);
       setState("ready");
     } catch (err) {
-      if (err instanceof Error && err.name === "AuthRequiredError") {
-        backToLogin();
-        return;
-      }
       setState("error");
       setError(explainNetworkError(err));
     }
-  }, [status, backToLogin]);
+  }, [status]);
 
   useEffect(() => {
     if (status !== "ready") return;

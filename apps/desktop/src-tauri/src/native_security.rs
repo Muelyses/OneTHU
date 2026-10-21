@@ -117,8 +117,13 @@ pub fn http_url(url: &reqwest::Url) -> Result<(), String> {
 }
 
 pub fn safe_url_log(url: &reqwest::Url) -> String {
-    // Query, fragment and userinfo can all contain login tickets.
-    format!("{}{}", url.origin().ascii_serialization(), url.path())
+    // Query, fragment, userinfo and Java path matrix parameters can carry tickets.
+    let path = url.path().split('/').map(|segment| {
+        let lower = segment.to_ascii_lowercase();
+        let cut = segment.find(';').into_iter().chain(lower.find("%3b")).min().unwrap_or(segment.len());
+        &segment[..cut]
+    }).collect::<Vec<_>>().join("/");
+    format!("{}{}", url.origin().ascii_serialization(), path)
 }
 
 /// Defense in depth for unstructured messages from the webview/plugins.

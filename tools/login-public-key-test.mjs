@@ -363,7 +363,8 @@ await check("an old timeout cannot detach the newer outstanding attempt", async 
 await check("full login keeps 2FA hooks, uses one OAuth entry and completes authenticated roaming", async () => {
   clearOutstandingLogin();
   const calls = [], actions = [];
-  const h = { ...helper(), beforeLoginAttemptHook: async () => {}, twoFactorMethodHook: async () => "totp", twoFactorAuthHook: async () => "123456", trustFingerprintHook: async () => false };
+  let successes = 0;
+  const h = { ...helper(), beforeLoginAttemptHook: async () => {}, afterLoginSuccessHook: () => { successes++; }, twoFactorMethodHook: async () => "totp", twoFactorAuthHook: async () => "123456", trustFingerprintHook: async () => false };
   setPlatformFetch(async (url, init) => {
     calls.push({ url, ...init });
     if (url.includes("/login?oauth_login=true")) return reply(KEY, url);
@@ -381,5 +382,6 @@ await check("full login keeps 2FA hooks, uses one OAuth entry and completes auth
   assert.equal(calls.filter(c => c.url.includes("oauth_login=true")).length, 1);
   assert.equal(calls.filter(c => c.url === ID_CHECK).length, 1);
   assert.deepEqual(actions, ["FIND_APPROACHES", "SEND_CODE", "VERITY_TOTP_CODE"]);
+  assert.equal(successes, 1);
 });
 console.log(`${count} login public-key regressions passed (offline).`);

@@ -74,10 +74,10 @@ async function setup(layout, scenario, locale = "zh-CN") {
       if (holdEntry) await entryBarrier;
       if (scenario === "rate-limit") return response(input.url, "Too many requests", 429);
       if (scenario === "trust-limit") return response(input.url, '<p id="msg_note">信任设备数量已达上限</p>');
-      if (scenario.startsWith("two-factor")) return response(input.url, keyHtml, 200, "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/fixture/0");
+      if (scenario.startsWith("two-factor") || scenario === "trusted-login") return response(input.url, keyHtml, 200, "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/fixture/0");
       return response(input.url, "<main>Unexpected portal fixture</main>", 200, "https://id.tsinghua.edu.cn/fixture-unexpected");
     }
-    if (url.pathname === "/do/off/ui/auth/login/check") return response(input.url, '<html><head><title>二次认证</title></head><body><div id="root"></div><script src="/v2/dist/doubleauth/doubleAuth.bundle.js"></script></body></html>');
+    if (url.pathname === "/do/off/ui/auth/login/check") return response(input.url, scenario === "trusted-login" ? successHtml : '<html><head><title>二次认证</title></head><body><div id="root"></div><script src="/v2/dist/doubleauth/doubleAuth.bundle.js"></script></body></html>');
     if (url.pathname === "/b/doubleAuth/login") {
       const action = fields.get("action");
       if (action === "FIND_APPROACHES") return response(input.url, JSON.stringify({ result: "success", object: { hasWeChatBool: scenario !== "two-factor-totp", phone: null, hasTotp: scenario === "two-factor-totp" } }));
@@ -91,6 +91,8 @@ async function setup(layout, scenario, locale = "zh-CN") {
       throw new Error("Unexpected fixture 2FA action: " + action);
     }
     if (url.pathname === "/b/doubleAuth/personal/saveFinger") return response(input.url, JSON.stringify({ result: "fail", msg: "受信设备数量已达上限" }));
+    if (url.pathname === "/wengine-vpn/cookie") return response(input.url, "XSRF-TOKEN=fixture-csrf;");
+    if (url.pathname.endsWith("/b/info/gxfw_fg/common/grjbxx")) return response(input.url, JSON.stringify({ object: { ryh: "2099000000" } }));
     if (url.pathname === "/fixture-finish" || url.pathname.startsWith("/do/off/ui/auth/login/form/")) return response(input.url, successHtml);
     if (url.hostname === "oauth.tsinghua.edu.cn") return response(input.url, "<main>Fixture session ready</main>", 200, "https://webvpn.tsinghua.edu.cn/");
     // Background services have no data in this isolated fixture. No request leaves this process.
@@ -211,6 +213,12 @@ try {
     await page.getByRole("button", { name: "验证并登录", exact: true }).click();
     await page.waitForFunction(() => !document.querySelector("#code"), null, { timeout: 20_000 });
     await page.waitForFunction(() => !document.querySelector(".login-wrap"), null, { timeout: 20_000 });
+    await waitUntil(() => logs.some(line => line.includes("PAGE-ERR CAMPUS")));
+    // Incomplete learning-service fixtures deliberately fail after main login.
+    // The shell must remain mounted after those asynchronous recoveries settle.
+    await page.waitForTimeout(2_000);
+    check(await page.locator(".login-wrap").count() === 0, `${layout}/${scenario}: delayed service failure cannot kick a verified login back to the form`);
+    check(await page.evaluate(() => sessionStorage.getItem("onethu.login-attempt-at")) === null, `${layout}/${scenario}: successful authentication clears its completed attempt cooldown`);
     check(requests.filter((item) => item.path === "/login").length === 1, `${layout}/${scenario}: one login chain covers selection, sending and verification`);
     check(requests.filter((item) => item.path === "/do/off/ui/auth/login/check").length === 1, `${layout}/${scenario}: credentials are submitted once`);
     const actions = requests.filter((item) => item.action).map((item) => item.action);
@@ -227,6 +235,18 @@ try {
     check(!(await page.locator("body").innerText()).includes("本页出现问题"), `${layout}/${scenario}: completed login does not fall into the React error boundary`);
     await page.screenshot({ path: `${out}/${layout}-${scenario}-trust-limit.png`, fullPage: true, animations: "disabled" });
     summaries.push({ layout, scenario, requests });
+    await context.close();
+  }
+  for (const layout of ["phone", "desktop"]) {
+    const { page, context, requests, logs } = await setup(layout, "trusted-login");
+    await page.locator("form button[type=submit]").click();
+    await page.waitForFunction(() => !document.querySelector(".login-wrap"));
+    await waitUntil(() => logs.some(line => line.includes("PAGE-ERR CAMPUS")));
+    await page.waitForTimeout(2_000);
+    check(await page.locator(".login-wrap").count() === 0, `${layout}/trusted-login: a scoped service failure retains the authenticated shell`);
+    check(await page.evaluate(() => sessionStorage.getItem("onethu.login-attempt-at")) === null, `${layout}/trusted-login: no completed-attempt cooldown remains`);
+    check(requests.filter(item => item.path === "/do/off/ui/auth/login/check").length === 1, `${layout}/trusted-login: missing learning data cannot replay the password`);
+    summaries.push({ layout, scenario: "trusted-login", requests });
     await context.close();
   }
   {

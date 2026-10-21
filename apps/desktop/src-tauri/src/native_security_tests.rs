@@ -3,6 +3,16 @@ use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
 
+#[test]
+fn java_path_sessions_are_removed_from_logs() {
+    for path in ["/timeout.jsp;jsessionid=fixture-private", "/a%3Bjsessionid%3Dfixture-private/b;token=fixture-private"] {
+        let url = reqwest::Url::parse(&format!("https://school.example{path}?ticket=fixture-private")).unwrap();
+        let safe = safe_url_log(&url);
+        assert!(!safe.contains("fixture-private"));
+        assert!(!redact_log(&format!("GET {url}")).contains("fixture-private"));
+    }
+}
+
 pub(crate) fn temp() -> PathBuf {
     let dir = std::env::temp_dir().join(format!("onethu-native-security-{}-{}", std::process::id(),
         NEXT_FILE.fetch_add(1, Ordering::Relaxed)));

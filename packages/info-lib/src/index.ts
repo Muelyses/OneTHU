@@ -267,6 +267,8 @@ export class InfoHelper {
     /** Admission/cooldown for every new authentication attempt, including roaming
      * and silent re-login. Joining an outstanding attempt does not run it again. */
     public beforeLoginAttemptHook: (() => Promise<void>) | undefined = undefined;
+    /** Called only when the current full authentication chain completes. */
+    public afterLoginSuccessHook: (() => void) | undefined = undefined;
 
     /**
      * Invoked when a login error occurs.

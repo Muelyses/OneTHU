@@ -401,18 +401,7 @@ async function performLogin(
       // lib 主会话活了 → learn 客户端经 webvpn 透明 SSO 抓 _csrf（2026-09-17
       // 实录：缺此步则 loadReal 的 learn.* 预请求即抛 AuthRequiredError →
       // CAMPUS-AUTH 无限循环；resume 内部抓不到就保持未登录，不抛错）
-      let okLearn = await learn.resume().catch(() => false);
-      if (!okLearn) {
-        // learn 会话没随主登录活：用 lib 的 id-漫游（card/info 同款）建它
-        const { libRoamLearn } = await import("./infoLib.js");
-        if (await libRoamLearn()) {
-          okLearn = await learn.resume().catch(() => false);
-        }
-      }
-      await logLine(
-        "LOGIN learn-resume " + (okLearn ? "ok" : "fail ") +
-        (okLearn ? "" : ` lastDebug=${learn.lastDebug.slice(0, 260).replace(/\s+/g, " ")}`),
-      ).catch(() => undefined);
+      await resumeLearnAfterLogin();
     } else {
       session.username = username;
       session.state = "need-2fa";
@@ -448,6 +437,17 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
   /* no-op：见 sendLearn2FA 注释 */
 }
 
+/** Both trusted sign-in and fresh 2FA must establish the same scoped session.
+ * A school-service failure is local to that service, not a failed main login. */
+async function resumeLearnAfterLogin(): Promise<void> {
+  let ready = await learn.resume().catch(() => false);
+  if (!ready) {
+    const { libRoamLearn } = await import("./infoLib.js");
+    if (await libRoamLearn()) ready = await learn.resume().catch(() => false);
+  }
+  await logLine(`LOGIN learn-resume ${ready ? "ok" : "unavailable"}`).catch(() => undefined);
+}
+
 export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
   const { libVerify2FA, helper, getSelfFinger3, setLibFinger3 } = await import("./infoLib.js");
   try {
@@ -469,7 +469,7 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
     // R17 23.3-4：2FA + 信任设备完成 → 自动重试一次此前失败的 TUOJ 漫游
     retryTuojAfterTrust();
     // 同 login()：2FA 完成即主会话活，learn 透明 SSO 建 csrf
-    await learn.resume().catch(() => false);
+    await resumeLearnAfterLogin();
     return null;
   } catch (err) {
     // finger3 必须保住：即使验证失败也不能丢受信凭据

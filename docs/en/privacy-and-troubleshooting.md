@@ -12,6 +12,8 @@ Use the exact app version and platform when comparing failures. Public-key retri
 
 Windows interaction freezes are different from a pending network request: check whether buttons, input, refresh and second-factor fields respond. Proxy/TUN state is useful diagnostic context but not a sufficient explanation. Avoid including credential values in logs.
 
+The sign-in rebuild fixes recognition of the university's title-only two-factor page. The `unexpected-page / credential-entry` classification alone does not reveal whether credentials were submitted. On Windows, press Win + R and open `%APPDATA%\app.onethu.desktop\logs`; collect the failure's AUTH-PHASE, AUTH-FAIL, ILIB and NATIVE-HOP lines from `onethu-debug.log`, without passwords, codes, cookies or page bodies. Chrome/79 in the summary is the application's configured User-Agent, not the actual WebView2 engine version.
+
 ## Cloud ownership and conflicts
 
 An unknown library owner pauses automatic creation, deletion and synchronization. Confirm the correct account and current native/client behavior before resuming; do not create duplicate empty libraries. A delete control is destructive and should identify the actual target. Compatible changes merge; genuinely incompatible records require an understandable explicit choice.

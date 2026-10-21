@@ -90,7 +90,7 @@ export function WidgetSettingsSection(): ReactNode {
   }
 
   return (
-    <>
+    <section className="widget-settings">
       <div className="setting-row">
         <div>
           <div className="setting-title">{i18n("components.widgetsettingssection.a73b70af248d")}</div>
@@ -104,7 +104,7 @@ export function WidgetSettingsSection(): ReactNode {
                   : i18n("components.widgetsettingssection.dea5a08f19a0", { length: String(instances.length) })}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+        <div className="widget-settings-actions">
           {/* R21c：ColorOS 等启动器上「绑定完桌面上没有」——直接请求系统放一块，
               绕开各家行为不一致的选择器；不支持时给出明确的手动路径。 */}
           <Btn variant="outline" titleAttr={i18n("components.widgetsettingssection.ac32b4f647b8")} onClick={() => {
@@ -157,7 +157,7 @@ export function WidgetSettingsSection(): ReactNode {
               {inst.bound === false ? <span style={{ color: "var(--text-3)" }}>{i18n("components.widgetsettingssection.502498767131")}</span> : null}
             </div>
           </div>
-          <div style={{ display: "flex", gap: 8, flex: "none" }}>
+          <div className="widget-settings-actions">
             <Btn variant="outline" onClick={() => requestWidgetBind({ to: "instance", id: String(inst.id) })}>{i18n("components.widgetsettingssection.ddfbdc2f2337")}</Btn>
             {map.byId[String(inst.id)] ? (
               <Btn variant="ghost" onClick={() => {
@@ -177,11 +177,11 @@ export function WidgetSettingsSection(): ReactNode {
           <div className="setting-desc">{i18nRich("components.widgetsettingssection.2a85a7e5a3ad", { value: bindingSummary(map.fallback, favs.data) })}<span style={{ color: "var(--text-3)" }}>{i18n("components.widgetsettingssection.b85432068f08")}</span>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, flex: "none" }}>
+        <div className="widget-settings-actions">
           {(["today", "shortcut"] as const).map((k) => (
-            <button
+            <Btn
               key={k}
-              className={"btn" + (map.fallback.kind === k ? "" : " btn-ghost")}
+              variant={map.fallback.kind === k ? "solid" : "ghost"}
               onClick={() => {
                 if (k === "today") {
                   setWidgetFallback({ kind: "today" });
@@ -193,7 +193,7 @@ export function WidgetSettingsSection(): ReactNode {
               }}
             >
               {k === "today" ? i18n("components.widgetsettingssection.17a0e39c6089") : i18n("components.widgetsettingssection.b016c8cdb0fd")}
-            </button>
+            </Btn>
           ))}
         </div>
       </div>
@@ -213,6 +213,6 @@ export function WidgetSettingsSection(): ReactNode {
           onClose={() => setFallbackPicker(false)}
         />
       ) : null}
-    </>
+    </section>
   );
 }

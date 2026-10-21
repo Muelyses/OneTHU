@@ -389,7 +389,7 @@
     bottom: 0;
     width: auto;
     max-height: 78vh;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: var(--og-safe-bottom, 0px);
   }
 }
 
@@ -656,7 +656,7 @@
 
 /* 底栏安全区：全面屏手势条不压内容 */
 .ex-bbar {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--og-safe-bottom, 0px);
 }
 
 /* ── 竖栏窄轨：单一事实源铆钉——收起/展开同一套左锚 44px 槽，图标恒 x=28 ──
@@ -744,7 +744,7 @@ html.is-phone .ex-sheet.is-mob-full {
   bottom: 0;
   width: auto;
   max-height: none;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: var(--og-safe-bottom, 0px);
 }
 html.is-phone .ex-sheet.is-mob-half { height: 60vh; }
 html.is-phone .ex-sheet.is-mob-full { height: 94vh; }
@@ -775,7 +775,7 @@ html.is-phone .ex-sheet.is-mob-drag { animation: none; transition: none; }
    ③ 底部安全区自己吃，别让胶囊贴在 home indicator 上。 */
 html.is-phone .ex-bbar {
   height: calc(var(--explorer-bar-h, 48px) + 8px);
-  padding: 0 8px calc(env(safe-area-inset-bottom, 0px));
+  padding: 0 8px calc(var(--og-safe-bottom, 0px));
 }
 html.is-phone .ex-bbar-btn {
   height: 44px;
@@ -804,8 +804,8 @@ html.is-phone .collect-star { min-width: 40px; min-height: 40px; }
    两个圆钮还会压住卡片。48px 仍是稳的触目标（HIG 44）。选择器加到 (0,3,1) 才压得住
    onegui-bridge.css 的 html:root :is(...)（(0,2,1)）。 */
 html:root.is-phone :is(.free-fab, .hard-refresh-fab, .top-fab, .board-fab) {
-  height: 48px;
-  min-width: 48px;
+  height: 44px;
+  min-width: 44px;
   padding: 0;
 }
 

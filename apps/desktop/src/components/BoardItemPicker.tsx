@@ -74,7 +74,7 @@ export function BoardItemPicker({
   return createPortal(
     <>
       <div className="add-drawer-mask" data-picker-mask="1" onClick={onClose} />
-      <div className={"add-drawer" + (leaving ? " is-out" : "")} role="dialog" aria-label={title} data-item-picker="1">
+      <div className={"add-drawer" + (leaving ? " is-out" : "")} role="dialog" aria-modal="true" aria-label={title} data-item-picker="1">
         <div className="add-drawer-inner">
           <div className="picker-head">
             <span className="picker-title">{title}</span>

@@ -37,7 +37,7 @@ html:root .vault-collection.is-selected { background:var(--og-surface-1); box-sh
 .vault-contents-drop { position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--og-space-4); background:var(--og-fill-overlay); backdrop-filter:var(--og-overlay-blur); color:var(--og-content-1); border:2px dashed var(--og-focus-color); border-radius:inherit; pointer-events:none; }
 .vault-workspace-foot { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--og-space-2); margin-top:auto; }
 .vault-workspace-foot > .og-text { text-align:right; }
-.og-scrim:has(> .vault-manager) { padding:max(var(--og-space-3),env(safe-area-inset-top)) var(--og-space-3) max(var(--og-space-3),env(safe-area-inset-bottom)); }
+.og-scrim:has(> .vault-manager) { padding:max(var(--og-space-3),var(--og-safe-top, 0px)) var(--og-space-3) max(var(--og-space-3),var(--og-safe-bottom, 0px)); }
 .vault-manager.og-panel { width:min(var(--og-vault-manager-w),100%); height:min(var(--og-vault-manager-h),100%); max-height:100%; }
 .vault-manager-title { display:flex; align-items:center; gap:var(--og-space-3); }
 .vault-manager > .og-panel-head { padding:var(--og-space-3) var(--og-space-4); }
@@ -47,7 +47,7 @@ html:root .vault-collection.is-selected { background:var(--og-surface-1); box-sh
 .vault-manager .vault-workspace-main { min-height:0; overflow:hidden; padding:var(--og-space-5); }
 .vault-manager .vault-contents { flex:1; min-height:var(--og-vault-list-min); overflow:auto; }
 .vault-manager .vault-collections-list { min-height:0; overflow:auto; }
-html:root.is-phone .og-scrim:has(> .vault-manager) { padding:max(var(--og-space-2),env(safe-area-inset-top)) var(--og-space-2) max(var(--og-space-2),env(safe-area-inset-bottom)); }
+html:root.is-phone .og-scrim:has(> .vault-manager) { padding:max(var(--og-space-2),var(--og-safe-top, 0px)) var(--og-space-2) max(var(--og-space-2),var(--og-safe-bottom, 0px)); }
 html:root.is-phone .vault-workspace { display:block; }
 html:root.is-phone .vault-page { padding-top:var(--og-space-3); }
 html:root.is-phone .vault-collections { display:none; }

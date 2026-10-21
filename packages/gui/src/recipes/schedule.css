@@ -46,13 +46,13 @@ html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content { paddin
 /* 手机档底栏常驻在屏幕底部：课表铺满时也要停在底栏上面——
    否则最后一节课/最后几行小时被底栏盖住看不见（用户 2026-10-19 口径）。 */
 html:root.is-phone.is-schedule-page .explorer-shell {
-  --og-c-schedule-chrome-bottom: calc(var(--explorer-bar-h, 48px) + var(--og-space-2) + env(safe-area-inset-bottom, 0px));
+  --og-c-schedule-chrome-bottom: calc(var(--explorer-bar-h, 48px) + var(--og-space-2) + var(--og-safe-bottom, 0px));
   --og-c-schedule-dock-bottom: calc(var(--og-workbench-header-h) + var(--og-space-10) + var(--og-space-3));
 }
 /* 极简/实用在电脑上也把 OH 放底部；不能继承完整桌面的零净空。
    顶部同样按简洁壳的 header 高度计算，不继承手机完整模式的标签条高度。 */
 html:root.is-schedule-page .explorer-shell.is-simple {
-  --og-c-schedule-chrome-bottom: calc(var(--og-workbench-header-h) + env(safe-area-inset-bottom, 0px));
+  --og-c-schedule-chrome-bottom: calc(var(--og-workbench-header-h) + var(--og-safe-bottom, 0px));
 }
 html:root.is-schedule-page .explorer-shell.is-simple > .explorer-content {
   padding-top: var(--og-workbench-header-h) !important;

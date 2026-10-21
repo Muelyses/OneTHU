@@ -62,7 +62,7 @@ html:root .is-onboarding .is-selected .experience-mode-preview { transform:persp
 html:root .is-onboarding .is-selected .experience-mode-check { background:var(--og-action); color:var(--og-action-on); }
 
 /* Temporary return control sits above the bottom dock; it does not cover the reading area. */
-.tour-resume { position:fixed; bottom:calc(var(--og-workbench-header-h) + var(--og-space-9) + var(--og-space-5) + env(safe-area-inset-bottom)); right:var(--og-space-5); display:flex; align-items:center; gap:var(--og-space-3); max-width:calc(100vw - var(--og-space-6)); padding:var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-xl); background:var(--og-surface-overlay); color:var(--og-content-1); box-shadow:var(--og-elev-3); z-index:var(--og-z-modal); }
+.tour-resume { position:fixed; bottom:calc(var(--og-workbench-header-h) + var(--og-space-9) + var(--og-space-5) + var(--og-safe-bottom, 0px)); right:var(--og-space-5); display:flex; align-items:center; gap:var(--og-space-3); max-width:calc(100vw - var(--og-space-6)); padding:var(--og-space-3); border:1px solid var(--og-line-2); border-radius:var(--og-radius-xl); background:var(--og-surface-overlay); color:var(--og-content-1); box-shadow:var(--og-elev-3); z-index:var(--og-z-modal); }
 .tour-resume-copy { display:flex; flex-direction:column; gap:var(--og-space-1); padding-inline:var(--og-space-2); min-width:0; }
 .tour-resume-copy small { color:var(--og-content-3); font-size:var(--og-text-micro); }
 .tour-resume-copy strong { font-size:var(--og-text-label); font-weight:var(--og-weight-medium); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

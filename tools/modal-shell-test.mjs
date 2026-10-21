@@ -53,7 +53,7 @@ const sheet = block(".home-modal {\n    max-width: 100%;");
 ok(mask.includes("align-items: flex-end") && mask.includes("padding: 0"), "手机端遮罩应贴底且去掉留白");
 ok(sheet.includes("max-width: 100%") && sheet.includes("92dvh"), "抽屉应满宽、限高 92dvh");
 ok(sheet.includes("var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0"), "抽屉只圆上面两角");
-ok(sheet.includes("env(safe-area-inset-bottom)"), "抽屉应留安全区内边距");
+ok(sheet.includes("var(--og-safe-bottom, 0px)"), "抽屉应留安全区内边距");
 ok(/animation:\s*m-sheet-up/.test(sheet), "抽屉应有上滑动画");
 ok(MOT.includes("@keyframes m-sheet-up"), "motion.css 缺少 m-sheet-up 关键帧");
 ok(block(".home-modal::before").includes("border-radius: var(--r-pill)"), "抽屉应有把手（纯 CSS ::before，胶囊令牌）");

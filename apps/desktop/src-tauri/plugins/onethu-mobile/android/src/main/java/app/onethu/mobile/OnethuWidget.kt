@@ -199,15 +199,15 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         /** 正文墨色（浅色卡片底上的主文字色） */
         private const val INK = 0xFF0F1115.toInt()
         /** 深色卡片底上的正文墨色（自动跟随系统深色，无需设置项） */
-        private const val INK_NIGHT = 0xFFE8EBF2.toInt()
+        private const val INK_NIGHT = 0xFFF1F1EE.toInt()
         /** 布局里三处文本的字号（sp）；行高一律按这些字号**真实测量**（见 fitRows） */
-        private const val TITLE_SP = 13
-        private const val ROW_SP = 13
-        private const val FOOTER_SP = 10
+        private const val TITLE_SP = 14
+        private const val ROW_SP = 15
+        private const val FOOTER_SP = 11
         /** 说明文字的颜色（灰）与字号 */
-        private const val SUB_COLOR = 0xFF81858C.toInt()
+        private const val SUB_COLOR = 0xFF666864.toInt()
         /** 深色卡片上的说明灰 */
-        private const val SUB_COLOR_NIGHT = 0xFF9AA1AC.toInt()
+        private const val SUB_COLOR_NIGHT = 0xFFB4B4AF.toInt()
 
         /** 系统深色？（渲染时读当前 uiMode；布局色走 values-night 自动跟随，Span 色在此选盘） */
         private fun isNight(ctx: Context): Boolean =
@@ -240,7 +240,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
             c.timeInMillis = ms
             return String.format("%02d:%02d", c.get(java.util.Calendar.HOUR_OF_DAY), c.get(java.util.Calendar.MINUTE))
         }
-        private const val SUB_SP = 11
+        private const val SUB_SP = 12
         /** 图标组布局的格子数（2 行 × 4 列） */
         private const val CELL_IDS = 8
 
@@ -613,12 +613,12 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
         private fun styledRow(text: String, sub: String, row: JSONObject?, color: Int?, ink: Int, subColor: Int): CharSequence {
             val full = if (sub.isEmpty()) text else "$text　$sub"
             val sp = android.text.SpannableString(full)
-            // 2026-09-20 用户反馈「安卓小组件字体很小」→ 整体 +1sp（主文 13→14、
-            // 强调 17→18、小档 11→12），说明小字 SUB_SP 同步 10→11。
+            // Keep names/numbers legible; course/status colours belong to the side bar,
+            // never to long text where arbitrary source colours lose contrast.
             val headSp = when (row?.optString("size").orEmpty()) {
-                "lg" -> 18
-                "sm" -> 12
-                else -> 14
+                "lg" -> 20
+                "sm" -> 13
+                else -> 15
             }
             // R21：加粗判定随当前时钟——正在上课（until>now≥at）或 6 小时内的 DDL / 日程，
             // 与快照自带的 strong 取并集（正在上课就算快照写死 false 也要抢眼）。
@@ -634,7 +634,7 @@ abstract class OnethuBaseWidget : AppWidgetProvider() {
                 sp.setSpan(android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             sp.setSpan(
-                android.text.style.ForegroundColorSpan(color ?: ink),
+                android.text.style.ForegroundColorSpan(ink),
                 0, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
             )
             if (sub.isNotEmpty()) {

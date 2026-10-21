@@ -2074,7 +2074,7 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
     flex-direction: row;
     align-items: center;
     padding: 8px 10px;
-    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+    padding-top: calc(8px + var(--og-safe-top, 0px));
     gap: 8px;
     background: var(--bg, #050505);
     border-right: 0;
@@ -2141,7 +2141,7 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 16px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 16px 12px calc(14px + var(--og-safe-bottom, 0px));
     background: var(--bg-soft, #f5f5f4);
     border-right: 1px solid var(--border-soft, #e5e5e3);
     transform: translateX(-100%);
@@ -2203,7 +2203,7 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
   .login-card { width: 100%; }
   .login-mark { margin-bottom: 16px; }
   .login-foot { margin-top: 14px; }
-  .content { padding: 10px 14px calc(72px + env(safe-area-inset-bottom, 0px)); }
+  .content { padding: 10px 14px calc(72px + var(--og-safe-bottom, 0px)); }
 
   /* 卡片满宽贴边；卡自身接管横滚（表格渲染不被破坏，宽表在卡内滚） */
   .card {
@@ -2248,8 +2248,8 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
   .page-head-actions { max-width: 100%; }
   /* 硬刷新 FAB 避让手势区 */
   .hard-refresh-fab {
-    right: calc(14px + env(safe-area-inset-right, 0px));
-    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    right: calc(14px + var(--og-safe-right, 0px));
+    bottom: calc(14px + var(--og-safe-bottom, 0px));
     width: 40px;
     height: 40px;
   }
@@ -2452,7 +2452,7 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
   /* 卡内列表行：巨高元凶（原 11/16+gap14） */
   .row { padding: 7px 12px; gap: 10px; }
   /* 701-839 内容区此前仍在用 20/16 旧内边距，统一收紧 */
-  .content { padding: 12px 14px calc(72px + env(safe-area-inset-bottom, 0px)); }
+  .content { padding: 12px 14px calc(72px + var(--og-safe-bottom, 0px)); }
 
   /* —— 第二档激进压缩：控件基准全线下调 —— */
   :root {
@@ -2498,7 +2498,7 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
 /* 回到顶层 FAB：叠在硬刷新上方 */
 .top-fab { bottom: 74px; }
 @media (max-width: 839.98px) {
-  .top-fab { bottom: calc(62px + env(safe-area-inset-bottom, 0px)); }
+  .top-fab { bottom: calc(62px + var(--og-safe-bottom, 0px)); }
   /* 二级导航：移动端比桌面更矮 */
   .seg-track { gap: 2px; padding: 2px; }
   .seg-track button { height: 20px; font-size: 10px; padding: 0 8px; }
@@ -2552,7 +2552,7 @@ html:root .hard-refresh-fab.is-dragging { cursor: grabbing; }
 .home-edit-bar {
   position: fixed;
   left: 50%;
-  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(14px + var(--og-safe-bottom, 0px));
   transform: translateX(-50%);
   z-index: 60;
   display: flex;
@@ -2625,7 +2625,7 @@ html.is-phone .segmented button { height: 32px; font-size: var(--text-sm); }
 /* 手机档内容区内边距：**顶让位必须清过固定顶栏**（--explorer-top-h），否则首屏第一个元素
    被压在顶栏下面 = 上一轮「内容被截断」的最大来源（课表页的「第 5 周」、云盘页头都是这么没的）。 */
 html.is-phone .content {
-  padding: calc(var(--explorer-top-h, 46px) + 12px) 16px calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap, 8px) + 12px);
+  padding: calc(var(--explorer-top-h, 46px) + 12px) 16px calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + var(--ex-phone-bar-gap, 8px) + 12px);
 }
 html.is-phone .card { padding: 12px 16px; }
 html.is-phone .home-entry-btn { padding: 16px; }
@@ -2964,7 +2964,7 @@ html.is-phone .stats:not(.stats-hero) .stat-num { white-space: nowrap; }
     max-height: 92dvh;
     border-radius: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0;
     border-bottom: 0;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: var(--og-safe-bottom, 0px);
     animation: m-sheet-up 260ms var(--md-sys-motion-easing-emphasized-decelerate, ease-out) both;
   }
   .home-modal::before { /* 抽屉把手：纯 CSS，不动组件 */
@@ -3000,7 +3000,7 @@ html.is-phone .stats:not(.stats-hero) .stat-num { white-space: nowrap; }
 }
 
 /* 旧通用提示 toast（第三方 JS 插件可能引用） */
-.plugin-toast-host { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); /* 灵动岛胶囊（46px@18px）上方 */ z-index: 9999; display: grid; gap: 6px; justify-items: center; pointer-events: none; }
+.plugin-toast-host { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + var(--og-safe-bottom, 0px)); /* 灵动岛胶囊（46px@18px）上方 */ z-index: 9999; display: grid; gap: 6px; justify-items: center; pointer-events: none; }
 .plugin-toast { background: #1f2329; color: #fff; padding: 8px 14px; border-radius: var(--r-pill); font-size: var(--text-sm); box-shadow: 0 4px 14px rgba(0,0,0,.18); opacity: 1; transition: opacity .3s; max-width: 78vw; }
 .plugin-toast.out { opacity: 0; }
 /* ============================================================
@@ -3071,7 +3071,7 @@ html.is-phone .stats:not(.stats-hero) .stat-num { white-space: nowrap; }
   position: fixed;
   left: 50%;
   /* 锚点 = 条顶（18 + 54 = 72px）− 32px = 40px；手机版另给（见手机媒体查询） */
-  bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(40px + var(--og-safe-bottom, 0px));
   z-index: 9993; /* 面板 9992 之上：面板开着长按入口条时，雾照样浮在面上 */
   width: min(96vw, 720px);
   max-width: calc(100vw - 8px);
@@ -3152,7 +3152,7 @@ body.dock-voice-lock {
   position: fixed;
   left: 50%;
   z-index: 9992;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px) + 60px);
+  bottom: calc(18px + var(--og-safe-bottom, 0px) + 60px);
   transform: translateX(-50%);
   max-width: min(86vw, 420px);
   padding: 12px 16px;
@@ -3813,7 +3813,7 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(20px + var(--og-safe-bottom, 0px));
   z-index: 9996;
   padding: 9px 16px;
   border-radius: var(--r-pill);
@@ -4464,7 +4464,7 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
     background: var(--md-sys-color-surface-container-lowest);
     /* MD3 navigation bar：靠色阶 + 高程分层，不用描边（B2 约定） */
     box-shadow: var(--md-sys-elevation-2, var(--shadow-2));
-    padding: 8px 4px calc(10px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 4px calc(10px + var(--og-safe-bottom, 0px));
   }
   .bottom-nav-item {
     position: relative;
@@ -4494,11 +4494,11 @@ html.is-phone .mail-toolbar-search { max-width: 320px; }
   .bottom-nav-item.is-active svg { color: var(--accent); }
   .bottom-nav-item:active { transform: scale(0.94); }
   /* 内容不被底栏遮住；回顶/刷新 FAB 抬到底栏上方 */
-  .content { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
-  .hard-refresh-fab { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .content { padding-bottom: calc(76px + var(--og-safe-bottom, 0px)); }
+  .hard-refresh-fab { bottom: calc(88px + var(--og-safe-bottom, 0px)); }
   /* OH 对话坞的语音链浮件抬到底栏上方，避免与 5 Tab 重合（面板展开时仍覆盖底栏，属模态行为） */
-  .dock-voice-toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px) + 60px); }
-  .dock-voice-sub { bottom: calc(102px + env(safe-area-inset-bottom, 0px)); } /* 条顶 134 − 32 */
+  .dock-voice-toast { bottom: calc(80px + var(--og-safe-bottom, 0px) + 60px); }
+  .dock-voice-sub { bottom: calc(102px + var(--og-safe-bottom, 0px)); } /* 条顶 134 − 32 */
   /* 新 IA：移动端侧边栏（抽屉）退役——底栏 5 Tab + 服务目录页承接全部入口；
      汉堡钮一并隐藏（JSX 暂保留，M1 收尾时删） */
   .drawer-mask, .drawer, .topbar-menu { display: none; }
@@ -4801,7 +4801,7 @@ section > .svc-label { margin-top: 14px; }
 .tasks-detail.is-full {
   position: fixed; inset: 0; z-index: 90;
   background: var(--bg);
-  padding: 16px clamp(16px, 5vw, 80px) calc(20px + env(safe-area-inset-bottom, 0px));
+  padding: 16px clamp(16px, 5vw, 80px) calc(20px + var(--og-safe-bottom, 0px));
 }
 .tasks-detail-fullbar {
   flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -4966,7 +4966,7 @@ section > .svc-label { margin-top: 14px; }
 @media (max-width: 839.98px) {
   html.is-phone .content:has(> .page-anim[data-page="schedule"]),
   .shell .content:has(> .page-anim[data-page="schedule"]) {
-    padding-bottom: calc(142px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(142px + var(--og-safe-bottom, 0px));
   }
 }
 
@@ -5202,7 +5202,7 @@ html.is-phone .pal-row-bc { font-size: 12px; }
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(18px + var(--og-safe-bottom, 0px));
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -5510,18 +5510,16 @@ html.is-phone .card-warn-label { width: auto; }
 /* 白板上的学生卡（「我的」页发布卡体） */
 .mine-student-standalone { display: flex; flex-direction: column; gap: 4px; padding: 8px; }
 /* ---------- 添加组件抽屉（HyperOS 观感） ---------- */
-/* 恒为页面一半高，且**避开底栏**（--bottom-nav-h 由 Layout 实测写入） */
+/* Modal sheet geometry and stacking are supplied by the OneGUI workbench recipe. */
 .add-drawer {
-  position: fixed; left: 0; right: 0; bottom: var(--bottom-nav-h, 0px); height: 50vh;
-  /* z-index 低于底栏（60）：滑动时被导航栏挡住，看起来是"从导航栏上边缘钻出来" */
-  z-index: 55;
-  display: flex; flex-direction: column; padding: 4px 16px calc(16px + var(--dock-clearance, 0px));
+  position: fixed; left: 0; right: 0; bottom: 0; height: 50vh;
+  z-index: var(--og-z-modal);
+  display: flex; flex-direction: column; padding: 4px 16px 16px;
   border-radius: 16px 16px 0 0; background: var(--md-sys-color-surface-container-lowest);
   box-shadow: 0 -8px 24px var(--md-sys-color-scrim);
   animation: add-drawer-in var(--dur-3) var(--md-sys-motion-easing-emphasized-decelerate);
 }
-/* 展开态要放循环卡片流，比总览高一档；底部为 OH 悬浮岛让位
-   （「聊点什么吧」胶囊会压住确认按钮，重叠量由 JS 量出写进 --dock-clearance） */
+/* Detail view has additional space for widget size previews. */
 .add-drawer.is-detail { height: 60vh; }
 .add-drawer.is-out { animation: add-drawer-out var(--dur-2) var(--md-sys-motion-easing-standard-accelerate) forwards; }
 @keyframes add-drawer-in { from { transform: translateY(100%); } to { transform: translateY(0); } }

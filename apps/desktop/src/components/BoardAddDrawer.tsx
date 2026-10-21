@@ -267,32 +267,6 @@ export function BoardAddDrawer({
     return () => document.removeEventListener("focusin", onFocusIn, true);
   }, []);
 
-  /* 抽屉底部为 OH 悬浮岛让位（霖 2026-10-11：「聊点什么吧」正好完全挡住确认按钮）。
-     量出胶囊与抽屉底部的重叠高度写进 --dock-clearance，CSS 用 padding-bottom 吃掉它；
-     入场动画与胶囊自身动画期间各补量一次，避免量到动画中间态。 */
-  useEffect(() => {
-    const root = drawerRef.current;
-    if (!root || !shown) return;
-    const measure = (): void => {
-      const dock = document.querySelector<HTMLElement>(".dock-island");
-      if (!dock) {
-        root.style.setProperty("--dock-clearance", "0px");
-        return;
-      }
-      const d = dock.getBoundingClientRect();
-      const r = root.getBoundingClientRect();
-      const overlap = r.bottom - d.top;
-      root.style.setProperty("--dock-clearance", overlap > 0 ? String(Math.ceil(overlap) + 8) + "px" : "0px");
-    };
-    measure();
-    const t1 = window.setTimeout(measure, 80);
-    const t2 = window.setTimeout(measure, 380);
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
-  }, [shown, expanded, mode]);
-
   if (!shown) return null;
 
   const def = expanded ? defs.find((d) => d.id === expanded) ?? null : null;
@@ -333,7 +307,7 @@ export function BoardAddDrawer({
     d.dy = dy;
     /* 往下拖先跟手（超过阈值就关），往上拖把抽屉拉高——不再只有“往下拖会关”一条方向。 */
     setDragY(Math.max(0, dy));
-    const next = Math.max(260, Math.min(Math.round(window.innerHeight * 0.92), Math.round(d.h - dy)));
+    const next = Math.min(window.innerHeight - 12, Math.max(Math.min(260, window.innerHeight - 12), Math.round(d.h - dy)));
     drawerRef.current?.style.setProperty("--sheet-h", next + "px");
     setTall(next > window.innerHeight * 0.62);
   };
@@ -382,6 +356,7 @@ export function BoardAddDrawer({
     <div
       className={"add-drawer" + (leaving ? " is-out" : "") + (def ? " is-detail" : "") + (tall ? " is-tall" : "")}
       role="dialog"
+      aria-modal="true"
       aria-label={mode === "resize" ? i18n("components.boardadddrawer.12e0be622c36") : i18n("components.boardadddrawer.97dcf4348652")}
       data-add-drawer="1"
       data-add-mode={mode}

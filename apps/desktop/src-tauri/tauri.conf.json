@@ -46,7 +46,7 @@
       "resources/plugins/": "plugins/"
     },
     "android": {
-      "versionCode": 11004
+      "versionCode": 11005
     }
   }
 }

@@ -28,8 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="3dp"
         android:gravity="center"
-        android:maxLines="1"
+        android:maxLines="2"
         android:ellipsize="end"
-        android:textSize="11sp"
+        android:textSize="12sp"
         android:textColor="@color/onethu_widget_ink" />
 </LinearLayout>

@@ -326,3 +326,28 @@
   --og-oneshot-max: 680px;
   --og-contacts-page-max: 1200px;
 }
+
+/* Android pads the content viewport in the native inset listener (including IME).
+   Browser safe areas remain active when there is no successful native bridge. */
+html[data-native-insets="content"] {
+  --og-safe-top: 0px;
+  --og-safe-bottom: 0px;
+  --og-safe-left: 0px;
+  --og-safe-right: 0px;
+}
+
+/* Phone controls: restrained visual density without shrinking primary hit targets. */
+html[data-og-platform="mobile"] {
+  --og-ctl-h-sm: 36px;
+  --og-ctl-h-md: 40px;
+  --og-ctl-h-lg: 44px;
+  --og-ctl-chip-h-sm: 36px;
+  --og-ctl-chip-h-md: 40px;
+  --og-ctl-pad-x-md: 12px;
+  --og-ctl-switch-w: 42px;
+  --og-ctl-switch-h: 26px;
+  --og-row-h: 48px;
+  --og-radius-control: 12px;
+  --og-workbench-header-h: 56px;
+  --og-mobile-dock-h: 60px;
+}

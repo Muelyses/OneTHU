@@ -37,3 +37,8 @@ assert.ok(/invoke\("ui_apply_insets"\)/.test(app), "前端启动时必须调用 
 assert.ok(/isAndroidNavigator/.test(app), "调用必须按平台判定（桌面端不调）");
 
 console.log("insets-guard-test: 全部断言通过（Kotlin 命令 + Rust 桥 + 启动调用 + IME 一并取 max）");
+
+const structure = read("packages/gui/src/tokens/structure.css");
+assert.ok(app.includes('dataset.nativeInsets = "content"') && app.includes('?.ok === true'), "CSS inset ownership is switched only after successful native acknowledgement");
+assert.match(structure, /html\[data-native-insets="content"\]\s*\{[^}]*--og-safe-bottom: 0px/);
+assert.match(structure, /--og-safe-bottom: env\(safe-area-inset-bottom, 0px\)/, "browser fallback must retain safe areas");

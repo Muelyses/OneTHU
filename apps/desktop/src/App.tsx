@@ -61,6 +61,11 @@ function Routed() {
     if (!isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined)) return;
     void import("@tauri-apps/api/core")
       .then(({ invoke }) => invoke("ui_apply_insets"))
+      .then((result) => {
+        if ((result as { ok?: boolean } | null)?.ok === true) {
+          document.documentElement.dataset.nativeInsets = "content";
+        }
+      })
       .catch(() => undefined);
   }, []);
 

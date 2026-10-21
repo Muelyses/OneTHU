@@ -99,11 +99,11 @@
 
 html.is-phone .explorer-shell > .explorer-content.is-home-canvas {
   --home-canvas-top: var(--explorer-top-h, 46px);
-  padding: var(--explorer-top-h, 46px) 0 calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px) !important;
+  padding: var(--explorer-top-h, 46px) 0 calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + var(--ex-phone-bar-gap) + 12px) !important;
 }
 html.is-phone .home-free, html.is-phone .home-tab {
-  min-height: calc(100vh - var(--explorer-top-h, 46px) - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
-  min-height: calc(100dvh - var(--explorer-top-h, 46px) - var(--explorer-bar-h, 48px) - env(safe-area-inset-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
+  min-height: calc(100vh - var(--explorer-top-h, 46px) - var(--explorer-bar-h, 48px) - var(--og-safe-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
+  min-height: calc(100dvh - var(--explorer-top-h, 46px) - var(--explorer-bar-h, 48px) - var(--og-safe-bottom, 0px) - var(--ex-phone-bar-gap) - 12px);
 }
 html.is-phone .explorer-panel.is-onepage-canvas { overflow: auto; }
 html.is-phone .explorer-panel.is-onepage-canvas::-webkit-scrollbar { display: none; }
@@ -685,7 +685,7 @@ html.is-phone .onepage-sheet {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap));
+  bottom: calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + var(--ex-phone-bar-gap));
   z-index: 40;
   display: flex;
   flex-direction: column;

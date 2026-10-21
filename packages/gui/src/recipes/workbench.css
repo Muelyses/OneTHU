@@ -185,7 +185,7 @@ html:root.is-phone .workbench-board-head h2 { font-size: var(--og-text-subtitle)
 html:root.is-phone .workbench-board-head > div > span { display: none; }
 html:root.is-phone .workbench-board-actions { gap: var(--og-space-1); }
 html:root.is-phone .workbench-board-actions .og-btn { padding-inline: var(--og-space-3); }
-html:root.is-phone .ex-bbar { padding-inline: var(--og-space-2); gap: var(--og-space-1); border-top: 1px solid var(--og-line-1); }
+html:root.is-phone .ex-bbar { height: calc(var(--og-mobile-dock-h) + var(--og-safe-bottom)); padding-block: 8px calc(8px + var(--og-safe-bottom)); padding-inline: var(--og-space-2); gap: var(--og-space-1); border-top: 1px solid var(--og-line-1); }
 html:root.is-phone #ex-bbar-onego-btn { padding-inline: var(--og-space-3); background: transparent; color: var(--og-content-1); }
 html:root.is-phone .ex-bbar-center .ohx-capsule { min-width: 0; padding-inline: var(--og-space-2); border-radius: var(--og-radius-full); }
 /* 手机常态提示作为一组居中；收藏/未读浮在右侧，对称留位，不再用单边空槽推偏。 */
@@ -401,7 +401,7 @@ html:root .home-free .freeboard { margin-bottom: var(--og-board-tool-clearance);
 html:root .freeboard-wrap .freeboard { background-image: none; }
 html:root .free-item.is-selected { z-index: 100; }
 html:root .free-toolbar { top: 30px; bottom: auto; left: var(--og-space-2); right: var(--og-space-2); width: max-content; max-width: calc(100% - 16px); flex-wrap: wrap; z-index: 5; background: var(--og-surface-overlay); border: 1px solid var(--og-line-2); box-shadow: var(--og-elev-menu); }
-html:root .board-viewport-tools { position: fixed; z-index: var(--og-z-board-tools); bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--og-space-1); padding: var(--og-space-2); max-width: calc(100vw - 24px); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); }
+html:root .board-viewport-tools { position: fixed; z-index: var(--og-z-board-tools); bottom: calc(24px + var(--og-safe-bottom, 0px)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--og-space-1); padding: var(--og-space-2); max-width: calc(100vw - 24px); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); }
 .board-tool-divider { align-self: stretch; width: 1px; background: var(--og-line-2); margin: var(--og-space-1); }
 html:root .board-viewport-tools .free-pen-panel { position: absolute; bottom: calc(100% + var(--og-space-3)); right: 0; z-index: 1; display: flex; align-items: center; gap: var(--og-space-2); width: max-content; padding: var(--og-space-2) var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); }
 html:root .board-viewport-tools .free-pen-panel .board-pen-toolbar { position: static; top: auto; right: auto; display: flex; align-items: center; gap: var(--og-space-2); padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
@@ -411,7 +411,7 @@ html:root .board-viewport-tools .free-pen-panel .board-pen-act { padding: var(--
 html:root .board-viewport-tools .free-pen-panel .board-pen-act:hover:not(:disabled) { background: var(--og-hover); color: var(--og-content-1); }
 html:root .board-viewport-tools .free-pen-panel .board-pen-act:disabled { color: var(--og-content-3); }
 html:root .workbench-board-head { position: relative; z-index: var(--og-z-sticky); }
-html:root.is-phone .board-viewport-tools { bottom: calc(var(--og-board-mobile-tool-bottom) + env(safe-area-inset-bottom)); }
+html:root.is-phone .board-viewport-tools { bottom: calc(var(--og-board-mobile-tool-bottom) + var(--og-safe-bottom, 0px)); }
 html:root.is-phone .home-services-widget { grid-template-columns: minmax(0, 1fr); }
 html:root.is-phone .home-services-widget > .hs-dock-actions { grid-column: 1; grid-row: 2; }
 html:root.is-phone .home-services-widget .hs-dock-row { grid-row: 3; grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -478,8 +478,8 @@ html:root .add-overview .add-scroll .add-grid { flex: none; min-height: 0; overf
 html:root .add-overview .add-section { display: flex; flex-direction: column; gap: var(--og-space-2); }
 html:root .add-overview .add-section-title { color: var(--og-content-2); font-size: var(--og-text-label); font-weight: var(--og-weight-medium); padding: 0 var(--og-space-1); }
 html:root .add-overview .free-add-list { max-height: none; overflow: visible; }
-html:root .add-drawer { height: var(--sheet-h, 50vh); }
-html:root .add-drawer.is-detail { height: var(--sheet-h, 60vh); }
+html:root .add-drawer { height: var(--sheet-h, 50dvh); max-height: calc(100dvh - var(--og-safe-top) - var(--og-space-3)); bottom: 0; padding-bottom: calc(var(--og-space-4) + var(--og-safe-bottom)); overflow: hidden; }
+html:root .add-drawer.is-detail { height: var(--sheet-h, 60dvh); }
 html:root .add-drawer.is-tall { height: var(--sheet-h, 86dvh); }
 html:root .add-drawer.is-detail.is-tall { height: var(--sheet-h, 86dvh); }
 
@@ -497,7 +497,7 @@ html:root .ex-tab-plugin-glyph svg { width: 100%; height: 100%; }
 .vault-share { display: grid; gap: var(--og-space-2); margin: var(--og-space-3) 0; padding: var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); }
 .vault-share-code { display: block; font-family: var(--og-font-mono); font-size: var(--og-text-micro); line-height: var(--og-text-micro-lh); color: var(--og-content-1); overflow-wrap: anywhere; user-select: all; }
 .vault-footer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--og-space-2); margin-top: var(--og-space-3); }
-html:root .vault-drop { position: fixed; left: 50%; bottom: calc(var(--og-space-8) + env(safe-area-inset-bottom)); z-index: var(--og-z-modal); display: flex; align-items: center; gap: var(--og-space-2); padding: var(--og-space-2) var(--og-space-4); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); color: var(--og-content-1); transform: translateX(-50%); transition: transform .16s ease-out, border-color .16s ease-out; }
+html:root .vault-drop { position: fixed; left: 50%; bottom: calc(var(--og-space-8) + var(--og-safe-bottom, 0px)); z-index: var(--og-z-modal); display: flex; align-items: center; gap: var(--og-space-2); padding: var(--og-space-2) var(--og-space-4); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); color: var(--og-content-1); transform: translateX(-50%); transition: transform .16s ease-out, border-color .16s ease-out; }
 html:root .vault-drop.is-hover { border-color: var(--og-focus-color); transform: translateX(-50%) scale(1.06); }
 .vault-drop-icon { display: inline-flex; align-items: center; justify-content: center; color: var(--og-content-2); }
 .vault-drop-main { display: grid; min-width: 0; }
@@ -505,7 +505,7 @@ html:root .vault-drop.is-hover { border-color: var(--og-focus-color); transform:
 .vault-drop-sub { font-size: var(--og-text-micro); color: var(--og-content-2); }
 body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
 @media (max-width: 839.98px) {
-  html:root .vault-drop { bottom: calc(var(--og-space-10) + env(safe-area-inset-bottom)); }
+  html:root .vault-drop { bottom: calc(var(--og-space-10) + var(--og-safe-bottom, 0px)); }
   .vault-toolbar { justify-content: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -520,7 +520,7 @@ body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
 /* 手机常驻暂存箱入口：在底栏之上、sheet/OH 面板之下；不占底栏三槽。 */
 /* 手机常驻入口：浮在底栏/FAB 上方，避开右下刷新列（否则会被底栏裁掉、与刷新球重叠）。
    right = 2*space10 + space2 ≈ 72px，bottom = 3*space10 ≈ 96px。 */
-html:root .vault-dock { position: fixed; right: calc(var(--og-space-10) * 2 + var(--og-space-2) + env(safe-area-inset-right)); bottom: calc(var(--og-space-10) * 3 + env(safe-area-inset-bottom)); z-index: var(--og-z-drawer); display: none; }
+html:root .vault-dock { position: fixed; right: calc(var(--og-space-10) * 2 + var(--og-space-2) + var(--og-safe-right, 0px)); bottom: calc(var(--og-space-10) * 3 + var(--og-safe-bottom, 0px)); z-index: var(--og-z-drawer); display: none; }
 html.is-phone .vault-dock { display: inline-flex; }
 html.is-phone .vault-dock .og-btn { box-shadow: var(--og-elev-menu); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); }
 .vault-dock-label { font-size: var(--og-text-micro); color: var(--og-content-2); }
@@ -578,7 +578,7 @@ html:root:not(.is-phone).tabs-vertical .explorer-shell > .explorer-content { pad
 .onego-bookmark-measure { position:absolute; visibility:hidden; pointer-events:none; display:flex; width:max-content; height:0; overflow:hidden; }
 .onego-bookmark-overflow { position:absolute; right:var(--og-space-3); top:100%; width:var(--og-bookmark-menu-width); max-height:60dvh; overflow:auto; padding:var(--og-space-2); display:flex; flex-direction:column; border:1px solid var(--og-line-2); background:var(--og-menu-fill); box-shadow:var(--og-elev-menu); border-radius:var(--og-radius-card); }
 .onego-bookmark-overflow .onego-bookmark { max-width:100%; justify-content:flex-start; }
-.oneshot { position:fixed; bottom:calc(var(--og-space-4) + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--og-space-3); width:min(var(--og-oneshot-max),calc(100vw - var(--og-exchange-card-width))); z-index:var(--og-z-board-tools); pointer-events:none; }
+.oneshot { position:fixed; bottom:calc(var(--og-space-4) + var(--og-safe-bottom, 0px)); left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--og-space-3); width:min(var(--og-oneshot-max),calc(100vw - var(--og-exchange-card-width))); z-index:var(--og-z-board-tools); pointer-events:none; }
 html:root .oneshot-button { height:var(--og-space-9); min-width:0; border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); pointer-events:auto; border:1px solid var(--og-line-2); gap:var(--og-space-2); }
 .oneshot-button .og-btn-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 html:root .board-viewport-tools { left:auto; right:var(--og-space-3); bottom:var(--og-board-tools-bottom); transform:none; flex-direction:column; flex-wrap:nowrap; width:auto; max-height:calc(100dvh - var(--og-bookmark-menu-width)); overflow:auto; }
@@ -588,8 +588,8 @@ html:root .board-viewport-tools { left:auto; right:var(--og-space-3); bottom:var
 html:root .board-viewport-tools.is-pen-open { overflow:visible; }
 html:root .hard-refresh-fab { bottom:var(--refresh-fab-bottom, var(--og-refresh-bottom)); }
 html:root .top-fab { bottom:var(--og-top-button-bottom); }
-html:root.is-phone .oneshot { bottom:calc(var(--explorer-bar-h) + var(--og-space-5) + env(safe-area-inset-bottom)); width:calc(100vw - var(--og-space-4)); gap:calc(var(--og-space-1) * 1.25); }
-html:root.is-phone .oneshot-button { height:var(--og-space-8); font-size:var(--og-text-label); padding-inline:calc(var(--og-space-2) - 1px); gap:var(--og-space-1); }
+html:root.is-phone .oneshot { bottom:calc(var(--og-mobile-dock-h) + var(--og-safe-bottom) + var(--og-space-2)); width:calc(100vw - var(--og-space-4)); gap:calc(var(--og-space-1) * 1.25); }
+html:root.is-phone .oneshot-button { height:36px; min-height:36px; font-size:var(--og-text-label); padding-inline:calc(var(--og-space-2) - 1px); gap:var(--og-space-1); }
 html:root.is-phone .oneshot-button svg { width:var(--og-space-4); height:var(--og-space-4); }
 
 /* 课表页：五连条常驻会压住底部日程 —— 收成一枚小按钮，浮在「日程设置」上方；
@@ -624,9 +624,9 @@ html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging .one
 html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging .oneshot-schedule-toggle { box-shadow:var(--og-elev-3); }
 html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-placement { bottom:calc(100% + var(--og-space-2)); }
 html:root.is-phone .explorer-shell > .explorer-content { padding-bottom:var(--og-mobile-content-clearance) !important; }
-html:root.is-phone .board-viewport-tools { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + env(safe-area-inset-bottom)); max-height:42dvh; right:calc(var(--og-space-1) * 1.25); }
-html:root.is-phone .hard-refresh-fab { bottom:var(--refresh-fab-bottom, calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + var(--og-space-8) + env(safe-area-inset-bottom))); right:var(--refresh-fab-right, calc(var(--og-space-10) - 6px)); }
-html:root.is-phone .top-fab { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-top-gap) + env(safe-area-inset-bottom)); right:calc(var(--og-space-10) - 6px); }
+html:root.is-phone .board-viewport-tools { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + var(--og-safe-bottom, 0px)); max-height:42dvh; right:calc(var(--og-space-1) * 1.25); }
+html:root.is-phone .hard-refresh-fab { bottom:var(--refresh-fab-bottom, calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + var(--og-space-8) + var(--og-safe-bottom, 0px))); right:var(--refresh-fab-right, calc(var(--og-space-10) - 6px)); }
+html:root.is-phone .top-fab { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-top-gap) + var(--og-safe-bottom, 0px)); right:calc(var(--og-space-10) - 6px); }
 /* The edge handle owns its gestures; the page edge remains available to system Back. */
 .vault-safe-area { position:fixed; visibility:hidden; pointer-events:none; padding:var(--og-safe-top) var(--og-safe-right) var(--og-safe-bottom) var(--og-safe-left); }
 .vault-floating-anchor { position:fixed; z-index:var(--og-z-board-tools); visibility:hidden; width:var(--og-vault-anchor-w); height:var(--og-vault-anchor-h); }
@@ -751,8 +751,8 @@ html:root .ex-tabstrip .ex-tab.is-home { background-color:var(--og-canvas); isol
 html:root .ex-tabstrip .ex-tab.is-home.is-active { background-image:linear-gradient(var(--og-selection-fill),var(--og-selection-fill)); }
 .simple-header { position:fixed; inset:0 0 auto; height:var(--og-workbench-header-h); display:flex; align-items:center; justify-content:space-between; padding-inline:var(--og-space-5); background:var(--og-canvas); z-index:var(--og-z-sticky); }
 html:root .explorer-shell.is-simple > .explorer-content { margin-inline:0 !important; padding:var(--og-workbench-header-h) var(--og-space-4) calc(var(--og-workbench-header-h) + var(--og-space-9) + var(--og-space-9)) !important; }
-html:root .explorer-shell.is-simple > .ex-bbar { position:fixed; inset:auto 0 0 !important; height:calc(var(--og-workbench-header-h) + env(safe-area-inset-bottom)) !important; display:flex; justify-content:center; background:var(--og-canvas); padding-bottom:env(safe-area-inset-bottom); }
-html:root .explorer-shell.is-simple .oneshot { bottom:calc(var(--og-workbench-header-h) + var(--og-space-3) + env(safe-area-inset-bottom)); width:min(var(--og-oneshot-max),calc(100vw - var(--og-space-4))); }
+html:root .explorer-shell.is-simple > .ex-bbar { position:fixed; inset:auto 0 0 !important; height:calc(var(--og-workbench-header-h) + var(--og-safe-bottom, 0px)) !important; display:flex; justify-content:center; background:var(--og-canvas); padding-bottom:var(--og-safe-bottom, 0px); }
+html:root .explorer-shell.is-simple .oneshot { bottom:calc(var(--og-workbench-header-h) + var(--og-space-3) + var(--og-safe-bottom, 0px)); width:min(var(--og-oneshot-max),calc(100vw - var(--og-space-4))); }
 .simple-home { max-width:var(--og-page-max-narrow); margin-inline:auto; display:grid; gap:var(--og-space-6); padding-block:var(--og-space-5); }
 .simple-home h2 { font-size:var(--og-text-title); margin:0 0 var(--og-space-3); }
 html:root .simple-panel { overflow:visible; }
@@ -1063,3 +1063,79 @@ html:root.is-phone .freeboard-wrap.is-edit-locked .free-item { touch-action: pan
 
 /* The mobile editor stays operable above the movable refresh/top buttons. */
 html:root.is-phone .board-viewport-tools.has-edit-toggle { z-index: var(--og-z-board-editor); }
+
+/* Sheet chrome stays outside the scrolling content, above all persistent navigation. */
+html:root .home-modal-mask { z-index: var(--og-z-modal); background: var(--og-scrim); }
+html:root .home-modal-mask .home-modal-mask { z-index: calc(var(--og-z-modal) + 1); }
+html:root .home-modal { background: var(--og-fill-overlay); color: var(--og-content-1); border-color: var(--og-line-1); box-shadow: var(--og-elev-menu); min-height: 0; overflow: hidden; }
+html:root .home-modal-head { flex: none; }
+html:root .home-modal-head h3 { min-width: 0; overflow-wrap: anywhere; }
+html:root .home-modal-body { flex: 1 1 auto; overscroll-behavior: contain; }
+html:root .collect-search { position: sticky; top: 0; z-index: 1; background: var(--og-fill-overlay); padding-bottom: var(--og-space-2); }
+html:root .add-scroll, html:root .picker-list { overscroll-behavior: contain; scrollbar-width: thin; }
+html:root .add-card { height: 152px; padding: var(--og-space-2); gap: var(--og-space-2); border: 1px solid var(--og-line-1); border-radius: var(--og-radius-lg); background: var(--og-surface-2); }
+html:root .add-card-name { position: static; flex: none; padding: 0 var(--og-space-1); font-size: var(--og-text-label); background: transparent; }
+html:root .add-preview-box { background: var(--og-canvas); }
+html:root .wb-kind, html:root .wb-row { border: 1px solid var(--og-line-1); background: var(--og-surface-2); border-radius: var(--og-radius-lg); }
+html:root .wb-kind.is-active { background: var(--og-selection-fill); border-color: var(--og-line-3); }
+html:root .wb-row-name, html:root .wb-kind-name { color: var(--og-content-1); }
+html:root .wb-row-sub, html:root .wb-kind-desc { color: var(--og-content-2); overflow-wrap: anywhere; }
+html:root .wb-current { background: var(--og-surface-2); color: var(--og-content-2); border-radius: var(--og-radius-md); padding: var(--og-space-3); }
+.widget-settings-actions { display: flex; flex-wrap: wrap; gap: var(--og-space-2); align-items: center; }
+html:root.is-phone .widget-settings .setting-row { align-items: stretch; flex-direction: column; gap: var(--og-space-3); }
+html:root.is-phone .widget-settings .setting-row > div { min-width: 0; }
+html:root.is-phone .widget-settings .setting-desc { overflow-wrap: anywhere; }
+html:root.is-phone .og-btn { font-size: var(--og-text-label); }
+html:root.is-phone .og-btn--sm { min-height: var(--og-ctl-h-sm); }
+/* 36px secondary controls keep a 44px tall hit area; neighbouring rows have >=8px gaps. */
+html:root.is-phone .og-btn--sm::before, html:root.is-phone .oneshot-button::before { content: ""; position: absolute; inset: -4px 0; }
+html:root.is-phone .ex-bbar-btn { min-height: 44px; }
+html:root.is-phone .explorer-shell.is-simple > .ex-bbar { height: calc(var(--og-mobile-dock-h) + var(--og-safe-bottom)) !important; padding-block: 8px calc(8px + var(--og-safe-bottom)); }
+html:root.is-phone .explorer-shell.is-simple .oneshot { bottom: calc(var(--og-mobile-dock-h) + var(--og-safe-bottom) + var(--og-space-2)); }
+html:root.is-phone .add-drawer { height: var(--sheet-h, 72dvh); padding-inline: var(--og-space-3); }
+html:root.is-phone .add-drawer.is-detail { height: var(--sheet-h, 78dvh); }
+html:root.is-phone .add-drawer.is-tall { height: var(--sheet-h, 90dvh); }
+html:root.is-phone .add-detail-head { flex: none; }
+html:root.is-phone .add-detail-add { flex: none; min-height: 44px; }
+html:root.is-phone .add-detail-name { font-size: var(--og-text-title); }
+html:root.is-phone .home-modal { max-height: calc(100dvh - var(--og-safe-top) - var(--og-space-3)); padding-bottom: var(--og-safe-bottom); }
+html:root.is-phone .home-modal-head { padding: var(--og-space-3) var(--og-space-4); }
+html:root.is-phone .home-modal-body { padding: var(--og-space-3) var(--og-space-4) var(--og-space-4); }
+html:root.is-phone .wb-kinds { gap: var(--og-space-2); }
+html:root.is-phone .wb-kind { padding: var(--og-space-3); gap: var(--og-space-2); }
+@media (max-height: 480px) {
+  html:root.is-phone .add-drawer, html:root.is-phone .add-drawer.is-detail { height: calc(100dvh - var(--og-safe-top) - var(--og-space-3)); }
+  html:root.is-phone .add-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html:root.is-phone .add-detail-head { gap: 0; }
+  html:root.is-phone .add-detail-desc { max-height: 2.8em; overflow-y: auto; }
+}
+
+/* Native Back dismisses pickers; document scroll cannot leak through the scrim. */
+html:has(.add-drawer, .home-modal-mask) { overflow: hidden; }
+html:has(.add-drawer, .home-modal-mask) .explorer-content { overflow: hidden; }
+html:root .add-overview .free-add-list .free-add-row { min-height: 44px; border-radius: var(--og-radius-md); }
+
+/* Widget information hierarchy: content is the focal point, chrome stays quiet.
+   Outer surfaces still own glass/theme; no hardcoded light card is introduced. */
+html:root .free-item .wg-card > .workbench-widget-title {
+  color: var(--og-content-1); font-size: var(--og-text-body); font-weight: var(--og-weight-semibold);
+  line-height: var(--og-text-body-lh); padding: var(--og-space-1) var(--og-space-2) var(--og-space-3);
+}
+html:root .free-item .tl-title { color: var(--og-content-1); font-size: var(--og-text-body); font-weight: var(--og-weight-semibold); line-height: var(--og-text-body-lh); }
+html:root .free-item .tl-time { color: var(--og-content-1); font-size: var(--og-text-label); font-weight: var(--og-weight-semibold); font-variant-numeric: tabular-nums; }
+html:root .free-item .tl-sub { color: var(--og-content-2); font-size: var(--og-text-label); line-height: var(--og-text-label-lh); }
+html:root .free-item .wg-card-line { padding-block: var(--og-space-3); }
+html:root .free-item .wg-card-line-name { color: var(--og-content-1); font-size: var(--og-text-label); font-weight: var(--og-weight-medium); }
+html:root .free-item .wg-card-line-side { color: var(--og-content-2); font-size: var(--og-text-label); }
+html:root .free-item .next-class-tiered { gap: var(--og-space-2); }
+html:root .free-item .next-class-head { flex-wrap: wrap; }
+html:root .free-item .next-class-left { color: var(--og-accent); font-size: var(--og-text-label); font-weight: var(--og-weight-semibold); }
+html:root .free-item .next-class-name { color: var(--og-content-1); font-size: var(--og-text-subtitle); line-height: var(--og-text-subtitle-lh); font-weight: var(--og-weight-semibold); }
+html:root .free-item .next-class-where { color: var(--og-content-2); font-size: var(--og-text-label); }
+html:root .free-item .balance-value, html:root .free-item .stat-num { color: var(--og-content-1); font-size: var(--og-text-title); font-weight: var(--og-weight-semibold); font-variant-numeric: tabular-nums; letter-spacing: var(--og-tracking-title); }
+html:root .free-item .balance-label { color: var(--og-content-2); font-size: var(--og-text-label); }
+html:root .free-item .balance-value-dim { font-size: var(--og-text-label); font-weight: var(--og-weight-medium); }
+html:root .free-item .hw-card-course { color: var(--og-content-2); font-size: var(--og-text-label); font-weight: var(--og-weight-medium); }
+html:root .free-item .hw-card-title { color: var(--og-content-1); font-size: var(--og-text-body); line-height: var(--og-text-body-lh); font-weight: var(--og-weight-semibold); }
+html:root .free-item .hw-card-ddl-sub { opacity: 1; font-size: var(--og-text-micro); }
+html:root .free-item .wg-card-empty { color: var(--og-content-2); }

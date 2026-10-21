@@ -235,8 +235,8 @@ assert.ok(manifest.includes("OnethuWidgetTickReceiver"), "manifest 必须登记�
 
 const nightColors = readFileSync(new URL("../apps/desktop/src-tauri/plugins/onethu-mobile/android/src/main/res/values-night/widget_colors.xml", import.meta.url), "utf8");
 const nightBg = readFileSync(new URL("../apps/desktop/src-tauri/plugins/onethu-mobile/android/src/main/res/drawable-night/onethu_widget_bg.xml", import.meta.url), "utf8");
-assert.ok(nightColors.includes("#E8EBF2"), "夜色文字色必须在位");
-assert.ok(nightBg.includes("#151A24"), "夜色卡底必须在位");
+assert.ok(nightColors.includes("#F1F1EE"), "夜色文字色必须在位");
+assert.ok(nightBg.includes("#202120"), "夜色卡底必须在位");
 assert.ok(!/--/.test(nightBg.replace(/<!--[\s\S]*?-->/g, "")), "XML 注释外不得有连续连字符（AAPT 解析失败实录）");
 
 /* 页脚分流（2026-09-21 用户实录：洗衣机状态正常、底下多一行「今天没有课与截止」）：
@@ -290,3 +290,10 @@ assert.ok(rtSrc.includes("events: inputs.events"),
   "小组件运行时必须把 events 交给快照构建（只收课程与 DDL 的话，勾了也不会出现）");
 
 console.log("widget-native-render-test: 全部断言通过（nativeRow 8 态 + 脚注标题 3 态 + 日程脚注 3 态 + 铺满与剩余项数 5 态 + 快照契约 + 两端同步守卫）");
+
+// Names stay legible on both native palettes; arbitrary source colours only mark bars.
+assert.match(kt, /private const val ROW_SP = 15/);
+assert.match(kt, /private const val SUB_SP = 12/);
+assert.ok(kt.includes("ForegroundColorSpan(ink)"), "Native row text must retain contrast independently of supplied course colours");
+
+assert.equal((layout.match(/android:textSize="15sp"/g) ?? []).length, 20, "All native row slots share the measured 15sp size");

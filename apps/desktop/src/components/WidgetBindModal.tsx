@@ -15,6 +15,7 @@ import { Btn } from "@onethu/gui";
  */
 import { useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useOverlayBack } from "../state/navStack.js";
 import { useExitPhase } from "../lib/useExitPhase.js";
 import { FavAtomPicker } from "./FavAtomPicker.js";
 import { IconCard, IconFile, IconFolder, IconToday } from "./Icons.js";
@@ -75,8 +76,8 @@ export const CONTENT_KINDS: Array<{
 export function WidgetBindModal(): ReactNode {
   const uiLocale = useUiLocale();
 
-  const [closing, requestClose] = useExitPhase(() => close());
   const req = useWidgetBindRequest();
+  const [closing, requestClose] = useExitPhase(() => close(), !!req);
   const favs = useFavs();
   const backend = useNotifyBackend();
   const [instances, setInstances] = useState<WidgetInstanceInfo[] | null>(null);
@@ -87,6 +88,8 @@ export function WidgetBindModal(): ReactNode {
   const [folderPick, setFolderPick] = useState(false);
   /* 夹选择是模态内的二级视图：它自己的关闭（遮罩/返回）也走退场，不然遮罩先消失、面板还在动 */
   const [pickClosing, requestPickClose] = useExitPhase(() => setFolderPick(false), folderPick);
+  useOverlayBack("widget-bind", !!req && backend === "android" && !folderPick && !picker, requestClose);
+  useOverlayBack("widget-bind-folder", !!req && folderPick, requestPickClose);
 
   useEffect(() => {
     if (!req) return;
@@ -218,11 +221,11 @@ export function WidgetBindModal(): ReactNode {
       </div>
 
       {folderPick ? (
-        <div className={"home-modal-mask" + (pickClosing ? " is-closing" : "")} onClick={requestPickClose}>
+        <div className={"home-modal-mask" + (pickClosing ? " is-closing" : "")} onClick={(e) => { e.stopPropagation(); requestPickClose(); }}>
           <div className={"home-modal" + (pickClosing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label={i18n("components.widgetbindmodal.cb2c998643fd")} onClick={(e) => e.stopPropagation()}>
             <div className="home-modal-head">
               <h3>{i18n("components.widgetbindmodal.cb2c998643fd")}</h3>
-              <Btn variant="ghost" onClick={requestPickClose}>{i18n("components.widgetbindmodal.572cf45ba436")}</Btn>
+              <Btn variant="ghost" onClick={(e) => { e.stopPropagation(); requestPickClose(); }}>{i18n("components.widgetbindmodal.572cf45ba436")}</Btn>
             </div>
             <div className="home-modal-body">
               <div className="home-modal-hint">{i18n("components.widgetbindmodal.0d59f4339593")}</div>

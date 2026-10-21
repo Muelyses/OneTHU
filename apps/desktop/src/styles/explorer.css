@@ -55,7 +55,7 @@
 /* ── 内容区：手机 = 顶栏 46px + 底栏 48px 占位；桌面媒体查询里另给 94px ── */
 .explorer-content {
   padding-top: var(--explorer-top-h, 46px);
-  padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
+  padding-bottom: calc(var(--explorer-bar-h) + var(--og-safe-bottom, 0px) + 12px);
 }
 
 /* 硬刷新 FAB 给底栏让位。
@@ -64,14 +64,14 @@
    让位量 = 工具栏一列的高度（--og-space-9）+ 一拍间隙。 */
 .hard-refresh-fab {
   right: var(--refresh-fab-right, 18px) !important;
-  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px)) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + 16px)) !important;
 }
 html:root.is-phone .hard-refresh-fab:not(.top-fab) {
-  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + var(--og-mobile-tools-gap, 76px) + var(--og-space-9) + var(--og-space-2) + env(safe-area-inset-bottom, 0px))) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + var(--og-mobile-tools-gap, 76px) + var(--og-space-9) + var(--og-space-2) + var(--og-safe-bottom, 0px))) !important;
 }
 .hard-refresh-fab.top-fab {
   right: var(--refresh-fab-right, 18px) !important;
-  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px)) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + 74px)) !important;
 }
 
 /* ══════════ 桌面/横屏（≥841px）：两行顶置（底栏上移第一行 / TopBar 其下第二行），
@@ -419,13 +419,13 @@ html:root.is-phone .hard-refresh-fab:not(.top-fab) {
 
 /* ═══ 手机档（html.is-phone）：底栏让位（2026-10-16 底部标签条退役 → 不再额外让 52px）═══ */
 html.is-phone .explorer-content {
-  padding-bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px);
+  padding-bottom: calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + var(--ex-phone-bar-gap) + 12px);
 }
 html.is-phone .hard-refresh-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 72px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + var(--ex-phone-bar-gap) + 72px) !important;
 }
 html.is-phone .hard-refresh-fab.top-fab {
-  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 136px) !important;
+  bottom: calc(var(--explorer-bar-h, 48px) + var(--og-safe-bottom, 0px) + var(--ex-phone-bar-gap) + 136px) !important;
 }
 
 /* ══════════ 内容区裸文本随壁纸明暗自适应（2026-10-14 扩全域：标题/表头全部在内）══════════

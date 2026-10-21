@@ -14,6 +14,7 @@ import { Btn } from "@onethu/gui";
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { useOverlayBack } from "../state/navStack.js";
 import { useExitPhase } from "../lib/useExitPhase.js";
 import { IconSearch, IconStar } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
@@ -45,7 +46,8 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    // Do not open the phone keyboard before the user chooses to search.
+    if (!document.documentElement.classList.contains("is-phone")) inputRef.current?.focus();
     const onKey = (ev: KeyboardEvent): void => {
       if (ev.key === "Escape") requestClose();
     };
@@ -84,6 +86,7 @@ export function FavAtomPicker({ title, hint, onPick, onClose }: {
   }, [uiLocale, q, favHits]);
 
   const [closing, requestClose] = useExitPhase(onClose);
+  useOverlayBack("widget-atom-picker", true, requestClose);
 
   return createPortal(
     <div className={"home-modal-mask" + (closing ? " is-closing" : "")} onClick={requestClose}>

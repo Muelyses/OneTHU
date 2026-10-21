@@ -1,5 +1,15 @@
 # OneTHU 0.11 · Revolution
 
+## 手机界面与小组件补包 / Mobile UI and widgets (2026-10-21)
+
+- Android 0.11.0 / versionCode **11005**，沿用原正式签名和上下结构 Logo。
+- 修复系统安全区重复留白、OH 胶囊上下空间与 OneShot 间距；收紧手机按钮和悬浮工具的尺寸。
+- 修复组件抽屉与选择层被导航遮挡、底部内容不可达、绑定层重复打开无法关闭的问题。
+- 提高白板组件标题、课程时间、作业与余额的可读性；安卓桌面组件正文/说明字号及深浅色对比同步优化。
+- Fix duplicate safe-area spacing, refine phone controls, keep widget pickers above navigation, and improve widget text hierarchy and contrast. Native binding dialogs can be reopened reliably.
+- macOS / Windows 安装包保持原版本文件；本次仅替换 Android。桌面代码修正会在下次桌面构建发布。
+- Existing macOS / Windows installer bytes are unchanged; this replacement updates Android only.
+
 ## Android 图标补包 / Android launcher repair (2026-10-21)
 
 - 修复 Android 工程重新生成后把 Tauri 默认图标带入正式包的问题，恢复原版上下结构的 OneTHU Logo，覆盖普通、圆形和自适应图标。

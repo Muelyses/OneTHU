@@ -1,5 +1,11 @@
 # OneTHU 0.11 · Revolution
 
+## Android 图标补包 / Android launcher repair (2026-10-21)
+
+- 修复 Android 工程重新生成后把 Tauri 默认图标带入正式包的问题，恢复原版上下结构的 OneTHU Logo，覆盖普通、圆形和自适应图标。
+- Restore the original stacked OneTHU logo for standard, round and adaptive Android launcher icons. Release builds now sync the logo and verify the compiled APK resources.
+- Android: 0.11.0 / versionCode **11004**, source `828d4d447f50af17a3e98e22b637d74b290f860d`, existing release signing certificate. macOS and Windows retain source `fc626cfd187ecd9ede05b801caee48b8e75cf974`.
+
 ## 登录与语言补包 / Sign-in and language rebuild (2026-10-21)
 
 - 修复只有网页标题包含认证标记的二次认证页被误报为不可用登录表单；登录页和验证码页新增语言选择，切换保留输入并即时翻译应用错误。
@@ -18,7 +24,7 @@
 
 The guide now begins with a bilingual permissions notice and a prominent reminder to authorize services manually. Cloud and OH permissions are separate and off by default. Full mode requires cloud consent; Minimal and Practical remain usable without it. Mobile boards stay locked until Edit is enabled. This rebuild also fixes an AppKit threading crash and explains permission-save failures on outdated native hosts.
 
-三端构建源码 / Source for all installers: [`fc626cfd`](https://github.com/smartThise/OneTHU/commit/fc626cfd187ecd9ede05b801caee48b8e75cf974). Android: `versionName 0.11.0`, `versionCode 11003`, 原正式签名 / existing release certificate. 使用旧版 0.11 的用户可下载本次安装包覆盖更新。 / Users on an earlier 0.11 build can install this replacement package to update.
+登录修复基线 / Sign-in fix baseline: [`fc626cfd`](https://github.com/smartThise/OneTHU/commit/fc626cfd187ecd9ede05b801caee48b8e75cf974). Android: `versionName 0.11.0`, `versionCode 11003`, 原正式签名 / existing release certificate. 使用旧版 0.11 的用户可下载本次安装包覆盖更新。 / Users on an earlier 0.11 build can install this replacement package to update.
 
 从 0.10 的公测版走向统一的校园工作台。主题、壁纸、布局按你的习惯调整，原版上下 Logo 保持不变。
 
@@ -66,7 +72,7 @@ Downloads: **macOS Apple Silicon DMG**, **Windows x64 installer**, and **Android
 
 ---
 
-**构建 / Build**：[`fc626cfd`](https://github.com/smartThise/OneTHU/commit/fc626cfd187ecd9ede05b801caee48b8e75cf974) · Windows [Actions](https://github.com/smartThise/OneTHU/actions/runs/39600985096) · macOS / Android 本地构建，Android 沿用正式签名 / locally built; Android retains the existing release key.
+**桌面构建 / Desktop build**：[`fc626cfd`](https://github.com/smartThise/OneTHU/commit/fc626cfd187ecd9ede05b801caee48b8e75cf974) · Windows [Actions](https://github.com/smartThise/OneTHU/actions/runs/39600985096) · macOS 本地构建 / locally built. Android source: `828d4d447f50af17a3e98e22b637d74b290f860d`, locally built with the existing release key.
 
 
 **清华云盘镜像 / Cloud mirror**：[固定下载入口](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/)，按 `Android` / `macOS` / `Windows` 系统目录直接下载 / download directly from your platform folder。三端安装包与校验文件已同步，匿名下载 SHA-256 核对一致 / all three installers and checksums are mirrored and verified.

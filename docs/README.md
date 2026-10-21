@@ -18,6 +18,7 @@
 ## 开发与素材
 
 - [开发者中心](developers.md)
+- [开发者构建与 Android 图标校验](dev-build.md)
 - [贡献者](contributors.md)
 - [系统架构](architecture.md)
 - [插件开发](plugin-development.md)

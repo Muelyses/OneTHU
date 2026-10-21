@@ -58,3 +58,15 @@ Windows 0.11 的现场日志确认：OAuth 登录页 HTTP 200、17524 字符；S
 | `OneTHU_0.11.0_arm64.apk` | `f614ddd725067d3b8d7331eccfbfdf10d22d5ba871a408c719be99c3201fa59e` |
 
 完整产物与校验记录保存在 `/Volumes/OneTHUBuild/artifacts/release-0.11/login-session/`，不提交原始校园认证日志或签名私钥。
+
+## 后续：Android 默认图标漏检
+
+用户发现 11003 包带 Tauri 默认图标。检查实际 APK 资源表、抽取图片以及本地生成工程，确认是新生成 Android 工程中的模板资源；正式脚本以前未同步图标，发布时也未验收这一项。这是本轮发布遗漏。
+
+修复提交 `828d4d447f50af17a3e98e22b637d74b290f860d`：正式和开发者脚本共用 `tools/android-icons.py`，从原版 `icons/icon.png` 同步普通、圆形、前景与自适应图标；保留原版上下 Logo。正式包签名后使用 AAPT 资源表找到最终混淆路径，解码检查 15 张 PNG 像素，并核对 Manifest 和自适应引用。旧坏包被该检查拒绝，新包通过，提取后的实际图标已查看。
+
+Android 单独重打为 0.11.0 / versionCode **11004**，原正式证书，SHA-256 `5cc60440fc4318def0b591fc0d38845460522f1931b508062d98cce619173a83`。macOS / Windows 保留前述 `fc626cfd` 安装包，清单分别记录每个平台的源码。三端同一提交的描述仅适用于上一次登录修复批次。
+
+恢复文档索引中开发者构建链接，开发者构建守卫 82 项通过。构建脚本语法、文档规范检查通过。修正版替换 Release / 云盘 Android 原路径、双源清单和总校验文件；官网重新校验下载，不依赖本地源目录截图。
+
+本次产物与记录：`/Volumes/OneTHUBuild/artifacts/release-0.11/android-logo/`。未在实体 Android 设备上安装，不将 APK 资源验收描述为手机实机验收。

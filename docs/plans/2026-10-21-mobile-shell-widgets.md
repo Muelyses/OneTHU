@@ -41,3 +41,14 @@
 - Desktop TypeScript and i18n check passed, 7,552/7,552 bilingual catalog entries and 62 native fallback templates.
 - CSS parse, token, inset, modal/platform, density, control and native-widget guards passed.
 - Full `pnpm guard` stops at existing `ui-copy-lint` findings in legacy Visit/library error text (unmodified in this change). This is not reported as an all-green full guard.
+
+### Published Android replacement
+
+- Source: `4957bc9cb20187fee7f6e4743e41c8031cfe01e8` (main, production code).
+- Android: 0.11.0 / versionCode **11005**, ARM64, 31,814,517 bytes, existing release certificate.
+- SHA256: `e4cba247b3d89474f650f9ff8957ab644bfa2e458a2996a20344d026648b2887`.
+- Canonical stacked Logo: 15 compiled PNGs checked pixel-for-pixel; standard, round and adaptive manifest bindings verified.
+- GitHub `v0.11.0` APK, SHA256SUMS and latest.json replaced; existing cloud `/Android` APK plus root manifests/checksums replaced. macOS and Windows installer digests unchanged.
+- Public mirror verifier downloaded the actual installers anonymously from each system folder and matched GitHub digests; both latest.json manifests and runtime GitHub-to-cloud fallback passed.
+- Website snapshot and bilingual download hashes updated in `OneTHU/onethu.github.io` commit `47f388ec9f3521cc5df29d13a9838e0798bb5921`; Pages run `39625717180`.
+- Small button visual bounds 36px retain 44px hit areas via transparent extensions, checked with actual hit testing.

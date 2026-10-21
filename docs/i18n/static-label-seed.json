@@ -345,8 +345,8 @@
       "en-US": "Deleted library “{name}”."
     },
     "state.seafile.nativeRestartRequired": {
-      "zh-CN": "当前程序无法确认资料库归属，已暂停自动建库、删除与同步。请更新并重新启动 OneTHU 后重试。",
-      "en-US": "The app cannot verify library ownership. Automatic library creation, deletion and syncing are paused. Update and restart OneTHU, then try again."
+      "zh-CN": "此资料库缺少可核实的归属信息，已暂停对它自动建库、删除与同步；请先刷新资料库列表。旧版客户端请更新并重启。",
+      "en-US": "Ownership information for this library is unavailable. Automatic creation, deletion and sync for it are paused. Refresh the library list; update and restart older clients."
     },
     "state.seafile.duplicatePersonalLibraries": {
       "zh-CN": "发现多个同名且有内容的个人资料库，无法安全选择。请先在云盘确认要使用的资料库。",
@@ -355,6 +355,246 @@
     "state.seafile.libraryCreationUnconfirmed": {
       "zh-CN": "上次建库结果尚未确认，已暂停自动创建，避免重复。请刷新云盘确认，或手动创建所需资料库后重试。",
       "en-US": "The previous library creation is still unconfirmed. Automatic creation is paused to prevent duplicates. Refresh cloud storage to check, or create the required library manually, then retry."
+    },
+    "profile.sync.offline": {
+      "zh-CN": "连接云盘后，自动同步名片、好友与组织索引",
+      "en-US": "Connect cloud storage to sync your card, contacts and organization index"
+    },
+    "profile.sync.pending": {
+      "zh-CN": "有本地更改，等待同步…",
+      "en-US": "Local changes are waiting to sync…"
+    },
+    "profile.sync.syncing": {
+      "zh-CN": "正在同步名片、好友与组织索引…",
+      "en-US": "Syncing your card, contacts and organization index…"
+    },
+    "profile.sync.synced": {
+      "zh-CN": "名片、好友与组织索引已同步",
+      "en-US": "Your card, contacts and organization index are synced"
+    },
+    "profile.sync.paused": {
+      "zh-CN": "资料同步已暂停，请检查云盘连接及 OneTHU-Profile 私有资料库权限",
+      "en-US": "Profile sync paused. Check the cloud connection and private permissions of OneTHU-Profile"
+    },
+    "profile.sync.now": {
+      "zh-CN": "立即同步",
+      "en-US": "Sync now"
+    },
+    "profile.sync.conflict": {
+      "zh-CN": "有更改需要你确认，其余内容已自动同步",
+      "en-US": "Some changes need your choice. Everything else is synced"
+    },
+    "profile.sync.personal": {
+      "zh-CN": "个人名片冲突",
+      "en-US": "Personal card conflict"
+    },
+    "profile.sync.local": {
+      "zh-CN": "本机内容",
+      "en-US": "Local version"
+    },
+    "profile.sync.remote": {
+      "zh-CN": "云端内容",
+      "en-US": "Cloud version"
+    },
+    "profile.sync.preview": {
+      "zh-CN": "合并预览",
+      "en-US": "Merge preview"
+    },
+    "profile.sync.keepLocal": {
+      "zh-CN": "保留本机",
+      "en-US": "Keep local"
+    },
+    "profile.sync.useRemote": {
+      "zh-CN": "使用云端，丢弃本机变更",
+      "en-US": "Use cloud, discard local changes"
+    },
+    "profile.sync.merge": {
+      "zh-CN": "确认合并",
+      "en-US": "Confirm merge"
+    },
+    "profile.sync.deleted": {
+      "zh-CN": "已删除",
+      "en-US": "Deleted"
+    },
+    "profile.sync.mergeHelp": {
+      "zh-CN": "默认自动合并不同字段和列表条目。此处有同一字段的矛盾或删除冲突；手动合并会保留双方条目，同一字段优先本机，删除冲突保留记录。",
+      "en-US": "Different fields and list items merge automatically. These items have same-field or deletion conflicts. A manual merge keeps entries from both sides, favors local values for competing fields, and retains edited records when deletion conflicts."
+    },
+    "profile.field.name": {
+      "zh-CN": "姓名 / 名称",
+      "en-US": "Name"
+    },
+    "profile.field.bio": {
+      "zh-CN": "个人简介",
+      "en-US": "Bio"
+    },
+    "profile.field.phone": {
+      "zh-CN": "手机号",
+      "en-US": "Phone"
+    },
+    "profile.field.website": {
+      "zh-CN": "个人网址",
+      "en-US": "Website"
+    },
+    "profile.field.social": {
+      "zh-CN": "社交媒体",
+      "en-US": "Social media"
+    },
+    "profile.field.brief": {
+      "zh-CN": "简介",
+      "en-US": "Summary"
+    },
+    "profile.field.note": {
+      "zh-CN": "备注",
+      "en-US": "Note"
+    },
+    "profile.field.members": {
+      "zh-CN": "成员",
+      "en-US": "Members"
+    },
+    "profile.field.role": {
+      "zh-CN": "角色",
+      "en-US": "Role"
+    },
+    "profile.field.email": {
+      "zh-CN": "邮箱",
+      "en-US": "Email"
+    },
+    "profile.field.projects": {
+      "zh-CN": "项目",
+      "en-US": "Projects"
+    },
+    "profile.field.announcements": {
+      "zh-CN": "公告",
+      "en-US": "Announcements"
+    },
+    "profile.field.title": {
+      "zh-CN": "标题",
+      "en-US": "Title"
+    },
+    "profile.field.body": {
+      "zh-CN": "正文",
+      "en-US": "Content"
+    },
+    "profile.field.description": {
+      "zh-CN": "说明",
+      "en-US": "Description"
+    },
+    "profile.field.status": {
+      "zh-CN": "状态",
+      "en-US": "Status"
+    },
+    "profile.field.libraries": {
+      "zh-CN": "资料库",
+      "en-US": "Libraries"
+    },
+    "profile.field.gitlabRepos": {
+      "zh-CN": "代码仓库",
+      "en-US": "Repositories"
+    },
+    "profile.field.image": {
+      "zh-CN": "图片",
+      "en-US": "Image"
+    },
+    "profile.field.owner": {
+      "zh-CN": "负责人",
+      "en-US": "Owner"
+    },
+    "profile.sync.field": {
+      "zh-CN": "冲突字段",
+      "en-US": "Conflicting field"
+    },
+    "profile.sync.privateValue": {
+      "zh-CN": "私密字段（不展开显示）",
+      "en-US": "Private field (hidden)"
+    },
+    "profile.sync.record": {
+      "zh-CN": "记录",
+      "en-US": "Record"
+    },
+    "profile.sync.thisDevice": {
+      "zh-CN": "这台设备",
+      "en-US": "This device"
+    },
+    "profile.sync.otherDevice": {
+      "zh-CN": "另一台设备",
+      "en-US": "Other device"
+    },
+    "profile.sync.combined": {
+      "zh-CN": "两边合在一起",
+      "en-US": "Both combined"
+    },
+    "profile.sync.deletedHere": {
+      "zh-CN": "这一边已经删除了它",
+      "en-US": "Deleted on this device"
+    },
+    "profile.sync.confirmDelete": {
+      "zh-CN": "确认删除这条记录",
+      "en-US": "Delete this record"
+    },
+    "profile.sync.useCombined": {
+      "zh-CN": "两边都保留",
+      "en-US": "Keep both"
+    },
+    "profile.sync.keepCard": {
+      "zh-CN": "保留这张名片",
+      "en-US": "Keep this card"
+    },
+    "profile.sync.useOtherCard": {
+      "zh-CN": "使用另一张名片",
+      "en-US": "Use the other card"
+    },
+    "profile.sync.keepVersion": {
+      "zh-CN": "保留这一版",
+      "en-US": "Keep this version"
+    },
+    "profile.sync.useOtherVersion": {
+      "zh-CN": "使用另一版",
+      "en-US": "Use the other version"
+    },
+    "profile.sync.review": {
+      "zh-CN": "看一下",
+      "en-US": "Review"
+    },
+    "profile.sync.chooseVersion": {
+      "zh-CN": "选你想保留的内容",
+      "en-US": "Choose what to keep"
+    },
+    "profile.sync.later": {
+      "zh-CN": "稍后再说",
+      "en-US": "Decide later"
+    },
+    "profile.sync.visualHelp": {
+      "zh-CN": "两台设备对同一处做了不同修改。选你想保留的卡片或内容，其他不冲突的修改都会保留。",
+      "en-US": "Both devices changed the same thing differently. Choose the card or content you want to keep. Other compatible changes will be kept."
+    },
+    "profile.sync.notSet": {
+      "zh-CN": "未填写",
+      "en-US": "Not set"
+    },
+    "profile.role.owner": {
+      "zh-CN": "所有者",
+      "en-US": "Owner"
+    },
+    "profile.role.member": {
+      "zh-CN": "成员",
+      "en-US": "Member"
+    },
+    "profile.role.guest": {
+      "zh-CN": "访客",
+      "en-US": "Guest"
+    },
+    "profile.status.planned": {
+      "zh-CN": "待开始",
+      "en-US": "Planned"
+    },
+    "profile.status.active": {
+      "zh-CN": "进行中",
+      "en-US": "In progress"
+    },
+    "profile.status.done": {
+      "zh-CN": "已完成",
+      "en-US": "Done"
     }
   }
 }

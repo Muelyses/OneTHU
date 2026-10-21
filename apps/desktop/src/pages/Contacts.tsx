@@ -14,6 +14,7 @@ import { PageHead } from "../components/Layout.js";
 import { PageAtomStar } from "../components/Collect.js";
 import { NameCardSection, OrgCardsSection } from "../components/NameCardSection.js";
 import { OrganizationSection } from "../components/OrganizationSection.js";
+import { ProfileSyncStatus } from "../components/ProfileSyncStatus.js";
 
 type ContactsTab = "cards" | "orgs";
 
@@ -29,6 +30,7 @@ export function ContactsPage() {
         meta={i18n("pages.contacts.b62dac5fc7e9")}
         actions={<PageAtomStar atomKey="contacts" title={i18n("pages.contacts.06657c279571")} />}
       />
+      <ProfileSyncStatus />
       <div className="contacts-tabs">
         <Segment
           value={tab}

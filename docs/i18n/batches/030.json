@@ -1,5 +1,5 @@
 {
-  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
+  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -415,7 +415,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 642,
+          "line": 643,
           "context": "shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
@@ -489,7 +489,7 @@
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 642,
+          "line": 643,
           "context": "shown.shared?.acceptedAt\n                    ? i18n(\"friends.connected\") : shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
@@ -521,7 +521,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ],
@@ -537,7 +537,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 705,
+          "line": 706,
           "context": "{i18n(\"friends.download\")}"
         }
       ],
@@ -569,7 +569,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 703,
+          "line": 704,
           "context": "m.mine ? i18n(\"friends.fromMe\") : shown.name"
         }
       ],
@@ -689,7 +689,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 643,
+          "line": 644,
           "context": "shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ],
@@ -736,22 +736,22 @@
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 424,
+          "line": 439,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 428,
+          "line": 443,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 444,
+          "line": 459,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 446,
+          "line": 461,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
@@ -853,7 +853,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 653,
+          "line": 654,
           "context": "{i18n(\"friends.openFiles\")}"
         }
       ],
@@ -933,7 +933,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 423,
+          "line": 424,
           "context": "showToast(i18nMsg(\"friends.published\"), 7000)"
         }
       ],
@@ -970,7 +970,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 688,
+          "line": 689,
           "context": "{i18n(\"friends.refreshMessages\")}"
         }
       ],
@@ -986,7 +986,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ],
@@ -1034,7 +1034,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 419,
+          "line": 420,
           "context": "confirmOk(i18nMsg(\"friends.upgradeLegacy\"))"
         }
       ],

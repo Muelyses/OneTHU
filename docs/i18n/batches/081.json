@@ -1,7 +1,956 @@
 {
-  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
+  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "profile.status.done",
+      "source": "已完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "done:t(\"profile.status.done\")"
+        }
+      ],
+      "translation": "Done",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.status.planned",
+      "source": "待开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "planned:t(\"profile.status.planned\")"
+        }
+      ],
+      "translation": "Planned",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.chooseVersion",
+      "source": "选你想保留的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 91,
+          "context": "{t(\"profile.sync.chooseVersion\")}"
+        }
+      ],
+      "translation": "Choose what to keep",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.combined",
+      "source": "两边合在一起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 69,
+          "context": "label:t(\"profile.sync.combined\")"
+        }
+      ],
+      "translation": "Both combined",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "profile.sync.confirmDelete",
+      "source": "确认删除这条记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "data===null?t(\"profile.sync.confirmDelete\"):option.kind===\"merge\"?t(\"profile.sync.useCombined\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+        }
+      ],
+      "translation": "Delete this record",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.conflict",
+      "source": "有更改需要你确认，其余内容已自动同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 37,
+          "context": "conflict:t(\"profile.sync.conflict\")"
+        }
+      ],
+      "translation": "Some changes need your choice. Everything else is synced",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.deleted",
+      "source": "已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 53,
+          "context": "return t(\"profile.sync.deleted\");"
+        }
+      ],
+      "translation": "Deleted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.deletedHere",
+      "source": "这一边已经删除了它",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 75,
+          "context": "{t(\"profile.sync.deletedHere\")}"
+        }
+      ],
+      "translation": "Deleted on this device",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.field",
+      "source": "冲突字段",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Conflicting field",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.keepCard",
+      "source": "保留这张名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")"
+        }
+      ],
+      "translation": "Keep this card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.keepLocal",
+      "source": "保留本机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Keep local",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.keepVersion",
+      "source": "保留这一版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\")"
+        }
+      ],
+      "translation": "Keep this version",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.later",
+      "source": "稍后再说",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 91,
+          "context": "{t(\"profile.sync.later\")}"
+        }
+      ],
+      "translation": "Decide later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.local",
+      "source": "本机内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Local version",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.merge",
+      "source": "确认合并",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Confirm merge",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.mergeHelp",
+      "source": "默认自动合并不同字段和列表条目。此处有同一字段的矛盾或删除冲突；手动合并会保留双方条目，同一字段优先本机，删除冲突保留记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Different fields and list items merge automatically. These items have same-field or deletion conflicts. A manual merge keeps entries from both sides, favors local values for competing fields, and retains edited records when deletion conflicts.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.notSet",
+      "source": "未填写",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 54,
+          "context": "return t(\"profile.sync.notSet\");"
+        }
+      ],
+      "translation": "Not set",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.now",
+      "source": "立即同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 88,
+          "context": "{t(\"profile.sync.now\")}"
+        }
+      ],
+      "translation": "Sync now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.offline",
+      "source": "连接云盘后，自动同步名片、好友与组织索引",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 36,
+          "context": "offline:t(\"profile.sync.offline\")"
+        }
+      ],
+      "translation": "Connect cloud storage to sync your card, contacts and organization index",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.otherDevice",
+      "source": "另一台设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 67,
+          "context": "label:t(\"profile.sync.otherDevice\")"
+        }
+      ],
+      "translation": "Other device",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "profile.sync.paused",
+      "source": "资料同步已暂停，请检查云盘连接及 OneTHU-Profile 私有资料库权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 37,
+          "context": "paused:t(\"profile.sync.paused\")"
+        }
+      ],
+      "translation": "Profile sync paused. Check the cloud connection and private permissions of OneTHU-Profile",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.pending",
+      "source": "有本地更改，等待同步…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 36,
+          "context": "pending:t(\"profile.sync.pending\")"
+        }
+      ],
+      "translation": "Local changes are waiting to sync…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.personal",
+      "source": "个人名片冲突",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 89,
+          "context": "c.key===\"personal\"?t(\"profile.sync.personal\"):c.local.value?.name??c.remote.value?.name??t(\"profile.sync.record\")"
+        }
+      ],
+      "translation": "Personal card conflict",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.preview",
+      "source": "合并预览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Merge preview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.privateValue",
+      "source": "私密字段（不展开显示）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 55,
+          "context": "return t(\"profile.sync.privateValue\");"
+        }
+      ],
+      "translation": "Private field (hidden)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.record",
+      "source": "记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 47,
+          "context": "fields[trail.split(\".\").at(-1)??\"\"]??t(\"profile.sync.record\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 59,
+          "context": "v.name??v.title??t(\"profile.sync.record\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 59,
+          "context": "value.name??value.title??t(\"profile.sync.record\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 89,
+          "context": "c.local.value?.name??c.remote.value?.name??t(\"profile.sync.record\")"
+        }
+      ],
+      "translation": "Record",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.remote",
+      "source": "云端内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Cloud version",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.review",
+      "source": "看一下",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 89,
+          "context": "{t(\"profile.sync.review\")}"
+        }
+      ],
+      "translation": "Review",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.synced",
+      "source": "名片、好友与组织索引已同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 37,
+          "context": "synced:t(\"profile.sync.synced\")"
+        }
+      ],
+      "translation": "Your card, contacts and organization index are synced",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.syncing",
+      "source": "正在同步名片、好友与组织索引…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 36,
+          "context": "syncing:t(\"profile.sync.syncing\")"
+        }
+      ],
+      "translation": "Syncing your card, contacts and organization index…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.thisDevice",
+      "source": "这台设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 67,
+          "context": "label:t(\"profile.sync.thisDevice\")"
+        }
+      ],
+      "translation": "This device",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "profile.sync.useCombined",
+      "source": "两边都保留",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"merge\"?t(\"profile.sync.useCombined\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+        }
+      ],
+      "translation": "Keep both",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.useOtherCard",
+      "source": "使用另一张名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")"
+        }
+      ],
+      "translation": "Use the other card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.useOtherVersion",
+      "source": "使用另一版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\")"
+        }
+      ],
+      "translation": "Use the other version",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.useRemote",
+      "source": "使用云端，丢弃本机变更",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Use cloud, discard local changes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.sync.visualHelp",
+      "source": "两台设备对同一处做了不同修改。选你想保留的卡片或内容，其他不冲突的修改都会保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 92,
+          "context": "{t(\"profile.sync.visualHelp\")}"
+        }
+      ],
+      "translation": "Both devices changed the same thing differently. Choose the card or content you want to keep. Other compatible changes will be kept.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "prompt.input",
+      "source": "输入内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 139,
+          "context": "request ? resolveMessage(request.title) : t(\"prompt.input\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/confirm.tsx",
+          "line": 163,
+          "context": "shown ? resolveMessage(shown.title) : t(\"prompt.input\")"
+        }
+      ],
+      "translation": "Enter text",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "settings.label.about",
+      "source": "关于",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "About",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.account",
+      "source": "账号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Account",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.advanced",
+      "source": "高级配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Advanced configuration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.appearance",
+      "source": "外观与布局",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Appearance & layout",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.basic",
+      "source": "基础设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Basic settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.bindings",
+      "source": "账号与绑定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Accounts & connections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.cloud",
+      "source": "云同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Cloud sync",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.download",
+      "source": "下载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Downloads",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.downloads",
+      "source": "下载与存储",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Downloads & storage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.favorites",
+      "source": "收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Favorites",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.geek",
+      "source": "极客模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Geek mode",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.harness",
+      "source": "OneTHU Harness",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OneTHU Harness",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.help",
+      "source": "帮助",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Help",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.home",
+      "source": "首页布局",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Home layout",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.homework",
+      "source": "外部作业源",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Assignment sources",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.market",
+      "source": "插件市场",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Plugin marketplace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.myPlugins",
+      "source": "我的插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "My plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.notification",
+      "source": "通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Notifications",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.notifications",
+      "source": "通知与提醒",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Notifications & reminders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.oneshot",
+      "source": "OneShot 快捷入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OneShot shortcuts",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.plugins",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.route.1a7930272017",
+      "source": "入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Entry points",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "settings.label.route.359213279505",
+      "source": "IM 通道（进阶）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/runtime-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "IM channel (advanced)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "settings.label.route.3c02623c9a2b",
       "source": "保活",
@@ -312,996 +1261,6 @@
         }
       ],
       "translation": "Enter your account and password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.accountsetup.ec4d67a81570",
-      "source": "请输入 Web API Auth Token",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/accountSetup.ts",
-          "line": 92,
-          "context": "new Error(i18n(\"state.accountsetup.ec4d67a81570\"))"
-        }
-      ],
-      "translation": "Enter your Web API Auth Token",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.accountsetup.ecbc67435fe1",
-      "source": "请输入邮箱与客户端专用密码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/accountSetup.ts",
-          "line": 85,
-          "context": "new Error(i18n(\"state.accountsetup.ecbc67435fe1\"))"
-        }
-      ],
-      "translation": "Enter your email and app-specific password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.app.053461ce86d2",
-      "source": "成功",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/app.tsx",
-          "line": 285,
-          "context": "silent ? i18n(\"state.app.053461ce86d2\") : i18n(\"state.app.28384d7afd2e\")"
-        }
-      ],
-      "translation": "Success",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.app.28384d7afd2e",
-      "source": "失败",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/app.tsx",
-          "line": 285,
-          "context": "silent ? i18n(\"state.app.053461ce86d2\") : i18n(\"state.app.28384d7afd2e\")"
-        }
-      ],
-      "translation": "Failed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.app.5ac30ce1e9bb",
-      "source": "LOGIN-RETRY 首次失败，静默重试一次：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(String(firstErr).slice(0, 120))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/app.tsx",
-          "line": 335,
-          "context": "logLine(i18n(\"state.app.5ac30ce1e9bb\", { value: String(String(firstErr).slice(0, 120)) }))"
-        }
-      ],
-      "translation": "LOGIN-RETRY first attempt failed, retrying silently once: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.00a42a995295",
-      "source": "预约页 · 自习空闲查询",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 252,
-          "context": "return i18n(\"state.atoms.00a42a995295\");"
-        }
-      ],
-      "translation": "Reservations · Free study space search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.02c6d939cacb",
-      "source": " · 教室",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 527,
-          "context": "(bName || \"\") + i18n(\"state.atoms.02c6d939cacb\")"
-        }
-      ],
-      "translation": " · Classroom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.02cb99cb0282",
-      "source": "信息页 · 问卷进度",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 235,
-          "context": "return i18n(\"state.atoms.02cb99cb0282\");"
-        }
-      ],
-      "translation": "Info page · Survey progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.06657c279571",
-      "source": "通讯录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 208,
-          "context": "return i18n(\"state.atoms.06657c279571\");"
-        }
-      ],
-      "translation": "Contacts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.07a0fa11958e",
-      "source": "体育预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 253,
-          "context": "return i18n(\"state.atoms.07a0fa11958e\");"
-        }
-      ],
-      "translation": "Sports reservations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.07c9a15ad13f",
-      "source": "同步云日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 172,
-          "context": "return i18n(\"state.atoms.07c9a15ad13f\");"
-        }
-      ],
-      "translation": "Sync cloud calendar",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.0ab15a1cb720",
-      "source": "云端已是最新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 168,
-          "context": "r.written === 0 ? i18n(\"state.atoms.0ab15a1cb720\") : i18n(\"state.atoms.253f54401fa7\")"
-        }
-      ],
-      "translation": "Cloud is up to date",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.0b2a360ee083",
-      "source": "公共空间 · 活动预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 577,
-          "context": "sub: i18n(\"state.atoms.0b2a360ee083\")"
-        }
-      ],
-      "translation": "Common spaces · Event bookings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.0e68f2517080",
-      "source": "网络学堂 · 课件与资料",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 228,
-          "context": "return i18n(\"state.atoms.0e68f2517080\");"
-        }
-      ],
-      "translation": "Web Learning · Courseware & materials",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.0f045b9615fc",
-      "source": "学校服务大厅 · 事项直达",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 201,
-          "context": "return i18n(\"state.atoms.0f045b9615fc\");"
-        }
-      ],
-      "translation": "University service hall · Direct access to services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.0f591af87c35",
-      "source": "所有 OnePage",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 206,
-          "context": "return i18n(\"state.atoms.0f591af87c35\");"
-        }
-      ],
-      "translation": "All OnePages",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.10d6105303f8",
-      "source": "订阅新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 237,
-          "context": "return i18n(\"state.atoms.10d6105303f8\");"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 314,
-          "context": "return i18n(\"state.atoms.10d6105303f8\");"
-        }
-      ],
-      "translation": "Subscribe to news",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.119099ab1bad",
-      "source": "今日课程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 313,
-          "context": "return i18n(\"state.atoms.119099ab1bad\");"
-        }
-      ],
-      "translation": "Today's courses",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.13a9d4b0c392",
-      "source": "网络学堂 · 切换数据学期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 230,
-          "context": "return i18n(\"state.atoms.13a9d4b0c392\");"
-        }
-      ],
-      "translation": "Web Learning · Switch data semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.13d31ddcce2b",
-      "source": "校园 AI 学伴 · 对话 · 历史 · 智能体 · 技能广场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 224,
-          "context": "return i18n(\"state.atoms.13d31ddcce2b\");"
-        }
-      ],
-      "translation": "Campus AI study companion · Chat · History · Agents · Skill plaza",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.14259c8a65a8",
-      "source": "未交作业 · 截止 · 今日课程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 307,
-          "context": "return i18n(\"state.atoms.14259c8a65a8\");"
-        }
-      ],
-      "translation": "Unsubmitted assignments · Due dates · Today's courses",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.14384c9d60cc",
-      "source": "教学评估",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 235,
-          "context": "return i18n(\"state.atoms.14384c9d60cc\");"
-        }
-      ],
-      "translation": "Teaching evaluation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.14e681cbe318",
-      "source": "网络学堂 · 课程通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 227,
-          "context": "return i18n(\"state.atoms.14e681cbe318\");"
-        }
-      ],
-      "translation": "Web Learning · Course notices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.1599af41d9c3",
-      "source": "课程 / 作业 / 通知 / 文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 229,
-          "context": "return i18n(\"state.atoms.1599af41d9c3\");"
-        }
-      ],
-      "translation": "Courses / Assignments / Notices / Files",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.15d208d1b4c9",
-      "source": "生活",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 212,
-          "context": "return i18n(\"state.atoms.15d208d1b4c9\");"
-        }
-      ],
-      "translation": "Life",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.1760b98532ec",
-      "source": "在线服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 201,
-          "context": "return i18n(\"state.atoms.1760b98532ec\");"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 415,
-          "context": "name || i18n(\"state.atoms.1760b98532ec\")"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 416,
-          "context": "department ? i18n(\"state.atoms.7ecb4f45c64b\") + department : i18n(\"state.atoms.1760b98532ec\")"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 728,
-          "context": "(s.department ? s.department + \" · \" : \"\") + i18n(\"state.atoms.1760b98532ec\")"
-        }
-      ],
-      "translation": "Online services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.192b490632ec",
-      "source": "课程共享计划 · 课程简介与时间地点",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 239,
-          "context": "return i18n(\"state.atoms.192b490632ec\");"
-        }
-      ],
-      "translation": "Course sharing program · Course intros, times & locations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.1c1ece1ebe90",
-      "source": "生活页 · 宿舍服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 240,
-          "context": "return i18n(\"state.atoms.1c1ece1ebe90\");"
-        }
-      ],
-      "translation": "Life page · Dorm services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.1cb2f2a7577c",
-      "source": "白板列表 · 改名 / 换图标 / 排序",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 206,
-          "context": "return i18n(\"state.atoms.1cb2f2a7577c\");"
-        }
-      ],
-      "translation": "Board list · Rename / change icon / reorder",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.203c08e0d44a",
-      "source": "首页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 199,
-          "context": "return i18n(\"state.atoms.203c08e0d44a\");"
-        }
-      ],
-      "translation": "Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.211d36ccbe1e",
-      "source": "今日概览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 307,
-          "context": "return i18n(\"state.atoms.211d36ccbe1e\");"
-        }
-      ],
-      "translation": "Today at a glance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.21c882a8b432",
-      "source": "体育系统 · 场次预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 537,
-          "context": "sub: i18n(\"state.atoms.21c882a8b432\")"
-        }
-      ],
-      "translation": "Sports system · Session bookings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 230,
-          "context": "return i18n(\"state.atoms.231ff6cd9b63\");"
-        }
-      ],
-      "translation": "Switch semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.2498d064346e",
-      "source": "教学楼 · 本周空闲状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 519,
-          "context": "sub: i18n(\"state.atoms.2498d064346e\")"
-        }
-      ],
-      "translation": "Teaching buildings · Free rooms this week",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.24be2018df29",
-      "source": "银行代发",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 247,
-          "context": "return i18n(\"state.atoms.24be2018df29\");"
-        }
-      ],
-      "translation": "Payroll",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.253f54401fa7",
-      "source": "未配置云同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 168,
-          "context": "r.written === 0 ? i18n(\"state.atoms.0ab15a1cb720\") : i18n(\"state.atoms.253f54401fa7\")"
-        }
-      ],
-      "translation": "Cloud sync not configured",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.266e6cb77079",
-      "source": "图书馆",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 553,
-          "context": "name || i18n(\"state.atoms.266e6cb77079\")"
-        },
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 719,
-          "context": "sub: i18n(\"state.atoms.266e6cb77079\")"
-        }
-      ],
-      "translation": "Library",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.2bb745fb2e6f",
-      "source": "课程文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 712,
-          "context": "sub: i18n(\"state.atoms.2bb745fb2e6f\")"
-        }
-      ],
-      "translation": "Course files",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.316da6d69b7d",
-      "source": "体测成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 233,
-          "context": "return i18n(\"state.atoms.316da6d69b7d\");"
-        }
-      ],
-      "translation": "Fitness test",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.31c17158ebdb",
-      "source": "图书馆座位",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 250,
-          "context": "return i18n(\"state.atoms.31c17158ebdb\");"
-        }
-      ],
-      "translation": "Library seat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.33005938adb3",
-      "source": "最近通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 310,
-          "context": "return i18n(\"state.atoms.33005938adb3\");"
-        }
-      ],
-      "translation": "Recent notices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.336dbe5fd82f",
-      "source": "研究生收入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 248,
-          "context": "return i18n(\"state.atoms.336dbe5fd82f\");"
-        }
-      ],
-      "translation": "Graduate stipend",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3382870bc4ad",
-      "source": "区域",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 569,
-          "context": "aName || i18n(\"state.atoms.3382870bc4ad\")"
-        }
-      ],
-      "translation": "Areas",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.352cdc807892",
-      "source": "预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 213,
-          "context": "return i18n(\"state.atoms.352cdc807892\");"
-        }
-      ],
-      "translation": "Reservations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.371c1b0109ee",
-      "source": "作业 · 预约 · 考试 · 余额聚合",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 203,
-          "context": "return i18n(\"state.atoms.371c1b0109ee\");"
-        }
-      ],
-      "translation": "Assignments · Reservations · Exams · Balance overview",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.37d169b450b9",
-      "source": "名片 · 好友 · 组织",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 208,
-          "context": "return i18n(\"state.atoms.37d169b450b9\");"
-        }
-      ],
-      "translation": "Card · Friends · Organizations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.390251ce8a9d",
-      "source": "生活页 · 设备状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 243,
-          "context": "return i18n(\"state.atoms.390251ce8a9d\");"
-        }
-      ],
-      "translation": "Life page · Device status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.39932f24fe11",
-      "source": "文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 439,
-          "context": "t: i18n(\"state.atoms.39932f24fe11\")"
-        }
-      ],
-      "translation": "Files",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3a74de9a9014",
-      "source": "宿舍",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 240,
-          "context": "return i18n(\"state.atoms.3a74de9a9014\");"
-        }
-      ],
-      "translation": "Dorm",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3b7240a9d253",
-      "source": "预约 · 座位与签到",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 250,
-          "context": "return i18n(\"state.atoms.3b7240a9d253\");"
-        }
-      ],
-      "translation": "Reservations · Seats & check-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3dcd26a9ba45",
-      "source": "时间地点见课程详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 667,
-          "context": "tls.length > 0 ? tls.join(\"；\") : i18n(\"state.atoms.3dcd26a9ba45\")"
-        }
-      ],
-      "translation": "See course details for time and location",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3df7b5791ab9",
-      "source": "作业 DDL 提醒",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 231,
-          "context": "return i18n(\"state.atoms.3df7b5791ab9\");"
-        }
-      ],
-      "translation": "Assignment deadline reminders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3e668eb1a6ae",
-      "source": "预约页 · 宿舍公共空间预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 254,
-          "context": "return i18n(\"state.atoms.3e668eb1a6ae\");"
-        }
-      ],
-      "translation": "Reservations · Dorm common space bookings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.3fb35cdc3085",
-      "source": "预约页 · 亲友来访报备与我的报备",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 256,
-          "context": "return i18n(\"state.atoms.3fb35cdc3085\");"
-        }
-      ],
-      "translation": "Reservations · Visitor registration and my registrations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.411769324590",
-      "source": "预约 · 研讨间申请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 251,
-          "context": "return i18n(\"state.atoms.411769324590\");"
-        }
-      ],
-      "translation": "Reservations · Seminar room applications",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.41d497d6e07e",
-      "source": "卫生成绩",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 244,
-          "context": "return i18n(\"state.atoms.41d497d6e07e\");"
-        }
-      ],
-      "translation": "Hygiene score",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.452f594e3f7c",
-      "source": "预约聚合页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 213,
-          "context": "return i18n(\"state.atoms.452f594e3f7c\");"
-        }
-      ],
-      "translation": "Reservations hub",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.4792ab1440aa",
-      "source": "校历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 236,
-          "context": "return i18n(\"state.atoms.4792ab1440aa\");"
-        }
-      ],
-      "translation": "Academic calendar",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.499fc8e68d81",
-      "source": "座位 · 研讨间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 312,
-          "context": "return i18n(\"state.atoms.499fc8e68d81\");"
-        }
-      ],
-      "translation": "Seats · Seminar rooms",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.4b6ded8a7f18",
-      "source": "通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 438,
-          "context": "t: i18n(\"state.atoms.4b6ded8a7f18\")"
-        }
-      ],
-      "translation": "Notices",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

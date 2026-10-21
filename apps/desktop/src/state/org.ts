@@ -122,6 +122,21 @@ export function subscribeOrgs(f: () => void): () => void {
 export function orgSnapshot(): OrgDoc {
   return doc;
 }
+/** Restore discovery/index data only. orgSync still verifies all permissions live. */
+export function restoreOrgsFromSync(value: OrgDoc): void {
+  const restored = JSON.parse(JSON.stringify(value)) as OrgDoc;
+  restored.orgs = restored.orgs.map(org => {
+    const local = doc.orgs.find(o=>o.id === org.id)?.collaboration;
+    const remote = org.collaboration;
+    if (local && remote && local.groupId === remote.groupId && local.projectId === remote.projectId
+      && local.adminBranch === remote.adminBranch && local.contentBranch === remote.contentBranch) {
+      return { ...org, collaboration: local }; // retain this device's cache, never import another device's grants
+    }
+    return org;
+  });
+  doc = restored;
+  commit();
+}
 export function useOrgs(): OrgDoc {
   return useSyncExternalStore(subscribeOrgs, orgSnapshot, orgSnapshot);
 }

@@ -1,6 +1,6 @@
 {
-  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
-  "count": 7376,
+  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
+  "count": 7436,
   "messages": [
     {
       "key": "app.08566a4b57a3",
@@ -15,7 +15,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 82,
+          "line": 92,
           "context": "showToast(i18nMsg(\"app.08566a4b57a3\", { value: String(r.account?.name ?? \"\") }))"
         }
       ]
@@ -28,7 +28,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 113,
+          "line": 123,
           "context": "{i18n(\"app.4d6e46fec3d4\")}"
         }
       ]
@@ -18102,7 +18102,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 173,
+          "line": 174,
           "context": "new Error(i18n(\"components.namecardsection.032ff20471ee\"))"
         }
       ]
@@ -18115,7 +18115,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 414,
+          "line": 415,
           "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
         }
       ]
@@ -18128,7 +18128,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 671,
+          "line": 672,
           "context": "{i18n(\"components.namecardsection.12f63705ed44\")}"
         }
       ]
@@ -18141,7 +18141,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 85,
+          "line": 86,
           "context": "(c.card as PersonalCard).bio || i18n(\"components.namecardsection.140181c90ccb\")"
         }
       ]
@@ -18154,7 +18154,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 300,
+          "line": 301,
           "context": "{i18n(\"components.namecardsection.16b12866400d\")}"
         }
       ]
@@ -18172,7 +18172,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 554,
+          "line": 555,
           "context": "{i18n(\"components.namecardsection.16c88a1bd8a9\", { name: String(c.name) })}"
         }
       ]
@@ -18185,7 +18185,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 433,
+          "line": 434,
           "context": "label: i18nMsg(\"components.namecardsection.1aadd1661e1d\")"
         }
       ]
@@ -18198,12 +18198,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 663,
+          "line": 664,
           "context": "channelId === shown.id ? i18n(\"components.namecardsection.e1bb8719dfa4\") : i18n(\"components.namecardsection.1ce1f2806523\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 686,
+          "line": 687,
           "context": "{i18n(\"components.namecardsection.1ce1f2806523\")}"
         }
       ]
@@ -18216,7 +18216,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 591,
+          "line": 592,
           "context": "{i18n(\"components.namecardsection.1da923d22b2f\")}"
         }
       ]
@@ -18229,12 +18229,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 153,
+          "line": 154,
           "context": "label: i18nMsg(\"components.namecardsection.22530f991560\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 270,
+          "line": 271,
           "context": "k: i18n(\"components.namecardsection.22530f991560\")"
         }
       ]
@@ -18247,7 +18247,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 711,
+          "line": 712,
           "context": "{i18n(\"components.namecardsection.2335399f1fa8\")}"
         }
       ]
@@ -18260,7 +18260,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 572,
+          "line": 573,
           "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
         }
       ]
@@ -18273,7 +18273,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 703,
+          "line": 704,
           "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
         }
       ]
@@ -18286,7 +18286,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 694,
+          "line": 695,
           "context": "{i18n(\"components.namecardsection.2a7be7efb999\")}"
         }
       ]
@@ -18299,7 +18299,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 196,
+          "line": 197,
           "context": "email || i18n(\"components.namecardsection.2b80886afc39\")"
         }
       ]
@@ -18312,7 +18312,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 225,
+          "line": 226,
           "context": "showToast(i18nMsg(\"components.namecardsection.2da6ab45cd99\"))"
         }
       ]
@@ -18325,7 +18325,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 680,
+          "line": 681,
           "context": "{i18n(\"components.namecardsection.2f9daa828907\")}"
         }
       ]
@@ -18338,12 +18338,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 607,
+          "line": 608,
           "context": "k: i18n(\"components.namecardsection.323a881ebd47\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 640,
+          "line": 641,
           "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
         }
       ]
@@ -18356,7 +18356,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 249,
+          "line": 250,
           "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
         }
       ]
@@ -18369,17 +18369,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 519,
+          "line": 520,
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 576,
+          "line": 577,
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 585,
+          "line": 586,
           "context": "{i18n(\"components.namecardsection.365d7c6687b0\")}"
         }
       ]
@@ -18392,7 +18392,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 266,
+          "line": 267,
           "context": "{i18n(\"components.namecardsection.381574fa5f7b\")}"
         }
       ]
@@ -18405,7 +18405,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 568,
+          "line": 569,
           "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
         }
       ]
@@ -18418,7 +18418,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 433,
+          "line": 434,
           "context": "openFormModal(i18nMsg(\"components.namecardsection.385d439d3e16\"), [{ key: \"text\", label: i18nMsg(\"components.namecardsection.1aadd1661e1d\"), kind: \"textarea\", required: true }])"
         }
       ]
@@ -18431,7 +18431,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 528,
+          "line": 529,
           "context": "{i18n(\"components.namecardsection.3e21bceb6dc5\")}"
         }
       ]
@@ -18444,7 +18444,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 689,
+          "line": 690,
           "context": "{i18n(\"components.namecardsection.3fd47edce45b\")}"
         }
       ]
@@ -18457,7 +18457,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 252,
+          "line": 253,
           "context": "{i18n(\"components.namecardsection.48659c30cb24\")}"
         }
       ]
@@ -18470,12 +18470,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 52,
+          "line": 53,
           "context": "return i18n(\"components.namecardsection.487e926379fe\");"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 597,
+          "line": 598,
           "context": "{i18n(\"components.namecardsection.487e926379fe\")}"
         }
       ]
@@ -18488,7 +18488,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 414,
+          "line": 415,
           "context": "dup ? i18nMsg(\"components.namecardsection.4a49d50fc1ad\") : i18nMsg(\"components.namecardsection.0c557ff432a7\")"
         }
       ]
@@ -18501,7 +18501,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 301,
+          "line": 302,
           "context": "{i18n(\"components.namecardsection.4dd6695c0a10\")}"
         }
       ]
@@ -18514,7 +18514,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 658,
+          "line": 659,
           "context": "sharingId === shown.id ? i18n(\"components.namecardsection.56b63def0e29\")\n                      : shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ]
@@ -18527,12 +18527,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 187,
+          "line": 188,
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 649,
+          "line": 650,
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         }
       ]
@@ -18545,7 +18545,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 703,
+          "line": 704,
           "context": "m.cloudPath ? i18n(\"components.namecardsection.28603f7d8ab4\") : i18n(\"components.namecardsection.5a51f9817528\")"
         }
       ]
@@ -18558,7 +18558,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 513,
+          "line": 514,
           "context": "label: i18n(\"components.namecardsection.5c55a67935af\")"
         }
       ]
@@ -18571,12 +18571,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 250,
+          "line": 251,
           "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 589,
+          "line": 590,
           "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
         }
       ]
@@ -18589,17 +18589,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 152,
+          "line": 153,
           "context": "label: i18nMsg(\"components.namecardsection.6773310492a9\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 269,
+          "line": 270,
           "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 605,
+          "line": 606,
           "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
         }
       ]
@@ -18617,7 +18617,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 675,
+          "line": 676,
           "context": "confirmOk(i18nMsg(\"components.namecardsection.6a7ab670dbb4\", { name: String(shown.name) }))"
         }
       ]
@@ -18630,7 +18630,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 223,
+          "line": 224,
           "context": "showToast(i18nMsg(\"components.namecardsection.6b70038c3f75\"))"
         }
       ]
@@ -18643,7 +18643,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 505,
+          "line": 506,
           "context": "{i18n(\"components.namecardsection.6d434210c5bf\")}"
         }
       ]
@@ -18656,12 +18656,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 242,
+          "line": 243,
           "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 612,
+          "line": 613,
           "context": "{i18n(\"components.namecardsection.6e7ecbfdeb6c\")}"
         }
       ]
@@ -18674,7 +18674,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 590,
+          "line": 591,
           "context": "{i18n(\"components.namecardsection.6ebb64384907\")}"
         }
       ]
@@ -18687,7 +18687,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 568,
+          "line": 569,
           "context": "filterActive ? i18n(\"components.namecardsection.3816a0cab667\") : i18n(\"components.namecardsection.6eeeec8e5551\")"
         }
       ]
@@ -18700,12 +18700,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 155,
+          "line": 156,
           "context": "label: i18nMsg(\"components.namecardsection.6f52cc94db65\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 272,
+          "line": 273,
           "context": "k: i18n(\"components.namecardsection.6f52cc94db65\")"
         }
       ]
@@ -18718,7 +18718,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 251,
+          "line": 252,
           "context": "{i18n(\"components.namecardsection.70c95a778953\")}"
         }
       ]
@@ -18731,7 +18731,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 473,
+          "line": 474,
           "context": "starred.has(c.id) ? i18n(\"components.namecardsection.a619ae87fda9\") : i18n(\"components.namecardsection.70d929b3b1f6\")"
         }
       ]
@@ -18744,7 +18744,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 53,
+          "line": 54,
           "context": "return i18n(\"components.namecardsection.728a0cd5f147\");"
         }
       ]
@@ -18757,7 +18757,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 641,
+          "line": 642,
           "context": "k: i18n(\"components.namecardsection.79d504ee7bef\")"
         }
       ]
@@ -18770,7 +18770,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 159,
+          "line": 160,
           "context": "placeholder: i18nMsg(\"components.namecardsection.7a456447d1df\")"
         }
       ]
@@ -18783,47 +18783,47 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 269,
-          "context": "personal.name || i18n(\"components.namecardsection.7f05190592e5\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
           "line": 270,
-          "context": "personal.website || i18n(\"components.namecardsection.7f05190592e5\")"
+          "context": "personal.name || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
           "line": 271,
-          "context": "personal.social || i18n(\"components.namecardsection.7f05190592e5\")"
+          "context": "personal.website || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
           "line": 272,
+          "context": "personal.social || i18n(\"components.namecardsection.7f05190592e5\")"
+        },
+        {
+          "file": "apps/desktop/src/components/NameCardSection.tsx",
+          "line": 273,
           "context": "personal.phone || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 605,
+          "line": 606,
           "context": "personal.name || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 606,
+          "line": 607,
           "context": "personal.bio || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 607,
+          "line": 608,
           "context": "[personal.website, personal.social, personal.phone].filter(Boolean).join(\" · \") || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 638,
+          "line": 639,
           "context": "shown.note || i18n(\"components.namecardsection.7f05190592e5\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 640,
+          "line": 641,
           "context": "contactLink(shown) || i18n(\"components.namecardsection.7f05190592e5\")"
         }
       ]
@@ -18836,7 +18836,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 276,
+          "line": 277,
           "context": "{i18n(\"components.namecardsection.80e5b5076b66\")}"
         }
       ]
@@ -18849,12 +18849,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 606,
+          "line": 607,
           "context": "k: i18n(\"components.namecardsection.8131eafd0239\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 639,
+          "line": 640,
           "context": "k: i18n(\"components.namecardsection.8131eafd0239\")"
         }
       ]
@@ -18867,7 +18867,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 212,
+          "line": 213,
           "context": "e instanceof Error ? e.message : i18nMsg(\"components.namecardsection.86ee28991b99\")"
         }
       ]
@@ -18880,7 +18880,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 217,
+          "line": 218,
           "context": "showToast(i18nMsg(\"components.namecardsection.8791b9f80795\"))"
         }
       ]
@@ -18893,7 +18893,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 151,
+          "line": 152,
           "context": "openFormModal(i18nMsg(\"components.namecardsection.87e6ed03c487\"), [\n      { key: \"name\", label: i18nMsg(\"components.namecardsection.6773310492a9\"), required: true, default: p.name },\n      { key: \"website\", label: i18nMsg(\"components.namecardsection.22530f991560\"), default: p.website },\n      { key: \"social\", label: i18nMsg(\"components.namecardsection.ed7ece7d61a0\"), default: p.social },\n      { key: \"phone\", label: i18nMsg(\"components.namecardsection.6f52cc94db65\"), default: p.phone },\n      {\n        key: \"cloudEmail\",\n        label: i18nMsg(\"components.namecardsection.cf09399631a7\"),\n        placeholder: i18nMsg(\"components.namecardsection.7a456447d1df\"),\n        default: p.cloudEmail || "
         }
       ]
@@ -18906,7 +18906,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 244,
+          "line": 245,
           "context": "personal.cover ? i18n(\"components.namecardsection.8af2bc38c6a7\") : i18n(\"components.namecardsection.bc6b27e11f11\")"
         }
       ]
@@ -18919,17 +18919,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 245,
+          "line": 246,
           "context": "{i18n(\"components.namecardsection.8e5ba1de0a5c\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 614,
+          "line": 615,
           "context": "{i18n(\"components.namecardsection.8e5ba1de0a5c\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 650,
+          "line": 651,
           "context": "{i18n(\"components.namecardsection.8e5ba1de0a5c\")}"
         }
       ]
@@ -18942,7 +18942,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 643,
+          "line": 644,
           "context": "shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ]
@@ -18955,7 +18955,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 306,
+          "line": 307,
           "context": "{i18n(\"components.namecardsection.9196d03dd121\")}"
         }
       ]
@@ -18968,7 +18968,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 702,
+          "line": 703,
           "context": "i18n(\"components.namecardsection.9491ade2781f\") + m.text"
         }
       ]
@@ -18981,7 +18981,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 669,
+          "line": 670,
           "context": "showToast(i18nMsg(\"components.namecardsection.97f4308501ff\"))"
         }
       ]
@@ -18994,12 +18994,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 186,
+          "line": 187,
           "context": "showToast(i18nMsg(\"components.namecardsection.98a4e5fe3ab0\"))"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 649,
+          "line": 650,
           "context": "r.ok ? i18nMsg(\"components.namecardsection.98a4e5fe3ab0\") : r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         }
       ]
@@ -19012,7 +19012,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 625,
+          "line": 626,
           "context": "shown ? i18n(\"components.namecardsection.a12513e5d0fd\", { name: String(shown.name) }) : i18n(\"components.namecardsection.9e3899a169a0\")"
         }
       ]
@@ -19025,12 +19025,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 187,
+          "line": 188,
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 649,
+          "line": 650,
           "context": "r.reason === \"duplicate\" ? i18nMsg(\"components.namecardsection.9e7804614304\") : i18nMsg(\"components.namecardsection.57ce97c584ca\")"
         }
       ]
@@ -19048,7 +19048,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 413,
+          "line": 414,
           "context": "showToast(i18nMsg(\"components.namecardsection.9fc6a0e68737\", { ok: String(ok) }))"
         }
       ]
@@ -19066,7 +19066,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 625,
+          "line": 626,
           "context": "shown ? i18n(\"components.namecardsection.a12513e5d0fd\", { name: String(shown.name) }) : i18n(\"components.namecardsection.9e3899a169a0\")"
         }
       ]
@@ -19084,7 +19084,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 425,
+          "line": 426,
           "context": "showToast(i18nMsg(\"components.namecardsection.a24929811487\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ]
@@ -19097,7 +19097,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 233,
+          "line": 234,
           "context": "showToast(i18nMsg(\"components.namecardsection.a3c0025dd64c\"))"
         }
       ]
@@ -19119,7 +19119,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 447,
+          "line": 448,
           "context": "showToast(i18nMsg(\"components.namecardsection.a3dd578bcf36\", { name: String(f.name), reason: String(r.reason) }))"
         }
       ]
@@ -19132,7 +19132,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 473,
+          "line": 474,
           "context": "starred.has(c.id) ? i18n(\"components.namecardsection.a619ae87fda9\") : i18n(\"components.namecardsection.70d929b3b1f6\")"
         }
       ]
@@ -19145,7 +19145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 249,
+          "line": 250,
           "context": "copying ? i18n(\"components.namecardsection.a8b8730c9611\") : i18n(\"components.namecardsection.353e57027d77\")"
         }
       ]
@@ -19158,7 +19158,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 176,
+          "line": 177,
           "context": "showToast(i18nMsg(\"components.namecardsection.a938ed15b3e5\"))"
         }
       ]
@@ -19171,7 +19171,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 587,
+          "line": 588,
           "context": "{i18n(\"components.namecardsection.a9f6d3616710\")}"
         }
       ]
@@ -19184,7 +19184,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 299,
+          "line": 300,
           "context": "{i18n(\"components.namecardsection.b1bd19b13336\")}"
         }
       ]
@@ -19197,7 +19197,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 615,
+          "line": 616,
           "context": "{i18n(\"components.namecardsection.b41cbf11b07d\")}"
         }
       ]
@@ -19210,12 +19210,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 515,
+          "line": 516,
           "context": "label: i18n(\"components.namecardsection.b4d203dea5b9\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 637,
+          "line": 638,
           "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b4d203dea5b9\") : i18n(\"components.namecardsection.b9b1480dd6ec\")"
         }
       ]
@@ -19228,7 +19228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 640,
+          "line": 641,
           "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b52ea6d355c2\") : i18n(\"components.namecardsection.323a881ebd47\")"
         }
       ]
@@ -19241,7 +19241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 84,
+          "line": 85,
           "context": "(c.card as OrgCard).brief || i18n(\"components.namecardsection.b8fde21bc2ca\")"
         }
       ]
@@ -19254,12 +19254,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 514,
+          "line": 515,
           "context": "label: i18n(\"components.namecardsection.b9b1480dd6ec\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 637,
+          "line": 638,
           "context": "shown.kind === \"organization\" ? i18n(\"components.namecardsection.b4d203dea5b9\") : i18n(\"components.namecardsection.b9b1480dd6ec\")"
         }
       ]
@@ -19272,7 +19272,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 637,
+          "line": 638,
           "context": "k: i18n(\"components.namecardsection.ba40014ff496\")"
         }
       ]
@@ -19285,7 +19285,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 436,
+          "line": 437,
           "context": "r.ok ? i18nMsg(\"components.namecardsection.bc398485aa6a\") : i18nMsg(\"components.namecardsection.f272a8187531\", { reason: String(r.reason) })"
         }
       ]
@@ -19298,7 +19298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 244,
+          "line": 245,
           "context": "personal.cover ? i18n(\"components.namecardsection.8af2bc38c6a7\") : i18n(\"components.namecardsection.bc6b27e11f11\")"
         }
       ]
@@ -19311,7 +19311,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 668,
+          "line": 669,
           "context": "showToast(i18nMsg(\"components.namecardsection.c5c9b9b48b9c\"))"
         }
       ]
@@ -19324,7 +19324,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 172,
+          "line": 173,
           "context": "new Error(i18n(\"components.namecardsection.c747909af9bf\"))"
         }
       ]
@@ -19342,7 +19342,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 451,
+          "line": 452,
           "context": "showToast(i18nMsg(\"components.namecardsection.c779c2d1fbe9\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ]
@@ -19355,7 +19355,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 158,
+          "line": 159,
           "context": "label: i18nMsg(\"components.namecardsection.cf09399631a7\")"
         }
       ]
@@ -19368,7 +19368,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 162,
+          "line": 163,
           "context": "label: i18nMsg(\"components.namecardsection.d35e72f2cbcf\")"
         }
       ]
@@ -19381,7 +19381,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 578,
+          "line": 579,
           "context": "{i18n(\"components.namecardsection.d62e64a05006\")}"
         }
       ]
@@ -19394,7 +19394,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 211,
+          "line": 212,
           "context": "showToast(i18nMsg(\"components.namecardsection.d71efdfa0d21\"))"
         }
       ]
@@ -19407,7 +19407,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 712,
+          "line": 713,
           "context": "{i18n(\"components.namecardsection.d909fbc0d1e8\")}"
         }
       ]
@@ -19420,12 +19420,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 273,
+          "line": 274,
           "context": "k: i18n(\"components.namecardsection.daa435b57879\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 608,
+          "line": 609,
           "context": "k: i18n(\"components.namecardsection.daa435b57879\")"
         }
       ]
@@ -19438,7 +19438,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 638,
+          "line": 639,
           "context": "k: i18n(\"components.namecardsection.daede9881787\")"
         }
       ]
@@ -19451,7 +19451,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 518,
+          "line": 519,
           "context": "{i18n(\"components.namecardsection.dff9e5a876ae\")}"
         }
       ]
@@ -19464,7 +19464,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 663,
+          "line": 664,
           "context": "channelId === shown.id ? i18n(\"components.namecardsection.e1bb8719dfa4\") : i18n(\"components.namecardsection.1ce1f2806523\")"
         }
       ]
@@ -19482,7 +19482,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 178,
+          "line": 179,
           "context": "showToast(i18nMsg(\"components.namecardsection.e5aeb36dd793\", { value: String(e instanceof Error ? e.message : String(e)) }))"
         }
       ]
@@ -19500,12 +19500,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 315,
+          "line": 316,
           "context": "{i18n(\"components.namecardsection.e84dedddc8c4\", { name: String(o.name) })}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 541,
+          "line": 542,
           "context": "{i18n(\"components.namecardsection.e84dedddc8c4\", { name: String(o.name) })}"
         }
       ]
@@ -19518,12 +19518,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 154,
+          "line": 155,
           "context": "label: i18nMsg(\"components.namecardsection.ed7ece7d61a0\")"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 271,
+          "line": 272,
           "context": "k: i18n(\"components.namecardsection.ed7ece7d61a0\")"
         }
       ]
@@ -19541,7 +19541,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 436,
+          "line": 437,
           "context": "r.ok ? i18nMsg(\"components.namecardsection.bc398485aa6a\") : i18nMsg(\"components.namecardsection.f272a8187531\", { reason: String(r.reason) })"
         }
       ]
@@ -19554,7 +19554,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 571,
+          "line": 572,
           "context": "filterActive\n              ? i18n(\"components.namecardsection.f2af14b00970\")\n              : i18n(\"components.namecardsection.2506df7b2e41\")"
         }
       ]
@@ -19567,7 +19567,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 506,
+          "line": 507,
           "context": "{i18n(\"components.namecardsection.f3c602ccaabb\")}"
         }
       ]
@@ -19580,7 +19580,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 266,
+          "line": 267,
           "context": "{i18n(\"components.namecardsection.f8802d448332\")}"
         }
       ]
@@ -19593,7 +19593,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 307,
+          "line": 308,
           "context": "{i18n(\"components.namecardsection.faf7ec668417\")}"
         }
       ]
@@ -19606,12 +19606,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 243,
+          "line": 244,
           "context": "{i18n(\"components.namecardsection.fb17c85750c7\")}"
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 613,
+          "line": 614,
           "context": "{i18n(\"components.namecardsection.fb17c85750c7\")}"
         }
       ]
@@ -19629,7 +19629,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 449,
+          "line": 450,
           "context": "showToast(i18nMsg(\"components.namecardsection.fb1cbf2a96f7\", { ok: String(ok) }))"
         }
       ]
@@ -33554,7 +33554,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 642,
+          "line": 643,
           "context": "shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ]
@@ -33616,7 +33616,7 @@
         },
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 642,
+          "line": 643,
           "context": "shown.shared?.acceptedAt\n                    ? i18n(\"friends.connected\") : shown.shared?.invitationPublishedAt ? i18n(\"friends.awaitingPeer\")\n                    : shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ]
@@ -33642,7 +33642,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ]
@@ -33655,7 +33655,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 705,
+          "line": 706,
           "context": "{i18n(\"friends.download\")}"
         }
       ]
@@ -33681,7 +33681,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 703,
+          "line": 704,
           "context": "m.mine ? i18n(\"friends.fromMe\") : shown.name"
         }
       ]
@@ -33783,7 +33783,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 643,
+          "line": 644,
           "context": "shown.shared ? i18n(\"friends.legacyChannel\") : i18n(\"components.namecardsection.90b310149a74\")"
         }
       ]
@@ -33824,22 +33824,22 @@
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 424,
+          "line": 439,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 428,
+          "line": 443,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 444,
+          "line": 459,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 446,
+          "line": 461,
           "context": "reason: i18n(\"friends.modeChanged\")"
         },
         {
@@ -33932,7 +33932,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 653,
+          "line": 654,
           "context": "{i18n(\"friends.openFiles\")}"
         }
       ]
@@ -33997,7 +33997,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 423,
+          "line": 424,
           "context": "showToast(i18nMsg(\"friends.published\"), 7000)"
         }
       ]
@@ -34028,7 +34028,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 688,
+          "line": 689,
           "context": "{i18n(\"friends.refreshMessages\")}"
         }
       ]
@@ -34041,7 +34041,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "shown.shared ? i18n(\"friends.resend\") : i18n(\"friends.create\")"
         }
       ]
@@ -34080,7 +34080,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 419,
+          "line": 420,
           "context": "confirmOk(i18nMsg(\"friends.upgradeLegacy\"))"
         }
       ]
@@ -36701,7 +36701,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 795,
+          "line": 798,
           "context": "new Error(i18n(\"lib.clients.193d04db6243\"))"
         }
       ]
@@ -36723,7 +36723,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 799,
+          "line": 802,
           "context": "new Error(i18n(\"lib.clients.cbad5bdfa19f\", { mime: String(mime), length: String(buf.length) }))"
         }
       ]
@@ -36741,7 +36741,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 794,
+          "line": 797,
           "context": "new Error(i18n(\"lib.clients.dc300032c143\", { length: String(buf.length) }))"
         }
       ]
@@ -42249,7 +42249,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 403,
+          "line": 406,
           "context": "new Error(i18n(\"lib.infolib.2d49d13d15b6\"))"
         }
       ]
@@ -49285,12 +49285,12 @@
         },
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 28,
+          "line": 29,
           "context": "{i18n(\"pages.contacts.06657c279571\")}"
         },
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 30,
+          "line": 31,
           "context": "{i18n(\"pages.contacts.06657c279571\")}"
         }
       ]
@@ -49303,7 +49303,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 37,
+          "line": 39,
           "context": "label: i18n(\"pages.contacts.1ad56c152731\")"
         }
       ]
@@ -49316,7 +49316,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 38,
+          "line": 40,
           "context": "label: i18n(\"pages.contacts.51cc2efa3e8d\")"
         }
       ]
@@ -49329,7 +49329,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 29,
+          "line": 30,
           "context": "{i18n(\"pages.contacts.b62dac5fc7e9\")}"
         }
       ]
@@ -49342,7 +49342,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 48,
+          "line": 50,
           "context": "{i18n(\"pages.contacts.d3548ea24212\")}"
         }
       ]
@@ -49355,7 +49355,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Contacts.tsx",
-          "line": 52,
+          "line": 54,
           "context": "{i18n(\"pages.contacts.ea0abe91fe00\")}"
         }
       ]
@@ -92230,6 +92230,808 @@
       ]
     },
     {
+      "key": "profile.field.announcements",
+      "source": "公告",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "announcements:t(\"profile.field.announcements\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.bio",
+      "source": "个人简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "bio:t(\"profile.field.bio\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.body",
+      "source": "正文",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "body:t(\"profile.field.body\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.brief",
+      "source": "简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "brief:t(\"profile.field.brief\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.description",
+      "source": "说明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "description:t(\"profile.field.description\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.email",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "email:t(\"profile.field.email\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.gitlabRepos",
+      "source": "代码仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "gitlabRepos:t(\"profile.field.gitlabRepos\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.image",
+      "source": "图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "avatar:t(\"profile.field.image\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "src:t(\"profile.field.image\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "cover:t(\"profile.field.image\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 58,
+          "context": "{t(\"profile.field.image\")}"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.libraries",
+      "source": "资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "libraries:t(\"profile.field.libraries\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.members",
+      "source": "成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "members:t(\"profile.field.members\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.name",
+      "source": "姓名 / 名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "name:t(\"profile.field.name\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.note",
+      "source": "备注",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "note:t(\"profile.field.note\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.owner",
+      "source": "负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "owner:t(\"profile.field.owner\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.phone",
+      "source": "手机号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "phone:t(\"profile.field.phone\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.projects",
+      "source": "项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "projects:t(\"profile.field.projects\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.role",
+      "source": "角色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "role:t(\"profile.field.role\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.social",
+      "source": "社交媒体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "social:t(\"profile.field.social\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.status",
+      "source": "状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "status:t(\"profile.field.status\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.title",
+      "source": "标题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "title:t(\"profile.field.title\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.field.website",
+      "source": "个人网址",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "website:t(\"profile.field.website\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.role.guest",
+      "source": "访客",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "guest:t(\"profile.role.guest\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.role.member",
+      "source": "成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "member:t(\"profile.role.member\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.role.owner",
+      "source": "所有者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "owner:t(\"profile.role.owner\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.status.active",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "active:t(\"profile.status.active\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.status.done",
+      "source": "已完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "done:t(\"profile.status.done\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.status.planned",
+      "source": "待开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "planned:t(\"profile.status.planned\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.chooseVersion",
+      "source": "选你想保留的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 91,
+          "context": "{t(\"profile.sync.chooseVersion\")}"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.combined",
+      "source": "两边合在一起",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 69,
+          "context": "label:t(\"profile.sync.combined\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.confirmDelete",
+      "source": "确认删除这条记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "data===null?t(\"profile.sync.confirmDelete\"):option.kind===\"merge\"?t(\"profile.sync.useCombined\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.conflict",
+      "source": "有更改需要你确认，其余内容已自动同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 37,
+          "context": "conflict:t(\"profile.sync.conflict\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.deleted",
+      "source": "已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 53,
+          "context": "return t(\"profile.sync.deleted\");"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.deletedHere",
+      "source": "这一边已经删除了它",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 75,
+          "context": "{t(\"profile.sync.deletedHere\")}"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.field",
+      "source": "冲突字段",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.keepCard",
+      "source": "保留这张名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.keepLocal",
+      "source": "保留本机",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.keepVersion",
+      "source": "保留这一版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.later",
+      "source": "稍后再说",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 91,
+          "context": "{t(\"profile.sync.later\")}"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.local",
+      "source": "本机内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.merge",
+      "source": "确认合并",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.mergeHelp",
+      "source": "默认自动合并不同字段和列表条目。此处有同一字段的矛盾或删除冲突；手动合并会保留双方条目，同一字段优先本机，删除冲突保留记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.notSet",
+      "source": "未填写",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 54,
+          "context": "return t(\"profile.sync.notSet\");"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.now",
+      "source": "立即同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 88,
+          "context": "{t(\"profile.sync.now\")}"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.offline",
+      "source": "连接云盘后，自动同步名片、好友与组织索引",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 36,
+          "context": "offline:t(\"profile.sync.offline\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.otherDevice",
+      "source": "另一台设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 67,
+          "context": "label:t(\"profile.sync.otherDevice\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.paused",
+      "source": "资料同步已暂停，请检查云盘连接及 OneTHU-Profile 私有资料库权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 37,
+          "context": "paused:t(\"profile.sync.paused\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.pending",
+      "source": "有本地更改，等待同步…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 36,
+          "context": "pending:t(\"profile.sync.pending\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.personal",
+      "source": "个人名片冲突",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 89,
+          "context": "c.key===\"personal\"?t(\"profile.sync.personal\"):c.local.value?.name??c.remote.value?.name??t(\"profile.sync.record\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.preview",
+      "source": "合并预览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.privateValue",
+      "source": "私密字段（不展开显示）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 55,
+          "context": "return t(\"profile.sync.privateValue\");"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.record",
+      "source": "记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 47,
+          "context": "fields[trail.split(\".\").at(-1)??\"\"]??t(\"profile.sync.record\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 59,
+          "context": "v.name??v.title??t(\"profile.sync.record\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 59,
+          "context": "value.name??value.title??t(\"profile.sync.record\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 89,
+          "context": "c.local.value?.name??c.remote.value?.name??t(\"profile.sync.record\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.remote",
+      "source": "云端内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.review",
+      "source": "看一下",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 89,
+          "context": "{t(\"profile.sync.review\")}"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.synced",
+      "source": "名片、好友与组织索引已同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 37,
+          "context": "synced:t(\"profile.sync.synced\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.syncing",
+      "source": "正在同步名片、好友与组织索引…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 36,
+          "context": "syncing:t(\"profile.sync.syncing\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.thisDevice",
+      "source": "这台设备",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 67,
+          "context": "label:t(\"profile.sync.thisDevice\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.useCombined",
+      "source": "两边都保留",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"merge\"?t(\"profile.sync.useCombined\"):personal?(option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")):(option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\"))"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.useOtherCard",
+      "source": "使用另一张名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepCard\"):t(\"profile.sync.useOtherCard\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.useOtherVersion",
+      "source": "使用另一版",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 81,
+          "context": "option.kind===\"local\"?t(\"profile.sync.keepVersion\"):t(\"profile.sync.useOtherVersion\")"
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.useRemote",
+      "source": "使用云端，丢弃本机变更",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "key": "profile.sync.visualHelp",
+      "source": "两台设备对同一处做了不同修改。选你想保留的卡片或内容，其他不冲突的修改都会保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 92,
+          "context": "{t(\"profile.sync.visualHelp\")}"
+        }
+      ]
+    },
+    {
       "key": "prompt.input",
       "source": "输入内容",
       "kind": "text",
@@ -92841,7 +93643,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/app.tsx",
-          "line": 335,
+          "line": 337,
           "context": "logLine(i18n(\"state.app.5ac30ce1e9bb\", { value: String(String(firstErr).slice(0, 120)) }))"
         }
       ]
@@ -98136,7 +98938,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/nameCard.ts",
-          "line": 269,
+          "line": 274,
           "context": "title: i18n(\"state.namecard.6344e8e2c076\", { value: String(doc.personal.name || \"我\") })"
         }
       ]
@@ -98154,7 +98956,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/nameCard.ts",
-          "line": 273,
+          "line": 278,
           "context": "title: i18n(\"state.namecard.e769cfbccd53\", { name: String(org.name) })"
         }
       ]
@@ -99905,7 +100707,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 391,
+          "line": 406,
           "context": "reason: i18n(\"state.org.1e4404a53a1d\")"
         }
       ]
@@ -99918,7 +100720,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 385,
+          "line": 400,
           "context": "reason: i18n(\"state.org.1f5874fd9b2a\")"
         }
       ]
@@ -99931,7 +100733,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 371,
+          "line": 386,
           "context": "reason: i18n(\"state.org.22f86a2a8ff2\")"
         }
       ]
@@ -99944,7 +100746,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 387,
+          "line": 402,
           "context": "reason: i18n(\"state.org.3dc0aa93b10c\")"
         }
       ]
@@ -99957,7 +100759,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 402,
+          "line": 417,
           "context": "reason: i18n(\"state.org.7aa0c43fe053\")"
         }
       ]
@@ -99970,7 +100772,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 388,
+          "line": 403,
           "context": "reason: i18n(\"state.org.989f1cde10a3\")"
         }
       ]
@@ -99983,7 +100785,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 430,
+          "line": 445,
           "context": "dec.reason ?? i18n(\"state.org.c4591b5b1fe8\")"
         }
       ]
@@ -99996,7 +100798,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/org.ts",
-          "line": 379,
+          "line": 394,
           "context": "reason: i18n(\"state.org.c6b6912e4bd5\")"
         }
       ]
@@ -101097,7 +101899,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 307,
+          "line": 311,
           "context": "new Error(i18n(\"state.seafile.0507dadfda6a\"))"
         }
       ]
@@ -101110,7 +101912,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 232,
+          "line": 236,
           "context": "new Error(i18n(\"state.seafile.15e1ef41e215\"))"
         }
       ]
@@ -101123,7 +101925,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 406,
+          "line": 410,
           "context": "new Error(i18n(\"state.seafile.2a15ea48f5c7\"))"
         }
       ]
@@ -101136,32 +101938,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 171,
+          "line": 175,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 264,
+          "line": 268,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 271,
+          "line": 275,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 278,
+          "line": 282,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 285,
+          "line": 289,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 331,
+          "line": 335,
           "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
         }
       ]
@@ -101174,17 +101976,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 297,
+          "line": 301,
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 318,
+          "line": 322,
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 325,
+          "line": 329,
           "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
         }
       ]
@@ -101227,7 +102029,7 @@
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 36,
+          "line": 40,
           "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
         },
         {
@@ -101250,7 +102052,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 176,
+          "line": 180,
           "context": "new Error(i18n(\"state.seafile.deleteOwnerOnly\"))"
         }
       ]
@@ -101263,7 +102065,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 42,
+          "line": 44,
           "context": "new Error(i18n(\"state.seafile.duplicatePersonalLibraries\"))"
         }
       ]
@@ -101281,7 +102083,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 266,
+          "line": 270,
           "context": "showToast(i18nMsg(\"state.seafile.f206fb3a20d8\", { local: String(local) }))"
         }
       ]
@@ -101294,7 +102096,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 274,
+          "line": 278,
           "context": "showToast(i18nMsg(\"state.seafile.f423b2f16ab1\"))"
         }
       ]
@@ -101307,7 +102109,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 382,
+          "line": 386,
           "context": "new Error(i18n(\"state.seafile.f6d2148271ab\"))"
         }
       ]
@@ -101320,30 +102122,30 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 67,
+          "line": 70,
           "context": "new Error(i18n(\"state.seafile.libraryCreationUnconfirmed\"))"
         },
         {
           "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 78,
+          "line": 81,
           "context": "new Error(i18n(\"state.seafile.libraryCreationUnconfirmed\"))"
         }
       ]
     },
     {
       "key": "state.seafile.nativeRestartRequired",
-      "source": "当前程序无法确认资料库归属，已暂停自动建库、删除与同步。请更新并重新启动 OneTHU 后重试。",
+      "source": "此资料库缺少可核实的归属信息，已暂停对它自动建库、删除与同步；请先刷新资料库列表。旧版客户端请更新并重启。",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
           "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 62,
+          "line": 65,
           "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
         },
         {
           "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 65,
+          "line": 68,
           "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
         },
         {
@@ -101368,12 +102170,12 @@
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 175,
+          "line": 179,
           "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
         },
         {
           "file": "apps/desktop/src/state/seafile.ts",
-          "line": 182,
+          "line": 186,
           "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
         }
       ]

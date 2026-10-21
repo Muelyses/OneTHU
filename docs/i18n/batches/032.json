@@ -1,5 +1,5 @@
 {
-  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
+  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -1354,7 +1354,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 795,
+          "line": 798,
           "context": "new Error(i18n(\"lib.clients.193d04db6243\"))"
         }
       ],
@@ -1379,7 +1379,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 799,
+          "line": 802,
           "context": "new Error(i18n(\"lib.clients.cbad5bdfa19f\", { mime: String(mime), length: String(buf.length) }))"
         }
       ],
@@ -1400,7 +1400,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 794,
+          "line": 797,
           "context": "new Error(i18n(\"lib.clients.dc300032c143\", { length: String(buf.length) }))"
         }
       ],

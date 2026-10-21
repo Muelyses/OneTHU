@@ -5,9 +5,11 @@ import type { SeafileAccount, SeafileRepo } from "../state/seafile.js";
 /** One gate for every automatic personal-library creator. Server metadata must
  * positively identify ownership; a name, writable share or absent field cannot. */
 export function hasOwnedRepoMetadata(repo: SeafileRepo): boolean {
-  return ["mine", "shared", "group", "org"].includes(repo.repoType ?? "")
-    && typeof repo.isVirtual === "boolean" && typeof repo.owner === "string"
-    && (repo.repoType !== "mine" || repo.owner.includes("@"));
+  // Received/group rows on Tsinghua omit `virtual`. They are already known not
+  // to be personally owned; do not mistake that API shape for an outdated host.
+  if (["shared", "group", "org"].includes(repo.repoType ?? "")) return typeof repo.owner === "string";
+  return repo.repoType === "mine" && typeof repo.isVirtual === "boolean"
+    && typeof repo.owner === "string" && repo.owner.includes("@");
 }
 
 const pending = new Map<string, Promise<SeafileRepo>>();
@@ -58,7 +60,8 @@ export function ensureOwnedCloudRepo(token: string, name: string, preferredId?: 
       clearMarker(markerKey(existing.owner!, name));
       return existing;
     }
-    if (rows.some((repo) => !hasOwnedRepoMetadata(repo))) {
+    if (rows.some((repo) => repo.name === name && !hasOwnedRepoMetadata(repo))
+      || rows.some((repo) => repo.repoType === undefined)) {
       throw new Error(i18n("state.seafile.nativeRestartRequired"));
     }
     const account = await invoke<SeafileAccount>("seafile_account", { token });

@@ -26,6 +26,7 @@ const OneGUIGallery = import.meta.env.DEV ? lazy(() => import("./gallery/OneGUIG
 
 /** dev 视觉自检驱动（?explorer-preview=…）；正式版整块剥离 */
 const ExplorerPreview = import.meta.env.DEV ? lazy(() => import("./components/explorer/ExplorerPreview.js")) : null;
+const ProfileConflictHost = lazy(() => import("./components/ProfileSyncStatus.js").then(m=>({default:m.ProfileConflictHost})));
 
 /** 插件桥回填：每帧把 navigate/status 同步给插件门面（bridges 无任何反向依赖） */
 function PluginBridge() {
@@ -67,9 +68,18 @@ function Routed() {
     void import("./im/boot.js").then((m) => m.bootIm()).catch(() => undefined);
   }, [status]);
 
-  // OH 记忆云盘同步 + 共享主对话同步 + 云盘自动连接（原样保留）
+  // Account-private indexes; mode gating lives in the sync service.
   useEffect(() => {
     if (status !== "ready") return;
+    let cancelled = false;
+    let stop: (() => void) | undefined;
+    void import("./state/profileSync.js").then(m => { if (!cancelled) stop = m.startProfileSync(); }).catch(() => undefined);
+    return () => { cancelled = true; stop?.(); };
+  }, [status]);
+
+  useEffect(() => {
+    if (status !== "ready") return;
+    // OH 记忆云盘同步 + 共享主对话同步 + 云盘自动连接
     void import("./memory/sync.js").then((m) => m.memoryBootSync()).catch(() => undefined);
     void import("./im/sessionSync.js").then((m) => m.sessionBootSync()).catch(() => undefined);
     void import("./state/seafileAuto.js")
@@ -139,6 +149,7 @@ function Routed() {
       {(status === "ready") && <ChatDock />}
       {/* 首启导览（2026-10-19 起）：统一模式向导 OnboardingTour——先选语言，再选极简/实用/完整，按所选语言与模式走课程（组件内部判是否首启） */}
       {status === "ready" ? <OnboardingTourGate /> : null}
+      {status === "ready" ? <Suspense fallback={null}><ProfileConflictHost /></Suspense> : null}
       <FilePreviewHost />
       <ToastHost />
       {ExplorerPreview ? (

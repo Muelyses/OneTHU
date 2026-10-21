@@ -330,6 +330,26 @@ pub async fn seafile_upload_text(token:String, repo_id:String, parent_dir:String
     if content.len()>2*1024*1024 || name.is_empty() || name.contains('/') || name.contains('\\') || name==".." {return Err("上传文本或文件名无效".into());}
     seafile_upload_data(&token,&repo_id,&parent_dir,name,content.into_bytes(),true).await
 }
+/// Private multi-device index; card covers may exceed the generic text limit.
+/// Stream from memory, never leave personal contacts in a shared temp directory.
+#[tauri::command]
+pub async fn seafile_upload_profile(token: String, repo_id: String, name: String, content: String) -> Result<i64, String> {
+    if content.len() > 12 * 1024 * 1024 || name.len() < 20 || name.len() > 92 || !name.starts_with("device-") || !name.ends_with(".json")
+        || !name[7..name.len()-5].bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-') {
+        return Err("个人资料同步文件无效".into());
+    }
+    let account = seafile_account(token.clone()).await?;
+    let rows = seafile_repos(token.clone()).await?;
+    let repo = rows.iter().find(|r| r.id == repo_id).ok_or("个人资料库不可用")?;
+    if repo.name != "OneTHU-Profile" || !can_delete_owned_repo(repo, &account.email) {
+        return Err("个人资料同步仅限本人完整私有资料库".into());
+    }
+    seafile_assert_account_acl(token.clone(), repo_id.clone()).await?;
+    if !seafile_repo_user_shares(token.clone(), repo_id.clone()).await?.is_empty() {
+        return Err("个人资料库已共享，暂停同步".into());
+    }
+    seafile_upload_data(&token, &repo_id, "/", name, content.into_bytes(), true).await
+}
 async fn seafile_upload_data(token:&str,repo_id:&str,parent_dir:&str,filename:String,data:Vec<u8>,replace:bool)->Result<i64,String>{
     let pd = if parent_dir.starts_with('/') { parent_dir.to_string() } else { format!("/{parent_dir}") };
     // ① 取 upload-link（返回带引号的裸字符串，trim '"' —— thufs 同款）
@@ -966,6 +986,14 @@ fn expand_home(local_path: &str) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn profile_upload_rejects_invalid_names_and_oversize_before_network() {
+        for name in ["profile.json", "device-.json", "device-../invalid.json", "device-abcdefgh.json/../leak"] {
+            assert!(seafile_upload_profile("unused".into(), "unused".into(), name.into(), "{}".into()).await.is_err());
+        }
+        assert!(seafile_upload_profile("unused".into(), "unused".into(), "device-abcdefgh.json".into(), "x".repeat(12 * 1024 * 1024 + 1)).await.is_err());
+    }
 
     #[test]
     fn repository_metadata_preserves_incoming_virtual_libraries() {

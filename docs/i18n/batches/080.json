@@ -1,5 +1,5 @@
 {
-  "sourceHash": "98db4b81d8bb919a989d174ee1efac7a396fb7b5a6721e320878c2852ab7fa7b",
+  "sourceHash": "26b5251acc34853e09f21aec0dff98c70922812b8c8a267eb21f607d283690e1",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -909,368 +909,401 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "prompt.input",
-      "source": "输入内容",
+      "key": "profile.field.announcements",
+      "source": "公告",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "apps/desktop/src/lib/confirm.tsx",
-          "line": 139,
-          "context": "request ? resolveMessage(request.title) : t(\"prompt.input\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/confirm.tsx",
-          "line": 163,
-          "context": "shown ? resolveMessage(shown.title) : t(\"prompt.input\")"
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "announcements:t(\"profile.field.announcements\")"
         }
       ],
-      "translation": "Enter text",
+      "translation": "Announcements",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.bio",
+      "source": "个人简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "bio:t(\"profile.field.bio\")"
+        }
+      ],
+      "translation": "Bio",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.body",
+      "source": "正文",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "body:t(\"profile.field.body\")"
+        }
+      ],
+      "translation": "Content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.brief",
+      "source": "简介",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "brief:t(\"profile.field.brief\")"
+        }
+      ],
+      "translation": "Summary",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.description",
+      "source": "说明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "description:t(\"profile.field.description\")"
+        }
+      ],
+      "translation": "Description",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.email",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "email:t(\"profile.field.email\")"
+        }
+      ],
+      "translation": "Email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.gitlabRepos",
+      "source": "代码仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "gitlabRepos:t(\"profile.field.gitlabRepos\")"
+        }
+      ],
+      "translation": "Repositories",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.image",
+      "source": "图片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "avatar:t(\"profile.field.image\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "src:t(\"profile.field.image\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "cover:t(\"profile.field.image\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 58,
+          "context": "{t(\"profile.field.image\")}"
+        }
+      ],
+      "translation": "Image",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.libraries",
+      "source": "资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "libraries:t(\"profile.field.libraries\")"
+        }
+      ],
+      "translation": "Libraries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.members",
+      "source": "成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "members:t(\"profile.field.members\")"
+        }
+      ],
+      "translation": "Members",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.name",
+      "source": "姓名 / 名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "name:t(\"profile.field.name\")"
+        }
+      ],
+      "translation": "Name",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.note",
+      "source": "备注",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "note:t(\"profile.field.note\")"
+        }
+      ],
+      "translation": "Note",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.owner",
+      "source": "负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "owner:t(\"profile.field.owner\")"
+        }
+      ],
+      "translation": "Owner",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.phone",
+      "source": "手机号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "phone:t(\"profile.field.phone\")"
+        }
+      ],
+      "translation": "Phone",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.projects",
+      "source": "项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "projects:t(\"profile.field.projects\")"
+        }
+      ],
+      "translation": "Projects",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.role",
+      "source": "角色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 41,
+          "context": "role:t(\"profile.field.role\")"
+        }
+      ],
+      "translation": "Role",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.social",
+      "source": "社交媒体",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "social:t(\"profile.field.social\")"
+        }
+      ],
+      "translation": "Social media",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.status",
+      "source": "状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 43,
+          "context": "status:t(\"profile.field.status\")"
+        }
+      ],
+      "translation": "Status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "profile.field.title",
+      "source": "标题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 42,
+          "context": "title:t(\"profile.field.title\")"
+        }
+      ],
+      "translation": "Title",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
-      "key": "settings.label.about",
-      "source": "关于",
+      "key": "profile.field.website",
+      "source": "个人网址",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 40,
+          "context": "website:t(\"profile.field.website\")"
         }
       ],
-      "translation": "About",
+      "translation": "Website",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "settings.label.account",
-      "source": "账号",
+      "key": "profile.role.guest",
+      "source": "访客",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "guest:t(\"profile.role.guest\")"
         }
       ],
-      "translation": "Account",
+      "translation": "Guest",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "settings.label.advanced",
-      "source": "高级配置",
+      "key": "profile.role.member",
+      "source": "成员",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "member:t(\"profile.role.member\")"
         }
       ],
-      "translation": "Advanced configuration",
+      "translation": "Member",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "settings.label.appearance",
-      "source": "外观与布局",
+      "key": "profile.role.owner",
+      "source": "所有者",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "owner:t(\"profile.role.owner\")"
         }
       ],
-      "translation": "Appearance & layout",
+      "translation": "Owner",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "settings.label.basic",
-      "source": "基础设置",
+      "key": "profile.status.active",
+      "source": "进行中",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
+          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
+          "line": 56,
+          "context": "active:t(\"profile.status.active\")"
         }
       ],
-      "translation": "Basic settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.bindings",
-      "source": "账号与绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Accounts & connections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.cloud",
-      "source": "云同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Cloud sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.download",
-      "source": "下载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Downloads",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.downloads",
-      "source": "下载与存储",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Downloads & storage",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.favorites",
-      "source": "收藏夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Favorites",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.geek",
-      "source": "极客模式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Geek mode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.harness",
-      "source": "OneTHU Harness",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OneTHU Harness",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.help",
-      "source": "帮助",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Help",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.home",
-      "source": "首页布局",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Home layout",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.homework",
-      "source": "外部作业源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Assignment sources",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.market",
-      "source": "插件市场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Plugin marketplace",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.myPlugins",
-      "source": "我的插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "My plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.notification",
-      "source": "通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Notifications",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.notifications",
-      "source": "通知与提醒",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Notifications & reminders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.oneshot",
-      "source": "OneShot 快捷入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OneShot shortcuts",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.plugins",
-      "source": "插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.route.1a7930272017",
-      "source": "入口",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Entry points",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.route.359213279505",
-      "source": "IM 通道（进阶）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "IM channel (advanced)",
+      "translation": "In progress",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

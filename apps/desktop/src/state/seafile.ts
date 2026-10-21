@@ -32,6 +32,10 @@ let loadPending: Promise<void> | null = null;
 let credentialVersion = 0;
 let persistenceTail: Promise<void> = Promise.resolve();
 const listeners = new Set<() => void>();
+export function subscribeSeafile(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => { listeners.delete(listener); };
+}
 const emit = (): void => listeners.forEach((fn) => fn());
 const changedAccount = (): Error => new Error(i18n("state.seafile.accountChanged"));
 

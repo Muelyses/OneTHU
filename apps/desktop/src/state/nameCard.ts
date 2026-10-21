@@ -136,6 +136,11 @@ export function subscribeCards(f: () => void): () => void {
 export function cardsSnapshot(): CardDoc {
   return doc;
 }
+/** Account-private sync replaces the local index; it never grants remote access. */
+export function restoreCardsFromSync(value: CardDoc): void {
+  doc = JSON.parse(JSON.stringify(value)) as CardDoc;
+  commit();
+}
 export function useCards(): CardDoc {
   return useSyncExternalStore(subscribeCards, cardsSnapshot, cardsSnapshot);
 }

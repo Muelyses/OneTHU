@@ -3,7 +3,7 @@ import { t as i18n } from "../i18n/index.js";
 /** Mode-specific lessons. Pure content: importing this file never reads or writes saved preferences. */
 import type { ExperienceMode } from "../state/experienceMode.js";
 
-export type TourTarget = "home" | "workspaces" | "vault" | "organization" | "onego" | "plugins" | "appearance" | "learn" | "data" | "practical";
+export type TourTarget = "home" | "workspaces" | "vault" | "organization" | "onego" | "plugins" | "appearance" | "learn" | "data" | "practical" | "xiaoda";
 export interface Lesson {
   id: string;
   title: string;
@@ -13,7 +13,7 @@ export interface Lesson {
   action?: string;
 }
 
-/** Full mode teaches its five distinctive workflows; secondary tools remain discoverable at the end. */
+/** Full mode teaches its distinctive workflows and Xiaoda; secondary tools remain discoverable at the end. */
 export const FULL_LESSONS: Lesson[] = [
   {
     id: "board", get title() { return i18n("lib.onboardinglessons.481859b46c3d"); }, get lead() { return i18n("lib.onboardinglessons.938cf6754eca"); },
@@ -39,6 +39,11 @@ export const FULL_LESSONS: Lesson[] = [
     id: "organization", get title() { return i18n("lib.onboardinglessons.74b07795cf47"); }, get lead() { return i18n("lib.onboardinglessons.da33da7edc5c"); },
     get steps() { return i18nList(["lib.onboardinglessons.a7d4fd864624","lib.onboardinglessons.836d1b485b82","lib.onboardinglessons.b54256466693"]); },
     target: "organization", get action() { return i18n("lib.onboardinglessons.b0e75e43d9da"); },
+  },
+  {
+    id: "xiaoda", get title() { return i18n("tour.xiaoda.title"); }, get lead() { return i18n("tour.xiaoda.lead"); },
+    get steps() { return i18nList(["tour.xiaoda.chat", "tour.xiaoda.agents", "tour.xiaoda.skills", "tour.xiaoda.limits"]); },
+    target: "xiaoda", get action() { return i18n("tour.xiaoda.action"); },
   },
 ];
 

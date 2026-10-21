@@ -21,6 +21,7 @@ export interface TourIllustrationProps {
 }
 type SceneSpec = { name: string; before: string; after: string };
 const SCENES: Record<string, SceneSpec> = {
+  xiaoda: { get name() { return i18n("tour.xiaoda.title"); }, get before() { return i18n("tour.xiaoda.before"); }, get after() { return i18n("tour.xiaoda.after"); } },
   board: { get name() { return i18n("components.tourillustration.4a8eac97e960"); }, get before() { return i18n("components.tourillustration.5f716b7dedd8"); }, get after() { return i18n("components.tourillustration.ee40e75e813e"); } },
   vault: { get name() { return i18n("components.tourillustration.a53febdc5466"); }, get before() { return i18n("components.tourillustration.3a7769c0aa16"); }, get after() { return i18n("components.tourillustration.4c7a7f26e106"); } },
   code: { get name() { return i18n("components.tourillustration.96b3145a6b73"); }, get before() { return i18n("components.tourillustration.420be7bc077e"); }, get after() { return i18n("components.tourillustration.d9c8475ca6a6"); } },

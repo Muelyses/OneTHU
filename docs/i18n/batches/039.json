@@ -1,5 +1,5 @@
 {
-  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
+  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -70,7 +70,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 74
         }
       ],
       "translation": "Cloud drive, email, GitLab and Directions can be opened directly too.",
@@ -101,7 +101,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 58,
+          "line": 63,
           "context": "return i18n(\"lib.onboardinglessons.9521224b68f9\");"
         }
       ],
@@ -117,7 +117,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 65,
+          "line": 70,
           "context": "return i18n(\"lib.onboardinglessons.96110462ab73\");"
         }
       ],
@@ -149,7 +149,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 64
         }
       ],
       "translation": "Install and manage plugins on the Plugins page, and configure model sources for OH.",
@@ -164,7 +164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 81,
+          "line": 86,
           "context": "return i18n(\"lib.onboardinglessons.a2fc98611a51\");"
         }
       ],
@@ -180,7 +180,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 75,
+          "line": 80,
           "context": "return i18n(\"lib.onboardinglessons.a497b5391775\");"
         }
       ],
@@ -196,11 +196,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 82
+          "line": 87
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 95
+          "line": 100
         }
       ],
       "translation": "Tap \"Home\" in the top-left corner at any time to return to today.",
@@ -230,7 +230,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 104,
+          "line": 109,
           "context": "return i18n(\"lib.onboardinglessons.a77d0e6c7c2d\");"
         }
       ],
@@ -261,7 +261,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 63,
+          "line": 68,
           "context": "return i18n(\"lib.onboardinglessons.abeb15db61bc\");"
         }
       ],
@@ -293,7 +293,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 60,
+          "line": 65,
           "context": "return i18n(\"lib.onboardinglessons.b262a001f2d3\");"
         }
       ],
@@ -309,12 +309,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 83,
+          "line": 88,
           "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 96,
+          "line": 101,
           "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
         }
       ],
@@ -345,7 +345,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 100
+          "line": 105
         }
       ],
       "translation": "Browse the directory by Study, Schedule, Life, Reservations and more, or just search.",
@@ -375,7 +375,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 101,
+          "line": 106,
           "context": "return i18n(\"lib.onboardinglessons.bab05287556d\");"
         }
       ],
@@ -391,7 +391,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 49
+          "line": 54
         }
       ],
       "translation": "Tap the + in the top bar or search to open a new tab; drag to reorder.",
@@ -406,7 +406,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 95
+          "line": 100
         }
       ],
       "translation": "The OH search capsule is always available; fill in your own API in Settings.",
@@ -421,7 +421,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 92
         }
       ],
       "translation": "The OH search capsule is always available; you can enter your own API in Settings.",
@@ -436,7 +436,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 59
         }
       ],
       "translation": "Trigger on demand: manually, on a schedule, or by event.",
@@ -467,7 +467,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 88,
+          "line": 93,
           "context": "return i18n(\"lib.onboardinglessons.d66e6fe01e59\");"
         }
       ],
@@ -483,7 +483,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 106,
+          "line": 111,
           "context": "return i18n(\"lib.onboardinglessons.d6dc9c00faa7\");"
         }
       ],
@@ -499,7 +499,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 70,
+          "line": 75,
           "context": "return i18n(\"lib.onboardinglessons.d79d92647cba\");"
         }
       ],
@@ -531,7 +531,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 79
         }
       ],
       "translation": "Schedule supports cloud calendar and system calendar sync.",
@@ -546,7 +546,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 53,
+          "line": 58,
           "context": "return i18n(\"lib.onboardinglessons.e225304e8091\");"
         }
       ],
@@ -562,7 +562,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 68,
+          "line": 73,
           "context": "return i18n(\"lib.onboardinglessons.e27c03ed11b7\");"
         }
       ],
@@ -578,7 +578,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 55,
+          "line": 60,
           "context": "return i18n(\"lib.onboardinglessons.e84b694246af\");"
         }
       ],
@@ -594,7 +594,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 92
         }
       ],
       "translation": "Life and Info gather campus services; the Timetable shows your time.",
@@ -609,7 +609,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 48,
+          "line": 53,
           "context": "return i18n(\"lib.onboardinglessons.eb8d4b7fd8d5\");"
         }
       ],
@@ -625,7 +625,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
+          "line": 110
         }
       ],
       "translation": "In \"More features\", tap the + on the right of a feature.",
@@ -700,7 +700,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 69
         }
       ],
       "translation": "Settings → Appearance & layout: theme, wallpaper, font size.",
@@ -715,7 +715,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 64
         }
       ],
       "translation": "You can expose the OH MCP to apps on this machine (off by default).",
@@ -746,7 +746,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
+          "line": 91,
           "context": "return i18n(\"lib.onboardinglessons.fdb99497532e\");"
         }
       ],
@@ -762,7 +762,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 82
+          "line": 87
         }
       ],
       "translation": "When you need more features, switch modes in Settings.",

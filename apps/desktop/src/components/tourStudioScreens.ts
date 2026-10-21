@@ -8,7 +8,7 @@ export const STUDIO_SCREEN_KEYS = [
   "practical-more", "practical-home-customized", "schedule", "vault",
   "vault-send-preview", "vault-send-code", "vault-receive", "vault-received",
   "board-full", "organization", "full-home-mobile",
-  "workspaces", "onego", "plugins", "appearance", "learn", "data",
+  "workspaces", "onego", "plugins", "appearance", "learn", "data", "xiaoda-chat", "xiaoda-skills",
 ] as const;
 export type StudioScreenKey = typeof STUDIO_SCREEN_KEYS[number];
 export type StudioScreenAssets = Readonly<Record<StudioScreenKey, HTMLImageElement>>;
@@ -49,6 +49,7 @@ export function selectStudioScreen(
   else if (lesson === "customize") key = "appearance";
   else if (lesson === "campus") key = "learn";
   else if (lesson === "data") key = "data";
+  else if (lesson === "xiaoda") key = after ? "xiaoda-skills" : "xiaoda-chat";
   return { primary: source(key) };
 }
 

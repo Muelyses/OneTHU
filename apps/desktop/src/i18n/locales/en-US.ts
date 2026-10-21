@@ -7495,7 +7495,17 @@ const locale = {
     "state.widgets.fae0c4931d49": "Campus network account and data usage. Requires sign-in.",
     "state.widgets.fb4ffac2dc8d": "Venues and seats you reserved today. Requires sign-in.",
     "state.widgets.fce8c2b36f6a": "Campus card balance, transactions, and top-ups. Requires sign-in.",
-    "state.widgets.fd611796f383": "Dorm cleanliness scores. Requires sign-in."
+    "state.widgets.fd611796f383": "Dorm cleanliness scores. Requires sign-in.",
+    "tour.xiaoda.action": "Open Qingxiaoda",
+    "tour.xiaoda.after": "Check compatibility in Skills, then enable the skill for OH.",
+    "tour.xiaoda.agents": "Agents: choose an assistant for your task and select “Chat with it”.",
+    "tour.xiaoda.before": "Start a Qingxiaoda conversation, or choose a specialist agent.",
+    "tour.xiaoda.chapter": "Qingxiaoda",
+    "tour.xiaoda.chat": "Chat: choose a model and ask. Continue earlier conversations from History.",
+    "tour.xiaoda.lead": "Chat with Qingxiaoda, choose a specialist agent, and enable compatible lightweight skills for OH, all in OneTHU.",
+    "tour.xiaoda.limits": "Skills needing Python, Node or external services can be saved for an agent on your computer.",
+    "tour.xiaoda.skills": "Skills: import and check a package, then enable compatible lightweight skills for OH.",
+    "tour.xiaoda.title": "Qingxiaoda in OneTHU"
   }
 } satisfies LocaleDef;
 export default locale;

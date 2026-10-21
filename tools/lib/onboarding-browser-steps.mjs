@@ -26,6 +26,7 @@ export async function walkFullOnboarding(page, check) {
     ['code', '一个短口令，传递一组内容', '查看收发入口', 'code'],
     ['nfc', '碰一碰：名片与内容接力', '打开收发入口', 'nfc'],
     ['organization', '组织：人、文件、项目一处管', '打开组织', 'organization'],
+    ['xiaoda', '清小搭 in OneTHU', '打开清小搭', 'xiaoda'],
     ['explorer', '标签页与工作区：多任务不打架', '打开工作区入口', 'workspaces', true],
     ['onego', 'OneGO!：全局入口与自动化', '打开 OneGO!', 'onego', true],
     ['plugin', '插件与 OH：把能力装进来', '看看插件页', 'plugins', true],
@@ -76,6 +77,10 @@ export async function walkFullOnboarding(page, check) {
       if (destination === 'plugins') { await resumeWithKeyboard(page, settings, check, '插件设置'); resumed = true; }
       else await settings.getByRole('button', { name: '关闭设置', exact: true }).click();
       await settings.waitFor({ state: 'hidden' });
+    } else if (destination === 'xiaoda') {
+      const panel = page.locator('[data-tab-page="xiaoda"]:visible');
+      await panel.getByRole('heading', { name: '清小搭', exact: true }).waitFor();
+      check(await panel.getByRole('tab', { name: '技能', exact: true }).isVisible(), '清小搭导览直达含对话、智能体与技能的真实一级功能页');
     } else if (destination === 'learn') {
       await page.locator('[data-tab-page="learn"]:visible').getByRole('heading', { name: '课程', exact: true }).waitFor();
     }

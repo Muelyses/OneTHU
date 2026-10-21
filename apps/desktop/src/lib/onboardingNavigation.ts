@@ -29,6 +29,7 @@ export function openLessonTarget(target: TourTarget): void {
     case "appearance": requestSettingsTab("外观与布局"); openSettings("settings"); break;
     case "data": requestSettingsTab("数据与同步"); openSettings("settings"); break;
     case "learn": openTab("learn"); break;
+    case "xiaoda": openTab("xiaoda"); break;
     case "practical": openTab("homepage"); showPracticalFeatures(); break;
   }
 }

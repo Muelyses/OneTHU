@@ -40,7 +40,7 @@ assert.ok(settings.includes("resetActiveOnboarding();"), "设置页保留「导�
 assert.ok(/ExperienceModePicker/.test(tour), "第一步要有模式选择器");
 for (const s of ["极简模式", "实用模式", "完整模式"]) assert.ok(picker.includes(s), "模式选择器缺 " + s);
 assert.ok(/lessonsForMode\(chosen\)/.test(tour), "三种模式必须各走自己的课程");
-assert.deepEqual(FULL_LESSONS.map(lesson => lesson.id), ["board", "vault", "code", "nfc", "organization"], "完整模式主线只保留五项重点");
+assert.deepEqual(FULL_LESSONS.map(lesson => lesson.id), ["board", "vault", "code", "nfc", "organization", "xiaoda"], "完整模式主线包含五项重点及清小搭");
 assert.deepEqual(EXTRA_LESSONS.map(lesson => lesson.id), ["explorer", "onego", "plugin", "customize", "campus", "data"], "原六个主题必须保留为结束页可选探索");
 assert.deepEqual(SIMPLE_LESSONS.map(lesson => lesson.id), ["today", "quick"], "极简模式只展示两课");
 assert.deepEqual(PRACTICAL_LESSONS.map(lesson => lesson.id), ["today", "more", "swap"], "实用模式展示三课");
@@ -49,7 +49,7 @@ for (const t of [
   "白板与 OnePage：首页由你摆", "标签页与工作区：多任务不打架", "暂存箱：什么都能先收进来",
   "一个短口令，传递一组内容", "碰一碰：名片与内容接力", "组织：人、文件、项目一处管",
   "OneGO!：全局入口与自动化", "插件与 OH：把能力装进来", "外观与工作台：全都可调",
-  "校园服务：完整模式的聚合", "数据与同步：跨设备继续",
+  "校园服务：完整模式的聚合", "数据与同步：跨设备继续", "清小搭 in OneTHU",
 ]) {
   assert.ok(lessons.includes(t), "完整模式缺一课：" + t);
 }

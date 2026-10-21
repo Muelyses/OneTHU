@@ -1,5 +1,5 @@
 {
-  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
+  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -849,6 +849,167 @@
       "translation": "Dorm cleanliness scores. Requires sign-in.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.action",
+      "source": "打开清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 46,
+          "context": "return i18n(\"tour.xiaoda.action\");"
+        }
+      ],
+      "translation": "Open Qingxiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.after",
+      "source": "在技能页检查兼容性，再启用给 OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 24,
+          "context": "return i18n(\"tour.xiaoda.after\");"
+        }
+      ],
+      "translation": "Check compatibility in Skills, then enable the skill for OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.agents",
+      "source": "智能体：按任务选助手，点「找它聊」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 45
+        }
+      ],
+      "translation": "Agents: choose an assistant for your task and select “Chat with it”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.before",
+      "source": "从清小搭对话开始，也可选择专用智能体。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 24,
+          "context": "return i18n(\"tour.xiaoda.before\");"
+        }
+      ],
+      "translation": "Start a Qingxiaoda conversation, or choose a specialist agent.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.chapter",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"tour.xiaoda.chapter\");"
+        }
+      ],
+      "translation": "Qingxiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.chat",
+      "source": "对话：选择模型提问，历史记录可接着聊。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 45
+        }
+      ],
+      "translation": "Chat: choose a model and ask. Continue earlier conversations from History.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.lead",
+      "source": "在 OneTHU 里使用清小搭、专用智能体，也能把兼容的轻量技能交给 OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 44,
+          "context": "return i18n(\"tour.xiaoda.lead\");"
+        }
+      ],
+      "translation": "Chat with Qingxiaoda, choose a specialist agent, and enable compatible lightweight skills for OH, all in OneTHU.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.limits",
+      "source": "需 Python、Node 或外部服务？保存给电脑 Agent。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 45
+        }
+      ],
+      "translation": "Skills needing Python, Node or external services can be saved for an agent on your computer.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.skills",
+      "source": "技能：导入并检查，兼容的轻量技能可启用给 OH。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 45
+        }
+      ],
+      "translation": "Skills: import and check a package, then enable compatible lightweight skills for OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "tour.xiaoda.title",
+      "source": "清小搭 in OneTHU",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 24,
+          "context": "return i18n(\"tour.xiaoda.title\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 44,
+          "context": "return i18n(\"tour.xiaoda.title\");"
+        }
+      ],
+      "translation": "Qingxiaoda in OneTHU",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

@@ -7495,7 +7495,17 @@ const locale = {
     "state.widgets.fae0c4931d49": "校园网账号与流量。需要登录。",
     "state.widgets.fb4ffac2dc8d": "今天已经预约的场馆与座位。需要登录。",
     "state.widgets.fce8c2b36f6a": "校园卡余额、流水与充值。需要登录。",
-    "state.widgets.fd611796f383": "宿舍卫生成绩。需要登录。"
+    "state.widgets.fd611796f383": "宿舍卫生成绩。需要登录。",
+    "tour.xiaoda.action": "打开清小搭",
+    "tour.xiaoda.after": "在技能页检查兼容性，再启用给 OH。",
+    "tour.xiaoda.agents": "智能体：按任务选助手，点「找它聊」。",
+    "tour.xiaoda.before": "从清小搭对话开始，也可选择专用智能体。",
+    "tour.xiaoda.chapter": "清小搭",
+    "tour.xiaoda.chat": "对话：选择模型提问，历史记录可接着聊。",
+    "tour.xiaoda.lead": "在 OneTHU 里使用清小搭、专用智能体，也能把兼容的轻量技能交给 OH。",
+    "tour.xiaoda.limits": "需 Python、Node 或外部服务？保存给电脑 Agent。",
+    "tour.xiaoda.skills": "技能：导入并检查，兼容的轻量技能可启用给 OH。",
+    "tour.xiaoda.title": "清小搭 in OneTHU"
   }
 } satisfies LocaleDef;
 export default locale;

@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 import { walkFullOnboarding, resumeWithKeyboard, closeTestBrowser, advanceOnboardingLanguage } from './lib/onboarding-browser-steps.mjs';
+import { installXiaodaTourFixture } from './lib/xiaoda-tour-fixture.mjs';
 import { installFakeCloud } from './lib/fake-cloud.mjs';
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-updater-scheduler']});
 let count=0;
@@ -13,6 +14,7 @@ try {
   await page.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/,()=>{});
   const errors=[];page.on('pageerror',e=>{if(!/reading 'invoke'/.test(e.message))errors.push(e.message);});
   await installFakeCloud(page);
+  await installXiaodaTourFixture(page);
   await page.addInitScript(()=>{localStorage.setItem('onethu.onboarded.phone','1');localStorage.setItem('onethu.overlay.closed','1');});
   await page.goto('http://127.0.0.1:5180/?explorer-preview=onboarding');
   await page.locator('.explorer-shell').waitFor();
@@ -40,7 +42,7 @@ try {
    await tour.getByRole('button',{name:'开始使用',exact:true}).click();
   }
   await replay('完整');
-  for(let i=0;i<5;i++)await tour.getByRole('button',{name:'下一步',exact:true}).click();
+  for(let i=0;i<6;i++)await tour.getByRole('button',{name:'下一步',exact:true}).click();
   await tour.locator('[data-lesson-id="customize"]').click();
   await tour.getByRole('button',{name:'打开外观设置',exact:true}).click();
   const settings=page.getByRole('dialog',{name:'我的',exact:true});

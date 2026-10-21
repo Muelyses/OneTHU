@@ -851,6 +851,46 @@
     "skills.error.generic": {
       "zh-CN": "技能操作未能完成，请更新应用后重试。",
       "en-US": "The skill action could not be completed. Update the app and try again."
+    },
+    "tour.xiaoda.title": {
+      "zh-CN": "清小搭 in OneTHU",
+      "en-US": "Qingxiaoda in OneTHU"
+    },
+    "tour.xiaoda.chapter": {
+      "zh-CN": "清小搭",
+      "en-US": "Qingxiaoda"
+    },
+    "tour.xiaoda.lead": {
+      "zh-CN": "在 OneTHU 里使用清小搭、专用智能体，也能把兼容的轻量技能交给 OH。",
+      "en-US": "Chat with Qingxiaoda, choose a specialist agent, and enable compatible lightweight skills for OH, all in OneTHU."
+    },
+    "tour.xiaoda.chat": {
+      "zh-CN": "对话：选择模型提问，历史记录可接着聊。",
+      "en-US": "Chat: choose a model and ask. Continue earlier conversations from History."
+    },
+    "tour.xiaoda.agents": {
+      "zh-CN": "智能体：按任务选助手，点「找它聊」。",
+      "en-US": "Agents: choose an assistant for your task and select “Chat with it”."
+    },
+    "tour.xiaoda.skills": {
+      "zh-CN": "技能：导入并检查，兼容的轻量技能可启用给 OH。",
+      "en-US": "Skills: import and check a package, then enable compatible lightweight skills for OH."
+    },
+    "tour.xiaoda.limits": {
+      "zh-CN": "需 Python、Node 或外部服务？保存给电脑 Agent。",
+      "en-US": "Skills needing Python, Node or external services can be saved for an agent on your computer."
+    },
+    "tour.xiaoda.action": {
+      "zh-CN": "打开清小搭",
+      "en-US": "Open Qingxiaoda"
+    },
+    "tour.xiaoda.before": {
+      "zh-CN": "从清小搭对话开始，也可选择专用智能体。",
+      "en-US": "Start a Qingxiaoda conversation, or choose a specialist agent."
+    },
+    "tour.xiaoda.after": {
+      "zh-CN": "在技能页检查兼容性，再启用给 OH。",
+      "en-US": "Check compatibility in Skills, then enable the skill for OH."
     }
   }
 }

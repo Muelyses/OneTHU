@@ -1,5 +1,5 @@
 {
-  "sourceHash": "153d591aebcbca220ae26890ecdf3706635c6647c60edeeb57f9b0a01f463e41",
+  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -627,7 +627,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 59
         }
       ],
       "translation": "Press ⌘/Ctrl+K to open search and jump straight to a page or content.",
@@ -642,7 +642,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 59
         }
       ],
       "translation": "OneFlow turns a chain of actions into fixed steps.",
@@ -657,7 +657,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 92
         }
       ],
       "translation": "Study covers courses and assignments; Reservations covers venues, seminar rooms and visitor registration.",
@@ -672,7 +672,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 100
+          "line": 105
         }
       ],
       "translation": "Stash, Organizations, Board and plugins belong to Full mode; switch in Settings.",
@@ -687,7 +687,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
+          "line": 110
         }
       ],
       "translation": "Pick one of the replaceable slots 1 to 4 and that feature stays pinned at the bottom.",
@@ -702,7 +702,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 48,
+          "line": 53,
           "context": "return i18n(\"lib.onboardinglessons.22953a2b1d3d\");"
         }
       ],
@@ -718,7 +718,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 64
         }
       ],
       "translation": "The floating ball can be turned on or off in OH settings.",
@@ -733,7 +733,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 64
         }
       ],
       "translation": "OH supports voice, multimodal input and IM access.",
@@ -748,7 +748,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 58,
+          "line": 63,
           "context": "return i18n(\"lib.onboardinglessons.2ae24bb56fc5\");"
         }
       ],
@@ -764,7 +764,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 49
+          "line": 54
         }
       ],
       "translation": "Save your workspace with OneGO! and restore it in one tap next time.",
@@ -779,11 +779,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 82
+          "line": 87
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 95
+          "line": 100
         }
       ],
       "translation": "Tap a task to see details, or tap a course to open its content.",
@@ -798,12 +798,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 81,
+          "line": 86,
           "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 94,
+          "line": 99,
           "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
         }
       ],
@@ -819,7 +819,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 69
         }
       ],
       "translation": "Widgets, main features, the tab bar and OneShot are all adjustable.",
@@ -834,7 +834,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 74
         }
       ],
       "translation": "Study: assignments, notices, files, grades and discussions.",
@@ -849,7 +849,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 79
         }
       ],
       "translation": "Switching modes doesn't clear data, and you can export from Settings.",
@@ -864,7 +864,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 99,
+          "line": 104,
           "context": "return i18n(\"lib.onboardinglessons.3d0109a1f308\");"
         }
       ],
@@ -928,7 +928,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 73,
+          "line": 78,
           "context": "return i18n(\"lib.onboardinglessons.48ad9a755b42\");"
         }
       ],
@@ -944,7 +944,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 99,
+          "line": 104,
           "context": "return i18n(\"lib.onboardinglessons.4afe5510ffd6\");"
         }
       ],
@@ -992,7 +992,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 94,
+          "line": 99,
           "context": "return i18n(\"lib.onboardinglessons.5179f2bbf334\");"
         }
       ],
@@ -1024,7 +1024,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 68,
+          "line": 73,
           "context": "return i18n(\"lib.onboardinglessons.579d6942635d\");"
         }
       ],
@@ -1040,7 +1040,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 50,
+          "line": 55,
           "context": "return i18n(\"lib.onboardinglessons.59899f30d40e\");"
         }
       ],
@@ -1056,7 +1056,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 104,
+          "line": 109,
           "context": "return i18n(\"lib.onboardinglessons.5c0e2772ea36\");"
         }
       ],
@@ -1072,7 +1072,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 74
         }
       ],
       "translation": "Life: campus card, electricity and network fees, laundry, venues.",
@@ -1102,7 +1102,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 69
         }
       ],
       "translation": "If a layout breaks, you can restore the default without touching your data.",
@@ -1117,7 +1117,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 49
+          "line": 54
         }
       ],
       "translation": "The tab bar can be horizontal or vertical; switch to match your habits.",
@@ -1132,7 +1132,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 73,
+          "line": 78,
           "context": "return i18n(\"lib.onboardinglessons.65909de13b31\");"
         }
       ],
@@ -1164,7 +1164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 53,
+          "line": 58,
           "context": "return i18n(\"lib.onboardinglessons.6946e33b26a8\");"
         }
       ],
@@ -1195,7 +1195,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 79
         }
       ],
       "translation": "Share codes and NFC pass content from device to device.",
@@ -1210,7 +1210,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 64
         }
       ],
       "translation": "Your own creations can be published as a OnePage or a widget.",
@@ -1241,7 +1241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
+          "line": 91,
           "context": "return i18n(\"lib.onboardinglessons.7a1d19ef38cd\");"
         }
       ],
@@ -1257,7 +1257,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 63,
+          "line": 68,
           "context": "return i18n(\"lib.onboardinglessons.7afcd8d783a6\");"
         }
       ],
@@ -1273,7 +1273,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
+          "line": 110
         }
       ],
       "translation": "Entries you've swapped in are kept; switching modes doesn't affect the other mode's arrangement.",

@@ -14,7 +14,7 @@ for (const dir of ['after', 'frames', 'recordings']) mkdirSync(`${out}/${dir}`, 
 const checks = [], errors = [], cycles = [], transitions = [], recordings = [], lifecycle = [], layout = [];
 const report = { scope, sizes, checks, errors, cycles, transitions, recordings, lifecycle, layout, passed: false, naturalCleanup: false };
 const check = (condition, text) => { assert.ok(condition, text); checks.push(text); console.log('✓ ' + text); };
-const plans = { simple: ['today', 'quick'], practical: ['today', 'more', 'swap'], full: ['board', 'vault', 'code', 'nfc', 'organization'] };
+const plans = { simple: ['today', 'quick'], practical: ['today', 'more', 'swap'], full: ['board', 'vault', 'code', 'nfc', 'organization', 'xiaoda'] };
 const names = { simple: '极简', practical: '实用', full: '完整' };
 const extras = ['explorer', 'onego', 'plugin', 'customize', 'campus', 'data'];
 const browser = await chromium.launch({

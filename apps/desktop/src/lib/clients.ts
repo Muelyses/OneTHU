@@ -346,8 +346,11 @@ export async function login(
   password: string,
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
+  void logLine("AUTH-PHASE import-login");
   const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
+  void logLine("AUTH-PHASE fingerprint-start");
   const fingerprint = await currentFingerprint();
+  void logLine("AUTH-PHASE fingerprint-ready");
   // （2026-09-18 决策）轮换实验撤除：强制 2FA 的链路被 keepalive/静默重登/
   // lib 僵尸链三面夹击，稳定性失控。回归简单：fp 固定，登录一次 2FA 到位；
   // finger3 缺失时选课靠死结自愈兜底（确认失败→清账直登，实测可用）。

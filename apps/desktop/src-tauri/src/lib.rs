@@ -542,8 +542,7 @@ fn debug_log_line(line: &str) {
 /// 打开调试日志（append）。写前先 `create_dir_all(parent)`——Windows 上 `\tmp\`
 /// 常不存在，此前 `File::create` 失败被 `let _` 吞掉，霖机器整条调试链静默失效
 /// （R10 15.1-3：log_debug / thos_log / venue_log 三处统一走本 helper）。
-#[tauri::command]
-fn log_debug(line: String) -> Result<(), String> {
+fn write_debug_log(line: String) -> Result<(), String> {
     // 体积闸门：超 16MB 轮转为 .old（防 HTML dump 类循环刷盘——曾灌到 1GB）
     let path = debug_log_path().ok_or("日志目录尚未就绪")?;
     if let Ok(meta) = std::fs::metadata(&path) {
@@ -553,6 +552,13 @@ fn log_debug(line: String) -> Result<(), String> {
     }
     debug_log_line(&line);
     Ok(())
+}
+
+// File I/O must not run inside the Windows WebView2 IPC callback.
+#[tauri::command]
+async fn log_debug(line: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || write_debug_log(line))
+        .await.map_err(|e| format!("日志后台任务失败: {e}"))?
 }
 
 /// 导出调试日志：安卓转存系统「下载」（复用 saveDownload 桥），桌面落下载目录。
@@ -1383,6 +1389,7 @@ async fn http_native(
     input: HttpInput,
 ) -> Result<HttpOutput, String> {
     let _ = app;
+    debug_log_line(&format!("[NATIVE-START] {} {}", input.method, native_security::safe_url_log(&input.url.parse().map_err(|_| "非法 URL")?)));
     let client = NATIVE_CLIENT.read().map_err(|_| "网络客户端锁失败")?.clone();
     http_native_with_client(input, client).await
 }
@@ -1507,28 +1514,32 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
 /// 原生 cookie 仓清空（换新匿名身份）。2026-09-17 实录：登录风暴后 id 服务器
 /// 按会话 cookie 封锁设备（同 IP 的无 cookie 客户端正常）——被封锁时唯一解法。
 #[tauri::command]
-fn http_native_clear_cookies() -> Result<(), String> {
-    NATIVE_JAR_ARC.clear();
-    Ok(())
+async fn http_native_clear_cookies() -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        NATIVE_JAR_ARC.clear();
+        Ok::<(), String>(())
+    }).await.map_err(|e| format!("Cookie 后台任务失败: {e}"))?
 }
 
 /// 按域后缀清 cookie（id 单点互踢根治）：lib 重登/选课自愈只清 id/oauth，
 /// learn/info/教务/webvpn 的会话票全保——重建后各页秒恢复，不再红条几秒。
 #[tauri::command]
-fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String> {
-    let suffixes: Vec<String> = suffixes.iter().map(|s| s.to_lowercase()).collect();
-    let mut jar = NATIVE_JAR_ARC.0.write().map_err(|_| "Cookie 仓锁失败")?;
-    let remove = jar.iter_any().filter_map(|cookie| {
-        let domain = match &cookie.domain {
-            cookie_store::CookieDomain::HostOnly(host) | cookie_store::CookieDomain::Suffix(host) => host,
-            _ => return None,
-        };
-        let hit = suffixes.iter().any(|suffix| domain == suffix || domain.ends_with(&format!(".{suffix}")));
-        hit.then(|| (domain.clone(), String::from(&cookie.path), cookie.name().to_string()))
-    }).collect::<Vec<_>>();
-    for (domain, path, name) in remove { jar.remove(&domain, &path, &name); }
-    NATIVE_JAR_ARC.1.store(true, std::sync::atomic::Ordering::Relaxed);
-    Ok(())
+async fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let suffixes: Vec<String> = suffixes.iter().map(|s| s.to_lowercase()).collect();
+        let mut jar = NATIVE_JAR_ARC.0.write().map_err(|_| "Cookie 仓锁失败")?;
+        let remove = jar.iter_any().filter_map(|cookie| {
+            let domain = match &cookie.domain {
+                cookie_store::CookieDomain::HostOnly(host) | cookie_store::CookieDomain::Suffix(host) => host,
+                _ => return None,
+            };
+            let hit = suffixes.iter().any(|suffix| domain == suffix || domain.ends_with(&format!(".{suffix}")));
+            hit.then(|| (domain.clone(), String::from(&cookie.path), cookie.name().to_string()))
+        }).collect::<Vec<_>>();
+        for (domain, path, name) in remove { jar.remove(&domain, &path, &name); }
+        NATIVE_JAR_ARC.1.store(true, std::sync::atomic::Ordering::Relaxed);
+        Ok::<(), String>(())
+    }).await.map_err(|e| format!("Cookie 后台任务失败: {e}"))?
 }
 
 /// jar → rust 播种（wengine 引导页票种等不经 Set-Cookie 的会话）
@@ -4872,4 +4883,39 @@ pub mod douyu_bridge {
     }
 
 
+}
+
+#[cfg(test)]
+mod login_ipc_tests {
+    use super::*;
+
+    async fn assert_cookie_clear_yields<F>(clear: F)
+    where F: std::future::Future<Output = Result<(), String>> {
+        let (ready_tx, ready_rx) = std::sync::mpsc::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let holder = std::thread::spawn(move || {
+            let _guard = NATIVE_JAR_ARC.0.write().unwrap();
+            ready_tx.send(()).unwrap();
+            let _ = release_rx.recv_timeout(std::time::Duration::from_secs(3));
+        });
+        ready_rx.recv_timeout(std::time::Duration::from_secs(2)).unwrap();
+        tokio::pin!(clear);
+        let started = std::time::Instant::now();
+        tokio::select! {
+            result = &mut clear => panic!("Cookie operation bypassed a held write lock: {result:?}"),
+            _ = tokio::time::sleep(std::time::Duration::from_millis(20)) => {}
+        }
+        let elapsed = started.elapsed();
+        let _ = release_tx.send(());
+        holder.join().unwrap();
+        tokio::time::timeout(std::time::Duration::from_secs(2), &mut clear).await.unwrap().unwrap();
+        assert!(elapsed < std::time::Duration::from_millis(750),
+            "Cookie lock wait blocked the caller executor for {elapsed:?}");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn cookie_lock_wait_keeps_the_caller_executor_responsive() {
+        assert_cookie_clear_yields(http_native_clear_cookies_domain(vec!["id.tsinghua.edu.cn".into()])).await;
+        assert_cookie_clear_yields(http_native_clear_cookies()).await;
+    }
 }

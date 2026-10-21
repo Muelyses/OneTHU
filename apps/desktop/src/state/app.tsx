@@ -312,9 +312,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (username: string, password: string, remember = true) => {
+      void clients.logLine("AUTH-PHASE submit");
       setStatus("connecting");
       setError(null);
       const finish = (r: Awaited<ReturnType<typeof clients.login>>): void => {
+        void clients.logLine(`AUTH-PHASE result=${r.state}`);
         if (r.state === "need-2fa") {
           setTwoFactor({ username, password, methods: r.methods });
           setStatus("2fa");

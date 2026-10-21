@@ -325,12 +325,14 @@ export async function libLogin(
   password: string,
   fingerprint: string,
 ): Promise<LibLoginResult> {
+  void log("AUTH-PHASE cookie-clear-start");
   markLoginAttempt();
   // 永远从干净仓开始（2026-09-17 定案）：仓里残留的匿名票（wrdvpn1-）+
   // IP 续会 = login?oauth 被拦成门户页，永远铸不出真票；清仓后服务端总是
   // 走完整 OAuth 舞（表单带 sig → check → 302 webvpn/login?code= → 铸票），
   // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
   await nativeCookieClear().catch(() => undefined);
+  void log("AUTH-PHASE cookie-clear-done");
   helper.fingerprint = fingerprint || makeFingerprint();
   // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER（内置路径
   // 响应 object=finger3 被 lib 丢弃——后续从持久化快照或再度 2FA 恢复）
@@ -346,6 +348,7 @@ export async function libLogin(
   // 弃掉 2FA 挂起的僵尸链（lib 的 outstandingLoginPromise 单例——见 core.ts 注释）
   const { clearOutstandingLogin } = await import("@onethu/info-lib");
   clearOutstandingLogin();
+  void log("AUTH-PHASE handshake-start");
   const { p, methodsPromise } = startLoginRaw(username, password);
   const settled = await Promise.race([
     p.then(

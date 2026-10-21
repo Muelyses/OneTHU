@@ -46,3 +46,12 @@ Downloads: **macOS Apple Silicon DMG**, **Windows x64 installer**, and **Android
 
 
 **清华云盘镜像 / Cloud mirror**：[固定下载入口](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/)，按 `Android` / `macOS` / `Windows` 系统目录直接下载 / download directly from your platform folder。三端安装包与校验文件已同步，匿名下载 SHA-256 核对一致 / all three installers and checksums are mirrored and verified.
+
+
+### Android 补包 / Android rebuild · 2026-10-21
+
+Android `0.11.0` 已更新至内部构建号 `11001`：手机首页和所有 OnePage 白板新增「编辑白板 / 完成编辑」。默认锁定，进入编辑后才能移动、缩放、绘画、增删和调整布局；退出后正常点击与滑动阅读。正式签名不变，可覆盖原同签名 0.11。Windows/macOS 安装包未更换。
+
+The Android `0.11.0` APK is now build `11001`. Home and every OnePage board start locked on mobile. Tap **Edit board** to arrange widgets and reveal editing tools; tap **Done editing** to return to normal browsing. The release signing identity is unchanged. Windows and macOS installers are unchanged.
+
+Android source: [`f1e06f94`](https://github.com/smartThise/OneTHU/commit/f1e06f94). Updated checksums and both update manifests accompany this APK.

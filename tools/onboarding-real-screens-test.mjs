@@ -19,7 +19,7 @@ const report = {
   failedLoadRejected: false,
   retrySucceeded: false,
   checks: [
-    'All 23 bundled app captures decode as HTMLImageElement sources.',
+    'All 31 bundled app captures decode as HTMLImageElement sources.',
     'Concurrent loads share a promise; a failed image load can be retried.',
     'Mode, lesson and phase select the intended captured page.',
     'Screen textures reference the decoded images directly, without Canvas repainting.',
@@ -90,7 +90,7 @@ try {
     const first = screensModule.loadStudioScreenAssets();
     check(first === screensModule.loadStudioScreenAssets(), 'Concurrent calls share one decode promise');
     const assets = await first;
-    check(Object.keys(assets).length === 23, 'All 23 real images decode');
+    check(Object.keys(assets).length === 31, 'All 31 real images decode');
     for (const [key, image] of Object.entries(assets)) {
       check(image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0, key + ': decoded image');
       check(image.src.includes('/real-ui/' + key + '.png'), key + ': correct bundled source');
@@ -111,6 +111,9 @@ try {
       ['data', 'full', false, 'data'],
       ['xiaoda', 'full', false, 'xiaoda-chat'],
       ['xiaoda', 'full', true, 'xiaoda-skills'],
+      ['essentials', 'full', false, 'search'],
+      ['essentials', 'simple', false, 'search-simple'],
+      ['essentials', 'practical', true, 'oh-practical'],
     ];
     for (const [lesson, mode, after, expected] of expectedDestinations) {
       check(screensModule.selectStudioScreen(lesson, mode, after).primary.key === expected, 'Actual destination: ' + lesson);
@@ -124,7 +127,7 @@ try {
     };
     const lessons = [
       'board', 'mode-full', 'nfc', 'today', 'quick', 'more', 'swap', 'mode-simple',
-      'mode-practical', 'ready', 'explorer', 'onego', 'plugin', 'customize', 'campus', 'data', 'xiaoda',
+      'mode-practical', 'ready', 'explorer', 'onego', 'plugin', 'customize', 'campus', 'data', 'xiaoda', 'essentials',
     ];
     let modelCases = 0;
     for (const mode of ['simple', 'practical', 'full']) for (const lesson of lessons) {

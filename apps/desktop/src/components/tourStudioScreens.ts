@@ -8,7 +8,7 @@ export const STUDIO_SCREEN_KEYS = [
   "practical-more", "practical-home-customized", "schedule", "vault",
   "vault-send-preview", "vault-send-code", "vault-receive", "vault-received",
   "board-full", "organization", "full-home-mobile",
-  "workspaces", "onego", "plugins", "appearance", "learn", "data", "xiaoda-chat", "xiaoda-skills",
+  "workspaces", "onego", "plugins", "appearance", "learn", "data", "xiaoda-chat", "xiaoda-skills", "search", "oh", "vault-drag-start", "vault-drag-done", "search-simple", "oh-simple", "search-practical", "oh-practical",
 ] as const;
 export type StudioScreenKey = typeof STUDIO_SCREEN_KEYS[number];
 export type StudioScreenAssets = Readonly<Record<StudioScreenKey, HTMLImageElement>>;
@@ -36,7 +36,8 @@ export function selectStudioScreen(
   let key: StudioScreenKey = home;
   if (lesson === "board" || lesson === "mode-full") key = "board-full";
   else if (lesson === "organization") key = "organization";
-  else if (lesson === "vault") key = "vault";
+  else if (lesson === "vault") key = after ? "vault-drag-done" : "vault-drag-start";
+  else if (lesson === "essentials") key = mode === "full" ? after ? "oh" : "search" : `${after ? "oh" : "search"}-${mode}`;
   else if (lesson === "code") key = after ? "vault-send-code" : "vault-send-preview";
   else if (lesson === "today") key = after && mode !== "full" ? mode === "practical" ? "practical-home-done" : "simple-home-done" : home;
   else if (lesson === "quick") key = after ? "schedule" : home;

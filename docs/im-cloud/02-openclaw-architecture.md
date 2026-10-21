@@ -1,5 +1,8 @@
 # openclaw 网关/适配器架构调研（附 zcode 通道层）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 最后更新：2026-10-09 ｜ 调研基线：openclaw 官方文档（docs.openclaw.ai）与 npm/GitHub 公开仓库
 > openclaw 即原 clawdbot（Peter Steinberger 项目，2026 年初爆火后因商标问题更名 openclaw，版本号采用日期制 `2026.x`），是目前个人 AI agent 网关事实上的参考架构。
 

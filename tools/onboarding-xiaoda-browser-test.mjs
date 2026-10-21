@@ -28,7 +28,7 @@ try {
   const tour = page.locator('.experience-tour');
   await tour.locator('.tour-language-continue').click();
   await tour.locator('.tour-next').click();
-  await tour.locator('.tour-chapters button').nth(5).click();
+  await tour.locator('.tour-chapters button').nth(6).click();
   await tour.locator('[data-lesson="xiaoda"].tour-shell').waitFor();
   const label = width + '/' + locale + '/' + motion;
   check(await tour.getByRole('heading', { name: locale === 'zh-CN' ? '清小搭 in OneTHU' : 'Qingxiaoda in OneTHU', exact: true }).isVisible(), label + ': dedicated full-mode lesson');

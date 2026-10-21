@@ -1,0 +1,33 @@
+{
+  "entries": [
+    {
+      "mode": "simple",
+      "type": "search",
+      "file": "search-simple.png",
+      "sha256": "c13a04277d17a2afe25dba9cc9b9812ad2cfbd2e695bb54f6bac47fa3c119384",
+      "fixture": "Disposable browser, fictional data, external HTTP blocked. Actual compact mode and capsule UI."
+    },
+    {
+      "mode": "simple",
+      "type": "oh",
+      "file": "oh-simple.png",
+      "sha256": "f7db8744e821103161b72c9a94ab6c71b1249f4b2d0835cf75f8b556fd4f0a56",
+      "fixture": "Disposable browser, fictional data, external HTTP blocked. Actual compact mode and capsule UI."
+    },
+    {
+      "mode": "practical",
+      "type": "search",
+      "file": "search-practical.png",
+      "sha256": "c13a04277d17a2afe25dba9cc9b9812ad2cfbd2e695bb54f6bac47fa3c119384",
+      "fixture": "Disposable browser, fictional data, external HTTP blocked. Actual compact mode and capsule UI."
+    },
+    {
+      "mode": "practical",
+      "type": "oh",
+      "file": "oh-practical.png",
+      "sha256": "f7db8744e821103161b72c9a94ab6c71b1249f4b2d0835cf75f8b556fd4f0a56",
+      "fixture": "Disposable browser, fictional data, external HTTP blocked. Actual compact mode and capsule UI."
+    }
+  ],
+  "passed": true
+}

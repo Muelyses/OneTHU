@@ -1,5 +1,8 @@
 # OneGUI exp Implementation Plan
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 **Goal:** 在本地 dev3 的 exp 分支建立 ChatGPT / Codex 方向的完整中性视觉语言，保留 OneTHU 的基础设计思维与 UX。
 
 **Architecture:** Reference → Semantic → Structure → Material → Components → OneTHU recipe。OneGUI 是视觉值的唯一来源；宿主保留路由、数据和布局。现有设置仍驱动明暗、主题色、密度和材质，强调色与主要动作分离。

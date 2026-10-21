@@ -1,5 +1,8 @@
 # exp 封存与 dev3 开发交接
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 2026-10-20，按用户要求将 exp 的成果归档，并以 dev3 作为后续主力开发分支。仓库：`smartThise/OneTHU`，发布远端：`github`。
 
 ## 分支约定

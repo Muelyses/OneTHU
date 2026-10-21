@@ -1,5 +1,8 @@
 # OH / OneFlow / OnePage / OH MCP 路由与操作审计（2026-10-18）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 本次对四个子系统做只读审计并立即修补可确认的缺漏。审计基线 `13a71c52`；修复提交见文末。
 
 ## 一、结论

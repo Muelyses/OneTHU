@@ -1,5 +1,8 @@
 # 清华云盘（Seafile）能力与暂存箱/口令落地调研（2026-10-18）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 只读调研，基线 `35cef40f`。结论用于 `docs/plans/2026-10-18-organization-vault-share.md` 的 Phase 2+ 设计。
 > 本文每条事实都可在仓库内复核；标「待 live 验证」的条目在实现前必须先冒烟。
 

@@ -1,103 +1,7 @@
 {
-  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
+  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "lib.infoapps.f575a006f94b",
-      "source": "校机关服务满意度调查",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 297,
-          "context": "return i18n(\"lib.infoapps.f575a006f94b\");"
-        }
-      ],
-      "translation": "University Administration Satisfaction Survey",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f66fc156eba4",
-      "source": "培养方案完成情况",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 94,
-          "context": "return i18n(\"lib.infoapps.f66fc156eba4\");"
-        }
-      ],
-      "translation": "Study Plan Completion Status",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f6e69d684adb",
-      "source": "文化素质课申请查询",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 101,
-          "context": "return i18n(\"lib.infoapps.f6e69d684adb\");"
-        }
-      ],
-      "translation": "General Education Course Application Search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f78a23b61ab7",
-      "source": "横向项目变更",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 181,
-          "context": "return i18n(\"lib.infoapps.f78a23b61ab7\");"
-        }
-      ],
-      "translation": "Industry-Sponsored Project Change",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f9206110d4bb",
-      "source": "毕业生调查问卷",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 92,
-          "context": "return i18n(\"lib.infoapps.f9206110d4bb\");"
-        }
-      ],
-      "translation": "Graduate Survey",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.fa1d7aa7deff",
-      "source": "奖励资助管理系统",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 104,
-          "context": "return i18n(\"lib.infoapps.fa1d7aa7deff\");"
-        }
-      ],
-      "translation": "Awards and Financial Aid Management System",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "lib.infoapps.fb199e506f1e",
       "source": "专用标志备案申请",
@@ -596,26 +500,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 29,
+          "line": 45,
           "context": "return i18n(\"lib.onboardinglessons.00548ebf0094\");"
         }
       ],
       "translation": "One short share code, one bundle of content",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.00bc1d36170d",
-      "source": "点箱子预览；手机向内轻滑打开管理。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 25
-        }
-      ],
-      "translation": "Tap a box to preview; swipe inward on mobile to open management.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -627,7 +516,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 75
         }
       ],
       "translation": "Press ⌘/Ctrl+K to open search and jump straight to a page or content.",
@@ -642,7 +531,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 75
         }
       ],
       "translation": "OneFlow turns a chain of actions into fixed steps.",
@@ -657,7 +546,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 92
+          "line": 109
         }
       ],
       "translation": "Study covers courses and assignments; Reservations covers venues, seminar rooms and visitor registration.",
@@ -672,7 +561,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
+          "line": 123
         }
       ],
       "translation": "Stash, Organizations, Board and plugins belong to Full mode; switch in Settings.",
@@ -687,7 +576,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 110
+          "line": 128
         }
       ],
       "translation": "Pick one of the replaceable slots 1 to 4 and that feature stays pinned at the bottom.",
@@ -702,7 +591,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 53,
+          "line": 69,
           "context": "return i18n(\"lib.onboardinglessons.22953a2b1d3d\");"
         }
       ],
@@ -718,7 +607,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ],
       "translation": "The floating ball can be turned on or off in OH settings.",
@@ -733,7 +622,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ],
       "translation": "OH supports voice, multimodal input and IM access.",
@@ -748,7 +637,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 63,
+          "line": 79,
           "context": "return i18n(\"lib.onboardinglessons.2ae24bb56fc5\");"
         }
       ],
@@ -764,7 +653,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 70
         }
       ],
       "translation": "Save your workspace with OneGO! and restore it in one tap next time.",
@@ -779,11 +668,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 104
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 100
+          "line": 118
         }
       ],
       "translation": "Tap a task to see details, or tap a course to open its content.",
@@ -798,12 +687,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
+          "line": 103,
           "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 99,
+          "line": 117,
           "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
         }
       ],
@@ -819,7 +708,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 85
         }
       ],
       "translation": "Widgets, main features, the tab bar and OneShot are all adjustable.",
@@ -834,7 +723,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 90
         }
       ],
       "translation": "Study: assignments, notices, files, grades and discussions.",
@@ -849,7 +738,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 79
+          "line": 95
         }
       ],
       "translation": "Switching modes doesn't clear data, and you can export from Settings.",
@@ -864,7 +753,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 104,
+          "line": 122,
           "context": "return i18n(\"lib.onboardinglessons.3d0109a1f308\");"
         }
       ],
@@ -880,7 +769,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 34,
+          "line": 50,
           "context": "i18n(\"lib.onboardinglessons.4766925e81fa\")}`"
         }
       ],
@@ -896,7 +785,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 34,
+          "line": 50,
           "context": "return i18n(\"lib.onboardinglessons.477ee6905e99\");"
         }
       ],
@@ -912,7 +801,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 19,
+          "line": 35,
           "context": "return i18n(\"lib.onboardinglessons.481859b46c3d\");"
         }
       ],
@@ -928,7 +817,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 78,
+          "line": 94,
           "context": "return i18n(\"lib.onboardinglessons.48ad9a755b42\");"
         }
       ],
@@ -944,27 +833,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 104,
+          "line": 122,
           "context": "return i18n(\"lib.onboardinglessons.4afe5510ffd6\");"
         }
       ],
       "translation": "The fifth slot, \"More features\", expands into a real directory; tap a name to open it.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.4c3730561869",
-      "source": "暂存箱：什么都能先收进来",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 24,
-          "context": "return i18n(\"lib.onboardinglessons.4c3730561869\");"
-        }
-      ],
-      "translation": "Stash: catch anything first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -976,7 +849,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 31,
+          "line": 47,
           "context": "return i18n(\"lib.onboardinglessons.4f8b0079e9a7\");"
         }
       ],
@@ -992,7 +865,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 99,
+          "line": 117,
           "context": "return i18n(\"lib.onboardinglessons.5179f2bbf334\");"
         }
       ],
@@ -1008,7 +881,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 21,
+          "line": 37,
           "context": "return i18n(\"lib.onboardinglessons.54b50ff31359\");"
         }
       ],
@@ -1024,7 +897,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 73,
+          "line": 89,
           "context": "return i18n(\"lib.onboardinglessons.579d6942635d\");"
         }
       ],
@@ -1040,7 +913,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 55,
+          "line": 71,
           "context": "return i18n(\"lib.onboardinglessons.59899f30d40e\");"
         }
       ],
@@ -1056,7 +929,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 109,
+          "line": 127,
           "context": "return i18n(\"lib.onboardinglessons.5c0e2772ea36\");"
         }
       ],
@@ -1072,7 +945,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 90
         }
       ],
       "translation": "Life: campus card, electricity and network fees, laundry, venues.",
@@ -1087,7 +960,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 35
+          "line": 51
         }
       ],
       "translation": "Receiving still requires network access; if it isn't supported, fall back to a share code or QR code.",
@@ -1102,7 +975,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 85
         }
       ],
       "translation": "If a layout breaks, you can restore the default without touching your data.",
@@ -1117,7 +990,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 70
         }
       ],
       "translation": "The tab bar can be horizontal or vertical; switch to match your habits.",
@@ -1132,7 +1005,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 78,
+          "line": 94,
           "context": "return i18n(\"lib.onboardinglessons.65909de13b31\");"
         }
       ],
@@ -1148,7 +1021,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 26,
+          "line": 42,
           "context": "return i18n(\"lib.onboardinglessons.6670a347d233\");"
         }
       ],
@@ -1164,7 +1037,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 58,
+          "line": 74,
           "context": "return i18n(\"lib.onboardinglessons.6946e33b26a8\");"
         }
       ],
@@ -1180,7 +1053,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 35
+          "line": 51
         }
       ],
       "translation": "On both devices choose NFC send and receive, then separate them after it succeeds.",
@@ -1195,7 +1068,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 79
+          "line": 95
         }
       ],
       "translation": "Share codes and NFC pass content from device to device.",
@@ -1210,7 +1083,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ],
       "translation": "Your own creations can be published as a OnePage or a widget.",
@@ -1225,7 +1098,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 39,
+          "line": 55,
           "context": "return i18n(\"lib.onboardinglessons.74b07795cf47\");"
         }
       ],
@@ -1241,7 +1114,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 91,
+          "line": 108,
           "context": "return i18n(\"lib.onboardinglessons.7a1d19ef38cd\");"
         }
       ],
@@ -1257,7 +1130,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 68,
+          "line": 84,
           "context": "return i18n(\"lib.onboardinglessons.7afcd8d783a6\");"
         }
       ],
@@ -1273,10 +1146,133 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 110
+          "line": 128
         }
       ],
       "translation": "Entries you've swapped in are kept; switching modes doesn't affect the other mode's arrangement.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.8201b1567e8a",
+      "source": "已发出口令可改接收范围或撤销；已接收副本保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 46
+        }
+      ],
+      "translation": "A share you've issued can be re-scoped or revoked; received copies stay as they are.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.821c17e0cd8b",
+      "source": "先打开收发入口，点「接收」查看设备支持。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 51
+        }
+      ],
+      "translation": "Open the share entry first, then tap \"Receive\" to see what your device supports.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.836d1b485b82",
+      "source": "在组织中管理成员、资料库、项目和公告。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 56
+        }
+      ],
+      "translation": "Manage members, repositories, projects and announcements inside an organization.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.860909859b77",
+      "source": "先确认箱内内容，再生成并复制分享口令。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 46
+        }
+      ],
+      "translation": "Confirm the box contents first, then create and copy the share code.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.91753f91e6a4",
+      "source": "云盘、邮箱、GitLab、寻迹也能直接打开。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 90
+        }
+      ],
+      "translation": "Cloud drive, email, GitLab and Directions can be opened directly too.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.938cf6754eca",
+      "source": "首页是一块自由画布，组件的位置和大小随手调。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 35,
+          "context": "return i18n(\"lib.onboardinglessons.938cf6754eca\");"
+        }
+      ],
+      "translation": "Home is a free canvas; adjust widget position and size as you like.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.9521224b68f9",
+      "source": "装插件扩展组件、主题与 MCP 工具。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 79,
+          "context": "return i18n(\"lib.onboardinglessons.9521224b68f9\");"
+        }
+      ],
+      "translation": "Install plugins to extend widgets, themes and MCP tools.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.96110462ab73",
+      "source": "打开外观设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 86,
+          "context": "return i18n(\"lib.onboardinglessons.96110462ab73\");"
+        }
+      ],
+      "translation": "Open appearance settings",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

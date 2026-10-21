@@ -891,6 +891,102 @@
     "tour.xiaoda.after": {
       "zh-CN": "在技能页检查兼容性，再启用给 OH。",
       "en-US": "Check compatibility in Skills, then enable the skill for OH."
+    },
+    "tour.essentials.title": {
+      "zh-CN": "搜索、OH 与插件",
+      "en-US": "Search, OH and plugins"
+    },
+    "tour.essentials.chapter": {
+      "zh-CN": "搜索与 OH",
+      "en-US": "Search & OH"
+    },
+    "tour.essentials.lead.full": {
+      "zh-CN": "从搜索胶囊找到功能，再用 OneTHU Harness（小 OH）和插件扩展能力。",
+      "en-US": "Find features in the search capsule, then do more with OneTHU Harness (OH) and plugins."
+    },
+    "tour.essentials.lead.compact": {
+      "zh-CN": "搜索和 OneTHU Harness（小 OH）都保留；插件扩展可在完整模式使用。",
+      "en-US": "Search and OneTHU Harness (OH) remain available. Switch to Full mode to use plugin extensions."
+    },
+    "tour.essentials.search": {
+      "zh-CN": "搜索：在胶囊输入名称，找当前模式的功能与内容。",
+      "en-US": "Search: type in the capsule to find features and content available in this mode."
+    },
+    "tour.essentials.oh.full": {
+      "zh-CN": "OH：切到小 OH 描述任务，由工具读取实际数据。",
+      "en-US": "OH: switch to the assistant and describe your task. Tools retrieve actual data."
+    },
+    "tour.essentials.oh.compact": {
+      "zh-CN": "OH：保留对话与自填 API，也可扫码连接微信、飞书。",
+      "en-US": "OH: chat with your own API provider, or scan to connect WeChat and Feishu."
+    },
+    "tour.essentials.plugins.full": {
+      "zh-CN": "插件：在「我的」管理扩展、主题与插件功能页。",
+      "en-US": "Plugins: manage extensions, themes and plugin pages from My."
+    },
+    "tour.essentials.plugins.compact": {
+      "zh-CN": "插件可增加主题和功能；在设置切到完整模式后使用。",
+      "en-US": "Plugins add themes and features. Switch to Full mode in settings to use them."
+    },
+    "tour.essentials.openSearch": {
+      "zh-CN": "试试搜索",
+      "en-US": "Try search"
+    },
+    "tour.essentials.openOh": {
+      "zh-CN": "打开小 OH",
+      "en-US": "Open OH"
+    },
+    "tour.essentials.openPlugins": {
+      "zh-CN": "打开插件页",
+      "en-US": "Open plugins"
+    },
+    "tour.essentials.openMode": {
+      "zh-CN": "查看使用模式",
+      "en-US": "View modes"
+    },
+    "tour.essentials.before": {
+      "zh-CN": "点胶囊，输入名称，找到功能与校园内容。",
+      "en-US": "Open the capsule and search for features or campus content."
+    },
+    "tour.essentials.after": {
+      "zh-CN": "切到小 OH 对话；插件与主题在完整模式管理。",
+      "en-US": "Switch to OH to chat. Manage plugins and themes in Full mode."
+    },
+    "tour.vault.drag.title": {
+      "zh-CN": "暂存箱：长按、拖入、再分享",
+      "en-US": "Staging box: hold, drag and share"
+    },
+    "tour.vault.drag.lead": {
+      "zh-CN": "长按支持拖动的内容，移到暂存箱按钮后松手；先在本机收纳，再按需分享。",
+      "en-US": "Hold a supported item, drag it onto the staging button, then release. Collect locally and share when needed."
+    },
+    "tour.vault.drag.hold": {
+      "zh-CN": "长按作业、文件或白板组件，提起后开始移动。",
+      "en-US": "Hold an assignment, file or whiteboard component, then lift and drag."
+    },
+    "tour.vault.drag.drop": {
+      "zh-CN": "拖到暂存箱按钮的高亮区域，松手完成收纳。",
+      "en-US": "Drag into the highlighted area around the staging button and release."
+    },
+    "tour.vault.drag.sources": {
+      "zh-CN": "还支持标签页、工作区、搜索结果、日程与名片。",
+      "en-US": "Tabs, workspaces, search results, events and cards are also supported."
+    },
+    "tour.vault.drag.more": {
+      "zh-CN": "邮件、云盘、GitLab 项目及已接入的设置条目也可收纳。",
+      "en-US": "Mail, cloud items, GitLab projects and integrated settings entries can also be collected."
+    },
+    "tour.vault.drag.limit": {
+      "zh-CN": "只有已接入拖动的内容可收纳；远端文件可能需要先缓存。",
+      "en-US": "Only integrated drag sources are supported. Remote files may need caching first."
+    },
+    "tour.vault.drag.before": {
+      "zh-CN": "按住示例作业，等待提起，再向暂存箱移动。",
+      "en-US": "Hold the example assignment until it lifts, then drag toward the staging box."
+    },
+    "tour.vault.drag.after": {
+      "zh-CN": "拖进高亮区域松手，再打开箱子查看内容。",
+      "en-US": "Release inside the highlighted area, then open the box to view the item."
     }
   }
 }

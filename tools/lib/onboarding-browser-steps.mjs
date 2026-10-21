@@ -21,8 +21,9 @@ export async function resumeWithKeyboard(page, panel, check, label) {
 export async function walkFullOnboarding(page, check) {
   const tour = page.getByRole('dialog', { name: 'OneTHU 使用导览' });
   const cases = [
+    ['essentials', '搜索、OH 与插件', '试试搜索', 'search'],
     ['board', '白板与 OnePage：首页由你摆', '去看看白板', 'home'],
-    ['vault', '暂存箱：什么都能先收进来', '打开暂存箱', 'vault'],
+    ['vault', '暂存箱：长按、拖入、再分享', '打开暂存箱', 'vault'],
     ['code', '一个短口令，传递一组内容', '查看收发入口', 'code'],
     ['nfc', '碰一碰：名片与内容接力', '打开收发入口', 'nfc'],
     ['organization', '组织：人、文件、项目一处管', '打开组织', 'organization'],
@@ -43,7 +44,10 @@ export async function walkFullOnboarding(page, check) {
     await tour.getByRole('heading', { name: title, exact: true }).waitFor();
     await tour.getByRole('button', { name: action, exact: true }).click();
     await tour.waitFor({ state: 'hidden' });
-    if (destination === 'home') {
+    if (destination === 'search') {
+      await page.locator('.dock-panel').waitFor();
+      check(await page.locator('.ohx-input').isVisible(), '三模式通用导览可打开真实搜索胶囊');
+    } else if (destination === 'home') {
       await page.locator('[data-tab-page="homepage"]:visible .freeboard').waitFor();
     } else if (['vault', 'code', 'nfc'].includes(destination)) {
       const vault = page.locator('[data-tab-page="vault"]:visible');

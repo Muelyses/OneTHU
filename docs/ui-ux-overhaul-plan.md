@@ -1,5 +1,8 @@
 # OneTHU UI/UX 体验改造方案（下一个大版本）v2
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](README.md)；英文入口见 [English overview](en/index.md)。
+
+
 > 状态：草案 v2.1（对接需求用；已融合外部咨询《建议.md》并根据项目实际情况修订；**§1 现状描述已逐项对照代码核实，2026-09-25**）
 > 分支：`next/ui-ux-overhaul`
 > 目标读者：参与本大版本的全部开发 / 设计 / 文案同学
@@ -310,7 +313,7 @@
 ### 3.4 动态取色（Android 12+）
 
 - [x] `plugins/onethu-mobile` 新增 `getDynamicColor()` 命令（Rust: src-tauri/src/lib.rs dynamic_color → run_mobile_plugin_async("getDynamicColor")，supported=false 时返回 None 走降级），读取系统 monet 取色返回 seed/tone；
-- [x] 前端注入 Reference 层变量，Compat 层自动生效（src/lib/dynamicColor.ts：注入 <style id="onethu-dynamic-color">，选择器 html:root[data-dynamic="on"] 特异性高于令牌/暗色套/主题注入，关开关即整体移除）；
+- [x] 前端注入 Reference 层变量，Compat 层自动生效（src/lib/dynamicColor.ts：注入 `<style id="onethu-dynamic-color">`，选择器 html:root[data-dynamic="on"] 特异性高于令牌/暗色套/主题注入，关开关即整体移除）；
 - [x] 降级链：Android 12+ 取色 → 清华紫 → 跟随系统亮暗。设置中提供"跟随系统取色"开关。
 
 

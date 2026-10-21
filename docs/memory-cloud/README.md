@@ -1,5 +1,8 @@
 # OH 云端记忆与文件管道设计（memory-cloud）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 状态：设计稿（原型级，未实现） · 分支 dev-memory-cloud（基于 dev3/2b16fa1） · 2026-10-09
 > 任务背景：OH（OneTHU Harness）需要跨设备长期记忆与文件自动归档，**用户明确要求「弱智架构」：不搞向量检索/嵌入模型，纯文本层面、贴着清华云盘（Seafile）实际 API 能力走。**
 

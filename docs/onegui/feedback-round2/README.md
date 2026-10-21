@@ -1,5 +1,8 @@
 # 第二轮反馈验收
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../../README.md)；英文入口见 [English overview](../../en/index.md)。
+
+
 对应计划：`docs/plans/2026-10-18-feedback-round2.md`。2026-10-19 完成前端实施和浏览器验收。
 
 ## 复跑

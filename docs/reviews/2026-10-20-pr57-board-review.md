@@ -1,5 +1,8 @@
 # PR 57 白板部分审查与模板修复
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 审查对象：PR 57 第一提交 `9426f7fc382c225c6fbeea0859b0fe1bf569f60c`，对照本地 `exp` 基线 `f3ba4dd6`。不涉及后续 i18n 提交。未整体应用 PR，也未加入默认吸附。
 
 ## 结论

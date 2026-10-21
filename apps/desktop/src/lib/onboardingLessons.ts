@@ -3,7 +3,7 @@ import { t as i18n } from "../i18n/index.js";
 /** Mode-specific lessons. Pure content: importing this file never reads or writes saved preferences. */
 import type { ExperienceMode } from "../state/experienceMode.js";
 
-export type TourTarget = "home" | "workspaces" | "vault" | "organization" | "onego" | "plugins" | "appearance" | "learn" | "data" | "practical" | "xiaoda";
+export type TourTarget = "home" | "workspaces" | "vault" | "organization" | "onego" | "plugins" | "appearance" | "learn" | "data" | "practical" | "xiaoda" | "search" | "oh" | "mode";
 export interface Lesson {
   id: string;
   title: string;
@@ -11,18 +11,34 @@ export interface Lesson {
   steps: string[];
   target?: TourTarget;
   action?: string;
+  extraActions?: Array<{ target: TourTarget; action: string }>;
+}
+
+/** Shared basics remain visible in every mode, with mode-specific capabilities. */
+function essentials(full: boolean): Lesson {
+  return {
+    id: "essentials", get title() { return i18n("tour.essentials.title"); },
+    get lead() { return full ? i18n("tour.essentials.lead.full") : i18n("tour.essentials.lead.compact"); },
+    get steps() { return full ? i18nList(["tour.essentials.search", "tour.essentials.oh.full", "tour.essentials.plugins.full"]) : i18nList(["tour.essentials.search", "tour.essentials.oh.compact", "tour.essentials.plugins.compact"]); },
+    target: "search", get action() { return i18n("tour.essentials.openSearch"); },
+    get extraActions(): Array<{ target: TourTarget; action: string }> { return [
+      { target: "oh", action: i18n("tour.essentials.openOh") },
+      { target: full ? "plugins" : "mode", action: full ? i18n("tour.essentials.openPlugins") : i18n("tour.essentials.openMode") },
+    ]; },
+  };
 }
 
 /** Full mode teaches its distinctive workflows and Xiaoda; secondary tools remain discoverable at the end. */
 export const FULL_LESSONS: Lesson[] = [
+  essentials(true),
   {
     id: "board", get title() { return i18n("lib.onboardinglessons.481859b46c3d"); }, get lead() { return i18n("lib.onboardinglessons.938cf6754eca"); },
     get steps() { return i18nList(["lib.onboardinglessons.ed00d331fead","lib.onboardinglessons.f544c165cc0d","lib.onboardinglessons.f0286e41a800"]); },
     target: "home", get action() { return i18n("lib.onboardinglessons.54b50ff31359"); },
   },
   {
-    id: "vault", get title() { return i18n("lib.onboardinglessons.4c3730561869"); }, get lead() { return i18n("lib.onboardinglessons.fd97d45a4baf"); },
-    get steps() { return i18nList(["lib.onboardinglessons.ba184b90db25","lib.onboardinglessons.00bc1d36170d","lib.onboardinglessons.a71a30210ed8"]); },
+    id: "vault", get title() { return i18n("tour.vault.drag.title"); }, get lead() { return i18n("tour.vault.drag.lead"); },
+    get steps() { return i18nList(["tour.vault.drag.hold","tour.vault.drag.drop","tour.vault.drag.sources","tour.vault.drag.more","tour.vault.drag.limit"]); },
     target: "vault", get action() { return i18n("lib.onboardinglessons.6670a347d233"); },
   },
   {
@@ -82,6 +98,7 @@ export const EXTRA_LESSONS: Lesson[] = [
 ];
 
 export const SIMPLE_LESSONS: Lesson[] = [
+  essentials(false),
   {
     id: "today", get title() { return i18n("lib.onboardinglessons.2ef7a07ed1a6"); }, get lead() { return i18n("lib.onboardinglessons.a2fc98611a51"); },
     get steps() { return i18nList(["lib.onboardinglessons.2d32fc5fb4ab","lib.onboardinglessons.a5ba218d1130","lib.onboardinglessons.fe79c11b666f"]); },
@@ -95,6 +112,7 @@ export const SIMPLE_LESSONS: Lesson[] = [
 ];
 
 export const PRACTICAL_LESSONS: Lesson[] = [
+  essentials(false),
   {
     id: "today", get title() { return i18n("lib.onboardinglessons.2ef7a07ed1a6"); }, get lead() { return i18n("lib.onboardinglessons.5179f2bbf334"); },
     get steps() { return i18nList(["lib.onboardinglessons.2d32fc5fb4ab","lib.onboardinglessons.a5ba218d1130","lib.onboardinglessons.befddfd12f6f"]); },

@@ -1637,7 +1637,7 @@ export function ChatDock(): ReactNode {
         return;
       }
       // 已开着且就在目标模式（无预填词）＝再点一下收起
-      if (open && mode === cmd.mode && !cmd.presetQuery) {
+      if (open && mode === cmd.mode && !cmd.presetQuery && !cmd.openOnly) {
         closePanelNow();
         return;
       }
@@ -1669,7 +1669,7 @@ export function ChatDock(): ReactNode {
       const el = e.target as HTMLElement | null;
       /* 排除一切 portal 弹层：它们挂在 body 上不在 .dock-panel 里，点它们同样不该收主窗。
          附件动作面板已收编 OG Sheet：`.ohaa-backdrop` 亡，锚 = 其 scope 标记（面板+遮罩都可命中）。 */
-      if (el?.closest(".dock-panel, .ohx-capsule, .dock-voice-toast, .imgview, .ohf-backdrop, .confirm-mask, .tab-manage-mask, .settings-mask, [data-og-scope='ohaa.sheet'], .ex-sheet-mask")) return;
+      if (el?.closest(".dock-panel, .ohx-capsule, .tour-resume, .dock-voice-toast, .imgview, .ohf-backdrop, .confirm-mask, .tab-manage-mask, .settings-mask, [data-og-scope='ohaa.sheet'], .ex-sheet-mask")) return;
       closePanelNow();
     };
     document.addEventListener("pointerdown", h, true);

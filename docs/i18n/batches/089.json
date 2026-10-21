@@ -1,183 +1,7 @@
 {
-  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
+  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "state.org.c6b6912e4bd5",
-      "source": "本地记录已删除；云盘分享撤销未成功（可能已过期）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/org.ts",
-          "line": 394,
-          "context": "reason: i18n(\"state.org.c6b6912e4bd5\")"
-        }
-      ],
-      "translation": "The local record was deleted; revoking the cloud drive share did not succeed (it may have expired)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.0ed5ca0bc425",
-      "source": "这个 GitLab 账号已经是组织成员，请使用编辑或角色菜单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 200,
-          "context": "new Error(i18n(\"state.orgsync.0ed5ca0bc425\"))"
-        }
-      ],
-      "translation": "This GitLab account is already an organization member. Use the edit or role menu instead.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.1345eb189bbb",
-      "source": "未完成的权限变更期间只能解除资源关联，请先完成重试再添加资源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 245,
-          "context": "new Error(i18n(\"state.orgsync.1345eb189bbb\"))"
-        }
-      ],
-      "translation": "While a permission change is incomplete, you can only detach resources. Complete the retry before adding resources.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.15f11e1c75da",
-      "source": "至少保留一位服务器上的组织负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 208,
-          "context": "new Error(i18n(\"state.orgsync.15f11e1c75da\"))"
-        }
-      ],
-      "translation": "Keep at least one organization Owner on the server",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.275a305b9f8b",
-      "source": "这个云盘邮箱已经绑定其他组织成员",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 212,
-          "context": "new Error(i18n(\"state.orgsync.275a305b9f8b\"))"
-        }
-      ],
-      "translation": "This Cloud Drive email is already bound to another organization member",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.2da1ab0ba765",
-      "source": "当前 GitLab 账号不是这个群组的负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 125,
-          "context": "new Error(i18n(\"state.orgsync.2da1ab0ba765\"))"
-        }
-      ],
-      "translation": "The current GitLab account is not an Owner of this group",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.43f661af3a74",
-      "source": "核对全部权限",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 225,
-          "context": "label:i18n(\"state.orgsync.43f661af3a74\")"
-        }
-      ],
-      "translation": "Verify all permissions",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsync.47b018369530",
-      "source": "上一次权限变更尚未完成，请先重试并完成它",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 84,
-          "context": "new Error(i18n(\"state.orgsync.47b018369530\"))"
-        }
-      ],
-      "translation": "The previous permission change is not finished yet. Retry and complete it first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.5784fd684c09",
-      "source": "这个组织尚未启用多人协作",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 62,
-          "context": "new Error(i18n(\"state.orgsync.5784fd684c09\"))"
-        }
-      ],
-      "translation": "This organization has not enabled collaboration yet",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.66f49a483a9b",
-      "source": "请先给每位组织成员填写云盘邮箱，再关联资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 254,
-          "context": "new Error(i18n(\"state.orgsync.66f49a483a9b\"))"
-        }
-      ],
-      "translation": "Fill in a Cloud Drive email for each organization member before linking libraries",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsync.68b2e1779e6b",
-      "source": "多人协作需要你拥有的独立私有 GitLab 群组，不能使用公开群组或继承权限的子群组",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSync.ts",
-          "line": 123,
-          "context": "new Error(i18n(\"state.orgsync.68b2e1779e6b\"))"
-        }
-      ],
-      "translation": "Collaboration requires your own standalone private GitLab group; public groups or subgroups with inherited permissions cannot be used",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "state.orgsync.6ad659d36005",
       "source": "组织中存在 GitLab Maintainer 特殊权限，无法保证只有负责人能改管理资料；请先在 GitLab 调整为负责人或普通成员",
@@ -1417,6 +1241,277 @@
         }
       ],
       "translation": "Cloud drive not configured",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.a6e7bedde538",
+      "source": "清华云盘未连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 301,
+          "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 322,
+          "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 329,
+          "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive is not connected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.accountChanged",
+      "source": "云盘账号已变化，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/cloudFolder.ts",
+          "line": 17,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/memory/sync.ts",
+          "line": 42,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 88,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 146,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 231,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 238,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 40,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 40,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 47,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        }
+      ],
+      "translation": "The cloud drive account has changed. Please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.deleteOwnerOnly",
+      "source": "只有资料库所有者可以删除整个资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 180,
+          "context": "new Error(i18n(\"state.seafile.deleteOwnerOnly\"))"
+        }
+      ],
+      "translation": "Only the library owner can delete the entire library.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.duplicatePersonalLibraries",
+      "source": "发现多个同名且有内容的个人资料库，无法安全选择。请先在云盘确认要使用的资料库。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 44,
+          "context": "new Error(i18n(\"state.seafile.duplicatePersonalLibraries\"))"
+        }
+      ],
+      "translation": "Several personal libraries have the same name and contain data. Review them in cloud storage before choosing which one to use.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.f206fb3a20d8",
+      "source": "已下载到：{local}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "local",
+          "expression": "String(local)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 270,
+          "context": "showToast(i18nMsg(\"state.seafile.f206fb3a20d8\", { local: String(local) }))"
+        }
+      ],
+      "translation": "Downloaded to: {local}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.f423b2f16ab1",
+      "source": "已上传到云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 278,
+          "context": "showToast(i18nMsg(\"state.seafile.f423b2f16ab1\"))"
+        }
+      ],
+      "translation": "Uploaded to the cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.f6d2148271ab",
+      "source": "请先连接清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 386,
+          "context": "new Error(i18n(\"state.seafile.f6d2148271ab\"))"
+        }
+      ],
+      "translation": "Connect Tsinghua Cloud Drive first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.libraryCreationUnconfirmed",
+      "source": "上次建库结果尚未确认，已暂停自动创建，避免重复。请刷新云盘确认，或手动创建所需资料库后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 70,
+          "context": "new Error(i18n(\"state.seafile.libraryCreationUnconfirmed\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 81,
+          "context": "new Error(i18n(\"state.seafile.libraryCreationUnconfirmed\"))"
+        }
+      ],
+      "translation": "The previous library creation is still unconfirmed. Automatic creation is paused to prevent duplicates. Refresh cloud storage to check, or create the required library manually, then retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.nativeRestartRequired",
+      "source": "此资料库缺少可核实的归属信息，已暂停对它自动建库、删除与同步；请先刷新资料库列表。旧版客户端请更新并重启。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 65,
+          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 68,
+          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 440,
+          "context": "!hasSeafileRepoOwnershipMetadata(repo) ? i18n(\"state.seafile.nativeRestartRequired\") : undefined"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 480,
+          "context": "{i18n(\"state.seafile.nativeRestartRequired\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 674,
+          "context": "{i18n(\"state.seafile.nativeRestartRequired\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 696,
+          "context": "!hasSeafileRepoOwnershipMetadata(r) ? i18n(\"state.seafile.nativeRestartRequired\") : undefined"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 179,
+          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 186,
+          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
+        }
+      ],
+      "translation": "Ownership information for this library is unavailable. Automatic creation, deletion and sync for it are paused. Refresh the library list; update and restart older clients.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafileauto.0b66b052d51d",
+      "source": "profile 页未找到 token（页面形态未知，请在云盘页手动粘贴一次）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafileAuto.ts",
+          "line": 238,
+          "context": "error: i18n(\"state.seafileauto.0b66b052d51d\")"
+        }
+      ],
+      "translation": "Token not found on the profile page (unknown page layout; paste it manually once on the Cloud Drive page)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafileauto.6064f0dbf06e",
+      "source": "统一认证直登后仍未通过：请在设置里重新登录清华账号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafileAuto.ts",
+          "line": 197,
+          "context": "error: i18n(\"state.seafileauto.6064f0dbf06e\")"
+        }
+      ],
+      "translation": "Still not approved after direct unified authentication sign-in: sign in to your Tsinghua account again in Settings",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

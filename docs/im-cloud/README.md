@@ -1,5 +1,8 @@
 # docs/im-cloud · IM Bot 通道调研与多通道接入架构（dev-im-cloud）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 调研时间：2026-10-09（同日修订：无后端形态主案） ｜ 分支：`dev-im-cloud`（基于 dev3/2b16fa1） ｜ 性质：调研与设计文档，不含产品代码改动
 > 背景：为 OneTHU Harness（OH）设计 IM 多通道接入——用户在微信/飞书/企微/QQ/TG 里指挥 OH 干活，**IM 传入文件统一转存清华云盘**。**用户拍板：不要任何后端网关（NAS/服务器否决），桌面 App 直连承载通道。**
 

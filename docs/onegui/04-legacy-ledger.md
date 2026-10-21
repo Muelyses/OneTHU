@@ -1,5 +1,8 @@
 # OneGUI · 独立样式全量清点（迁移工作单）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 生成物：`node tools/onegui-audit.mjs`（2026-10-14）。**用户定案：所有可见对象必须来自 OneGUI 或它的派生，
 > 不允许任何独立手写的样式** —— 本清单就是那句话的执行面：清点 → 逐条消灭 → 末尾判据全部为 0。
 
@@ -55,10 +58,10 @@
 
 | 文件 | 形态 | 约字节 |
 |---|---|---|
-| `apps/desktop/src/components/FilePreview.tsx` | <style> 块 | 33330 |
+| `apps/desktop/src/components/FilePreview.tsx` | `<style>` 块 | 33330 |
 | `apps/desktop/src/components/FilePreview.tsx` | 模板字符串 DOCX_CSS | 678 |
-| `apps/desktop/src/lib/yktBody.ts` | <style> 块 | 10859 |
-| `apps/desktop/src/pages/MailPage.tsx` | <style> 块 | 1116 |
+| `apps/desktop/src/lib/yktBody.ts` | `<style>` 块 | 10859 |
+| `apps/desktop/src/pages/MailPage.tsx` | `<style>` 块 | 1116 |
 
 ## C1. 内联外观样式 Top 25（共 469 处 / 87 个文件）
 

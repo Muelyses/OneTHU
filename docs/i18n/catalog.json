@@ -1,6 +1,6 @@
 {
-  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
-  "count": 7503,
+  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "count": 7516,
   "messages": [
     {
       "key": "app.08566a4b57a3",
@@ -26164,7 +26164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.081c32889cff\");"
         }
       ]
@@ -26177,7 +26177,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
         }
       ]
@@ -26190,7 +26190,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.14904f50ba72\");"
         }
       ]
@@ -26203,7 +26203,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.16afed511861\");"
         }
       ]
@@ -26216,7 +26216,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.24a36e5f10e5\");"
         }
       ]
@@ -26229,7 +26229,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.299d568b581f\");"
         }
       ]
@@ -26242,7 +26242,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 39,
           "context": "return i18n(\"components.tourillustration.2af3e3257866\");"
         }
       ]
@@ -26255,7 +26255,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 42,
+          "line": 44,
           "context": "return i18n(\"components.tourillustration.2f356fc75c90\");"
         }
       ]
@@ -26268,7 +26268,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "paused?i18n(\"components.tourillustration.eb0c326b60ae\"):i18n(\"components.tourillustration.3272fe53c0f6\")"
         }
       ]
@@ -26286,21 +26286,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 147,
+          "line": 161,
           "context": "{i18n(\"components.tourillustration.37bf31378e03\", { name: String(spec.name) })}"
-        }
-      ]
-    },
-    {
-      "key": "components.tourillustration.3a7769c0aa16",
-      "source": "长按内容，再拖到边缘暂存箱。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
-          "context": "return i18n(\"components.tourillustration.3a7769c0aa16\");"
         }
       ]
     },
@@ -26312,7 +26299,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 43,
+          "line": 45,
           "context": "return i18n(\"components.tourillustration.3c3ca96372d1\");"
         }
       ]
@@ -26325,7 +26312,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.413088d3b1a0\");"
         }
       ]
@@ -26338,7 +26325,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.420be7bc077e\");"
         }
       ]
@@ -26351,21 +26338,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 27,
           "context": "return i18n(\"components.tourillustration.4a8eac97e960\");"
-        }
-      ]
-    },
-    {
-      "key": "components.tourillustration.4c7a7f26e106",
-      "source": "三项内容收好了，原来的内容仍然保留。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
-          "context": "return i18n(\"components.tourillustration.4c7a7f26e106\");"
         }
       ]
     },
@@ -26377,7 +26351,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 27,
           "context": "return i18n(\"components.tourillustration.5f716b7dedd8\");"
         }
       ]
@@ -26390,7 +26364,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 143,
+          "line": 157,
           "context": "before:i18n(\"components.tourillustration.60d33c9c54ae\")"
         }
       ]
@@ -26403,12 +26377,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "reduced?i18n(\"components.tourillustration.65c89582594c\"):paused?i18n(\"components.tourillustration.eb0c326b60ae\"):i18n(\"components.tourillustration.3272fe53c0f6\")"
         },
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "reduced?i18n(\"components.tourillustration.65c89582594c\"):paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
         }
       ]
@@ -26421,7 +26395,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.6cc2a4b7bfc9\");"
         }
       ]
@@ -26434,7 +26408,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 37,
           "context": "return i18n(\"components.tourillustration.6d3f6f685e53\");"
         }
       ]
@@ -26447,7 +26421,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 143,
+          "line": 157,
           "context": "extra?.title??i18n(\"components.tourillustration.6d78bc490e7e\")"
         }
       ]
@@ -26460,7 +26434,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.6f56d8a61fe3\");"
         }
       ]
@@ -26473,7 +26447,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.7119f12b506b\");"
         }
       ]
@@ -26486,7 +26460,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
         }
       ]
@@ -26499,7 +26473,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "reduced?i18n(\"components.tourillustration.76aa084fbdd3\"):paused?i18n(\"components.tourillustration.73446b07bee3\"):i18n(\"components.tourillustration.0d450810e15f\")"
         }
       ]
@@ -26512,7 +26486,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.7b25b8069c23\");"
         }
       ]
@@ -26525,7 +26499,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.7d20856e7f07\");"
         }
       ]
@@ -26538,7 +26512,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.8173df51f2a7\");"
         }
       ]
@@ -26551,7 +26525,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 157,
+          "line": 171,
           "context": "{i18n(\"components.tourillustration.81a9402f9808\")}"
         }
       ]
@@ -26564,7 +26538,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 40,
+          "line": 42,
           "context": "return i18n(\"components.tourillustration.88f643c1b98a\");"
         }
       ]
@@ -26577,7 +26551,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
         }
       ]
@@ -26590,7 +26564,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.92ea3aacf873\");"
         }
       ]
@@ -26603,7 +26577,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.9593aef7149a\");"
         }
       ]
@@ -26616,7 +26590,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.96b3145a6b73\");"
         }
       ]
@@ -26629,7 +26603,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.9c7a9fcee92f\");"
         }
       ]
@@ -26642,7 +26616,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.a134c7737c93\");"
         }
       ]
@@ -26655,7 +26629,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 72,
+          "line": 74,
           "context": "{i18n(\"components.tourillustration.a31b16bc552a\")}"
         }
       ]
@@ -26668,7 +26642,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 28,
           "context": "return i18n(\"components.tourillustration.a53febdc5466\");"
         }
       ]
@@ -26681,7 +26655,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 39,
           "context": "return i18n(\"components.tourillustration.bb3cdc17373c\");"
         }
       ]
@@ -26694,7 +26668,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.bf5b53af13f4\");"
         }
       ]
@@ -26707,7 +26681,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.c20f83cc52d2\");"
         }
       ]
@@ -26720,7 +26694,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "paused?i18n(\"components.tourillustration.c3396195e91c\"):i18n(\"components.tourillustration.8d12fc0d4eb2\")"
         }
       ]
@@ -26733,7 +26707,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 39,
           "context": "return i18n(\"components.tourillustration.c3d0e8d4b506\");"
         }
       ]
@@ -26746,7 +26720,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.c6331cafc401\");"
         }
       ]
@@ -26759,7 +26733,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.c89246ea218f\");"
         }
       ]
@@ -26772,7 +26746,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 37,
           "context": "return i18n(\"components.tourillustration.d8aa9757d2b3\");"
         }
       ]
@@ -26785,7 +26759,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 45,
+          "line": 47,
           "context": "return i18n(\"components.tourillustration.d924d8e8fe20\");"
         }
       ]
@@ -26798,7 +26772,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.d9c8475ca6a6\");"
         }
       ]
@@ -26811,7 +26785,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 37,
           "context": "return i18n(\"components.tourillustration.dd52e4b6a630\");"
         }
       ]
@@ -26824,7 +26798,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 143,
+          "line": 157,
           "context": "after:i18n(\"components.tourillustration.e431c37e9bdc\")"
         }
       ]
@@ -26837,7 +26811,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.e8332f3f0437\");"
         }
       ]
@@ -26850,7 +26824,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 148,
+          "line": 162,
           "context": "paused?i18n(\"components.tourillustration.eb0c326b60ae\"):i18n(\"components.tourillustration.3272fe53c0f6\")"
         }
       ]
@@ -26863,7 +26837,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 27,
           "context": "return i18n(\"components.tourillustration.ee40e75e813e\");"
         }
       ]
@@ -26876,7 +26850,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.f4ad88248fc0\");"
         }
       ]
@@ -26889,7 +26863,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.f65def27f883\");"
         }
       ]
@@ -26902,7 +26876,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 44,
+          "line": 46,
           "context": "return i18n(\"components.tourillustration.fa060d19d9cd\");"
         }
       ]
@@ -26915,7 +26889,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.fd962d16dac1\");"
         }
       ]
@@ -26928,7 +26902,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 41,
+          "line": 43,
           "context": "return i18n(\"components.tourillustration.fe0f7b11128c\");"
         }
       ]
@@ -26941,7 +26915,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 189,
+          "line": 217,
           "context": "subtitle: i18n(\"components.tourstudiomodels.06f8b75c9666\")"
         }
       ]
@@ -26954,18 +26928,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 202,
+          "line": 230,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 204,
+          "line": 232,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
-        },
-        {
-          "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 216,
-          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.70b7371a692c\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ]
     },
@@ -26977,7 +26946,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 192,
+          "line": 220,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ]
@@ -26990,7 +26959,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 189,
+          "line": 217,
           "context": "title: i18n(\"components.tourstudiomodels.1c23243a9085\")"
         }
       ]
@@ -27003,7 +26972,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 204,
+          "line": 232,
           "context": "badge: i18n(\"components.tourstudiomodels.21c80015e886\")"
         }
       ]
@@ -27016,18 +26985,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 202,
+          "line": 230,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 204,
+          "line": 232,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
-        },
-        {
-          "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 216,
-          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.70b7371a692c\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ]
     },
@@ -27039,7 +27003,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 191,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ]
@@ -27052,7 +27016,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 202,
+          "line": 230,
           "context": "badge: i18n(\"components.tourstudiomodels.49ef840efe6f\")"
         }
       ]
@@ -27065,7 +27029,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 191,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ]
@@ -27078,7 +27042,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 192,
+          "line": 220,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ]
@@ -27091,21 +27055,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 189,
+          "line": 217,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.6fef00bb252c\")"
-        }
-      ]
-    },
-    {
-      "key": "components.tourstudiomodels.70b7371a692c",
-      "source": "一段文字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 216,
-          "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.70b7371a692c\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ]
     },
@@ -27117,21 +27068,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 192,
+          "line": 220,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
-        }
-      ]
-    },
-    {
-      "key": "components.tourstudiomodels.804002a9c49a",
-      "source": "暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 212,
-          "context": "title: i18n(\"components.tourstudiomodels.804002a9c49a\")"
         }
       ]
     },
@@ -27143,7 +27081,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 192,
+          "line": 220,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ]
@@ -27156,7 +27094,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 202,
+          "line": 230,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.90c7cebe15c6\")"
         }
       ]
@@ -27169,7 +27107,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 204,
+          "line": 232,
           "context": "title: i18n(\"components.tourstudiomodels.92f20b9fa474\")"
         }
       ]
@@ -27182,7 +27120,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 191,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ]
@@ -27195,34 +27133,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 203,
+          "line": 231,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.b0c8602734bb\")"
-        }
-      ]
-    },
-    {
-      "key": "components.tourstudiomodels.ca0df86f3c7e",
-      "source": "内容留存 · 按需分享",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 212,
-          "context": "subtitle: i18n(\"components.tourstudiomodels.ca0df86f3c7e\")"
-        }
-      ]
-    },
-    {
-      "key": "components.tourstudiomodels.cba1ec75f4ca",
-      "source": "资料",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
-          "context": "title: i18n(\"components.tourstudiomodels.cba1ec75f4ca\")"
         }
       ]
     },
@@ -27234,7 +27146,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 147,
+          "line": 150,
           "context": "new Error(i18n(\"components.tourstudiomodels.cf4324a5411f\"))"
         }
       ]
@@ -27247,7 +27159,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 202,
+          "line": 230,
           "context": "title: i18n(\"components.tourstudiomodels.d38b22e68fc1\")"
         }
       ]
@@ -27260,7 +27172,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 204,
+          "line": 232,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.d513aac3caac\")"
         }
       ]
@@ -27273,7 +27185,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 192,
+          "line": 220,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ]
@@ -27286,7 +27198,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 192,
+          "line": 220,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ]
@@ -27304,12 +27216,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 31,
+          "line": 33,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(source.key) }))"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 115,
+          "line": 118,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(key) }))"
         }
       ]
@@ -27335,7 +27247,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioScreens.ts",
-          "line": 70,
+          "line": 71,
           "context": "new Error(i18n(\"components.tourstudioscreens.18455d8d7822\"))"
         }
       ]
@@ -27353,7 +27265,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioScreens.ts",
-          "line": 82,
+          "line": 83,
           "context": "new Error(i18n(\"components.tourstudioscreens.fca0380c4f7e\", { key: String(key) }))"
         }
       ]
@@ -42560,20 +42472,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 29,
+          "line": 45,
           "context": "return i18n(\"lib.onboardinglessons.00548ebf0094\");"
-        }
-      ]
-    },
-    {
-      "key": "lib.onboardinglessons.00bc1d36170d",
-      "source": "点箱子预览；手机向内轻滑打开管理。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 25
         }
       ]
     },
@@ -42585,7 +42485,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 75
         }
       ]
     },
@@ -42597,7 +42497,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 75
         }
       ]
     },
@@ -42609,7 +42509,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 92
+          "line": 109
         }
       ]
     },
@@ -42621,7 +42521,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
+          "line": 123
         }
       ]
     },
@@ -42633,7 +42533,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 110
+          "line": 128
         }
       ]
     },
@@ -42645,7 +42545,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 53,
+          "line": 69,
           "context": "return i18n(\"lib.onboardinglessons.22953a2b1d3d\");"
         }
       ]
@@ -42658,7 +42558,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ]
     },
@@ -42670,7 +42570,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ]
     },
@@ -42682,7 +42582,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 63,
+          "line": 79,
           "context": "return i18n(\"lib.onboardinglessons.2ae24bb56fc5\");"
         }
       ]
@@ -42695,7 +42595,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 70
         }
       ]
     },
@@ -42707,11 +42607,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 104
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 100
+          "line": 118
         }
       ]
     },
@@ -42723,12 +42623,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
+          "line": 103,
           "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 99,
+          "line": 117,
           "context": "return i18n(\"lib.onboardinglessons.2ef7a07ed1a6\");"
         }
       ]
@@ -42741,7 +42641,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 85
         }
       ]
     },
@@ -42753,7 +42653,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 90
         }
       ]
     },
@@ -42765,7 +42665,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 79
+          "line": 95
         }
       ]
     },
@@ -42777,7 +42677,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 104,
+          "line": 122,
           "context": "return i18n(\"lib.onboardinglessons.3d0109a1f308\");"
         }
       ]
@@ -42790,7 +42690,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 34,
+          "line": 50,
           "context": "i18n(\"lib.onboardinglessons.4766925e81fa\")}`"
         }
       ]
@@ -42803,7 +42703,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 34,
+          "line": 50,
           "context": "return i18n(\"lib.onboardinglessons.477ee6905e99\");"
         }
       ]
@@ -42816,7 +42716,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 19,
+          "line": 35,
           "context": "return i18n(\"lib.onboardinglessons.481859b46c3d\");"
         }
       ]
@@ -42829,7 +42729,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 78,
+          "line": 94,
           "context": "return i18n(\"lib.onboardinglessons.48ad9a755b42\");"
         }
       ]
@@ -42842,21 +42742,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 104,
+          "line": 122,
           "context": "return i18n(\"lib.onboardinglessons.4afe5510ffd6\");"
-        }
-      ]
-    },
-    {
-      "key": "lib.onboardinglessons.4c3730561869",
-      "source": "暂存箱：什么都能先收进来",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 24,
-          "context": "return i18n(\"lib.onboardinglessons.4c3730561869\");"
         }
       ]
     },
@@ -42868,7 +42755,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 31,
+          "line": 47,
           "context": "return i18n(\"lib.onboardinglessons.4f8b0079e9a7\");"
         }
       ]
@@ -42881,7 +42768,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 99,
+          "line": 117,
           "context": "return i18n(\"lib.onboardinglessons.5179f2bbf334\");"
         }
       ]
@@ -42894,7 +42781,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 21,
+          "line": 37,
           "context": "return i18n(\"lib.onboardinglessons.54b50ff31359\");"
         }
       ]
@@ -42907,7 +42794,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 73,
+          "line": 89,
           "context": "return i18n(\"lib.onboardinglessons.579d6942635d\");"
         }
       ]
@@ -42920,7 +42807,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 55,
+          "line": 71,
           "context": "return i18n(\"lib.onboardinglessons.59899f30d40e\");"
         }
       ]
@@ -42933,7 +42820,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 109,
+          "line": 127,
           "context": "return i18n(\"lib.onboardinglessons.5c0e2772ea36\");"
         }
       ]
@@ -42946,7 +42833,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 90
         }
       ]
     },
@@ -42958,7 +42845,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 35
+          "line": 51
         }
       ]
     },
@@ -42970,7 +42857,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 85
         }
       ]
     },
@@ -42982,7 +42869,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 70
         }
       ]
     },
@@ -42994,7 +42881,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 78,
+          "line": 94,
           "context": "return i18n(\"lib.onboardinglessons.65909de13b31\");"
         }
       ]
@@ -43007,7 +42894,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 26,
+          "line": 42,
           "context": "return i18n(\"lib.onboardinglessons.6670a347d233\");"
         }
       ]
@@ -43020,7 +42907,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 58,
+          "line": 74,
           "context": "return i18n(\"lib.onboardinglessons.6946e33b26a8\");"
         }
       ]
@@ -43033,7 +42920,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 35
+          "line": 51
         }
       ]
     },
@@ -43045,7 +42932,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 79
+          "line": 95
         }
       ]
     },
@@ -43057,7 +42944,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ]
     },
@@ -43069,7 +42956,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 39,
+          "line": 55,
           "context": "return i18n(\"lib.onboardinglessons.74b07795cf47\");"
         }
       ]
@@ -43082,7 +42969,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 91,
+          "line": 108,
           "context": "return i18n(\"lib.onboardinglessons.7a1d19ef38cd\");"
         }
       ]
@@ -43095,7 +42982,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 68,
+          "line": 84,
           "context": "return i18n(\"lib.onboardinglessons.7afcd8d783a6\");"
         }
       ]
@@ -43108,7 +42995,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 110
+          "line": 128
         }
       ]
     },
@@ -43120,7 +43007,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 30
+          "line": 46
         }
       ]
     },
@@ -43132,7 +43019,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 35
+          "line": 51
         }
       ]
     },
@@ -43144,7 +43031,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 40
+          "line": 56
         }
       ]
     },
@@ -43156,7 +43043,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 30
+          "line": 46
         }
       ]
     },
@@ -43168,7 +43055,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 74
+          "line": 90
         }
       ]
     },
@@ -43180,7 +43067,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 19,
+          "line": 35,
           "context": "return i18n(\"lib.onboardinglessons.938cf6754eca\");"
         }
       ]
@@ -43193,7 +43080,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 63,
+          "line": 79,
           "context": "return i18n(\"lib.onboardinglessons.9521224b68f9\");"
         }
       ]
@@ -43206,7 +43093,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 70,
+          "line": 86,
           "context": "return i18n(\"lib.onboardinglessons.96110462ab73\");"
         }
       ]
@@ -43219,7 +43106,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 36,
+          "line": 52,
           "context": "return i18n(\"lib.onboardinglessons.9697b3ac8ab8\");"
         }
       ]
@@ -43232,7 +43119,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
+          "line": 80
         }
       ]
     },
@@ -43244,7 +43131,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
+          "line": 103,
           "context": "return i18n(\"lib.onboardinglessons.a2fc98611a51\");"
         }
       ]
@@ -43257,7 +43144,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 80,
+          "line": 96,
           "context": "return i18n(\"lib.onboardinglessons.a497b5391775\");"
         }
       ]
@@ -43270,23 +43157,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 104
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 100
-        }
-      ]
-    },
-    {
-      "key": "lib.onboardinglessons.a71a30210ed8",
-      "source": "长按内容拖进箱子；日程先存快照，按需加入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 25
+          "line": 118
         }
       ]
     },
@@ -43298,7 +43173,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 109,
+          "line": 127,
           "context": "return i18n(\"lib.onboardinglessons.a77d0e6c7c2d\");"
         }
       ]
@@ -43311,7 +43186,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 40
+          "line": 56
         }
       ]
     },
@@ -43323,7 +43198,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 68,
+          "line": 84,
           "context": "return i18n(\"lib.onboardinglessons.abeb15db61bc\");"
         }
       ]
@@ -43336,7 +43211,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 41,
+          "line": 57,
           "context": "return i18n(\"lib.onboardinglessons.b0e75e43d9da\");"
         }
       ]
@@ -43349,7 +43224,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 65,
+          "line": 81,
           "context": "return i18n(\"lib.onboardinglessons.b262a001f2d3\");"
         }
       ]
@@ -43362,12 +43237,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 88,
+          "line": 105,
           "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 101,
+          "line": 119,
           "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
         }
       ]
@@ -43380,7 +43255,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 40
+          "line": 56
         }
       ]
     },
@@ -43392,19 +43267,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 105
-        }
-      ]
-    },
-    {
-      "key": "lib.onboardinglessons.ba184b90db25",
-      "source": "暂存箱贴在屏幕边缘，可拖动换位。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 25
+          "line": 123
         }
       ]
     },
@@ -43416,7 +43279,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 106,
+          "line": 124,
           "context": "return i18n(\"lib.onboardinglessons.bab05287556d\");"
         }
       ]
@@ -43429,7 +43292,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 54
+          "line": 70
         }
       ]
     },
@@ -43441,7 +43304,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 100
+          "line": 118
         }
       ]
     },
@@ -43453,7 +43316,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 92
+          "line": 109
         }
       ]
     },
@@ -43465,7 +43328,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 59
+          "line": 75
         }
       ]
     },
@@ -43477,7 +43340,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 29,
+          "line": 45,
           "context": "return i18n(\"lib.onboardinglessons.d202897590a6\");"
         }
       ]
@@ -43490,7 +43353,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 93,
+          "line": 110,
           "context": "return i18n(\"lib.onboardinglessons.d66e6fe01e59\");"
         }
       ]
@@ -43503,7 +43366,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 111,
+          "line": 129,
           "context": "return i18n(\"lib.onboardinglessons.d6dc9c00faa7\");"
         }
       ]
@@ -43516,7 +43379,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 75,
+          "line": 91,
           "context": "return i18n(\"lib.onboardinglessons.d79d92647cba\");"
         }
       ]
@@ -43529,7 +43392,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 39,
+          "line": 55,
           "context": "return i18n(\"lib.onboardinglessons.da33da7edc5c\");"
         }
       ]
@@ -43542,7 +43405,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 79
+          "line": 95
         }
       ]
     },
@@ -43554,7 +43417,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 58,
+          "line": 74,
           "context": "return i18n(\"lib.onboardinglessons.e225304e8091\");"
         }
       ]
@@ -43567,7 +43430,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 73,
+          "line": 89,
           "context": "return i18n(\"lib.onboardinglessons.e27c03ed11b7\");"
         }
       ]
@@ -43580,7 +43443,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 60,
+          "line": 76,
           "context": "return i18n(\"lib.onboardinglessons.e84b694246af\");"
         }
       ]
@@ -43593,7 +43456,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 92
+          "line": 109
         }
       ]
     },
@@ -43605,7 +43468,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 53,
+          "line": 69,
           "context": "return i18n(\"lib.onboardinglessons.eb8d4b7fd8d5\");"
         }
       ]
@@ -43618,7 +43481,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 110
+          "line": 128
         }
       ]
     },
@@ -43630,7 +43493,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 20
+          "line": 36
         }
       ]
     },
@@ -43642,7 +43505,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 30
+          "line": 46
         }
       ]
     },
@@ -43654,7 +43517,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 20
+          "line": 36
         }
       ]
     },
@@ -43666,7 +43529,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 20
+          "line": 36
         }
       ]
     },
@@ -43678,7 +43541,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 69
+          "line": 85
         }
       ]
     },
@@ -43690,20 +43553,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 64
-        }
-      ]
-    },
-    {
-      "key": "lib.onboardinglessons.fd97d45a4baf",
-      "source": "文件先留在本机，需要分享时再连接云盘。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 24,
-          "context": "return i18n(\"lib.onboardinglessons.fd97d45a4baf\");"
+          "line": 80
         }
       ]
     },
@@ -43715,7 +43565,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 91,
+          "line": 108,
           "context": "return i18n(\"lib.onboardinglessons.fdb99497532e\");"
         }
       ]
@@ -43728,7 +43578,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 87
+          "line": 104
         }
       ]
     },
@@ -47595,7 +47445,7 @@
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 34,
+          "line": 50,
           "context": "i18n(\"nfc.unstableNotice\")} ${"
         },
         {
@@ -108209,6 +108059,317 @@
       ]
     },
     {
+      "key": "tour.essentials.after",
+      "source": "切到小 OH 对话；插件与主题在完整模式管理。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"tour.essentials.after\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.before",
+      "source": "点胶囊，输入名称，找到功能与校园内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"tour.essentials.before\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.chapter",
+      "source": "搜索与 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTour.tsx",
+          "line": 26,
+          "context": "return i18n(\"tour.essentials.chapter\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.lead.compact",
+      "source": "搜索和 OneTHU Harness（小 OH）都保留；插件扩展可在完整模式使用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 21,
+          "context": "full ? i18n(\"tour.essentials.lead.full\") : i18n(\"tour.essentials.lead.compact\")"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.lead.full",
+      "source": "从搜索胶囊找到功能，再用 OneTHU Harness（小 OH）和插件扩展能力。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 21,
+          "context": "full ? i18n(\"tour.essentials.lead.full\") : i18n(\"tour.essentials.lead.compact\")"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.oh.compact",
+      "source": "OH：保留对话与自填 API，也可扫码连接微信、飞书。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.oh.full",
+      "source": "OH：切到小 OH 描述任务，由工具读取实际数据。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.openMode",
+      "source": "查看使用模式",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 26,
+          "context": "full ? i18n(\"tour.essentials.openPlugins\") : i18n(\"tour.essentials.openMode\")"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.openOh",
+      "source": "打开小 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 25,
+          "context": "action: i18n(\"tour.essentials.openOh\")"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.openPlugins",
+      "source": "打开插件页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 26,
+          "context": "full ? i18n(\"tour.essentials.openPlugins\") : i18n(\"tour.essentials.openMode\")"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.openSearch",
+      "source": "试试搜索",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 23,
+          "context": "return i18n(\"tour.essentials.openSearch\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.plugins.compact",
+      "source": "插件可增加主题和功能；在设置切到完整模式后使用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.plugins.full",
+      "source": "插件：在「我的」管理扩展、主题与插件功能页。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.search",
+      "source": "搜索：在胶囊输入名称，找当前模式的功能与内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "key": "tour.essentials.title",
+      "source": "搜索、OH 与插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 25,
+          "context": "return i18n(\"tour.essentials.title\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 20,
+          "context": "return i18n(\"tour.essentials.title\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.after",
+      "source": "拖进高亮区域松手，再打开箱子查看内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 28,
+          "context": "return i18n(\"tour.vault.drag.after\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.before",
+      "source": "按住示例作业，等待提起，再向暂存箱移动。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 28,
+          "context": "return i18n(\"tour.vault.drag.before\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.drop",
+      "source": "拖到暂存箱按钮的高亮区域，松手完成收纳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.hold",
+      "source": "长按作业、文件或白板组件，提起后开始移动。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.lead",
+      "source": "长按支持拖动的内容，移到暂存箱按钮后松手；先在本机收纳，再按需分享。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 40,
+          "context": "return i18n(\"tour.vault.drag.lead\");"
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.limit",
+      "source": "只有已接入拖动的内容可收纳；远端文件可能需要先缓存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.more",
+      "source": "邮件、云盘、GitLab 项目及已接入的设置条目也可收纳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.sources",
+      "source": "还支持标签页、工作区、搜索结果、日程与名片。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "key": "tour.vault.drag.title",
+      "source": "暂存箱：长按、拖入、再分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 40,
+          "context": "return i18n(\"tour.vault.drag.title\");"
+        }
+      ]
+    },
+    {
       "key": "tour.xiaoda.action",
       "source": "打开清小搭",
       "kind": "text",
@@ -108216,7 +108377,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 46,
+          "line": 62,
           "context": "return i18n(\"tour.xiaoda.action\");"
         }
       ]
@@ -108229,7 +108390,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 24,
+          "line": 26,
           "context": "return i18n(\"tour.xiaoda.after\");"
         }
       ]
@@ -108242,7 +108403,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 45
+          "line": 61
         }
       ]
     },
@@ -108254,7 +108415,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 24,
+          "line": 26,
           "context": "return i18n(\"tour.xiaoda.before\");"
         }
       ]
@@ -108280,7 +108441,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 45
+          "line": 61
         }
       ]
     },
@@ -108292,7 +108453,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 44,
+          "line": 60,
           "context": "return i18n(\"tour.xiaoda.lead\");"
         }
       ]
@@ -108305,7 +108466,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 45
+          "line": 61
         }
       ]
     },
@@ -108317,7 +108478,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 45
+          "line": 61
         }
       ]
     },
@@ -108329,12 +108490,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 24,
+          "line": 26,
           "context": "return i18n(\"tour.xiaoda.title\");"
         },
         {
           "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 44,
+          "line": 60,
           "context": "return i18n(\"tour.xiaoda.title\");"
         }
       ]

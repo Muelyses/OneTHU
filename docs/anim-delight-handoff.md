@@ -1,5 +1,8 @@
 # OneTHU 动效层交接文档（`local/anim-delight` 自用分支）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](README.md)；英文入口见 [English overview](en/index.md)。
+
+
 > 最后更新：2026-09-24 14:00
 
 > 面向接手动效工作的 agent。读完这一份即可开工：背景、设计纪律、代码地图、已实现清单、

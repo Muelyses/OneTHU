@@ -1,5 +1,8 @@
 # 手机操作与 OneGUI 收口验收 · 2026-10-20
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../../README.md)；英文入口见 [English overview](../../en/index.md)。
+
+
 本轮使用 Chrome 移动视口（390×844、320×740、844×390），通过 CDP `Input.dispatchTouchEvent` 和 Playwright 真实触摸/键盘输入操作。未向目标元素派发伪造 PointerEvent，未使用 force click 绕过遮挡；记录的触摸事件均 `isTrusted=true`。截图已逐张抽查阅读态、放大拖动、边角调整、横向平移和横屏。
 
 **这不是实体 Android 设备验收。** 当前 `adb devices -l` 没有设备；Android WebView、系统键盘、原生文件选择器及设备 NFC 不在本报告覆盖范围内。

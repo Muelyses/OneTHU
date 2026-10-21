@@ -1,5 +1,8 @@
 # 02 · Files Hub 文件汇聚管道设计
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 状态：设计稿（原型级，未实现） · 分支 dev-memory-cloud · 2026-10-09
 > 姊妹篇：[01-memory-system.md](./01-memory-system.md)（记忆系统）、[03-sync-conflict.md](./03-sync-conflict.md)（同步/冲突/缓存）
 

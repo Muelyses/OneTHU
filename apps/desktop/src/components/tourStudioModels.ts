@@ -1,5 +1,6 @@
 import { t as i18n } from "../i18n/index.js";
 import * as THREE from "three";
+import vaultDragVideo from "../assets/tour/real-ui/vault-drag.mp4?url";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { selectStudioScreen, type StudioScreenAssets, type StudioScreenKey } from "./tourStudioScreens.js";
 
@@ -12,6 +13,7 @@ export interface StudioAssembly {
   group: THREE.Group;
   pose(progress: number): void;
   dispose(): void;
+  setPlaying?(running: boolean, reduced: boolean): void;
 }
 interface FaceContent {
   eyebrow?: string; title: string; subtitle?: string; rows?: string[];
@@ -21,7 +23,7 @@ const mix = THREE.MathUtils.lerp;
 const clamp = (value: number): number => THREE.MathUtils.clamp(value, 0, 1);
 
 /** Real bevelled solids under every face; canvas textures contain only typography/UI. */
-export function createStudioAssembly(lesson: string, palette: StudioPalette, mode: "simple" | "practical" | "full" = "full", screens?: StudioScreenAssets): StudioAssembly {
+export function createStudioAssembly(lesson: string, palette: StudioPalette, mode: "simple" | "practical" | "full" = "full", screens?: StudioScreenAssets, onFrame?: () => void): StudioAssembly {
   if (!["organization", "code", "vault"].includes(lesson)) {
     for (const after of [false, true]) {
       const selection = selectStudioScreen(lesson, mode, after);
@@ -34,6 +36,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
   }
   const group = new THREE.Group(); group.name = `studio-assembly-${lesson}`;
   const updateFaces: Array<(progress: number) => void> = [];
+  let setPlaying: StudioAssembly["setPlaying"], releaseMedia: (() => void) | undefined;
   const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>(), textures = new Set<THREE.Texture>();
   const keepGeometry = <T extends THREE.BufferGeometry>(value: T): T => { geometries.add(value); return value; };
   const material = (color: string, properties: THREE.MeshPhysicalMaterialParameters = {}): THREE.MeshPhysicalMaterial => {
@@ -146,7 +149,32 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     const afterKey = (receiver ? after.secondary : after.primary)?.key;
     if (!beforeKey || !afterKey) throw new Error(i18n("components.tourstudiomodels.cf4324a5411f"));
     const screen = screenshotFace(beforeKey); screen.name = `${name}-screen`; screen.position.set(0, 0, .109); result.add(screen);
-    if (afterKey !== beforeKey) {
+    if (lesson === "vault" && !receiver) {
+      const video = document.createElement("video");
+      video.src = vaultDragVideo; video.loop = true; video.muted = true; video.playsInline = true; video.preload = "auto";
+      video.dataset.tourVaultDemo = "true";
+      Object.defineProperty(group.userData, "media", { get: () => ({ kind: "recorded-drag", src: video.currentSrc || video.src, currentTime: video.currentTime, duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused }) });
+      const texture = new THREE.VideoTexture(video); texture.colorSpace = THREE.SRGBColorSpace; textures.add(texture);
+      const surface = screen.material as THREE.MeshBasicMaterial;
+      const first = surface.map!, last = screenshotFace(afterKey).material as THREE.MeshBasicMaterial;
+      let running = false, reduced = false, released = false, request = 0, timer = 0, progress = 0;
+      const frame = (): void => {
+        if (released || !running) return;
+        if (video.readyState >= 2) { surface.map = texture; surface.needsUpdate = true; onFrame?.(); }
+        if (typeof video.requestVideoFrameCallback === "function") request = video.requestVideoFrameCallback(frame);
+        else timer = window.setTimeout(frame, 40);
+      };
+      setPlaying = (next, minimal) => {
+        reduced = minimal;
+        if (reduced) { surface.map = progress >= .9 ? last.map : first; surface.needsUpdate = true; }
+        if (next === running) return;
+        running = next;
+        if (running) void video.play().then(frame, () => { running = false; surface.map = first; surface.needsUpdate = true; });
+        else { video.pause(); if (request) video.cancelVideoFrameCallback(request); if (timer) clearTimeout(timer); }
+      };
+      updateFaces.push(p => { progress = p; if (reduced) { surface.map = p >= .9 ? last.map : first; surface.needsUpdate = true; } });
+      releaseMedia = () => { released = true; running = false; video.pause(); if (request) video.cancelVideoFrameCallback(request); if (timer) clearTimeout(timer); video.removeAttribute("src"); video.load(); };
+    } else if (afterKey !== beforeKey) {
       const afterFace = screenshotFace(afterKey); afterFace.name = `${name}-screen-after`; afterFace.position.copy(screen.position); result.add(afterFace);
       updateFaces.push(p => { screen.visible = p < .9; afterFace.visible = p >= .9; });
     }
@@ -203,24 +231,6 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     const key = card(1.28, .67, { eyebrow: i18n("components.tourstudiomodels.b0c8602734bb"), title: "ON · 7K2P", compact: true }, "studio-code-key", .09); key.position.set(0, .02, .12);
     const recipient = card(1.45, 1.95, { eyebrow: i18n("components.tourstudiomodels.d513aac3caac"), title: i18n("components.tourstudiomodels.92f20b9fa474"), rows: [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.07e577ff8c0d")], badge: i18n("components.tourstudiomodels.21c80015e886") }, "studio-code-recipient", .12); group.add(source, key, recipient);
     applyPose = progress => { const p = clamp(progress); recipient.position.set(mix(1.56, 1.54, p), mix(.12, 0, p), mix(-.13, .18, p)); recipient.rotation.set(mix(.08, -.035, p), mix(-Math.PI * .92, -.16, p), mix(.07, 0, p)); key.rotation.set(0, mix(-.12, .025, p), 0); };
-  } else if (lesson === "vault") {
-    const box = new THREE.Group(); box.name = "studio-vault-body"; box.position.set(1.13, -.25, -.12); box.rotation.set(.09, -.27, 0); group.add(box);
-    const boxSurface = material(palette.body, { metalness: .12, roughness: .37, clearcoat: .35 });
-    const base = solid(1.7, .09, 1.2, .04, boxSurface); base.position.y = -.65; box.add(base);
-    for (const side of [-1, 1]) { const wall = solid(.085, 1.3, 1.2, .038, boxSurface); wall.position.x = side * .81; box.add(wall); }
-    for (const side of [-1, 1]) { const wall = solid(1.7, 1.3, .085, .038, boxSurface); wall.position.z = side * .56; box.add(wall); }
-    const label = canvasFace(1.28, .5, { title: i18n("components.tourstudiomodels.804002a9c49a"), subtitle: i18n("components.tourstudiomodels.ca0df86f3c7e"), compact: true, background: palette.body }); label.position.set(0, .08, .605); box.add(label);
-    const handle = solid(.48, .06, .07, .025, aluminium); handle.position.set(0, -.26, .64); box.add(handle);
-    const lidPivot = new THREE.Group(); lidPivot.name = "studio-vault-lid"; lidPivot.position.set(0, .67, -.59);
-    const lid = solid(1.76, .09, 1.25, .042, boxSurface); lid.position.z = .59; lidPivot.add(lid); box.add(lidPivot);
-    const originals = [i18n("components.tourstudiomodels.28d76cd105cb"), i18n("components.tourstudiomodels.70b7371a692c"), i18n("components.tourstudiomodels.07e577ff8c0d")].map((title, index) => {
-      const item = card(1.66, .51, { eyebrow: `0${index + 1}`, title, compact: true }, `studio-vault-original-${index}`); item.position.set(-1.34, .46 - index * .53, .05 + index * .035); item.rotation.set(.02, .12, index === 1 ? .045 : -.045); group.add(item); return item;
-    });
-    const parcels = originals.map((_, index) => { const item = card(.65, .4, { title: i18n("components.tourstudiomodels.cba1ec75f4ca"), compact: true }, `studio-vault-parcel-${index}`, .035); group.add(item); return item; });
-    applyPose = progress => {
-      const p = clamp(progress); lidPivot.rotation.x = mix(0, -1.68, clamp(p * 2.1));
-      parcels.forEach((parcel, index) => { const t = clamp((p - index * .11) / .76); parcel.visible = p > index * .11 && t < 1; parcel.position.set(mix(-1.34, 1.13, t), mix(.46 - index * .53, -.36, t) + Math.sin(t * Math.PI) * 1.75, mix(.25, -.03, t)); parcel.rotation.set(-t * .8, -.3 + t * .5, -.1 + Math.sin(t * Math.PI) * .25); });
-    };
   } else {
     const device = phone("studio-phone-preview"); group.add(device);
     applyPose = progress => {
@@ -236,8 +246,10 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
   return {
     group,
     pose,
+    setPlaying,
     dispose(): void {
       if (disposed) return; disposed = true;
+      releaseMedia?.();
       for (const geometry of geometries) geometry.dispose();
       for (const surface of materials) surface.dispose();
       for (const texture of textures) texture.dispose();

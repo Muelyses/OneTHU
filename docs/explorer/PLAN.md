@@ -1,5 +1,8 @@
 # OneTHU · dev-explorer：从校园服务导航到个人校园工作空间
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 2026-10-12 立项。上一进程笔记：`docs/ball/PLAN.md`（Ball 分支，task-1→22 已收口于 cf8dd13 + bdae9c1）。
 > 本分支 = 交互架构革命：底栏三入口（标签页 | OH | OneGO）+ 顶栏标签条 + 侧边栏整体退役（**桌面手机同一套**）。
 

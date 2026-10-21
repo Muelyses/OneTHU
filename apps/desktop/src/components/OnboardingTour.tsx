@@ -8,7 +8,7 @@ import { OnboardingLanguageStep, onboardingLanguagePrompt } from "./OnboardingLa
 import { ExperienceModePicker, MODE_OPTIONS } from "./ExperienceModePicker.js";
 import { experienceMode, setExperienceMode, useExperienceMode, type ExperienceMode } from "../state/experienceMode.js";
 import { useOverlayBack } from "../state/navStack.js";
-import { EXTRA_LESSONS, lessonsForMode, type Lesson } from "../lib/onboardingLessons.js";
+import { EXTRA_LESSONS, lessonsForMode, type Lesson, type TourTarget } from "../lib/onboardingLessons.js";
 import { beginPracticePanels, closePracticePanels, endPracticePanels, openLessonTarget } from "../lib/onboardingNavigation.js";
 import { OptionalConnections } from "./SimpleSettings.js";
 import { TOUR_CARD_SCOPE, defineOnboardingScopes } from "./OnboardingTourScope.js";
@@ -23,7 +23,7 @@ function shouldStart(){
   return !localStorage.getItem(KEY)&&!localStorage.getItem("onethu.onboarded.flow3")&&!localStorage.getItem("onethu.onboarded.phone");
  } catch { return false; }
 }
-const CHAPTERS:Record<string,string>={get xiaoda() { return i18n("tour.xiaoda.chapter"); },get board() { return i18n("components.onboardingtour.chapter.board"); },get vault() { return i18n("components.onboardingtour.chapter.vault"); },get code() { return i18n("components.onboardingtour.chapter.code"); },get nfc() { return i18n("components.onboardingtour.chapter.nfc"); },get organization() { return i18n("components.onboardingtour.chapter.organization"); },get today() { return i18n("components.onboardingtour.chapter.today"); },get quick() { return i18n("components.onboardingtour.chapter.quick"); },get more() { return i18n("components.onboardingtour.chapter.more"); },get swap() { return i18n("components.onboardingtour.chapter.swap"); },get explorer() { return i18n("components.onboardingtour.chapter.explorer"); },get onego() { return i18n("components.onboardingtour.chapter.onego"); },get plugin() { return i18n("components.onboardingtour.chapter.plugin"); },get customize() { return i18n("components.onboardingtour.chapter.customize"); },get campus() { return i18n("components.onboardingtour.chapter.campus"); },get data() { return i18n("components.onboardingtour.chapter.data"); }};
+const CHAPTERS:Record<string,string>={get essentials() { return i18n("tour.essentials.chapter"); },get xiaoda() { return i18n("tour.xiaoda.chapter"); },get board() { return i18n("components.onboardingtour.chapter.board"); },get vault() { return i18n("components.onboardingtour.chapter.vault"); },get code() { return i18n("components.onboardingtour.chapter.code"); },get nfc() { return i18n("components.onboardingtour.chapter.nfc"); },get organization() { return i18n("components.onboardingtour.chapter.organization"); },get today() { return i18n("components.onboardingtour.chapter.today"); },get quick() { return i18n("components.onboardingtour.chapter.quick"); },get more() { return i18n("components.onboardingtour.chapter.more"); },get swap() { return i18n("components.onboardingtour.chapter.swap"); },get explorer() { return i18n("components.onboardingtour.chapter.explorer"); },get onego() { return i18n("components.onboardingtour.chapter.onego"); },get plugin() { return i18n("components.onboardingtour.chapter.plugin"); },get customize() { return i18n("components.onboardingtour.chapter.customize"); },get campus() { return i18n("components.onboardingtour.chapter.campus"); },get data() { return i18n("components.onboardingtour.chapter.data"); }};
 const MODE_INTRO:Record<ExperienceMode,string>={get simple() { return i18n("components.onboardingtour.modeintro.simple"); },get practical() { return i18n("components.onboardingtour.modeintro.practical"); },get full() { return i18n("components.onboardingtour.e2ee720ea747"); }};
 
 export function OnboardingTour(){
@@ -77,11 +77,11 @@ export function OnboardingTour(){
   }
  },[step,extra,practice,open]);
  defineOnboardingScopes();
- const startPractice=(item:Lesson)=>{
-  if(!item.target)return;
+ const startPractice=(item:Lesson,target:TourTarget|undefined=item.target)=>{
+  if(!target)return;
   beginPracticePanels();
   setPractice(item);
-  openLessonTarget(item.target);
+  openLessonTarget(target);
  };
  return <>
  {open&&practice?<OnboardingPracticeReturn title={CHAPTERS[practice.id]!} onResume={()=>{
@@ -119,7 +119,7 @@ export function OnboardingTour(){
     </>:<>
      <div className="tour-copy-heading" key={lesson!.id}><span className="tour-eyebrow">{extra?i18n("components.onboardingtour.a8ab98831f5c"):`${String(step+1).padStart(2,"0")} / ${modeName}`}</span><h2>{lesson!.title}</h2><p>{lesson!.lead}</p></div>
      <ol className="tour-steps" key={`steps-${lesson!.id}`}>{lesson!.steps.map((line,i)=><li key={line}><span aria-hidden="true">{String(i+1).padStart(2,"0")}</span>{line}</li>)}</ol>
-     {lesson!.target?<div className="tour-real-action"><Btn variant="outline" onClick={()=>startPractice(lesson!)}>{lesson!.action}<span aria-hidden="true">↗</span></Btn><Text slot="micro" tone="faint">{i18n("components.onboardingtour.24e75cb57392")}</Text></div>:null}
+     {lesson!.target?<div className="tour-real-action"><Btn variant="outline" onClick={()=>startPractice(lesson!)}>{lesson!.action}<span aria-hidden="true">↗</span></Btn>{lesson!.extraActions?.map(action=><Btn key={action.target} variant="outline" onClick={()=>startPractice(lesson!,action.target)}>{action.action}<span aria-hidden="true">↗</span></Btn>)}<Text slot="micro" tone="faint">{i18n("components.onboardingtour.24e75cb57392")}</Text></div>:null}
     </>}
    </div>
   </div>

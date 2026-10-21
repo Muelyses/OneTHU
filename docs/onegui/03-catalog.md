@@ -1,5 +1,8 @@
 # OneGUI · 组件目录与迁移台账
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 由 `packages/gui/src/index.ts` 反解 + `tools/onegui-baseline.json` 台账生成（2026-10-14）。
 > 规则原文见 [10-contract.md](./10-contract.md)，总纲见 [00-plan.md](./00-plan.md)。
 > 画廊：`http://127.0.0.1:5180/?onegui-gallery=1`（可加 `&skin=glass&level=rich&scheme=dark&density=touch`）。

@@ -1,5 +1,8 @@
 # exp 分支交接报告（2026-10-19 收尾）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 面向下一个接手的智能体。仓库 `/Volumes/PortableSSD/Projects/thuapp/OneTHU`，分支 **exp**，
 > 远端 `github` = `smartThise/OneTHU`。dev server 常驻 `http://127.0.0.1:5180`。
 

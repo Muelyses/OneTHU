@@ -14,7 +14,7 @@ for (const dir of ['after', 'frames', 'recordings']) mkdirSync(`${out}/${dir}`, 
 const checks = [], errors = [], cycles = [], transitions = [], recordings = [], lifecycle = [], layout = [];
 const report = { scope, sizes, checks, errors, cycles, transitions, recordings, lifecycle, layout, passed: false, naturalCleanup: false };
 const check = (condition, text) => { assert.ok(condition, text); checks.push(text); console.log('✓ ' + text); };
-const plans = { simple: ['today', 'quick'], practical: ['today', 'more', 'swap'], full: ['board', 'vault', 'code', 'nfc', 'organization', 'xiaoda'] };
+const plans = { simple: ['essentials', 'today', 'quick'], practical: ['essentials', 'today', 'more', 'swap'], full: ['essentials', 'board', 'vault', 'code', 'nfc', 'organization', 'xiaoda'] };
 const names = { simple: '极简', practical: '实用', full: '完整' };
 const extras = ['explorer', 'onego', 'plugin', 'customize', 'campus', 'data'];
 const browser = await chromium.launch({
@@ -138,7 +138,7 @@ async function automaticCycle(page, lesson, label, capture = false, fallback = f
     evidence.projection = projection;
     if (active.meshes.some(mesh => mesh.path.includes('studio-phone'))) {
       evidence.screens = active.meshes.filter(mesh => mesh.visible && mesh.screen).map(mesh => ({ name: mesh.name, screen: mesh.screen, textureSources: mesh.textureSources }));
-      check(evidence.screens.length > 0 && evidence.screens.every(mesh => mesh.textureSources.some(source => source && new URL(source).pathname.endsWith(`/assets/tour/real-ui/${mesh.screen.key}.png`))), label + ' 真实GPU手机纹理直接来自运行中app截图资产');
+      check(evidence.screens.length > 0 && evidence.screens.every(mesh => mesh.textureSources.some(source => source && (new URL(source).pathname.endsWith(`/assets/tour/real-ui/${mesh.screen.key}.png`) || lesson === 'vault' && new URL(source).pathname.endsWith('/assets/tour/real-ui/vault-drag.mp4')))), label + ' 真实GPU手机纹理直接来自运行中app截图资产');
       if (lesson === 'nfc') check(evidence.screens.map(mesh => mesh.screen.key).sort().join(',') === 'vault-received,vault-send-code', label + ' 双机结果分别使用实际发送口令与实际接收结果画面');
     }
   } else {

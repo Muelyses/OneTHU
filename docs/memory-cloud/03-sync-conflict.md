@@ -1,5 +1,8 @@
 # 03 · 同步、冲突与缓存层设计（OH-Memory + Files Hub 公共底座）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 状态：设计稿（原型级，未实现） · 分支 dev-memory-cloud · 2026-10-09
 > 姊妹篇：[01-memory-system.md](./01-memory-system.md)、[02-files-hub.md](./02-files-hub.md)
 > 本文回答一个问题：**在没有原子写、没有锁、没有实时通知的 Seafile Web API 上，三端怎么安全地共享一棵会变的树。**

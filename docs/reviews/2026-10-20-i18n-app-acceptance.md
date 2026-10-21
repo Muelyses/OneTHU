@@ -1,5 +1,8 @@
 # 语言切换与 OneGUI 验收
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 OneGUI 新增独立语言 Provider，内部 26 个默认文本与无障碍标签具有完整中英文默认值。宿主可注入词典，库不依赖桌面应用的国际化代码；切换语言不通过重新挂载组件实现。
 
 `node tools/gui-locale-test.mjs` 的 65 项断言通过，包括默认中文、英文覆盖、嵌套 Provider、调用方自带内容保留和实际组件服务端渲染。非视觉导出已在 OneGUI 护栏明确分类，没有提高基线。

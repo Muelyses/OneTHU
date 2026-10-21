@@ -1,5 +1,7 @@
 # 设计令牌对照表（tokens map）
 
+> 0.11 工程参考：现行组件与令牌以 `packages/gui` 为准；旧业务变量是兼容层，不构成另一套主题标准。主题、壁纸与布局可调整。使用入口见 [OneGUI](design-language.md)，英文见 [Design system](en/design-language.md)。
+
 本表由 `node tools/gen-tokens-map.mjs` 从 `packages/ui/src/tokens.css` 与 `palette.css` **自动生成**，不要手改。
 
 三层结构：**Reference**（`palette.css`，`tools/gen-tokens.mjs` 按「清华紫」种子生成的 tonal palette，零运行时依赖）

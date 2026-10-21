@@ -1,0 +1,1718 @@
+{
+  "version": "0.11.0",
+  "source": "apps/desktop/src/plugins/types.ts",
+  "namespaces": 36,
+  "methods": 255,
+  "entries": [
+    {
+      "namespace": "session",
+      "methods": [
+        {
+          "name": "status",
+          "signature": "status(): string;",
+          "line": 206,
+          "permission": "user:read"
+        },
+        {
+          "name": "username",
+          "signature": "username(): string | null;",
+          "line": 208,
+          "permission": "user:read"
+        }
+      ]
+    },
+    {
+      "namespace": "user",
+      "methods": [
+        {
+          "name": "info",
+          "signature": "info(): Promise<import(\"@onethu/core\").BasicUserInfo>;",
+          "line": 212,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "info",
+      "methods": [
+        {
+          "name": "schedule",
+          "signature": "schedule(startDate: string, endDate: string): Promise<import(\"@onethu/core\").ScheduleEntry[]>;",
+          "line": 216,
+          "permission": null
+        },
+        {
+          "name": "report",
+          "signature": "report(): Promise<import(\"@onethu/core\").ReportRow[]>;",
+          "line": 218,
+          "permission": null
+        },
+        {
+          "name": "exams",
+          "signature": "exams(): Promise<import(\"@onethu/core\").ExamEntry[]>;",
+          "line": 219,
+          "permission": null
+        },
+        {
+          "name": "deadlines",
+          "signature": "deadlines(): Promise<import(\"@onethu/core\").DeadlineItem[]>;",
+          "line": 221,
+          "permission": null
+        },
+        {
+          "name": "news",
+          "signature": "news(page?: number): Promise<import(\"@onethu/core\").NewsItem[]>;",
+          "line": 223,
+          "permission": null
+        },
+        {
+          "name": "newsDetail",
+          "signature": "newsDetail(xxid: string): Promise<import(\"@onethu/core\").NewsDetail>;",
+          "line": 224,
+          "permission": null
+        },
+        {
+          "name": "searchNews",
+          "signature": "searchNews(keyword: string, page?: number): Promise<import(\"@onethu/core\").NewsItem[]>;",
+          "line": 225,
+          "permission": null
+        },
+        {
+          "name": "newsSub",
+          "signature": "newsSub(page?: number, subscriptionId?: string): Promise<import(\"@onethu/core\").NewsItem[]>;",
+          "line": 227,
+          "permission": null
+        },
+        {
+          "name": "schoolCalendar",
+          "signature": "schoolCalendar(): Promise<import(\"@onethu/core\").SchoolCalendarData>;",
+          "line": 229,
+          "permission": null
+        },
+        {
+          "name": "classroomList",
+          "signature": "classroomList(): Promise<import(\"@onethu/core\").Classroom[]>;",
+          "line": 231,
+          "permission": null
+        },
+        {
+          "name": "classroomState",
+          "signature": "classroomState(building: string, week: number): Promise<import(\"@onethu/core\").ClassroomStateResult>;",
+          "line": 232,
+          "permission": null
+        },
+        {
+          "name": "invoices",
+          "signature": "invoices(page: number): Promise<import(\"@onethu/core\").InvoicePage>;",
+          "line": 234,
+          "permission": null
+        },
+        {
+          "name": "bankPayments",
+          "signature": "bankPayments(): Promise<import(\"@onethu/core\").BankPaymentByMonth[]>;",
+          "line": 235,
+          "permission": null
+        },
+        {
+          "name": "graduateIncome",
+          "signature": "graduateIncome(begin: string, end: string): Promise<import(\"@onethu/core\").GraduateIncome[] | null>;",
+          "line": 236,
+          "permission": null
+        },
+        {
+          "name": "dormScore",
+          "signature": "dormScore(): Promise<string | null>;",
+          "line": 237,
+          "permission": null
+        },
+        {
+          "name": "physicalExam",
+          "signature": "physicalExam(): Promise<Array<[string, string]>>;",
+          "line": 238,
+          "permission": null
+        },
+        {
+          "name": "assessmentList",
+          "signature": "assessmentList(): Promise<Array<[string, boolean, string]>>;",
+          "line": 239,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "learn",
+      "methods": [
+        {
+          "name": "semesters",
+          "signature": "semesters(): Promise<string[]>;",
+          "line": 242,
+          "permission": null
+        },
+        {
+          "name": "courses",
+          "signature": "courses(semesterId?: string): Promise<{ semester: string; courses: import(\"@onethu/core\").CourseInfo[] }>;",
+          "line": 243,
+          "permission": null
+        },
+        {
+          "name": "homework",
+          "signature": "homework(semesterId?: string): Promise<Array<import(\"@onethu/core\").Homework & { courseName: string }>>;",
+          "line": 244,
+          "permission": null
+        },
+        {
+          "name": "notifications",
+          "signature": "notifications(semesterId?: string): Promise<Array<import(\"@onethu/core\").Notification & { courseName: string }>>;",
+          "line": 245,
+          "permission": null
+        },
+        {
+          "name": "files",
+          "signature": "files(courseId: string, semesterId?: string): Promise<import(\"@onethu/core\").CourseFile[]>;",
+          "line": 246,
+          "permission": null
+        },
+        {
+          "name": "download",
+          "signature": "download(fileId: string, filename?: string): Promise<string>;",
+          "line": 248,
+          "permission": null
+        },
+        {
+          "name": "reply",
+          "signature": "reply(wlkcid: string, threadId: string, content: string): Promise<void>;",
+          "line": 249,
+          "permission": "learn:write"
+        },
+        {
+          "name": "post",
+          "signature": "post(wlkcid: string, bqid: string, title: string, html: string): Promise<void>;",
+          "line": 250,
+          "permission": "learn:write"
+        },
+        {
+          "name": "bbsBoards",
+          "signature": "bbsBoards(wlkcid: string): Promise<import(\"@onethu/core\").LearnBbsBoard[]>;",
+          "line": 251,
+          "permission": null
+        },
+        {
+          "name": "bbsThreads",
+          "signature": "bbsThreads(wlkcid: string, opts?: { bqid?: string; kind?: \"yb\" | \"jh\" | \"cy\"; start?: number; length?: number }): Promise<{ total: number; threads: import(\"@onethu/core\").LearnBbsThreadSummary[] }>;",
+          "line": 252,
+          "permission": null
+        },
+        {
+          "name": "bbsThread",
+          "signature": "bbsThread(wlkcid: string, threadId: string, bqId?: string): Promise<import(\"@onethu/core\").LearnBbsThreadDetail>;",
+          "line": 253,
+          "permission": null
+        },
+        {
+          "name": "bbsPosts",
+          "signature": "bbsPosts(wlkcid: string, threadId: string, pageNum: number): Promise<import(\"@onethu/core\").LearnBbsPost[]>;",
+          "line": 254,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "venue",
+      "methods": [
+        {
+          "name": "scenes",
+          "signature": "scenes(): Promise<import(\"@onethu/core\").VenueScene[]>;",
+          "line": 257,
+          "permission": "venue:read"
+        },
+        {
+          "name": "currentPage",
+          "signature": "currentPage(params: { sceneUuid: string; reserveDate: string; classTypeUuid?: string; siteType?: string }): Promise<import(\"@onethu/core\").VenueSite[] | null>;",
+          "line": 258,
+          "permission": "venue:read"
+        },
+        {
+          "name": "myRecords",
+          "signature": "myRecords(page?: number): Promise<import(\"@onethu/core\").VenueRecord[]>;",
+          "line": 259,
+          "permission": "venue:read"
+        },
+        {
+          "name": "cancel",
+          "signature": "cancel(resvUuid: string): Promise<void>;",
+          "line": 260,
+          "permission": "venue:book"
+        },
+        {
+          "name": "jump",
+          "signature": "jump(sceneUuid: string): string;",
+          "line": 261,
+          "permission": "venue:read"
+        }
+      ]
+    },
+    {
+      "namespace": "xk",
+      "methods": [
+        {
+          "name": "search",
+          "signature": "search(opts: { kcm?: string; kch?: string; teacher?: string; semester?: string; page?: number }): Promise<import(\"@onethu/core\").XkSearchResult>;",
+          "line": 264,
+          "permission": "xk:read"
+        },
+        {
+          "name": "catalog",
+          "signature": "catalog(sem?: string): Promise<import(\"@onethu/core\").XkCourse[]>;",
+          "line": 265,
+          "permission": "xk:read"
+        },
+        {
+          "name": "selected",
+          "signature": "selected(sem?: string): Promise<import(\"@onethu/core\").SelectedCourse[]>;",
+          "line": 266,
+          "permission": "xk:read"
+        },
+        {
+          "name": "detail",
+          "signature": "detail(teacherId: string, code: string): Promise<import(\"@onethu/core\").XkCourseDetail | null>;",
+          "line": 267,
+          "permission": "xk:read"
+        },
+        {
+          "name": "reviews",
+          "signature": "reviews(course: string, teacher?: string): Promise<{ course: string; teacher: string; count: number; avg: number; reviews: { count?: number; results: Array<Record<string, unknown>> }; } | null>;",
+          "line": 268,
+          "permission": "xk:read"
+        }
+      ]
+    },
+    {
+      "namespace": "cal",
+      "methods": [
+        {
+          "name": "agenda",
+          "signature": "agenda(startYmd?: string, endYmd?: string): Promise<Array<{ uid: string; title: string; date: string; start: string; end: string; allDay: boolean; location?: string; note?: string; source: \"cloud\" | \"local\"; }>>;",
+          "line": 275,
+          "permission": "cal:read"
+        },
+        {
+          "name": "add",
+          "signature": "add(title: string, dateYmd: string, startHm: string, endHm: string, opts?: { location?: string; note?: string; allDay?: boolean; local?: boolean; }): Promise<{ uid: string; where: \"cloud\" | \"local\" }>;",
+          "line": 280,
+          "permission": "cal:write"
+        },
+        {
+          "name": "edit",
+          "signature": "edit(uid: string, ch: { title?: string; date?: string; start?: string; end?: string; location?: string; note?: string; allDay?: boolean; toCloud?: boolean; }): Promise<{ uid: string; where: \"cloud\" | \"local\" }>;",
+          "line": 284,
+          "permission": "cal:write"
+        },
+        {
+          "name": "remove",
+          "signature": "remove(uid: string): Promise<{ removed: true }>;",
+          "line": 289,
+          "permission": "cal:write"
+        }
+      ]
+    },
+    {
+      "namespace": "mail",
+      "methods": [
+        {
+          "name": "list",
+          "signature": "list(folder: string, limit: number): Promise<{ total: number; mails: Array<{ uid: number; subject: string; from: string; dateMs: number; seen: boolean }>; }>;",
+          "line": 293,
+          "permission": null
+        },
+        {
+          "name": "read",
+          "signature": "read(folder: string, uid: number): Promise<{ subject: string; from: string; to: string; dateMs: number; text: string; html: string | null; }>;",
+          "line": 298,
+          "permission": null
+        },
+        {
+          "name": "search",
+          "signature": "search(folder: string, query: string): Promise<Array<{ uid: number; subject: string; from: string; dateMs: number; seen: boolean }>>;",
+          "line": 302,
+          "permission": null
+        },
+        {
+          "name": "send",
+          "signature": "send(to: string, cc: string, subject: string, body: string): Promise<{ sent: true }>;",
+          "line": 304,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "cloud",
+      "methods": [
+        {
+          "name": "repos",
+          "signature": "repos(): Promise<Array<{ id: string; name: string; mtime: number; size: number }>>;",
+          "line": 308,
+          "permission": null
+        },
+        {
+          "name": "list",
+          "signature": "list(repoId: string, path: string): Promise<Array<{ name: string; kind: \"dir\" | \"file\"; size: number; mtime: number }>>;",
+          "line": 310,
+          "permission": null
+        },
+        {
+          "name": "search",
+          "signature": "search(repoId: string, query: string): Promise<Array<{ name: string; kind: \"dir\" | \"file\"; size: number; mtime: number }>>;",
+          "line": 312,
+          "permission": null
+        },
+        {
+          "name": "download",
+          "signature": "download(repoId: string, path: string): Promise<string>;",
+          "line": 314,
+          "permission": null
+        },
+        {
+          "name": "upload",
+          "signature": "upload(repoId: string, parentDir: string, localPath: string, replace: boolean): Promise<{ size: number }>;",
+          "line": 316,
+          "permission": null
+        },
+        {
+          "name": "share",
+          "signature": "share(repoId: string, path: string, expireDays: number): Promise<{ link: string; token: string }>;",
+          "line": 318,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "memory",
+      "methods": [
+        {
+          "name": "search",
+          "signature": "search(q: { query?: string; tags?: string[]; type?: string; folder?: string; limit?: number }): Promise<Array<{ permalink: string; title: string; type: string; tags: string[]; path: string; modified: string; score: number; snippet: string; via?: string; }>>;",
+          "line": 322,
+          "permission": null
+        },
+        {
+          "name": "read",
+          "signature": "read(permalink: string): Promise<string>;",
+          "line": 327,
+          "permission": null
+        },
+        {
+          "name": "list",
+          "signature": "list(opts?: { folder?: string; tag?: string }): Promise<Array<{ permalink: string; title: string; type: string; folder: string; tags: string[]; modified: string; }>>;",
+          "line": 329,
+          "permission": null
+        },
+        {
+          "name": "refresh",
+          "signature": "refresh(): Promise<{ count: number }>;",
+          "line": 333,
+          "permission": null
+        },
+        {
+          "name": "ready",
+          "signature": "ready(): Promise<boolean>;",
+          "line": 334,
+          "permission": null
+        },
+        {
+          "name": "write",
+          "signature": "write(input: { title: string; observations: Array<{ category: string; text: string; context?: string }>; relations?: Array<{ rel: string; target: string; context?: string }>; tags?: string[]; type?: string; folder?: string; origin?: string; }): Promise<{ permalink: string; path: string }>;",
+          "line": 336,
+          "permission": null
+        },
+        {
+          "name": "append",
+          "signature": "append(permalink: string, category: string, text: string, context?: string): Promise<{ ok: true }>;",
+          "line": 345,
+          "permission": null
+        },
+        {
+          "name": "edit",
+          "signature": "edit(permalink: string, find: string, replace: string): Promise<{ ok: true }>;",
+          "line": 346,
+          "permission": null
+        },
+        {
+          "name": "delete",
+          "signature": "delete(permalink: string, reason?: string): Promise<{ trashedTo: string }>;",
+          "line": 348,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "ext",
+      "methods": [
+        {
+          "name": "skillSearch",
+          "signature": "skillSearch(query?: string): Promise<unknown>;",
+          "line": 352,
+          "permission": "ui"
+        },
+        {
+          "name": "skillCompute",
+          "signature": "skillCompute(code: string, input: unknown): Promise<unknown>;",
+          "line": 353,
+          "permission": "ui"
+        },
+        {
+          "name": "skillRun",
+          "signature": "skillRun(id: string, path: string, input: unknown): Promise<unknown>;",
+          "line": 354,
+          "permission": "ui"
+        },
+        {
+          "name": "skillLoad",
+          "signature": "skillLoad(id: string): Promise<unknown>;",
+          "line": 355,
+          "permission": "ui"
+        },
+        {
+          "name": "skillReadFile",
+          "signature": "skillReadFile(id: string, path: string): Promise<unknown>;",
+          "line": 356,
+          "permission": "ui"
+        },
+        {
+          "name": "toolCreate",
+          "signature": "toolCreate(name: string, description: string, steps: unknown): void;",
+          "line": 357,
+          "permission": "ui"
+        },
+        {
+          "name": "toolList",
+          "signature": "toolList(): Array<{ id: string; name: string; description: string }>;",
+          "line": 358,
+          "permission": null
+        },
+        {
+          "name": "toolRun",
+          "signature": "toolRun(id: string): Promise<{ ok: boolean; error?: string }>;",
+          "line": 359,
+          "permission": null
+        },
+        {
+          "name": "toolDelete",
+          "signature": "toolDelete(id: string): void;",
+          "line": 360,
+          "permission": null
+        },
+        {
+          "name": "flowCreate",
+          "signature": "flowCreate(name: string, trigger: unknown, steps: unknown): { id: string };",
+          "line": 361,
+          "permission": "ui"
+        },
+        {
+          "name": "flowList",
+          "signature": "flowList(): Array<{ id: string; name: string; trigger: unknown; enabled: boolean; lastRun?: number; lastOk?: boolean; lastError?: string }>;",
+          "line": 362,
+          "permission": null
+        },
+        {
+          "name": "flowRun",
+          "signature": "flowRun(id: string): Promise<{ ok: boolean; error?: string }>;",
+          "line": 363,
+          "permission": "ui"
+        },
+        {
+          "name": "flowUpdate",
+          "signature": "flowUpdate(id: string, patch: { name?: string; trigger?: unknown; steps?: unknown; enabled?: boolean }): { ok: boolean };",
+          "line": 365,
+          "permission": "ui"
+        },
+        {
+          "name": "flowSetEnabled",
+          "signature": "flowSetEnabled(id: string, on: boolean): { ok: boolean };",
+          "line": 366,
+          "permission": "ui"
+        },
+        {
+          "name": "flowDelete",
+          "signature": "flowDelete(id: string): void;",
+          "line": 367,
+          "permission": "ui"
+        },
+        {
+          "name": "widgetCreate",
+          "signature": "widgetCreate(name: string, html: string, x?: number, y?: number): { id: string };",
+          "line": 368,
+          "permission": "ui"
+        },
+        {
+          "name": "widgetList",
+          "signature": "widgetList(): Array<{ id: string; name: string; createdAt: number }>;",
+          "line": 369,
+          "permission": null
+        },
+        {
+          "name": "widgetDelete",
+          "signature": "widgetDelete(id: string): void;",
+          "line": 370,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageCreate",
+          "signature": "onePageCreate(name: string, icon?: string): { id: string };",
+          "line": 371,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageList",
+          "signature": "onePageList(): Array<{ id: string; name: string; kind: string; icon: string }>;",
+          "line": 372,
+          "permission": null
+        },
+        {
+          "name": "onePageDelete",
+          "signature": "onePageDelete(id: string): { ok: boolean; reason?: string };",
+          "line": 373,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageRename",
+          "signature": "onePageRename(id: string, name: string): void;",
+          "line": 374,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageSetIcon",
+          "signature": "onePageSetIcon(id: string, icon: string): { ok: boolean };",
+          "line": 375,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageOpen",
+          "signature": "onePageOpen(id: string): void;",
+          "line": 376,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageItems",
+          "signature": "onePageItems(boardId: string): Array<{ id: string; kind: string; text?: string; x: number; y: number; w: number; h: number }>;",
+          "line": 377,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageAddItem",
+          "signature": "onePageAddItem(boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }>;",
+          "line": 378,
+          "permission": null
+        },
+        {
+          "name": "onePageMoveItem",
+          "signature": "onePageMoveItem(boardId: string, itemId: string, x: number, y: number): void;",
+          "line": 379,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageRemoveItem",
+          "signature": "onePageRemoveItem(boardId: string, itemId: string): void;",
+          "line": 380,
+          "permission": "ui"
+        },
+        {
+          "name": "onePageAddAtom",
+          "signature": "onePageAddAtom(target: { to?: string; boardId?: string } | null, atomKey: string): { ok: boolean; boardId: string; added?: string; reason?: string };",
+          "line": 384,
+          "permission": "ui"
+        },
+        {
+          "name": "homeDock.set",
+          "signature": "set(pageId?: string, on?: boolean): { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[]; entries: Array<{ page: string; label: string; plugin: boolean }>; };",
+          "line": 396,
+          "permission": null
+        },
+        {
+          "name": "workspaceList",
+          "signature": "workspaceList(): Array<{ id: string; name: string; live: boolean; tabs: number }>;",
+          "line": 405,
+          "permission": null
+        },
+        {
+          "name": "workspaceCreate",
+          "signature": "workspaceCreate(name: string, tabIds?: unknown): { id: string };",
+          "line": 406,
+          "permission": "ui"
+        },
+        {
+          "name": "workspaceOpen",
+          "signature": "workspaceOpen(id: string): boolean;",
+          "line": 407,
+          "permission": "ui"
+        },
+        {
+          "name": "workspaceCollapse",
+          "signature": "workspaceCollapse(id: string): boolean;",
+          "line": 409,
+          "permission": "ui"
+        },
+        {
+          "name": "workspaceClose",
+          "signature": "workspaceClose(id: string): boolean;",
+          "line": 411,
+          "permission": "ui"
+        },
+        {
+          "name": "workspaceDissolve",
+          "signature": "workspaceDissolve(id: string): boolean;",
+          "line": 412,
+          "permission": "ui"
+        },
+        {
+          "name": "workspaceDelete",
+          "signature": "workspaceDelete(id: string): boolean;",
+          "line": 413,
+          "permission": "ui"
+        },
+        {
+          "name": "tabList",
+          "signature": "tabList(): Array<{ id: string; title: string; page: string }>;",
+          "line": 414,
+          "permission": null
+        },
+        {
+          "name": "tabOpen",
+          "signature": "tabOpen(page: string): { id: string };",
+          "line": 415,
+          "permission": "ui"
+        },
+        {
+          "name": "tabClose",
+          "signature": "tabClose(id: string): boolean;",
+          "line": 416,
+          "permission": "ui"
+        },
+        {
+          "name": "tabDuplicate",
+          "signature": "tabDuplicate(id: string): { id: string };",
+          "line": 417,
+          "permission": "ui"
+        },
+        {
+          "name": "tabFocus",
+          "signature": "tabFocus(id: string): boolean;",
+          "line": 418,
+          "permission": "ui"
+        },
+        {
+          "name": "wallpaperSet",
+          "signature": "wallpaperSet(scope: string, ref: string | null): void;",
+          "line": 419,
+          "permission": "ui"
+        },
+        {
+          "name": "wallpaperGet",
+          "signature": "wallpaperGet(): { global: string | null };",
+          "line": 420,
+          "permission": "ui"
+        },
+        {
+          "name": "voiceSet",
+          "signature": "voiceSet(patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };",
+          "line": 421,
+          "permission": "ui"
+        },
+        {
+          "name": "voiceGet",
+          "signature": "voiceGet(): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };",
+          "line": 422,
+          "permission": "ui"
+        },
+        {
+          "name": "prefSet",
+          "signature": "prefSet(patch: unknown): void;",
+          "line": 423,
+          "permission": "ui"
+        },
+        {
+          "name": "prefGet",
+          "signature": "prefGet(): { capsuleTap: string; voiceTarget: string };",
+          "line": 424,
+          "permission": "ui"
+        },
+        {
+          "name": "themeScheduleSet",
+          "signature": "themeScheduleSet(opts: unknown): { followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null };",
+          "line": 425,
+          "permission": "ui"
+        },
+        {
+          "name": "notifySet",
+          "signature": "notifySet(patch: unknown): unknown;",
+          "line": 426,
+          "permission": "ui"
+        },
+        {
+          "name": "notifyGet",
+          "signature": "notifyGet(): unknown;",
+          "line": 427,
+          "permission": "ui"
+        },
+        {
+          "name": "hwTimelineSet",
+          "signature": "hwTimelineSet(minutes: number): { minutes: number };",
+          "line": 428,
+          "permission": "ui"
+        },
+        {
+          "name": "hwReminderSet",
+          "signature": "hwReminderSet(id: string, minutes: number | null): void;",
+          "line": 429,
+          "permission": "ui"
+        },
+        {
+          "name": "eventAdd",
+          "signature": "eventAdd(ev: unknown): Promise<{ uid: string }>;",
+          "line": 430,
+          "permission": "ui"
+        },
+        {
+          "name": "eventDelete",
+          "signature": "eventDelete(uid: string): Promise<void>;",
+          "line": 431,
+          "permission": "ui"
+        },
+        {
+          "name": "eventList",
+          "signature": "eventList(): Array<{ uid: string; summary: string; start: number; end: number; allDay?: boolean }>;",
+          "line": 432,
+          "permission": "ui"
+        },
+        {
+          "name": "pluginInstalledList",
+          "signature": "pluginInstalledList(): Promise<Array<{ id: string; name: string; enabled: boolean }>>;",
+          "line": 433,
+          "permission": "plugins:call"
+        },
+        {
+          "name": "pluginInstallFromRepo",
+          "signature": "pluginInstallFromRepo(repo: string, entry?: string): Promise<{ id: string; name: string }>;",
+          "line": 434,
+          "permission": "plugins:call"
+        },
+        {
+          "name": "pluginEnableToggle",
+          "signature": "pluginEnableToggle(id: string, on: boolean): Promise<void>;",
+          "line": 435,
+          "permission": "plugins:call"
+        },
+        {
+          "name": "pluginUninstall",
+          "signature": "pluginUninstall(id: string): Promise<void>;",
+          "line": 436,
+          "permission": "plugins:call"
+        },
+        {
+          "name": "themeApply",
+          "signature": "themeApply(name: string, vars: unknown): { id: string };",
+          "line": 437,
+          "permission": "ui"
+        },
+        {
+          "name": "themeList",
+          "signature": "themeList(): Array<{ id: string; name: string; active: boolean }>;",
+          "line": 438,
+          "permission": null
+        },
+        {
+          "name": "themeActivate",
+          "signature": "themeActivate(id: string | null): void;",
+          "line": 439,
+          "permission": null
+        },
+        {
+          "name": "themeDelete",
+          "signature": "themeDelete(id: string): void;",
+          "line": 440,
+          "permission": null
+        },
+        {
+          "name": "phoneWidgetSet",
+          "signature": "phoneWidgetSet(title: string, rows: unknown): { ok: boolean; rows: number };",
+          "line": 441,
+          "permission": "ui"
+        }
+      ]
+    },
+    {
+      "namespace": "kongjian",
+      "methods": [
+        {
+          "name": "page",
+          "signature": "page(opts?: { spaceId?: string; roomId?: string; date?: string }): Promise<import(\"@onethu/core\").KongjianPage>;",
+          "line": 444,
+          "permission": "dorm:read"
+        },
+        {
+          "name": "my",
+          "signature": "my(): Promise<import(\"@onethu/core\").KongjianRecord[]>;",
+          "line": 445,
+          "permission": "dorm:read"
+        },
+        {
+          "name": "book",
+          "signature": "book(bookUrl: string, info_: { name: string; sid: string; tel: string; other: string }): Promise<string>;",
+          "line": 446,
+          "permission": "kongjian:book"
+        },
+        {
+          "name": "cancel",
+          "signature": "cancel(target: string): Promise<void>;",
+          "line": 447,
+          "permission": "kongjian:book"
+        }
+      ]
+    },
+    {
+      "namespace": "visit",
+      "methods": [
+        {
+          "name": "fill",
+          "signature": "fill(patch: Record<string, unknown>, opts?: { open?: boolean }): { ok: boolean; opened: boolean; filled: string[] };",
+          "line": 455,
+          "permission": "nav"
+        }
+      ]
+    },
+    {
+      "namespace": "gitlab",
+      "methods": [
+        {
+          "name": "projects",
+          "signature": "projects(page?: number): Promise<import(\"@onethu/info-lib\").GitProject[]>;",
+          "line": 459,
+          "permission": null
+        },
+        {
+          "name": "starred",
+          "signature": "starred(page?: number): Promise<import(\"@onethu/info-lib\").GitProject[]>;",
+          "line": 461,
+          "permission": null
+        },
+        {
+          "name": "search",
+          "signature": "search(search: string, page?: number): Promise<import(\"@onethu/info-lib\").GitProject[]>;",
+          "line": 463,
+          "permission": null
+        },
+        {
+          "name": "project",
+          "signature": "project(id: number): Promise<import(\"@onethu/info-lib\").GitProjectDetail>;",
+          "line": 465,
+          "permission": null
+        },
+        {
+          "name": "branches",
+          "signature": "branches(id: number): Promise<import(\"@onethu/info-lib\").GitBranch[]>;",
+          "line": 467,
+          "permission": null
+        },
+        {
+          "name": "tree",
+          "signature": "tree(id: number, path: string, ref: string, page?: number): Promise<import(\"@onethu/info-lib\").GitFile[]>;",
+          "line": 469,
+          "permission": null
+        },
+        {
+          "name": "file",
+          "signature": "file(id: number, sha: string): Promise<string>;",
+          "line": 471,
+          "permission": null
+        },
+        {
+          "name": "issues",
+          "signature": "issues(id: number, opts?: { state?: \"opened\" | \"closed\" | \"all\"; search?: string; page?: number }): Promise<import(\"@onethu/info-lib\").GitIssue[]>;",
+          "line": 472,
+          "permission": null
+        },
+        {
+          "name": "issue",
+          "signature": "issue(id: number, iid: number): Promise<import(\"@onethu/info-lib\").GitIssue>;",
+          "line": 473,
+          "permission": null
+        },
+        {
+          "name": "issueNotes",
+          "signature": "issueNotes(id: number, iid: number): Promise<import(\"@onethu/info-lib\").GitNote[]>;",
+          "line": 475,
+          "permission": null
+        },
+        {
+          "name": "mergeRequests",
+          "signature": "mergeRequests(id: number, opts?: { state?: \"opened\" | \"closed\" | \"all\"; search?: string; page?: number }): Promise<import(\"@onethu/info-lib\").GitMergeRequest[]>;",
+          "line": 476,
+          "permission": null
+        },
+        {
+          "name": "mergeRequest",
+          "signature": "mergeRequest(id: number, iid: number): Promise<import(\"@onethu/info-lib\").GitMergeRequest>;",
+          "line": 477,
+          "permission": null
+        },
+        {
+          "name": "mergeRequestNotes",
+          "signature": "mergeRequestNotes(id: number, iid: number): Promise<import(\"@onethu/info-lib\").GitNote[]>;",
+          "line": 478,
+          "permission": null
+        },
+        {
+          "name": "pipelines",
+          "signature": "pipelines(id: number, opts?: { ref?: string; page?: number }): Promise<import(\"@onethu/info-lib\").GitPipeline[]>;",
+          "line": 480,
+          "permission": null
+        },
+        {
+          "name": "jobs",
+          "signature": "jobs(id: number, pipelineId: number): Promise<import(\"@onethu/info-lib\").GitJob[]>;",
+          "line": 482,
+          "permission": null
+        },
+        {
+          "name": "jobTrace",
+          "signature": "jobTrace(id: number, jobId: number): Promise<string>;",
+          "line": 484,
+          "permission": null
+        },
+        {
+          "name": "createIssue",
+          "signature": "createIssue(id: number, title: string, description: string): Promise<import(\"@onethu/info-lib\").GitIssue>;",
+          "line": 486,
+          "permission": null
+        },
+        {
+          "name": "comment",
+          "signature": "comment(kind: \"issue\" | \"mr\", id: number, iid: number, body: string): Promise<import(\"@onethu/info-lib\").GitNote>;",
+          "line": 488,
+          "permission": null
+        },
+        {
+          "name": "updateComment",
+          "signature": "updateComment(kind: \"issue\" | \"mr\", id: number, iid: number, noteId: number, body: string): Promise<import(\"@onethu/info-lib\").GitNote>;",
+          "line": 491,
+          "permission": null
+        },
+        {
+          "name": "discussions",
+          "signature": "discussions(kind: \"issue\" | \"mr\", id: number, iid: number, page?: number): Promise<import(\"@onethu/info-lib\").GitDiscussion[]>;",
+          "line": 493,
+          "permission": null
+        },
+        {
+          "name": "reply",
+          "signature": "reply(kind: \"issue\" | \"mr\", id: number, iid: number, discussionId: string, body: string): Promise<import(\"@onethu/info-lib\").GitNote>;",
+          "line": 495,
+          "permission": null
+        },
+        {
+          "name": "deleteComment",
+          "signature": "deleteComment(kind: \"issue\" | \"mr\", id: number, iid: number, discussionId: string, noteId: number): Promise<void>;",
+          "line": 497,
+          "permission": null
+        },
+        {
+          "name": "resolveDiscussion",
+          "signature": "resolveDiscussion(kind: \"issue\" | \"mr\", id: number, iid: number, discussionId: string, resolved: boolean): Promise<void>;",
+          "line": 499,
+          "permission": null
+        },
+        {
+          "name": "assignees",
+          "signature": "assignees(kind: \"issue\" | \"mr\", id: number, iid: number, userIds: number[]): Promise<void>;",
+          "line": 501,
+          "permission": null
+        },
+        {
+          "name": "requestCounts",
+          "signature": "requestCounts(kind: \"issue\" | \"mr\", id: number): Promise<{ opened: number; closed: number; all: number }>;",
+          "line": 503,
+          "permission": null
+        },
+        {
+          "name": "awards",
+          "signature": "awards(kind: \"issue\" | \"mr\", id: number, iid: number, noteId?: number): Promise<import(\"@onethu/info-lib\").GitAward[]>;",
+          "line": 505,
+          "permission": null
+        },
+        {
+          "name": "react",
+          "signature": "react(kind: \"issue\" | \"mr\", id: number, iid: number, name: string, noteId?: number): Promise<import(\"@onethu/info-lib\").GitAward>;",
+          "line": 507,
+          "permission": null
+        },
+        {
+          "name": "unreact",
+          "signature": "unreact(kind: \"issue\" | \"mr\", id: number, iid: number, awardId: number, noteId?: number): Promise<void>;",
+          "line": 509,
+          "permission": null
+        },
+        {
+          "name": "mergeRequestChanges",
+          "signature": "mergeRequestChanges(id: number, iid: number): Promise<import(\"@onethu/info-lib\").GitMergeRequestChanges>;",
+          "line": 511,
+          "permission": null
+        },
+        {
+          "name": "createMergeRequest",
+          "signature": "createMergeRequest(id: number, sourceBranch: string, targetBranch: string, title: string, description: string): Promise<import(\"@onethu/info-lib\").GitMergeRequest>;",
+          "line": 513,
+          "permission": null
+        },
+        {
+          "name": "mergeMergeRequest",
+          "signature": "mergeMergeRequest(id: number, iid: number): Promise<import(\"@onethu/info-lib\").GitMergeRequest>;",
+          "line": 515,
+          "permission": null
+        },
+        {
+          "name": "setState",
+          "signature": "setState(kind: \"issue\" | \"mr\", id: number, iid: number, state: \"close\" | \"reopen\"): Promise<void>;",
+          "line": 517,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "coursex",
+      "methods": [
+        {
+          "name": "semesters",
+          "signature": "semesters(): Promise<import(\"@onethu/core\").CourseXSemester[]>;",
+          "line": 520,
+          "permission": null
+        },
+        {
+          "name": "search",
+          "signature": "search(q: string, semester?: string): Promise<import(\"@onethu/core\").CourseXSummary[]>;",
+          "line": 521,
+          "permission": null
+        },
+        {
+          "name": "detail",
+          "signature": "detail(id: string): Promise<import(\"@onethu/core\").CourseXDetail | { id: string; error: string } | null>;",
+          "line": 522,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "card",
+      "methods": [
+        {
+          "name": "info",
+          "signature": "info(): Promise<import(\"@onethu/core\").CardInfo>;",
+          "line": 525,
+          "permission": null
+        },
+        {
+          "name": "transactions",
+          "signature": "transactions(start: string, end: string): Promise<import(\"@onethu/core\").CardTransaction[]>;",
+          "line": 527,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "dorm",
+      "methods": [
+        {
+          "name": "eleRemainder",
+          "signature": "eleRemainder(): Promise<import(\"@onethu/core\").EleRemainder>;",
+          "line": 530,
+          "permission": null
+        },
+        {
+          "name": "elePayRecord",
+          "signature": "elePayRecord(): Promise<import(\"@onethu/core\").ElePayRecord[]>;",
+          "line": 531,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "library",
+      "methods": [
+        {
+          "name": "list",
+          "signature": "list(): Promise<import(\"@onethu/core\").Library[]>;",
+          "line": 534,
+          "permission": null
+        },
+        {
+          "name": "floors",
+          "signature": "floors(libraryId: number, dateChoice?: 0 | 1): Promise<import(\"@onethu/core\").LibraryFloor[]>;",
+          "line": 536,
+          "permission": null
+        },
+        {
+          "name": "sections",
+          "signature": "sections(floor: { id: number; zhNameTrace: string }, dateChoice?: 0 | 1): Promise<import(\"@onethu/core\").LibrarySection[]>;",
+          "line": 538,
+          "permission": null
+        },
+        {
+          "name": "seats",
+          "signature": "seats(section: { id: number; zhNameTrace: string }, dateChoice?: 0 | 1): Promise<import(\"@onethu/core\").LibrarySeat[]>;",
+          "line": 539,
+          "permission": null
+        },
+        {
+          "name": "records",
+          "signature": "records(): Promise<import(\"@onethu/core\").LibBookRecord[]>;",
+          "line": 541,
+          "permission": null
+        },
+        {
+          "name": "book",
+          "signature": "book(seat: { id: number; type?: string }, sectionId: number, dateChoice?: 0 | 1): Promise<{ status?: number; msg?: string }>;",
+          "line": 543,
+          "permission": null
+        },
+        {
+          "name": "cancel",
+          "signature": "cancel(recordId: string): Promise<void>;",
+          "line": 544,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "libroom",
+      "methods": [
+        {
+          "name": "list",
+          "signature": "list(): Promise<import(\"@onethu/core\").LibRoomInfo[]>;",
+          "line": 548,
+          "permission": null
+        },
+        {
+          "name": "resources",
+          "signature": "resources(date: string, kindId: number): Promise<import(\"@onethu/core\").LibRoomRes[]>;",
+          "line": 550,
+          "permission": null
+        },
+        {
+          "name": "records",
+          "signature": "records(): Promise<import(\"@onethu/core\").LibRoomBookRecord[]>;",
+          "line": 551,
+          "permission": null
+        },
+        {
+          "name": "book",
+          "signature": "book(roomRes: import(\"@onethu/core\").LibRoomRes, start: string, end: string, memberAccNos?: number[]): Promise<void>;",
+          "line": 553,
+          "permission": null
+        },
+        {
+          "name": "cancel",
+          "signature": "cancel(uuid: string): Promise<void>;",
+          "line": 554,
+          "permission": null
+        },
+        {
+          "name": "fuzzyMember",
+          "signature": "fuzzyMember(keyword: string): Promise<import(\"@onethu/core\").LibFuzzySearchResult[]>;",
+          "line": 556,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "network",
+      "methods": [
+        {
+          "name": "balance",
+          "signature": "balance(): Promise<import(\"@onethu/core\").NetworkBalance>;",
+          "line": 559,
+          "permission": null
+        },
+        {
+          "name": "devices",
+          "signature": "devices(): Promise<import(\"@onethu/core\").NetworkDevice[]>;",
+          "line": 560,
+          "permission": null
+        },
+        {
+          "name": "deviceCount",
+          "signature": "deviceCount(): Promise<number>;",
+          "line": 561,
+          "permission": null
+        },
+        {
+          "name": "accountInfo",
+          "signature": "accountInfo(): Promise<import(\"@onethu/core\").NetworkAccountInfo>;",
+          "line": 562,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "nav",
+      "methods": [
+        {
+          "name": "go",
+          "signature": "go(page: string, params?: Record<string, unknown>): boolean;",
+          "line": 566,
+          "permission": "nav"
+        },
+        {
+          "name": "searchAtoms",
+          "signature": "searchAtoms(query: string, limit?: number): Promise<Array<{ kind: string; key: string; title: string; sub?: string; group: string }>>;",
+          "line": 570,
+          "permission": "nav"
+        },
+        {
+          "name": "searchRow",
+          "signature": "searchRow(ref: { routeId?: string; query?: string }): Promise<{ ok: boolean; id?: string; title?: string; breadcrumb?: string[]; landedOn?: string; note?: string; reason?: string; candidates?: Array<{ id: string; title: string }> }>;",
+          "line": 574,
+          "permission": "nav"
+        },
+        {
+          "name": "routeTable",
+          "signature": "routeTable(): Promise<Array<{ id: string; title: string; desc: string; aliases: string[]; breadcrumb: string[]; kind: string; tier: string; view: string; tab: string; section: string; note: string }>>;",
+          "line": 577,
+          "permission": "nav"
+        },
+        {
+          "name": "openAtom",
+          "signature": "openAtom(ref: { kind: string; key: string }): Promise<boolean>;",
+          "line": 580,
+          "permission": "nav"
+        },
+        {
+          "name": "usage",
+          "signature": "usage(limit?: number): Promise<{ total: number; kinds: number; top: Array<{ kind: string; key: string; title: string; group: string; n: number; last: number }>; recent: Array<{ kind: string; key: string; title: string; n: number; last: number }>; }>;",
+          "line": 583,
+          "permission": "nav"
+        },
+        {
+          "name": "clearUsage",
+          "signature": "clearUsage(): Promise<void>;",
+          "line": 590,
+          "permission": "nav"
+        }
+      ]
+    },
+    {
+      "namespace": "ui",
+      "methods": [
+        {
+          "name": "toast",
+          "signature": "toast(text: string): void;",
+          "line": 593,
+          "permission": "ui"
+        },
+        {
+          "name": "confirm",
+          "signature": "confirm( msg: string, opts?: { danger?: boolean; title?: string; confirmText?: string }, ): Promise<boolean>;",
+          "line": 598,
+          "permission": "ui"
+        },
+        {
+          "name": "form",
+          "signature": "form(title: string, fields: Array<{ key: string; label: string; kind?: \"text\" | \"textarea\" | \"password\" | \"select\"; placeholder?: string; default?: string; required?: boolean; options?: Array<{ value: string; label: string }>; }>): Promise<Record<string, string> | null>;",
+          "line": 604,
+          "permission": "ui"
+        },
+        {
+          "name": "webModal",
+          "signature": "webModal(url: string): Promise<void>;",
+          "line": 611,
+          "permission": "webview"
+        },
+        {
+          "name": "clipboard.write",
+          "signature": "write(text: string): Promise<void>;",
+          "line": 614,
+          "permission": "ui"
+        },
+        {
+          "name": "clipboard.read",
+          "signature": "read(): Promise<string>;",
+          "line": 615,
+          "permission": "clipboard:read"
+        },
+        {
+          "name": "getTabRoot",
+          "signature": "getTabRoot(pageKey: string): HTMLElement | null;",
+          "line": 618,
+          "permission": "ui"
+        },
+        {
+          "name": "onTabReady",
+          "signature": "onTabReady(pageKey: string, cb: (root: HTMLElement) => void): () => void;",
+          "line": 620,
+          "permission": "ui"
+        }
+      ]
+    },
+    {
+      "namespace": "favorites",
+      "methods": [
+        {
+          "name": "add",
+          "signature": "add(key: string, folderId?: string): void;",
+          "line": 626,
+          "permission": "ui"
+        },
+        {
+          "name": "list",
+          "signature": "list(): Array<{ folderId: string; folderTitle: string; key: string }>;",
+          "line": 628,
+          "permission": "ui"
+        },
+        {
+          "name": "addAtom",
+          "signature": "addAtom(ref: { kind: string; key: string }, meta?: { title: string; sub?: string; group?: string; iconSvg?: string }, folderId?: string): void;",
+          "line": 630,
+          "permission": "ui"
+        },
+        {
+          "name": "kinds",
+          "signature": "kinds(): Array<{ kind: string; group: string; source: \"registered\" | \"static\" }>;",
+          "line": 632,
+          "permission": "ui"
+        }
+      ]
+    },
+    {
+      "namespace": "services",
+      "methods": [
+        {
+          "name": "search",
+          "signature": "search(query: string, limit?: number): Promise<Array<{ id: string; name: string; department?: string; url: string; score: number }>>;",
+          "line": 641,
+          "permission": "info:read"
+        },
+        {
+          "name": "open",
+          "signature": "open(service: { id?: string; name?: string; url?: string }): Promise<boolean>;",
+          "line": 644,
+          "permission": "info:read"
+        }
+      ]
+    },
+    {
+      "namespace": "notify",
+      "methods": [
+        {
+          "name": "send",
+          "signature": "send(opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{ ok: boolean; id: string; reason?: string; }>;",
+          "line": 650,
+          "permission": "notify"
+        },
+        {
+          "name": "cancel",
+          "signature": "cancel(key: string): Promise<boolean>;",
+          "line": 657,
+          "permission": "notify"
+        },
+        {
+          "name": "status",
+          "signature": "status(request?: boolean): Promise<{ ok: boolean; backend: string; granted: boolean; exact: boolean; reason?: string }>;",
+          "line": 659,
+          "permission": "notify"
+        }
+      ]
+    },
+    {
+      "namespace": "widget",
+      "methods": [
+        {
+          "name": "list",
+          "signature": "list(): Array<{ id: string; title: string; slot: string | null }>;",
+          "line": 664,
+          "permission": "widget"
+        },
+        {
+          "name": "slots",
+          "signature": "slots(): number;",
+          "line": 666,
+          "permission": "widget"
+        },
+        {
+          "name": "instances",
+          "signature": "instances(): Promise<Array<{ id: string; shape: string; binding: unknown }>>;",
+          "line": 668,
+          "permission": "widget"
+        },
+        {
+          "name": "getFallback",
+          "signature": "getFallback(): Promise<unknown>;",
+          "line": 670,
+          "permission": "widget"
+        },
+        {
+          "name": "setFallback",
+          "signature": "setFallback(binding: { kind: \"today\" } | { kind: \"folder\"; folderId: string } | { kind: \"detail\" | \"shortcut\"; atom: { kind: string; key: string } } | null): Promise<boolean>;",
+          "line": 672,
+          "permission": "widget"
+        },
+        {
+          "name": "bind",
+          "signature": "bind(id: string, binding: { kind: \"today\" } | { kind: \"folder\"; folderId: string } | { kind: \"detail\" | \"shortcut\"; atom: { kind: string; key: string } } | null): Promise<boolean>;",
+          "line": 674,
+          "permission": "widget"
+        },
+        {
+          "name": "unbind",
+          "signature": "unbind(id: string): Promise<boolean>;",
+          "line": 676,
+          "permission": "widget"
+        }
+      ]
+    },
+    {
+      "namespace": "storage",
+      "methods": [
+        {
+          "name": "get",
+          "signature": "get<T = string>(key: string): T | null;",
+          "line": 679,
+          "permission": "storage"
+        },
+        {
+          "name": "set",
+          "signature": "set<T = string>(key: string, value: T): void;",
+          "line": 680,
+          "permission": "storage"
+        },
+        {
+          "name": "keys",
+          "signature": "keys(): string[];",
+          "line": 681,
+          "permission": "storage"
+        },
+        {
+          "name": "remove",
+          "signature": "remove(key: string): void;",
+          "line": 682,
+          "permission": "storage"
+        }
+      ]
+    },
+    {
+      "namespace": "settings",
+      "methods": [
+        {
+          "name": "get",
+          "signature": "get(): Record<string, string>;",
+          "line": 686,
+          "permission": "storage"
+        }
+      ]
+    },
+    {
+      "namespace": "net",
+      "methods": [
+        {
+          "name": "fetch",
+          "signature": "fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;",
+          "line": 691,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "ws",
+      "methods": [
+        {
+          "name": "open",
+          "signature": "open(url: string, opts?: { headers?: Record<string, string>; connectTimeoutMs?: number }): Promise<string>;",
+          "line": 696,
+          "permission": null
+        },
+        {
+          "name": "send",
+          "signature": "send(session: string, data: string, encoding?: \"text\" | \"b64\"): Promise<void>;",
+          "line": 698,
+          "permission": "ws:external"
+        },
+        {
+          "name": "recv",
+          "signature": "recv(session: string, timeoutMs?: number): Promise<{ kind: \"text\" | \"binary\" | \"closed\"; text?: string; b64?: string } | null>;",
+          "line": 700,
+          "permission": "ws:external"
+        },
+        {
+          "name": "close",
+          "signature": "close(session: string): Promise<void>;",
+          "line": 702,
+          "permission": "ws:external"
+        },
+        {
+          "name": "closeAll",
+          "signature": "closeAll(): Promise<void>;",
+          "line": 704,
+          "permission": "ws:external"
+        }
+      ]
+    },
+    {
+      "namespace": "plugins",
+      "methods": [
+        {
+          "name": "list",
+          "signature": "list(): Promise<Array<{ pluginId: string; pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>>;",
+          "line": 708,
+          "permission": "plugins:call"
+        },
+        {
+          "name": "call",
+          "signature": "call(pluginId: string, cmdId: string, input?: string): Promise<unknown>;",
+          "line": 710,
+          "permission": "plugins:call"
+        }
+      ]
+    },
+    {
+      "namespace": "browser",
+      "methods": [
+        {
+          "name": "probe",
+          "signature": "probe(): Promise<unknown>;",
+          "line": 714,
+          "permission": "ui"
+        },
+        {
+          "name": "launch",
+          "signature": "launch(mode: string): Promise<unknown>;",
+          "line": 715,
+          "permission": "ui"
+        },
+        {
+          "name": "navigate",
+          "signature": "navigate(url: string): Promise<void>;",
+          "line": 716,
+          "permission": "ui"
+        },
+        {
+          "name": "eval",
+          "signature": "eval(js: string): Promise<unknown>;",
+          "line": 717,
+          "permission": "ui"
+        },
+        {
+          "name": "snapshot",
+          "signature": "snapshot(): Promise<unknown>;",
+          "line": 718,
+          "permission": "ui"
+        },
+        {
+          "name": "close",
+          "signature": "close(): Promise<unknown>;",
+          "line": 719,
+          "permission": "ui"
+        }
+      ]
+    },
+    {
+      "namespace": "ts",
+      "methods": [
+        {
+          "name": "status",
+          "signature": "status(): Promise<\"ready\" | \"expired\" | \"logged-out\">;",
+          "line": 723,
+          "permission": "tsinghua:sdk"
+        },
+        {
+          "name": "ensure",
+          "signature": "ensure(): Promise<void>;",
+          "line": 725,
+          "permission": "tsinghua:sdk"
+        },
+        {
+          "name": "username",
+          "signature": "username(): Promise<string | null>;",
+          "line": 727,
+          "permission": "tsinghua:sdk"
+        },
+        {
+          "name": "client",
+          "signature": "client(opts?: { mode?: \"auto\" | \"webvpn\" | \"direct\" }): { fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>; resolve(url: string): string; };",
+          "line": 730,
+          "permission": "tsinghua:sdk"
+        }
+      ]
+    },
+    {
+      "namespace": "llm",
+      "methods": [
+        {
+          "name": "chat",
+          "signature": "chat(input: string): Promise<{ text: string; model: string; provider: string }>;",
+          "line": 742,
+          "permission": "llm"
+        },
+        {
+          "name": "provider",
+          "signature": "provider(): Promise<string>;",
+          "line": 744,
+          "permission": "llm"
+        }
+      ]
+    },
+    {
+      "namespace": "theme",
+      "methods": [
+        {
+          "name": "list",
+          "signature": "list(): Promise<Array<{ id: string; name: string; version: string; dark: boolean }>>;",
+          "line": 748,
+          "permission": "theme"
+        },
+        {
+          "name": "active",
+          "signature": "active(): Promise<string | null>;",
+          "line": 750,
+          "permission": null
+        },
+        {
+          "name": "apply",
+          "signature": "apply(id: string | null): Promise<void>;",
+          "line": 752,
+          "permission": "theme"
+        },
+        {
+          "name": "schedule",
+          "signature": "schedule(): Promise<{ followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null; systemDark: boolean }>;",
+          "line": 754,
+          "permission": null
+        },
+        {
+          "name": "setFollowSystem",
+          "signature": "setFollowSystem(on: boolean): Promise<void>;",
+          "line": 756,
+          "permission": null
+        },
+        {
+          "name": "setDayNight",
+          "signature": "setDayNight(dayId: string | null, nightId: string | null): Promise<void>;",
+          "line": 758,
+          "permission": null
+        }
+      ]
+    },
+    {
+      "namespace": "exthw",
+      "methods": [
+        {
+          "name": "snapshot",
+          "signature": "snapshot(): Promise<{ items: Array<{ source: string; course: string; title: string; deadline: string | null; url: string | null; submitted: boolean; graded: boolean; score: number | null }>; errors: Record<string, string>; state: string; lastAt: number; configured: boolean; }>;",
+          "line": 762,
+          "permission": "exthw:read"
+        },
+        {
+          "name": "refresh",
+          "signature": "refresh(): Promise<void>;",
+          "line": 770,
+          "permission": "exthw:refresh"
+        }
+      ]
+    }
+  ]
+}

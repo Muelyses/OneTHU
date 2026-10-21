@@ -1,5 +1,8 @@
 # 暂存箱点击直达与长按雷达验收
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../../README.md)；英文入口见 [English overview](../../en/index.md)。
+
+
 2026-10-20，`tools/vault-radar-browser-test.mjs` 在最终源码上完成 **309 项断言**，进程自然退出 0，浏览器清理完成，无页面异常。原始结果、触摸轨迹、首按祖先样式、几何与录像时间戳保存在 [report.json](report.json)。
 
 ## 实际覆盖

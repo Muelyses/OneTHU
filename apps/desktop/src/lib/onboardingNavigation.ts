@@ -4,6 +4,8 @@ import { closeOneGoSheet, openOneGoSection } from "../components/explorer/OneGoS
 import { requestSettingsTab } from "../state/settingsMode.js";
 import { showPracticalFeatures } from "../state/practicalFeatures.js";
 import { back, MAX_FRAMES, navFrames } from "../state/navStack.js";
+import { requestOhPanel, openOhPanel } from "../plugins/ohControl.js";
+import { dockUiSnapshot } from "../plugins/ChatDock.js";
 import type { TourTarget } from "./onboardingLessons.js";
 
 let practiceBaseline: Set<string> | null = null;
@@ -20,6 +22,9 @@ export function endPracticePanels(): void {
 
 export function openLessonTarget(target: TourTarget): void {
   switch (target) {
+    case "search": openOhPanel("search", ""); break;
+    case "oh": openOhPanel("oh", ""); break;
+    case "mode": openSettings("settings"); break;
     case "home": openTab("homepage"); break;
     case "workspaces": openOneGoSection("ws"); break;
     case "onego": openOneGoSection("favs"); break;
@@ -51,6 +56,8 @@ export function closePracticePanels(): boolean {
     const remaining = navFrames().at(-1);
     if (remaining?.kind === "overlay" && remaining.id !== "onboarding-tour" && !practiceBaseline.has(remaining.id)) return false;
   }
+  const dock = dockUiSnapshot();
+  if (dock.open && practiceBaseline && !practiceBaseline.has("oh-panel")) requestOhPanel(dock.mode);
   closeSettings();
   closeOneGoSheet();
   showPracticalFeatures(false);

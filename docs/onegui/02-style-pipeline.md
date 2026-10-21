@@ -1,5 +1,8 @@
 # 02 · 样式管线实测图（OneGUI 接管前的基线）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 侦察范围：`packages/ui/src/*.css`、`apps/desktop/src/styles/*.css`、`apps/desktop/src/{state,lib,components}`、`tools/*.mjs`。
 > 排除 `node_modules` / `vendor` / `._*`。所有计数为 2026-10-14 实测（`grep -ro` / `node tools/*.mjs`），非估计。
 

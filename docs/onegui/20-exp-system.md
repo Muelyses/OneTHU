@@ -1,5 +1,8 @@
 # OneGUI exp · 中性工作台视觉体系
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 2026-10-17，从本地 dev3 `90eec5b2` 创建 `exp`。本轮以 ChatGPT / Codex 的中性工作台语言为方向，实际实现于 OneTHU 的原有界面结构。
 
 ## 设计边界

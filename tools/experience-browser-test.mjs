@@ -60,7 +60,7 @@ try{
  console.log('changed stores',Object.keys({...saved,...restored}).filter(k=>saved[k]!==restored[k]).map(k=>({key:k,before:saved[k],after:restored[k]})));check(JSON.stringify(saved)===JSON.stringify(restored),'往返模式和极简导航不改完整存档');
  await call(p,'/src/components/OnboardingTour.tsx','replayOnboarding');await advanceOnboardingLanguage(p);await p.getByRole('dialog',{name:'OneTHU 使用导览'}).waitFor();
  await p.getByRole('button',{name:'极简模式',exact:true}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
- check(await p.getByRole('heading',{name:'首页，只关心今天'}).isVisible(),'极简导览正确分流');
+ await p.getByRole('heading',{name:'搜索、OH 与插件',exact:true}).waitFor();await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'首页，只关心今天'}).isVisible(),'极简导览正确分流');
  await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'五个功能，固定在手边'}).isVisible(),'极简导览精简');
  await p.getByRole('button',{name:'下一步',exact:true}).click();check(await p.getByRole('heading',{name:'需要时，再连接'}).isVisible(),'接入步骤可选');check(await p.getByRole('switch',{name:'OH MCP 服务器开关'}).count()===0,'极简导览隐藏高级 MCP 开关');
  await p.getByRole('button',{name:'开始使用',exact:true}).click();await p.waitForTimeout(300);
@@ -148,7 +148,7 @@ try{
  await p.waitForTimeout(400);await p.screenshot({path:out+'/mode-picker-desktop.png'});
  check(await p.getByRole('button',{name:'实用模式',exact:true}).count()===1,'导览提供实用模式选项');
  await p.getByRole('button',{name:'实用模式',exact:true}).click();await p.getByRole('button',{name:'按此模式开始'}).click();
- await p.getByRole('heading',{name:'首页，只关心今天'}).waitFor();check(true,'实用导览第 1 课');
+ await p.getByRole('heading',{name:'搜索、OH 与插件',exact:true}).waitFor();await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'首页，只关心今天'}).waitFor();check(true,'实用导览第 1 课');
  await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'更多功能：所有基础功能都在这里'}).waitFor();check(true,'实用导览第 2 课：更多功能');await p.getByRole('button',{name:'展开更多功能',exact:true}).click();await more.waitFor();check(await more.getByRole('textbox',{name:'搜索功能'}).isVisible(),'实用导览真实展开更多功能');await p.keyboard.press('Escape');await more.waitFor({state:'hidden'});await p.getByRole('button',{name:'继续导览',exact:true}).click();
  await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'四个入口，随你安排'}).waitFor();check(true,'实用导览第 3 课：换入口');
  await p.getByRole('button',{name:'下一步',exact:true}).click();await p.getByRole('heading',{name:'需要时，再连接'}).waitFor();check(true,'实用导览接入步骤可选');check(await p.getByRole('switch',{name:'OH MCP 服务器开关'}).count()===0,'实用导览隐藏高级 MCP 开关');

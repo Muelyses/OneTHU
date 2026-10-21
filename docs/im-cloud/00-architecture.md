@@ -1,5 +1,8 @@
 # 00 · OH 多通道 IM 接入架构建议（无后端形态）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 最后更新：2026-10-09（修订版：用户拍板**否决任何后端网关**，NAS/服务器形态出局；本文为「无后端形态」主案，原独立网关方案移至附录 A 留档）
 > 依据：本目录 01–06 平台调研 + OneTHU 现状（OH sidecar、onethu.call 门面、seafile 集成）
 > 一句话结论：**通道层直接跑在桌面 OneTHU App 的宿主 TS 层（App 常驻=bot 在线，关机即离线）；P0 落 微信官方 iLink + 飞书长连接 双通道；入站消息经 callRust 注入 OH（`agent.inject`），回复原路发回（出站零 OH 改动）；IM 文件直接经 seafile.rs 上云盘，与 Files Hub 汇合。**

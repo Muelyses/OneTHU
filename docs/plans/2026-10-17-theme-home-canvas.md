@@ -1,5 +1,8 @@
 # OneGUI theme, material and editable home canvas
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 Goal: repair theme injection, segment contrast and glass, then bring all home content into one persistent canvas.
 
 ## Decisions / ADR

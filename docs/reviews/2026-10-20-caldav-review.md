@@ -1,5 +1,8 @@
 # CalDAV 云日历复查与修复（2026-10-20）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 范围：`state/cloudCal.ts`、核心 CalDAV/ICS、日程编辑门面和严格文件持久化。全部测试使用隔离内存文件与 fake DAV；没有读取实际账号文件、请求学校服务或修改真实云日历。
 
 ## 历史策略确认

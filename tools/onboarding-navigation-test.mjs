@@ -4,9 +4,11 @@ import { registerHooks } from 'node:module';
 
 globalThis.location = { hash: '#/today' };
 globalThis.history = { replaceState(_state, _title, url) { location.hash = url; } };
-globalThis.__tourPanelCalls = [];
+globalThis.__tourPanelCalls = [];globalThis.__tourDock={open:false,mode:'search'};
 const calls = globalThis.__tourPanelCalls;
 const stubs = {
+  '../plugins/ohControl.js': 'export const requestOhPanel=()=>globalThis.__tourPanelCalls.push(\"dock-close\");export const openOhPanel=mode=>globalThis.__tourPanelCalls.push(\"dock-open-\"+mode);',
+  '../plugins/ChatDock.js': 'export const dockUiSnapshot=()=>globalThis.__tourDock;',
   '../state/explorer.js': 'export const closeSettings=()=>globalThis.__tourPanelCalls.push("settings"); export const openSettings=()=>{}; export const openTab=()=>{};',
   '../components/explorer/OneGoSheet.js': 'export const closeOneGoSheet=()=>globalThis.__tourPanelCalls.push("onego"); export const openOneGoSection=()=>{};',
   '../state/settingsMode.js': 'export const requestSettingsTab=()=>{};',
@@ -17,7 +19,7 @@ registerHooks({ resolve(specifier, context, next) {
   return source ? { url: 'data:text/javascript,' + encodeURIComponent(source), shortCircuit: true } : next(specifier, context);
 } });
 const nav = await import('../apps/desktop/src/state/navStack.ts');
-const { beginPracticePanels, closePracticePanels, endPracticePanels } = await import('../apps/desktop/src/lib/onboardingNavigation.ts');
+const { beginPracticePanels, closePracticePanels, endPracticePanels, openLessonTarget } = await import('../apps/desktop/src/lib/onboardingNavigation.ts');
 let checks = 0;
 const check = (value, label) => { assert.ok(value, label); checks++; console.log('✓ ' + label); };
 const root = { page: 'today', params: null, url: '#/today' };
@@ -93,4 +95,9 @@ check(ids().join(',') === 'user-work' && calls.length === 0, 'ending a practice 
 nav.openOverlayFrame('later-work', () => assert.fail('A later replay must not inherit the old practice ownership'));
 check(closePracticePanels() && ids().join(',') === 'user-work,later-work', 'later replay cleanup cannot dismiss work from an ended practice');
 
+reset();globalThis.__tourDock={open:true,mode:'search'};
+nav.openOverlayFrame('oh-panel',()=>assert.fail('A pre-existing OH panel is not owned by the guide'));
+beginPracticePanels();check(closePracticePanels()&&!calls.includes('dock-close'),'return preserves a pre-existing OH panel');
+reset();openLessonTarget('search');openLessonTarget('oh');check(calls.join(',')==='dock-open-search,dock-open-oh','guide destinations use open-only commands, not toggle commands');
+globalThis.__tourDock={open:false,mode:'search'};
 console.log(`${checks} onboarding navigation assertions passed`);

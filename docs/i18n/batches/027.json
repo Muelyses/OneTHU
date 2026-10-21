@@ -1,103 +1,7 @@
 {
-  "sourceHash": "4892dee0205b215640f0cfb8e669fe2436cfe51917e3f23c09e08420e7202f04",
+  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.vault.vaultitempresentation.d24c10d37db0",
-      "source": "图片",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 62,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d24c10d37db0\"), \"image\"]"
-        }
-      ],
-      "translation": "Image",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.d39567b2b9f1",
-      "source": "新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 19,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d39567b2b9f1\"), \"text\"]"
-        }
-      ],
-      "translation": "News",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.d4f7864690bb",
-      "source": "Info 应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 26,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
-        }
-      ],
-      "translation": "Info app",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.dd42589239f7",
-      "source": "合并请求",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 21,
-          "context": "[i18n(\"components.vault.vaultitempresentation.dd42589239f7\"), \"gitlab\"]"
-        }
-      ],
-      "translation": "Merge request",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.df7a65bb1371",
-      "source": "教室",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 23,
-          "context": "[i18n(\"components.vault.vaultitempresentation.df7a65bb1371\"), \"location\"]"
-        }
-      ],
-      "translation": "Classroom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.e00b99270be7",
-      "source": "体育场馆",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 24,
-          "context": "[i18n(\"components.vault.vaultitempresentation.e00b99270be7\"), \"location\"]"
-        }
-      ],
-      "translation": "Sports venue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.vault.vaultitempresentation.e26e5de89c0a",
       "source": "新闻订阅",
@@ -1367,6 +1271,102 @@
         }
       ],
       "translation": "Reading",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.voicesettingssection.20e403134d07",
+      "source": "当前平台是否支持语音合成 / 重新检查",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.20e403134d07\");"
+        }
+      ],
+      "translation": "Whether the current platform supports speech synthesis / Recheck",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.2a015c420014",
+      "source": "音色、语速、音高全部回到原声，并关闭自动朗读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 274,
+          "context": "{i18n(\"components.voicesettingssection.2a015c420014\")}"
+        }
+      ],
+      "translation": "Voice, speed, and pitch all return to default, and auto-read is turned off",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.36aaad1be5c9",
+      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
+        }
+      ],
+      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3b6c48ce496b",
+      "source": "全部恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 279,
+          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
+        }
+      ],
+      "translation": "Restore all defaults",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.3e3b45ef84ac",
+      "source": "引擎状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 71,
+          "context": "return i18n(\"components.voicesettingssection.3e3b45ef84ac\");"
+        }
+      ],
+      "translation": "Engine status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.voicesettingssection.5e4df038f43b",
+      "source": "正在准备朗读引擎…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 40,
+          "context": "title: i18n(\"components.voicesettingssection.5e4df038f43b\")"
+        }
+      ],
+      "translation": "Preparing the reading engine…",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

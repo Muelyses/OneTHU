@@ -1,5 +1,8 @@
 # 反馈修复第二轮：日程白字 / NFC 口令入口 / 日程铺满
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 来源：用户 2026-10-18 晚补充（原话归纳），在第一轮 30 项收尾后开工。第一轮见
 `docs/plans/2026-10-18-feedback-repairs.md`。
 

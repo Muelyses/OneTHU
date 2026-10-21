@@ -1,5 +1,8 @@
 # Ball 分支作战计划（OH 全面改造）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 单一口径文档：所有参与本轮的 agent 都读这一份。分支 `Ball`（内容 = `dev3`，`7ce6cbe`）。
 > KWS 已出局：归档 tag `archive/dev-kws-20261010`（2884240），远端 `dev-kws` 已删，勿复活。
 

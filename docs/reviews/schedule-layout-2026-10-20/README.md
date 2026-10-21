@@ -1,5 +1,8 @@
 # 日程底栏遮挡与列表滚动验收
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../../README.md)；英文入口见 [English overview](../../en/index.md)。
+
+
 2026-10-20，`tools/schedule-layout-browser-test.mjs` 最终整套自然退出 `0`：**313 项通过、60 份实际几何与命中采样、24 张截图、0 个浏览器运行错误**。本目录保留统一 `report.json` 和三张关键截图；报告中的全部原始截图位于 `/tmp/onethu-schedule-layout-final-complete/`。
 
 ## 复现与修复效果

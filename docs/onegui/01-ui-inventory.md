@@ -1,5 +1,8 @@
 # OneGUI 前置盘点 01：现有 UI 表面清单与分裂度实测
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 只读勘察，覆盖 `apps/desktop/src/components/**` 与 `apps/desktop/src/pages/**`。
 > 排除 `node_modules/`、`vendor/`、AppleDouble `._*`。所有数字来自 `grep -c` / `wc -l` / 一次性解析脚本，非估计值。
 > 证据格式 `file:line`；CSS 引文为**原文逐字**，未改写。

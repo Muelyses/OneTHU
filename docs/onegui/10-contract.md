@@ -1,5 +1,8 @@
 # OneGUI · 组件契约
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../README.md)；英文入口见 [English overview](../en/index.md)。
+
+
 > 写给"加组件的人"与"迁页面的人"，也是护栏的依据。
 > `tools/onegui-guard.mjs` 按它检查，`docs/onegui/03-catalog.md` 按它列目录。
 

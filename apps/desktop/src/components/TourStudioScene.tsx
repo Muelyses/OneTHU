@@ -165,7 +165,7 @@ function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAsset
       return { bounds, readingPoints };
     };
     const createActor = (lesson: string, first = false): Actor => {
-      const mode = config.mode ?? "full", assembly = createStudioAssembly(lesson, palette, mode, props.screens);
+      const mode = config.mode ?? "full", assembly = createStudioAssembly(lesson, palette, mode, props.screens, () => draw());
       const framing = measureAssembly(assembly);
       const actor = { lesson, mode, assembly, materials: prepareMaterials(assembly), pose: spring(0, config.after ? 1 : 0), weight: spring(first ? 1 : 0, 1), x: spring(first ? 0 : 4.2, 0), y: spring(first ? 0 : -.1, 0), z: spring(first ? 0 : -1.2, 0), yaw: spring(first ? 0 : -.7, 0), ...framing };
       actors.push(actor); scene.add(assembly.group); applyActor(actor); return actor;
@@ -227,7 +227,7 @@ function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAsset
     };
     const draw = (): void => {
       if (disposed || lost || width < 2 || height < 2 || !visible || document.hidden) return;
-      actors.forEach(applyActor); applyCamera(); renderer.render(scene, camera); frames++; presented ||= isRunning(); report();
+      actors.forEach(actor => { applyActor(actor); actor.assembly.setPlaying?.(isRunning() && actor === active && actor.weight.value > .98 && Math.abs(actor.x.value) < .1 && Math.abs(angle.value) < .8, config.reduced); }); applyCamera(); renderer.render(scene, camera); frames++; presented ||= isRunning(); report();
       if (!readyReported) { readyReported = true; config.onReady?.(); }
     };
     const settleScene = (): void => {
@@ -266,6 +266,7 @@ function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAsset
     };
     const wake = (paint = true): void => {
       if (disposed) return;
+      if (!isRunning()) actors.forEach(actor => actor.assembly.setPlaying?.(false, config.reduced));
       if (!isRunning()) { stop(); settleScene(); if (paint) draw(); report(); return; }
       if (!presented) {
         for (const actor of actors.slice()) {
@@ -289,19 +290,19 @@ function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAsset
       keyLight.shadow.map?.dispose(); keyLight.shadow.map = null;
       wake();
     };
-    const onLost = (event: Event): void => { event.preventDefault(); lost = true; stop(); setAvailable(false); report(); };
+    const onLost = (event: Event): void => { event.preventDefault(); lost = true; wake(false); setAvailable(false); report(); };
     const onRestored = (): void => {
       if (disposed) return;
       try { lost = false; buildEnvironment(); setAvailable(true); wake(); }
       catch { lost = true; setAvailable(false); report(); }
     };
-    const onVisibility = (): void => { if (document.hidden) { stop(); report(); } else wake(); };
+    const onVisibility = (): void => { wake(); };
     const resizeObserver = new ResizeObserver(resize);
-    const intersection = new IntersectionObserver(([entry]) => { const next = !!entry?.isIntersecting; if (next === visible) return; visible = next; if (!visible) { stop(); report(); } else wake(); }, { threshold: .01 });
+    const intersection = new IntersectionObserver(([entry]) => { const next = !!entry?.isIntersecting; if (next === visible) return; visible = next; wake(); }, { threshold: .01 });
     const theme = new MutationObserver(() => {
       if (disposed || lost || !readPalette()) return;
       for (const actor of actors) {
-        scene.remove(actor.assembly.group); actor.assembly.dispose(); actor.assembly = createStudioAssembly(actor.lesson, palette, actor.mode, props.screens);
+        scene.remove(actor.assembly.group); actor.assembly.dispose(); actor.assembly = createStudioAssembly(actor.lesson, palette, actor.mode, props.screens, () => draw());
         actor.materials = prepareMaterials(actor.assembly);
         scene.add(actor.assembly.group); applyActor(actor);
       }
@@ -326,12 +327,12 @@ function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAsset
               const textureIds = materials.map(material => "map" in material && material.map instanceof THREE.Texture ? material.map.uuid : null);
               const textureSources = materials.map(material => {
                 const image = "map" in material && material.map instanceof THREE.Texture ? material.map.image : null;
-                return image instanceof HTMLImageElement ? image.currentSrc || image.src : null;
+                return image instanceof HTMLImageElement || image instanceof HTMLVideoElement ? image.currentSrc || image.src : null;
               });
               meshes.push({ name: object.name, path: path.join("/"), id: object.id, textureId: textureIds[0], textureIds, textureSources, screen: object.userData.studioScreen ?? null, visible: effectiveVisible, materials: materials.map(material => ({ opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite })), min: bounds.min.toArray(), max: bounds.max.toArray(), matrixWorld: object.matrixWorld.toArray() });
             }
           });
-          return { lesson: actor.lesson, mode: actor.mode, active: actor === active, progress: actor.pose.value, opacity: actor.weight.value, worldMatrix: actor.assembly.group.matrixWorld.toArray(), meshes };
+          return { lesson: actor.lesson, mode: actor.mode, media: actor.assembly.group.userData.media ?? null, active: actor === active, progress: actor.pose.value, opacity: actor.weight.value, worldMatrix: actor.assembly.group.matrixWorld.toArray(), meshes };
         }),
       };
     };
@@ -361,7 +362,7 @@ function StudioEngine(props: TourStudioSceneProps & { screens: StudioScreenAsset
       // but replace its screen assets using the actor's own provenance.
       if (active.mode !== (next.mode ?? "full")) {
         scene.remove(active.assembly.group); active.assembly.dispose();
-        active.assembly = createStudioAssembly(active.lesson, palette, next.mode, props.screens);
+        active.assembly = createStudioAssembly(active.lesson, palette, next.mode, props.screens, () => draw());
         active.mode = next.mode ?? "full";
         Object.assign(active, measureAssembly(active.assembly));
         active.materials = prepareMaterials(active.assembly);

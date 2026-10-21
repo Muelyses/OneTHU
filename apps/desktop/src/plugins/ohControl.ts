@@ -11,7 +11,7 @@
 export type OhMode = "search" | "oh" | "xiaoda";
 
 export type OhCommand =
-  | { type: "panel"; mode: OhMode; presetQuery?: string }
+  | { type: "panel"; mode: OhMode; presetQuery?: string; openOnly?: boolean }
   | { type: "voice" };
 
 let queue: OhCommand[] = [];
@@ -30,6 +30,11 @@ function dispatch(cmd: OhCommand): void {
 /** 打开 OH 小窗：mode=search 落搜索；mode=oh 落 OH 对话；mode=xiaoda 落清小搭（只开新默认对话） */
 export function requestOhPanel(mode: OhMode = "search", presetQuery?: string): void {
   dispatch({ type: "panel", mode, presetQuery });
+}
+
+/** Guide and deep-link actions open their destination without toggling an existing panel closed. */
+export function openOhPanel(mode: OhMode = "search", presetQuery?: string): void {
+  dispatch({ type: "panel", mode, presetQuery, openOnly: true });
 }
 
 /** 直接进语音输入（长按胶囊/悬浮球；发送目标按 explorerPrefs.voiceTarget） */

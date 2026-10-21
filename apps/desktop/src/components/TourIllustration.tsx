@@ -1,6 +1,7 @@
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Btn } from "@onethu/gui";
+import vaultDragVideo from "../assets/tour/real-ui/vault-drag.mp4?url";
 import { selectStudioScreen, type StudioScreenSource } from "./tourStudioScreens.js";
 import type { ExperienceMode } from "../state/experienceMode.js";
 const TourStudioScene = lazy(() => import("./TourStudioScene.js").then(module => ({ default: module.TourStudioScene })));
@@ -21,9 +22,10 @@ export interface TourIllustrationProps {
 }
 type SceneSpec = { name: string; before: string; after: string };
 const SCENES: Record<string, SceneSpec> = {
+  essentials: { get name() { return i18n("tour.essentials.title"); }, get before() { return i18n("tour.essentials.before"); }, get after() { return i18n("tour.essentials.after"); } },
   xiaoda: { get name() { return i18n("tour.xiaoda.title"); }, get before() { return i18n("tour.xiaoda.before"); }, get after() { return i18n("tour.xiaoda.after"); } },
   board: { get name() { return i18n("components.tourillustration.4a8eac97e960"); }, get before() { return i18n("components.tourillustration.5f716b7dedd8"); }, get after() { return i18n("components.tourillustration.ee40e75e813e"); } },
-  vault: { get name() { return i18n("components.tourillustration.a53febdc5466"); }, get before() { return i18n("components.tourillustration.3a7769c0aa16"); }, get after() { return i18n("components.tourillustration.4c7a7f26e106"); } },
+  vault: { get name() { return i18n("components.tourillustration.a53febdc5466"); }, get before() { return i18n("tour.vault.drag.before"); }, get after() { return i18n("tour.vault.drag.after"); } },
   code: { get name() { return i18n("components.tourillustration.96b3145a6b73"); }, get before() { return i18n("components.tourillustration.420be7bc077e"); }, get after() { return i18n("components.tourillustration.d9c8475ca6a6"); } },
   nfc: { get name() { return i18n("components.tourillustration.fd962d16dac1"); }, get before() { return i18n("components.tourillustration.a134c7737c93"); }, get after() { return i18n("components.tourillustration.7b25b8069c23"); } },
   organization: { get name() { return i18n("components.tourillustration.24a36e5f10e5"); }, get before() { return i18n("components.tourillustration.299d568b581f"); }, get after() { return i18n("components.tourillustration.f65def27f883"); } },
@@ -76,6 +78,18 @@ function RealScreen({ before, after, tablet = false }: { before: StudioScreenSou
       <img src={after.url} alt="" draggable={false} data-screen={after.key} className="tour-real-after" />
     </div>
   </figure>;
+}
+function VaultReplay({ running, reduced }: { running: boolean; reduced: boolean }): ReactNode {
+  const video = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const element = video.current;
+    if (!element) return;
+    if (running && !reduced) void element.play().catch(() => undefined);
+    else element.pause();
+    return () => element.pause();
+  }, [running, reduced]);
+  if (reduced) return <RealScreen before={selectStudioScreen("vault", "full", true).primary} after={selectStudioScreen("vault", "full", true).primary} />;
+  return <figure className="tour-real-device"><div className="tour-real-display"><video ref={video} src={vaultDragVideo} muted loop playsInline preload="metadata" poster={selectStudioScreen("vault", "full", false).primary.url} data-tour-vault-replay="true" /></div></figure>;
 }
 function RealScene({ lesson, mode }: { lesson: string; mode: ExperienceMode }): ReactNode {
   const uiLocale = useUiLocale();
@@ -141,8 +155,8 @@ export function TourIllustration({ lesson, mode = "full", playing = true, replay
   }, [running]);
   const extra = EXTRAS[lesson];
   const spec = SCENES[lesson] ?? {name:extra?.title??i18n("components.tourillustration.6d78bc490e7e"),before:i18n("components.tourillustration.60d33c9c54ae"),after:i18n("components.tourillustration.e431c37e9bdc")};
-  const singlePhone = !["board", "mode-full", "vault", "code", "nfc", "organization"].includes(lesson);
-  const content = <RealScene lesson={lesson} mode={mode}/>;
+  const singlePhone = !["board", "mode-full", "code", "nfc", "organization"].includes(lesson);
+  const content = lesson === "vault" ? <div className="tour-real-scene"><VaultReplay running={running} reduced={reduced}/></div> : <RealScene lesson={lesson} mode={mode}/>;
   const fallback = <AutomaticFallback running={running} state={{lesson, after, replayKey: sceneKey}} onSettled={onSettled}>{content}</AutomaticFallback>;
   return <section ref={host} className="tour-stage" data-lesson={lesson} data-device={singlePhone ? "phone" : undefined} data-phase={after?"after":"before"} data-running={String(running)} data-reduced={String(reduced)} data-autoplay="true" aria-label={i18n("components.tourillustration.37bf31378e03", { name: String(spec.name) })}>
     <div className="tour-stage-tools"><span><i aria-hidden="true"/>{reduced?i18n("components.tourillustration.65c89582594c"):paused?i18n("components.tourillustration.eb0c326b60ae"):i18n("components.tourillustration.3272fe53c0f6")}</span><div><Btn variant="ghost" size="sm" disabled={reduced} aria-label={reduced?i18n("components.tourillustration.76aa084fbdd3"):paused?i18n("components.tourillustration.73446b07bee3"):i18n("components.tourillustration.0d450810e15f")} aria-pressed={paused} onClick={()=>setPaused(value=>!value)}>{reduced?i18n("components.tourillustration.65c89582594c"):paused?i18n("components.tourillustration.c3396195e91c"):i18n("components.tourillustration.8d12fc0d4eb2")}</Btn></div></div>

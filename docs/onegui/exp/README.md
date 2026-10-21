@@ -1,5 +1,8 @@
 # exp 视觉验收（2026-10-17）
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](../../README.md)；英文入口见 [English overview](../../en/index.md)。
+
+
 实现范围与角色说明见 `../20-exp-system.md`。
 
 ## 结果

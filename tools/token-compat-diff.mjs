@@ -62,6 +62,8 @@ const INTENTIONAL = new Map([
   ["--primary-hover", "同上（悬停回 #43454a）"],
   ["--hover", "§3.5 B1：状态层对齐 MD3（hover 6% → 8%）"],
   ["--active", "§3.5 B1：状态层对齐 MD3（pressed 10% → 12%）"],
+  ["--text-3", "玻璃面对比度修复：浅色次要字 #81858c → #696e77，侧栏由 2.87:1 提到 ≥4.5:1"],
+  ["--dsw-alias-label-secondary", "同上（--text-3 的别名）"],
 ]);
 const fails = [];
 const changed = [];

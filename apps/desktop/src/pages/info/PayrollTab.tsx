@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 银行代发 —— info.getBankPayment（thu-info-app bankPayment.tsx 移植）。
  * 按月分组的工资/奖金发放记录（部门 · 项目 · 实发）。空数据/维护态铁律见 tabStates.tsx。
@@ -13,6 +14,8 @@ type LoadState = "loading" | "error" | "ready";
 type PayrollMonth = Awaited<ReturnType<typeof info.getBankPayment>>[number];
 
 export function PayrollTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [months, setMonths] = useState<PayrollMonth[] | null>(null);
   const [state, setState] = useState<LoadState>("loading");
@@ -48,24 +51,24 @@ export function PayrollTab() {
       {state === "loading" && !months ? (
         <SkeletonRows rows={5} />
       ) : state !== "ready" ? null : (months?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无银行代发记录（工资条可能尚未生成，或无代发项目）。" />
+        <TabEmpty text={i18n("pages.info.payrolltab.71145329d3c9")} />
       ) : (
         months!.map((m) => (
           <div key={m.month} style={{ marginBottom: 18 }}>
-            <SectionHead title={m.month} aside={`${m.payment.length} 笔`} />
+            <SectionHead title={m.month} aside={i18n("pages.info.payrolltab.92f8ed737113", { length: String(m.payment.length) })} />
             <Card style={{ padding: 0, overflow: "hidden" }}>
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>项目</th>
-                    <th>说明</th>
-                    <th className="num">实发</th>
+                    <th>{i18n("pages.info.payrolltab.79f326be4409")}</th>
+                    <th>{i18n("pages.info.payrolltab.4262c45dc797")}</th>
+                    <th className="num">{i18n("pages.info.payrolltab.c5b8451b5654")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {m.payment.map((r, i) => (
                     <tr key={`${m.month}-${i}`} style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}>
-                      <td className="cell-title">{r.project || r.usage || "代发"}</td>
+                      <td className="cell-title">{r.project || r.usage || i18n("pages.info.payrolltab.9ebdab488017")}</td>
                       <td>{r.department || r.description || "–"}</td>
                       <td className="num">{r.actual || "–"}</td>
                     </tr>

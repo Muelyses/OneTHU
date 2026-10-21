@@ -1,0 +1,266 @@
+{
+  "version": "0.11.0",
+  "capturedAt": "2026-10-21T05:35:00.237Z",
+  "passed": true,
+  "naturalCleanup": true,
+  "command": "node tools/capture-public-preview.mjs",
+  "privacy": "Only fictional data in disposable browser contexts. No real browser profile, real credentials, native app or campus service used.",
+  "externalRequestsSent": 0,
+  "blockedExternalRequests": [
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest"
+  ],
+  "entries": [
+    {
+      "key": "home-simple",
+      "file": "home-simple.png",
+      "description": "simple 模式手机首页",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "4bb646ac4cb1ff9a67da9890c2986e536d9318824d8fc57c8991fadfd95a9c3a",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-practical",
+      "file": "home-practical.png",
+      "description": "practical 模式手机首页",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "66f5fe53300bed7fc68ed8fcdad81a9dfd523aa2107f937e5ab7005871f4c498",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-full",
+      "file": "home-full.png",
+      "description": "full 模式手机首页",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "a3879cf3e44da6fec3946af2cb4c5eab0350a727d31edb9a6f0efeebfab65183",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "learn",
+      "file": "learn.png",
+      "description": "learn 模拟界面",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "462144b9cb69ed50a7a3fc044f0d3b53cf6c36f6c36fb85114b9240106e36d6c",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "schedule",
+      "file": "schedule.png",
+      "description": "schedule 模拟界面",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "93bbbb6d83802f862812fbad150c71ee649f85547f23c80c5a03d267559551ba",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "tasks",
+      "file": "tasks.png",
+      "description": "tasks 模拟界面",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "7ca46690dad7cd702e0dddea57ee5742dfdcdd64fd9ebd0121f0d9b3cebc1b02",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-landscape",
+      "file": "home-landscape.png",
+      "description": "homepage 模拟界面",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "5eee7582cbdb0ddc7c046c97f4760d447bce49ff4a993bcb0e6b60d3e0cee53c",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "schedule-landscape",
+      "file": "schedule-landscape.png",
+      "description": "schedule 模拟界面",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "bb0e1392d3026d474beed2c80cd9757f4c6f59993009db7342d6f2ceedec34d4",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-desktop",
+      "file": "home-desktop.png",
+      "description": "homepage 模拟界面",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "236f13a0456e51bfba3f6c1ecf87c34b7d80ffff4150754b9177127301efa8b7",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "learn-desktop",
+      "file": "learn-desktop.png",
+      "description": "learn 模拟界面",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "efd335599c2a847d735e90bbfa0d6bea704b29ee621e89f6987427957c82b32b",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "vault",
+      "file": "vault.png",
+      "description": "暂存箱：模拟课程与文字",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "60c92686028d6e5823dbcfefb1aaf3a28cb4e60049e37dd2494a9b7261631e4d",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "organization",
+      "file": "organization.png",
+      "description": "虚构学习组织：名片与管理入口",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "5b972cac83f785b8603d7e18449e0d57e04e28dea91403a1fb4e6f03b619c31e",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "xiaoda",
+      "file": "xiaoda.png",
+      "description": "清小搭模拟对话入口",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "6385ab9f16c32f2b9ff4e4d918225e22258206da8b6b32f06f46825a609c9c53",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "skills",
+      "file": "skills.png",
+      "description": "模拟轻量技能库",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "2fa50a8ed5d319b26ab364bc1172fc433b7e78052a78a0ea1d80e7433eb59ff0",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "search",
+      "file": "search.png",
+      "description": "搜索胶囊：模拟功能与作业结果",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "620faab400702ef2e9376db80820824c4cd21e85b8c7623183b71c66da194795",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "oh",
+      "file": "oh.png",
+      "description": "OH 与搜索胶囊：模拟预览",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "aa6147e4b2ae15226ed7f60458a8863356731b9110ba89333b4c2738a1339512",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    }
+  ],
+  "errors": []
+}

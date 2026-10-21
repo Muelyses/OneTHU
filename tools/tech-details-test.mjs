@@ -7,13 +7,15 @@
  *  ② 守实现：必须用原生 details（键盘可达、无脚本能开）、技术串要能选中复制；
  *  ③ 守覆盖面：错误态总闸 ErrorNote 走拆分渲染；页面里不许再把裸 HTTP 状态码直接抛给用户。
  */
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 import assert from "node:assert/strict";
 
 const src = readFileSync("apps/desktop/src/components/Details.tsx", "utf8");
 const layout = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8");
 const thubook = readFileSync("apps/desktop/src/pages/ThubookPage.tsx", "utf8");
 const settings = readFileSync("apps/desktop/src/pages/Settings.tsx", "utf8");
+const calendarSettings = readFileSync("apps/desktop/src/components/CalendarSyncSettings.tsx", "utf8");
+const simpleSettings = readFileSync("apps/desktop/src/components/SimpleSettings.tsx", "utf8");
 const css = readFileSync("apps/desktop/src/styles/global.css", "utf8");
 
 // ① 原生 details：键盘可达、无脚本能开、内容可选中
@@ -41,13 +43,17 @@ assert.ok(/<span>\{text\}<\/span>/.test(src), "不是技术串时要整句照常
 // ④ 覆盖面
 assert.ok(/<ErrorLine text=\{text\} \/>/.test(layout), "ErrorNote 必须走拆分渲染（所有页面的错误态都经过它）");
 const humanHttp = [...thubook.matchAll(/暂时打不开，请稍后再试：HTTP/g)].length;
-assert.equal(humanHttp, 2, "Thubook 两处 HTTP 报错都要写成「人话：HTTP <码>」，现在 " + humanHttp + " 处");
+assert.equal(humanHttp, 2, "THUBook 两处 HTTP 报错都要写成「人话：HTTP <码>」，现在 " + humanHttp + " 处");
 const httpMentions = [...thubook.matchAll(/HTTP/g)].length;
-assert.equal(httpMentions, humanHttp, "Thubook 里还有裸 HTTP 状态码没包上人话（" + httpMentions + " 处 HTTP / " + humanHttp + " 处带人话）");
-const settingsUses = [...settings.matchAll(/<ErrorLine /g)].length;
+assert.equal(httpMentions, humanHttp, "THUBook 里还有裸 HTTP 状态码没包上人话（" + httpMentions + " 处 HTTP / " + humanHttp + " 处带人话）");
+// Calendar controls are shared by all modes; keep the same coverage floor
+// across the component boundary and verify both settings hosts render it.
+assert.ok(/<CalendarSyncSettings\s*\/>/.test(settings), "完整模式必须接入共享日历设置");
+assert.ok(/<CalendarSyncSettings\s*\/>/.test(simpleSettings), "简洁模式必须接入共享日历设置");
+const settingsUses = [...(settings + calendarSettings).matchAll(/<ErrorLine /g)].length;
 assert.ok(settingsUses >= 5, "设置页用拆分渲染的地方太少（" + settingsUses + " 处）");
 
 console.log(
   "技术细节护栏：原生 details + 可复制 ✓ / 分类器 5 个技术串与 4 句人话分类正确 ✓ / " +
-  "ErrorNote 总闸已接 ✓ / Thubook 2 处报错可拆分 ✓ / 设置页 " + settingsUses + " 处 ✓",
+  "ErrorNote 总闸已接 ✓ / THUBook 2 处报错可拆分 ✓ / 设置页 " + settingsUses + " 处 ✓",
 );

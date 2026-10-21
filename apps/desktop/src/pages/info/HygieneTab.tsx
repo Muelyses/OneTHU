@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 卫生成绩 —— info.getDormScore（thu-info-app dormScore.tsx 移植）。
  * 家园网宿舍卫生检查成绩单（base64 图片，可缩放）；null = 暂无检查数据。
@@ -18,6 +20,8 @@ function toImageSrc(raw: string): string {
 }
 
 export function HygieneTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [image, setImage] = useState<string | null>(null);
   const [state, setState] = useState<LoadState>("loading");
@@ -53,7 +57,7 @@ export function HygieneTab() {
 
   return (
     <>
-      <SectionHead title="宿舍卫生成绩" aside="家园网 myhome · 卫生检查成绩单" />
+      <SectionHead title={i18n("pages.info.hygienetab.01a1a12a8cc2")} aside={i18n("pages.info.hygienetab.b0c4ef246a16")} />
       {state === "error" ? (
         <TabError unavailable={unavailable} text={error} onRetry={() => void load()} />
       ) : null}
@@ -61,25 +65,21 @@ export function HygieneTab() {
       {state === "loading" ? (
         <SkeletonRows rows={4} />
       ) : state === "none" ? (
-        <TabEmpty text="暂无卫生检查记录（本学期尚未开始检查）。" />
+        <TabEmpty text={i18n("pages.info.hygienetab.07c7e78ab1eb")} />
       ) : image ? (
         <>
           <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
-            <button className="btn btn-ghost" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))} disabled={zoom <= 0.5}>
-              −
-            </button>
+            <Btn variant="ghost" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.25).toFixed(2)))} disabled={zoom <= 0.5}>−
+            </Btn>
             <span style={{ fontSize: 13, color: "var(--text-2)" }}>{Math.round(zoom * 100)}%</span>
-            <button className="btn btn-ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>
-              +
-            </button>
-            <button className="btn btn-ghost" onClick={() => setZoom(1)}>
-              重置
-            </button>
+            <Btn variant="ghost" onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))} disabled={zoom >= 4}>+
+            </Btn>
+            <Btn variant="ghost" onClick={() => setZoom(1)}>{i18n("pages.info.hygienetab.cb5d682bac3d")}</Btn>
           </div>
           <Card style={{ overflow: "auto", padding: 12 }}>
             <img
               src={image}
-              alt="宿舍卫生检查成绩单"
+              alt={i18n("pages.info.hygienetab.faaa5c3ec584")}
               style={{ width: `${Math.round(zoom * 100)}%`, maxWidth: zoom === 1 ? "100%" : "none", display: "block", borderRadius: 8 }}
             />
           </Card>

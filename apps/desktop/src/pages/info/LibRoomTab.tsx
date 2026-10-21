@@ -1,28 +1,62 @@
+import { localizedList as i18nList } from "../../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 /**
  * 研讨间预约（cab.lib.tsinghua.edu.cn ic-web，thu-info-app libRoomSelect/libRoomBook/
  * libRoomPerformBook 桌面化移植）：
  * - 房型（kindId/kindName）选择 + 未来 5 天日期选择（lib validDateNum=5）
- * - 可约资源列表：每房间开放时段条（占段=红/空闲=绿，convertUsageToSegments 同款）
- *   + 逐格三态时段（30 分钟一格：绿=可约 / 红=已被占 / 灰=不可选，格内显式标注
- *   时段文本与占用状态，明确指出哪几个时段被占）；资源请求带代数去重（仅最新一次
- *   请求可落状态），房型/日期切换才清空列表，预约/取消后的刷新为软刷新（旧列表
- *   保留展示，杜绝占用条闪没）
+ * - 可约资源列表：逐格三态时段（30 分钟一格：绿=可约 / 红=已被占 / 灰=不可选，
+ *   格内显式标注时段文本与占用状态，明确指出哪几个时段被占）；资源请求带代数去重
+ *   （仅最新一次请求可落状态），房型/日期切换才清空列表，预约/取消后的刷新为软刷新
+ *   （旧列表保留展示，杜绝占用格闪没）
  * - 时段筛选：按 5 分钟粒度选起止时间，只显示整段连续空闲且满足房间
  *   开放时间、最短/最长时长与当日未过期约束的房间；从筛选结果点「预约」
  *   会自动带入该时段
  * - 选时段（开始/结束 5 分钟粒度、min/max 时长与占用约束，libRoomPerformBook 同算法；
- *   开始时刻可点时段格直接改选，改开始后结束回落到首个合法值，与 lib 同语义；
+ *   点列表时段立即打开确认窗口，自动带入合法起止时间；确认窗只保留精确微调，
+ *   不重复展示全天时段表；
  *   lib 为开始/结束双轮单选连续区间，不支持多选离散时段，此处保持一致）
- *   → 提交预约（ic-web/reserve POST JSON，sysKind=1 等字段为 lib 源码字面值）
+ *   → 确认后提交预约（ic-web/reserve POST JSON，sysKind=1 等字段为 lib 源码字面值）
  * - 我的预约（未来 6 天 resvInfo 列表）+ 取消（POST /reserve/delete {uuid}，
  *   行内确认后调用并即时刷新）
  * - 成员：仅以本人 accNo 提交（minUser>1 的多人房间给出说明，成员搜索端点已在
  *   InfoClient.fuzzySearchLibRoomMember 移植，UI 暂不开放）
  * - 首次预约报「填写邮箱地址」→ getUserInfo 邮箱确认 → ic-web/account/update 绑定后重试
+ *
+ * 2026-10-14 OneGUI 换血：筛选条 = Field+Inline+Grow（房型 SearchSelect/CollectStar
+ * 原样复用，保留 .ss-row 给下拉撤底边距；日期 5 天走 Segment——原生 time 输入换
+ * SearchSelect 复用，5 分钟粒度候选全日可搜，与预约面板同一时段选择族）·
+ * 错误/免登录引导/预约结果 = Banner（error 免登录可重试、success/error 语义色）·
+ * 骨架 LoadingBlock、空态 EmptyState · 可约房间行 = Card flush + List divided + Row
+ * （房间状态语义 Tag tone=neutral，.row-amount 换 trailing 预约钮）· 逐格三态时段格 =
+ * Btn tonal 轻量化网格（可约 success / 已被占 error / 不可选中性 disabled，本线
+ * 座位格判例同款，selected 高亮=面板当前开始时刻，.slot-grid/.slot-cell 共享类其他
+ * 场次页仍用保留）· 预约面板 = Card+Field+Spacer+实体按钮；顶部精确段条（UsageBar）
+ * 退役：占段精确信息由三态格与 sub 行全量承载（同一 convertUsageToSegments 源），
+ * aria 概述并入 Row sub 文本。
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+
+/* ── OG 全量 imported ── */
 import { isAuthError, type LibRoomBookRecord, type LibRoomRes } from "@onethu/core";
-import { Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
+import {
+  Banner,
+  Btn,
+  Card,
+  EmptyState,
+  Field,
+  Grow,
+  Inline,
+  List,
+  LoadingBlock,
+  Modal,
+  Row,
+  Section,
+  Segment,
+  Spacer,
+  Stack,
+  Tag,
+  Text,
+} from "@onethu/gui";
 import { SearchSelect } from "../../components/SearchSelect.jsx";
 import { CollectStar } from "../../components/Collect.js";
 import { enc, noteAtomCache } from "../../state/atoms.js";
@@ -31,25 +65,23 @@ import { explainNetworkError } from "../../lib/transport.js";
 import { openExternal } from "./openExternal.js";
 import { useApp } from "../../state/context.js";
 import { softRecover } from "../../lib/reload.js";
+import { showToast } from "../../state/toast.js";
 
-/** 研讨间「未绑定邮箱」检测卡（2026-09 用户反馈：新生首次使用必须在 cab.lib
- *  原网站绑定邮箱，否则会话建立/userInfo 校验恒败，只报错会让用户干等）。
- *  命中会话失败类文案时显示引导 + 一键打开原站；其余错误原样只走 ErrorNote。 */
+/* 研讨间「未绑定邮箱」引导条（2026-09 用户反馈：新生首次使用必须在 cab.lib
+ * 原网站绑定邮箱，否则会话建立/userInfo 校验恒败，只报错会让用户干等）。
+ * 命中会话失败类文案时显示引导 + 一键打开原站；其余错误原样只走 Banner。 */
 function EmailBindHint({ text }: { text: string }) {
+  const uiLocale = useUiLocale();
+
   if (!/研讨间会话未能建立|研讨间登录失败|userInfo 校验/.test(text)) return null;
   return (
-    <Card style={{ marginBottom: 12, borderLeft: "3px solid var(--accent)" }}>
-      <div style={{ fontSize: 13, lineHeight: 1.7 }}>
-        <b>首次使用研讨间？需要先绑定邮箱</b>
-        <div style={{ opacity: 0.75, marginTop: 4 }}>
-          研讨间系统要求先在原网站（cab.lib.tsinghua.edu.cn）登录并绑定邮箱后才能预约，新生未绑定时会一直报「会话未能建立」。
-          请在原网站绑定邮箱后，回到这里点「重试」。
-        </div>
-        <button className="btn" style={{ marginTop: 8 }} onClick={() => void openExternal("https://cab.lib.tsinghua.edu.cn/")}>
-          打开研讨间网站
-        </button>
-      </div>
-    </Card>
+    <Banner
+      tone="warning"
+      title={i18n("pages.info.libroomtab.cc3c388dfc29")}
+      action={
+        <Btn variant="outline" onClick={() => void openExternal("https://cab.lib.tsinghua.edu.cn/")}>{i18n("pages.info.libroomtab.85247a78ead3")}</Btn>
+      }
+    >{i18n("pages.info.libroomtab.f37e39e9300f")}</Banner>
   );
 }
 
@@ -76,7 +108,7 @@ const hhmmSafe = (d: Date): string => {
     return "–";
   }
 };
-const WEEKDAYS = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+const WEEKDAYS = i18nList(["pages.info.libroomtab.ee239f394329","pages.info.libroomtab.c430f4c12eaa","pages.info.libroomtab.d1378a68e620","pages.info.libroomtab.2961168962be","pages.info.libroomtab.e9d3b01a5a00","pages.info.libroomtab.572388f3b096","pages.info.libroomtab.f9aa11dbb15c"]);
 
 interface DayChoice {
   offset: number;
@@ -96,16 +128,27 @@ function dayChoices(): DayChoice[] {
       offset: k,
       compact: `${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`,
       iso: `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`,
-      label: k === 0 ? "今天" : `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} ${WEEKDAYS[d.getDay()]}`,
+      label: k === 0 ? i18n("pages.info.libroomtab.d5f5a7a01073") : `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} ${WEEKDAYS[d.getDay()]}`,
     });
   }
   return out;
 }
 
+/** 空闲时段筛选候选：全日 00:00~23:55 每 5 分钟一档（原 step=300 time 输入的同域
+ *  替代——SearchSelect ≥6 选项自动带搜索框，5 分钟粒度可搜可点）。 */
+const TIME_OPTIONS: Array<{ value: string; label: string }> = (() => {
+  const out: Array<{ value: string; label: string }> = [];
+  for (let m = 0; m < 24 * 60; m += 5) {
+    const hm = `${pad2(Math.floor(m / 60))}:${pad2(m % 60)}`;
+    out.push({ value: hm, label: hm });
+  }
+  return out;
+})();
+
 /* ------------- 时段切分（libRoomBookTimeIndicator 逐行移植） ------------- */
 
 /** [start, duration(分钟), occupied] —— lib convertUsageToSegments */
-type Segment = [string, number, boolean];
+type SegmentData = [string, number, boolean];
 
 const timeDiff = (start: string, end: string): number => {
   const sh = Number(start.slice(0, 2));
@@ -115,11 +158,11 @@ const timeDiff = (start: string, end: string): number => {
   return eh * 60 + em - (sh * 60 + sm);
 };
 
-const convertUsageToSegments = (res: LibRoomRes): Segment[] => {
+const convertUsageToSegments = (res: LibRoomRes): SegmentData[] => {
   if (res.openStart === null || res.openEnd === null) return [];
   try {
     const sorted = [...res.usage].sort((a, b) => (a.start < b.start ? -1 : 1));
-    const result: Segment[] = [];
+    const result: SegmentData[] = [];
     let lastTime = res.openStart;
     for (const u of sorted) {
       const beginTime = hhmm(u.start);
@@ -182,29 +225,6 @@ const validEnds = (res: LibRoomRes, begs: TimePoint[], beg: string): TimePoint[]
   }
   return result;
 };
-
-/** 开放时段条（libRoomBookTimeIndicator 桌面化：占段红 / 空闲绿） */
-function UsageBar({ res }: { res: LibRoomRes }) {
-  if (res.openStart === null || res.openEnd === null) {
-    return <div style={{ fontSize: 12, color: "var(--text-3)" }}>当日不开放</div>;
-  }
-  const segments = convertUsageToSegments(res);
-  return (
-    <div
-      style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", marginTop: 6 }}
-      role="img"
-      aria-label={`开放 ${res.openStart}~${res.openEnd}`}
-    >
-      {segments.map(([start, duration, occupied]) => (
-        <div
-          key={start}
-          title={`${start} 起 ${duration} 分钟${occupied ? " · 已占用" : " · 空闲"}`}
-          style={{ flex: duration, background: occupied ? "var(--red)" : "var(--green-soft)" }}
-        />
-      ))}
-    </div>
-  );
-}
 
 /* ------------- 逐格三态时段（可约 / 已被占 / 不可选） ------------- */
 
@@ -298,74 +318,60 @@ const roomSlots = (res: LibRoomRes, iso: string): RoomSlot[] => {
 };
 
 const SLOT_STATE_LABEL: Record<SlotState, string> = {
-  free: "可约",
-  occupied: "已被占",
-  blocked: "不可选",
+  get free() { return i18n("pages.info.libroomtab.d1d50368fefe"); },
+  get occupied() { return i18n("pages.info.libroomtab.336f1ae10407"); },
+  get blocked() { return i18n("pages.info.libroomtab.6087d10e5aec"); },
 };
 
-/** 三态时段格：默认只读（房间列表）；传 selectedBeg+onPickFree 即为预约面板的
- *  可点改选模式（点任一绿格改选开始时刻；红/灰格不可点）。 */
+const SLOT_TONE: Record<SlotState, OGBToneAlias> = {
+  free: "success",
+  occupied: "error",
+  blocked: "default",
+};
+type OGBToneAlias = "default" | "quiet" | "brand" | "error" | "warning" | "success" | "info";
+
+/** 列表绿格直接打开确认窗；红/灰格不可选。 */
 function SlotGrid({
   slots,
   res,
-  selectedBeg,
   onPickFree,
 }: {
   slots: RoomSlot[];
   res: LibRoomRes;
-  selectedBeg?: string;
   onPickFree?: (slot: RoomSlot) => void;
 }) {
+  const uiLocale = useUiLocale();
+
   if (slots.length === 0) return null;
   return (
-    <div className="slot-grid slot-grid-tight" style={{ marginTop: 6 }}>
+    <Inline gap={1} wrap>
       {slots.map((sl) => {
-        const cls =
-          sl.state === "occupied"
-            ? "slot-cell occ"
-            : sl.state === "free"
-              ? "slot-cell"
-              : "slot-cell taken";
         const label = SLOT_STATE_LABEL[sl.state];
-        const selected = selectedBeg !== undefined && onPickFree !== undefined && sl.state === "free" && sl.start === selectedBeg;
         const interactive = onPickFree !== undefined && sl.state === "free";
         const tip = `${sl.start}~${sl.end} · ${label}${
           sl.state === "occupied" ? usageAt(res, toMin(sl.start), toMin(sl.end)) : ""
-        }${interactive ? " · 点击选此开始时刻" : ""}`;
-        const body = (
-          <>
-            <b>{sl.start}~{sl.end}</b>
-            <small>{label}</small>
-          </>
-        );
-        if (interactive) {
-          return (
-            <button
-              key={`${sl.start}-${sl.end}`}
-              type="button"
-              className={cls + (selected ? " picked" : "")}
-              title={tip}
-              onClick={() => onPickFree!(sl)}
-            >
-              {body}
-            </button>
-          );
-        }
+        }${interactive ? i18n("pages.info.libroomtab.c31c70fef156") : ""}`;
         return (
-          <span key={`${sl.start}-${sl.end}`} className={cls} title={tip}>
-            {body}
-          </span>
+          <Btn
+            key={`${sl.start}-${sl.end}`}
+            variant="tonal"
+            tone={SLOT_TONE[sl.state]}
+            size="sm"
+            disabled={!interactive}
+            titleAttr={tip}
+            onClick={interactive ? () => onPickFree!(sl) : undefined}
+          >
+            {sl.start}~{sl.end} {label}
+          </Btn>
         );
       })}
-    </div>
+    </Inline>
   );
 }
 
 interface BookTarget {
   res: LibRoomRes;
   day: DayChoice;
-  preferredBeg?: string;
-  preferredEnd?: string;
 }
 
 export function LibRoomTab({
@@ -374,6 +380,8 @@ export function LibRoomTab({
   /** 深链（实体原子）：自动选中的房型 kindId */
   deepKind?: number;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const userId = session.username;
 
@@ -384,7 +392,7 @@ export function LibRoomTab({
   const [kindId, setKindId] = useState<number | null>(null);
 
   /* 日期 + 资源 */
-  const days = useMemo(dayChoices, []);
+  const days = useMemo(dayChoices, [uiLocale]);
   const [day, setDay] = useState<DayChoice>(days[0]!);
   const [resources, setResources] = useState<LibRoomRes[] | null>(null);
   const [resState, setResState] = useState<LoadState>("loading");
@@ -412,7 +420,7 @@ export function LibRoomTab({
   const [busyCancel, setBusyCancel] = useState<string | null>(null);
 
   /* 登录态丢失静默自愈：每条加载链路独立计数（成功清零），同一次失败最多自动恢复 1 次；
-   * 恢复中保持 loading 骨架不闪红，自动恢复也失败才亮 ErrorNote（手动重试清零重计）。 */
+   * 恢复中保持 loading 骨架不闪红，自动恢复也失败才亮 Banner（手动重试清零重计）。 */
   const kindRecover = useRef(0);
   const resRecover = useRef(0);
   const recRecover = useRef(0);
@@ -423,7 +431,7 @@ export function LibRoomTab({
     setKindError(null);
     try {
       const list = await info.getLibRoomInfoList(userId);
-      if (list.length === 0) throw new Error("房型列表为空（ic-web 未返回数据，请稍后重试）");
+      if (list.length === 0) throw new Error(i18n("pages.info.libroomtab.a89e82b07621"));
       kindRecover.current = 0;
       setKinds(list);
       setKindState("ready");
@@ -431,7 +439,7 @@ export function LibRoomTab({
       noteAtomCache({ libroomKinds: list.map((k) => ({ kindId: k.kindId, kindName: k.kindName })) });
     } catch (err) {
       logErr("LIBROOM-KIND", err);
-      // 登录态丢失：不闪红，静默重建研讨间 cab 会话后自动重载一次；仍失败才亮 ErrorNote
+      // 登录态丢失：不闪红，静默重建研讨间 cab 会话后自动重载一次；仍失败才亮 Banner
       // 登录态丢失：softRelogin 透明全链重建 → 原地重拉
       if (isAuthError(err) && (await softRecover("libroom"))) return loadKinds();
       // softRecover 失败/节流 → 落回数据级恢复兜底
@@ -489,7 +497,7 @@ export function LibRoomTab({
    * - 请求代数去重：resGen 自增，仅最新一次发出的请求可落状态（resTick 重取、
    *   房型/日期连点时旧响应一律丢弃，杜绝互相覆盖）；
    * - 软/硬刷新：房型/日期变化（源变化）才清空列表与选房；预约/取消后的 resTick
-   *   重取保留旧列表展示（stale-while-revalidate），占用条不再先消失再出现。 */
+   *   重取保留旧列表展示（stale-while-revalidate），占用格不再先消失再出现。 */
   const resGen = useRef(0);
   const lastResSource = useRef<string | null>(null);
   useEffect(() => {
@@ -512,9 +520,9 @@ export function LibRoomTab({
         lastResSource.current = source;
         setResources(list);
         setResState("ready");
-        // 面板开着时同步刷新占用（如取消自己的预约后该时段回绿）：
-        // 仅替换 res，保留用户已选的 beg/end 字符串；新数据下不再合法时
-        // ends 落空 → 提交按钮自动禁用，用户重选即可。
+        // 面板开着时同步刷新占用（如取消自己的预约后该时段回绿）：仅替换 res，
+        // 保留用户已选的 beg/end 字符串；新数据下不再合法时 ends 落空 → 提交按钮
+        // 自动禁用，用户重选即可。
         setTarget((t) => {
           if (!t) return null;
           const fresh = list.find((x) => x.devId === t.res.devId);
@@ -544,26 +552,13 @@ export function LibRoomTab({
     };
   }, [kindId, day, status, userId, resTick]);
 
-  /* 预约面板：目标/日期变化时重置时段选择 */
-  const begins = useMemo(() => (target ? validBegins(target.res, target.day.iso) : []), [target]);
-  useEffect(() => {
-    const preferred = target?.preferredBeg;
-    setBeg(preferred && begins.some((p) => p.start === preferred) ? preferred : (begins[0]?.start ?? ""));
-    setEnd("");
-  }, [begins, target?.preferredBeg]);
-  const ends = useMemo(
-    () => (target && beg ? validEnds(target.res, begins, beg) : []),
-    [target, begins, beg],
-  );
-  useEffect(() => {
-    const preferred = target?.preferredEnd;
-    setEnd(preferred && ends.some((p) => p.start === preferred) ? preferred : (ends[0]?.start ?? ""));
-  }, [ends, target?.preferredEnd]);
-  /* 预约面板逐格三态（红/灰禁点，绿格点击改选开始时刻） */
-  const targetSlots = useMemo(
-    () => (target ? roomSlots(target.res, target.day.iso) : []),
-    [target],
-  );
+  const begins = useMemo(() => (target ? validBegins(target.res, target.day.iso) : []), [uiLocale, target]);
+  const ends = useMemo(() => (target && beg ? validEnds(target.res, begins, beg) : []), [uiLocale, target, begins, beg]);
+  const chooseStart = (value: string): void => {
+    setBookError(null);
+    setBeg(value);
+    setEnd(target ? validEnds(target.res, begins, value)[0]?.start ?? "" : "");
+  };
 
   const filterComplete = filterBeg !== "" && filterEnd !== "";
   const filterValid = filterComplete && filterBeg < filterEnd;
@@ -572,36 +567,39 @@ export function LibRoomTab({
       resources === null || !filterValid
         ? resources
         : resources.filter((r) => isRoomFreeForRange(r, day.iso, filterBeg, filterEnd)),
-    [resources, filterValid, day.iso, filterBeg, filterEnd],
+    [uiLocale, resources, filterValid, day.iso, filterBeg, filterEnd],
   );
 
-  const pickRoom = (res: LibRoomRes): void => {
+  const pickRoom = (res: LibRoomRes, preferredBeg?: string, preferredEnd?: string): void => {
     setBookError(null);
     setPendingEmail(null);
     setNotice(null);
-    setTarget({
-      res,
-      day,
-      preferredBeg: filterValid ? filterBeg : undefined,
-      preferredEnd: filterValid ? filterEnd : undefined,
-    });
+    const requestedBeg = preferredBeg ?? (filterValid ? filterBeg : undefined);
+    const requestedEnd = preferredEnd ?? (filterValid ? filterEnd : undefined);
+    const starts = validBegins(res, day.iso);
+    const begin = starts.find((p) => p.start === requestedBeg)?.start
+      ?? starts.find((p) => requestedBeg && p.start >= requestedBeg && p.start < (requestedEnd ?? "24:00"))?.start
+      ?? starts[0]?.start ?? "";
+    const finishes = validEnds(res, starts, begin);
+    setBeg(begin);
+    setEnd(finishes.find((p) => p.start === requestedEnd)?.start ?? finishes[0]?.start ?? "");
+    setTarget({ res, day });
   };
 
   const doBook = useCallback(
     async (t: BookTarget, begin: string, finish: string): Promise<void> => {
       const accNo = info.getLibRoomAccNo();
       if (!userId) {
-        setBookError("需要先登录（未读取到学号）");
+        setBookError(i18n("pages.info.libroomtab.90bd6800e5b6"));
         return;
       }
       if (accNo === null) {
-        setBookError("研讨间账号信息缺失（accNo），请重试");
+        setBookError(i18n("pages.info.libroomtab.9fa1db46b010"));
         return;
       }
-      if (t.res.minUser > 1) {
-        setBookError(`该房间需 ${t.res.minUser}~${t.res.maxUser} 人成组，本应用暂不支持添加成员，请到图书馆研讨间系统网页端预约`);
-        return;
-      }
+      /* 不再因 minUser>1 硬性阻断（用户点名「红色绿色的都不让预约」）：
+         以仅本人（accNo）先按后端真实规则提交——馆方若要求成组人数会明确拒绝，
+         那时把后端原话交给用户并指路网页端加成员；馆方放行就按用户的选择预约成功。 */
       setBusy(true);
       setBookError(null);
       try {
@@ -609,7 +607,9 @@ export function LibRoomTab({
         await info.bookLibRoom(userId, t.res, `${t.day.iso} ${begin}:00`, `${t.day.iso} ${finish}:00`, [
           accNo,
         ]);
-        setNotice({ ok: true, text: `${t.res.roomName} ${t.day.iso} ${begin}~${finish} 预约成功，请留意图书馆邮件通知` });
+        const message = i18n("pages.info.libroomtab.fa437861d75f", { roomName: String(t.res.roomName), iso: String(t.day.iso), begin: String(begin), finish: String(finish) });
+        setNotice({ ok: true, text: message });
+        showToast(message);
         setTarget(null);
         void loadRecords();
         setResTick((n) => n + 1);
@@ -622,16 +622,22 @@ export function LibRoomTab({
             const userInfo = await info.getUserInfo();
             if (userInfo.email) {
               setPendingEmail(userInfo.email);
-              setBookError("首次预约需绑定邮箱地址，请确认下方邮箱后重试");
+              setBookError(i18n("pages.info.libroomtab.4b1f669230a0"));
               return;
             }
           } catch (emailErr) {
             logErr("LIBROOM-EMAIL", emailErr);
           }
-          setBookError("首次预约需绑定邮箱地址（未能自动获取邮箱），请先在图书馆研讨间系统网页端绑定后重试");
+          setBookError(i18n("pages.info.libroomtab.cd970b5c7fd4"));
           return;
         }
-        setBookError(explainNetworkError(err));
+        const explained = explainNetworkError(err);
+        /* 后端按成组规则拒绝（人数/成员不足）：原话照给 + 指路网页端加成员 */
+        setBookError(
+          /人数|成员|成组/.test(explained) && t.res.minUser > 1
+            ? i18n("pages.info.libroomtab.7402f19c127c", { explained: String(explained), minUser: String(t.res.minUser), maxUser: String(t.res.maxUser) })
+            : explained,
+        );
       } finally {
         setBusy(false);
       }
@@ -660,7 +666,7 @@ export function LibRoomTab({
     setNotice(null);
     try {
       await info.cancelLibRoomBooking(userId, r.uuid);
-      setNotice({ ok: true, text: "已取消该预约" });
+      setNotice({ ok: true, text: i18n("pages.info.libroomtab.8f0adfe5e873") });
       void loadRecords();
       setResTick((n) => n + 1);
     } catch (err) {
@@ -673,158 +679,174 @@ export function LibRoomTab({
   };
 
   const canSubmit =
-    target !== null && beg !== "" && end !== "" && !busy && target.res.minUser <= 1;
+    target !== null && !busy && isRoomFreeForRange(target.res, target.day.iso, beg, end);
+
+  const dayOptions = days.map((d) => ({
+    value: String(d.offset),
+    label: d.label,
+  }));
 
   return (
-    <>
-      <SectionHead title="研讨间" aside="cab.lib.tsinghua.edu.cn · ic-web" />
+    <Stack gap={3}>
+      <Section title={i18n("pages.info.libroomtab.e4d40b4d6759")} hint="cab.lib.tsinghua.edu.cn · ic-web" />
       {kindState === "error" ? (
-        <ErrorNote
-          text={kindError ?? ""}
-          onRetry={() => {
-            kindRecover.current = 0;
-            void loadKinds();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                kindRecover.current = 0;
+                void loadKinds();
+              }}
+            >{i18n("pages.info.libroomtab.b8784c8dd563")}</Btn>
+          }
+        >
+          {kindError ?? ""}
+        </Banner>
       ) : null}
       {kindState === "error" ? <EmailBindHint text={kindError ?? ""} /> : null}
-      {kindState === "loading" && !kinds ? <SkeletonRows rows={2} /> : null}
+      {kindState === "loading" && !kinds ? <LoadingBlock rows={2} /> : null}
 
       {kinds && kinds.length > 0 ? (
         <>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-            <div className="field" style={{ margin: 0, minWidth: 220 }}>
-              <label htmlFor="libroom-kind">房型</label>
-              <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                <div style={{ flex: "1 1 auto", minWidth: 0 }}>
-                  <SearchSelect
-                    value={kindId != null ? String(kindId) : ""}
-                    onChange={(v) => setKindId(Number(v) || null)}
-                    placeholder="选择房型…"
-                    options={kinds.map((k) => ({ value: String(k.kindId), label: k.kindName }))}
-                  />
-                </div>
-                {kindId != null ? (
-                  <CollectStar
-                    atom={{ kind: "libroom-k", key: enc(kindId, kinds?.find((k) => k.kindId === kindId)?.kindName ?? "") }}
-                    title={kinds?.find((k) => k.kindId === kindId)?.kindName ?? "研讨间房型"}
-                  />
-                ) : null}
-              </div>
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-date">日期</label>
-              <select
-                id="libroom-date"
-                className="input"
-                value={day.offset}
-                onChange={(e) => setDay(days[Number(e.target.value)] ?? days[0]!)}
-              >
-                {days.map((d) => (
-                  <option key={d.offset} value={d.offset}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-filter-beg">空闲时段</label>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <input
-                  id="libroom-filter-beg"
-                  className="input"
-                  type="time"
-                  step={300}
-                  aria-label="空闲时段开始"
+          {/* 筛选条：房型 / 日期 / 空闲时段（Field + Inline + Grow 判例同款） */}
+          <Inline gap={3} wrap vAlign="end">
+            <Grow>
+              <Field label={i18n("pages.info.libroomtab.dbeb70190aef")}>
+                <Inline gap={1} className="ss-row">
+                  <Grow>
+                    <SearchSelect
+                      value={kindId != null ? String(kindId) : ""}
+                      onChange={(v) => setKindId(Number(v) || null)}
+                      placeholder={i18n("pages.info.libroomtab.2607c5f4717f")}
+                      options={kinds.map((k) => ({ value: String(k.kindId), label: k.kindName }))}
+                    />
+                  </Grow>
+                  {kindId != null ? (
+                    <CollectStar
+                      atom={{ kind: "libroom-k", key: enc(kindId, kinds?.find((k) => k.kindId === kindId)?.kindName ?? "") }}
+                      title={kinds?.find((k) => k.kindId === kindId)?.kindName ?? i18n("pages.info.libroomtab.bee1f96066cd")}
+                    />
+                  ) : null}
+                </Inline>
+              </Field>
+            </Grow>
+            <Field label={i18n("pages.info.libroomtab.70d0c1b33626")}>
+              <Segment
+                size="sm"
+                options={dayOptions}
+                value={String(day.offset)}
+                onChange={(value) => setDay(days[Number(value)] ?? days[0]!)}
+              />
+            </Field>
+            <Field
+              label={i18n("pages.info.libroomtab.28f3de61dcf6")}
+              error={filterComplete && !filterValid ? i18n("pages.info.libroomtab.6475e95b06ba") : undefined}
+            >
+              <Inline gap={1} vAlign="center" wrap>
+                <SearchSelect
                   value={filterBeg}
-                  onChange={(e) => setFilterBeg(e.target.value)}
+                  onChange={setFilterBeg}
+                  placeholder={i18n("pages.info.libroomtab.91a1c26035d5")}
+                  options={TIME_OPTIONS}
                 />
-                <span style={{ color: "var(--text-3)" }}>至</span>
-                <input
-                  className="input"
-                  type="time"
-                  step={300}
-                  aria-label="空闲时段结束"
+                <Text slot="label" tone="faint" nowrap>{i18n("pages.info.libroomtab.65edbf9f1c67")}</Text>
+                <SearchSelect
                   value={filterEnd}
-                  onChange={(e) => setFilterEnd(e.target.value)}
+                  onChange={setFilterEnd}
+                  placeholder={i18n("pages.info.libroomtab.d191869abcc3")}
+                  options={TIME_OPTIONS}
                 />
                 {filterBeg || filterEnd ? (
-                  <button
-                    type="button"
-                    className="btn btn-ghost"
-                    style={{ height: 32, whiteSpace: "nowrap" }}
+                  <Btn
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
                       setFilterBeg("");
                       setFilterEnd("");
                     }}
-                  >
-                    清除
-                  </button>
+                  >{i18n("pages.info.libroomtab.bce2377283c2")}</Btn>
                 ) : null}
-              </div>
-              {filterComplete && !filterValid ? (
-                <div className="t-red" style={{ fontSize: 12, marginTop: 4 }}>结束时间需晚于开始时间</div>
-              ) : null}
-            </div>
-          </div>
+              </Inline>
+            </Field>
+          </Inline>
 
-          <SectionHead
-            title="可约房间"
-            aside={`${day.label}${filterValid ? ` · ${filterBeg}~${filterEnd} 连续空闲 ${visibleResources?.length ?? 0} 间` : ""} · 时段格 绿=可约 红=已被占 灰=不可选${resState === "loading" && resources !== null ? " · 刷新中…" : ""}`}
+          <Section
+            title={i18n("pages.info.libroomtab.b477db89f407")}
+            hint={i18n("pages.info.libroomtab.8a0bfbb5427c", { label: String(day.label), value: String(filterValid ? i18n("pages.info.libroomtab.17d2ede12828", { filterBeg: String(filterBeg), filterEnd: String(filterEnd), value: String(visibleResources?.length ?? 0) }) : ""), value2: String(resState === "loading" && resources !== null ? i18n("pages.info.libroomtab.383229129c45") : "") })}
           />
-          {resState === "loading" && resources === null ? <SkeletonRows rows={4} /> : null}
+          {resState === "loading" && resources === null ? <LoadingBlock rows={4} /> : null}
           {resState === "error" ? (
-            <ErrorNote
-              text={resError ?? ""}
-              onRetry={() => {
-                resRecover.current = 0;
-                setResTick((n) => n + 1);
-              }}
-            />
+            <Banner
+              tone="error"
+              action={
+                <Btn
+                  variant="ghost"
+                  tone="error"
+                  size="sm"
+                  onClick={() => {
+                    resRecover.current = 0;
+                    setResTick((n) => n + 1);
+                  }}
+                >{i18n("pages.info.libroomtab.b8784c8dd563")}</Btn>
+              }
+            >
+              {resError ?? ""}
+            </Banner>
           ) : null}
           {resState === "error" ? <EmailBindHint text={resError ?? ""} /> : null}
           {resources !== null && resources.length === 0 ? (
             <Card>
-              <Empty text="该房型当日暂无可约房间。" />
+              <EmptyState title={i18n("pages.info.libroomtab.54dfc521d801")} />
             </Card>
           ) : null}
           {resources !== null && resources.length > 0 && visibleResources?.length === 0 ? (
             <Card>
-              <Empty text={`没有研讨间在 ${filterBeg}~${filterEnd} 整段可约，请调整时间或清除筛选。`} />
+              <EmptyState title={i18n("pages.info.libroomtab.22e2feab7d3e", { filterBeg: String(filterBeg), filterEnd: String(filterEnd) })} />
             </Card>
           ) : null}
           {visibleResources !== null && visibleResources.length > 0 ? (
-            <Card className="list">
-              {visibleResources.map((r) => (
-                <div className="row" key={r.devId}>
-                  <div className="row-main">
-                    <div className="row-title">
-                      {r.roomName}
-                      {r.maxUser > 1 ? `（${r.minUser}~${r.maxUser} 人）` : ""}
-                      {r.kindName.includes("暂未开放") ? "（暂未开放）" : ""}
-                    </div>
-                    <div className="row-sub">
-                      {r.openStart && r.openEnd
-                        ? `开放 ${r.openStart}~${r.openEnd} · 单次 ${r.minMinute}~${r.maxMinute} 分钟`
-                        : "当日不开放"}
-                      {r.usage.length > 0 ? ` · 已约 ${r.usage.length} 段` : ""}
-                    </div>
-                    <UsageBar res={r} />
-                    {/* 逐格三态：明确列出被占时段文本（红=已被占 / 绿=可约 / 灰=不可选） */}
-                    <SlotGrid slots={roomSlots(r, day.iso)} res={r} />
-                  </div>
-                  <div className="row-amount">
-                    <button
-                      className="btn btn-primary"
-                      style={{ height: 28 }}
-                      disabled={r.kindName.includes("暂未开放") || r.openStart === null}
-                      onClick={() => pickRoom(r)}
-                    >
-                      预约
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <Card flush>
+              <List divided>
+                {visibleResources.map((r) => (
+                  <Row
+                    flush
+                    key={r.devId}
+                    title={
+                      <>
+                        <Text as="span" slot="body" weight="medium">
+                          {r.roomName}
+                          {r.maxUser > 1 ? i18n("pages.info.libroomtab.8733d2e2c8bb", { minUser: String(r.minUser), maxUser: String(r.maxUser) }) : ""}
+                        </Text>
+                        {r.kindName.includes("暂未开放") ? <Tag tone="neutral">{i18n("pages.info.libroomtab.98c9b122a6cf")}</Tag> : null}
+                      </>
+                    }
+                    sub={`${r.openStart && r.openEnd
+                      ? i18n("pages.info.libroomtab.7f2e89deee04", { openStart: String(r.openStart), openEnd: String(r.openEnd), minMinute: String(r.minMinute), maxMinute: String(r.maxMinute) })
+                      : i18n("pages.info.libroomtab.447c95b50fda")}${r.usage.length > 0 ? i18n("pages.info.libroomtab.4c3802fbc5ba", { length: String(r.usage.length) }) : ""}`}
+                    trailing={
+                      <Btn
+                        variant="solid"
+                        tone="brand"
+                        disabled={r.kindName.includes("暂未开放") || r.openStart === null}
+                        onClick={() => pickRoom(r)}
+                      >{i18n("pages.info.libroomtab.352cdc807892")}</Btn>
+                    }
+                  >
+                    {/* 逐格三态：明确列出被占时段（红=已被占 / 绿=可约 / 灰=不可选）。
+                        绿格直接可点：点任何一段「可约」即以该格为开始时刻发起预约
+                        （用户点名「红色绿色的都不让我选择预约」——绿格原先整排只读）。 */}
+                    <SlotGrid
+                      slots={roomSlots(r, day.iso)}
+                      res={r}
+                      onPickFree={(sl) => pickRoom(r, sl.start, sl.end)}
+                    />
+                  </Row>
+                ))}
+              </List>
             </Card>
           ) : null}
         </>
@@ -832,169 +854,122 @@ export function LibRoomTab({
 
       {/* 选房后的预约面板 */}
       {target ? (
-        <Card style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 13, marginBottom: 8 }}>
-            预约 <b>{target.res.roomName}</b> · {target.day.iso}
-            {target.res.maxUser > 1 ? `（${target.res.minUser}~${target.res.maxUser} 人）` : ""}
-          </div>
-          {/* 三态时段格：点任一「可约」格即改选开始时刻（可反复改选），
-              改开始后结束时刻自动回落到该开始的首个合法值（lib 同语义） */}
-          <SlotGrid
-            slots={targetSlots}
-            res={target.res}
-            selectedBeg={beg}
-            onPickFree={(sl) => {
-              setBookError(null);
-              setNotice(null);
-              setBeg(sl.start);
-            }}
-          />
-          <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 6 }}>
-            点「可约」格改选开始时刻；结束时刻在下方下拉微调（须满足单次 {target.res.minMinute}~{target.res.maxMinute} 分钟）。
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end", marginTop: 8 }}>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-beg">开始</label>
-              <SearchSelect
-                value={beg}
-                onChange={(v) => setBeg(v)}
-                placeholder={begins.length === 0 ? "无可约时段" : "开始"}
-                disabled={begins.length === 0}
-                options={begins.map((b) => ({ value: b.start, label: b.start }))}
-              />
-            </div>
-            <div className="field" style={{ margin: 0 }}>
-              <label htmlFor="libroom-end">结束</label>
-              <SearchSelect
-                value={end}
-                onChange={(v) => setEnd(v)}
-                placeholder={ends.length === 0 ? "–" : "结束"}
-                disabled={ends.length === 0}
-                options={ends.map((p2) => ({ value: p2.start, label: p2.start }))}
-              />
-            </div>
-            <span style={{ flex: 1 }} />
-            <button
-              className="btn btn-primary"
-              style={{ height: 32 }}
-              disabled={!canSubmit}
-              onClick={() => {
-                if (target && beg && end) void doBook(target, beg, end);
-              }}
-            >
-              {busy ? "提交中…" : "提交预约"}
-            </button>
-            <button className="btn" style={{ height: 32 }} onClick={() => setTarget(null)}>
-              取消
-            </button>
-          </div>
-          <div style={{ fontSize: 12, color: "var(--text-3)", marginTop: 8 }}>
-            成员：本人（accNo {info.getLibRoomAccNo() ?? "–"}）。
-            {target.res.minUser > 1
-              ? ` 该房间需 ${target.res.minUser}~${target.res.maxUser} 人成组，本应用暂不支持添加成员，请到图书馆研讨间系统网页端预约。`
-              : ` 单次可约 ${target.res.minMinute}~${target.res.maxMinute} 分钟，5 分钟粒度。`}
-          </div>
-        </Card>
+        <Modal
+          open={target !== null}
+          onClose={() => { if (!busy) setTarget(null); }}
+          title={i18n("pages.info.libroomtab.d074b567fa9a", { roomName: String(target.res.roomName) })}
+          size="md"
+          maskClose={!busy}
+          closeButton={!busy}
+          foot={<>
+            <Btn variant="outline" disabled={busy} onClick={() => setTarget(null)}>{i18n("pages.info.libroomtab.2cd0f3be8738")}</Btn>
+            <Btn variant="solid" tone="brand" disabled={!canSubmit} onClick={() => {
+              if (target && beg && end) void doBook(target, beg, end);
+            }}>{busy ? i18n("pages.info.libroomtab.18931020ad52") : i18n("pages.info.libroomtab.598f9049c774")}</Btn>
+          </>}
+        >
+          <Stack gap={3}>
+            <Inline gap={2} vAlign="baseline" wrap>
+              <Text as="h3" slot="subtitle">
+                {target.day.iso}
+              </Text>
+              {target.res.maxUser > 1 ? (
+                <Tag tone="neutral">{i18nRich("pages.info.libroomtab.28b482943de6", { minUser: target.res.minUser, maxUser: target.res.maxUser })}</Tag>
+              ) : null}
+              <Tag tone="brand">{target.day.label}</Tag>
+            </Inline>
+            <Banner tone="info">{i18nRich("pages.info.libroomtab.30f8a1537ef9", { label: target.day.label, value: beg || "–", value2: end || "–" })}</Banner>
+            <Inline gap={2} wrap vAlign="end">
+              {/* 两个时段选择并排各占半行（Grow），不再各霸一行 */}
+              <Grow><Field label={i18n("pages.info.libroomtab.d2bb025a2e51")}>
+                <SearchSelect
+                  value={beg}
+                  onChange={chooseStart}
+                  placeholder={begins.length === 0 ? i18n("pages.info.libroomtab.c2de2822c57e") : i18n("pages.info.libroomtab.d2bb025a2e51")}
+                  disabled={begins.length === 0}
+                  options={begins.map((b) => ({ value: b.start, label: b.start }))}
+                />
+              </Field></Grow>
+              <Grow><Field label={i18n("pages.info.libroomtab.c7b24e7997e9")}>
+                <SearchSelect
+                  value={end}
+                  onChange={setEnd}
+                  placeholder={ends.length === 0 ? "–" : i18n("pages.info.libroomtab.c7b24e7997e9")}
+                  disabled={ends.length === 0}
+                  options={ends.map((p2) => ({ value: p2.start, label: p2.start }))}
+                />
+              </Field></Grow>
+            </Inline>
+            <Text slot="label" tone="quiet">{i18nRich("pages.info.libroomtab.b120e1334a3f", { value: target.res.minUser > 1
+                ? i18n("pages.info.libroomtab.9ea0b476aafe", { minUser: String(target.res.minUser), maxUser: String(target.res.maxUser) })
+                : i18n("pages.info.libroomtab.64d9036b1805", { minMinute: String(target.res.minMinute), maxMinute: String(target.res.maxMinute) }) })}</Text>
+            {bookError ? <Banner tone="error">{bookError}</Banner> : null}
+            {pendingEmail ? (
+              <Banner tone="warning" action={<Btn variant="solid" disabled={busy} onClick={() => void confirmEmailAndRetry()}>{i18n("pages.info.libroomtab.b3935f1363ac")}</Btn>}>{i18nRich("pages.info.libroomtab.70cb2ebbf5ed", { pendingEmail: pendingEmail })}</Banner>
+            ) : null}
+          </Stack>
+        </Modal>
       ) : null}
 
-      {pendingEmail ? (
-        <Card style={{ marginTop: 12, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-          <span style={{ fontSize: 13 }}>
-            绑定邮箱 <b>{pendingEmail}</b> 并重试预约？
-          </span>
-          <span style={{ flex: 1 }} />
-          <button
-            className="btn btn-primary"
-            style={{ height: 28 }}
-            disabled={busy}
-            onClick={() => void confirmEmailAndRetry()}
-          >
-            确认并重试
-          </button>
-          <button className="btn" style={{ height: 28 }} onClick={() => setPendingEmail(null)}>
-            取消
-          </button>
-        </Card>
-      ) : null}
+      {notice ? <Banner tone={notice.ok ? "success" : "error"}>{notice.text}</Banner> : null}
 
-      {bookError ? <ErrorNote text={bookError} /> : null}
-      {notice ? (
-        <Card style={{ marginTop: 12 }}>
-          <span className={notice.ok ? "" : "t-red"} style={{ fontSize: 13 }}>
-            {notice.text}
-          </span>
-        </Card>
-      ) : null}
-
-      <SectionHead title="我的预约" aside="研讨间预约记录（未来 6 天）" />
-      {recState === "loading" ? <SkeletonRows rows={2} /> : null}
+      <Section title={i18n("pages.info.libroomtab.1a558735ea57")} hint={i18n("pages.info.libroomtab.a88520a9ca6c")} />
+      {recState === "loading" ? <LoadingBlock rows={2} /> : null}
       {recState === "error" ? (
-        <ErrorNote
-          text={recError ?? ""}
-          onRetry={() => {
-            recRecover.current = 0;
-            void loadRecords();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                recRecover.current = 0;
+                void loadRecords();
+              }}
+            >{i18n("pages.info.libroomtab.b8784c8dd563")}</Btn>
+          }
+        >
+          {recError ?? ""}
+        </Banner>
       ) : null}
       {recState === "error" ? <EmailBindHint text={recError ?? ""} /> : null}
       {recState === "ready" && (records ?? []).length === 0 ? (
         <Card>
-          <Empty text="暂无研讨间预约记录。" />
+          <EmptyState title={i18n("pages.info.libroomtab.0eb7acb104e7")} />
         </Card>
       ) : null}
       {recState === "ready" && (records ?? []).length > 0 ? (
-        <Card className="list">
-          {(records ?? []).map((r) => (
-            <div className="row" key={r.uuid || r.rsvId}>
-              <div className="row-main">
-                <div className="row-title">
-                  {r.devName || "研讨间"}
-                  {r.kindName ? ` · ${r.kindName}` : ""}
-                </div>
-                <div className="row-sub">
-                  {r.date} {hhmmSafe(r.begin)}~{hhmmSafe(r.end)}
-                  {r.members.length > 0 ? ` · 成员 ${r.members.map((m) => m.name).join("、")}` : ""}
-                </div>
-              </div>
-              <div className="row-amount">
-                {r.uuid ? (
-                  pendingCancel === r.uuid ? (
-                    <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 12, color: "var(--text-2)" }}>确认取消？</span>
-                      <button
-                        className="btn btn-primary"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => void cancelRecord(r)}
-                      >
-                        {busyCancel !== null ? "取消中…" : "确认取消"}
-                      </button>
-                      <button
-                        className="btn"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => setPendingCancel(null)}
-                      >
-                        算了
-                      </button>
-                    </span>
-                  ) : (
-                    <button
-                      className="btn"
-                      style={{ height: 28 }}
-                      disabled={busyCancel !== null}
-                      onClick={() => setPendingCancel(r.uuid)}
-                    >
-                      取消预约
-                    </button>
-                  )
-                ) : null}
-              </div>
-            </div>
-          ))}
+        <Card flush>
+          <List divided>
+            {(records ?? []).map((r) => (
+              <Row
+                flush
+                key={r.uuid || r.rsvId}
+                title={`${r.devName || i18n("pages.info.libroomtab.e4d40b4d6759")}${r.kindName ? ` · ${r.kindName}` : ""}`}
+                sub={`${r.date} ${hhmmSafe(r.begin)}~${hhmmSafe(r.end)}${
+                  r.members.length > 0 ? i18n("pages.info.libroomtab.d90dc196c21b", { value: String(r.members.map((m) => m.name).join("、")) }) : ""
+                }`}
+                trailing={
+                  r.uuid ? (
+                    pendingCancel === r.uuid ? (
+                      <Inline gap={2} vAlign="center">
+                        <Text slot="label" tone="quiet">{i18n("pages.info.libroomtab.c73899395698")}</Text>
+                        <Btn variant="solid" tone="error" disabled={busyCancel !== null} onClick={() => void cancelRecord(r)}>
+                          {busyCancel !== null ? i18n("pages.info.libroomtab.0addd7784578") : i18n("pages.info.libroomtab.b741efb628be")}
+                        </Btn>
+                        <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>{i18n("pages.info.libroomtab.6b7589029582")}</Btn>
+                      </Inline>
+                    ) : (
+                      <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(r.uuid)}>{i18n("pages.info.libroomtab.0afc4fe3d305")}</Btn>
+                    )
+                  ) : null
+                }
+              />
+            ))}
+          </List>
         </Card>
       ) : null}
-    </>
+    </Stack>
   );
 }

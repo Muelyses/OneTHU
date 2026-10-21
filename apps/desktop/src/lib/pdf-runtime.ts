@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * pdf.js v6 的运行时依赖与垫片（R27 手机端 PDF 渲染失败修复）。
  *
@@ -96,7 +97,7 @@ export function ensurePdfRuntimeShims(): void {
     let sum = 0;
     let compensation = 0;
     for (const value of items) {
-      if (typeof value !== "number") throw new TypeError("Math.sumPrecise: 元素必须是 number");
+      if (typeof value !== "number") throw new TypeError(i18n("lib.pdf.runtime.0c6ad6379eeb"));
       const t = sum + value;
       compensation += Math.abs(sum) >= Math.abs(value) ? sum - t + value : value - t + sum;
       sum = t;

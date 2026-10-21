@@ -200,7 +200,6 @@
   }
 }
 
-
 /* 完成勾：描边"画"出来 */
 @keyframes m-check-draw {
   from {
@@ -440,7 +439,10 @@ select {
 /* 顶层页签切换：keyed 容器重新挂载 → 播放一次转场 */
 .page-anim {
   animation: m-page-in var(--dur-3) var(--ease-ios) backwards;
-  will-change: transform, opacity;
+  /* 刻意不写 will-change: transform —— 它会**常驻**为 fixed 后代建立包含块，
+     把页内浮钮（.board-fab-col / .free-fab-col 的 position: fixed）困在页面上，
+     于是浮钮随内容漂移（验证员实测浮钮 Δy≈296 与内容 Δ285 同步，而同屏真 fixed 的刷新钮不动）。
+     动画自身的 transform 已足够触发合成，且动画结束即失效，不会长期改变包含块。 */
 }
 .page-anim[data-dir="back"] {
   animation-name: m-page-in-back;
@@ -484,7 +486,7 @@ select {
 @media (hover: hover) and (pointer: fine) {
   .plg-form-overlay,
   .confirm-mask {
-    backdrop-filter: blur(2px);
+    backdrop-filter: var(--glass-scrim-blur);
   }
 }
 
@@ -610,26 +612,6 @@ select {
 
 /* ---------- 12. 工具类（组件里直接用） ---------- */
 
-.anim-rise {
-  animation: m-rise var(--dur-3) var(--ease-out) backwards;
-}
-.anim-fade {
-  animation: m-fade var(--dur-2) var(--ease-out) backwards;
-}
-.anim-pop {
-  animation: m-pop var(--dur-3) var(--ease-spring) backwards;
-}
-.anim-spring {
-  animation: m-spring-in var(--dur-3) var(--ease-out) backwards;
-}
-.anim-slide-right {
-  animation: m-slide-right var(--dur-3) var(--ease-ios) backwards;
-}
-.anim-delay-1 { animation-delay: 60ms; }
-.anim-delay-2 { animation-delay: 120ms; }
-.anim-delay-3 { animation-delay: 180ms; }
-.anim-delay-4 { animation-delay: 240ms; }
-
 /* ---------- 13. 主题切换：颜色平滑过渡（JS 短暂挂 .theme-anim） ---------- */
 
 html.theme-anim,
@@ -696,12 +678,7 @@ html.has-reveal :is(.row-click, .mail-row, .news-row, .setting-row, .cloud-row)[
 }
 
 /* 可展开菜单：展开时内容滑入（收起仍是即时——纯 CSS 无法延迟卸载） */
-.nav-folded-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  animation: m-expand-in var(--dur-3) var(--ease-out) backwards;
-}
+
 .collect-row {
   animation: m-expand-in var(--dur-2) var(--ease-out) backwards;
 }

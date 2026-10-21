@@ -13,7 +13,7 @@
  */
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { BP, platformOf } from "../apps/desktop/src/state/platform.ts";
+import { BP, platformOf, isPhoneViewport } from "../apps/desktop/src/state/platform.ts";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 
@@ -74,4 +74,26 @@ for (const [path, text] of files) {
 }
 assert.deepEqual(offenders, [], "组件自写宽度断点（应改用 usePlatformLayout）：" + offenders.join(", "));
 
-console.log("双端断点：单源 " + BP.medium + "/" + BP.expanded + "；旧断点 0 处；自写宽度 matchMedia 0 处；medium 档在册 ✓");
+/* [5] 手机形态判定：窄窗/横屏手机算手机；被压矮的桌面窗（1256×596）必须是桌面 */
+const cases = [
+  [1256, 596, false, "压矮的桌面窗（用户的 1256×596）：桌面形态"],
+  [1280, 520, false, "宽而矮的桌面窗：桌面形态"],
+  [1000, 560, false, "超过横屏手机宽度上限的矮窗：桌面形态"],
+  [1440, 900, false, "常规桌面窗：桌面形态"],
+  [744, 1133, false, "平板竖屏（宽高都不窄）：桌面形态"],
+  [390, 844, true, "竖屏手机：手机形态"],
+  [320, 568, true, "窄手机：手机形态"],
+  [844, 390, false, "横屏手机（iPhone 15）：直接桌面形态（2026-10-19 用户拍板）"],
+  [932, 430, false, "横屏手机（15 Pro Max）：桌面形态"],
+  [915, 412, false, "横屏手机（Pixel 8 Pro）：桌面形态"],
+  [900, 560, false, "宽窗压矮：桌面形态"],
+];
+const realWindow = globalThis.window;
+for (const [w, h, want, label] of cases) {
+  globalThis.window = { innerWidth: w, innerHeight: h };
+  assert.equal(isPhoneViewport(), want, `${label}（${w}×${h}）`);
+}
+globalThis.window = realWindow;
+assert.equal(isPhoneViewport(), false, "无 window 环境不崩");
+
+console.log("双端断点：单源 " + BP.medium + "/" + BP.expanded + "；旧断点 0 处；自写宽度 matchMedia 0 处；medium 档在册；手机形态 " + cases.length + " 例全对 ✓");

@@ -6,6 +6,7 @@
  * JS 的 + 从左往右算，第一个操作数是字符串时后面全程变字符串拼接，"" + 8 + 1 === "81"。
  * 所以这里既做**行为断言**（格式化函数本身对不对），也做**源码扫描**（别又有人在外面裸拼月份）。
  */
+import "./ts-resolve-register.mjs";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
@@ -59,9 +60,11 @@ for (const f of walk(SRC)) {
 }
 ok(naked.length === 0, "有 " + naked.length + " 处仍在裸拼月份（请用 lib/dateText.ts 的 fmtMonthDayWeek）：\n    " + naked.join("\n    "));
 
-/* 3 Today 页头必须走格式化函数（防止有人把 '' + getMonth() 那种写法改回去） */
-const today = readFileSync("apps/desktop/src/pages/Today.tsx", "utf8");
-ok(/fmtMonthDayWeek\(now\)/.test(today), "Today 页头 meta 应调用 fmtMonthDayWeek(now)");
+/* 3 首页时钟的日期必须走格式化函数（防裸拼月份改回来）。
+   2026-10-15：旧「今日页」删了，锚点改到新首页固定层的 ChromeClock —— 它此前正是在 JSX 里
+   手拼 `{getMonth()+1} 月 …`（分片拼接躲过了上面的扫描），已改为调用 fmtMonthDayWeek。 */
+const chrome = readFileSync("apps/desktop/src/components/explorer/HomeSpheres.tsx", "utf8");
+ok(/fmtMonthDayWeek\(now\)/.test(chrome), "首页时钟日期应调用 fmtMonthDayWeek(now)");
 
 console.log(
   fails.length

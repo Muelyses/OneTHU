@@ -1,0 +1,177 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 全局基座
+ *
+ * 只做三件事：复位（盒模型/字体/滚动条）、全局元素语言、通用工具类。
+ * 任何"某个页面特有的样式"都不许进这里 —— 那是组件的活。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* 滚动条槽常驻：切页时内容高度变化不再整页横移（PC 专属坑） */
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--og-font-ui);
+  font-size: var(--og-text-body);
+  line-height: var(--og-text-body-lh);
+  color: var(--og-content-1);
+  background: var(--og-surface-0);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── 滚动条：令牌化，跟随强调色；两端箭头去掉（平台默认风会立刻泄掉整体感） ── */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--og-accent) 22%, transparent);
+  border: 3px solid transparent;      /* 视觉 4px、命中区 10px */
+  background-clip: content-box;
+  border-radius: var(--og-radius-full);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--og-accent) 34%, transparent);
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:active {
+  background: color-mix(in srgb, var(--og-accent) 48%, transparent);
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* ── 键盘可达性：焦点环统一由管线给，谁都不许自己写 box-shadow 焦点 ── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--og-ring);
+}
+
+::selection {
+  background: var(--og-accent-soft);
+  color: var(--og-content-1);
+}
+
+/* ── 禁用态：只降内容不降结构 ── */
+[disabled],
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* ── 工具类：极少数、且都是"零自由度"的表达（不再新增） ── */
+.og-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.og-truncate {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.og-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── 动效：只动画 transform/opacity，时长走令牌，reduced 时自动归零 ── */
+@keyframes og-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes og-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes og-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes og-pop-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(6px) scale(0.99); }
+}
+
+@keyframes og-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes og-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ── 布局宽度辅助类（画廊/表单排版用；宽度是布局语义，不是外观） ── */
+.og-w-320 { width: min(var(--og-ctl-form-narrow), 100%); }
+.og-w-560 { width: min(var(--og-ctl-form-wide), 100%); }
+
+/* 手机壳预览：把宽度钉在 390（手机逻辑宽），模拟真机视口 */
+.og-preview-frame--phone {
+  display: flex;
+  justify-content: center;
+  background: var(--og-surface-2);
+}
+
+.og-phone-mock {
+  width: min(390px, 100%);
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--og-line-1);
+  border-radius: var(--og-radius-2xl);
+  background: var(--og-surface-0);
+}
+
+.og-preview-phone { display: flex; justify-content: center; }
+.og-preview-narrow { max-width: var(--og-space-9); }
+
+/* 画廊预览框：把整块壳/页面塞进固定高度里看（overflow 裁剪 + 圆角） */
+.og-preview-frame {
+  height: var(--og-ctl-preview-h);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--og-line-1);
+  border-radius: var(--og-radius-lg);
+  background: var(--og-surface-0);
+}

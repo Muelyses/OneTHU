@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
+import { i18nDictionaryGuard } from "../../tools/i18n/vite-guard.mjs";
 
 // 构建时注入版本号（设置页诊断卡显示，确认真机装的是哪个包）
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as { version: string };
@@ -31,7 +32,7 @@ export default defineConfig({
     __ONETHU_COMMIT__: JSON.stringify(gitCommit()),
     __ONETHU_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
-  plugins: [react()],
+  plugins: [i18nDictionaryGuard(), react()],
   optimizeDeps: {
     // @onethu/core 是 workspace 源码包（零运行时依赖）：预打包会被 .vite/deps
     // 钉死在旧快照——外置 exFAT 卷上 deps 再优化不触发（2026-09-14 实锤：
@@ -54,6 +55,12 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5180,
     strictPort: true,
+    headers: {
+      // dev 模式禁缓存：WKWebView 会把模块 HTTP 缓存到磁盘，app 重启后仍加载
+      // 旧 JS（2026-10-10 实录：移动弹窗新代码永远不生效，清 WebKit 缓存才好）。
+      // no-store 让每次启动/刷新都拿最新模块；dev 服务器无带宽顾虑。
+      "Cache-Control": "no-store",
+    },
     watch: {
       // exFAT 卷 inotify 不可靠：不开轮询则 HMR 不推送，窗口永远停在旧渲染
       usePolling: true,

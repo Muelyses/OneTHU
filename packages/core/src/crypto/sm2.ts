@@ -1,8 +1,52 @@
 /**
- * SM2 国密封装（选课系统 / CAS 登录密码加密）。
- * 密文格式：'04' + C1C3C2 hex，sm-crypto cipherMode=1 —— 与服务端验证一致。
+ * sm-crypto 是 CJS 老包，两种运行环境的模块形态互不相同，取值必须「链式探测」：
+ *  - Node22 ESM：无具名导出（cjs-module-lexer 解不出 module.exports 对象字面量），
+ *    命名空间 = { default: module.exports }；
+ *  - Vite 预打包：产物只有 `export default require_src()`，且 `import * as` 会被
+ *    interopNamespace 包成 `{ ...ns, default: ns }`（.default 指回命名空间自身）——
+ *    直接取 .default 或解构都拿不到 sm2。
+ * 2026-10-15 事故留档：曾把具名导入改成默认导入解构，Vite 侧拿到命名空间对象 →
+ * sm2 = undefined → encryptPassword 抛 TypeError，卡在登录 POST 之前（「登录失败」
+ * 表象），并连带打坏 CAS 登录链。故此处改为沿 .default 链逐层探测，直到找到
+ * 真正带 sm2.doEncrypt 的那一层。
  */
-import { sm2, sm3, sm4 } from "sm-crypto";
+import * as smCryptoNS from "sm-crypto";
+
+interface Sm2Like {
+  doEncrypt: (msg: string, key: string, cipherMode?: number) => string;
+  doDecrypt: (msg: string, key: string, cipherMode?: number) => string;
+  generateKeyPairHex: () => { publicKey: string; privateKey: string };
+  doSignature: (msg: string, privateKey: string, opts?: { hash?: boolean }) => string;
+  doVerifySignature: (msg: string, signHex: string, publicKey: string, opts?: { hash?: boolean }) => boolean;
+}
+interface SmCryptoShape {
+  sm2: Sm2Like;
+  sm3: unknown;
+  sm4: unknown;
+}
+
+/** 沿 .default 链探测真正的模块本体（Node ESM / Vite 各种互操作形态通吃）。
+ *  取「第一个持有 sm2 的层」；其中带 doEncrypt 的真实现优先，空壳（测试替身
+ *  `export const sm2 = {}`，见 tools/tuoj-cas-test.mjs 的内联桩）作为兜底——
+ *  会话流测试不该因为「国密实现没带进来」而加载失败。 */
+function pickSmCrypto(mod: unknown): SmCryptoShape {
+  let cur: unknown = mod;
+  let shell: SmCryptoShape | null = null;
+  for (let depth = 0; depth < 5 && cur; depth++) {
+    const cand = cur as { sm2?: unknown; default?: unknown };
+    const sm2 = cand.sm2;
+    if (sm2 && (typeof sm2 === "object" || typeof sm2 === "function")) {
+      const shape = cand as SmCryptoShape;
+      if (typeof (sm2 as Partial<Sm2Like>).doEncrypt === "function") return shape;
+      shell ??= shape;
+    }
+    cur = cand.default;
+  }
+  if (shell) return shell;
+  throw new Error("sm-crypto 互操作形态未识别（拿不到 sm2）");
+}
+
+const { sm2, sm3, sm4 } = pickSmCrypto(smCryptoNS);
 
 /** CAS / 教务登录口令加密：公钥来自登录页 #sm2publicKey */
 export function encryptPassword(password: string, publicKey: string): string {

@@ -1,13 +1,38 @@
+import { getLocale as getUiLocale } from "../../i18n/index.js";
+import { labelForId } from "../../i18n/staticLabels.js";
+import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../../i18n/index.js";
+import {
+  Btn,
+  Card as OGCard,
+  Chip,
+  Divider,
+  Field,
+  Grow,
+  IconBtn,
+  IconX,
+  Inline,
+  List,
+  Modal,
+  Progress,
+  Row,
+  Select,
+  Spacer,
+  Stack,
+  StatTile,
+  Surface,
+  Tag,
+  Text,
+  TextArea,
+  Input,
+  Banner,
+} from "@onethu/gui";
 /**
  * 选课工作台 —— nextthuxk v1.4.9 布局复刻（单屏两栏）：
  * 左栏 = 搜索/筛选chips/筛选selects/课程列表；右栏 = 学分统计·课表预览·暂存草稿·候补·AI。
- * UI 用 OneTHU 设计系统（Card/list/row/chip/btn/input）。
+ * UI 用 OneGUI（Btn/Input/Select/Card/Row/Chip/Tag/Banner/Modal/Text/Inline/Stack/Progress/StatTile）。
  */
-import { courseColor } from "../../lib/courseColor.js";
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from "react";
 import { PageAtomStar } from "../..//components/Collect.js";
-import { createPortal } from "react-dom";
-import { useExitPhase } from "../../lib/useExitPhase.js";
 import { Card, Empty, ErrorNote, PageHead, SegmentedOverflow, SkeletonRows } from "../../components/Layout.js";
 import { IconRefresh } from "../../components/Icons.js";
 import { nextVolCheckpoint, useXkWorkbench, type XkSearchMeta, type XkStageItem } from "../../state/data.js";
@@ -93,13 +118,15 @@ function clockRangesOf(note: string, time: string): ClockRange[] {
   return out;
 }
 
-/** 课块配色（无概率色时按课名稳定取色，同正式课表：lib/courseColor.ts） */
-const pvColorOf = (name: string): string => courseColor(name);
+/** 课块配色：课块不再按课名取色（旧 courseColor 调色板收编为 OG 语义令牌——
+ *  普通课块走 accent-soft 一族，候选/占用/概率走 warning/error/自定义线，见预览课块 render）。
+ *  正式课表页仍用 lib/courseColor 的共享口径，本页预览不再消费。 */
 
 /** 外校课程标注：课号前缀 PK=北大本科、GPK=北大研究生（2026 秋 38 门）、BW=北外（形如 BW3w0007） */
 type Origin = "北大" | "北大研" | "北外" | "";
 const originOf = (code: string): Origin => (code.startsWith("GPK") ? "北大研" : code.startsWith("PK") ? "北大" : code.startsWith("BW") ? "北外" : "");
-const ORIGIN_COLORS: Record<Origin, string> = { 北大: "#c0392b", 北大研: "#c0392b", 北外: "#1f4e79", "": "transparent" };
+/** 来源色 tone（旧暗红 → error 族；旧藏蓝 → info 族；无来源不渲染标签） */
+const ORIGIN_TONE: Record<Exclude<Origin, "">, "error" | "info"> = { 北大: "error", 北大研: "error", 北外: "info" };
 
 const fmtVol = (v: string): string => {
   // NextTHUxk 2.0 probability.js 逐字：全零且无优先 → 空（不上屏）；优先 (N) 前缀
@@ -110,10 +137,28 @@ const fmtVol = (v: string): string => {
   const parts = cleaned.split(",").map((n) => parseInt(n) || 0);
   if (parts.every((n) => n === 0) && !pri) return "";
   let out = parts.join("/");
-  if (pri) out = `优先${pri}/${out}`;
+  if (pri) out = i18n("pages.zhjwxk.courses.afb7bec1c0e2", { pri: String(pri), out: String(out) });
   return out;
 };
-const heat = (applied: number, cap: number): string => (!cap ? "inherit" : applied / cap <= 0.8 ? "var(--green)" : applied / cap <= 1.2 ? "var(--amber)" : "var(--red)");
+const heatTone = (applied: number, cap: number): "success" | "warning" | "error" | undefined =>
+  !cap ? undefined : applied / cap <= 0.8 ? "success" : applied / cap <= 1.2 ? "warning" : "error";
+/** 概率 tone：与 lib/xklogic.calcProb 的三色门槛一致（≥0.8 绿 / ≥0.5 黄 / 其余红；<0 无数据=弱灰） */
+const probTone = (prob: number): "success" | "warning" | "error" | "faint" =>
+  prob < 0 ? "faint" : prob >= 0.8 ? "success" : prob >= 0.5 ? "warning" : "error";
+/** 竞争色阶 tone：volColor 的 level 四档（easy 绿 / medium 黄 / hard 红 / unknown 弱灰） */
+const levelTone = (level: "easy" | "medium" | "hard" | "unknown"): "success" | "warning" | "error" | "faint" =>
+  level === "easy" ? "success" : level === "medium" ? "warning" : level === "hard" ? "error" : "faint";
+/** 概率 tone → 课块 tone（预览网格用） */
+const toBlockTone = (t: "success" | "warning" | "error" | "faint"): "good" | "warn" | "bad" | "off" =>
+  t === "success" ? "good" : t === "warning" ? "warn" : t === "error" ? "bad" : "off";
+/** 课块 tone → OG 语义令牌面/线（无独立"每课一色"档：候选=warning 族、概率分级=success/warning/error 族、
+ *  占用=accent 强线、普通课块=accent-soft/soft-line；demo of "课表格子的浅紫底 = --og-accent-soft"） */
+const BLOCK_LICENSE: Record<"normal" | "good" | "warn" | "bad", { fill: string; line: string }> = {
+  normal: { fill: "var(--og-accent-soft)", line: "var(--og-accent-soft-line)" },
+  good: { fill: "var(--og-success-soft)", line: "var(--og-success-line)" },
+  warn: { fill: "var(--og-warning-soft)", line: "var(--og-warning-line)" },
+  bad: { fill: "var(--og-error-soft)", line: "var(--og-error-line)" },
+};
 const tbBadge = (r: XkRow): string => {
   const e = tbMatch(r.name, r.teacher);
   return e && e.count > 0 ? `${tbStars(e.avg)} ${e.avg ? e.avg.toFixed(1) : ""}(${e.count})` : "";
@@ -134,12 +179,12 @@ const tbBadge = (r: XkRow): string => {
 //   const m = xkPick(ratings[r.c.code], r.teacher);
 //   return m && m.total > 0 ? `教评 ${m.average.toFixed(1)}(${m.total})` : "";
 // };
-const itemProb = (wb: ReturnType<typeof useXkWorkbench>, code: string, seq: string, flag: XkFlag, zy: number): { prob: string; color: string; bg: string } => {
+const itemProb = (wb: ReturnType<typeof useXkWorkbench>, code: string, seq: string, flag: XkFlag, zy: number): { prob: string; color: string; bg: string; probNum: number } => {
   const row = wb.courses.find((r) => r.c.code === code && r.c.seq === seq);
   const vol = row?.vol;
   const cap = vol ? vol.capacity : row?.c.capacity || 0; // 缺志愿行=无数据，不拿 kkxx 容量造 0/N 宽松（2.0 定稿）
   const p = calcProb(cap, vol, flag, zy);
-  return { prob: p.label === "无数据" ? "无数据" : `${p.percentLabel} · ${p.ratioLabel}`, color: p.color, bg: p.bg };
+  return { prob: p.prob < 0 ? i18n("pages.zhjwxk.courses.ab9ba6d10394") : `${p.percentLabel} · ${p.ratioLabel}`, color: p.color, bg: p.bg, probNum: p.prob };
 };
 /* 跳转/弹窗 opener（module-level 轻通道） */
 let _jump = "";
@@ -154,16 +199,11 @@ const jumpTo = (code: string, chip = "all", seq = ""): void => { _jump = code; _
 const openDetail = (code: string, teacherId: string): void => { _detailOpen?.(code, teacherId); };
 const openReviews = (v: { code: string; seq: string; name: string; teacher: string }): void => { _reviewOpen?.(v); };
 
-/* ══════════ 弹窗（自带表面色，不依赖 Card 上下文变量）══════════ */
-/** 退场：内联 animation 覆盖入场（本项目不给内联几何弹层写 CSS 规则） */
-const maskOut: React.CSSProperties = { animation: "m-fade-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
-const panelOut: React.CSSProperties = { animation: "m-pop-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
-const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 620, maxHeight: "78vh", display: "flex", flexDirection: "column", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" };
-const panelHead: React.CSSProperties = { display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: "1px solid var(--border, #eee)" };
-const panelBody: React.CSSProperties = { padding: "12px 16px", overflowY: "auto", fontSize: 13, lineHeight: 1.65 };
+/* ══════════ 弹窗（OneGUI Modal：遮罩/面板/退场/Esc/滚动锁全部由库承担） ══════════ */
 
 function DetailModal({ wb, code, tid, onClose }: { wb: ReturnType<typeof useXkWorkbench>; code: string | null; tid: string; onClose: () => void }) {
+  const uiLocale = useUiLocale();
+
   const [data, setData] = useState<XkCourseDetail | null>(null);
   const [loading, setLoading] = useState(false);
   // const [rrows, setRrows] = useState<XkRatingRow[] | null | undefined>(undefined);   // 【教评#31冻结】
@@ -178,7 +218,6 @@ function DetailModal({ wb, code, tid, onClose }: { wb: ReturnType<typeof useXkWo
     // void wb.getRatings(code).then((v) => { if (alive) setRrows(v); });
     // return () => { alive = false; };
   }, [code, tid]);
-  const [closing, requestClose] = useExitPhase(onClose);
   if (!code) return null;
   const order = ["课程编号", "课程名称", "总学时数", "总学分", "课程内容简介", "Course Description", "考核安排", "联系人", "教材及参考书", "上课教师", "选课指导语", "先修要求", "教师教学特色", "Office Hour", "成绩评定标准", "参考书"];
   const entries = data ? Object.entries(data.fields) : [];
@@ -186,54 +225,50 @@ function DetailModal({ wb, code, tid, onClose }: { wb: ReturnType<typeof useXkWo
     const ia = order.indexOf(a[0]), ib = order.indexOf(b[0]);
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
   });
-  return createPortal(
-    <div style={closing ? { ...maskStyle, ...maskOut } : maskStyle} className="xk-mask" onClick={requestClose}>
-      <div style={closing ? { ...panelStyle, ...panelOut } : panelStyle} className="xk-panel" onClick={(e) => e.stopPropagation()}>
-        <div style={panelHead}><b>课程简介</b><span style={{ flex: 1 }} /><button className="btn" onClick={requestClose}>✕</button></div>
-        <div style={panelBody}>
-          {/* 【教评#31冻结】教评三态块（整块注释保留，教务修好解开）
-           {rrows === undefined ? (
-             <div style={{ borderBottom: "1px solid var(--border, #f0f0f0)", padding: "6px 0 10px", fontSize: 12, color: "var(--text-3, #9aa1ac)" }}>正在获取官方教评…</div>
-           ) : rrows === null ? (
-             <div style={{ borderBottom: "1px solid var(--border, #f0f0f0)", padding: "6px 0 10px", fontSize: 12, color: "var(--red)" }}>官方教评获取未成功（教务登录或网络问题），请稍后重试</div>
-           ) : rrows.length > 0 ? (
-             <div style={{ borderBottom: "1px solid var(--border, #f0f0f0)", padding: "10px 0 14px" }}>
-               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>官方教评 · 选课学生推荐度（1-7 分）</div>
-               {rrows.map((row) => (
-                 <div key={row.teacher + row.total} style={{ marginBottom: 8 }}>
-                   <div style={{ display: "flex", alignItems: "baseline", gap: 8, fontSize: 12 }}>
-                     <span style={{ fontWeight: 600 }}>{row.teacher || "（未署名教师）"}</span>
-                     <span style={{ color: xkAvgColor(row.average), fontWeight: 700 }}>{row.average.toFixed(2)} / 7</span>
-                     <span style={{ color: "var(--text-3, #9aa1ac)" }}>{row.total} 人评分 · 高分率 {(row.highRatio * 100).toFixed(0)}%</span>
-                   </div>
-                   <div style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", marginTop: 4, background: "var(--border, #f0f0f0)" }}>
-                     {row.distribution.map((v, i) => v > 0 ? (
-                       <div key={i} title={`${i + 1} 分：${v} 人`} style={{ width: `${(v / Math.max(1, row.total)) * 100}%`, background: i >= 5 ? "var(--green)" : i >= 3 ? "var(--amber)" : "var(--red)", opacity: i >= 5 ? 0.85 : i >= 3 ? 0.75 : 0.65 }} />
-                     ) : null)}
-                   </div>
-                 </div>
-               ))}
-               <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", marginTop: 4 }}>数据来自教务 xgpg 学生评教；绿=6/7 分，黄=4/5 分，红=1-3 分</div>
-             </div>
-           ) : (
-             <div style={{ borderBottom: "1px solid var(--border, #f0f0f0)", padding: "6px 0 10px", fontSize: 12, color: "var(--text-3, #9aa1ac)" }}>该课暂无官方教评数据</div>
-           )}
+  return (
+    <Modal open onClose={onClose} title={i18n("pages.zhjwxk.courses.19368dbee54d")} size="lg" scope="zhjwxk.detail">
+      {/* 【教评#31冻结】教评三态块（整块注释保留，教务修好解开；内联外观已随 UI 收编改为 OG 件）
+       {rrows === undefined ? <Text slot="label" tone="faint">正在获取官方教评…</Text> : null}
+       {rrows === null ? <Text slot="label" tone="error">官方教评获取未成功（教务登录或网络问题），请稍后重试</Text> : null}
+       {rrows && rrows.length > 0 ? (
+         <Stack gap={2}>
+           <Text slot="label" weight="bold">官方教评 · 选课学生推荐度（1-7 分）</Text>
+           {rrows.map((row) => (
+             <Stack key={row.teacher + row.total} gap={1}>
+               <Inline gap={2} vAlign="baseline">
+                 <Text slot="label" weight="semibold">{row.teacher || "（未署名教师）"}</Text>
+                 <Text slot="label" tone={row.average >= 6 ? "success" : row.average >= 5 ? "warning" : "error"} weight="bold">{row.average.toFixed(2)} / 7</Text>
+                 <Text slot="label" tone="faint">{row.total} 人评分 · 高分率 {(row.highRatio * 100).toFixed(0)}%</Text>
+               </Inline>
+               <Progress value={row.average / 7} tone={row.average >= 6 ? "success" : row.average >= 5 ? "warning" : "error"} size="sm" />
+             </Stack>
+           ))}
+           <Text slot="micro" tone="faint">数据来自教务 xgpg 学生评教；绿=6/7 分，黄=4/5 分，红=1-3 分</Text>
+         </Stack>
+       ) : rrows ? <Text slot="label" tone="faint">该课暂无官方教评数据</Text> : null}
 
-          */}
-          {loading ? <Empty text="正在加载课程简介…" /> : !data ? <Empty text="暂无课程简介信息（该课缺教师号，无法拉取）" /> : entries.map(([k, v]) => (
-            <div key={k} style={{ display: "flex", gap: 10, padding: "6px 0", borderBottom: "1px solid var(--border, #f0f0f0)" }}>
-              <div style={{ width: 108, flexShrink: 0, color: "var(--text-3, #9aa1ac)", fontSize: 12 }}>{k}</div>
-              <div style={{ flex: 1, whiteSpace: "pre-wrap" }}>{v}</div>
-            </div>
+      */}
+      {loading ? <Empty text={i18n("pages.zhjwxk.courses.ebc1a817b794")} /> : !data ? <Empty text={i18n("pages.zhjwxk.courses.aa7f2e6b23d5")} /> : (
+        <Stack gap={1}>
+          {entries.map(([k, v]) => (
+            <Inline key={k} gap={3} vAlign="start">
+              <span style={{ width: 108, flexShrink: 0 }}>
+                <Text slot="label" tone="faint" nowrap>{k}</Text>
+              </span>
+              <span style={{ whiteSpace: "pre-wrap" }}>
+                <Text>{v}</Text>
+              </span>
+            </Inline>
           ))}
-        </div>
-      </div>
-    </div>,
-    document.body,
+        </Stack>
+      )}
+    </Modal>
   );
 }
 
 function ReviewsModal({ code, seq, name, teacher, onClose }: { code: string | null; seq: string; name: string; teacher: string; onClose: () => void }) {
+  const uiLocale = useUiLocale();
+
   const [phase, setPhase] = useState<"loading" | "ready" | "fail">("loading");
   const [entry, setEntry] = useState<TbEntry | null>(null);
   const [data, setData] = useState<TbReviews | null>(null);
@@ -260,89 +295,73 @@ function ReviewsModal({ code, seq, name, teacher, onClose }: { code: string | nu
     })();
     return () => { alive = false; };
   }, [code, nameKey, name, teacher]);
-  // Esc 关闭（插件 modal 同款：mask 点击/Esc 均可退出）
-  useEffect(() => {
-    if (!code) return;
-    const onKey = (ev: KeyboardEvent): void => { if (ev.key === "Escape") requestClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [code, onClose]);
   // 未打开时绝不渲染（重写时弄丢的守卫 —— 空态也渲染遮罩且永远关不掉，就是糊脸黑罩的根因）
-  const [closing, requestClose] = useExitPhase(onClose);
   if (!code) return null;
 
-  const headBits: React.ReactNode[] = [];
-  if (entry && entry.count) {
-    headBits.push(
-      <div key="h" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: "var(--amber, #ff9f1a)" }}>{Number(entry.avg).toFixed(1)}</span>
-        <span>
-          <span style={{ color: "var(--amber, #ff9f1a)", letterSpacing: 1 }}>{tbStars(entry.avg)}</span>
-          <span style={{ fontSize: 12, color: "var(--text-3, #9aa1ac)" }}> {entry.count} 条点评{entry.kkdw ? ` · ${entry.kkdw}` : ""}</span>
-        </span>
-      </div>,
-    );
-  } else {
-    headBits.push(<div key="h" style={{ fontSize: 13, color: "var(--text-3, #9aa1ac)" }}>这门课在 THU选课社区还没有点评</div>);
-  }
   const courseUrl = entry ? tbCourseUrl(entry) : tbCourseUrl(entry!);
-  headBits.push(
-    <div key="a" style={{ display: "flex", gap: 10, marginTop: 8 }}>
-      <a className="btn" href={courseUrl} onClick={(e) => { e.preventDefault(); void openExternal(courseUrl); }}>查看课程页 ↗</a>
-      <a className="btn" style={{ borderColor: "var(--accent)", color: "var(--accent)" }} href={tbWriteUrl(entry)} onClick={(e) => { e.preventDefault(); void openExternal(tbWriteUrl(entry)); }}>✎ 去写点评</a>
-    </div>,
-    <div key="l" style={{ marginTop: 8, fontSize: 11, color: "var(--text-3, #9aa1ac)" }}>
-      点评数据来自 <a href={courseUrl} onClick={(e) => { e.preventDefault(); void openExternal(courseUrl); }} style={{ color: "var(--accent)" }}>THU选课社区</a> 贡献者，以{" "}
-      <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" onClick={(e) => { e.preventDefault(); void openExternal("https://creativecommons.org/licenses/by-nc/4.0/deed.zh"); }} style={{ color: "var(--accent)" }}>CC BY-NC 4.0</a> 提供 · 仅限非商业用途
-    </div>,
-  );
-  return createPortal(
-    <div style={closing ? { ...maskStyle, ...maskOut } : maskStyle} className="xk-mask" onClick={requestClose}>
-      <div style={closing ? { ...panelStyle, ...panelOut } : panelStyle} className="xk-panel" onClick={(e) => e.stopPropagation()}>
-        <div style={panelHead}><b>{name} · 社区点评</b><span style={{ flex: 1 }} /><button className="btn" onClick={requestClose}>✕</button></div>
-        <div style={panelBody}>
-          {headBits}
-          {entry ? (
-            phase === "loading" ? <Empty text="拉取正文…" /> : phase === "fail" ? <Empty text="点评加载失败（网络原因），稍后重试" /> :
-            !data?.results.length ? <Empty text="暂无点评正文" /> : (
-              <div style={{ marginTop: 10 }}>
-                {data.results.map((r, i) => (
-                  <div key={i} style={{ borderTop: "1px solid var(--border, #f0f0f0)", padding: "8px 0" }}>
-                    <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                      <span style={{ color: "var(--amber, #ff9f1a)", letterSpacing: 1 }}>{tbStars(r.rating ?? 0)}</span>
-                      <span style={{ fontWeight: 700 }}>{Number(r.rating ?? 0)}</span>
-                      {r.score ? <span className="chip" style={{ fontSize: 10 }}>给分 {String(r.score).slice(0, 8)}</span> : null}
-                      <span style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", marginLeft: "auto" }}>{r.created_at ?? ""}</span>
-                    </div>
-                    <div style={{ marginTop: 4, whiteSpace: "pre-wrap", fontSize: 12.5 }}>{String(r.comment ?? "").trim()}</div>
-                  </div>
-                ))}
-              </div>
-            )
-          ) : null}
-        </div>
-      </div>
-    </div>,
-    document.body,
+  return (
+    <Modal open onClose={onClose} title={i18n("pages.zhjwxk.courses.d28b333318b4", { name: String(name) })} scope="zhjwxk.reviews">
+      {entry && entry.count ? (
+        <Inline gap={2} vAlign="baseline">
+          <Text slot="title" tone="warning" weight="bold">{Number(entry.avg).toFixed(1)}</Text>
+          <Text tone="warning">{tbStars(entry.avg)}</Text>
+          <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.ef8963e02e96", { count: entry.count, value: entry.kkdw ? ` · ${entry.kkdw}` : "" })}</Text>
+        </Inline>
+      ) : (
+        <Text tone="faint">{i18n("pages.zhjwxk.courses.5bbcf9e26267")}</Text>
+      )}
+      <Inline gap={2} wrap>
+        <Btn variant="outline" href={courseUrl} onClick={(e) => { e.preventDefault(); void openExternal(courseUrl); }}>{i18n("pages.zhjwxk.courses.ccd11f27c335")}</Btn>
+        <Btn variant="outline" tone="brand" href={tbWriteUrl(entry)} onClick={(e) => { e.preventDefault(); void openExternal(tbWriteUrl(entry)); }}>{i18n("pages.zhjwxk.courses.cc5250e00330")}</Btn>
+      </Inline>
+      <Text slot="micro" tone="faint">{i18n("pages.zhjwxk.courses.3a94b84beb0c")}<a className="og-text--t-brand" href={courseUrl} onClick={(e) => { e.preventDefault(); void openExternal(courseUrl); }}>{i18n("pages.zhjwxk.courses.ce1aa25eb717")}</a>{i18n("pages.zhjwxk.courses.99b048211611")}<a className="og-text--t-brand" href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" onClick={(e) => { e.preventDefault(); void openExternal("https://creativecommons.org/licenses/by-nc/4.0/deed.zh"); }}>CC BY-NC 4.0</a>{i18n("pages.zhjwxk.courses.31ba5905672b")}</Text>
+      {entry ? (
+        phase === "loading" ? <Empty text={i18n("pages.zhjwxk.courses.0fe3db929495")} /> : phase === "fail" ? <Empty text={i18n("pages.zhjwxk.courses.5739e3851d0e")} /> :
+        !data?.results.length ? <Empty text={i18n("pages.zhjwxk.courses.2071a95cf2d7")} /> : (
+          <List divided gap={2}>
+            {data.results.map((r, i) => (
+              <Row key={i} size="sm"
+                title={
+                  <Inline as="div" gap={2} vAlign="baseline" wrap>
+                    <Text tone="warning">{tbStars(r.rating ?? 0)}</Text>
+                    <Text weight="bold">{Number(r.rating ?? 0)}</Text>
+                    {r.score ? <Chip size="sm">{i18nRich("pages.zhjwxk.courses.55e82546e619", { value: String(r.score).slice(0, 8) })}</Chip> : null}
+                  </Inline>
+                }
+                trailing={<Text slot="micro" tone="faint">{r.created_at ?? ""}</Text>}
+              >
+                <span style={{ whiteSpace: "pre-wrap" }}>
+                  <Text>{String(r.comment ?? "").trim()}</Text>
+                </span>
+              </Row>
+            ))}
+          </List>
+        )
+      ) : null}
+    </Modal>
   );
 }
 
 /* ══════════ 右栏小节标题 ══════════ */
 function Sec({ title, extra, children }: { title: string; extra?: React.ReactNode; children: React.ReactNode }) {
+  const uiLocale = useUiLocale();
+
   return (
-    <Card style={{ padding: 12 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-        <b style={{ fontSize: 13 }}>{title}</b>
-        <span style={{ flex: 1 }} />
+    <OGCard pad="sm">
+      <Inline gap={2}>
+        <Text slot="label" weight="bold">{title}</Text>
+        <Spacer />
         {extra}
-      </div>
-      {children}
-    </Card>
+      </Inline>
+      <Stack gap={1}>{children}</Stack>
+    </OGCard>
   );
 }
 
 /* ══════════ 主页面：单屏两栏 ══════════ */
 export function ZhjwxkCoursesPage() {
+  const uiLocale = useUiLocale();
+
   const wb = useXkWorkbench();
   const [detailCode, setDetailCode] = useState<string | null>(null);
   const [detailTid, setDetailTid] = useState("");
@@ -412,35 +431,27 @@ export function ZhjwxkCoursesPage() {
   return (
     <>
       <PageHead
-        title="选课"
+        title={i18n("pages.zhjwxk.courses.fd17d86dd268")}
         meta={[
-          wb.semester ?? "选课系统",
-          wb.phase ? "课余量模式" : "预选模式",
-          `已选 ${wb.selected.length} 门 · ${selCredits} 学分`,
-          `已浏览 ${wb.searchRows.length} 门（实时）`,
+          wb.semester ?? i18n("pages.zhjwxk.courses.c6b20f53de3e"),
+          wb.phase ? i18n("pages.zhjwxk.courses.9a512330e94a") : i18n("pages.zhjwxk.courses.ba23721689b0"),
+          i18n("pages.zhjwxk.courses.960b5a9f210e", { length: String(wb.selected.length), selCredits: String(selCredits) }),
+          i18n("pages.zhjwxk.courses.cc4aef94b28b", { length: String(wb.searchRows.length) }),
         ].filter(Boolean).join(" · ")}
         actions={
           <>
-            <PageAtomStar atomKey="zhjwxk" title="选课" />
-            <select className="input" style={{ height: 28, fontSize: 12 }} value={wb.semester ?? ""} onChange={(e) => void wb.setSemesterOverride(e.target.value)}>
-              {(wb.semesterOptions ?? []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-            {wb.phase ? <button className="btn" onClick={() => void wb.refreshQueue()} disabled={wb.queueState === "loading"}>刷新队列</button> : null}
-            <button className="btn" onClick={() => void wb.refresh()} disabled={wb.coreState === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新数据
-            </button>
+            <PageAtomStar atomKey="zhjwxk" title={i18n("pages.zhjwxk.courses.fd17d86dd268")} />
+            <Select value={wb.semester ?? ""} onChange={(value) => void wb.setSemesterOverride(value)}>{(wb.semesterOptions ?? []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</Select>
+            {wb.phase ? <Btn variant="outline" onClick={() => void wb.refreshQueue()} disabled={wb.queueState === "loading"}>{i18n("pages.zhjwxk.courses.65fb020bd6ee")}</Btn> : null}
+            <Btn variant="outline" onClick={() => void wb.refresh()} disabled={wb.coreState === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.zhjwxk.courses.0468ee76ee3d")}</Btn>
           </>
         }
       />
       {wb.coreState === "error" ? <ErrorNote text={wb.error ?? ""} onRetry={() => void wb.refresh()} /> : null}
       {wb.toast ? (
-        <Card style={{ padding: "8px 14px", borderColor: "var(--accent)", marginBottom: 10 }}>
-          <span style={{ fontSize: "var(--text-sm)" }}>{wb.toast}</span>
-          <button className="btn" style={{ marginLeft: 10 }} onClick={() => wb.setToast(null)}>知道了</button>
-        </Card>
+        <Banner tone="info" action={<Btn variant="outline" size="sm" onClick={() => wb.setToast(null)}>{i18n("pages.zhjwxk.courses.de32e20193ad")}</Btn>}>{wb.toast}</Banner>
       ) : null}
-      {wb.progress ? <Card style={{ padding: "8px 14px", borderColor: "var(--amber)", marginBottom: 10 }}><span style={{ fontSize: "var(--text-sm)" }}>{wb.progress}</span></Card> : null}
+      {wb.progress ? <Banner tone="warning">{wb.progress}</Banner> : null}
 
       {/* ── 桌面：双栏（左查找 / 右管理+AI）── */}
       <div className="xk-two-col" ref={colRef} style={{ display: "flex", gap: 6, alignItems: "stretch", flexWrap: "nowrap", width: "100%", maxWidth: "100%", overflow: "hidden", userSelect: "none" }}>
@@ -461,24 +472,19 @@ export function ZhjwxkCoursesPage() {
           <div
             role="separator"
             aria-orientation="vertical"
-            title="拖动调整两栏宽度；拖到两端折叠为单栏"
+            title={i18n("pages.zhjwxk.courses.9aa48e0ea5e2")}
             onPointerDown={onSepDown}
             onPointerMove={onSepMove}
             onPointerUp={onSepUp}
             onPointerCancel={onSepUp}
-            style={{ flex: "0 0 6px", cursor: "col-resize", borderRadius: 3, background: "var(--border, #ececec)", position: "relative", touchAction: "none" }}
+            style={{ flex: "0 0 6px", cursor: "col-resize", position: "relative", touchAction: "none", display: "flex", justifyContent: "center" }}
           >
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 3, height: 40, borderRadius: 2, background: "var(--text-3, #b8b8b8)" }} />
+            {/* 竖分隔线：OG Divider（--og-line-1介质），横排居中是纯几何 */}
+            <Divider vertical />
           </div>
         ) : (
-          <button
-            className="btn"
-            title="恢复双栏"
-            onClick={() => setSplitP({ pct: 50, collapsed: "none" })}
-            style={{ flex: "0 0 22px", padding: "12px 1px", fontSize: 12, fontWeight: 700, lineHeight: 1, alignSelf: "center", borderRadius: 6, letterSpacing: -1, whiteSpace: "nowrap", overflow: "visible" }}
-          >
-            ‹›
-          </button>
+          <Btn variant="outline" titleAttr={i18n("pages.zhjwxk.courses.290d10efc55e")} onClick={() => setSplitP({ pct: 50, collapsed: "none" })}>‹›
+          </Btn>
         )}
         <div
           className="xk-right"
@@ -501,21 +507,21 @@ export function ZhjwxkCoursesPage() {
 
       {/* ── 竖屏：双页签（课程查找 / 选课管理），跳转关系由 jump 联动 ── */}
       <div className="xk-mobile-tabs">
-        <SegmentedOverflow ariaLabel="选课分栏">
-          {([["find", "课程查找"], ["manage", "选课管理"]] as const).map(([k, label]) => (
-            <button key={k} role="tab" aria-selected={mTab === k} className={mTab === k ? "is-active" : ""} onClick={() => setMTab(k)}>
+        <SegmentedOverflow ariaLabel={i18n("pages.zhjwxk.courses.7594fdb2ae0d")}>
+          {([["find", i18n("pages.zhjwxk.courses.c518420d2110")], ["manage", i18n("pages.zhjwxk.courses.7e37a0b0d351")]] as const).map(([k, label]) => (
+            <Btn key={k} size="sm" variant={mTab === k ? "tonal" : "ghost"} role="tab" aria-selected={mTab === k} onClick={() => setMTab(k)}>
               {label}
-            </button>
+            </Btn>
           ))}
         </SegmentedOverflow>
         {mTab === "find" ? <CourseListPanel wb={wb} jump={jump} jumpSeq={jumpSeq} /> : null}
         {mTab === "manage" ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <Stack gap={2}>
             <PlanSection wb={wb} />
             <PreviewSection wb={wb} />
             <StageSection wb={wb} />
             <QueueSection wb={wb} />
-          </div>
+          </Stack>
         ) : null}
       </div>
 
@@ -527,6 +533,8 @@ export function ZhjwxkCoursesPage() {
 
 /* ══════════ 左栏：搜索 + 筛选 + 列表 ══════════ */
 function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWorkbench>; jump: string; jumpSeq: string }) {
+  const uiLocale = useUiLocale();
+
   const [query, setQuery] = useState("");
   const [chip, setChip] = useState("all");
   const [credits, setCredits] = useState("");
@@ -550,7 +558,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
    * 其余（冲突/学分/评价/文字说明/chips）为本地叠加，作用于已取回的页。 */
   const serverKey = useMemo(() => JSON.stringify([
     query.trim(), tongshi, feature, grade, day, period, bksrem === "1", yjsrem === "1",
-  ]), [query, tongshi, feature, grade, day, period, bksrem, yjsrem]);
+  ]), [uiLocale, query, tongshi, feature, grade, day, period, bksrem, yjsrem]);
   const firstSearchRef = useRef(false);
   useEffect(() => {
     const kw = query.trim();
@@ -651,7 +659,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
 //     }
     else scored.sort((a, b) => ((a.e?.avg ?? 6) - (b.e?.avg ?? 6)) || ((b.e?.count ?? 0) - (a.e?.count ?? 0)));
     return scored.map((x) => x.r);
-  }, [wb.searchRows, wb.searchState, wb.courses, wb.previewIndex, query, chip, credits, day, period, conflictF, tongshi, feature, grade, bksrem, yjsrem, xknote, reviewsF, sortBy]);
+  }, [uiLocale, wb.searchRows, wb.searchState, wb.courses, wb.previewIndex, query, chip, credits, day, period, conflictF, tongshi, feature, grade, bksrem, yjsrem, xknote, reviewsF, sortBy]);
 
   // 志愿数据渲染行按需补拉（NextTHUxk 2.0 搜索行合并尾部同款触发点）：
   // 可见行到位/翻页/筛选 → 60ms 防抖 → 院系定向增量（只拉「正在看的行」
@@ -689,7 +697,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
     if (chip === "selected" || chip === "queue") return rows;
     const pk = new Set(wb.searchRaw.map((c) => `${c.code}_${c.seq || "0"}`));
     return rows.filter((r) => pk.has(r.key));
-  }, [rows, chip, wb.searchRaw]);
+  }, [uiLocale, rows, chip, wb.searchRaw]);
 //   // 官方教评按需拉（#31）：当前页可见行课号 → 500ms 间隔顺序抓（data 层节流），
 //   // 教评学期内不变 → localStorage 按学期缓存，越用越快
 //   useEffect(() => {
@@ -703,7 +711,7 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
   const curPage = searchMode ? Math.min(uiPage, totalPages) : wb.searchPage;
   const pagedRows = useMemo(
     () => (searchMode ? listRows.slice((curPage - 1) * 20, curPage * 20) : listRows),
-    [listRows, searchMode, curPage],
+    [uiLocale, listRows, searchMode, curPage],
   );
   // #23 收口：搜索落地后定位到具体课序行——翻到所在页 + 滚动到行；
   // 行不在已加载池且数据不完整 → 自动「加载全部」一轮（保险丝防循环），
@@ -741,117 +749,108 @@ function CourseListPanel({ wb, jump, jumpSeq }: { wb: ReturnType<typeof useXkWor
     setGoPage("");
   };
 
-  const selSel = "input";
-  const selStyle: React.CSSProperties = { height: 26, fontSize: 12, flex: 1, minWidth: 96 };
   return (
     <>
-      <Card style={{ padding: "8px 10px", marginBottom: 10, position: "sticky", top: 0, zIndex: 8, background: "var(--surface-2, #faf8f2)", borderColor: "var(--amber)" }}>
-        <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text-2)" }}>
-          📌 北大、北外课程时间为通知附件形式（含单双周），<b>无法在筛选栏按时间筛选</b>。开放选课通知：
-          <button className="btn" style={{ marginLeft: 6, padding: "1px 8px", fontSize: 11 }} onClick={() => navigate("info", { infoNewsQuery: "北京大学 北京外国语大学" })}>北大·北外本科</button>
-          <button className="btn" style={{ marginLeft: 6, padding: "1px 8px", fontSize: 11 }} onClick={() => navigate("info", { infoNewsQuery: "北京大学 研究生" })}>北大研究生</button>
-        </div>
-      </Card>
-      <Card style={{ padding: 10, marginBottom: 10 }}>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <input className="input" style={{ flex: 1 }} placeholder="搜索课程名称、教师、课程号…" value={query} onChange={(e) => setQuery(e.target.value)} />
-          {query ? <button className="btn" onClick={() => setQuery("")}>×</button> : null}
-        </div>
-        <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-          {([["all", "全部"], ["available", "可选"], ["selected", "已选"], ["required", "必修"], ["elective", "限选"], ["sports", "体育"], ["queue", "我的队列"], ["plan", "培养方案"]] as const).map(([k, label]) => (
-            <button key={k} className={"btn" + (chip === k ? " is-active" : "")} onClick={() => setChip(k)}>{label}</button>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-          <select className={selSel} style={selStyle} value={conflictF} onChange={(e) => setConflictF(e.target.value)}><option value="">不限制冲突</option><option value="noconflict">仅无冲突</option><option value="conflict">仅冲突</option></select>
-          <select className={selSel} style={selStyle} value={credits} onChange={(e) => setCredits(e.target.value)}><option value="">全部学分</option>{["1", "2", "3", "4", "5+"].map((v) => <option key={v} value={v}>{v === "5+" ? "5+学分" : `${v}学分`}</option>)}</select>
-          <select className={selSel} style={selStyle} value={day} onChange={(e) => setDay(e.target.value)}><option value="">不限周次</option>{[1, 2, 3, 4, 5, 6, 7].map((d) => <option key={d} value={d}>{dayName(d)}</option>)}</select>
-          <select className={selSel} style={selStyle} value={period} onChange={(e) => setPeriod(e.target.value)}><option value="">不限大节</option>{SLOT_NAMES.map((n, i) => <option key={i} value={i + 1}>第{i + 1}大节</option>)}</select>
-        </div>
-        <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-          <select className={selSel} style={selStyle} value={reviewsF} onChange={(e) => setReviewsF(e.target.value)}><option value="">社区评价: 不限</option><option value="has">有点评</option><option value="cnt5">点评≥5条</option><option value="r45">★≥4.5 好评</option><option value="r40">★≥4.0</option><option value="low">★≤3.0 避雷线</option></select>
-          <select className={selSel} style={selStyle} value={sortBy} onChange={(e) => setSortBy(e.target.value)}><option value="">排序: 默认目录序</option><option value="rate_desc">社区评分 高→低</option><option value="rate_asc">社区评分 低→高</option><option value="cnt_desc">点评数 多→少</option>{/* 【教评#31冻结】教评排序选项 <option value="xk_desc">官方教评 高→低</option><option value="xk_asc">官方教评 低→高</option> */}</select>
-        </div>
-        <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-          <select className={selSel} style={selStyle} value={tongshi} onChange={(e) => setTongshi(e.target.value)}><option value="">通识课组: 不限</option>{TS_GROUPS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
-          <select className={selSel} style={selStyle} value={feature} onChange={(e) => setFeature(e.target.value)}><option value="">课程特色: 不限</option>{FEATURES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
-          <select className={selSel} style={selStyle} value={grade} onChange={(e) => setGrade(e.target.value)}><option value="">年级: 不限</option>{["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019"].map((g) => <option key={g} value={g}>{g}级</option>)}</select>
-          <select className={selSel} style={selStyle} value={bksrem} onChange={(e) => setBksrem(e.target.value)}><option value="">本科余量: 不限</option><option value="1">本科余量&gt;0</option></select>
-          <select className={selSel} style={selStyle} value={yjsrem} onChange={(e) => setYjsrem(e.target.value)}><option value="">研院余量: 不限</option><option value="1">研院余量&gt;0</option></select>
-        </div>
-        <div style={{ marginTop: 6 }}>
-          <input className="input" style={{ width: "100%", height: 28, fontSize: 12 }} placeholder="选课文字说明搜索" value={xknote} onChange={(e) => setXknote(e.target.value)} />
-        </div>
-      </Card>
+      {/* 吸顶通告：geometry（sticky/top/z）走内联，材质走 OG Banner */}
+      <div style={{ position: "sticky", top: 0, zIndex: 8 }}>
+        <Banner tone="warning">{i18n("pages.zhjwxk.courses.930f9dfb61f1")}<b>{i18n("pages.zhjwxk.courses.02e289f65f4d")}</b>{i18n("pages.zhjwxk.courses.69a6f2c141f6")}<Inline gap={1} wrap>
+            <Btn variant="outline" size="sm" onClick={() => navigate("info", { infoNewsQuery: "北京大学 北京外国语大学" })}>{i18n("pages.zhjwxk.courses.2702f7fc3c8a")}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => navigate("info", { infoNewsQuery: "北京大学 研究生" })}>{i18n("pages.zhjwxk.courses.a7d043c48d9b")}</Btn>
+          </Inline>
+        </Banner>
+      </div>
+      <Stack gap={2}>
+        <OGCard pad="sm">
+          <Stack gap={2}>
+            <Inline gap={2}>
+              <Grow>{<Input placeholder={i18n("pages.zhjwxk.courses.2da0f8388f67")} value={query} onChange={(value) => setQuery(value)} />}</Grow>
+              {query ? <Btn variant="outline" onClick={() => setQuery("")}>×</Btn> : null}
+            </Inline>
+            <Inline gap={2} wrap>
+              {([["all", i18n("pages.zhjwxk.courses.5c55a67935af")], ["available", i18n("pages.zhjwxk.courses.537352400c49")], ["selected", i18n("pages.zhjwxk.courses.7ecf1cde6486")], ["required", i18n("pages.zhjwxk.courses.5def9905e85f")], ["elective", i18n("pages.zhjwxk.courses.4aa68593661e")], ["sports", i18n("pages.zhjwxk.courses.ef7be5be3c13")], ["queue", i18n("pages.zhjwxk.courses.b584dd846f9a")], ["plan", i18n("pages.zhjwxk.courses.59f317cfa0db")]] as const).map(([k, label]) => (
+                <Chip key={k} size="sm" selected={chip === k} onClick={() => setChip(k)}>{label}</Chip>
+              ))}
+            </Inline>
+            <Inline gap={2} wrap>
+              <Grow><Select size="sm" value={conflictF} onChange={setConflictF}><option value="">{i18n("pages.zhjwxk.courses.51da637dced9")}</option><option value="noconflict">{i18n("pages.zhjwxk.courses.5261eed6794b")}</option><option value="conflict">{i18n("pages.zhjwxk.courses.ea29940ac15a")}</option></Select></Grow>
+              <Grow><Select size="sm" value={credits} onChange={setCredits}><option value="">{i18n("pages.zhjwxk.courses.14a8f4b49e16")}</option>{["1", "2", "3", "4", "5+"].map((v) => <option key={v} value={v}>{v === "5+" ? i18n("pages.zhjwxk.courses.44843497379a") : i18n("pages.zhjwxk.courses.4380e27691cb", { v: String(v) })}</option>)}</Select></Grow>
+              <Grow><Select size="sm" value={day} onChange={setDay}><option value="">{i18n("pages.zhjwxk.courses.610b3a3bb0aa")}</option>{[1, 2, 3, 4, 5, 6, 7].map((d) => <option key={d} value={d}>{dayName(d)}</option>)}</Select></Grow>
+              <Grow><Select size="sm" value={period} onChange={setPeriod}><option value="">{i18n("pages.zhjwxk.courses.6d77fe629c45")}</option>{SLOT_NAMES.map((n, i) => <option key={i} value={i + 1}>{i18nRich("pages.zhjwxk.courses.873290bd40ad", { value: i + 1 })}</option>)}</Select></Grow>
+            </Inline>
+            <Inline gap={2} wrap>
+              <Grow><Select size="sm" value={reviewsF} onChange={setReviewsF}><option value="">{i18n("pages.zhjwxk.courses.3808d3b1f577")}</option><option value="has">{i18n("pages.zhjwxk.courses.9ab2a2d8455a")}</option><option value="cnt5">{i18n("pages.zhjwxk.courses.6adf7277bdd2")}</option><option value="r45">{i18n("pages.zhjwxk.courses.62fe195d6158")}</option><option value="r40">★≥4.0</option><option value="low">{i18n("pages.zhjwxk.courses.8a0c890e2957")}</option></Select></Grow>
+              <Grow><Select size="sm" value={sortBy} onChange={setSortBy}><option value="">{i18n("pages.zhjwxk.courses.71b1a0997a52")}</option><option value="rate_desc">{i18n("pages.zhjwxk.courses.3cf587997516")}</option><option value="rate_asc">{i18n("pages.zhjwxk.courses.9eefcbca074f")}</option><option value="cnt_desc">{i18n("pages.zhjwxk.courses.ba401db1483e")}</option>{/* 【教评#31冻结】教评排序选项 <option value="xk_desc">官方教评 高→低</option><option value="xk_asc">官方教评 低→高</option> */}</Select></Grow>
+            </Inline>
+            <Inline gap={2} wrap>
+              <Grow><Select size="sm" value={tongshi} onChange={setTongshi}><option value="">{i18n("pages.zhjwxk.courses.a0876e50b428")}</option>{TS_GROUPS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select></Grow>
+              <Grow><Select size="sm" value={feature} onChange={setFeature}><option value="">{i18n("pages.zhjwxk.courses.c799be2fc953")}</option>{FEATURES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select></Grow>
+              <Grow><Select size="sm" value={grade} onChange={setGrade}><option value="">{i18n("pages.zhjwxk.courses.d826fde21582")}</option>{["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019"].map((g) => <option key={g} value={g}>{i18nRich("pages.zhjwxk.courses.cf2dd5254476", { g: g })}</option>)}</Select></Grow>
+              <Grow><Select size="sm" value={bksrem} onChange={setBksrem}><option value="">{i18n("pages.zhjwxk.courses.ae4b6316156e")}</option><option value="1">{i18n("pages.zhjwxk.courses.07ee656ca409")}</option></Select></Grow>
+              <Grow><Select size="sm" value={yjsrem} onChange={setYjsrem}><option value="">{i18n("pages.zhjwxk.courses.312e77e57076")}</option><option value="1">{i18n("pages.zhjwxk.courses.e66200d4cbbd")}</option></Select></Grow>
+            </Inline>
+            <Input placeholder={i18n("pages.zhjwxk.courses.b17cb44f0c38")} value={xknote} onChange={(value) => setXknote(value)} />
+          </Stack>
+        </OGCard>
 
-      {chip === "plan" ? <PlanView wb={wb} query={query} onSearchCode={(code) => jumpTo(code, "all")} /> : wb.searchState === "idle" || wb.searchState === "loading" ? (
-        <Card><SkeletonRows rows={6} /><Empty text="正在实时查询教务系统（搜索/翻页各 1 个往返，即搜即得）…" /></Card>
-      ) : wb.searchState === "error" && rows.length === 0 ? (
-        <ErrorNote text={wb.searchError ?? ""} onRetry={() => void wb.retrySearch()} />
-      ) : rows.length === 0 ? (
-        <Card><Empty text={wb.searchError || "暂无匹配课程。"} /></Card>
-      ) : (
-        <>
-          {/* SWR 语义：刷新失败但旧结果在——保留列表只挂黄条（红条只在无结果时露脸） */}
-          {wb.searchState === "error" ? (
-            <div style={{ textAlign: "center", padding: "8px 0", fontSize: 12, color: "var(--amber)" }}>
-              刷新失败，展示上次搜索结果：{wb.searchError} · <a style={{ textDecoration: "underline", cursor: "pointer" }} onClick={() => void wb.retrySearch()}>重试</a>
-            </div>
-          ) : null}
-          {wb.searchIncomplete ? (
-            <div style={{ textAlign: "center", padding: "8px 0", fontSize: 12, color: "var(--amber)" }}>
-              数据不完整：已加载 {listRows.length} 门{wb.searchTotalPages > 0 ? `，教务共 ${wb.searchTotalPages} 页${wb.searchTotalRows > 0 ? `（共 ${wb.searchTotalRows} 门）` : ""}` : "，还有更多"}
-              <button className="btn" style={{ marginLeft: 8 }} disabled={busy} onClick={() => void wb.loadAllSearch()}>
-                {busy ? "加载中…" : "加载当前关键词全部"}
-              </button>
-            </div>
-          ) : null}
-          <Card className="list">
-            {pagedRows.map((r, i) => <PickCard key={r.key} wb={wb} r={r} i={i} picks={picks} setPicks={setPicks} highlight={r.c.code === highlight && (jumpSeq === "" || String(r.c.seq || "0") === String(jumpSeq || "0"))} />)}
-            {pagedRows.length === 0 && !pageLoaded ? (
-              <Empty text="此页未加载——点上方「加载全部」后可查看。" />
+        {chip === "plan" ? <PlanView wb={wb} query={query} onSearchCode={(code) => jumpTo(code, "all")} /> : wb.searchState === "idle" || wb.searchState === "loading" ? (
+          <Card><SkeletonRows rows={6} /><Empty text={i18n("pages.zhjwxk.courses.ac86b7d1284b")} /></Card>
+        ) : wb.searchState === "error" && rows.length === 0 ? (
+          <ErrorNote text={wb.searchError ?? ""} onRetry={() => void wb.retrySearch()} />
+        ) : rows.length === 0 ? (
+          <Card><Empty text={wb.searchError || i18n("pages.zhjwxk.courses.df8ffc573e08")} /></Card>
+        ) : (
+          <>
+            {/* SWR 语义：刷新失败但旧结果在——保留列表只挂黄条（红条只在无结果时露脸） */}
+            {wb.searchState === "error" ? (
+              <Banner tone="warning" action={<Btn variant="outline" size="sm" onClick={() => void wb.retrySearch()}>{i18n("pages.zhjwxk.courses.b8784c8dd563")}</Btn>}>{i18nRich("pages.zhjwxk.courses.878421afac2a", { searchError: wb.searchError })}</Banner>
             ) : null}
-          </Card>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", alignItems: "center", padding: "10px 0", flexWrap: "wrap" }}>
-            <button className="btn" disabled={busy || (searchMode ? curPage <= 1 : wb.searchPage <= 1)}
-              onClick={() => (searchMode ? setUiPage(curPage - 1) : void wb.gotoPage(wb.searchPage - 1))}>上一页</button>
-            <span style={{ fontSize: 12, color: "var(--text-3)" }}>
-              第 {curPage} 页 / 共 {totalPages} 页{searchMode && !wb.searchIncomplete ? `（${listRows.length} 门）` : ""}
-            </span>
-            <button className="btn" disabled={busy || (searchMode ? curPage >= totalPages : !wb.searchHasMore && !(wb.searchTotalPages > wb.searchPage))}
-              onClick={() => {
-                if (searchMode) setUiPage(curPage + 1);
-                else void wb.gotoPage(wb.searchPage + 1);
-              }}>下一页</button>
-            <span style={{ fontSize: 12, color: "var(--text-3)" }}>跳至</span>
-            <input className="input" style={{ width: 52, height: 24, fontSize: 12 }} value={goPage}
-              onChange={(e) => setGoPage(e.target.value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && goJump()} />
-            <button className="btn" disabled={busy || !goPage} onClick={goJump}>GO</button>
-          </div>
-        </>
-      )}
+            {wb.searchIncomplete ? (
+              <Banner tone="warning" action={<Btn variant="outline" size="sm" disabled={busy} onClick={() => void wb.loadAllSearch()}>{busy ? i18n("pages.zhjwxk.courses.4927a53bcc88") : i18n("pages.zhjwxk.courses.d56768244576")}</Btn>}>{i18nRich("pages.zhjwxk.courses.4ae716384a8e", { length: listRows.length, value: wb.searchTotalPages > 0 ? i18n("pages.zhjwxk.courses.56a7b5abaea4", { searchTotalPages: String(wb.searchTotalPages), value: String(wb.searchTotalRows > 0 ? i18n("pages.zhjwxk.courses.f723ce33054e", { searchTotalRows: String(wb.searchTotalRows) }) : "") }) : i18n("pages.zhjwxk.courses.9896d1a50a30") })}</Banner>
+            ) : null}
+            <Card className="list">
+              {pagedRows.map((r, i) => <PickCard key={r.key} wb={wb} r={r} i={i} picks={picks} setPicks={setPicks} highlight={r.c.code === highlight && (jumpSeq === "" || String(r.c.seq || "0") === String(jumpSeq || "0"))} />)}
+              {pagedRows.length === 0 && !pageLoaded ? (
+                <Empty text={i18n("pages.zhjwxk.courses.7bce208862bb")} />
+              ) : null}
+            </Card>
+            <Inline gap={3} justify="center" wrap>
+              <Btn variant="outline" size="sm" disabled={busy || (searchMode ? curPage <= 1 : wb.searchPage <= 1)} onClick={() => (searchMode ? setUiPage(curPage - 1) : void wb.gotoPage(wb.searchPage - 1))}>{i18n("pages.zhjwxk.courses.c9b9ae7a6144")}</Btn>
+              <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.096a7bc0a88d", { curPage: curPage, totalPages: totalPages, value: searchMode && !wb.searchIncomplete ? i18n("pages.zhjwxk.courses.1d58af91498f", { length: String(listRows.length) }) : "" })}</Text>
+              <Btn variant="outline" size="sm" disabled={busy || (searchMode ? curPage >= totalPages : !wb.searchHasMore && !(wb.searchTotalPages > wb.searchPage))} onClick={() => {
+                  if (searchMode) setUiPage(curPage + 1);
+                  else void wb.gotoPage(wb.searchPage + 1);
+                }}>{i18n("pages.zhjwxk.courses.8a8542f69648")}</Btn>
+              <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.83954f3e3c76")}</Text>
+              <Input size="sm" value={goPage} onChange={(value) => setGoPage(value.replace(/[^0-9]/g, ""))} onKeyDown={(e) => e.key === "Enter" && goJump()} />
+              <Btn variant="outline" size="sm" disabled={busy || !goPage} onClick={goJump}>GO</Btn>
+            </Inline>
+          </>
+        )}
+      </Stack>
     </>
   );
 }
 
 /* ══════════ 培养方案视图（render.js renderPlanView 逐行移植）══════════ */
 function PlanView({ wb, query, onSearchCode }: { wb: ReturnType<typeof useXkWorkbench>; query: string; onSearchCode: (code: string) => void }) {
+  const uiLocale = useUiLocale();
+
   const coverage = useMemo(() => checkPlanCoverage(wb.plan, wb.courses, wb.stageCart, wb.savedDrafts.map((d) => d.courses), (wb.semester ?? "").endsWith("2")),
-    [wb.plan, wb.courses, wb.stageCart, wb.savedDrafts, wb.semester]);
+    [uiLocale, wb.plan, wb.courses, wb.stageCart, wb.savedDrafts, wb.semester]);
   useEffect(() => {
     planGroupClick = () => { setPresetGroupChip?.("plan"); };
     return () => { planGroupClick = null; };
   }, []);
   if (wb.plan.length === 0 && wb.searchState !== "ready") {
-    return <Card><SkeletonRows rows={4} /><Empty text="培养方案加载中（实时模式：随核心数据一并秒取）…" /></Card>;
+    return <Card><SkeletonRows rows={4} /><Empty text={i18n("pages.zhjwxk.courses.49e9e6d0c944")} /></Card>;
   }
   if (!coverage.length) {
     return (
       <Card>
-        <Empty text="暂无培养方案数据（该学期可能未配置，或登录已过期）" />
-        <div style={{ textAlign: "center", paddingBottom: 10 }}>
-          <button className="btn" onClick={() => void wb.refresh()}>重试</button>
-        </div>
+        <Empty text={i18n("pages.zhjwxk.courses.8ade52e3ff55")} />
+        <Inline justify="center">
+          <Btn variant="outline" onClick={() => void wb.refresh()}>{i18n("pages.zhjwxk.courses.b8784c8dd563")}</Btn>
+        </Inline>
       </Card>
     );
   }
@@ -859,7 +858,7 @@ function PlanView({ wb, query, onSearchCode }: { wb: ReturnType<typeof useXkWork
   const filtered = q ? coverage.filter((p) => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q) || (p.attr || "").includes(q)) : coverage;
   const groups = new Map<string, PlanCoverageItem[]>();
   for (const p of filtered) {
-    const g = p.group || p.attr || "其他";
+    const g = p.group || p.attr || i18n("pages.zhjwxk.courses.d2909f1647e7");
     if (!groups.has(g)) groups.set(g, []);
     groups.get(g)!.push(p);
   }
@@ -868,38 +867,41 @@ function PlanView({ wb, query, onSearchCode }: { wb: ReturnType<typeof useXkWork
   const coveredN = coverage.filter((c) => c.covered).length;
   return (
     <>
-      <Card style={{ marginBottom: 12, padding: "12px 16px", fontSize: 13 }}>
-        <b>培养方案进度</b>: {coveredN}/{coverage.length}门 · {coveredCr}/{totalCr}学分
-        <div style={{ marginTop: 6, height: 6, background: "rgba(0,0,0,.06)", borderRadius: 3, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${totalCr ? Math.round((coveredCr / totalCr) * 100) : 0}%`, background: "var(--accent)", borderRadius: 3 }} />
-        </div>
-      </Card>
+      <OGCard pad="sm">
+        <Text slot="label" weight="bold">{i18nRich("pages.zhjwxk.courses.f391fe0280a5", { coveredN: coveredN, length: coverage.length, coveredCr: coveredCr, totalCr: totalCr })}</Text>
+        <Stack gap={1}>
+          <Progress value={totalCr ? coveredCr / totalCr : 0} size="sm" />
+        </Stack>
+      </OGCard>
       {[...groups.entries()].map(([g, courses]) => {
         const gTotal = courses.reduce((s, c) => s + c.credits, 0);
         const gCovered = courses.filter((c) => c.covered).reduce((s, c) => s + c.credits, 0);
         return (
-          <div key={g} style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6, padding: "5px 12px", background: "rgba(127,127,127,.06)", borderRadius: 8, display: "flex", justifyContent: "space-between" }}>
-              <span>{g}</span>
-              <span style={{ fontSize: 11, fontWeight: 400, color: gCovered >= gTotal ? "var(--green)" : "var(--text-3)" }}>{gCovered}/{gTotal}学分</span>
-            </div>
-            {courses.map((p) => {
-              const bg = p.covered ? "rgba(7,193,96,.06)" : "rgba(238,77,77,.04)";
-              return (
-                <div key={p.code} title={`点击搜索 ${p.code}`} onClick={() => onSearchCode(p.code)}
-                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 10px", borderRadius: 10, background: bg, marginBottom: 3, fontSize: 12, cursor: "pointer" }}>
-                  <span style={{ fontSize: 12 }}>{p.covered ? "✓" : "✗"}</span>
-                  <span style={{ flex: 1, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {p.name} <span style={{ color: "var(--text-3)", fontSize: 10 }}>{p.code}</span>
-                  </span>
-                  <span style={{ fontSize: 10, color: "var(--text-3)", whiteSpace: "nowrap" }}>{p.credits}学分</span>
-                  {p.covered
-                    ? <span style={{ color: "var(--green)", fontSize: 11, whiteSpace: "nowrap" }}>{p.coveredBy || "已满足"}</span>
-                    : <span style={{ color: "var(--red)", fontSize: 11 }}>未满足</span>}
-                </div>
-              );
-            })}
-          </div>
+          <Stack key={g} gap={1}>
+            {/* 组头：Surface sunken 承担旧「灰底圆角条」的材质（--og-surface-3） */}
+            <Surface sunken radius="sm">
+              <Inline gap={2} pad={1}>
+                <Text slot="label" weight="bold">{g}</Text>
+                <Spacer />
+                <Text slot="label" tone={gCovered >= gTotal ? "success" : "faint"}>{i18nRich("pages.zhjwxk.courses.03132616defc", { gCovered: gCovered, gTotal: gTotal })}</Text>
+              </Inline>
+            </Surface>
+            {courses.map((p) => (
+              <Row key={p.code} size="sm" titleAttr={i18n("pages.zhjwxk.courses.4e2b44f1e949", { code: String(p.code) })} onClick={() => onSearchCode(p.code)}
+                leading={<Text slot="label" tone={p.covered ? "success" : "error"}>{p.covered ? "✓" : "✗"}</Text>}
+                title={p.name}
+                meta={<Text slot="micro" tone="faint">{p.code}</Text>}
+                trailing={
+                  <Inline gap={2}>
+                    <Text slot="label" tone="faint" nowrap>{i18nRich("pages.zhjwxk.courses.93fbcc41041a", { credits: p.credits })}</Text>
+                    {p.covered
+                      ? <Text slot="label" tone="success" nowrap>{p.coveredBy || i18n("pages.zhjwxk.courses.a42029434c65")}</Text>
+                      : <Text slot="label" tone="error">{i18n("pages.zhjwxk.courses.ec9205286c3d")}</Text>}
+                  </Inline>
+                }
+              />
+            ))}
+          </Stack>
         );
       })}
     </>
@@ -914,6 +916,8 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
   setPicks: (f: (m: Record<string, { flag: XkFlag; zy: number }>) => Record<string, { flag: XkFlag; zy: number }>) => void;
   highlight: boolean;
 }) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const key = r.key;
   const inStage = wb.stageCart.some((s) => s.code === r.c.code && String(s.seq || "0") === String(r.c.seq || "0"));
@@ -932,236 +936,232 @@ function PickCard({ wb, r, i, picks, setPicks, highlight }: {
   return (
     <div className="row" data-xk-row={r.key} style={{ animationDelay: `${Math.min(i, 20) * 20}ms`, ...(highlight ? { outline: "2px solid var(--accent)" } : {}) }}>
       <div className="row-when">
-        <b style={{ color: wb.phase && q ? (q.qRemaining > 0 ? "var(--green)" : q.qQueue > 0 ? "var(--amber)" : "var(--red)") : heat(applied, cap) }}>
+        <Text as="b" weight="bold" tone={wb.phase && q ? (q.qRemaining > 0 ? "success" : q.qQueue > 0 ? "warning" : "error") : heatTone(applied, cap)}>
           {wb.phase ? (q?.qRemaining ?? r.c.remaining) : r.c.remaining}
-        </b>
-        <span>{wb.phase ? "余量" : "余量"}</span>
+        </Text>
+        <span>{wb.phase ? i18n("pages.zhjwxk.courses.628a729f6d7c") : i18n("pages.zhjwxk.courses.628a729f6d7c")}</span>
       </div>
       <div className="row-main">
-        <div className="row-title" style={{ whiteSpace: "normal" }}>
-          {(() => { const o = originOf(r.c.code); return o
-            ? <span style={{ fontSize: 10, padding: "1px 5px", marginRight: 6, borderRadius: 4, color: "#fff", background: ORIGIN_COLORS[o], verticalAlign: "1px", whiteSpace: "nowrap" }}>{o}</span>
-            : null; })()}
-          {r.name}
+        <Stack gap={1}>
+          <div className="row-title" style={{ whiteSpace: "normal" }}>
+            {(() => { const o = originOf(r.c.code); return o
+              ? <Tag tone={ORIGIN_TONE[o]}>{labelForId(o)}</Tag>
+              : null; })()}
+            {r.name}
 
-          {r.teacherId ? <button className="btn" style={{ padding: "0 6px", marginLeft: 6, fontSize: 11 }} onClick={() => openDetail(r.c.code, r.teacherId)}>简介</button> : null}
-          {tbBadge(r) ? (
-            <button className="btn" style={{ padding: "0 6px", marginLeft: 6, fontSize: 11, color: "var(--amber)" }} onClick={() => openReviews({ code: r.c.code, seq: r.c.seq, name: r.name, teacher: r.teacher })}>{tbBadge(r)}</button>
-          ) : null}
-          {/* 【教评#31冻结】行内教评徽章（整块注释保留，教务修好解开）
-           {(() => {
-             const m = xkPick(wb.ratings[r.c.code], r.teacher);
-             if (!m || m.total <= 0) return null;
-             const dist = m.distribution.map((v, i) => `${i + 1}分:${v}`).join(" ");
-             return (
-               <span
-                 style={{ marginLeft: 6, fontSize: 11, fontWeight: 600, color: xkAvgColor(m.average), cursor: "default", whiteSpace: "nowrap" }}
-                 title={`官方教评 · ${m.teacher}：均分 ${m.average.toFixed(2)} / 7 · ${m.total} 人评分 · 高分率 ${(m.highRatio * 100).toFixed(0)}%\n${dist}\n（选课学生推荐度，教务 xgpg 数据）`}
-               >教评 {m.average.toFixed(1)}({m.total})</span>
-             );
-           })()}
-
-          */}
-        </div>
-        {/* 元数据分属性表述（用户实锤「一堆灰字挤在一起看不清」）：课号班次=等宽
-            底色 chip；教师=加粗主色正文；时间=accent chip；学分=中性小字；院系=弱化尾注 */}
-        <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", whiteSpace: "normal" }}>
-          <span style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(127,127,127,.12)", color: "var(--text-2)" }}>{r.c.code}{r.c.seq && r.c.seq !== "0" ? `·${r.c.seq}班` : ""}</span>
-          {/* 纯数字教师=教务多教师格解析未明（取证中，见 xkParseDebug）——隐藏不误导 */}
-          {r.teacher && !/^\d{1,3}$/.test(r.teacher) ? <b style={{ fontSize: 13, color: "var(--text-1)" }}>{r.teacher}</b> : null}
-          {r.time ? <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, color: "var(--accent)", background: "rgba(59,130,246,.08)", whiteSpace: "nowrap" }}>{r.time}</span> : null}
-          {r.credits ? <span style={{ fontSize: 11, color: "var(--text-2)" }}>{r.credits} 学分</span> : null}
-          {r.c.department ? <span style={{ fontSize: 11, color: "var(--text-3)" }}>{r.c.department}</span> : null}
-        </div>
-        {/* 课程特色标签行（NextTHUxk nx-tag 同款）：独立成行、一段一标签、
-            flexWrap 换行——挂标题行内会被 nowrap+overflow 裁出 CSS 省略号
-            （用户实锤：复制是全文、看到的是「文化素质…」） */}
-        {(() => {
-          // 源数据服务端截断（"新生研讨…"）：剥省略点 → 筛选器规范全值表前缀补全
-          const canon = (seg: string): string => {{
-            if (seg.length < 3) return seg;
-            const hit = FEATURES.map(([v]) => v).filter((v) => v.startsWith(seg) && v !== seg).sort((a, b) => a.length - b.length)[0];
-            return hit ?? seg;
-          }};
-          const segs = (r.c.feature || "")
-            .split(/[;；,，]/)
-            .map((t) => t.replace(/[\s.。…·—-]/g, "").trim())
-            .filter(Boolean)
-            .map(canon);
-          return segs.length ? (
-            <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 4 }}>
-              {segs.map((t) => (
-                <span key={t} style={{ fontSize: 10, padding: "1px 6px", borderRadius: 4, color: "#7c5cff", background: "rgba(124,92,255,.1)", border: "1px solid rgba(124,92,255,.25)", whiteSpace: "nowrap" }}>{t}</span>
-              ))}
-            </div>
-          ) : null;
-        })()}
-        {r.c.note ? (
-          <div style={{ marginTop: 4, padding: "5px 8px", borderRadius: 6, border: "1px solid var(--border)", background: "rgba(124,92,255,.05)", fontSize: 12, lineHeight: 1.6, color: "var(--text-1)", whiteSpace: "normal" }}>
-            <b style={{ color: "var(--accent)" }}>课程说明</b>　{r.c.note}
-          </div>
-        ) : null}
-        {wb.phase ? (
-          r.cand ? <div className="row-sub" style={{ whiteSpace: "normal" }}>{r.cand.myPos ? `我的排队 第${r.cand.myPos}名 / 共${r.cand.queueTotal}人` : "候选中（队列未出位次）"}</div> : null
-        ) : r.vol ? (
-          <div className="row-sub" style={{ whiteSpace: "normal" }}>
-            {(() => {
-              // 志愿统计行（NextTHUxk 2.0 render.js 同款）：体/必/限/任 前缀，
-              // '0,0,0' 全零段滤除（fmtVol 全零也返回空，双保险）
-              const parts: string[] = [];
-              if (isSportsCourse(r) && r.vol.volSports && r.vol.volSports !== "0,0,0") {
-                const v = fmtVol(r.vol.volSports);
-                if (v) parts.push(`体 ${v}`);
-              } else {
-                if (r.vol.volRequired && r.vol.volRequired !== "0,0,0") { const v = fmtVol(r.vol.volRequired); if (v) parts.push(`必 ${v}`); }
-                if (r.vol.volElective && r.vol.volElective !== "0,0,0") { const v = fmtVol(r.vol.volElective); if (v) parts.push(`限 ${v}`); }
-                if (r.vol.volOptional && r.vol.volOptional !== "0,0,0") { const v = fmtVol(r.vol.volOptional); if (v) parts.push(`任 ${v}`); }
-              }
-              return parts.join("　");
-            })()}
-            {showInlineProb ? <span style={{ marginLeft: 8, color: prob.color }}>{prob.prob}</span> : null}
-          </div>
-        ) : (r.c.capacity || r.c.remaining) ? (
-          // 队列阶段未开放/志愿接口被拦（xkqkSearch 弹「功能未开放」→ volMap 恒空）
-          // 时用目录行自带容量/余量兜底——插件 probInline 同源（kkxxSearch td6/td7）。
-          // 不兜底则所有卡片的容量行整体消失（2026-09-03 实录）
-          <div className="row-sub" style={{ whiteSpace: "normal" }}>
-            {[r.c.capacity ? `容量 ${r.c.capacity}` : "", typeof r.c.remaining === "number" ? `余量 ${r.c.remaining}` : ""].filter(Boolean).join(" · ")}
-            {showInlineProb ? <span style={{ marginLeft: 8, color: prob.color }}>{prob.prob}</span> : null}
-          </div>
-        ) : null}
-        {/* 竞争条（NextTHUxk 2.0 compHtml 回移）：占用对按阶段取数（occupancyOf），
-            已满(余0)绝不显示 0/N 宽松假象；比例 ≤0.8 绿 / ≤1.2 黄 / 其余红。
-            仅预选模式——队列阶段概率走排队/余量模型（插件同款阶段门控），
-            志愿竞争条混在课余量模式是「志愿数据怪象」的残余（2026-09-14 实锤） */}
-        {(() => {
-          if (wb.phase) {
-            // 队列阶段：余量/排队进度条（用户实锤要求醒目化）：余>0 绿、有排队
-            // 黄、满且无队 红；条长=满员度，右侧粗体 余X/帽Y·排队N人
-            if (!q || !q.qCapacity) return null;
-            const used = Math.max(0, q.qCapacity - q.qRemaining);
-            const pct = Math.min(100, Math.round((used / q.qCapacity) * 100));
-            const color = q.qRemaining > 0 ? "var(--green)" : q.qQueue > 0 ? "var(--amber)" : "var(--red)";
-            return (
-              <div style={{ marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ flex: 1, height: 5, borderRadius: 3, background: "var(--border)", overflow: "hidden" }}>
-                  <div style={{ width: `${pct}%`, height: "100%", background: color }} />
-                </div>
-                <span style={{ fontSize: 11, fontWeight: 700, color, whiteSpace: "nowrap" }}>
-                  余{q.qRemaining}/{q.qCapacity}{q.qQueue > 0 ? ` · 排队${q.qQueue}人` : ""}
-                </span>
-              </div>
-            );
-          }
-          const occ = occupancyOf({ capacity: r.c.capacity, remaining: r.c.remaining, vol: r.vol }, wb.phase);
-          if (!occ.cap) return null;
-          const vc = volColor(occ.applied, occ.cap);
-          const label = vc.level === "easy" ? "竞争宽松" : vc.level === "medium" ? "竞争适中" : vc.level === "hard" ? "竞争激烈" : "";
-          return (
-            <div style={{ marginTop: 3, display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ flex: 1, height: 4, borderRadius: 2, background: "var(--border)", overflow: "hidden" }}>
-                <div style={{ width: `${vc.pct}%`, height: "100%", background: vc.color }} />
-              </div>
-              <span style={{ fontSize: 10, color: vc.color, whiteSpace: "nowrap" }}>{occ.applied}/{occ.cap}{label ? ` · ${label}` : ""}</span>
-            </div>
-          );
-        })()}
-        {/* 三行概率网格（NextTHUxk 2.0 fullProbGrid 回移）：必修/限选/任选 ×
-            1/2/3 志愿全显，无数据格灰显——显示侧全开（用户十六报拍板）。
-            仅预选模式（队列阶段志愿数据无意义——排队模型阶段门控） */}
-        {!wb.phase ? <div style={{ marginTop: 3, lineHeight: 1.4, fontSize: 9 }}>
-          {fullProbGrid(cap, r.vol, isSportsCourse(r)).map((row) => (
-            <div key={row.flag}>
-              <span style={{ color: "var(--text-3)" }}>{FLAG_LABELS[row.flag]}</span>{" "}
-              {row.cells.map((p, zi) => (
-                <span key={zi} style={{ color: p.prob >= 0 ? p.color : "var(--text-3)", fontWeight: p.prob >= 0 ? 600 : 400, marginRight: 8 }}>
-                  {zi + 1}志愿:{p.label}{p.prob >= 0 && p.ratioLabel ? ` · ${p.ratioLabel}` : ""}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div> : null}
-        {(() => { const o = originOf(r.c.code); if (!o) return null;
-          if (clockRangesOf(r.c.note, r.time).length > 0) return null; // 时间已解析上时间轴，不废话
-          return (
-          <div className="row-sub" style={{ color: "var(--amber)", whiteSpace: "normal", display: "flex", gap: 6, alignItems: "flex-start" }}>
-            <span style={{ flex: 1 }}>{o}课程时间无法自动获取</span>
-            <button className="btn" style={{ flexShrink: 0, height: "auto", padding: "2px 8px", fontSize: 11 }}
-              onClick={() => navigate("info", { infoNewsQuery: o === "北大研" ? "北京大学 研究生" : "北京大学 北京外国语大学" })}>
-              点击查看{o === "北大研" ? "北京大学面向我校研究生开放课程" : "北大、北外课程"}的选课通知
-            </button>
-          </div>
-          ); })()}
-        {confs.length ? <div className="row-sub" style={{ color: "var(--red)", whiteSpace: "normal" }}>冲突: {confs.slice(0, 3).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.b}`).join(" · ")}</div> : null}
-        {state === "selected" ? (
-          <div className="row-sub" style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4, flexWrap: "wrap" }}>
-            {r.zy ? <span style={{ fontSize: 12, color: "var(--text-3)" }}>{FLAG_LABELS[r.flag]} · 第{r.zy}志愿</span> : null}
-            <button className="btn" disabled={!(r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1)) || wb.busy !== null} title={r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy - 1)}>▲</button>
-            <button className="btn" disabled={!(r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1)) || wb.busy !== null} title={r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1) ? "" : "该志愿名额已满"} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy + 1)}>▼</button>
-            <button className="btn" disabled={inStage} onClick={() => wb.addToStage(r, r.flag, r.zy || 3)}>{inStage ? "已暂存" : "暂存"}</button>
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void (async () => { if (await confirmDanger(`「${r.name}」（${r.c.code}_${r.c.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, DROP_CONFIRM)) await wb.drop(r.c.code, r.c.seq, false); })()}>退选</button>
-          </div>
-        ) : state === "candidate" ? (
-          <div className="row-sub" style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
-            <span style={{ color: "var(--amber)", fontSize: 12 }}>{r.cand ? (r.cand.myPos ? `排队第${r.cand.myPos}名 / 共${r.cand.queueTotal}人` : "候选中") : "候选中"}</span>
-            {r.teacherId ? <button className="btn" style={{ padding: "0 6px", fontSize: 11 }} onClick={() => openDetail(r.c.code, r.teacherId)}>简介</button> : null}
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void wb.drop(r.c.code, r.c.seq, true)}>删除</button>
-          </div>
-        ) : (
-          <div className="row-sub" style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 4, flexWrap: "wrap" }}>
-            {state === "full" ? <span style={{ color: "var(--red)", fontSize: 12 }}>已满</span> : null}
-            <select className="input" style={{ height: 26, fontSize: 12, maxWidth: 76 }} value={pick.flag} disabled={wb.busy !== null} onChange={(e) => setPicks((m) => ({ ...m, [key]: { ...pick, flag: e.target.value as XkFlag } }))}>
-              {allowedFlags(pick.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}
-            </select>
-            {!wb.phase ? <select className="input" style={{ height: 26, fontSize: 12, maxWidth: 76 }} value={String(pick.zy)} disabled={wb.busy !== null} onChange={(e) => setPicks((m) => ({ ...m, [key]: { ...pick, zy: Number(e.target.value) } }))}>
-              {[3, 2, 1].map((z) => <option key={z} value={z}>{z}志愿</option>)}
-            </select> : null}
-            {!wb.phase ? (
-              <span style={{ fontSize: 12, color: prob.color, minWidth: 96 }}>{prob.prob}</span>
+            {r.teacherId ? <Btn variant="outline" size="sm" onClick={() => openDetail(r.c.code, r.teacherId)}>{i18n("pages.zhjwxk.courses.8131eafd0239")}</Btn> : null}
+            {tbBadge(r) ? (
+              <Btn variant="outline" size="sm" onClick={() => openReviews({ code: r.c.code, seq: r.c.seq, name: r.name, teacher: r.teacher })}>{tbBadge(r)}</Btn>
             ) : null}
-            <button className="btn" disabled={wb.busy !== null} onClick={() => void wb.submit(r.c.code, r.c.seq, pick.zy, pick.flag)}>
-              {wb.busy === `submit-${r.c.code}-${r.c.seq}` ? "提交中…" : state === "full" ? "排队选课" : "选课"}
-            </button>
-            <button className="btn" disabled={inStage} onClick={() => wb.addToStage(r, pick.flag, pick.zy)}>{inStage ? "已暂存" : "暂存"}</button>
+            {/* 【教评#31冻结】行内教评徽章（整块注释保留，教务修好解开；外观改走 OG Tag/tone）
+             {(() => {
+               const m = xkPick(wb.ratings[r.c.code], r.teacher);
+               if (!m || m.total <= 0) return null;
+               const dist = m.distribution.map((v, i) => `${i + 1}分:${v}`).join(" ");
+               return (
+                 <Tag tone={m.average >= 6 ? "success" : m.average >= 5 ? "warning" : "error"}
+                   title={`官方教评 · ${m.teacher}：均分 ${m.average.toFixed(2)} / 7 · ${m.total} 人评分 · 高分率 ${(m.highRatio * 100).toFixed(0)}%\n${dist}\n（选课学生推荐度，教务 xgpg 数据）`}
+                 >教评 {m.average.toFixed(1)}({m.total})</Tag>
+               );
+             })()}
+
+            */}
           </div>
-        )}
+          {/* 元数据分属性表述（用户实锤「一堆灰字挤在一起看不清」）：课号班次=等宽
+              chip；教师=加粗主色正文；时间=accent chip；学分=中性小字；院系=弱化尾注 */}
+          <Inline gap={1} wrap>
+            <Chip size="sm"><Text mono slot="micro">{r.c.code}{r.c.seq && r.c.seq !== "0" ? i18n("pages.zhjwxk.courses.6503ee4eb9dd", { seq: String(r.c.seq) }) : ""}</Text></Chip>
+            {/* 纯数字教师=教务多教师格解析未明（取证中，见 xkParseDebug）——隐藏不误导 */}
+            {r.teacher && !/^\d{1,3}$/.test(r.teacher) ? <Text as="b" weight="semibold">{r.teacher}</Text> : null}
+            {r.time ? <Chip size="sm" tone="brand">{r.time}</Chip> : null}
+            {r.credits ? <Text slot="label" tone="quiet">{i18nRich("pages.zhjwxk.courses.2cb6ebd1ab1f", { credits: r.credits })}</Text> : null}
+            {r.c.department ? <Text slot="label" tone="faint">{r.c.department}</Text> : null}
+          </Inline>
+          {/* 课程特色标签行（NextTHUxk nx-tag 同款）：独立成行、一段一标签、
+              flexWrap 换行——挂标题行内会被 nowrap+overflow 裁出 CSS 省略号
+              （用户实锤：复制是全文、看到的是「文化素质…」） */}
+          {(() => {
+            // 源数据服务端截断（"新生研讨…"）：剥省略点 → 筛选器规范全值表前缀补全
+            const canon = (seg: string): string => {{
+              if (seg.length < 3) return seg;
+              const hit = FEATURES.map(([v]) => v).filter((v) => v.startsWith(seg) && v !== seg).sort((a, b) => a.length - b.length)[0];
+              return hit ?? seg;
+            }};
+            const segs = (r.c.feature || "")
+              .split(/[;；,，]/)
+              .map((t) => t.replace(/[\s.。…·—-]/g, "").trim())
+              .filter(Boolean)
+              .map(canon);
+            return segs.length ? (
+              <Inline gap={1} wrap>
+                {segs.map((t) => (
+                  <Tag key={t} tone="brand">{t}</Tag>
+                ))}
+              </Inline>
+            ) : null;
+          })()}
+          {r.c.note ? (
+            <Surface sunken radius="sm">
+              <Text>
+                <Text as="b" slot="label" tone="brand" weight="bold">{i18n("pages.zhjwxk.courses.6ad41e5d286b")}</Text>
+                {"　"}
+                {r.c.note}
+              </Text>
+            </Surface>
+          ) : null}
+          {wb.phase ? (
+            r.cand ? <div className="row-sub" style={{ whiteSpace: "normal" }}>{r.cand.myPos ? i18n("pages.zhjwxk.courses.f09113c77540", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n("pages.zhjwxk.courses.90c4b556f895")}</div> : null
+          ) : r.vol ? (
+            <div className="row-sub" style={{ whiteSpace: "normal" }}>
+              {(() => {
+                // 志愿统计行（NextTHUxk 2.0 render.js 同款）：体/必/限/任 前缀，
+                // '0,0,0' 全零段滤除（fmtVol 全零也返回空，双保险）
+                const parts: string[] = [];
+                if (isSportsCourse(r) && r.vol.volSports && r.vol.volSports !== "0,0,0") {
+                  const v = fmtVol(r.vol.volSports);
+                  if (v) parts.push(i18n("pages.zhjwxk.courses.7325240aedc4", { v: String(v) }));
+                } else {
+                  if (r.vol.volRequired && r.vol.volRequired !== "0,0,0") { const v = fmtVol(r.vol.volRequired); if (v) parts.push(i18n("pages.zhjwxk.courses.c7acb7331269", { v: String(v) })); }
+                  if (r.vol.volElective && r.vol.volElective !== "0,0,0") { const v = fmtVol(r.vol.volElective); if (v) parts.push(i18n("pages.zhjwxk.courses.cd80acb3d16b", { v: String(v) })); }
+                  if (r.vol.volOptional && r.vol.volOptional !== "0,0,0") { const v = fmtVol(r.vol.volOptional); if (v) parts.push(i18n("pages.zhjwxk.courses.4b1d2df912f5", { v: String(v) })); }
+                }
+                return parts.join("　");
+              })()}
+              {showInlineProb ? <Text slot="label" tone={probTone(prob.probNum)}>{prob.prob}</Text> : null}
+            </div>
+          ) : (r.c.capacity || r.c.remaining) ? (
+            // 队列阶段未开放/志愿接口被拦（xkqkSearch 弹「功能未开放」→ volMap 恒空）
+            // 时用目录行自带容量/余量兜底——插件 probInline 同源（kkxxSearch td6/td7）。
+            // 不兜底则所有卡片的容量行整体消失（2026-09-03 实录）
+            <div className="row-sub" style={{ whiteSpace: "normal" }}>
+              {[r.c.capacity ? i18n("pages.zhjwxk.courses.4c0f5dc662f8", { capacity: String(r.c.capacity) }) : "", typeof r.c.remaining === "number" ? i18n("pages.zhjwxk.courses.e5e83906ac41", { remaining: String(r.c.remaining) }) : ""].filter(Boolean).join(" · ")}
+              {showInlineProb ? <Text slot="label" tone={probTone(prob.probNum)}>{prob.prob}</Text> : null}
+            </div>
+          ) : null}
+          {/* 竞争条（NextTHUxk 2.0 compHtml 回移）：占用对按阶段取数（occupancyOf），
+              已满(余0)绝不显示 0/N 宽松假象；比例 ≤0.8 绿 / ≤1.2 黄 / 其余红。
+              仅预选模式——队列阶段概率走排队/余量模型（插件同款阶段门控），
+              志愿竞争条混在课余量模式是「志愿数据怪象」的残余（2026-09-14 实锤） */}
+          {(() => {
+            if (wb.phase) {
+              // 队列阶段：余量/排队进度条（用户实锤要求醒目化）：余>0 绿、有排队
+              // 黄、满且无队 红；条长=满员度，右侧粗体 余X/帽Y·排队N人
+              if (!q || !q.qCapacity) return null;
+              const used = Math.max(0, q.qCapacity - q.qRemaining);
+              const pct = Math.min(100, Math.round((used / q.qCapacity) * 100));
+              const tone = q.qRemaining > 0 ? "success" : q.qQueue > 0 ? "warning" : "error";
+              return (
+                <Inline gap={2}>
+                  <Grow><Progress value={pct / 100} tone={tone} size="sm" /></Grow>
+                  <Text slot="label" tone={tone} weight="bold" nowrap>{i18nRich("pages.zhjwxk.courses.e371bb0c700d", { qRemaining: q.qRemaining, qCapacity: q.qCapacity, value: q.qQueue > 0 ? i18n("pages.zhjwxk.courses.a1065b209234", { qQueue: String(q.qQueue) }) : "" })}</Text>
+                </Inline>
+              );
+            }
+            const occ = occupancyOf({ capacity: r.c.capacity, remaining: r.c.remaining, vol: r.vol }, wb.phase);
+            if (!occ.cap) return null;
+            const vc = volColor(occ.applied, occ.cap);
+            const tone = levelTone(vc.level);
+            const barTone = vc.level === "unknown" ? "accent" as const : (tone === "faint" ? "accent" : tone) as "accent" | "success" | "warning" | "error";
+            const label = vc.level === "easy" ? i18n("pages.zhjwxk.courses.8490de9e4f0a") : vc.level === "medium" ? i18n("pages.zhjwxk.courses.5ca6cb21cd29") : vc.level === "hard" ? i18n("pages.zhjwxk.courses.135fef5e1db6") : "";
+            return (
+              <Inline gap={2}>
+                <Grow><Progress value={vc.pct / 100} tone={barTone} size="sm" /></Grow>
+                <Text slot="micro" tone={tone} nowrap>{occ.applied}/{occ.cap}{label ? ` · ${label}` : ""}</Text>
+              </Inline>
+            );
+          })()}
+          {/* 三行概率网格（NextTHUxk 2.0 fullProbGrid 回移）：必修/限选/任选 ×
+              1/2/3 志愿全显，无数据格灰显——显示侧全开（用户十六报拍板）。
+              仅预选模式（队列阶段志愿数据无意义——排队模型阶段门控） */}
+          {!wb.phase ? <Stack gap={1}>
+            {fullProbGrid(cap, r.vol, isSportsCourse(r)).map((row) => (
+              <Inline key={row.flag} gap={2} vAlign="baseline">
+                <Text slot="micro" tone="faint">{FLAG_LABELS[row.flag]}</Text>
+                {row.cells.map((p, zi) => (
+                  <Text key={zi} slot="micro" tone={probTone(p.prob)} weight={p.prob >= 0 ? "semibold" : "regular"}>{i18nRich("pages.zhjwxk.courses.04071043a9de", { value: zi + 1, label: p.label, value2: p.prob >= 0 && p.ratioLabel ? ` · ${p.ratioLabel}` : "" })}</Text>
+                ))}
+              </Inline>
+            ))}
+          </Stack> : null}
+          {(() => { const o = originOf(r.c.code); if (!o) return null;
+            if (clockRangesOf(r.c.note, r.time).length > 0) return null; // 时间已解析上时间轴，不废话
+            return (
+            <Inline gap={2} vAlign="start">
+              <Text slot="label" tone="warning">{i18nRich("pages.zhjwxk.courses.4583bde5e031", { o: labelForId(o) })}</Text>
+              <Grow>
+                <Btn variant="outline" size="sm" onClick={() => navigate("info", { infoNewsQuery: o === "北大研" ? "北京大学 研究生" : "北京大学 北京外国语大学" })}>{i18nRich("pages.zhjwxk.courses.3cd7d874f722", { value: o === "北大研" ? i18n("pages.zhjwxk.courses.44a94cb2b71a") : i18n("pages.zhjwxk.courses.06ac33331166") })}</Btn>
+              </Grow>
+            </Inline>
+            ); })()}
+          {confs.length ? (
+            <div className="row-sub" style={{ whiteSpace: "normal" }}>
+              <Text slot="label" tone="error">{i18nRich("pages.zhjwxk.courses.06f610639057", { value: confs.slice(0, 3).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.b}`).join(" · ") })}</Text>
+            </div>
+          ) : null}
+          {state === "selected" ? (
+            <Inline gap={1} wrap>
+              {r.zy ? <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.6dfa4700bf10", { value: FLAG_LABELS[r.flag], zy: r.zy })}</Text> : null}
+              <Btn variant="outline" size="sm" disabled={!(r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1)) || wb.busy !== null} titleAttr={r.zy > 1 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy - 1) ? "" : i18n("pages.zhjwxk.courses.0bc08374ab3a")} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy - 1)}>▲</Btn>
+              <Btn variant="outline" size="sm" disabled={!(r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1)) || wb.busy !== null} titleAttr={r.zy < 3 && wb.canAdjustZy(r.c.code, r.c.seq, r.zy + 1) ? "" : i18n("pages.zhjwxk.courses.0bc08374ab3a")} onClick={() => void wb.changeZy(r.c.code, r.c.seq, r.zy + 1)}>▼</Btn>
+              <Btn variant="outline" size="sm" disabled={inStage} onClick={() => wb.addToStage(r, r.flag, r.zy || 3)}>{inStage ? i18n("pages.zhjwxk.courses.847d376afd41") : i18n("pages.zhjwxk.courses.e57b6dbedea3")}</Btn>
+              <Btn variant="outline" size="sm" disabled={wb.busy !== null} onClick={() => void (async () => { if (await confirmDanger(i18nMsg("pages.zhjwxk.courses.5b1ff08354a0", { name: String(r.name), code: String(r.c.code), value: String(r.c.seq || "0") }), DROP_CONFIRM)) await wb.drop(r.c.code, r.c.seq, false); })()}>{i18n("pages.zhjwxk.courses.639c677f0c52")}</Btn>
+            </Inline>
+          ) : state === "candidate" ? (
+            <Inline gap={2}>
+              <Text slot="label" tone="warning">{r.cand ? (r.cand.myPos ? i18n("pages.zhjwxk.courses.519d719dc036", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n("pages.zhjwxk.courses.def2a886248f")) : i18n("pages.zhjwxk.courses.def2a886248f")}</Text>
+              {r.teacherId ? <Btn variant="outline" size="sm" onClick={() => openDetail(r.c.code, r.teacherId)}>{i18n("pages.zhjwxk.courses.8131eafd0239")}</Btn> : null}
+              <Btn variant="outline" size="sm" disabled={wb.busy !== null} onClick={() => void wb.drop(r.c.code, r.c.seq, true)}>{i18n("pages.zhjwxk.courses.2f9daa828907")}</Btn>
+            </Inline>
+          ) : (
+            <Inline gap={1} wrap>
+              {state === "full" ? <Text slot="label" tone="error">{i18n("pages.zhjwxk.courses.0ba6b11d9de0")}</Text> : null}
+              <Select size="sm" value={pick.flag} disabled={wb.busy !== null} onChange={(value) => setPicks((m) => ({ ...m, [key]: { ...pick, flag: value as XkFlag } }))}>{allowedFlags(pick.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}</Select>
+              {!wb.phase ? <Select size="sm" value={String(pick.zy)} disabled={wb.busy !== null} onChange={(value) => setPicks((m) => ({ ...m, [key]: { ...pick, zy: Number(value) } }))}>{[3, 2, 1].map((z) => <option key={z} value={z}>{i18nRich("pages.zhjwxk.courses.b2af275db60a", { z: z })}</option>)}</Select> : null}
+              {!wb.phase ? (
+                <Text slot="label" tone={probTone(prob.probNum)}>{prob.prob}</Text>
+              ) : null}
+              <Btn variant="outline" size="sm" disabled={wb.busy !== null} onClick={() => void wb.submit(r.c.code, r.c.seq, pick.zy, pick.flag)}>{wb.busy === `submit-${r.c.code}-${r.c.seq}` ? i18n("pages.zhjwxk.courses.18931020ad52") : state === "full" ? i18n("pages.zhjwxk.courses.2e486022e4f8") : i18n("pages.zhjwxk.courses.fd17d86dd268")}</Btn>
+              <Btn variant="outline" size="sm" disabled={inStage} onClick={() => wb.addToStage(r, pick.flag, pick.zy)}>{inStage ? i18n("pages.zhjwxk.courses.847d376afd41") : i18n("pages.zhjwxk.courses.e57b6dbedea3")}</Btn>
+            </Inline>
+          )}
+        </Stack>
       </div>
-      <span className={"chip " + (r.selected ? "chip-green" : r.isCandidate ? "chip-amber" : "")} style={state === "full" ? { color: "#ee4d4d", background: "rgba(238,77,77,.1)" } : undefined}>
-        <span className="dot" />
-        {r.selected ? `已选${r.zy ? ` · ${r.zy}志愿` : ""}` : r.isCandidate ? (r.cand?.myPos ? `候补 第${r.cand.myPos}名` : "候选") : state === "full" ? "已满" : r.available ? "可选" : "已满"}
-      </span>
+      <Chip size="sm" tone={r.selected ? "success" : r.isCandidate ? "warning" : state === "full" ? "error" : "neutral"}>
+        {r.selected ? i18n("pages.zhjwxk.courses.aa21e6887117", { value: String(r.zy ? i18n("pages.zhjwxk.courses.2ea763bbee3e", { zy: String(r.zy) }) : "") }) : r.isCandidate ? (r.cand?.myPos ? i18n("pages.zhjwxk.courses.4d4f91afcd66", { myPos: String(r.cand.myPos) }) : i18n("pages.zhjwxk.courses.64af28c77281")) : state === "full" ? i18n("pages.zhjwxk.courses.0ba6b11d9de0") : r.available ? i18n("pages.zhjwxk.courses.537352400c49") : i18n("pages.zhjwxk.courses.0ba6b11d9de0")}
+      </Chip>
     </div>
   );
 }
 
 /* ══════════ 右栏⓪：培养方案（render.js renderPlan 同款卡片网格）══════════ */
 function PlanSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
+  const uiLocale = useUiLocale();
+
   const coverage = useMemo(() => checkPlanCoverage(wb.plan, wb.courses, wb.stageCart, wb.savedDrafts.map((d) => d.courses), (wb.semester ?? "").endsWith("2")),
-    [wb.plan, wb.courses, wb.stageCart, wb.savedDrafts, wb.semester]);
+    [uiLocale, wb.plan, wb.courses, wb.stageCart, wb.savedDrafts, wb.semester]);
   if (!wb.plan.length) return null;
   const groups = new Map<string, PlanCoverageItem[]>();
   for (const c of coverage) {
-    const g = c.group || c.attr || "其他";
+    const g = c.group || c.attr || i18n("pages.zhjwxk.courses.d2909f1647e7");
     if (!groups.has(g)) groups.set(g, []);
     groups.get(g)!.push(c);
   }
   const totalCr = coverage.reduce((s, c) => s + c.credits, 0);
   const coveredCr = coverage.filter((c) => c.covered).reduce((s, c) => s + c.credits, 0);
   return (
-    <Sec title="我的培养方案">
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+    <Sec title={i18n("pages.zhjwxk.courses.c97657457226")}>
+      <Stack gap={0}>
         {[...groups.entries()].map(([g, items]) => {
           const cr = items.reduce((a, c) => a + c.credits, 0);
           const cov = items.filter((c) => c.covered).reduce((a, c) => a + c.credits, 0);
           return (
-            <div key={g} style={{ padding: "10px 14px", borderRadius: 16, background: "var(--surface, #fff)", boxShadow: "inset 0 0 0 1px rgba(127,127,127,.12), 0 4px 18px rgba(28,39,64,.06)", flex: 1, minWidth: 100, cursor: "pointer" }} onClick={() => { planGroupClick?.(g); }}>
-              <div style={{ fontSize: 22, fontWeight: 700, color: cov >= cr ? "var(--green)" : "var(--accent)" }}>{cov}<small style={{ fontSize: 12, fontWeight: 400, color: "var(--text-3)" }}>/{cr}学分</small></div>
-              <div style={{ fontSize: 11, color: "var(--text-3)", marginTop: 2 }}>{g} ({items.length}门)</div>
-            </div>
+            <StatTile key={g} label={i18n("pages.zhjwxk.courses.3c3926abccf0", { g: String(g), length: String(items.length) })}
+              value={<Text slot="title" tone={cov >= cr ? "success" : "brand"} weight="bold">{cov}</Text>}
+              unit={i18n("pages.zhjwxk.courses.f791593c30e2", { cr: String(cr) })} onClick={() => { planGroupClick?.(g); }} />
           );
         })}
-      </div>
-      <div style={{ marginTop: 8, fontSize: 12, color: "var(--text-3)" }}>共 {coverage.length} 门，{coveredCr}/{totalCr} 学分已覆盖</div>
+      </Stack>
+      <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.5c1672e6a3bf", { length: coverage.length, coveredCr: coveredCr, totalCr: totalCr })}</Text>
     </Sec>
   );
 }
@@ -1169,6 +1169,8 @@ let planGroupClick: ((g: string) => void) | null = null;
 
 /* ══════════ 右栏②：课表预览（render.js renderPreviewTT 逐行移植）══════════ */
 function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
+  const uiLocale = useUiLocale();
+
   const [mOpen, setMOpen] = useState(false);
   const [mName, setMName] = useState("");
   const [mDay, setMDay] = useState("1");
@@ -1204,42 +1206,43 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       x.time && parseTimeSlots(x.time).length ? x.time : wb.courses.find((y) => y.c.code === x.code && String(y.c.seq || "0") === String(x.seq || "0"))?.time || x.time || "";
     if (mode === "stage") return wb.stageCart.map((x) => ({ name: x.name, teacher: x.teacher, code: x.code, seq: x.seq || "0", time: timeOf(x), note: noteOf(x), credits: x.credits, zy: x.zy, flag: x.flag }));
     return (wb.savedDrafts[wb.previewDraftIdx]?.courses ?? []).map((x) => ({ name: x.name, teacher: x.teacher, code: x.code, seq: x.seq || "0", time: timeOf(x), note: noteOf(x), credits: x.credits, zy: x.zy, flag: x.flag }));
-  }, [mode, wb]);
+  }, [uiLocale, mode, wb]);
 
-  // 概率/余量信息（绿=有余量/已选，橙=排队，红=已满；色块直接画在时间轴课块上）
-  const probOf = (c: { code: string; seq: string; zy: number; manual?: boolean; flag?: XkFlag; typeCode?: string }): { color: string; label: string } => {
-    if (c.manual) return { color: "#8b5cf6", label: "占用" };
+  // 概率/余量信息：返回 OG 语义 tone + 原始标签（色块不再由 hex 决定，
+  // 由渲染侧按 tone/family 映射 --og-success/warning/error/accent 一族）
+  const probOf = (c: { code: string; seq: string; zy: number; manual?: boolean; flag?: XkFlag; typeCode?: string }): { tone: "good" | "warn" | "bad" | "off"; label: string } => {
+    if (c.manual) return { tone: "off", label: i18n("pages.zhjwxk.courses.c0aa76aebce6") };
     if (wb.phase) {
       const qKey = `${c.code}_${c.seq || "0"}`;
       const r = wb.courses.find((x) => x.c.code === c.code && String(x.c.seq || "0") === String(c.seq || "0"));
       const qd = wb.queueMap[qKey] ?? r?.q;
       const cand = wb.candidates.find((cc) => cc.code === c.code && String(cc.seq) === String(c.seq || "0"));
-      if (cand) return { color: "#ff9f1a", label: cand.myPos ? `排队第${cand.myPos}/${cand.queueTotal}人` : "候选" };
-      if (mode === "selected") return { color: "#07c160", label: "已选" };
+      if (cand) return { tone: "warn", label: cand.myPos ? i18n("pages.zhjwxk.courses.1a01e52411e2", { myPos: String(cand.myPos), queueTotal: String(cand.queueTotal) }) : i18n("pages.zhjwxk.courses.64af28c77281") };
+      if (mode === "selected") return { tone: "good", label: i18n("pages.zhjwxk.courses.7ecf1cde6486") };
       if (qd) {
-        if (qd.qRemaining > 0) return { color: "#07c160", label: `余${qd.qRemaining}` };
-        if (qd.qQueue > 0) return { color: "#ff9f1a", label: `排队${qd.qQueue}人` };
-        return { color: "#ee4d4d", label: "已满" };
+        if (qd.qRemaining > 0) return { tone: "good", label: i18n("pages.zhjwxk.courses.fab993c6ff6f", { qRemaining: String(qd.qRemaining) }) };
+        if (qd.qQueue > 0) return { tone: "warn", label: i18n("pages.zhjwxk.courses.57273d4232a7", { qQueue: String(qd.qQueue) }) };
+        return { tone: "bad", label: i18n("pages.zhjwxk.courses.0ba6b11d9de0") };
       }
-      return { color: "", label: "" };
+      return { tone: "off", label: "" };
     }
     if (mode === "selected" && c.zy) {
       const sf = (c.typeCode ? typeCodeToFlag(c.typeCode) : (c.flag ?? "bx")) as XkFlag;
       const vol = r2vol(wb, c.code, c.seq);
       const p = calcProb(vol?.capacity || 0, vol, sf, c.zy);
-      return { color: p.prob >= 0 ? p.color : "", label: p.prob >= 0 ? (p.percentLabel || p.label) : "" };
+      return { tone: p.prob >= 0 ? toBlockTone(probTone(p.prob)) : "off", label: p.prob >= 0 ? (p.percentLabel || p.label) : "" };
     }
     if ((mode === "stage" || mode === "draft") && c.flag && c.zy) {
       const vol = r2vol(wb, c.code, c.seq);
       const p = calcProb(vol?.capacity || 0, vol, c.flag, c.zy);
-      return { color: p.prob >= 0 ? p.color : "", label: p.prob >= 0 ? (p.percentLabel || p.label) : "" };
+      return { tone: p.prob >= 0 ? toBlockTone(probTone(p.prob)) : "off", label: p.prob >= 0 ? (p.percentLabel || p.label) : "" };
     }
-    return { color: "", label: "" };
+    return { tone: "off", label: "" };
   };
 
   // 时间轴课块：清华课按大节→钟点；北大/北外等外校课 time 列无槽位，从 note 解析「周X HH:MM—HH:MM」
   const { placed, undet } = useMemo(() => {
-    type PvBlock = { key: string; day: number; begin: number; end: number; label: string; color: string; probLabel?: string; manual?: boolean; id?: string; code?: string; seq?: string; origin?: string; tag?: string; cand?: boolean };
+    type PvBlock = { key: string; day: number; begin: number; end: number; label: string; tone: "normal" | "good" | "warn" | "bad"; cand: boolean; manual: boolean; probLabel?: string; id?: string; code?: string; seq?: string; origin?: string; tag?: string };
     const raw: PvBlock[] = [];
     const undet: Array<{ lbl: string; code: string; seq: string; credits: number; zy: number; manual: boolean; id?: string }> = [];
     type PvCourse = { name: string; teacher?: string; code: string; seq: string; time: string; note: string; credits: number; zy: number; manual?: boolean; id?: string; flag?: XkFlag; typeCode?: string; begin?: string; end?: string; day?: number; cand?: boolean };
@@ -1248,12 +1251,14 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
       ...wb.manualEvents.map((e): PvCourse => ({ name: e.name, teacher: undefined, code: e.code, seq: e.seq, time: e.time, note: "", credits: e.credits, zy: 0, manual: true, id: e.id, begin: e.begin, end: e.end, day: e.day })),
     ];
     for (const c of all) {
-      const lbl = (c.cand ? "候选：" : "") + (c.teacher ? `${c.name}(${c.teacher})` : c.name);
+      const lbl = (c.cand ? i18n("pages.zhjwxk.courses.fa33afcd5d0c") : "") + (c.teacher ? `${c.name}(${c.teacher})` : c.name);
       const prob = probOf(c);
-      const color = c.cand ? "#ff9f1a" : c.manual ? "#8b5cf6" : prob.color || pvColorOf(c.name);
+      // 填充族：候选=warning、手动占用=normal（渲染层再加 accent 强线）、
+      // 概率分档=good/warn/bad、普通课=normal；未命中概率=normal
+      const family: PvBlock["tone"] = c.cand ? "warn" : c.manual ? "normal" : prob.tone === "off" || !prob.label ? "normal" : (prob.tone as "good" | "warn" | "bad");
       const mk = (day: number, begin: number, end: number, tag: string): PvBlock => ({
-        key: `${c.code}_${c.seq || "0"}_${tag}`, day, begin, end, label: lbl, color,
-        probLabel: prob.label || undefined, manual: c.manual, id: c.id, code: c.code, seq: c.seq, origin: originOf(c.code), cand: c.cand,
+        key: `${c.code}_${c.seq || "0"}_${tag}`, day, begin, end, label: lbl, tone: family, cand: Boolean(c.cand), manual: Boolean(c.manual),
+        probLabel: prob.label || undefined, id: c.id, code: c.code, seq: c.seq, origin: originOf(c.code),
       });
       let n = 0;
       for (const { day, slot } of parseTimeSlots(c.time)) {
@@ -1309,65 +1314,65 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
     const placed = raw.map((b) => ({ ...b, ...(lanesOf.get(b.key) ?? { lane: 0, lanes: 1 }) }));
     return { placed, undet };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courses, mode, wb.phase, wb.queueMap, wb.candidates, wb.manualEvents]);
+  }, [uiLocale, courses, mode, wb.phase, wb.queueMap, wb.candidates, wb.manualEvents]);
 
   const removeItem = async (code: string, seq: string): Promise<void> => {
     if (mode === "selected") {
       const c = wb.courses.find((x) => x.c.code === code && String(x.c.seq || "0") === String(seq));
       const name = c?.name || code;
-      if (!(await confirmDanger(`「${name}」（${code}_${seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, DROP_CONFIRM))) return;
+      if (!(await confirmDanger(i18nMsg("pages.zhjwxk.courses.5b1ff08354a0", { name: String(name), code: String(code), value: String(seq || "0") }), DROP_CONFIRM))) return;
       await wb.drop(code, seq, false);
     } else if (mode === "stage") {
       const x = wb.stageCart.find((y) => y.code === code && String(y.seq || "0") === String(seq || "0"));
-      if (!(await confirmOk(`从暂存区移除「${x?.name || code}」？`))) return;
+      if (!(await confirmOk(i18nMsg("pages.zhjwxk.courses.989a65fefd6f", { value: String(x?.name || code) })))) return;
       wb.removeFromStage(code, seq);
     } else {
       const d = wb.savedDrafts[wb.previewDraftIdx];
       if (!d) return;
       const x = d.courses.find((y) => y.code === code && String(y.seq || "0") === String(seq || "0"));
-      if (!(await confirmOk(`从草稿移除「${x?.name || code}」？`))) return;
+      if (!(await confirmOk(i18nMsg("pages.zhjwxk.courses.ed67b28e1e78", { value: String(x?.name || code) })))) return;
       wb.removeFromDraft(wb.previewDraftIdx, code, seq);
     }
   };
 
   const cr = courses.reduce((a, c) => a + (c.credits || 0), 0);
-  const label = mode === "selected" ? "当前已选" : mode === "stage" ? `暂存车预览（暂存车${wb.stageCart.length}门${wb.stageCart.length ? "：" + wb.stageCart.map((x) => x.code).join("、") : ""}）` : `草稿「${wb.savedDrafts[wb.previewDraftIdx]?.name ?? ""}」预览`;
+  const label = mode === "selected" ? i18n("pages.zhjwxk.courses.6266b6f08df5") : mode === "stage" ? i18n("pages.zhjwxk.courses.59294a8dd125", { length: String(wb.stageCart.length), value: String(wb.stageCart.length ? "：" + wb.stageCart.map((x) => x.code).join("、") : "") }) : i18n("pages.zhjwxk.courses.6cfbf1f20072", { value: String(wb.savedDrafts[wb.previewDraftIdx]?.name ?? "") });
   const canvasH = pvY(PV_AXIS_END) + 12;
   const todayIdx = (() => { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; })();
   return (
-    <Sec title="课表预览" extra={<span style={{ fontSize: 11, color: "var(--text-3)" }}>{label}</span>}>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
-        <button className={"btn" + (mode === "selected" ? " is-active" : "")} onClick={() => wb.setPreview("selected")}>当前已选</button>
-        <button className={"btn" + (mode === "stage" ? " is-active" : "")} onClick={() => wb.setPreview("stage")}>预览暂存</button>
+    <Sec title={i18n("pages.zhjwxk.courses.1bf3158a977b")} extra={<Text slot="label" tone="faint">{label}</Text>}>
+      <Inline gap={1} wrap>
+        <Chip size="sm" selected={mode === "selected"} onClick={() => wb.setPreview("selected")}>{i18n("pages.zhjwxk.courses.6266b6f08df5")}</Chip>
+        <Chip size="sm" selected={mode === "stage"} onClick={() => wb.setPreview("stage")}>{i18n("pages.zhjwxk.courses.24f0b1d35bb6")}</Chip>
         {wb.savedDrafts.map((d, i) => (
-          <button key={i} className={"btn" + (mode === "draft" && wb.previewDraftIdx === i ? " is-active" : "")} onClick={() => wb.setPreview("draft", i)}>{d.name}</button>
+          <Chip key={i} size="sm" selected={mode === "draft" && wb.previewDraftIdx === i} onClick={() => wb.setPreview("draft", i)}>{d.name}</Chip>
         ))}
-      </div>
+      </Inline>
       {!courses.length && !wb.manualEvents.length ? (
-        <div style={{ fontSize: 12, color: "var(--text-3)" }}>暂无课程</div>
+        <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.1f5350ec49f1")}</Text>
       ) : (
         <div style={{ overflowX: "auto" }}>
           <div style={{ minWidth: 560 }}>
             <div style={{ display: "flex", marginBottom: 8, alignItems: "flex-end" }}>
               <div style={{ width: 34, flexShrink: 0 }} />
-              {["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map((name, i) => (
+              {[i18n("pages.zhjwxk.courses.c430f4c12eaa"), i18n("pages.zhjwxk.courses.d1378a68e620"), i18n("pages.zhjwxk.courses.2961168962be"), i18n("pages.zhjwxk.courses.e9d3b01a5a00"), i18n("pages.zhjwxk.courses.572388f3b096"), i18n("pages.zhjwxk.courses.f9aa11dbb15c"), i18n("pages.zhjwxk.courses.ee239f394329")].map((name, i) => (
                 <div key={name} className={"tt-head" + (i === todayIdx ? " is-today" : "")} style={{ flex: 1, textAlign: "center" }}>{name}</div>
               ))}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ width: 34, flexShrink: 0, position: "relative", height: canvasH }}>
                 {PV_HALF_HOURS.filter((m) => m % 60 === 0).map((m) => (
-                  <div key={m} style={{ position: "absolute", top: Math.max(0, pvY(m) - 6), right: 6, fontSize: 9, color: "var(--text-3)", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
-                    {pvHm(m)}
-                  </div>
+                  <span key={m} style={{ position: "absolute", top: Math.max(0, pvY(m) - 6), right: 6 }}>
+                    <Text slot="micro" tone="faint">{pvHm(m)}</Text>
+                  </span>
                 ))}
               </div>
               <div style={{ flex: 1, position: "relative", height: canvasH }}>
                 {Array.from({ length: 7 }, (_, day) => (
-                  <div key={`col-${day}`} style={{ position: "absolute", left: `${(day * 100) / 7}%`, width: `${100 / 7}%`, top: 0, height: canvasH, borderLeft: day === 0 ? "none" : "1px solid var(--border, #ececec)", background: day === todayIdx ? "rgba(109,127,240,0.055)" : undefined }} />
+                  <div key={`col-${day}`} style={{ position: "absolute", left: `${(day * 100) / 7}%`, width: `${100 / 7}%`, top: 0, height: canvasH, borderLeft: day === 0 ? "none" : "1px solid var(--og-line-1)", background: day === todayIdx ? "color-mix(in srgb, var(--og-accent) 6%, transparent)" : undefined }} />
                 ))}
                 {PV_HALF_HOURS.map((m) => (
-                  <div key={`gl-${m}`} style={{ position: "absolute", left: 0, right: 0, top: pvY(m), borderTop: m % 60 === 0 ? "1px solid var(--border, #e8e8e8)" : "1px solid var(--border, #f2f2f2)" }} />
+                  <div key={`gl-${m}`} style={{ position: "absolute", left: 0, right: 0, top: pvY(m), borderTop: m % 60 === 0 ? "1px solid var(--og-line-2)" : "1px solid var(--og-line-1)" }} />
                 ))}
                 {placed.map((b) => {
                   const laneW = 100 / b.lanes;
@@ -1376,17 +1381,17 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
                   const top = pvY(b.begin) + 2;
                   const height = Math.max((b.end - b.begin) * PV_PX_PER_MIN - 5, 22);
                   const compact = height < 40;
+                  const license = b.manual ? BLOCK_LICENSE.normal : BLOCK_LICENSE[b.tone];
+                  const fill = b.manual ? "var(--og-surface-4)" : license.fill;
+                  const line = b.manual ? "1px dashed var(--og-accent-soft-line)" : `1px solid ${license.line}`;
                   return (
                     <div key={b.key} title={`${b.label}（${pvHm(b.begin)}–${pvHm(b.end)}）${b.probLabel ? " · " + b.probLabel : ""}`}
-                      style={{ position: "absolute", left: `calc(${leftPct}% + 3px)`, width: `calc(${widthPct}% - 6px)`, top, height, background: b.color, borderRadius: 5, padding: compact ? "2px 4px" : "3px 5px", color: "#fff", overflow: "hidden", boxSizing: "border-box", boxShadow: "0 1px 3px rgba(0,0,0,0.18)", zIndex: 6, cursor: b.manual ? undefined : "pointer" }}
+                      style={{ position: "absolute", left: `calc(${leftPct}% + 3px)`, width: `calc(${widthPct}% - 6px)`, top, height, background: fill, border: line, borderRadius: 5, padding: compact ? "2px 4px" : "3px 5px", color: "var(--og-content-on-soft)", overflow: "hidden", boxSizing: "border-box", zIndex: 6, cursor: b.manual ? undefined : "pointer", display: "flex", flexDirection: "column", gap: 1 }}
                       onClick={() => { if (!b.manual && b.code) jumpTo(b.code, "all", b.seq || ""); }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                        <div style={{ fontSize: compact ? 8.5 : 9.5, fontWeight: 700, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.label}</div>
-                      </div>
-                      {!compact ? <div style={{ fontSize: 8, opacity: 0.9, lineHeight: 1.3 }}>{pvHm(b.begin)}–{pvHm(b.end)}{b.tag ? ` ${b.tag}` : ""}</div> : null}
-                      {b.probLabel && height > 44 ? <span style={{ display: "inline-block", marginTop: 1, padding: "0 4px", borderRadius: 999, fontSize: 8, fontWeight: 700, background: "rgba(255,255,255,.25)" }}>{b.probLabel}</span> : null}
-                      <button className="btn" style={{ position: "absolute", top: 1, right: 1, padding: "0 3px", fontSize: 8, lineHeight: 1.4, opacity: 0.65, border: "none", background: "transparent", color: "#fff" }}
-                        title={b.cand ? "退出候补" : "移除"} onClick={(e) => { e.stopPropagation(); if (b.manual && b.id) wb.removeManualEvent(b.id); else if (b.cand && b.code && b.seq) void wb.drop(b.code, b.seq, true); else if (b.code && b.seq) void removeItem(b.code, b.seq); }}>✕</button>
+                      <Text slot="micro" weight="bold" truncate>{b.label}</Text>
+                      {!compact ? <Text slot="micro" tone="quiet">{pvHm(b.begin)}–{pvHm(b.end)}{b.tag ? ` ${b.tag}` : ""}</Text> : null}
+                      {b.probLabel && height > 44 ? <Chip size="sm">{b.probLabel}</Chip> : null}
+                      <Btn variant="outline" size="sm" titleAttr={b.cand ? i18n("pages.zhjwxk.courses.9ea04b6a9425") : i18n("pages.zhjwxk.courses.6135d4159e89")} onClick={(e) => { e.stopPropagation(); if (b.manual && b.id) wb.removeManualEvent(b.id); else if (b.cand && b.code && b.seq) void wb.drop(b.code, b.seq, true); else if (b.code && b.seq) void removeItem(b.code, b.seq); }}>✕</Btn>
                     </div>
                   );
                 })}
@@ -1396,59 +1401,60 @@ function PreviewSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
         </div>
       )}
       {undet.length ? (
-        <div style={{ marginTop: 8 }}>
-          <div style={{ fontSize: 11, color: "var(--text-3)" }}>时间未定 / 无法解析（{undet.length} 门，不在上方时间轴中）</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 6 }}>
+        <Stack gap={1}>
+          <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.f3477d357ef2", { length: undet.length })}</Text>
+          <Inline gap={1} wrap>
             {undet.map((u, i) => (
-              <span key={i} className="chip" style={{ fontSize: 11, cursor: "pointer" }} title="点击移除" onClick={() => void removeItem(u.code, u.seq)}>
-                {u.lbl} · {u.credits}学分{u.zy ? ` · 第${u.zy}志愿` : ""} <i>✕</i>
+              <span key={i} title={i18n("pages.zhjwxk.courses.96fc74daea7d")}>
+                <Chip size="sm" onClick={() => void removeItem(u.code, u.seq)}>{i18nRich("pages.zhjwxk.courses.f7486a1ba60e", { lbl: u.lbl, credits: u.credits, value: u.zy ? i18n("pages.zhjwxk.courses.4a640209de60", { zy: String(u.zy) }) : "" })}</Chip>
               </span>
             ))}
-          </div>
-        </div>
+          </Inline>
+        </Stack>
       ) : null}
       {wb.manualEvents.length ? (
-        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
-          <span style={{ fontSize: 11, color: "var(--text-3)" }}>自定义占用</span>
+        <Inline gap={1} wrap>
+          <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.2ef9b1789eaf")}</Text>
           {wb.manualEvents.map((e) => {
             const slots = parseTimeSlots(e.time || "");
-            const when = e.begin && e.end ? `${["周一","周二","周三","周四","周五","周六","周日"][(e.day ?? 1) - 1]} ${e.begin}–${e.end}` : slots.map((x) => `${x.day}第${x.slot}大节`).join("、");
+            const when = e.begin && e.end ? `${[i18n("pages.zhjwxk.courses.c430f4c12eaa"),i18n("pages.zhjwxk.courses.d1378a68e620"),i18n("pages.zhjwxk.courses.2961168962be"),i18n("pages.zhjwxk.courses.e9d3b01a5a00"),i18n("pages.zhjwxk.courses.572388f3b096"),i18n("pages.zhjwxk.courses.f9aa11dbb15c"),i18n("pages.zhjwxk.courses.ee239f394329")][(e.day ?? 1) - 1]} ${e.begin}–${e.end}` : slots.map((x) => i18n("pages.zhjwxk.courses.dc9b0041ffc7", { day: String(x.day), slot: String(x.slot) })).join("、");
             return (
-              <button key={e.id} className="chip" style={{ borderRadius: 999, padding: "3px 10px", background: "rgba(139,92,246,.12)", color: "#7c3aed", fontSize: 11, cursor: "pointer", border: "none" }} title="删除此占用" onClick={() => wb.removeManualEvent(e.id)}>
-                {e.name}{when ? ` · ${when}` : ""} ✕
-              </button>
+              <span key={e.id} title={i18n("pages.zhjwxk.courses.49b95727fe16")}>
+                <Chip tone="brand" onRemove={() => wb.removeManualEvent(e.id)}>
+                  {e.name}{when ? ` · ${when}` : ""}
+                </Chip>
+              </span>
             );
           })}
-        </div>
+        </Inline>
       ) : null}
-      <div style={{ marginTop: 6, fontSize: 11, color: "var(--green)" }}>{courses.length}门课 · {cr}学分{wb.manualEvents.length ? ` · 自定义占用${wb.manualEvents.length}项` : ""}</div>
-      <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 8, flexWrap: "wrap", fontSize: 12 }}>
-        <button className="btn" onClick={() => setMOpen((v) => !v)}>＋ 添加占用</button>
-      </div>
+      <Text slot="label" tone="success">{i18nRich("pages.zhjwxk.courses.3c48d4b889f5", { length: courses.length, cr: cr, value: wb.manualEvents.length ? i18n("pages.zhjwxk.courses.5dbc7a39b365", { length: String(wb.manualEvents.length) }) : "" })}</Text>
+      <Inline gap={1} wrap>
+        <Btn variant="outline" size="sm" onClick={() => setMOpen((v) => !v)}>{i18n("pages.zhjwxk.courses.c4c21f2c783f")}</Btn>
+      </Inline>
       {mOpen ? (
-        <div style={{ display: "grid", gap: 8, marginTop: 8 }}>
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)" }}>
-            活动名称
-            <input className="input" style={{ height: 30 }} placeholder="例如：社团例会" value={mName} onChange={(e) => setMName(e.target.value)} />
-          </label>
-          <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)" }}>
-            星期
-            <select className="input" style={{ height: 30 }} value={mDay} onChange={(e) => setMDay(e.target.value)}>{[1,2,3,4,5,6,7].map((d) => <option key={d} value={d}>{["周一","周二","周三","周四","周五","周六","周日"][d-1]}</option>)}</select>
-          </label>
-          <div style={{ display: "flex", gap: 8 }}>
-            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)", flex: 1 }}>
-              开始
-              <select className="input" style={{ height: 30 }} value={mBegin} onChange={(e) => setMBegin(e.target.value)}>{PV_HALF_HOURS.slice(0, -1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</select>
-            </label>
-            <label style={{ display: "grid", gap: 4, fontSize: 12, fontWeight: 600, color: "var(--text-3)", flex: 1 }}>
-              结束
-              <select className="input" style={{ height: 30 }} value={mEnd} onChange={(e) => setMEnd(e.target.value)}>{PV_HALF_HOURS.slice(1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</select>
-            </label>
-          </div>
-          <div style={{ fontSize: 11, color: "var(--text-3)" }}>占用保存在本地，画在时间轴上（支持任意钟点段），便于与课程重叠对照。</div>
-          <button className="btn" style={{ borderColor: "var(--accent)", color: "var(--accent)" }} disabled={!(mBegin < mEnd)}
-            onClick={() => { wb.addManualEventRange(mName, Number(mDay), mBegin, mEnd); setMName(""); setMOpen(false); }}>添加到课表</button>
-        </div>
+        <Stack gap={2}>
+          <Field label={i18n("pages.zhjwxk.courses.30db88b23b2e")}>
+            <Input placeholder={i18n("pages.zhjwxk.courses.33fabd4ae4d8")} value={mName} onChange={(value) => setMName(value)} />
+          </Field>
+          <Field label={i18n("pages.zhjwxk.courses.c398134d7d1f")}>
+            <Select value={mDay} onChange={setMDay}>{[1,2,3,4,5,6,7].map((d) => <option key={d} value={d}>{[i18n("pages.zhjwxk.courses.c430f4c12eaa"),i18n("pages.zhjwxk.courses.d1378a68e620"),i18n("pages.zhjwxk.courses.2961168962be"),i18n("pages.zhjwxk.courses.e9d3b01a5a00"),i18n("pages.zhjwxk.courses.572388f3b096"),i18n("pages.zhjwxk.courses.f9aa11dbb15c"),i18n("pages.zhjwxk.courses.ee239f394329")][d-1]}</option>)}</Select>
+          </Field>
+          <Inline gap={2}>
+            <Grow>
+              <Field label={i18n("pages.zhjwxk.courses.d2bb025a2e51")}>
+                <Select value={mBegin} onChange={setMBegin}>{PV_HALF_HOURS.slice(0, -1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</Select>
+              </Field>
+            </Grow>
+            <Grow>
+              <Field label={i18n("pages.zhjwxk.courses.c7b24e7997e9")}>
+                <Select value={mEnd} onChange={setMEnd}>{PV_HALF_HOURS.slice(1).map((m) => <option key={m} value={pvHm(m)}>{pvHm(m)}</option>)}</Select>
+              </Field>
+            </Grow>
+          </Inline>
+          <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.aba7797394c4")}</Text>
+          <Btn variant="outline" disabled={!(mBegin < mEnd)} onClick={() => { wb.addManualEventRange(mName, Number(mDay), mBegin, mEnd); setMName(""); setMOpen(false); }}>{i18n("pages.zhjwxk.courses.54b72e846d49")}</Btn>
+        </Stack>
       ) : null}
     </Sec>
   );
@@ -1462,6 +1468,8 @@ function r2vol(wb: ReturnType<typeof useXkWorkbench>, code: string, seq: string)
 
 /* ══════════ 右栏③：暂存课表 + 草稿 ══════════ */
 function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
+  const uiLocale = useUiLocale();
+
   // 暂存条目也可能不在当前渲染行里（从培养方案/详情暂存）——单独补拉，
   // department 缺省走逐课 p_kch 兜底（2.0：暂存条概率一会有一会没的根因）
   useEffect(() => {
@@ -1479,114 +1487,115 @@ function StageSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
     try {
       const obj = JSON.parse(importText) as { name?: string; courses?: XkStageItem[] };
       const incoming = obj.courses;
-      if (!Array.isArray(incoming)) throw new Error("缺少 courses");
+      if (!Array.isArray(incoming)) throw new Error(i18n("pages.zhjwxk.courses.1ad3aeaef070"));
       for (const c of incoming) wb.importStageItem(c);
       setImportText(""); setImportOpen(false);
-    } catch (e) { wb.setToast(`导入失败: ${e instanceof Error ? e.message : String(e)}`); }
+    } catch (e) { wb.setToast(i18n("pages.zhjwxk.courses.579d5468a97a", { value: String(e instanceof Error ? e.message : String(e)) })); }
   };
   return (
-    <Sec title={`暂存课表（${wb.stageCart.length}）`}>
+    <Sec title={i18n("pages.zhjwxk.courses.c42dc6f6316f", { length: String(wb.stageCart.length) })}>
       {/* 志愿数据检查点同步状态（NextTHUxk 2.0 回移：8/12/16/20 点对齐 + 手动补拉） */}
-      {wb.volState === "loading" ? <div style={{ fontSize: 10, color: "var(--text-3)" }}>志愿数据同步中…</div>
+      {wb.volState === "loading" ? <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.25de4f1abc92")}</Text>
         : wb.volState === "error" ? (
-          <div style={{ fontSize: 10, color: "var(--text-3)" }}>
-            志愿数据同步失败
-            <button className="btn" style={{ padding: "0 5px", fontSize: 10 }} onClick={() => void wb.refreshVol(wb.stageCart.map((st) => ({ code: st.code, seq: st.seq || "0", department: "" })), true)}>重试</button>
-          </div>
+          <Inline gap={2}>
+            <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.912ee0b6d057")}</Text>
+            <Btn variant="outline" size="sm" onClick={() => void wb.refreshVol(wb.stageCart.map((st) => ({ code: st.code, seq: st.seq || "0", department: "" })), true)}>{i18n("pages.zhjwxk.courses.b8784c8dd563")}</Btn>
+          </Inline>
         ) : wb.volLastSync ? (
-          <div style={{ fontSize: 10, color: "var(--text-3)" }}>
-            志愿数据 {new Date(wb.volLastSync).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })} 同步 · 下次 {nextVolCheckpoint().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
-          </div>
+          <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.6a79b6b079b0", { value: new Date(wb.volLastSync).toLocaleTimeString(getUiLocale(), { hour: "2-digit", minute: "2-digit" }), value2: nextVolCheckpoint().toLocaleTimeString(getUiLocale(), { hour: "2-digit", minute: "2-digit" }) })}</Text>
         ) : null}
-      {wb.stageCart.length === 0 ? <div style={{ fontSize: 12, color: "var(--text-3)" }}>暂无暂存课程</div> : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {wb.stageCart.length === 0 ? <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.7bdbe718ba55")}</Text> : (
+        <List gap={1}>
           {wb.stageCart.map((s, i) => {
             const p = itemProb(wb, s.code, s.seq, s.flag, s.zy);
             // 余量按 (课号,班次) 精确匹配——同课号多班次只按课号会串行（简介串台同款病）
             const vol = wb.courses.find((r) => r.c.code === s.code && String(r.c.seq || "0") === String(s.seq || "0"))?.q?.qRemaining;
             return (
-              <div key={`${s.code}_${s.seq || "0"}_${i}`} style={{ display: "flex", flexDirection: "column", alignItems: "stretch", gap: 2, fontSize: 12, padding: "6px 8px", borderRadius: 10, background: "var(--surface, #f7f7f8)", border: "1px solid var(--border)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                  <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600, cursor: "pointer" }} title={`点击搜索：${s.name}（${s.code}）`} onClick={() => jumpTo(s.code, "all", s.seq)}>
-                    {s.name}{s.teacher ? <span style={{ color: "var(--text-3)", fontWeight: 400 }}> {s.teacher}</span> : null}
-                  </span>
-                  {s.credits ? <span style={{ fontSize: 10, color: "var(--text-3)", whiteSpace: "nowrap" }}>{s.credits}学分</span> : null}
-                  <button className="btn" style={{ padding: "0 6px", fontSize: 10 }} title="从暂存区移除" onClick={() => wb.removeFromStage(s.code, s.seq)}>✕</button>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <select className="input" style={{ height: 22, fontSize: 10, maxWidth: 60 }} value={s.flag} onChange={(e) => wb.updateStageItem(s.code, s.seq, { flag: e.target.value as XkFlag })}>
-                    {allowedFlags(s.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}
-                  </select>
-                  <select className="input" style={{ height: 22, fontSize: 10, maxWidth: 52 }} value={s.zy} onChange={(e) => wb.updateStageItem(s.code, s.seq, { zy: Number(e.target.value) })}>
-                    {[3, 2, 1].map((z) => <option key={z} value={z}>{z}志愿</option>)}
-                  </select>
-                  <span style={{ fontSize: 10, color: wb.phase ? "var(--text-3)" : p.color, whiteSpace: "nowrap", marginLeft: "auto" }}>
+              <Row key={`${s.code}_${s.seq || "0"}_${i}`} size="sm" titleAttr={i18n("pages.zhjwxk.courses.83820da93bbb", { name: String(s.name), code: String(s.code) })} onClick={() => jumpTo(s.code, "all", s.seq)}
+                title={s.name}
+                sub={s.teacher ? s.teacher : undefined}
+                trailing={
+                  <Inline gap={2}>
+                    {s.credits ? <Text slot="label" tone="faint" nowrap>{i18nRich("pages.zhjwxk.courses.93fbcc41041a", { credits: s.credits })}</Text> : null}
+                    <IconBtn label={i18n("pages.zhjwxk.courses.d0b3c2123cf2")} size="sm" icon={<IconX size="sm" />} titleAttr={i18n("pages.zhjwxk.courses.d0b3c2123cf2")} onClick={() => wb.removeFromStage(s.code, s.seq)} />
+                  </Inline>
+                }
+              >
+                <Inline gap={2} wrap>
+                  <Select size="sm" value={s.flag} onChange={(value) => wb.updateStageItem(s.code, s.seq, { flag: value as XkFlag })}>{allowedFlags(s.flag).map((f) => <option key={f} value={f}>{FLAG_LABELS[f]}</option>)}</Select>
+                  <Select size="sm" value={s.zy} onChange={(value) => wb.updateStageItem(s.code, s.seq, { zy: Number(value) })}>{[3, 2, 1].map((z) => <option key={z} value={z}>{i18nRich("pages.zhjwxk.courses.b2af275db60a", { z: z })}</option>)}</Select>
+                  <Text slot="label" tone={wb.phase ? "faint" : probTone(p.probNum)} nowrap>
                     {wb.phase ? (vol ?? "—") : p.prob}
-                  </span>
-                </div>
-              </div>
+                  </Text>
+                </Inline>
+              </Row>
             );
           })}
-        </div>
+        </List>
       )}
-      {conflicts.length ? <div style={{ color: "var(--red)", fontSize: 11, marginTop: 6 }}>冲突: {conflicts.slice(0, 5).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.a}/${c.b}`).join(" · ")}</div> : null}
-      <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-        <input className="input" style={{ flex: 1, height: 26, fontSize: 12, minWidth: 110 }} placeholder="草稿名称（如：方案A）" value={draftName} onChange={(e) => setDraftName(e.target.value)} />
-        <button className="btn" onClick={() => { if (draftName.trim()) { wb.saveDraft(draftName.trim()); setDraftName(""); } }}>保存草稿</button>
-        <button className="btn" onClick={() => { const n = globalThis.prompt?.("草稿名称", "我的课表"); if (n) wb.saveCurrentAsDraft(n); }}>存当前选课</button>
-        <button className="btn" onClick={() => wb.setPreview("stage")}>预览暂存</button>
-        <button className="btn" style={{ color: "var(--red)" }} disabled={!wb.stageCart.length && !wb.manualEvents.length}
-          onClick={() => { void (async () => { if (await confirmOk(`清空暂存车 ${wb.stageCart.length} 门 + 自定义占用 ${wb.manualEvents.length} 项？`)) { for (const s of [...wb.stageCart]) wb.removeFromStage(s.code, s.seq); wb.clearManualEvents(); } })()}}>清空</button>
-        <button className="btn" onClick={() => setImportOpen((v) => !v)}>导入</button>
-      </div>
+      {conflicts.length ? <Text slot="label" tone="error">{i18nRich("pages.zhjwxk.courses.06f610639057", { value: conflicts.slice(0, 5).map((c) => `${dayName(c.day)} ${SLOT_NAMES[c.slot - 1]} ${c.a}/${c.b}`).join(" · ") })}</Text> : null}
+      <Inline gap={1} wrap>
+        <Grow><Input size="sm" placeholder={i18n("pages.zhjwxk.courses.f31a1706ec82")} value={draftName} onChange={(value) => setDraftName(value)} /></Grow>
+        <Btn variant="outline" size="sm" onClick={() => { if (draftName.trim()) { wb.saveDraft(draftName.trim()); setDraftName(""); } }}>{i18n("pages.zhjwxk.courses.5329e3f0ee46")}</Btn>
+        <Btn variant="outline" size="sm" onClick={() => { const n = globalThis.prompt?.(i18n("pages.zhjwxk.courses.a2658663724d"), i18n("pages.zhjwxk.courses.bbb5405f0e01")); if (n) wb.saveCurrentAsDraft(n); }}>{i18n("pages.zhjwxk.courses.9fd1ea01249e")}</Btn>
+        <Btn variant="outline" size="sm" onClick={() => wb.setPreview("stage")}>{i18n("pages.zhjwxk.courses.24f0b1d35bb6")}</Btn>
+        <Btn variant="outline" size="sm" disabled={!wb.stageCart.length && !wb.manualEvents.length} onClick={() => { void (async () => { if (await confirmOk(i18nMsg("pages.zhjwxk.courses.c853fddad79f", { length: String(wb.stageCart.length), length2: String(wb.manualEvents.length) }))) { for (const s of [...wb.stageCart]) wb.removeFromStage(s.code, s.seq); wb.clearManualEvents(); } })()}}>{i18n("pages.zhjwxk.courses.1ef3de06b32e")}</Btn>
+        <Btn variant="outline" size="sm" onClick={() => setImportOpen((v) => !v)}>{i18n("pages.zhjwxk.courses.576d81bb0631")}</Btn>
+      </Inline>
       {importOpen ? (
-        <div style={{ marginTop: 6 }}>
-          <textarea className="input" style={{ width: "100%", height: 60, fontSize: 11 }} placeholder="粘贴导出的课表数据…" value={importText} onChange={(e) => setImportText(e.target.value)} />
-          <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-            <button className="btn" onClick={putImport}>确认导入到暂存区</button>
-            <button className="btn" style={{ color: "var(--red)" }} onClick={() => setImportOpen(false)}>取消</button>
-          </div>
-        </div>
+        <Stack gap={1}>
+          <TextArea placeholder={i18n("pages.zhjwxk.courses.a8c7d1760ed1")} value={importText} onChange={(value) => setImportText(value)} />
+          <Inline gap={1}>
+            <Btn variant="outline" size="sm" onClick={putImport}>{i18n("pages.zhjwxk.courses.20b4ffc097d3")}</Btn>
+            <Btn variant="outline" size="sm" onClick={() => setImportOpen(false)}>{i18n("pages.zhjwxk.courses.2cd0f3be8738")}</Btn>
+          </Inline>
+        </Stack>
       ) : null}
-      <div style={{ display: "flex", gap: 6, flexDirection: "column", marginTop: 8 }}>
+      <Stack gap={1}>
         {wb.savedDrafts.map((d, idx) => (
-          <div key={idx} style={{ padding: "6px 8px", borderRadius: 8, border: "1px solid var(--border)", fontSize: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              <b>{d.name}</b>
-              <span style={{ color: "var(--text-3)", fontSize: 11 }}>{d.courses.length} 门 · {d.courses.reduce((a, c) => a + (c.credits || 0), 0)} 学分</span>
-              <span style={{ flex: 1 }} />
+          <OGCard key={idx} pad="sm">
+            <Inline gap={2} wrap spread>
+              <Text weight="bold">{d.name}</Text>
+              <Text slot="label" tone="faint">{i18nRich("pages.zhjwxk.courses.78a83dfa97af", { length: d.courses.length, value: d.courses.reduce((a, c) => a + (c.credits || 0), 0) })}</Text>
               {confirmIdx === idx ? (
-                <>
-                  <button className="btn" onClick={() => { setConfirmIdx(-1); void wb.submitDraft(idx); }}>确认提交</button>
-                  <button className="btn" onClick={() => setConfirmIdx(-1)}>取消</button>
-                </>
+                <Inline gap={1}>
+                  <Btn variant="outline" size="sm" onClick={() => { setConfirmIdx(-1); void wb.submitDraft(idx); }}>{i18n("pages.zhjwxk.courses.9ebe36f8cf23")}</Btn>
+                  <Btn variant="outline" size="sm" onClick={() => setConfirmIdx(-1)}>{i18n("pages.zhjwxk.courses.2cd0f3be8738")}</Btn>
+                </Inline>
               ) : (
-                <button className="btn" onClick={() => setConfirmIdx(idx)}>提交</button>
+                <Btn variant="outline" size="sm" onClick={() => setConfirmIdx(idx)}>{i18n("pages.zhjwxk.courses.08a85f4ab4ba")}</Btn>
               )}
-              <button className="btn" onClick={() => wb.setPreview("draft", idx)}>预览</button>
-              <button className="btn" onClick={() => void wb.exportDraft(idx)}>导出</button>
-              <button className="btn" onClick={() => wb.deleteDraft(idx)}>删除</button>
-            </div>
-          </div>
+              <Btn variant="outline" size="sm" onClick={() => wb.setPreview("draft", idx)}>{i18n("pages.zhjwxk.courses.13d61fea9f17")}</Btn>
+              <Btn variant="outline" size="sm" onClick={() => void wb.exportDraft(idx)}>{i18n("pages.zhjwxk.courses.76420433f22d")}</Btn>
+              <Btn variant="outline" size="sm" onClick={() => wb.deleteDraft(idx)}>{i18n("pages.zhjwxk.courses.2f9daa828907")}</Btn>
+            </Inline>
+          </OGCard>
         ))}
-        {wb.savedDrafts.length ? <div style={{ fontSize: 10, color: "var(--text-3)" }}>提交将先退选所有已选课程，再逐门选入（每门间隔 2s 防验证码）</div> : null}
-      </div>
+        {wb.savedDrafts.length ? <Text slot="label" tone="faint">{i18n("pages.zhjwxk.courses.2f53e8b4a58a")}</Text> : null}
+      </Stack>
     </Sec>
   );
 }
 
 /* ══════════ 右栏④：我的候补 ══════════ */
 function QueueSection({ wb }: { wb: ReturnType<typeof useXkWorkbench> }) {
+  const uiLocale = useUiLocale();
+
   if (!wb.candidates.length) return null;
   return (
-    <Sec title={`我的候补（${wb.candidates.length}）`}>
-      {wb.candidates.map((c, i) => (
-        <div key={`${c.code}-${i}`} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, padding: "4px 0", borderBottom: "1px solid var(--border)" }}>
-          <span className="chip chip-amber" style={{ fontSize: 10 }}>{c.myPos ? `第${c.myPos}位/${c.queueTotal}` : "候选"}</span>
-          <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", cursor: "pointer" }} title={`${c.name}（${c.code}${c.seq && c.seq !== "0" ? `·${c.seq}` : ""}）`} onClick={() => jumpTo(c.code, "all", c.seq)}>{c.name}<span style={{ color: "var(--text-3)" }}> {c.code}{c.seq && c.seq !== "0" ? `·${c.seq}` : ""}</span></span>
-          <button className="btn" style={{ padding: "0 5px", fontSize: 10 }} disabled={wb.busy !== null} onClick={() => void wb.drop(c.code, c.seq, true)}>删除</button>
-        </div>
-      ))}
+    <Sec title={i18n("pages.zhjwxk.courses.530701767bec", { length: String(wb.candidates.length) })}>
+      <List divided>
+        {wb.candidates.map((c, i) => (
+          <Row key={`${c.code}-${i}`} size="sm"
+            leading={<Chip size="sm" tone="warning">{c.myPos ? i18n("pages.zhjwxk.courses.c0587f566be1", { myPos: String(c.myPos), queueTotal: String(c.queueTotal) }) : i18n("pages.zhjwxk.courses.64af28c77281")}</Chip>}
+            title={c.name}
+            titleAttr={`${c.name}（${c.code}${c.seq && c.seq !== "0" ? `·${c.seq}` : ""}）`}
+            meta={<Text slot="label" tone="faint">{c.code}{c.seq && c.seq !== "0" ? `·${c.seq}` : ""}</Text>}
+            trailing={<Btn variant="outline" size="sm" disabled={wb.busy !== null} onClick={() => void wb.drop(c.code, c.seq, true)}>{i18n("pages.zhjwxk.courses.2f9daa828907")}</Btn>}
+            onClick={() => jumpTo(c.code, "all", c.seq)}
+          />
+        ))}
+      </List>
     </Sec>
   );
 }

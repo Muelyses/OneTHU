@@ -1,9 +1,12 @@
+import { courseDisplayName } from "../../lib/learnLanguage.js";
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /** 课程详情（learnX CourseDetail）：头部课程信息 + 通知/作业/文件/分组/讨论区 tab 列表。
  *  作业 tab 带状态筛选 chips（未提交/已提交/已批改/全部，AssignmentsPage 同款 segmented），
  *  已批改条目直接显示成绩（HomeworkRow showGrade，thu-app learnHome「已批改 (分数)」语义）。 */
 import { useEffect, useMemo, useState } from "react";
 import type { LearnGroup } from "@onethu/core";
-import { SegmentedOverflow, Card, Empty, ErrorNote, PageHead, SkeletonRows } from "../../components/Layout.js";
+import { SegmentedOverflow, Card, Empty, ErrorNote, PageHead, SectionHead, SkeletonRows } from "../../components/Layout.js";
 import { CollectStar } from "../../components/Collect.js";
 import { enc } from "../../state/atoms.js";
 import { IconRefresh } from "../../components/Icons.js";
@@ -15,27 +18,30 @@ import { BackButton, FileRow, HomeworkRow, NoticeRow, semesterText } from "./sha
 import { useIgnoredHw } from "../../state/hwIgnore.js";
 import { useLearnNavSemester } from "./shared.js";
 import { BbsPanel } from "./Forum.js";
+import { toExternalNotice, toHomework, useExternalHomework } from "../../state/exthw.js";
+import { mergeCoursesByName, yktKindToCourseTab } from "./courseMerge.js";
+import { YktContentList } from "../../components/exthw/YktContentList.js";
 
 type Tab = "notices" | "assignments" | "files" | "groups" | "forum";
 
 const TABS: Array<{ key: Tab; label: string }> = [
-  { key: "notices", label: "通知" },
-  { key: "assignments", label: "作业" },
-  { key: "files", label: "文件" },
-  { key: "groups", label: "分组" },
-  { key: "forum", label: "讨论区" },
+  { key: "notices", get label() { return i18n("pages.learn.coursedetailpage.4b6ded8a7f18"); } },
+  { key: "assignments", get label() { return i18n("pages.learn.coursedetailpage.b0dff016ff17"); } },
+  { key: "files", get label() { return i18n("pages.learn.coursedetailpage.39932f24fe11"); } },
+  { key: "groups", get label() { return i18n("pages.learn.coursedetailpage.399ee6934772"); } },
+  { key: "forum", get label() { return i18n("pages.learn.coursedetailpage.9c92c9d08b05"); } },
 ];
 
 /** 作业状态筛选（AssignmentsPage 同款口径：未提交 / 已提交未批改 / 已批改 / 全部） */
 type HwFilter = "unfinished" | "submitted" | "graded" | "ignored" | "all";
 
 const HW_FILTERS: Array<{ key: HwFilter; label: string }> = [
-  { key: "unfinished", label: "未提交" },
-  { key: "submitted", label: "已提交" },
-  { key: "graded", label: "已批改" },
+  { key: "unfinished", get label() { return i18n("pages.learn.coursedetailpage.8032af4a590f"); } },
+  { key: "submitted", get label() { return i18n("pages.learn.coursedetailpage.bc37a6110a07"); } },
+  { key: "graded", get label() { return i18n("pages.learn.coursedetailpage.d42baf1647c8"); } },
   // R21c：忽略优先级最高——本课程的忽略作业只出现在这一栏，其余栏一律不含
-  { key: "ignored", label: "已忽略" },
-  { key: "all", label: "全部" },
+  { key: "ignored", get label() { return i18n("pages.learn.coursedetailpage.c9bb70bcaaa3"); } },
+  { key: "all", get label() { return i18n("pages.learn.coursedetailpage.5c55a67935af"); } },
 ];
 
 /** 分组数据模块级缓存（单条目 + 5min TTL，useLearnData 同思路）：
@@ -44,6 +50,8 @@ let groupsCache: { courseId: string; at: number; data: LearnGroup[] } | null = n
 const GROUPS_CACHE_TTL = 5 * 60 * 1000;
 
 export function CourseDetailPage() {
+  const uiLocale = useUiLocale();
+
   useLearnNavSemester();
   const { navParams, status } = useApp();
   const { data, state, error, reload } = useLearnData();
@@ -60,18 +68,49 @@ export function CourseDetailPage() {
   const [groupsNonce, setGroupsNonce] = useState(0);
 
   const courseId = navParams?.courseId ?? "";
-  const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [data, courseId]);
+  useEffect(() => {
+    const t = navParams?.courseTab;
+    setTab(t === "assignments" || t === "files" || t === "groups" || t === "forum" ? t : "notices");
+  }, [courseId, navParams?.courseTab]);
+  const course = useMemo(() => data?.courses.find((c) => c.id === courseId), [uiLocale, data, courseId]);
 
   const notices = useMemo(
     () => (data?.notifications ?? []).filter((n) => n.courseId === courseId)
       .sort((a, b) => b.publishTime.localeCompare(a.publishTime)),
-    [data, courseId],
+    [uiLocale, data, courseId],
   );
   const homework = useMemo(
     () => (data?.homework ?? []).filter((h) => h.courseId === courseId)
       .sort((a, b) => a.deadline.localeCompare(b.deadline)),
-    [data, courseId],
+    [uiLocale, data, courseId],
   );
+
+  /* ── R29：同名雨课堂课程的作业/资料/公告并进本页对应栏位 ──
+   * 匹配沿用「同名课程」口径（courseMerge 的归一化精确匹配）；
+   * 雨课堂侧映射：作业+试卷→作业栏；公告→通知栏；资料/课件/视频/其他→文件栏。 */
+  const ext = useExternalHomework();
+  const yktCourse = useMemo(() => {
+    if (!course) return undefined;
+    const yktCourses = ext.courses.filter((c) => c.source === "yuketang");
+    return mergeCoursesByName([course], yktCourses).byLearnId.get(course.id);
+  }, [uiLocale, course, ext.courses]);
+  const yktHw = useMemo(
+    () =>
+      yktCourse
+        ? ext.items.filter((i) => i.source === "yuketang" && i.classroomId === yktCourse.id).map(toHomework)
+        : [],
+    [uiLocale, ext.items, yktCourse],
+  );
+  const yktContents = useMemo(
+    () => (yktCourse ? ext.contents.filter((c) => c.source === "yuketang" && c.courseId === yktCourse.id) : []),
+    [uiLocale, ext.contents, yktCourse],
+  );
+  /** 公告 → 通知栏 */
+  const yktNotices = useMemo(() => yktContents.filter((c) => yktKindToCourseTab(c.kind) === "notices"), [uiLocale, yktContents]);
+  /** 其余内容（资料/课件/视频/投票/未知）→ 文件栏（雨课堂没有独立"资料库"页签时最自然的落点） */
+  const yktFiles = useMemo(() => yktContents.filter((c) => yktKindToCourseTab(c.kind) === "files"), [uiLocale, yktContents]);
+  /** 本课程作业全集（网络学堂 + 雨课堂），筛选/计数都基于它 */
+  const hwAll = useMemo(() => [...homework, ...yktHw], [uiLocale, homework, yktHw]);
   const ignored = useIgnoredHw(); // R21c：忽略状态（课程页也要过滤 + 自己的忽略栏）
 
   // 作业筛选（默认「全部」：进入页面行为与旧版一致），各组计数供 chip 展示
@@ -79,20 +118,20 @@ export function CourseDetailPage() {
   const hwGroups = useMemo(() => {
     // R21c：忽略的作业从本课程所有常规栏移出，只在「已忽略」栏里（可恢复）
     // R23：旁听作业不属于正式课程作业栏（在「全部作业」页单列）
-    const live = homework.filter((h) => !ignored.has(h.id) && !h.audited);
+    const live = hwAll.filter((h) => !ignored.has(h.id) && !h.audited);
     return {
       unfinished: live.filter((h) => !h.submitted),
       submitted: live.filter((h) => h.submitted && !h.graded),
       graded: live.filter((h) => h.graded),
-      ignored: homework.filter((h) => ignored.has(h.id)),
+      ignored: hwAll.filter((h) => ignored.has(h.id)),
       all: live,
     };
-  }, [homework, ignored]);
+  }, [uiLocale, hwAll, ignored]);
   const hwList = hwGroups[hwFilter];
   const files = useMemo(
     () => (data?.files ?? []).filter((f) => f.courseId === courseId)
       .sort((a, b) => b.uploadTime.localeCompare(a.uploadTime)),
-    [data, courseId],
+    [uiLocale, data, courseId],
   );
 
   useEffect(() => {
@@ -125,33 +164,30 @@ export function CourseDetailPage() {
   }, [tab, status, courseId, groupsNonce]);
 
   const counts: Partial<Record<Tab, number>> = {
-    notices: notices.length,
+    notices: notices.length + yktNotices.length,
     // R21c：计数只算参与中的作业（忽略的不计入，避免「3 条」点进去只剩 2 条）
-    assignments: homework.filter((h) => !ignored.has(h.id) && !h.audited).length,
-    files: files.length,
+    assignments: hwAll.filter((h) => !ignored.has(h.id) && !h.audited).length,
+    files: files.length + yktFiles.length,
     groups: groups?.length,
   };
 
   return (
     <>
       <PageHead
-        title={course?.name ?? (state === "loading" && !data ? "加载中…" : "课程")}
+        title={courseDisplayName(course) ?? (state === "loading" && !data ? i18n("pages.learn.coursedetailpage.4927a53bcc88") : i18n("pages.learn.coursedetailpage.60db1afb4022"))}
         meta={
           course
             ? `${course.courseNumber}-${course.courseIndex} · ${course.teacherName}${data ? ` · ${semesterText(data.semester.id)}` : ""}`
-            : "课程详情"
+            : i18n("pages.learn.coursedetailpage.22519a88484f")
         }
         actions={
           <>
-            <BackButton to="learn" label="课程列表" />
+            <BackButton to="learn" label={i18n("pages.learn.coursedetailpage.e5da2c107242")} />
             <CollectStar
               atom={{ kind: "course", key: enc(course?.id ?? navParams?.courseId ?? "", course?.name ?? "", course?.teacherName ?? "", data?.semester.id ?? "") }}
-              title={course?.name}
+              title={courseDisplayName(course)}
             />
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.coursedetailpage.aee887434131")}</Btn>
           </>
         }
       />
@@ -187,22 +223,46 @@ export function CourseDetailPage() {
       {state === "loading" && !data ? (
         <SkeletonRows rows={5} />
       ) : state === "error" && !data ? null : tab === "notices" ? (
-        notices.length === 0 ? (
-          <Card><Empty text="本课程暂无通知。" /></Card>
+        notices.length === 0 && yktNotices.length === 0 ? (
+          <Card><Empty text={i18n("pages.learn.coursedetailpage.b3731a435fb0")} /></Card>
         ) : (
-          <Card className="list">
-            {notices.map((n, i) => (
-              <NoticeRow key={n.id} n={n} sem={data?.semester.id} from="learn-course" style={{ animationDelay: `${i * 25}ms` }} />
-            ))}
-          </Card>
+          <>
+            {notices.length > 0 ? (
+              <Card className="list">
+                {notices.map((n, i) => (
+                  <NoticeRow key={n.id} n={n} sem={data?.semester.id} from="learn-course" style={{ animationDelay: `${i * 25}ms` }} />
+                ))}
+              </Card>
+            ) : null}
+            {/* R29 + R32：雨课堂公告并入本栏，且与网络学堂通知**同款行、同一打开方式**
+                （点击进同一个站内通知详情页）。navCourseId 传本课程 id：详情页「返回」要回到
+                本课程通知栏（外部公告自身的 courseId 是雨课堂课堂 id，退回会缺参）。 */}
+            {yktNotices.length > 0 ? (
+              <>
+                <SectionHead title={i18n("pages.learn.coursedetailpage.79cccc91b765")} />
+                <Card className="list">
+                  {yktNotices.map((c, i) => (
+                    <NoticeRow
+                      key={c.id}
+                      n={toExternalNotice(c)}
+                      sem={data?.semester.id}
+                      from="learn-course"
+                      navCourseId={courseId}
+                      style={{ animationDelay: `${i * 25}ms` }}
+                    />
+                  ))}
+                </Card>
+              </>
+            ) : null}
+          </>
         )
       ) : tab === "assignments" ? (
-        homework.length === 0 ? (
-          <Card><Empty text="本课程暂无作业。" /></Card>
+        hwAll.length === 0 ? (
+          <Card><Empty text={i18n("pages.learn.coursedetailpage.bdf5dcb60763")} /></Card>
         ) : (
           <>
             {/* 状态筛选 chips：AssignmentsPage 同款 segmented（含各组计数） */}
-            <SegmentedOverflow ariaLabel="作业状态筛选">
+            <SegmentedOverflow ariaLabel={i18n("pages.learn.coursedetailpage.5d2c51e297aa")}>
               {HW_FILTERS.map(({ key, label }) => (
                 <button
                   key={key}
@@ -217,16 +277,19 @@ export function CourseDetailPage() {
               ))}
             </SegmentedOverflow>
             {hwList.length === 0 ? (
-              <Card><Empty text={hwFilter === "ignored" ? "本课程没有已忽略的作业。" : "该状态下暂无作业。"} /></Card>
+              <Card><Empty text={hwFilter === "ignored" ? i18n("pages.learn.coursedetailpage.052544849717") : i18n("pages.learn.coursedetailpage.4fc6f287e4e5")} /></Card>
             ) : (
               <Card className="list">
                 {hwList.map((h, i) => (
                   <HomeworkRow
                     key={h.id}
                     h={h}
-                    courseName={course?.name}
+                    courseName={courseDisplayName(course)}
+                    identityCourseName={course?.name}
                     sem={data?.semester.id}
                     from="learn-course"
+                    // R29：雨课堂作业行返回时带回本课程 id（否则课程页缺参渲染空页）
+                    {...(h.source ? { fromCourseId: courseId } : {})}
                     showGrade
                     remind
                     style={{ animationDelay: `${i * 25}ms` }}
@@ -237,21 +300,32 @@ export function CourseDetailPage() {
           </>
         )
       ) : tab === "files" ? (
-        files.length === 0 ? (
-          <Card><Empty text="本课程暂无文件。" /></Card>
+        files.length === 0 && yktFiles.length === 0 ? (
+          <Card><Empty text={i18n("pages.learn.coursedetailpage.dc9cd1730d43")} /></Card>
         ) : (
-          <Card className="list">
-            {files.map((f, i) => (
-              <FileRow key={f.id} f={f} sem={data?.semester.id} from="learn-course" style={{ animationDelay: `${i * 25}ms` }} />
-            ))}
-          </Card>
+          <>
+            {files.length > 0 ? (
+              <Card className="list">
+                {files.map((f, i) => (
+                  <FileRow key={f.id} f={f} sem={data?.semester.id} from="learn-course" style={{ animationDelay: `${i * 25}ms` }} />
+                ))}
+              </Card>
+            ) : null}
+            {/* R29：雨课堂「资料」等并入文件栏（行内就地展开/内置预览） */}
+            {yktFiles.length > 0 ? (
+              <>
+                <SectionHead title={i18n("pages.learn.coursedetailpage.cc67d302a7ef")} />
+                <YktContentList items={yktFiles} />
+              </>
+            ) : null}
+          </>
         )
       ) : tab === "groups" ? (
         groupsState === "loading" || groupsState === "idle" ? (
           <SkeletonRows rows={2} />
         ) : groupsState === "error" ? (
           <ErrorNote
-            text={groupsError || "分组没有加载出来，请刷新后重试"}
+            text={groupsError || i18n("pages.learn.coursedetailpage.f25c0dd68e3b")}
             onRetry={() => {
               groupsCache = null; // 强制绕过缓存重试
               setGroupsNonce((n) => n + 1);
@@ -259,16 +333,16 @@ export function CourseDetailPage() {
           />
         ) : !groups || groups.length === 0 ? (
           <Card>
-            <Empty text="本课程暂无分组，或课程未开启分组。" />
+            <Empty text={i18n("pages.learn.coursedetailpage.7fe1716b6c26")} />
           </Card>
         ) : (
           <Card className="list">
             {groups.map((g, i) => {
               const meta = [
-                g.members.length > 0 ? `${g.members.length} 名成员` : "",
-                g.creator ? `创建人 ${g.creator}` : "",
+                g.members.length > 0 ? i18n("pages.learn.coursedetailpage.2012dba9a5c5", { length: String(g.members.length) }) : "",
+                g.creator ? i18n("pages.learn.coursedetailpage.5351f3751c35", { creator: String(g.creator) }) : "",
                 g.createTime,
-                g.topicCount !== undefined ? `${g.topicCount} 个话题` : "",
+                g.topicCount !== undefined ? i18n("pages.learn.coursedetailpage.d41346cbeb96", { topicCount: String(g.topicCount) }) : "",
               ]
                 .filter(Boolean)
                 .join(" · ");
@@ -297,7 +371,7 @@ export function CourseDetailPage() {
         <BbsPanel
           courseId={courseId}
           initialBoard={navParams?.bbsBoard}
-          courseName={course?.name}
+          courseName={courseDisplayName(course)}
           sem={data?.semester.id}
         />
       )}

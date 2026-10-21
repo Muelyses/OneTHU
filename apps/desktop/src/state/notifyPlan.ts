@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 通知计划（纯计算，可测）：日程 + 未交作业 + 两级提醒规则 → 未来 N 天要投递的系统通知。
  *
@@ -19,9 +20,9 @@ export type NotifyKind = "class" | "exam" | "event" | "ddl" | "briefing";
 export type NotifyChannel = "course" | "ddl" | "briefing";
 
 export const NOTIFY_CHANNEL_NAMES: Record<NotifyChannel, string> = {
-  course: "课程与日程",
-  ddl: "作业截止",
-  briefing: "每日早报",
+  get course() { return i18n("state.notifyplan.7f9ab29b611d"); },
+  get ddl() { return i18n("state.notifyplan.9b702fb32d62"); },
+  get briefing() { return i18n("state.notifyplan.fe593e7c8ef9"); },
 };
 
 /** 通知属于哪个渠道（后端据此选 Android 渠道 / 前端据此分组显示）。
@@ -93,9 +94,14 @@ export interface PlanEventEntry {
   location?: string | null;
   /** 起点（毫秒） */
   start: number;
+  /** 本场次的结束时刻（毫秒；全天日程为末日的次日 0 点，即不含端点） */
+  end?: number;
   allDay?: boolean;
   /** 事件自带的提前量（分钟）；缺省用设置里的课程提前量 */
   alarmMinutes?: number | null;
+  /** 用户勾了「在桌面小组件显示」（ICS 的 X-ONETHU-WIDGET）：
+   *  该场次进桌面小组件的「今天」卡片，行与 DDL 同款（见 widgetSnapshot.ts）。 */
+  inWidget?: boolean;
 }
 
 export interface PlanHomework {
@@ -369,7 +375,7 @@ export function buildNotifyPlan(input: {
           eventsToday.length ? `${eventsToday.length} 个日程` : null,
           dues.length ? `${dues.length} 个截止` : null,
         ]),
-        page: i === 0 && key === nowDay ? "today" : "schedule",
+        page: i === 0 && key === nowDay ? "homepage" : "schedule",
         ...(q.shifted ? { shifted: true } : {}),
       }, end);
     }

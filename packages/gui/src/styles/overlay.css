@@ -1,0 +1,414 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 浮层族（Modal / Sheet / Drawer / ActionSheet / Menu / ContextMenu / Tooltip / Popover）
+ *
+ * 一个模型，两种落点：
+ *   ① 模态族 = 遮罩 .og-scrim + 面板 .og-panel：Modal / Sheet / Drawer / ActionSheet
+ *      只差修饰符（--bottom / --left / --right / --sm…），面板解剖（head/body/foot）完全共用；
+ *   ② 锚定族 = 定位壳 .og-floating + 浮层面 .og-float：Menu / ContextMenu / Popover / Tooltip
+ *      共用一份落位几何（JS 算出的 top/left/maxHeight 内联，节点标 data-og-dynamic="overlay"）。
+ *
+ * 玻璃皮肤零改动：面只认 --og-surface-overlay，材质只认 var(--og-overlay-tint) /
+ * var(--og-overlay-blur)（与 .og-surface--overlay 同一套取值），边缘只认 --og-line-1。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── ① 浮层面：面板与锚定浮层共用同一套面（皮肤换材质时这两行就够） ── */
+.og-panel,
+.og-float {
+  background-color: var(--og-fill-overlay);
+  background-image: var(--og-overlay-tint);
+  border: 1px solid var(--og-line-1);
+  -webkit-backdrop-filter: var(--og-overlay-blur);
+  backdrop-filter: var(--og-overlay-blur);
+}
+
+/* ── ② 遮罩：全站唯一一个 .og-scrim ───────────────────────────────────── */
+.og-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--og-z-overlay);
+  display: grid;
+  place-items: center;
+  padding: var(--og-space-6);
+  background: var(--og-scrim);
+  overscroll-behavior: contain;
+  animation: og-fade-in var(--og-dur-2) var(--og-ease-decelerate) both;
+}
+
+.og-scrim.is-closing {
+  animation: og-fade-out var(--og-dur-2) var(--og-ease-accelerate) both;
+  pointer-events: none;
+}
+
+/* 手机底部表：通栏贴底（面板自己管圆角与安全区） */
+.og-scrim--sheet {
+  padding: 0;
+  place-items: end stretch;
+}
+
+/* 抽屉：两侧满高，面板自己靠 auto 外边距贴边 */
+.og-scrim--drawer {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+}
+
+/* ── ③ 面板：模态族共用外形 ───────────────────────────────────────────── */
+.og-panel {
+  position: relative;
+  z-index: var(--og-z-modal);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-height: 100%;
+  overflow: hidden;
+  color: var(--og-content-1);
+  border-radius: var(--og-radius-card);
+  box-shadow: var(--og-elev-3);
+  animation: og-pop-in var(--og-dur-2) var(--og-ease-decelerate) both;
+}
+
+/* 程序化聚焦的面板不画焦点环（环只给真正可交互的控件） */
+.og-panel:focus {
+  outline: none;
+}
+
+.og-panel:focus-visible {
+  box-shadow: var(--og-elev-3);
+}
+
+.og-panel.is-closing {
+  animation: og-pop-out var(--og-dur-2) var(--og-ease-accelerate) both;
+  pointer-events: none;
+}
+
+/* ── ④ 面板解剖：所有面板家族共用这五个部件 ───────────────────────────── */
+.og-panel-head {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--og-space-3);
+  padding: var(--og-space-5) var(--og-space-6);
+  border-bottom: 1px solid var(--og-line-1);
+}
+
+.og-panel-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--og-text-subtitle);
+  font-weight: var(--og-weight-semibold);
+  line-height: var(--og-text-subtitle-lh);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.og-panel-close {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.og-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--og-space-5);
+}
+
+.og-panel-foot {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--og-space-2);
+  padding: var(--og-space-5) var(--og-space-6);
+  border-top: 1px solid var(--og-line-1);
+}
+
+/* Sheet 的抓手：纯装饰，拖拽/关闭都由遮罩与按钮负责 */
+.og-sheet-grip {
+  flex: 0 0 auto;
+  align-self: center;
+  width: calc(var(--og-space-7) + var(--og-space-2));
+  height: var(--og-space-1);
+  margin-top: var(--og-space-2);
+  border-radius: var(--og-radius-full);
+  background: var(--og-line-3);
+}
+
+/* ── ⑤ Modal：三档宽度，刻度 = 间距刻度的整数倍（不引入新刻度） ── */
+.og-modal {
+  --og-c-modal-w: calc(var(--og-space-10) * 8);
+  width: min(100%, var(--og-c-modal-w));
+}
+
+.og-modal--sm {
+  --og-c-modal-w: calc(var(--og-space-10) * 6);
+}
+
+.og-modal--lg {
+  --og-c-modal-w: calc(var(--og-space-10) * 12);
+}
+
+/* ── ⑥ Sheet：手机 = 底部表；桌面 = 缩小成居中面板（同一份 API） ── */
+.og-sheet--center {
+  --og-c-sheet-w: calc(var(--og-space-10) * 8);
+  width: min(100%, var(--og-c-sheet-w));
+}
+
+.og-sheet--bottom {
+  width: 100%;
+  max-height: 92dvh;
+  padding-bottom: var(--og-safe-bottom);
+  border-radius: var(--og-radius-2xl) var(--og-radius-2xl) 0 0;
+  animation: og-sheet-up var(--og-dur-3) var(--og-ease-decelerate) both;
+}
+
+.og-sheet--bottom.is-closing {
+  animation: og-sheet-down var(--og-dur-3) var(--og-ease-accelerate) both;
+  pointer-events: none;
+}
+
+/* ── ⑦ Drawer：只动 transform，左右只差位移方向 ── */
+.og-drawer {
+  --og-c-drawer-w: calc(var(--og-space-10) * 7);
+  --og-c-drawer-shift: 100%;
+  width: min(100%, var(--og-c-drawer-w));
+  height: 100%;
+  max-height: 100%;
+  border-radius: 0;
+  animation: og-drawer-in var(--og-dur-3) var(--og-ease-decelerate) both;
+}
+
+.og-drawer--right {
+  margin-left: auto;
+}
+
+.og-drawer--left {
+  --og-c-drawer-shift: -100%;
+  margin-right: auto;
+}
+
+.og-drawer.is-closing {
+  animation: og-drawer-out var(--og-dur-3) var(--og-ease-accelerate) both;
+  pointer-events: none;
+}
+
+/* ── ⑧ 锚定浮层：定位壳（几何内联，壳只管"还没落位时先别露脸"） ── */
+.og-floating {
+  position: fixed;
+  visibility: hidden;
+}
+
+.og-floating.is-placed {
+  visibility: visible;
+}
+
+.og-float {
+  z-index: var(--og-z-menu);
+  max-width: calc(100vw - var(--og-space-8));
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--og-radius-menu);
+  box-shadow: var(--og-elev-menu);
+  transform-origin: center;
+  animation: og-pop-in var(--og-dur-2) var(--og-ease-decelerate) both;
+}
+
+/* 展开原点跟着落位方向走（从锚点那一角长出来，而不是从中心） */
+.og-float--bottom {
+  transform-origin: top left;
+}
+
+.og-float--top {
+  transform-origin: bottom left;
+}
+
+.og-float--left {
+  transform-origin: right center;
+}
+
+.og-float--right {
+  transform-origin: left center;
+}
+
+.og-float.is-closing {
+  animation: og-pop-out var(--og-dur-2) var(--og-ease-accelerate) both;
+  pointer-events: none;
+}
+
+/* ── ⑨ Menu / ContextMenu / ActionSheet 的列表（同一份模型） ── */
+.og-menu {
+  --og-c-menu-min-w: calc(var(--og-space-10) * 3);
+  min-width: var(--og-c-menu-min-w);
+  padding: var(--og-space-1);
+}
+
+.og-menu-title {
+  padding: var(--og-space-2) var(--og-space-3) var(--og-space-1);
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-3);
+}
+
+.og-menu-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.og-menu-sep {
+  height: 1px; /* 描边级 1px：与 --og-line-* 的分隔线同口径 */
+  margin: var(--og-space-1) var(--og-space-2);
+  background: var(--og-line-1);
+}
+
+.og-menu-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-3);
+  width: 100%;
+  min-height: var(--og-ctl-h-md);
+  padding: 0 var(--og-space-3);
+  border: 1px solid transparent;
+  border-radius: var(--og-radius-sm);
+  background: transparent;
+  color: var(--og-content-1);
+  font-family: inherit;
+  font-size: var(--og-text-body);
+  line-height: var(--og-text-body-lh);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--og-dur-1) var(--og-ease-standard);
+}
+
+@media (hover: hover) {
+  .og-menu-item:hover {
+    background: var(--og-hover);
+  }
+}
+
+.og-menu-item:active {
+  background: var(--og-press);
+}
+
+.og-menu-item.is-active {
+  background: var(--og-selected);
+}
+
+.og-menu-item.is-danger {
+  color: var(--og-error);
+}
+
+.og-menu-item.is-disabled {
+  opacity: var(--og-disabled-opacity);
+  pointer-events: none;
+}
+
+.og-menu-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  color: var(--og-content-2);
+}
+
+.og-menu-item.is-danger .og-menu-icon {
+  color: inherit;
+}
+
+.og-menu-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ActionSheet：把面板正文还给列表（自己管内边距与取消行） */
+.og-action-body {
+  padding: var(--og-space-2);
+}
+
+.og-action-cancel {
+  justify-content: center;
+  margin-top: var(--og-space-2);
+  border-top: 1px solid var(--og-line-1);
+  border-radius: 0 0 var(--og-radius-md) var(--og-radius-md);
+  color: var(--og-content-2);
+}
+
+/* ── ⑩ Tooltip：反色面，不吃指针（永远不挡它标注的那个东西） ── */
+.og-tooltip-anchor {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+.og-tooltip {
+  z-index: var(--og-z-tooltip);
+  max-width: calc(100vw - var(--og-space-8));
+  padding: var(--og-space-2) var(--og-space-3);
+  border-radius: var(--og-radius-md);
+  background: var(--og-surface-inverse);
+  color: var(--og-content-inverse);
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  box-shadow: var(--og-elev-2);
+  pointer-events: none;
+  transform-origin: center;
+  animation: og-fade-in var(--og-dur-1) var(--og-ease-decelerate) both;
+}
+
+.og-tooltip--top {
+  transform-origin: bottom center;
+}
+
+.og-tooltip--bottom {
+  transform-origin: top center;
+}
+
+.og-tooltip--left {
+  transform-origin: right center;
+}
+
+.og-tooltip--right {
+  transform-origin: left center;
+}
+
+/* ── ⑪ Popover：锚定的浮层面板，内容自管 ── */
+.og-popover {
+  --og-c-popover-min-w: calc(var(--og-space-10) * 3);
+  min-width: var(--og-c-popover-min-w);
+  padding: var(--og-space-4);
+}
+
+/* ── ⑫ 模态族打开时锁文档滚动（类挂在根节点上，不写内联样式） ── */
+.og-scroll-lock,
+.og-scroll-lock body {
+  overflow: hidden;
+}
+
+/* ── ⑬ 退场/进场键位：只动 transform（百分比位移，不带像素） ── */
+@keyframes og-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@keyframes og-sheet-down {
+  from { transform: none; }
+  to { transform: translateY(100%); }
+}
+
+@keyframes og-drawer-in {
+  from { transform: translateX(var(--og-c-drawer-shift)); }
+  to { transform: none; }
+}
+
+@keyframes og-drawer-out {
+  from { transform: none; }
+  to { transform: translateX(var(--og-c-drawer-shift)); }
+}

@@ -12,9 +12,19 @@ mod notify_macos;
 mod notify_windows;
 mod mail;
 mod seafile;
+mod memory_mirror;
+mod im_media;
 mod downloads;
 mod harness_embed;
+mod overlay_win;
+mod updater;
+mod ws_bridge;
 mod plugins;
+mod native_security;
+mod plugin_package;
+mod skill_package;
+mod skill_runtime;
+mod skills;
 use std::collections::HashMap;
 use std::error::Error as _;
 use std::time::Duration;
@@ -83,6 +93,275 @@ struct HttpOutput {
 #[tauri::command]
 fn read_file_text(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("读取失败：{e}"))
+}
+
+/// 写临时文件（附件通路的反向：JS 侧字节 → 本地路径）。
+/// 经 <input>/相机/滤镜拿到的字节没有路径，而 seafile_upload、作业提交、讨论区发帖都吃 localPath；
+/// 每次写入使用独立临时目录，保留 basename 供云盘上传使用，避免并发分享相互覆盖。
+#[tauri::command]
+fn write_temp_file(name: String, data_base64: String) -> Result<String, String> {
+    use base64::Engine as _;
+    let safe = std::path::Path::new(&name)
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "attach.bin".to_string());
+    static NEXT_TEMP: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let nonce = NEXT_TEMP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_err(|e| e.to_string())?.as_nanos();
+    let dir = std::env::temp_dir().join("onethu-tmp").join(format!("{}-{stamp}-{nonce}", std::process::id()));
+    std::fs::create_dir_all(&dir).map_err(|e| format!("建目录失败：{e}"))?;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64.as_bytes())
+        .map_err(|e| format!("base64 解码失败：{e}"))?;
+    let path = dir.join(safe);
+    std::fs::write(&path, bytes).map_err(|e| format!("写入失败：{e}"))?;
+    Ok(path.to_string_lossy().to_string())
+}
+
+/// 壁纸专用存档（2026-10-13 用户实测大图/视频走 dataURL：a) localStorage 1.2MB blob 上限必爆，
+/// b) 渲染端对超大 dataURL 的解码也常拒绝 → 用户看到「灰色一大片没铺开」）。
+/// 落 app_data_dir/wallpapers/（**不是 temp**：temp 会被系统清理，壁纸要长期）；只取文件名防目录穿越。
+#[tauri::command]
+fn wallpaper_save(app: tauri::AppHandle, name: String, data_base64: String) -> Result<String, String> {
+    use base64::Engine as _;
+    let safe = std::path::Path::new(&name)
+        .file_name()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "wallpaper.bin".to_string());
+    let dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| format!("定位存档目录失败：{e}"))?
+        .join("wallpapers");
+    std::fs::create_dir_all(&dir).map_err(|e| format!("建目录失败：{e}"))?;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64.as_bytes())
+        .map_err(|e| format!("base64 解码失败：{e}"))?;
+    let path = dir.join(&safe);
+    std::fs::write(&path, bytes).map_err(|e| format!("写入失败：{e}"))?;
+    Ok(path.to_string_lossy().to_string())
+}
+
+/* ══════════ 极客模式（浏览器探索；2026-10-13 用户点名）══════════
+ * 能力：探测本机 Chrome/Chromium/Edge 与 playwright 下载件 → 用**独立 profile**
+ * （app_data_dir/geek-profile，登录态自持且与主程序隔离）启动，远程调试口给 TS 侧 CDP。
+ * 硬边界：①手机端（Android）一律拒绝；②写入动作全走应用内两段式确认（facade/OH 工具层再 gate）；
+ * ③用户风险自负的说明由设置层承载（此处不拦也不代持免责）。 */
+
+#[cfg(desktop)]
+fn geek_probe_browsers() -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    #[cfg(target_os = "macos")]
+    for p in [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    ] {
+        if std::path::Path::new(p).exists() {
+            out.push(p.to_string());
+        }
+    }
+    #[cfg(target_os = "windows")]
+    for p in [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        "C:\\Program Files\\Chromium\\chromium.exe",
+    ] {
+        if std::path::Path::new(p).exists() {
+            out.push(p.to_string());
+        }
+    }
+    #[cfg(all(unix, not(target_os = "macos")))]
+    for p in ["/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome", "/usr/bin/google-chrome-stable"] {
+        if std::path::Path::new(p).exists() {
+            out.push(p.to_string());
+        }
+    }
+    out
+}
+
+/// 浏览器探索探测（只读）：本机可选浏览器 + playwright chromium 是否已下载 + 独立 profile 是否已存在。
+#[tauri::command]
+fn geek_browser_probe(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放浏览器探索（桌面端专属）。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        let _ = app;
+        return Err("手机端不开放浏览器探索。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let data = app.path().app_data_dir().map_err(|e| e.to_string())?;
+        let profile = data.join("geek-profile");
+        let pw_dir = std::env::var_os("HOME").map(|h| std::path::PathBuf::from(h).join("Library/Caches/ms-playwright")).or_else(|| std::env::var_os("USERPROFILE").map(|h| std::path::PathBuf::from(h).join("AppData/Local/ms-playwright")));
+        let pw_ready = pw_dir
+            .map(|d| std::fs::read_dir(&d).map(|rd| rd.flatten().any(|e| e.file_name().to_string_lossy().starts_with("chromium-"))).unwrap_or(false))
+            .unwrap_or(false);
+        Ok(serde_json::json!({
+            "browsers": geek_probe_browsers(),
+            "profileReady": profile.exists(),
+            "playwrightReady": pw_ready,
+            "profileDir": profile.to_string_lossy(),
+        }))
+    }
+}
+
+static GEEK_CHILD: std::sync::OnceLock<std::sync::Mutex<Option<(u32, std::process::Child)>>> = std::sync::OnceLock::new();
+static GEEK_PORT: std::sync::OnceLock<std::sync::Mutex<Option<u16>>> = std::sync::OnceLock::new();
+
+fn geek_child_slot() -> &'static std::sync::Mutex<Option<(u32, std::process::Child)>> {
+    GEEK_CHILD.get_or_init(|| std::sync::Mutex::new(None))
+}
+
+/// 启动探索浏览器（mode = "system" | "playwright"）：独立 profile + remote-debugging-port。
+#[tauri::command]
+fn geek_browser_launch(app: tauri::AppHandle, mode: String) -> Result<serde_json::Value, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放浏览器探索（桌面端专属）。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        let _ = (app, mode);
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        use base64::Engine as _;
+        let _ = base64::engine::general_purpose::STANDARD;
+        let data = app.path().app_data_dir().map_err(|e| e.to_string())?;
+        let profile = data.join("geek-profile");
+        std::fs::create_dir_all(&profile).map_err(|e| format!("建 profile 失败：{e}"))?;
+        let running = geek_child_slot().lock().map(|g| g.is_some()).unwrap_or(false);
+        if running {
+            let port = GEEK_PORT.get_or_init(|| std::sync::Mutex::new(None)).lock().map(|g| g.unwrap_or(0)).unwrap_or(0);
+            return Ok(serde_json::json!({ "alreadyRunning": true, "port": port }));
+        }
+        let path = if mode == "playwright" {
+            let dir = std::env::var_os("HOME").map(|h| std::path::PathBuf::from(h).join("Library/Caches/ms-playwright")).or_else(|| std::env::var_os("USERPROFILE").map(|h| std::path::PathBuf::from(h).join("AppData/Local/ms-playwright"))).ok_or("找不到用户目录")?;
+            let mut found: Option<std::path::PathBuf> = None;
+            if let Ok(rd) = std::fs::read_dir(&dir) {
+                for e in rd.flatten() {
+                    let name = e.file_name().to_string_lossy().to_string();
+                    if name.starts_with("chromium-") {
+                        let cand = e.path().join("chrome-mac").join("Chromium.app").join("Contents").join("MacOS").join("Chromium");
+                        if cand.exists() {
+                            found = Some(cand);
+                            break;
+                        }
+                        let cand2 = e.path().join("chrome-linux").join("chrome");
+                        if cand2.exists() {
+                            found = Some(cand2);
+                            break;
+                        }
+                    }
+                }
+            }
+            found.ok_or("playwright chromium 还没下载（设置里先一键下载）")?.to_string_lossy().to_string()
+        } else {
+            geek_probe_browsers()
+                .into_iter()
+                .next()
+                .ok_or("本机没装 Chrome/Chromium/Edge；或改用 playwright 下载档")?
+        };
+        let port: u16 = 9333;
+        let child = std::process::Command::new(&path)
+            .arg(format!("--remote-debugging-port={port}"))
+            .arg(format!("--user-data-dir={}", profile.to_string_lossy()))
+            .arg("--no-first-run")
+            .arg("--no-default-browser-check")
+            .spawn()
+            .map_err(|e| format!("启动失败：{e}"))?;
+        let pid = child.id();
+        *geek_child_slot().lock().map_err(|e| e.to_string())? = Some((pid, child));
+        *GEEK_PORT.get_or_init(|| std::sync::Mutex::new(None)).lock().map_err(|e| e.to_string())? = Some(port);
+        Ok(serde_json::json!({ "pid": pid, "port": port, "profileDir": profile.to_string_lossy() }))
+    }
+}
+
+/// 关闭探索浏览器（kill 子进程；session 粒度不优雅退出——登录态在磁盘 profile 里不丢）。
+#[tauri::command]
+fn geek_browser_close() -> Result<bool, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let mut slot = geek_child_slot().lock().map_err(|e| e.to_string())?;
+        if let Some((pid, mut child)) = slot.take() {
+            let _ = child.kill();
+            let _ = pid;
+            *GEEK_PORT.get_or_init(|| std::sync::Mutex::new(None)).lock().map_err(|e| e.to_string())? = None;
+            return Ok(true);
+        }
+        Ok(false)
+    }
+}
+
+/// 一键下载 playwright chromium（桌面 Only；子进程跑 npx -y playwright install chromium，返回日志尾）。
+#[tauri::command]
+fn geek_playwright_install() -> Result<String, String> {
+    if cfg!(target_os = "android") {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(target_os = "android")]
+    {
+        return Err("手机端不开放。".into());
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let out = std::process::Command::new("npx")
+            .args(["-y", "playwright@1.49.1", "install", "chromium"])
+            .output()
+            .map_err(|e| format!("npx 启动失败（机器上要有 Node.js）：{e}"))?;
+        let tail = String::from_utf8_lossy(&out.stderr).trim().to_string();
+        let head = String::from_utf8_lossy(&out.stdout).trim().to_string();
+        let msg = if !tail.is_empty() { tail } else { head };
+        if out.status.success() {
+            Ok(if msg.is_empty() { "下载完成".into() } else { msg.lines().rev().take(3).collect::<Vec<_>>().into_iter().rev().collect::<Vec<_>>().join("；") })
+        } else {
+            Err(format!("下载失败：{msg}"))
+        }
+    }
+}
+
+/// 删除壁纸存档：路径必须落在 wallpapers 目录内（防目录穿越被滥用成任意删文件）。
+#[tauri::command]
+fn wallpaper_delete(app: tauri::AppHandle, path: String) -> Result<(), String> {
+    let root = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| e.to_string())?
+        .join("wallpapers");
+    let p = std::path::PathBuf::from(&path);
+    let pr = p.canonicalize().unwrap_or(p.clone());
+    let rr = root.canonicalize().unwrap_or(root.clone());
+    if !pr.starts_with(&rr) {
+        return Err("这个路径不在壁纸存档目录里，拒绝删除".into());
+    }
+    if pr.exists() {
+        std::fs::remove_file(&pr).map_err(|e| format!("删除失败：{e}"))?;
+    }
+    Ok(())
+}
+
+/// 读本地文件为 base64（附件通路：本地路径 → JS 侧 File/bytes）。
+/// 默认上限 64MB；超限直接报错而不是截断（避免悄悄传坏文件）。base64 膨胀 ~33%，调用方自担内存。
+#[tauri::command]
+fn read_file_base64(path: String, max_bytes: Option<u64>) -> Result<String, String> {
+    use base64::Engine as _;
+    let limit = max_bytes.unwrap_or(64 * 1024 * 1024);
+    let meta = std::fs::metadata(&path).map_err(|e| format!("读取失败：{e}"))?;
+    if meta.len() > limit {
+        return Err(format!("文件过大：{} 字节（上限 {}）", meta.len(), limit));
+    }
+    let bytes = std::fs::read(&path).map_err(|e| format!("读取失败：{e}"))?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
 }
 
 // ── 寻迹：高德 Web 服务 Key（编译期经 build.rs 注入；XOR 0x5A 混淆）──
@@ -222,24 +501,9 @@ fn trace_key() -> String {
         .collect()
 }
 
-/// 调试日志文件路径：所有写点统一走这里（Windows 下 /tmp 语义为「当前盘根 \tmp\」）。
-const DEBUG_LOG_PATH: &str = "/tmp/onethu-debug.log";
-
-/// 调试日志落点。R21：安卓此前只有 logcat（无 /tmp），用户拿不到日志、真机问题
-/// 全靠猜（2026-09-21「在线服务跳浏览器」「校内启动 20s」两个实录的教训）——
-/// 现在安卓落 app_data_dir/logs/onethu-debug.log，设置页可一键转存系统下载。
-fn debug_log_path() -> std::path::PathBuf {
-    if let Some(app) = LOG_APP.get() {
-        #[cfg(target_os = "android")]
-        {
-            use tauri::Manager;
-            if let Ok(dir) = app.path().app_data_dir() {
-                return dir.join("logs").join("onethu-debug.log");
-            }
-        }
-        let _ = app;
-    }
-    std::path::PathBuf::from(DEBUG_LOG_PATH)
+/// All platforms use the application's private directory. Before setup, skip file logs.
+fn debug_log_path() -> Option<std::path::PathBuf> {
+    LOG_APP.get()?.path().app_data_dir().ok().map(|dir| dir.join("logs").join("onethu-debug.log"))
 }
 
 /// setup 时注入全局句柄（命令/内部日志统一取落点，不必层层穿参）
@@ -247,16 +511,23 @@ static LOG_APP: std::sync::OnceLock<tauri::AppHandle> = std::sync::OnceLock::new
 
 /// Rust 侧直接写调试日志（逐跳计时 / THOS-SEED / VENUEVIEW 等）——与 JS log_debug 同一落点。
 fn debug_log_line(line: &str) {
-    let path = debug_log_path();
+    // File and logcat must receive exactly the same sanitized record.
+    let line = native_security::redact_log(line);
+    let Some(path) = debug_log_path() else { return };
     if let Some(parent) = path.parent() {
         let _ = std::fs::create_dir_all(parent);
     }
-    let ok = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&path)
+    if native_security::confined_path(path.parent().unwrap(), std::path::Path::new("onethu-debug.log")).is_err() { return; }
+    let mut options = std::fs::OpenOptions::new();
+    options.create(true).append(true);
+    #[cfg(unix)]
+    { use std::os::unix::fs::OpenOptionsExt; options.mode(0o600); }
+    let ok = options.open(&path)
         .ok()
-        .and_then(|mut f| std::io::Write::write_all(&mut f, format!("{line}\n").as_bytes()).ok());
+        .and_then(|mut f| {
+            native_security::private_permissions(&path).ok()?;
+            std::io::Write::write_all(&mut f, format!("{line}\n").as_bytes()).ok()
+        });
     // Android：**始终**镜像一份到 logcat（tag=onethu）。落盘文件在应用私有目录，
     // 真机 adb 读不到（release 包 run-as 不可用、导出要用户手点），而排查真机问题恰恰
     // 需要实时现场 → `adb logcat -s onethu:V` 即可跟着复现看日志。
@@ -274,10 +545,9 @@ fn debug_log_line(line: &str) {
 /// 打开调试日志（append）。写前先 `create_dir_all(parent)`——Windows 上 `\tmp\`
 /// 常不存在，此前 `File::create` 失败被 `let _` 吞掉，霖机器整条调试链静默失效
 /// （R10 15.1-3：log_debug / thos_log / venue_log 三处统一走本 helper）。
-#[tauri::command]
-fn log_debug(line: String) -> Result<(), String> {
+fn write_debug_log(line: String) -> Result<(), String> {
     // 体积闸门：超 16MB 轮转为 .old（防 HTML dump 类循环刷盘——曾灌到 1GB）
-    let path = debug_log_path();
+    let path = debug_log_path().ok_or("日志目录尚未就绪")?;
     if let Ok(meta) = std::fs::metadata(&path) {
         if meta.len() > 16 * 1024 * 1024 {
             let _ = std::fs::rename(&path, path.with_extension("log.old"));
@@ -287,11 +557,18 @@ fn log_debug(line: String) -> Result<(), String> {
     Ok(())
 }
 
+// File I/O must not run inside the Windows WebView2 IPC callback.
+#[tauri::command]
+async fn log_debug(line: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || write_debug_log(line))
+        .await.map_err(|e| format!("日志后台任务失败: {e}"))?
+}
+
 /// 导出调试日志：安卓转存系统「下载」（复用 saveDownload 桥），桌面落下载目录。
 /// 返回用户可说的落点（「下载/onethu-debug.log」或桌面绝对路径）。
 #[tauri::command]
 fn debug_log_export(app: tauri::AppHandle) -> Result<String, String> {
-    let src = debug_log_path();
+    let src = debug_log_path().ok_or("日志目录尚未就绪")?;
     let bytes = std::fs::read(&src).map_err(|e| {
         if e.kind() == std::io::ErrorKind::NotFound {
             "还没有日志：先复现一次问题再导出".to_string()
@@ -340,54 +617,13 @@ fn debug_log_export(app: tauri::AppHandle) -> Result<String, String> {
  * WebView 内 window.open / <a target=_blank> 均无效，必须交给系统默认浏览器。
  * 主通道是官方 opener 插件；open_external 是免 ACL 的自写兜底（插件异常时前端降级调用）。 */
 
-/// 用系统默认程序打开 URL（平台分派：open / start / xdg-open）
-#[cfg(target_os = "macos")]
-fn spawn_system_open(url: &str) -> Result<(), String> {
-    std::process::Command::new("open")
-        .arg(url)
-        .spawn()
-        .map(|_| ())
-        .map_err(|e| format!("调用系统 open 失败: {e}"))
-}
-
-#[cfg(target_os = "windows")]
-fn spawn_system_open(url: &str) -> Result<(), String> {
-    // start 的第一个引号参数是窗口标题，必须占位空串，否则 URL 被吞
-    use std::os::windows::process::CommandExt; // creation_flags 仅 Windows 提供
-    std::process::Command::new("cmd")
-        .args(["/C", "start", "", url])
-        .creation_flags(0x0800_0000) // CREATE_NO_WINDOW，不闪控制台黑框
-        .spawn()
-        .map(|_| ())
-        .map_err(|e| format!("调用系统 start 失败: {e}"))
-}
-
-#[cfg(all(unix, not(target_os = "macos")))]
-fn spawn_system_open(url: &str) -> Result<(), String> {
-    std::process::Command::new("xdg-open")
-        .arg(url)
-        .spawn()
-        .map(|_| ())
-        .map_err(|e| format!("调用 xdg-open 失败: {e}"))
-}
-
-#[cfg(not(any(
-    target_os = "macos",
-    target_os = "windows",
-    all(unix, not(target_os = "macos"))
-)))]
-fn spawn_system_open(_url: &str) -> Result<(), String> {
-    Err("当前平台不支持外部打开".into())
-}
-
 /* ---------------- 本地文件：打开 / 定位（免 ACL 的自写命令） ----------------
  * 官方 opener 插件的 open_path / reveal_item_in_dir 除命令权限外，还需要 capability 里配
  * **路径 scope**（allow 列表里给具体路径通配项，例如用户主目录下的 glob）；
  * 只给 `opener:allow-open-path` 会直接报 "Not allowed to open path ..."。而下载与「另存为」
  * 的落盘位置由用户决定（任意盘符/目录），白名单式 scope 覆盖不全，故自写命令直接交给系统
- * shell —— 自定义命令不受插件 ACL 约束。
- * 安全：只接受**绝对路径**且**必须已存在**；不放行任何 URL/scheme；不做 shell 字符串拼接
- * （Windows 用 raw_arg 逐段追加、路径整体加引号，空格与特殊字符都不会被重新解析）。 */
+ * opener 的 Rust API —— 自定义命令不受插件 ACL 约束。
+ * 安全：只接受绝对路径且必须已存在；不放行 URL/scheme，不拼接 shell 命令。 */
 
 fn validate_local_path(path: &str) -> Result<std::path::PathBuf, String> {
     if path.trim().is_empty() {
@@ -403,84 +639,19 @@ fn validate_local_path(path: &str) -> Result<std::path::PathBuf, String> {
     Ok(p)
 }
 
-/// 用系统默认应用打开本地文件
+/// 用系统默认应用打开本地文件；使用 opener 的原生实现，禁止经 cmd 字符串解释。
 #[tauri::command]
-fn onethu_open_path(path: String) -> Result<(), String> {
-    let p = validate_local_path(&path)?;
-    #[cfg(target_os = "windows")]
-    {
-        use std::os::windows::process::CommandExt;
-        let mut c = std::process::Command::new("cmd");
-        c.raw_arg("/C");
-        c.raw_arg("start");
-        c.raw_arg("\"\""); // start 的第一个引号参数是窗口标题，必须占位，否则路径被吞
-        c.raw_arg(format!("\"{}\"", p.display()));
-        c.creation_flags(0x0800_0000); // CREATE_NO_WINDOW，不闪控制台黑框
-        c.spawn().map(|_| ()).map_err(|e| format!("调用系统打开失败: {e}"))
-    }
-    #[cfg(target_os = "macos")]
-    {
-        std::process::Command::new("open")
-            .arg(&p)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用系统 open 失败: {e}"))
-    }
-    #[cfg(all(unix, not(target_os = "macos")))]
-    {
-        std::process::Command::new("xdg-open")
-            .arg(&p)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用 xdg-open 失败: {e}"))
-    }
-    #[cfg(not(any(target_os = "windows", target_os = "macos", all(unix, not(target_os = "macos")))))]
-    {
-        let _ = p;
-        Err("当前平台不支持打开本地文件".into())
-    }
+fn onethu_open_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let path = validate_local_path(&path)?;
+    app.opener().open_path(path.to_string_lossy().into_owned(), None::<&str>).map_err(|e| e.to_string())
 }
 
-/// 在文件管理器中定位并选中本地文件
 #[tauri::command]
-fn onethu_reveal_path(path: String) -> Result<(), String> {
-    let p = validate_local_path(&path)?;
-    #[cfg(target_os = "windows")]
-    {
-        use std::os::windows::process::CommandExt;
-        let mut c = std::process::Command::new("explorer");
-        // explorer 只认 `/select,"路径"` 这种一整段参数形式：raw_arg 原样追加，避免被引号转义破坏
-        c.raw_arg(format!("/select,\"{}\"", p.display()));
-        c.creation_flags(0x0800_0000);
-        c.spawn().map(|_| ()).map_err(|e| format!("调用资源管理器失败: {e}"))
-    }
-    #[cfg(target_os = "macos")]
-    {
-        std::process::Command::new("open")
-            .arg("-R")
-            .arg(&p)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用 Finder 失败: {e}"))
-    }
-    #[cfg(all(unix, not(target_os = "macos")))]
-    {
-        // Linux 无统一的「定位选中」语义：退化为打开所在目录
-        let dir = p
-            .parent()
-            .map(|d| d.to_path_buf())
-            .unwrap_or_else(|| std::path::PathBuf::from("/"));
-        std::process::Command::new("xdg-open")
-            .arg(dir)
-            .spawn()
-            .map(|_| ())
-            .map_err(|e| format!("调用 xdg-open 失败: {e}"))
-    }
-    #[cfg(not(any(target_os = "windows", target_os = "macos", all(unix, not(target_os = "macos")))))]
-    {
-        let _ = p;
-        Err("当前平台不支持定位本地文件".into())
-    }
+fn onethu_reveal_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
+    use tauri_plugin_opener::OpenerExt;
+    let path = validate_local_path(&path)?;
+    app.opener().reveal_item_in_dir(path).map_err(|e| e.to_string())
 }
 
 /// 兜底外链打开：Rust 侧再校验一次 scheme，仅放行 http/https
@@ -501,12 +672,10 @@ fn open_external(app: tauri::AppHandle, url: String) -> Result<(), String> {
             return Ok(());
         }
     }
-    #[cfg(not(target_os = "android"))]
-    let _ = &app;
-    if !(url.starts_with("http://") || url.starts_with("https://")) {
-        return Err(format!("拒绝打开非 http(s) 链接: {url}"));
-    }
-    spawn_system_open(&url)
+    use tauri_plugin_opener::OpenerExt;
+    let parsed = reqwest::Url::parse(&url).map_err(|e| format!("非法 URL：{e}"))?;
+    native_security::http_url(&parsed)?;
+    app.opener().open_url(parsed.as_str(), None::<&str>).map_err(|e| e.to_string())
 }
 
 /* ---------------- 本机状态文件（appData/state 下的 JSON 文件） ----------------
@@ -540,15 +709,15 @@ fn safe_name(name: &str) -> String {
 #[tauri::command]
 fn state_write<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String, content: String) -> Result<(), String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
-    // 原子写：临时文件 + rename，强退/断电不留半截 JSON
-    let tmp = path.with_extension("json.tmp");
-    std::fs::write(&tmp, content.as_bytes()).map_err(|e| e.to_string())?;
-    std::fs::rename(&tmp, &path).map_err(|e| e.to_string())
+    native_security::confined_path(path.parent().ok_or("缺少状态目录")?, path.file_name().ok_or("缺少状态文件名")?.as_ref())?;
+    native_security::private_atomic_write(&path, content.as_bytes())
 }
 
 #[tauri::command]
 fn state_read<R: tauri::Runtime>(app: tauri::AppHandle<R>, name: String) -> Result<Option<String>, String> {
     let path = state_dir(&app)?.join(format!("{}.json", safe_name(&name)));
+    native_security::confined_path(path.parent().ok_or("缺少状态目录")?, path.file_name().ok_or("缺少状态文件名")?.as_ref())?;
+    if path.exists() { native_security::private_permissions(&path)?; }
     match std::fs::read_to_string(&path) {
         Ok(s) => Ok(Some(s)),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
@@ -633,10 +802,8 @@ pub fn plugins_root(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String
 
 /// 取插件子目录（不存在则创建）；id 防路径穿越（只允许字母数字.-_）
 fn plugin_dir(app: &tauri::AppHandle, id: &str) -> Result<std::path::PathBuf, String> {
-    if id.is_empty() || !id.chars().all(|c| c.is_alphanumeric() || matches!(c, '.' | '-' | '_')) {
-        return Err(format!("非法插件 id：{id}"));
-    }
-    Ok(plugins_root(app)?.join(id))
+    native_security::plugin_id(id)?;
+    native_security::confined_path(&plugins_root(app)?, std::path::Path::new(id))
 }
 
 /// 导入 rust 插件（文件夹形态）：把所选目录全部文件复制进 plugins/<id>/，
@@ -648,130 +815,13 @@ fn plugin_dir_install_rust(
     manifest_dir: String,
     bin: String,
 ) -> Result<String, String> {
-    use std::path::Path;
-    let dir = plugin_dir(&app, &id)?;
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let src = Path::new(&manifest_dir);
-    let rd = std::fs::read_dir(src).map_err(|e| format!("读取目录失败：{e}"))?;
-    for entry in rd {
-        let entry = entry.map_err(|e| e.to_string())?;
-        if !entry.file_type().map(|t| t.is_file()).unwrap_or(false) {
-            continue;
-        }
-        let name = entry.file_name();
-        let data = std::fs::read(entry.path()).map_err(|e| format!("读取 {:?} 失败：{e}", name))?;
-        std::fs::write(dir.join(&name), data).map_err(|e| format!("写入 {:?} 失败：{e}", name))?;
-    }
-    let bin_path = dir.join(&bin);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        let _ = std::fs::set_permissions(&bin_path, std::fs::Permissions::from_mode(0o755));
-    }
-    Ok(bin_path.to_string_lossy().to_string())
+    plugin_package::install_rust(&plugins_root(&app)?, &id, std::path::Path::new(&manifest_dir), &bin)
 }
 
-/// zip 防路径穿越（zip-slip）：展开路径必须留在目标目录内
-fn zip_safe_path(dir: &std::path::Path, name: &str) -> Result<std::path::PathBuf, String> {
-    let rel = std::path::Path::new(name);
-    if name.starts_with('/') || name.contains('\\') && name.contains("..")
-        || rel.components().any(|c| matches!(c, std::path::Component::ParentDir | std::path::Component::RootDir | std::path::Component::Prefix(_)))
-    {
-        return Err(format!("zip 内非法路径：{name}"));
-    }
-    Ok(dir.join(rel))
-}
-
-/// 导入插件压缩包（rust/js 通用）：安全解包进 plugins/<id>/ 并返回登记所需信息。
-/// rust → binPath；js → 返回入口 js 源码（注册表仍存 code，目录留存文件与 logo）。
+/// 完整验证与暂存后替换；非法包不会破坏已安装版本。
 #[tauri::command]
-fn plugin_dir_import_zip(
-    app: tauri::AppHandle,
-    zip_path: String,
-) -> Result<serde_json::Value, String> {
-    use std::io::Read;
-    let file = std::fs::File::open(&zip_path).map_err(|e| format!("打开压缩包失败：{e}"))?;
-    let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("读取压缩包失败：{e}"))?;
-    // 先读 manifest.json 定 id（支持根目录或单一一级子目录）
-    let mut manifest_text: Option<String> = None;
-    let mut prefix = String::new();
-    {
-        for i in 0..archive.len() {
-            let mut e = archive.by_index(i).map_err(|e| e.to_string())?;
-            let name = e.name().to_string();
-            if e.is_dir() { continue; }
-            let parts: Vec<&str> = name.split('/').filter(|p| !p.is_empty()).collect();
-            if parts.last() == Some(&"manifest.json") && parts.len() <= 2 {
-                let mut text = String::new();
-                e.read_to_string(&mut text).map_err(|er| er.to_string())?;
-                manifest_text = Some(text);
-                prefix = if parts.len() == 2 { format!("{}/", parts[0]) } else { String::new() };
-                break;
-            }
-        }
-    }
-    let manifest_text = manifest_text.ok_or("压缩包根目录未找到 manifest.json")?;
-    let manifest: serde_json::Value =
-        serde_json::from_str(&manifest_text).map_err(|e| format!("manifest.json 解析失败：{e}"))?;
-    let id = manifest
-        .get("id")
-        .and_then(|v| v.as_str())
-        .ok_or("manifest.json 缺 id")?
-        .to_string();
-    let kind = manifest.get("kind").and_then(|v| v.as_str()).unwrap_or("js").to_string();
-    let dir = plugin_dir(&app, &id)?;
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    // 整包解压（prefix 剥离一级目录）
-    for i in 0..archive.len() {
-        let mut e = archive.by_index(i).map_err(|er| er.to_string())?;
-        let name = e.name().to_string();
-        if e.is_dir() { continue; }
-        let rel = name.strip_prefix(&prefix).unwrap_or(&name).to_string();
-        if rel.is_empty() { continue; }
-        let out = zip_safe_path(&dir, &rel)?;
-        if let Some(pp) = out.parent() {
-            std::fs::create_dir_all(pp).map_err(|er| er.to_string())?;
-        }
-        let mut w = std::fs::File::create(&out).map_err(|er| er.to_string())?;
-        std::io::copy(&mut e, &mut w).map_err(|er| format!("解压 {rel} 失败：{er}"))?;
-    }
-    if kind == "rust" {
-        let bin = manifest
-            .get("bin")
-            .and_then(|v| v.as_str())
-            .ok_or("rust 插件 manifest 缺 bin")?
-            .to_string();
-        let bin_path = dir.join(&bin);
-        if !bin_path.exists() {
-            return Err(format!("压缩包内缺二进制：{bin}"));
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            let _ = std::fs::set_permissions(&bin_path, std::fs::Permissions::from_mode(0o755));
-        }
-        return Ok(serde_json::json!({
-            "kind": "rust", "manifest": manifest, "binPath": bin_path.to_string_lossy(),
-        }));
-    }
-    // js：入口 = manifest.entry 或根目录唯一 .js
-    let entry = manifest
-        .get("entry")
-        .and_then(|v| v.as_str())
-        .map(|s| s.to_string())
-        .or_else(|| {
-            std::fs::read_dir(&dir)
-                .ok()?
-                .filter_map(|r| r.ok())
-                .map(|r| r.file_name().to_string_lossy().to_string())
-                .filter(|n| n.ends_with(".js"))
-                .collect::<Vec<_>>()
-                .into_iter()
-                .next()
-        })
-        .ok_or("js 插件包缺入口（manifest.entry 或根目录 .js）")?;
-    let code = std::fs::read_to_string(dir.join(&entry)).map_err(|e| format!("读取 {entry} 失败：{e}"))?;
-    Ok(serde_json::json!({ "kind": "js", "manifest": manifest, "code": code }))
+fn plugin_dir_import_zip(app: tauri::AppHandle, zip_path: String) -> Result<serde_json::Value, String> {
+    plugin_package::import_zip(&plugins_root(&app)?, std::path::Path::new(&zip_path))
 }
 
 /// 插件 logo 读取（logo 随插件包走：plugins/<id>/logo.svg|png）→ dataURL
@@ -791,7 +841,7 @@ fn plugin_logo_data(app: tauri::AppHandle, id: String) -> Result<Option<String>,
     );
     for dir in &dirs {
         for (name, mime) in [("logo.svg", "image/svg+xml"), ("logo.png", "image/png")] {
-            let p = dir.join(name);
+            let p = native_security::confined_path(dir, std::path::Path::new(name))?;
             if let Ok(bytes) = std::fs::read(&p) {
                 return Ok(Some(format!(
                     "data:{mime};base64,{}",
@@ -846,19 +896,22 @@ fn builtin_sidecar_install(app: tauri::AppHandle) -> Result<Option<String>, Stri
     };
     let dir = plugin_dir(&app, "onethu.harness")?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let dst = dir.join(exe_name);
+    let dst = native_security::confined_path(&dir, std::path::Path::new(exe_name))?;
     // 内容一致则跳过复制（重复开机免写）
     let need = match std::fs::read(&res) {
         Ok(src) => std::fs::read(&dst).map(|d| d != src).unwrap_or(true),
         Err(_) => false,
     };
     if need {
-        std::fs::copy(&res, &dst).map_err(|e| format!("内置 sidecar 复制失败：{e}"))?;
+        let bytes = std::fs::read(&res).map_err(|e| format!("内置 sidecar 读取失败：{e}"))?;
+        native_security::private_atomic_write(&dst, &bytes)?;
     }
     // logo 随包（logo.svg 与二进制同目录打包在资源里）
     if let Some(logo) = res.parent().map(|pp| pp.join("logo.svg")) {
         if logo.exists() {
-            let _ = std::fs::copy(&logo, dir.join("logo.svg"));
+            let destination = native_security::confined_path(&dir, std::path::Path::new("logo.svg"))?;
+            let bytes = std::fs::read(&logo).map_err(|e| e.to_string())?;
+            native_security::private_atomic_write(&destination, &bytes)?;
         }
     }
     #[cfg(unix)]
@@ -900,6 +953,37 @@ async fn save_text_file(
     Ok(Some(real.to_string_lossy().to_string()))
 }
 
+/// 主 webview 的 UA（tauri.conf.json `windows[].userAgent`）。wengine webvpn 的会话票
+/// **按 UA 指纹校验**：Rust 侧任何复用主会话的请求都必须带它，否则票被判无效、回登录页。
+const SESSION_UA: &str = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
+
+/// 合并「原生 cookie 仓」与调用方（JS 侧）传入的 cookie：**同名以原生仓为准**。
+/// 原生仓才是 learn/info 的权威会话（数据链走的就是它）；JS 侧仓常只有半份票
+/// （真机实录：learn 域只剩 `refresh`），拿它去请求包装域会被 wengine 判「票无效」——
+/// 附件下载/预览曾因此整片报「会话已失效」（2026-10-12）。
+fn merge_session_cookies(url: &str, js_cookies: &str) -> String {
+    use reqwest::cookie::CookieStore as _;
+    let mut out: Vec<String> = Vec::new();
+    let mut seen: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let jar = reqwest::Url::parse(url)
+        .ok()
+        .and_then(|u| NATIVE_JAR_ARC.cookies(&u))
+        .and_then(|v| v.to_str().ok().map(str::to_string))
+        .unwrap_or_default();
+    for pair in jar.split(';').chain(js_cookies.split(';')) {
+        let pair = pair.trim();
+        if pair.is_empty() {
+            continue;
+        }
+        let name = pair.split('=').next().unwrap_or("").trim();
+        if name.is_empty() || !seen.insert(name.to_string()) {
+            continue;
+        }
+        out.push(pair.to_string());
+    }
+    out.join("; ")
+}
+
 /// 抓附件字节（download_file / save_file_as 共用）：
 /// 会话失效识别、真名解析、空文件校验都收敛在这里——两处走同一套判断，
 /// 免得出现「下载能识别会话失效、另存为却把登录页当文件写盘」这种不一致。
@@ -918,18 +1002,20 @@ pub(crate) async fn fetch_attachment(
         // 默认读 Windows/ macOS 系统代理，全局模式梯子会把清华流量送出境触发风控）。
         // 仅救系统代理场景；TUN 网络层接管无解（参考 PR #2，user-A100）。
         .no_proxy()
-        .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
+        // UA 必须是主 webview 那个（wengine 票按 UA 指纹校验）。此处原先写死 Mac UA，
+        // 于是包装域请求被判「票无效」→ 回登录页 → 附件下载/预览整片失败（2026-10-12 真机）
+        .user_agent(SESSION_UA)
         .build()
         .map_err(|e| e.to_string())?;
     let resp = client
         .get(url)
-        .header("Cookie", cookies)
+        .header("Cookie", merge_session_cookies(url, cookies))
         .send()
         .await
         .map_err(|e| e.to_string())?;
     if !resp.status().is_success() {
         // 带上 URL：404 必须能一眼看出是哪条链接（历史上正是靠这条线索才发现走错了端点）
-        eprintln!("[onethu] fetch_attachment {} {}", resp.status(), url);
+        eprintln!("[onethu] fetch_attachment {} {}", resp.status(), native_security::safe_url_log(resp.url()));
         return Err(format!("HTTP {} — {}", resp.status(), url));
     }
     let content_disposition = resp
@@ -1144,7 +1230,7 @@ async fn fetch_binary(
         .await
         .map_err(|e| e.to_string())?;
     if !resp.status().is_success() {
-        eprintln!("[onethu] fetch_binary {} {}", resp.status(), url);
+        eprintln!("[onethu] fetch_binary {} {}", resp.status(), native_security::safe_url_log(resp.url()));
         return Err(format!("HTTP {} — {}", resp.status(), url));
     }
     let mime = resp
@@ -1194,8 +1280,7 @@ struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>, std::sync::
 
 /// cookie 仓落盘（2026-09-17：纯内存仓每次进程重启丢光 id 信任票据 →
 /// 服务器反复索要 2FA；持久化后冷启动直接带票复用，登录/2FA 频率大幅下降）。
-/// 行格式：domain<TAB>path<TAB>secure<TAB>name=value（Domain/Path 显式回种，
-/// 不存 Expires——加载即会话票，运行期由服务器重新盖章续命）。
+/// 新格式保存 cookie_store 的完整属性；仍兼容旧 TSV，不读取真实凭据用于测试。
 impl SharedNativeJar {
     fn seed_line(&self, url: &str, line: &str) {
         let Ok(u) = reqwest::Url::parse(url) else { return };
@@ -1208,27 +1293,25 @@ impl SharedNativeJar {
     }
     fn save_to_file(&self, path: &std::path::Path) {
         let g = self.0.read().unwrap();
-        let mut out = String::new();
-        for c in g.iter_unexpired() {
-            let domain = c.domain().unwrap_or("");
-            let path = c.path().unwrap_or("/");
-            let host = domain.trim_start_matches('.');
-            if host.is_empty() { continue; }
-            let line = format!(
-                "{domain}\t{path}\t{}\t{}={}",
-                if c.secure().unwrap_or(false) { "1" } else { "0" },
-                c.name(),
-                c.value()
-            );
-            out.push_str(&line);
-            out.push('\n');
+        // Serialize cookie_store's real attributes: host-only, Secure, HttpOnly,
+        // path and expiry must survive a restart. Session cookies remain supported.
+        let Ok(out) = serde_json::to_vec(&g.iter_unexpired().collect::<Vec<_>>()) else { return };
+        if native_security::private_atomic_write(path, &out).is_ok() {
+            self.1.store(false, std::sync::atomic::Ordering::Relaxed);
         }
-        let _ = std::fs::write(path, out);
-        self.1.store(false, std::sync::atomic::Ordering::Relaxed);
     }
     fn load_from_file(&self, path: &std::path::Path) {
+        if native_security::private_permissions(path).is_err() { return; }
         let Ok(text) = std::fs::read_to_string(path) else { return };
         let mut g = self.0.write().unwrap();
+        if text.trim_start().starts_with('[') {
+            if let Ok(loaded) = cookie_store::serde::json::load(text.as_bytes()) {
+                *g = loaded;
+                self.1.store(false, std::sync::atomic::Ordering::Relaxed);
+            }
+            return;
+        }
+        // Legacy TSV remains readable; it did not record host-only/expiry attributes.
         for line in text.lines() {
             let parts: Vec<&str> = line.split('\t').collect();
             if parts.len() != 4 { continue; }
@@ -1236,7 +1319,7 @@ impl SharedNativeJar {
             let host = domain.trim_start_matches('.');
             let scheme = if secure == "1" { "https" } else { "http" };
             let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
-            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
+            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}{}", if secure == "1" { "; Secure" } else { "" });
             let _ = g.parse(&set_cookie, &u);
         }
         self.1.store(false, std::sync::atomic::Ordering::Relaxed);
@@ -1281,7 +1364,7 @@ fn build_native_client() -> reqwest::Client {
         // wengine webvpn 会话票绑定 UA 指纹，rust 与 webview 不一致时票被判无效
         // → THOS portal webview 打开即跳登录页（上游 thu-info-app 同构问题，
         // 它用 lib USER_AGENT 常量喂 RN WebView userAgent 解决）。
-        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36")
+        .user_agent(SESSION_UA)
         // 同 http_request：清华域直连，绕系统代理
         .no_proxy()
         .build()
@@ -1308,6 +1391,13 @@ async fn http_native(
     app: tauri::AppHandle,
     input: HttpInput,
 ) -> Result<HttpOutput, String> {
+    let _ = app;
+    debug_log_line(&format!("[NATIVE-START] {} {}", input.method, native_security::safe_url_log(&input.url.parse().map_err(|_| "非法 URL")?)));
+    let client = NATIVE_CLIENT.read().map_err(|_| "网络客户端锁失败")?.clone();
+    http_native_with_client(input, client).await
+}
+
+async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> Result<HttpOutput, String> {
     let method: reqwest::Method = input
         .method
         .to_uppercase()
@@ -1316,6 +1406,8 @@ async fn http_native(
 
 
     let mut url: reqwest::Url = input.url.parse().map_err(|e| format!("非法 URL: {e}"))?;
+    native_security::http_url(&url)?;
+    let mut request_headers = input.headers.clone();
     let mut method_cur = method;
     let mut body_bytes: Option<Vec<u8>> = if let Some(b64) = &input.body_b64 {
         use base64::Engine as _;
@@ -1336,16 +1428,9 @@ async fn http_native(
     let mut final_url = url.to_string();
 
     for _hop in 0..=25u32 {
-        let client = NATIVE_CLIENT.read().unwrap().clone();
-        let mut req = client.request(method_cur.clone(), url.clone());
-        // 诊断：首跳外发 cookie 名单 + 逐跳 URL/状态（铸票断链定位）
-        if _hop == 0 {
-            let sent = reqwest::cookie::CookieStore::cookies(NATIVE_JAR_ARC.as_ref(), &url)
-                .and_then(|c: reqwest::header::HeaderValue| c.to_str().ok().map(|s: &str| s.to_string()))
-                .unwrap_or_else(|| "(无)".into());
-            debug_log_line(&format!("[NATIVE-STORE] {} → {}", url.host_str().unwrap_or("?"), sent));
-        }
-        for (k, v) in &input.headers {
+        let mut req = client.request(method_cur.clone(), url.clone())
+            .timeout(Duration::from_millis(input.timeout_ms.unwrap_or(60_000).clamp(1, 300_000)));
+        for (k, v) in &request_headers {
             let lower = k.to_lowercase();
             // Cookie 由原生仓管理，手动传入反而跨跳污染
             if matches!(lower.as_str(), "host" | "content-length" | "cookie") {
@@ -1357,13 +1442,13 @@ async fn http_native(
             req = req.body(b.clone());
         }
         let hop_t0 = std::time::Instant::now();
-        let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e)))?;
+        let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e.without_url())))?;
         let hop_ms = hop_t0.elapsed().as_millis();
         let status = resp.status();
         final_status = status;
         final_url = resp.url().to_string();
         // R21 逐跳计时入文件：定位「校内启动 20s」吃在哪一跳（logcat 读不到的旧痛）
-        debug_log_line(&format!("[NATIVE-HOP{}] {} {}ms {} {}", _hop, status.as_u16(), hop_ms, method_cur.as_str(), resp.url().as_str().chars().take(210).collect::<String>()));
+        debug_log_line(&format!("[NATIVE-HOP{}] {} {}ms {} {}", _hop, status.as_u16(), hop_ms, method_cur.as_str(), native_security::safe_url_log(resp.url())));
 
         let mut headers = HashMap::new();
         let mut set_cookies = Vec::new();
@@ -1377,17 +1462,12 @@ async fn http_native(
             }
         }
 
-        // 跟随重定向（浏览器语义：303 一律 GET；301/302 的 POST 转 GET）
-        if status.is_redirection() {
-            if let Some(loc) = headers.get("location").cloned() {
-                let next = url.join(&loc).map_err(|e| format!("重定向地址解析失败: {e}"))?;
-                if status.as_u16() == 303
-                    || ((status.as_u16() == 301 || status.as_u16() == 302)
-                        && method_cur == reqwest::Method::POST)
-                {
-                    method_cur = reqwest::Method::GET;
-                    body_bytes = None;
-                }
+        if matches!(status.as_u16(), 301 | 302 | 303 | 307 | 308) {
+            if let Some(loc) = headers.get("location") {
+                if _hop == 25 { return Err("重定向次数超过上限".into()); }
+                let next = url.join(loc).map_err(|e| format!("重定向地址解析失败: {e}"))?;
+                native_security::redirect_request(&url, &next, status.as_u16(),
+                    &mut method_cur, &mut body_bytes, &mut request_headers)?;
                 url = next;
                 continue;
             }
@@ -1395,25 +1475,8 @@ async fn http_native(
 
         final_headers = headers;
         final_set_cookies = set_cookies;
-        let body_url_tag = resp.url().as_str().to_string();
         final_body = resp.bytes().await.map_err(|e| format!("读取响应失败: {}", error_chain(&e)))?.to_vec();
-        // learn zyList POST 完整外发请求转储（400 根因对照老运输层）
-        if (body_url_tag.contains("kczy") || body_url_tag.contains("bbs") || body_url_tag.contains("pageFzList") || body_url_tag.contains("checkSingle")) && method_cur.as_str() == "POST" {
-            let mut hdr_dump = String::new();
-            for (k, v) in &input.headers {
-                hdr_dump.push_str(&format!("{}={:?}; ", k, v));
-            }
-            let body_str = body_bytes.as_ref().map(|b| String::from_utf8_lossy(b).chars().take(180).collect::<String>()).unwrap_or_default();
-            println!("[NATIVE-REQ] {} HEADERS[{}] BODY[{}]", &body_url_tag[..body_url_tag.len().min(130)], hdr_dump, body_str);
-        }
-        // learn 域响应体首段（2026-09-17：200 装 HTML 的会话死法专诊）
-        {
-            let u = &body_url_tag;
-            if u.contains("wlxt") {
-                let head = String::from_utf8_lossy(&final_body[..final_body.len().min(1400)]).replace(['\n', '\r', '\t'], " ");
-                println!("[NATIVE-BODY] {} | {}", &u[u.len().saturating_sub(70)..], head);
-            }
-        }
+        // Never log headers, cookies or response/request bodies: they contain login tickets and personal data.
         break;
     }
 
@@ -1454,52 +1517,44 @@ async fn http_native(
 /// 原生 cookie 仓清空（换新匿名身份）。2026-09-17 实录：登录风暴后 id 服务器
 /// 按会话 cookie 封锁设备（同 IP 的无 cookie 客户端正常）——被封锁时唯一解法。
 #[tauri::command]
-fn http_native_clear_cookies() -> Result<(), String> {
-    NATIVE_JAR_ARC.clear();
-    Ok(())
+async fn http_native_clear_cookies() -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        NATIVE_JAR_ARC.clear();
+        Ok::<(), String>(())
+    }).await.map_err(|e| format!("Cookie 后台任务失败: {e}"))?
 }
 
 /// 按域后缀清 cookie（id 单点互踢根治）：lib 重登/选课自愈只清 id/oauth，
 /// learn/info/教务/webvpn 的会话票全保——重建后各页秒恢复，不再红条几秒。
 #[tauri::command]
-fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String> {
-    let suffixes: Vec<String> = suffixes.iter().map(|s| s.to_lowercase()).collect();
-    let keep: Vec<String> = {
-        let g = NATIVE_JAR_ARC.0.read().unwrap();
-        let mut lines = Vec::new();
-        for c in g.iter_unexpired() {
-            let domain = c.domain().unwrap_or("").trim_start_matches('.').to_lowercase();
-            if domain.is_empty() { continue; }
-            let hit = suffixes.iter().any(|s| domain == *s || domain.ends_with(&format!(".{}", s)));
-            if hit { continue; }
-            let path = c.path().unwrap_or("/").to_string();
-            let secure = if c.secure().unwrap_or(false) { "1" } else { "0" };
-            lines.push(format!("{}\t{}\t{}\t{}={}", c.domain().unwrap_or(""), path, secure, c.name(), c.value()));
-        }
-        lines
-    };
-    NATIVE_JAR_ARC.clear();
-    {
-        let mut g = NATIVE_JAR_ARC.0.write().unwrap();
-        for line in &keep {
-            let parts: Vec<&str> = line.split('\t').collect();
-            if parts.len() != 4 { continue; }
-            let (domain, cpath, secure, kv) = (parts[0], parts[1], parts[2], parts[3]);
-            let host = domain.trim_start_matches('.');
-            let scheme = if secure == "1" { "https" } else { "http" };
-            let Ok(u) = reqwest::Url::parse(&format!("{scheme}://{host}{cpath}")) else { continue };
-            let set_cookie = format!("{kv}; Domain={domain}; Path={cpath}");
-            let _ = g.parse(&set_cookie, &u);
-        }
-    }
-    NATIVE_JAR_ARC.1.store(true, std::sync::atomic::Ordering::Relaxed);
-    Ok(())
+async fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let suffixes: Vec<String> = suffixes.iter().map(|s| s.to_lowercase()).collect();
+        let mut jar = NATIVE_JAR_ARC.0.write().map_err(|_| "Cookie 仓锁失败")?;
+        let remove = jar.iter_any().filter_map(|cookie| {
+            let domain = match &cookie.domain {
+                cookie_store::CookieDomain::HostOnly(host) | cookie_store::CookieDomain::Suffix(host) => host,
+                _ => return None,
+            };
+            let hit = suffixes.iter().any(|suffix| domain == suffix || domain.ends_with(&format!(".{suffix}")));
+            hit.then(|| (domain.clone(), String::from(&cookie.path), cookie.name().to_string()))
+        }).collect::<Vec<_>>();
+        for (domain, path, name) in remove { jar.remove(&domain, &path, &name); }
+        NATIVE_JAR_ARC.1.store(true, std::sync::atomic::Ordering::Relaxed);
+        Ok::<(), String>(())
+    }).await.map_err(|e| format!("Cookie 后台任务失败: {e}"))?
 }
 
 /// jar → rust 播种（wengine 引导页票种等不经 Set-Cookie 的会话）
 #[tauri::command]
 fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
+    // webvpn 匿名引导票（wrdvpn1- 前缀）绝不入仓——clients.ts 203 行 TS 侧同名
+    // 过滤的 Rust 对等防线。2026-10-10 实录：TS jar 的匿名票被 seed 进仓后覆盖
+    // lib 真票，wengine 全线按匿名处理（在线服务点击即弹 webvpn 首页）。
     for l in &lines {
+        if l.starts_with("wengine_vpn_ticket=wrdvpn1-") {
+            continue;
+        }
         NATIVE_JAR_ARC.seed_line(&url, l);
     }
     Ok(())
@@ -1754,6 +1809,12 @@ async fn thos_portal_window(
         if main_ua.is_some() { "同主窗口" } else { "默认" },
         &target[..target.len().min(60)]
     ));
+    // 种完票**必须显式导航到目标页**：建窗落点固定在 webvpn 根（=门户首页），
+    // 漏 navigate 用户看到的就是门户首页而非服务页（2026-10-10 用户实录，
+    // 052d11c 原版有此行，中途丢失）。雨课堂/云盘窗口同款套路。
+    win.navigate(target.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
+        .map_err(|e| e.to_string())?;
+    let _ = win.set_focus();
     Ok(())
 }
 
@@ -1913,7 +1974,7 @@ async fn thos_open_portal(
                 .map(|v| v.trim_matches('"').to_string())
                 .unwrap_or_else(|| "http://tauri.localhost/#/thos".to_string())
         };
-        thos_log(&format!("[THOS-SEED] 链启动 url={} 来路={}", &url[..url.len().min(60)], origin_url));
+        thos_log("[THOS-SEED] 会话链启动");
         let (seed_host, seed_header) = {
             // 目标 URL 的域决定在哪个 origin 种 cookie（webvpn 模式=webvpn 域，
             // 直连模式=thos 域）；webvpn 域优先级最高——全程代理域
@@ -2149,12 +2210,12 @@ async fn thos_open_portal(
         webview
             .eval(&format!("location.href = {}", serde_json::to_string(&url).unwrap_or_default()))
             .map_err(|e| format!("导航目标: {e}"))?;
-        thos_log(&format!("[THOS-SEED] 会话链完成 → {}", &url[..url.len().min(60)]));
+        thos_log("[THOS-SEED] 会话链完成");
         // 5) 桌面统一：跳回 app 页面（THOS 官方页由系统浏览器打开的需求后续再议）
         webview
             .eval(&format!("location.href = {}", serde_json::to_string(&origin_url).unwrap_or_default()))
             .ok();
-        thos_log(&format!("[THOS-SEED] 已跳回 {}", origin_url));
+        thos_log("[THOS-SEED] 已跳回应用");
         Ok(())
     }
 }
@@ -2449,6 +2510,7 @@ fn close_ykt_window(app: tauri::AppHandle) -> Result<(), String> {
 }
 
 
+
 #[cfg(desktop)]
 #[tauri::command]
 async fn open_sports_window(app: tauri::AppHandle) -> Result<String, String> {
@@ -2506,6 +2568,558 @@ async fn open_sports_window(app: tauri::AppHandle) -> Result<String, String> {
         }
     });
     Ok("opened".into())
+}
+
+const CLOUD_TOKEN_PROFILE_URL: &str = "https://cloud.tsinghua.edu.cn/profile/#get-auth-token";
+const CLOUD_COOKIE_ORIGINS: [&str; 4] = [
+    "https://cloud.tsinghua.edu.cn/",
+    "https://id.tsinghua.edu.cn/",
+    "https://oauth.tsinghua.edu.cn/",
+    "https://webvpn.tsinghua.edu.cn/",
+];
+
+/* ── WebVPN（wrdvpn）URL 编码：与 core crypto/webvpn.ts 逐字符对齐 ──
+ * AES-128-CFB（CFB-128 整块反馈）；Key = IV = "wrdvpnisthebest!"；
+ * host 尾部补 '0' 至 16 倍数 → 加密 → hex(IV)+hex(密文).slice(0,2×host长)。
+ * 用于云盘 HTTP 静默爬取的「全程续包装」：302 Location 跳出包装域时重编码回包装，
+ * SSO 链（oauth→id→checkSingle→回调）全部由 wengine 服务端完成，客户端零登录页。 */
+fn webvpn_cfb_encrypt(plain: &[u8]) -> Vec<u8> {
+    use aes::cipher::{BlockEncrypt, KeyInit};
+    use aes::Aes128;
+    let key: [u8; 16] = *b"wrdvpnisthebest!";
+    let mut iv: [u8; 16] = *b"wrdvpnisthebest!";
+    let cipher = Aes128::new((&key).into());
+    let mut out = Vec::with_capacity(plain.len());
+    for chunk in plain.chunks(16) {
+        let mut keystream = iv;
+        cipher.encrypt_block((&mut keystream).into());
+        for (i, b) in chunk.iter().enumerate() {
+            out.push(b ^ keystream[i]);
+        }
+        if chunk.len() == 16 {
+            iv.copy_from_slice(&out[out.len() - 16..]);
+        }
+    }
+    out
+}
+
+fn webvpn_hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{b:02x}")).collect()
+}
+
+fn webvpn_encode_url(target: &str) -> Option<String> {
+    let u = url::Url::parse(target).ok()?;
+    let host = u.host_str()?;
+    let mut plain = host.as_bytes().to_vec();
+    let rem = plain.len() % 16;
+    if rem != 0 {
+        plain.resize(plain.len() + (16 - rem), b'0');
+    }
+    let cipher = webvpn_cfb_encrypt(&plain);
+    let iv_hex = webvpn_hex(b"wrdvpnisthebest!");
+    let mut host_hex = format!("{iv_hex}{}", webvpn_hex(&cipher));
+    // core 语义：总长 = hex(IV)=32 字符 + 密文 hex 前 2×host长 字符（此前误把 IV 计入总长）
+    host_hex.truncate(iv_hex.len() + host.len() * 2);
+    let proto = if u.scheme() == "http" { "http" } else { "https" };
+    Some(format!(
+        "https://webvpn.tsinghua.edu.cn/{proto}/{host_hex}{}{}",
+        u.path(),
+        if u.query().is_some() { format!("?{}", u.query().unwrap()) } else { String::new() }
+    ))
+}
+
+/// 清华域但非 webvpn 自身 → 需要续包装（跳循环用）
+fn webvpn_needs_wrap(u: &url::Url) -> bool {
+    match u.host_str() {
+        Some(h) => h != "webvpn.tsinghua.edu.cn" && h.ends_with(".tsinghua.edu.cn"),
+        None => false,
+    }
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct CloudWebvpnProfile {
+    final_url: String,
+    body: String,
+    /// 落地页是 id 的「确认续用」壳页：前端调 InfoClient.confirmIdCheckSingle
+    /// （带设备指纹的等价 POST）确认后**再爬一次**——确认链会把 cloud 直连会话
+    /// 票落进 native jar（2026-10-10 三轮实录：id 直连会话活、确认可成功）。
+    need_confirm: bool,
+    /// GET /api2/auth-token/ 的明文口令（只在内存传递；空 = 未取到）
+    plain_token: String,
+}
+
+/// 从 JSON/文本里抠 40 位小写 hex（auth-token 响应形态 "token": "…"）
+fn regex_lite_40hex(s: &str) -> String {
+    let b = s.as_bytes();
+    let mut i = 0;
+    while i + 40 <= b.len() {
+        if b[i..i + 40].iter().all(|c| c.is_ascii_hexdigit()) {
+            // 边界：前后不能还是 hex（防长串截取）
+            let before_ok = i == 0 || !b[i - 1].is_ascii_hexdigit();
+            let after = i + 40;
+            let after_ok = after >= b.len() || !b[after].is_ascii_hexdigit();
+            if before_ok && after_ok {
+                return b[i..i + 40].iter().map(|&c| c as char).collect();
+            }
+            i += 40;
+        } else {
+            i += 1;
+        }
+    }
+    String::new()
+}
+
+/// 云盘 profile 的静默直连爬取（webvpn 包装方案已证伪：oauth 域 SSO 缺会话，
+/// wengine 侧 302 死循环 + WebView 跳出包装域）。全直连链：cloud→oauth→id 的
+/// 302 原样跟随（native jar 的 id 会话实测活着），checkSingle 壳页交给前端确认。
+#[tauri::command]
+async fn cloud_webvpn_profile(
+    app: tauri::AppHandle,
+    username: Option<String>,
+    password: Option<String>,
+) -> Result<CloudWebvpnProfile, String> {
+    let _ = &app;
+    let client = NATIVE_CLIENT.read().unwrap().clone();
+    let mut url: url::Url = "https://cloud.tsinghua.edu.cn/profile/"
+        .parse()
+        .map_err(|e| format!("起始 URL: {e}"))?;
+    let mut final_url = url.to_string();
+    let mut body: Vec<u8> = Vec::new();
+    for hop in 0..=25u32 {
+        let resp = client
+            .get(url.clone())
+            .send()
+            .await
+            .map_err(|e| format!("网络错误: {e}"))?;
+        let status = resp.status();
+        debug_log_line(&format!(
+            "[CLOUD-DIRECT] hop{hop} {} {}",
+            status.as_u16(),
+            resp.url().as_str().chars().take(150).collect::<String>()
+        ));
+        let headers: HashMap<String, String> = resp
+            .headers()
+            .iter()
+            .map(|(k, v)| (k.as_str().to_lowercase(), v.to_str().unwrap_or("").to_string()))
+            .collect();
+        final_url = resp.url().to_string();
+        if status.is_redirection() {
+            let Some(loc) = headers.get("location") else {
+                return Err(format!("重定向无 Location（{}）", status.as_u16()));
+            };
+            url = url.join(loc).map_err(|e| format!("Location 解析: {e}"))?;
+            continue;
+        }
+        body = resp.bytes().await.map_err(|e| format!("读取响应: {e}"))?.to_vec();
+        break;
+    }
+    let text = String::from_utf8_lossy(&body).into_owned();
+    // SPA 壳无 token 区域（2026-10-10 实录）：口令是运行时 ajax 拉的。Seafile 老版
+    // 「显示口令」端点 = GET /api2/auth-token/（只读，不生成不重置）——cloud 直连
+    // 会话已在 jar，直接调用；明文只在内存回传，绝不写日志。
+    let mut plain_token = String::new();
+    if final_url.contains("cloud.tsinghua.edu.cn/profile") {
+        // 壳里 pageOptions 带 csrfToken：Django 对带 session 的 POST 一律查 CSRF——
+        // 上轮 403(len=63) 形如 "CSRF Failed"（未必是禁直连）。带 X-CSRFToken 重试，
+        // 并试 Seafile 11 的 v2.1 口令端点。凭据/口令只在内存传递，绝不写日志。
+        let csrf = text
+            .split("csrfToken: '").nth(1).and_then(|x| x.split('\'').next())
+            .or_else(|| text.split("csrfToken: \"").nth(1).and_then(|x| x.split('"').next()))
+            .unwrap_or_default()
+            .to_string();
+        debug_log_line(&format!("[CLOUD-DIRECT] csrfToken 抠取 {}（{}字符）", if csrf.is_empty() { "失败" } else { "ok" }, csrf.len()));
+        let try_call = |method: reqwest::Method, url_s: String, body: Option<String>| {
+            let client = client.clone();
+            let csrf = csrf.clone();
+            let referer = "https://cloud.tsinghua.edu.cn/profile/".to_string();
+            async move {
+                let parsed: url::Url = url_s.parse().map_err(|e| format!("url: {e}"))?;
+                let mut req = client.request(method, parsed);
+                if !csrf.is_empty() {
+                    req = req.header("X-CSRFToken", &csrf).header("Referer", &referer);
+                }
+                if let Some(b) = body {
+                    req = req.header("Content-Type", "application/json").body(b);
+                }
+                let r = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
+                let code = r.status().as_u16();
+                let body_t = r.text().await.unwrap_or_default();
+                Ok::<(u16, String), String>((code, body_t))
+            }
+        };
+        // 「显示口令」真实端点（settings bundle 实锤）：组件挂载即 GET
+        // /api/v2.1/auth-token-by-session/——会话式读取现有口令，纯只读。
+        // （api2 密码签发已被清华版拒绝：本地密码从未设置，此路不通。）
+        let _ = username; let _ = password;
+        if plain_token.is_empty() {
+            for ep in ["https://cloud.tsinghua.edu.cn/api/v2.1/auth-token-by-session/"] {
+                match try_call(reqwest::Method::GET, ep.to_string(), None).await {
+                    Ok((code, body_t)) => {
+                        let hit = regex_lite_40hex(&body_t);
+                        debug_log_line(&format!("[CLOUD-DIRECT] GET {ep} → {code} len={} token={}", body_t.len(), if hit.is_empty() { "无" } else { "40hex" }));
+                        if !hit.is_empty() { plain_token = hit; break; }
+                    }
+                    Err(e) => debug_log_line(&format!("[CLOUD-DIRECT] GET {ep} 失败 {e}")),
+                }
+            }
+        }
+    }
+    let need_confirm = text.contains("checkSingle") || final_url.contains("checkSingle");
+    // The authenticated HTML can contain non-hex credentials and personal data.
+    // Return it to the caller, but never dump it into diagnostic logs.
+    Ok(CloudWebvpnProfile { final_url, body: text, need_confirm, plain_token })
+}
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CloudCookieSeed {
+    url: String,
+    cookies: Vec<String>,
+}
+
+fn is_cloud_cookie_origin(raw: &str) -> bool {
+    let Ok(url) = url::Url::parse(raw) else { return false };
+    url.scheme() == "https"
+        && CLOUD_COOKIE_ORIGINS.iter().any(|base| {
+            url::Url::parse(base).ok().and_then(|u| u.host_str().map(str::to_string))
+                == url.host_str().map(str::to_string)
+        })
+}
+
+/// 统一 HttpClient → native jar → WebView 的双向会话桥只允许这些认证域。
+fn cloud_cookie_seeds_from_native_jar() -> Vec<CloudCookieSeed> {
+    let jar = NATIVE_JAR_ARC.0.read().unwrap();
+    CLOUD_COOKIE_ORIGINS
+        .iter()
+        .filter_map(|base| {
+            let url: url::Url = base.parse().ok()?;
+            let host = url.host_str()?;
+            let cookies = jar.matches(&url).iter().map(|c| {
+                let secure = if c.secure().unwrap_or(false) { "; Secure" } else { "" };
+                format!("{}={}; Domain={host}; Path={}{}", c.name(), c.value(), c.path().unwrap_or("/"), secure)
+            }).collect::<Vec<_>>();
+            (!cookies.is_empty()).then(|| CloudCookieSeed { url: base.to_string(), cookies })
+        })
+        .collect()
+}
+
+fn seed_native_cloud_cookies(seeds: &[CloudCookieSeed]) {
+    for seed in seeds {
+        if !is_cloud_cookie_origin(&seed.url) { continue; }
+        for line in &seed.cookies {
+            NATIVE_JAR_ARC.seed_line(&seed.url, line);
+        }
+    }
+}
+
+fn cloud_cookie_seeds_from_webview(window: &tauri::WebviewWindow) -> Vec<CloudCookieSeed> {
+    CLOUD_COOKIE_ORIGINS
+        .iter()
+        .filter_map(|base| {
+            let url: url::Url = base.parse().ok()?;
+            let host = url.host_str()?.to_string();
+            let cookies = window.cookies_for_url(url).ok()?.iter().map(|c| {
+                format!("{}={}; Domain={host}; Path=/; Secure", c.name(), c.value())
+            }).collect::<Vec<_>>();
+            (!cookies.is_empty()).then(|| CloudCookieSeed { url: base.to_string(), cookies })
+        })
+        .collect()
+}
+
+/// 页面脚本只在 cloud.tsinghua.edu.cn 读取现有值；从不点「生成/重置」。
+/// document.title 是已验证的桌面/Android WebView 回传通道，不注入 JS native bridge。
+const CLOUD_TOKEN_SCRIPT: &str = r##"(function() {
+  if (window.__ONETHU_CLOUD_TOKEN) return;
+  window.__ONETHU_CLOUD_TOKEN = true;
+  var HEX40 = /^[0-9a-f]{40}$/i;
+  var sent = false;
+  var eyeClicked = false;
+  function onCloudHost() {
+    return location.hostname === "cloud.tsinghua.edu.cn" ||
+      // webvpn 包装通道（THOS 同构零跳登录）：包装的 cloud 页在 webvpn 域 + /https/ 路径前缀
+      (location.hostname === "webvpn.tsinghua.edu.cn" && location.pathname.indexOf("/https/") === 0);
+  }
+  // id 的「确认续用」页（checkSingle）：HTTP 轮 confirmIdCheckSingle 的页面内等价——
+  // 勾选记住并直接提交表单，整条 SSO 链全自动（2026-10-10 实录：链就停在这一页）。
+  function onIdConfirmPage() {
+    return location.hostname === "id.tsinghua.edu.cn" && location.href.indexOf("/login/checkSingle") >= 0;
+  }
+  function autoConfirmCheckSingle() {
+    if (window.__ONETHU_CS_DONE) return;
+    var form = document.querySelector("form[action*='checkSingle'], form#logined");
+    if (!form) return;
+    window.__ONETHU_CS_DONE = true;
+    try {
+      var rm = form.querySelector("input[name='i_rememberme']");
+      if (rm) rm.checked = true;
+      form.submit();
+    } catch (e) {}
+  }
+  function fieldHint(el) {
+    return [el.id, el.name, el.className, el.placeholder, el.getAttribute("aria-label"), el.title]
+      .filter(Boolean).join(" ").toLowerCase();
+  }
+  function tokenField() {
+    var fields = Array.prototype.slice.call(document.querySelectorAll("input,textarea"));
+    return fields.find(function(el) { return /token|auth/i.test(fieldHint(el)); }) || null;
+  }
+  function readValue(el) {
+    if (!el) return "";
+    var value = typeof el.value === "string" ? el.value.trim() : (el.textContent || "").trim();
+    return HEX40.test(value) ? value : "";
+  }
+  function findToken() {
+    if (!onCloudHost()) return "";
+    var value = readValue(tokenField());
+    if (value) return value;
+    var html = document.documentElement ? document.documentElement.innerHTML : "";
+    var m = /apiToken["']?\s*[:=]\s*["']([0-9a-f]{40})["']/i.exec(html) ||
+      /["']?api_token["']?\s*[:=]\s*["']([0-9a-f]{40})["']/i.exec(html) ||
+      /(?:value|id|class)\s*=\s*["'][^"']*token[^"']*["'][^>]*value\s*=\s*["']([0-9a-f]{40})["']/i.exec(html);
+    if (m && m[1]) return m[1];
+    var marked = Array.prototype.slice.call(document.querySelectorAll("[id],[class]"))
+      .find(function(el) { return /token|auth/i.test(fieldHint(el)) && HEX40.test((el.textContent || "").trim()); });
+    return marked ? (marked.textContent || "").trim() : "";
+  }
+  function showControl(field) {
+    if (!field) return null;
+    var scopes = [];
+    var el = field;
+    for (var i = 0; el && i < 5; i++, el = el.parentElement) scopes.push(el);
+    var isShow = /eye|visibility|show|reveal|toggle|显示|查看|可见/i;
+    var isDangerous = /generate|new token|reset|生成|重置|创建/i;
+    for (var s = 0; s < scopes.length; s++) {
+      var nodes = Array.prototype.slice.call(scopes[s].querySelectorAll("button,a,[role=button],i,span"));
+      var found = nodes.find(function(n) {
+        var label = [n.textContent, n.title, n.getAttribute("aria-label"), n.className].filter(Boolean).join(" ");
+        return isShow.test(label) && !isDangerous.test(label);
+      });
+      if (found) return found.closest("button,a,[role=button]") || found;
+    }
+    return null;
+  }
+  function send(token) {
+    if (sent || !HEX40.test(token || "")) return;
+    sent = true;
+    document.title = "ONETHU_CTOKEN::" + token;
+  }
+  function readCurrent() {
+    if (!onCloudHost()) return;
+    var token = findToken();
+    if (token) { send(token); return; }
+    if (!eyeClicked) {
+      var eye = showControl(tokenField());
+      if (eye) { eyeClicked = true; eye.click(); }
+    }
+  }
+  window.__ONETHU_CLOUD_READ = readCurrent;
+  function mountHelper() {
+    if (!onCloudHost() || !document.body || document.getElementById("onethu-cloud-token-read")) return;
+    var b = document.createElement("button");
+    b.id = "onethu-cloud-token-read";
+    b.type = "button";
+    b.textContent = "读取现有访问口令并返回 OneTHU";
+    b.setAttribute("aria-label", "读取现有云盘访问口令并返回 OneTHU");
+    b.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:2147483647;padding:10px 16px;border:0;border-radius:8px;background:#1a6fd4;color:#fff;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.3);cursor:pointer";
+    b.onclick = function() { readCurrent(); };
+    document.body.appendChild(b);
+  }
+  function poll() {
+    if (!onCloudHost() && !onIdConfirmPage()) return;
+    try {
+      if (onIdConfirmPage()) autoConfirmCheckSingle();
+      mountHelper();
+      readCurrent();
+    } catch (e) {}
+    setTimeout(poll, 500);
+  }
+  if (onCloudHost() || onIdConfirmPage()) poll();
+})();"##;
+
+/// 桌面端：把统一 native jar 的认证 Cookie 种入独立 WebView，再读回新会话。
+/// username/password：记住的清华账密（内存传递，绝不落日志）；WebView 落到
+/// id 登录表单页时自动填表提交（THOS eid_fill_script 同款）。2026-10-10 实录：
+/// oauth/id 会话票对 WebView 直连不被认（链停在 id 表单页），种票不够，
+/// 自动填表是 THOS 已验证的兜底——体验仍为零输入。
+#[cfg(desktop)]
+#[tauri::command]
+async fn open_cloud_token_window(
+    app: tauri::AppHandle,
+    username: Option<String>,
+    password: Option<String>,
+    target_url: Option<String>,
+) -> Result<String, String> {
+    use tauri::webview::{Cookie, WebviewWindowBuilder};
+    use tauri::{Emitter, WebviewUrl};
+    let label = "cloudtoken";
+    if let Some(old) = app.get_webview_window(label) {
+        let _ = old.set_focus();
+        return Ok("exists".into());
+    }
+    // target_url：前端用 webvpnWrap 算好的包装 profile URL（零跳通道）；
+    // 缺省回退直连 profile。账密自动填表仍保留（直连回退时的兜底）。
+    let target = target_url.filter(|u| u.starts_with("https://")).unwrap_or_else(|| CLOUD_TOKEN_PROFILE_URL.to_string());
+    let fill_js = eid_fill_script(username.as_deref().unwrap_or(""), password.as_deref().unwrap_or(""));
+
+    // 与 THOS 子窗口一样沿用主窗口 UA；wengine 的续会话票按 UA 指纹绑定。
+    let main_ua = app.config().app.windows.first().and_then(|w| w.user_agent.clone());
+    // 先建在 about:blank：建窗即导航 cloud 根会发出**无票首跳**（票还没种），
+    // 302 链直接走到登录页；about:blank 零网络请求，种完票再导航 profile。
+    let mut builder = WebviewWindowBuilder::new(
+        &app,
+        label,
+        WebviewUrl::External("about:blank".parse().unwrap()),
+    )
+    .title("清华云盘 · 读取现有访问口令")
+    .inner_size(520.0, 720.0)
+    .initialization_script(CLOUD_TOKEN_SCRIPT)
+    // id 登录表单页自动填表提交（THOS eid_fill_script；无凭据时脚本自静默）
+    .initialization_script(fill_js)
+    // 逐跳导航日志（不带任何 cookie 值）：定位「没继承」卡在哪一跳。
+    .on_navigation(|url| {
+        debug_log_line(&format!(
+            "[CLOUD-TOKEN] 导航 {}",
+            url.as_str().chars().take(180).collect::<String>()
+        ));
+        true
+    });
+    if let Some(ua) = main_ua.as_deref() {
+        builder = builder.user_agent(ua);
+    }
+    let win = builder.build().map_err(|e| e.to_string())?;
+
+    // 明确播种共享 jar 里的 cloud/id/oauth/webvpn 会话票；不记录 Cookie 值。
+    let initial_seeds = cloud_cookie_seeds_from_native_jar();
+    let mut seeded_total = 0usize;
+    for seed in &initial_seeds {
+        if !is_cloud_cookie_origin(&seed.url) { continue; }
+        let host = url::Url::parse(&seed.url).ok().and_then(|u| u.host_str().map(str::to_string)).unwrap_or_default();
+        let mut ok_n = 0usize;
+        for line in &seed.cookies {
+            if let Ok(cookie) = Cookie::parse(line.clone()) {
+                if win.set_cookie(cookie).is_ok() { ok_n += 1; }
+            }
+        }
+        seeded_total += ok_n;
+        debug_log_line(&format!("[CLOUD-TOKEN] 种票 {host} {ok_n}/{} 条", seed.cookies.len()));
+    }
+    debug_log_line(&format!("[CLOUD-TOKEN] 共种 {seeded_total} 条（种子源 {} 组）→ 导航 profile", initial_seeds.len()));
+    // WKHTTPCookieStore.setCookie 异步落库；留一拍再导航，避免竞态丢票
+    std::thread::sleep(std::time::Duration::from_millis(250));
+    win.navigate(target.parse().map_err(|e| format!("profile URL: {e}"))?)
+        .map_err(|e| e.to_string())?;
+    let _ = win.set_focus();
+
+    std::thread::spawn(move || {
+        // webvpn 单会话（logoutByOther 实锤，1a28601 会话权威化）：WebView 登录链
+        // 会踢掉 lib 的 webvpn 会话。轮询期间**持续**把 WebView 会话同步回 native
+        // jar——无论最终成功/取消/超时，会话续期都不丢（此前只在成功时回灌，
+        // 失败路径留死票 → 在线服务点击即弹 webvpn 首页）。
+        let mut sync_tick = 0u32;
+        for _ in 0..600 {
+            std::thread::sleep(std::time::Duration::from_millis(1000));
+            let Some(w) = app.get_webview_window(label) else {
+                let _ = app.emit("cloud-token-cancelled", "closed");
+                return;
+            };
+            sync_tick += 1;
+            if sync_tick % 5 == 0 {
+                let seeds = cloud_cookie_seeds_from_webview(&w);
+                if !seeds.is_empty() {
+                    seed_native_cloud_cookies(&seeds);
+                    NATIVE_JAR_ARC.save_if_dirty(&jar_store_path(&app));
+                }
+            }
+            let title = w.title().unwrap_or_default();
+            if let Some(token) = title.strip_prefix("ONETHU_CTOKEN::") {
+                let token = token.to_string();
+                let valid = token.len() == 40 && token.bytes().all(|b| b.is_ascii_hexdigit());
+                if !valid {
+                    let _ = w.eval("document.title='清华云盘 · 读取现有访问口令'");
+                    continue;
+                }
+                // 成功时同步 WebView 中刚建立/续期的认证票，回灌统一 jar 与 core CookieJar。
+                let cookie_seeds = cloud_cookie_seeds_from_webview(&w);
+                seed_native_cloud_cookies(&cookie_seeds);
+                NATIVE_JAR_ARC.save_if_dirty(&jar_store_path(&app));
+                let payload = serde_json::json!({ "token": token, "cookieSeeds": cookie_seeds });
+                let _ = w.close();
+                let _ = app.emit("cloud-token", payload);
+                return;
+            }
+        }
+        if let Some(w) = app.get_webview_window(label) {
+            let _ = w.close();
+        }
+        let _ = app.emit("cloud-token-cancelled", "timeout");
+    });
+    Ok("opened".into())
+}
+
+/// 碰一碰：NFC 能力探测（Android 走 onethu-mobile 插件；桌面恒不可用）。
+#[tauri::command]
+async fn nfc_available(app: tauri::AppHandle) -> Result<serde_json::Value, String> {
+    #[cfg(mobile)]
+    {
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        return handle
+            .run_mobile_plugin_async("nfcAvailable", serde_json::json!({}))
+            .await
+            .map_err(|e| e.to_string());
+    }
+    #[cfg(desktop)]
+    {
+        let _ = &app;
+        Ok(serde_json::json!({ "available": false, "enabled": false, "reason": "desktop" }))
+    }
+}
+
+/// 碰一碰：把一段文本放进 HCE 发送端（对方用 NFC 接收端贴一下读取；桌面报不支持）。
+#[tauri::command]
+async fn nfc_share_text(app: tauri::AppHandle, text: String) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        let _: serde_json::Value = handle
+            .run_mobile_plugin_async("nfcShareText", serde_json::json!({ "text": text }))
+            .await
+            .map_err(|e| e.to_string())?;
+        return Ok(());
+    }
+    #[cfg(desktop)]
+    {
+        let _ = (&app, &text);
+        Err("桌面端没有 NFC：在手机端用碰一碰，或复制口令/扫码".into())
+    }
+}
+
+/// 碰一碰：读取一张 NFC 标签/对方 HCE 的 NDEF 文本（Android；桌面报不支持）。
+#[tauri::command]
+async fn nfc_read_tag(app: tauri::AppHandle) -> Result<String, String> {
+    #[cfg(mobile)]
+    {
+        let handle = app
+            .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+            .0
+            .clone();
+        let r: serde_json::Value = handle
+            .run_mobile_plugin_async("nfcReadTag", serde_json::json!({}))
+            .await
+            .map_err(|e| e.to_string())?;
+        return Ok(r.get("text").and_then(|v| v.as_str()).unwrap_or("").to_string());
+    }
+    #[cfg(desktop)]
+    {
+        let _ = &app;
+        Err("桌面端没有 NFC：请用手机碰一碰，或复制口令/扫码".into())
+    }
 }
 
 #[cfg(mobile)]
@@ -3192,7 +3806,7 @@ async fn open_web_modal(app: tauri::AppHandle, url: String, dark: Option<bool>) 
     let _: serde_json::Value = handle
         .run_mobile_plugin_async(
             "openWebModal",
-            // dark：应用当前是否深色主题 → Kotlin 侧开「算法暗化」，让官方页（THUbook/
+            // dark：应用当前是否深色主题 → Kotlin 侧开「算法暗化」，让官方页（THUBook/
             // 在线服务）自带的黑字在深色下变白（2026-09-20 用户实录：字看不见）
             serde_json::json!({ "url": url, "dark": dark.unwrap_or(false) }),
         )
@@ -3502,7 +4116,7 @@ async fn venue_proxy_fetch(
     venue_log(&format!(
         "REQ {} {} auth={}",
         request.method(),
-        pq.split('&').next().unwrap_or(""),
+        pq.split('?').next().unwrap_or(""),
         auth_len
     ));
     // 页面请求 query 里的 ?token=<JWT>：官方 SPA 开机从 localStorage["token"]
@@ -3550,8 +4164,8 @@ async fn venue_proxy_fetch(
     let resp = match req.send().await {
         Ok(r) => r,
         Err(e) => {
-            venue_log(&format!("ERR upstream {e} {pq}"));
-            return upstream_err(format!("upstream: {e}"));
+            venue_log(&format!("ERR upstream {} {}", e.without_url(), pq.split('?').next().unwrap_or("")));
+            return upstream_err("upstream request failed".into());
         }
     };
     let status = resp.status();
@@ -3588,8 +4202,15 @@ async fn venue_proxy_fetch(
                     // 预置登录态（token + refreshToken 空值兜底）+ 读写监听探针：
                     // hook getItem("token")/removeItem/clear，回执经 __rd/__clr/__rm
                     // 图片请求进日志——谁读、读到多长、谁删，全部留痕。
+                    // JSON handles JS quotes/control characters; escaping "<" also prevents
+                    // HTML's raw-text parser from ending the script at a token's </script>.
+                    let token_json = serde_json::to_string(jwt)
+                        .expect("a string always serializes as JSON")
+                        .replace('<', "\\u003c")
+                        .replace('\u{2028}', "\\u2028")
+                        .replace('\u{2029}', "\\u2029");
                     let script = format!(
-                        r#"<script>(function(){{var t="{jwt}";var ok=0,err="";try{{localStorage.setItem("token",JSON.stringify(t));localStorage.setItem("headers",JSON.stringify(JSON.stringify({{token:t}})));localStorage.setItem("refreshToken",JSON.stringify(""));ok=localStorage.getItem("token")===JSON.stringify(t)?1:0;}}catch(e){{err=String(e);}}try{{new Image().src="/venue/index.html?__probe=1&ok="+ok+"&err="+encodeURIComponent(err)+"&ts="+Date.now();}}catch(e){{}}try{{var og=Storage.prototype.getItem;Storage.prototype.getItem=function(k){{var v=og.call(this,k);if(k==="token"){{try{{new Image().src="/venue/index.html?__rd=1&len="+(v?v.length:0)+"&ts="+Date.now();}}catch(e){{}}}}return v;}};var oc=Storage.prototype.clear;Storage.prototype.clear=function(){{try{{new Image().src="/venue/index.html?__clr=1&ts="+Date.now();}}catch(e){{}}return oc.call(this);}};var orm=Storage.prototype.removeItem;Storage.prototype.removeItem=function(k){{if(k==="token"){{try{{new Image().src="/venue/index.html?__rm=1&ts="+Date.now();}}catch(e){{}}}}return orm.call(this,k);}};}}catch(e){{}}}})();</script>"#
+                        r#"<script>(function(){{var t={token_json};var ok=0,err="";try{{localStorage.setItem("token",JSON.stringify(t));localStorage.setItem("headers",JSON.stringify(JSON.stringify({{token:t}})));localStorage.setItem("refreshToken",JSON.stringify(""));ok=localStorage.getItem("token")===JSON.stringify(t)?1:0;}}catch(e){{err=String(e);}}try{{new Image().src="/venue/index.html?__probe=1&ok="+ok+"&err="+encodeURIComponent(err)+"&ts="+Date.now();}}catch(e){{}}try{{var og=Storage.prototype.getItem;Storage.prototype.getItem=function(k){{var v=og.call(this,k);if(k==="token"){{try{{new Image().src="/venue/index.html?__rd=1&len="+(v?v.length:0)+"&ts="+Date.now();}}catch(e){{}}}}return v;}};var oc=Storage.prototype.clear;Storage.prototype.clear=function(){{try{{new Image().src="/venue/index.html?__clr=1&ts="+Date.now();}}catch(e){{}}return oc.call(this);}};var orm=Storage.prototype.removeItem;Storage.prototype.removeItem=function(k){{if(k==="token"){{try{{new Image().src="/venue/index.html?__rm=1&ts="+Date.now();}}catch(e){{}}}}return orm.call(this,k);}};}}catch(e){{}}}})();</script>"#
                     );
                     let bytes = script.as_bytes();
                     let head_pos = body
@@ -3608,19 +4229,12 @@ async fn venue_proxy_fetch(
             venue_log(&format!(
                 "RSP {} {} ct={} len={} inject={} tok={}",
                 status,
-                pq.split('&').next().unwrap_or(""),
+                pq.split('?').next().unwrap_or(""),
                 ct,
                 body.len(),
                 injected,
                 sso_token.is_some()
             ));
-            // 小 JSON 体直接记内容（未登录/错误判词一眼可见）
-            if ct.starts_with("application/json") && body.len() <= 400 {
-                venue_log(&format!(
-                    "BODY {}",
-                    String::from_utf8_lossy(&body).replace('\n', " ")
-                ));
-            }
             tauri::http::Response::builder()
                 .status(status)
                 .header(CONTENT_TYPE, ct)
@@ -3638,12 +4252,52 @@ fn open_sports_window(_: tauri::AppHandle) -> Result<String, String> {
     Err("场馆登录多窗口仅桌面端可用".into())
 }
 
+#[cfg(mobile)]
+#[tauri::command]
+async fn open_cloud_token_window(
+    app: tauri::AppHandle,
+    username: Option<String>,
+    password: Option<String>,
+    target_url: Option<String>,
+) -> Result<serde_json::Value, String> {
+    let handle = app
+        .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
+        .0
+        .clone();
+    let seeds = cloud_cookie_seeds_from_native_jar();
+    let cookie_seeds_json = serde_json::to_string(&seeds).map_err(|e| e.to_string())?;
+    let target = target_url.filter(|u| u.starts_with("https://")).unwrap_or_else(|| CLOUD_TOKEN_PROFILE_URL.to_string());
+    // 桌面同款：id 表单页自动填表（拼在读票脚本前；无凭据自静默）
+    let fill_js = eid_fill_script(username.as_deref().unwrap_or(""), password.as_deref().unwrap_or(""));
+    let script = format!("{fill_js}\n{CLOUD_TOKEN_SCRIPT}");
+    let result: serde_json::Value = handle
+        .run_mobile_plugin_async(
+            "openCloudTokenWebview",
+            serde_json::json!({
+                "url": target,
+                "script": script,
+                "cookieSeedsJson": cookie_seeds_json,
+            }),
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+    if let Some(raw) = result.get("cookieSeeds") {
+        if let Ok(returned) = serde_json::from_value::<Vec<CloudCookieSeed>>(raw.clone()) {
+            seed_native_cloud_cookies(&returned);
+            NATIVE_JAR_ARC.save_if_dirty(&jar_store_path(&app));
+        }
+    }
+    Ok(result)
+}
+
 tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_geolocation::init())
         .plugin(tauri_plugin_onethu_mobile::init())
         .plugin(tauri_plugin_onethu_calendar::init())
         .plugin(tauri_plugin_onethu_speech::init())
+        .plugin(tauri_plugin_onethu_tts::init())
+        .plugin(tauri_plugin_onethu_overlay::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(std::sync::Mutex::new(None::<String>) as VenueSsoState)
         .manage(plugins::PluginHost::default())
@@ -3724,13 +4378,27 @@ tauri::Builder::default()
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            skills::skills_action, skills::skills_export,
+            douyu_bridge::douyu_send_danmu,
+            douyu_bridge::douyu_self_check,
+            ws_bridge::ws_open,
+            ws_bridge::ws_send,
+            ws_bridge::ws_recv,
+            ws_bridge::ws_close,
+            ws_bridge::ws_close_owner,
             http_native_clear_cookies,
             http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
-            downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,debug_log_export,read_file_text,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_search,seafile::seafile_pick_upload,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,dynamic_color,
-            open_external,onethu_open_path,onethu_reveal_path,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,widget_pin,ui_apply_insets,save_image_to_gallery,ui_set_bar_theme,ui_haptic_tick,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,notify_post,notify_dismiss,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,venue_sso_set,venue_open_portal,
+            downloads::save_local_download,downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
+            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_delete,geek_browser_probe,geek_browser_launch,geek_browser_close,geek_playwright_install,
+            overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,updater::updater_download,updater::updater_cancel_download,updater::updater_open_installer,overlay_win::overlay_set_panel_height,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
+            seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_share_delete,seafile::seafile_share_read,seafile::seafile_share_folder_to_user,seafile::seafile_delete_repo,seafile::seafile_delete_owned_repo,seafile::seafile_share_read_bytes,seafile::seafile_assert_account_acl,seafile::seafile_upload_text,seafile::seafile_upload_profile,seafile::seafile_repo_owner,seafile::seafile_repo_user_shares,seafile::seafile_set_repo_user_permission,seafile::seafile_remove_repo_user_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
+            im_media::im_fetch_media,
+            im_media::im_peek_text,
+            im_media::im_stat_file,
+            im_media::im_write_text_file,http_request,http_native,download_file,fetch_binary,save_text_file,plugin_dir_install_rust,builtin_sidecar_install,plugin_dir_import_zip,plugin_logo_data,os_is_android,plugin_dir_remove,state_read,state_write,state_delete,dynamic_color,
+            open_external,onethu_open_path,nfc_available,nfc_read_tag,nfc_share_text,onethu_reveal_path,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,widget_pin,ui_apply_insets,save_image_to_gallery,ui_set_bar_theme,ui_haptic_tick,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,notify_post,notify_dismiss,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,open_cloud_token_window,cloud_webvpn_profile,venue_sso_set,venue_open_portal,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
         .run(tauri::generate_context!())
@@ -3753,5 +4421,505 @@ pub mod notify_probe_hooks {
     }
     pub fn cancel(ids: &[String]) {
         crate::notify_macos::cancel(ids)
+    }
+}
+
+// =========================================================================
+/// Android 占位：宿主直连弹幕桥只做非安卓（Android 走 WebView 的 WS 回落通道），
+/// 但这两个命令在 `invoke_handler!` 里是**无条件注册**的——所以安卓侧必须存在同名命令，
+/// 否则 `cannot find module or crate douyu_bridge`（2026-10-11 实机交叉编译实录）。
+#[cfg(target_os = "android")]
+pub mod douyu_bridge {
+    #[derive(serde::Deserialize)]
+    pub struct DanmuSendArgs {
+        #[allow(dead_code)]
+        pub cookie: String,
+        #[serde(alias = "roomId")]
+        #[allow(dead_code)]
+        pub room_id: u64,
+        #[serde(default)]
+        #[allow(dead_code)]
+        pub content: String,
+        #[serde(default)]
+        #[allow(dead_code)]
+        pub check_only: bool,
+    }
+
+    #[tauri::command]
+    pub async fn douyu_send_danmu(_args: DanmuSendArgs) -> Result<serde_json::Value, String> {
+        Err("Android 不支持宿主直连弹幕桥（走 WebView WS 回落通道）".into())
+    }
+
+    #[tauri::command]
+    pub async fn douyu_self_check(_args: DanmuSendArgs) -> Result<serde_json::Value, String> {
+        Err("Android 不支持宿主直连弹幕桥（走 WebView WS 回落通道）".into())
+    }
+}
+
+// =========================================================================
+#[cfg(not(target_os = "android"))]
+pub mod douyu_bridge {
+    // niko 弹幕桥（douyu_send_danmu / douyu_self_check）—— 自包含追加块 v1
+    // 背景：OneTHU 的 WKWebView（tauri:// custom scheme 页面）里 WebSocket 全灭
+    //      （实测 baidu:443 的 WS 也一样死），HTTPS 正常。故此短事务在 Rust 层完成。
+    // 协议已实测闭环：直连 danmuproxy.douyu.com:8501~8503 登录进房，chatmessage 从
+    //      同一 socket 发出，10s 内收本 uid 的 chatmsg 回显判「已上墙」。
+    // 登录：JWT 时代字段全部并入 acf_jwt_token payload（uid/ltkid/stk/biz），
+    //      biz 必须用 jwt 的（旧代码写死 biz=1 会被网关拒），devid=dy_did 做 vk。
+    // =========================================================================
+
+    use base64::Engine as _Base64Engine;
+    use std::time::Duration as StepDuration;
+
+    use futures_util::{SinkExt, StreamExt};
+    use md5::Digest;
+    use serde::Deserialize as NikoDeserialize;
+    use tokio_tungstenite::tungstenite::client::IntoClientRequest;
+    use tokio_tungstenite::tungstenite::Message;
+
+    const VK_SECRET: &str = "r5*^5;}2#${XF[h+;'./.Q'1;,-]f'p[";
+    const MSG_TYPE_SEND: u16 = 689; // 0x02B1
+
+    fn stt_escape(s: &str) -> String {
+        s.replace('@', "@A").replace('/', "@S")
+    }
+
+    fn stt_unescape(s: &str) -> String {
+        s.replace("@S", "/").replace("@A", "@")
+    }
+
+    fn frame_pairs(pairs: &[(String, String)]) -> Vec<u8> {
+        let mut stt = String::from("type@=");
+        stt.push_str(&stt_escape(&pairs[0].1));
+        stt.push('/');
+        for (k, v) in &pairs[1..] {
+            stt.push_str(&stt_escape(k));
+            stt.push_str("@=");
+            stt.push_str(&stt_escape(v));
+            stt.push('/');
+        }
+        stt.push('\0');
+        let body = stt.as_bytes();
+        let len = (body.len() + 8) as i32;
+        let mut out = Vec::with_capacity(12 + body.len());
+        out.extend_from_slice(&len.to_le_bytes());
+        out.extend_from_slice(&len.to_le_bytes());
+        out.extend_from_slice(&MSG_TYPE_SEND.to_le_bytes());
+        out.push(0u8);
+        out.push(0u8);
+        out.extend_from_slice(body);
+        out
+    }
+
+    // 一条 WS Message 里的 douyu 帧解析（容忍一帧多包）
+    fn decode_douyu_frame(u8s: &[u8]) -> Vec<String> {
+        let mut stts = Vec::new();
+        let mut off = 0usize;
+        while off + 12 <= u8s.len() {
+            let len = i32::from_le_bytes(u8s[off..off + 4].try_into().unwrap());
+            if len < 9 || off as i32 + 4 + len > u8s.len() as i32 {
+                break;
+            }
+            let s = String::from_utf8_lossy(&u8s[off + 12..off as usize + 4 + len as usize - 1]).to_string();
+            stts.push(s);
+            off += (4 + len) as usize;
+        }
+        stts
+    }
+
+    fn kv_of(stt: &str) -> std::collections::HashMap<String, String> {
+        stt.split('/')
+            .filter_map(|seg| {
+                let i = seg.find("@=")?;
+                let key = stt_unescape(&seg[..i]);
+                let val = stt_unescape(&seg[i + 2..]);
+                if key.is_empty() { None } else { Some((key, val)) }
+            })
+            .collect()
+    }
+
+    fn parse_cookie(s: &str) -> std::collections::HashMap<String, String> {
+        let mut map = std::collections::HashMap::new();
+        for line in s.split('\n') {
+            if line.contains('\t') {
+                let mut it = line.split('\t').map(|t| t.trim());
+                if let (Some(k), Some(v)) = (it.next(), it.next()) {
+                    if !k.is_empty() && !v.is_empty() {
+                        map.insert(k.to_string(), v.to_string());
+                    }
+                }
+                continue;
+            }
+            for seg in line.split(';') {
+                if let Some(i) = seg.find('=') {
+                    let k = seg[..i].trim();
+                    if !k.is_empty() {
+                        map.insert(k.to_string(), seg[i + 1..].trim().to_string());
+                    }
+                }
+            }
+        }
+        map
+    }
+
+    // 从 acf_jwt_token（或 acf_dmjwt_token）派生 {uid, ltkid, stk, biz}；旧版 acf_* 也兼容
+    fn derive_fields(cm: &std::collections::HashMap<String, String>) -> Result<(String, String, String, String, String), String> {
+        if let (Some(uid), Some(ltk), Some(stk)) = (cm.get("acf_uid"), cm.get("acf_ltkid"), cm.get("acf_stk")) {
+            let biz = cm.get("acf_biz").cloned().unwrap_or_else(|| "1".into());
+            return Ok((uid.clone(), ltk.clone(), stk.clone(), biz, "旧版 Cookie".into()));
+        }
+        let jwt = cm
+            .get("acf_jwt_token")
+            .or_else(|| cm.get("acf_dmjwt_token"))
+            .ok_or("没有可用登录凭据：需要 acf_jwt_token（现版）或 acf_uid/acf_stk/acf_ltkid（旧版）")?;
+        let payload = jwt.split('.').nth(1).ok_or("JWT 结构异常")?;
+        let bytes = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .decode(payload.trim_end_matches('='))
+            .map_err(|e| format!("JWT payload 解码失败: {e}"))?;
+        let v: serde_json::Value = serde_json::from_slice(&bytes).map_err(|e| format!("JWT payload 解析失败: {e}"))?;
+        let uid = v["uid"].as_i64().map(|n| n.to_string()).ok_or("JWT 缺 uid")?;
+        let ltk = v["ltkid"].as_i64().map(|n| n.to_string()).ok_or("JWT 缺 ltkid")?;
+        let stk = v["stk"].as_str().ok_or("JWT 缺 stk")?.to_string();
+        let biz = v["biz"].as_i64().map(|n| n.to_string()).unwrap_or_else(|| "93".into());
+        Ok((uid, ltk, stk, biz, "JWT 派生".into()))
+    }
+
+    fn extract_room_id(html: &str) -> Option<String> {
+        for pat in ["$ROOM.room_id", "window.room_id"] {
+            if let Some(idx) = html.find(pat) {
+                let tail = &html[idx + pat.len()..];
+                let digits: String = tail
+                    .chars()
+                    .skip_while(|c| !c.is_ascii_digit())
+                    .take_while(|c| c.is_ascii_digit())
+                    .collect();
+                if !digits.is_empty() {
+                    return Some(digits);
+                }
+            }
+        }
+        None
+    }
+
+    fn md5_hex(parts: &[&[u8]]) -> String {
+        let mut h = md5::Md5::new();
+        for p in parts {
+            h.update(p);
+        }
+        h.finalize().iter().map(|b| format!("{b:02x}")).collect()
+    }
+
+    #[derive(NikoDeserialize, Debug)]
+    #[serde(rename_all = "camelCase")]
+    pub struct DanmuSendArgs {
+        pub cookie: String,
+        #[serde(alias = "roomId")]
+        pub room_id: u64,
+        #[serde(default)]
+        pub content: String,
+        /// true = 自检（不发送 chatmessage）
+        #[serde(default)]
+        pub check_only: bool,
+    }
+
+    struct Chain {
+        real_rid: String,
+        level: Option<u64>,
+        echoed: bool,
+        via: String,
+        saw: Vec<String>,
+    }
+
+    async fn douyu_send_chain(a: &DanmuSendArgs) -> Result<Chain, String> {
+        if a.cookie.trim().is_empty() {
+            return Err("未配置：请先在插件设置粘贴斗鱼 Cookie".into());
+        }
+        let cm = parse_cookie(&a.cookie);
+        let did = cm
+            .get("dy_did")
+            .cloned()
+            .ok_or("缺少 dy_did（设备指纹）")?;
+        if a.content.trim().is_empty() && !a.check_only {
+            return Err("弹幕内容为空".into());
+        }
+        let (uid, ltkid, stk, biz, src) = derive_fields(&cm).map_err(|e| format!("登录凭据：{e}"))?;
+
+        // ① 真实房间号（宿主 HTTP 层走 douyu.com:443 —— rustls 已验证可用）
+        let client = reqwest::Client::builder()
+            .no_proxy()
+            .user_agent("Mozilla/5.0 (Macintosh) OneTHU-niko")
+            .build()
+            .map_err(|e| format!("reqwest:{e}"))?;
+        let html = client
+            .get(format!("https://www.douyu.com/{}", a.room_id))
+            .send()
+            .await
+            .map_err(|e| format!("真实房间号：{e}"))?
+            .text()
+            .await
+            .map_err(|e| format!("真实房间号：{e}"))?;
+        let real_rid = extract_room_id(&html).ok_or("真实房间号：房间页无 room_id（房间不存在或已封禁）")?;
+
+        // ② 迭代 8501~8503
+        let rt = chrono_now_secs();
+        let vk = md5_hex(&[rt.as_bytes(), VK_SECRET.as_bytes(), did.as_bytes()]);
+        let mut last_err = String::new();
+        for port in [8501u16, 8502, 8503] {
+            let url = format!("wss://danmuproxy.douyu.com:{port}/");
+            let (mut ws, _) = match tokio_tungstenite::connect_async(url.as_str()).await {
+                Ok(v) => v,
+                Err(e) => {
+                    last_err = format!("{port}: {e}");
+                    continue;
+                }
+            };
+
+            // loginreq（旧式 + JWT 派生字段 + biz）
+            let login = vec![
+                ("type".to_string(), "loginreq".to_string()),
+                ("roomid".to_string(), real_rid.clone()),
+                ("dfl".to_string(), "sn@A=105@Sss@A=1".to_string()),
+                ("username".to_string(), uid.clone()),
+                ("password".to_string(), String::new()),
+                ("ltkid".to_string(), ltkid.clone()),
+                ("biz".to_string(), biz.clone()),
+                ("stk".to_string(), stk.clone()),
+                ("devid".to_string(), did.clone()),
+                ("ct".to_string(), "0".into()),
+                ("pt".to_string(), "2".into()),
+                ("cvr".to_string(), "0".into()),
+                ("tvr".to_string(), "7".into()),
+                ("apd".to_string(), String::new()),
+                ("rt".to_string(), String::new()), // 占位，稍后再填时间戳
+                ("vk".to_string(), vk.clone()),
+                ("ver".to_string(), "20220825".into()),
+                ("aver".to_string(), "218101901".into()),
+                ("dmbt".to_string(), "chrome".into()),
+                ("dmbv".to_string(), "116".into()),
+            ];
+            let login = fix_rt(login, &rt);
+            if let Err(e) = ws.send(Message::Binary(frame_pairs(&login).into())).await {
+                last_err = format!("{port}: send loginreq {e}");
+                continue;
+            }
+
+            // 等 loginres / memberinfores
+            let mut level: Option<u64> = None;
+            let mut logged = false;
+            let deadline = std::time::Instant::now() + StepDuration::from_secs(10);
+            loop {
+                if std::time::Instant::now() > deadline {
+                    break;
+                }
+                let msg = match tokio::time::timeout(StepDuration::from_secs(2), ws.next()).await {
+                    Ok(Some(Ok(m))) => m,
+                    _ => break,
+                };
+                if let Message::Binary(b) = &msg {
+                    for stt in decode_douyu_frame(b) {
+                        let m = kv_of(&stt);
+                        match m.get("type").map(|s| s.as_str()).unwrap_or("") {
+                            "loginres" => logged = true,
+                            "memberinfores" => level = m.get("level").and_then(|s| s.parse().ok()),
+                            "error" | "emrr" => return Err(format!("斗鱼网关错误：{}", m.get("content").cloned().unwrap_or_default())),
+                            _ => {}
+                        }
+                    }
+                }
+                if logged {
+                    break;
+                }
+            }
+            if !logged {
+                last_err = format!("{port}: 登录未确认（10s 无 loginres）");
+                let _ = ws.close(None).await;
+                continue;
+            }
+
+            // login 后暗号帧（老客户端 Strenght：h5ckreq）
+            let _ = ws
+                .send(Message::Binary(
+                    frame_pairs(&[
+                        ("type".to_string(), "h5ckreq".into()),
+                        ("rid".to_string(), real_rid.clone()),
+                        ("ti".to_string(), "220120191120".into()),
+                    ])
+                    .into(),
+                ))
+                .await;
+
+            // joingroup + mrkl +（发送前发放下）
+            let _ = ws
+                .send(Message::Binary(
+                    frame_pairs(&[
+                        ("type".to_string(), "joingroup".into()),
+                        ("rid".to_string(), real_rid.clone()),
+                        ("gid".to_string(), "1".into()),
+                    ])
+                    .into(),
+                ))
+                .await;
+            tokio::time::sleep(StepDuration::from_millis(300)).await;
+            let _ = ws.send(Message::Binary(frame_pairs(&[("type".to_string(), "mrkl".into())]).into())).await;
+            let _ = ws
+                .send(Message::Binary(
+                    frame_pairs(&[
+                        ("type".to_string(), "sub".into()),
+                        ("mt".to_string(), "dayrk".into()),
+                    ])
+                    .into(),
+                ))
+                .await;
+
+            // ③ 发送 + 回显检测
+            let mut echoed = false;
+            let mut saw: Vec<String> = Vec::new();
+            if !a.check_only {
+                let tts = chrono_now_secs().parse::<u64>().unwrap_or(0);
+                let cst = (tts * 1000) + 9000;
+                let cmmsg = vec![
+                    ("type".to_string(), "chatmessage".into()),
+                    ("pe".to_string(), "0".into()),
+                    ("content".to_string(), a.content.trim().to_string()),
+                    ("col".to_string(), "0".into()),
+                    ("dy".to_string(), did.clone()),
+                    ("sender".to_string(), uid.clone()),
+                    ("ifs".to_string(), "0".into()),
+                    ("nc".to_string(), "0".into()),
+                    ("dat".to_string(), "0".into()),
+                    ("rev".to_string(), "0".into()),
+                    ("tts".to_string(), tts.to_string()),
+                    ("admzq".to_string(), "0".into()),
+                    ("cst".to_string(), cst.to_string()),
+                ];
+                ws.send(Message::Binary(frame_pairs(&cmmsg).into()))
+                    .await
+                    .map_err(|e| format!("chatmessage 发送失败:{e}"))?;
+                let deadline2 = std::time::Instant::now() + StepDuration::from_secs(10);
+                loop {
+                    if std::time::Instant::now() > deadline2 {
+                        break;
+                    }
+                    let msg = match tokio::time::timeout(StepDuration::from_millis(300), ws.next()).await {
+                        Ok(Some(Ok(m))) => m,
+                        _ => break,
+                    };
+                    if let Message::Binary(b) = &msg {
+                        for stt in decode_douyu_frame(b) {
+                            let m = kv_of(&stt);
+                            if let Some(t) = m.get("type") {
+                                if saw.last() != Some(t) && saw.len() < 12 {
+                                    saw.push(t.clone());
+                                }
+                            }
+                            if m.get("type").map(|s| s.as_str()) == Some("memberinfores") {
+                                level = m.get("level").and_then(|p| p.parse().ok());
+                            }
+                            if m.get("type").map(|s| s.as_str()) == Some("error") {
+                                if let Some(e) = m.get("content") {
+                                    saw.push(format!("error:{e}"))
+                                }
+                            }
+                            if m.get("type").map(|s| s.as_str()) == Some("chatmsg") && m.get("uid").map(String::as_str) == Some(uid.as_str()) {
+                                let got = stt_unescape(&m.get("txt").cloned().unwrap_or_default());
+                                if got.trim() == a.content.trim() || got.contains(a.content.trim().chars().take(8).collect::<String>().as_str()) {
+                                    echoed = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if echoed {
+                        break;
+                    }
+                }
+            }
+            let _ = ws.close(None).await;
+            return Ok(Chain { real_rid, level, echoed, via: format!("宿主桥（{port}）· {src}"), saw });
+        }
+        Err(format!("弹幕服务器 8501~8503 全部连不上（{last_err}）。若 HTTP 正常而 WS 全灭，大概率是本机代理对偶发端口的分流限制，可再试或换网络"))
+    }
+
+    fn fix_rt(mut v: Vec<(String, String)>, rt: &str) -> Vec<(String, String)> {
+        for p in v.iter_mut() {
+            if p.0 == "rt" {
+                p.1 = rt.to_string();
+            }
+        }
+        v
+    }
+
+    fn chrono_now_secs() -> String {
+        use std::time::{SystemTime, UNIX_EPOCH};
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_secs().to_string())
+            .unwrap_or_else(|_| "0".into())
+    }
+
+    #[tauri::command]
+    pub async fn douyu_send_danmu(args: DanmuSendArgs) -> Result<serde_json::Value, String> {
+        let c = douyu_send_chain(&args).await?;
+        Ok(serde_json::json!({
+            "echoed": c.echoed,
+            "realRid": c.real_rid,
+            "level": c.level,
+            "via": c.via,
+            "check": !args.check_only,
+        }))
+    }
+
+    #[tauri::command]
+    pub async fn douyu_self_check(args: DanmuSendArgs) -> Result<serde_json::Value, String> {
+        let a = DanmuSendArgs {
+            cookie: args.cookie,
+            room_id: args.room_id,
+            content: String::new(),
+            check_only: true,
+        };
+        let c = douyu_send_chain(&a).await?;
+        Ok(serde_json::json!({
+            "ok": true,
+            "realRid": c.real_rid,
+            "level": c.level,
+            "via": c.via,
+        }))
+    }
+
+
+}
+
+#[cfg(test)]
+mod login_ipc_tests {
+    use super::*;
+
+    async fn assert_cookie_clear_yields<F>(clear: F)
+    where F: std::future::Future<Output = Result<(), String>> {
+        let (ready_tx, ready_rx) = std::sync::mpsc::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let holder = std::thread::spawn(move || {
+            let _guard = NATIVE_JAR_ARC.0.write().unwrap();
+            ready_tx.send(()).unwrap();
+            let _ = release_rx.recv_timeout(std::time::Duration::from_secs(3));
+        });
+        ready_rx.recv_timeout(std::time::Duration::from_secs(2)).unwrap();
+        tokio::pin!(clear);
+        let started = std::time::Instant::now();
+        tokio::select! {
+            result = &mut clear => panic!("Cookie operation bypassed a held write lock: {result:?}"),
+            _ = tokio::time::sleep(std::time::Duration::from_millis(20)) => {}
+        }
+        let elapsed = started.elapsed();
+        let _ = release_tx.send(());
+        holder.join().unwrap();
+        tokio::time::timeout(std::time::Duration::from_secs(2), &mut clear).await.unwrap().unwrap();
+        assert!(elapsed < std::time::Duration::from_millis(750),
+            "Cookie lock wait blocked the caller executor for {elapsed:?}");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn cookie_lock_wait_keeps_the_caller_executor_responsive() {
+        assert_cookie_clear_yields(http_native_clear_cookies_domain(vec!["id.tsinghua.edu.cn".into()])).await;
+        assert_cookie_clear_yields(http_native_clear_cookies()).await;
     }
 }

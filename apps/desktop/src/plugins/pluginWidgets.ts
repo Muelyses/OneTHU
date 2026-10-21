@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 插件小组件注册表（**声明式**）——插件经 `ctx.registerWidget` 声明「桌面上要显示什么」，
  * 宿主把声明解析成原生能画的快照（`state/widgetSnapshot.ts` → 原生 RemoteViews）。
@@ -131,7 +132,7 @@ export function collectWidgetSlots(maxRows = PLUGIN_WIDGET_MAX_ROWS): ResolvedWi
       slot: String(out.length + 1),
       pluginId: def.pluginId,
       widgetId: def.id,
-      title: String(def.title ?? def.pluginName ?? "插件小组件").trim() || "插件小组件",
+      title: String(def.title ?? def.pluginName ?? i18n("plugins.pluginwidgets.10243e85ea3c")).trim() || i18n("plugins.pluginwidgets.10243e85ea3c"),
       rows,
       target: String(def.target ?? "").trim() || `plugin:${def.pluginId}:main`,
       footer: def.pluginName,

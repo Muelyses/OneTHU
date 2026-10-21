@@ -1,0 +1,1982 @@
+{
+ "url": "http://127.0.0.1:5180/?explorer-preview=home",
+ "dark": false,
+ "scheme": "light",
+ "glass": "",
+ "rows": [
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-tab.home-free>div.home-chrome-layer>div.workbench-intro>p.workbench-description",
+   "t": "常用服务随手可达，重要的事留在白板上。",
+   "c": "rgb(107, 107, 101)",
+   "fs": 14,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     75,
+     249,
+     341,
+     266
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 4.999202379343073,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    75,
+    249,
+    341,
+    266
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.freeboard-wrap>div.workbench-board-head>div>span",
+   "t": "自由摆放，让工作台成为你的样子",
+   "c": "rgb(107, 107, 101)",
+   "fs": 13,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     75,
+     522,
+     270,
+     538
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 4.999202379343073,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    75,
+    522,
+    270,
+    538
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-tab.home-free>div.home-chrome-layer>div.chrome-block.chrome-dock>div.workbench-section-label",
+   "t": "常用服务",
+   "c": "rgb(107, 107, 101)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     100,
+     327,
+     152,
+     343
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 5.3624026224622385,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    100,
+    327,
+    152,
+    343
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.freeboard-world>div.free-item>div.wg-card>div.workbench-widget-title",
+   "t": "今日课程",
+   "c": "rgb(107, 107, 101)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     96,
+     579,
+     148,
+     595
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 5.3624026224622385,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    96,
+    579,
+    148,
+    595
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.freeboard-world>div.free-item>div.wg-card>div.workbench-widget-title",
+   "t": "未提交作业",
+   "c": "rgb(107, 107, 101)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     472,
+     579,
+     537,
+     595
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 5.3624026224622385,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    472,
+    579,
+    537,
+    595
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.freeboard-world>div.free-item>div.wg-card>div.workbench-widget-title",
+   "t": "最近通知",
+   "c": "rgb(107, 107, 101)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     848,
+     579,
+     900,
+     595
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 5.3624026224622385,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    848,
+    579,
+    900,
+    595
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "nav.ex-bbar>button.ex-bbar-btn>span.workbench-wordmark>span",
+   "t": "/ 工作台",
+   "c": "rgb(107, 107, 101)",
+   "fs": 13,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     116,
+     23,
+     166,
+     39
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 5.3624026224622385,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 0.9423076923076923,
+   "rect": [
+    116,
+    23,
+    166,
+    39
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-tab.home-free>div.home-chrome-layer>div.workbench-intro>span.workbench-eyebrow",
+   "t": "OneTHU / 校园工作台",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     75,
+     147,
+     203,
+     163
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    75,
+    147,
+    203,
+    163
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-chrome-layer>div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-date",
+   "t": "10月17日 星期六",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1099,
+     147,
+     1195,
+     163
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    1099,
+    147,
+    1195,
+    163
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.workbench-board-head>div.workbench-board-actions>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label",
+   "t": "模板",
+   "c": "rgb(80, 80, 75)",
+   "fs": 14,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1046,
+     508,
+     1074,
+     525
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    1046,
+    508,
+    1074,
+    525
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "待办",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     143,
+     410,
+     169,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    143,
+    410,
+    169,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "课程",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     263,
+     410,
+     289,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    263,
+    410,
+    289,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "日程",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     382,
+     410,
+     408,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    382,
+    410,
+    408,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "寻迹",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     502,
+     410,
+     528,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    502,
+    410,
+    528,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "邮箱",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     622,
+     410,
+     648,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    622,
+    410,
+    648,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "云盘",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     742,
+     410,
+     768,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    742,
+    410,
+    768,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "GitLab",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     854,
+     410,
+     895,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    854,
+    410,
+    895,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "THUBook",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     965,
+     410,
+     1024,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    965,
+    410,
+    1024,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.hs-dock-row>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label>span.sphere-name",
+   "t": "清小搭",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1095,
+     410,
+     1134,
+     426
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    1095,
+    410,
+    1134,
+    426
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-actions>span.og-chip.og-chip--sm.og-chip--interactive>span.og-chip-label",
+   "t": "更多功能",
+   "c": "rgb(80, 80, 75)",
+   "fs": 11,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1055,
+     327,
+     1099,
+     340
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    1055,
+    327,
+    1099,
+    340
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-actions>span.og-chip.og-chip--sm.og-chip--interactive>span.og-chip-label",
+   "t": "详细功能",
+   "c": "rgb(80, 80, 75)",
+   "fs": 11,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1117,
+     330,
+     1161,
+     343
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    1117,
+    330,
+    1161,
+    343
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.og-empty>div.og-empty-action>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label",
+   "t": "看本周课表",
+   "c": "rgb(80, 80, 75)",
+   "fs": 14,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     220,
+     684,
+     290,
+     701
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    220,
+    684,
+    290,
+    701
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.og-empty>div.og-empty-action>button.og-btn.og-btn--ghost.og-interactive>span.og-btn-label",
+   "t": "去网络学堂",
+   "c": "rgb(80, 80, 75)",
+   "fs": 14,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     972,
+     684,
+     1042,
+     701
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    972,
+    684,
+    1042,
+    701
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.shell.explorer-shell>nav.ex-bbar>button.ex-bbar-btn>span.workbench-wordmark",
+   "t": "OneTHU",
+   "c": "rgb(80, 80, 75)",
+   "fs": 16,
+   "fw": "700",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     55,
+     21,
+     116,
+     39
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 0.978494623655914,
+   "rect": [
+    55,
+    21,
+    116,
+    39
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.p",
+   "t": "(",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     89,
+     67,
+     96,
+     82
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.828125,
+   "rect": [
+    89,
+    67,
+    96,
+    82
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "span.ex-tab-glyph>span.brand-logo>span.word>i",
+   "t": "O",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13.7,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     96,
+     67,
+     106,
+     83
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.7222222222222222,
+   "rect": [
+    96,
+    67,
+    106,
+    83
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "span.ex-tab-glyph>span.brand-logo>span.word>i",
+   "t": "n",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13.7,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     107,
+     67,
+     114,
+     83
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.5909090909090909,
+   "rect": [
+    107,
+    67,
+    114,
+    83
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "span.ex-tab-glyph>span.brand-logo>span.word>i",
+   "t": "e",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13.7,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     115,
+     67,
+     121,
+     83
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.71875,
+   "rect": [
+    115,
+    67,
+    121,
+    83
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.u",
+   "t": "T",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "800",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     96,
+     80,
+     104,
+     95
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.7954545454545454,
+   "rect": [
+    96,
+    80,
+    104,
+    95
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.u",
+   "t": "H",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "800",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     104,
+     80,
+     112,
+     95
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.6666666666666666,
+   "rect": [
+    104,
+    80,
+    112,
+    95
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.u",
+   "t": "U",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "800",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     112,
+     80,
+     121,
+     95
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.6323529411764706,
+   "rect": [
+    112,
+    80,
+    121,
+    95
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.p",
+   "t": ")",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     121,
+     81,
+     129,
+     96
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 0.7954545454545454,
+   "rect": [
+    121,
+    81,
+    129,
+    96
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-tabstrip>div.ex-tab.is-active.is-home>button.ex-tab-main>span.ex-tab-title",
+   "t": "首页",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     139,
+     74,
+     165,
+     90
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 14.123379878071269,
+   "bg": [
+    240,
+    240,
+    238
+   ],
+   "bL": 0.8701848794992137,
+   "share": 1,
+   "rect": [
+    139,
+    74,
+    165,
+    90
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-tab.home-free>div.home-chrome-layer>div.workbench-intro>h1.workbench-title",
+   "t": "把今天，安排好。",
+   "c": "rgb(33, 33, 32)",
+   "fs": 44,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     75,
+     182,
+     415,
+     234
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    75,
+    182,
+    415,
+    234
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-chrome-layer>div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-time",
+   "t": "14",
+   "c": "rgb(33, 33, 32)",
+   "fs": 72,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1026,
+     171,
+     1105,
+     256
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.9631211180124224,
+   "rect": [
+    1026,
+    171,
+    1105,
+    256
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-time>span.chrome-clock-colon",
+   "t": ":",
+   "c": "rgb(33, 33, 32)",
+   "fs": 72,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1105,
+     171,
+     1116,
+     256
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.9669811320754716,
+   "rect": [
+    1105,
+    171,
+    1116,
+    256
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-chrome-layer>div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-time",
+   "t": "36",
+   "c": "rgb(33, 33, 32)",
+   "fs": 72,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1116,
+     171,
+     1195,
+     256
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.9592391304347826,
+   "rect": [
+    1116,
+    171,
+    1195,
+    256
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.freeboard-wrap>div.workbench-board-head>div>h2",
+   "t": "我的白板",
+   "c": "rgb(33, 33, 32)",
+   "fs": 24,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     75,
+     490,
+     168,
+     518
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.9592326139088729,
+   "rect": [
+    75,
+    490,
+    168,
+    518
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.p",
+   "t": "(",
+   "c": "rgb(33, 33, 32)",
+   "fs": 15,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     603,
+     21,
+     612,
+     40
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.881578947368421,
+   "rect": [
+    603,
+    21,
+    612,
+    40
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.o",
+   "t": "O",
+   "c": "rgb(33, 33, 32)",
+   "fs": 17.1,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     613,
+     19,
+     626,
+     39
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.8604651162790697,
+   "rect": [
+    613,
+    19,
+    626,
+    39
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.h",
+   "t": "H",
+   "c": "rgb(33, 33, 32)",
+   "fs": 15.9,
+   "fw": "700",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     626,
+     18,
+     638,
+     40
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.8806818181818182,
+   "rect": [
+    626,
+    18,
+    638,
+    40
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.p",
+   "t": ")",
+   "c": "rgb(33, 33, 32)",
+   "fs": 15,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     639,
+     21,
+     648,
+     40
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.8421052631578947,
+   "rect": [
+    639,
+    21,
+    648,
+    40
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "nav.ex-bbar>div.ex-bbar-center>button.ohx-capsule>span.ohx-capsule-ph",
+   "t": "搜索或问小OH",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     656,
+     22,
+     741,
+     38
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    656,
+    22,
+    741,
+    38
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.workbench-board-head>div.workbench-board-actions>button.og-btn.og-btn--solid.og-interactive>span.og-btn-label",
+   "t": "＋ 添加组件",
+   "c": "rgb(255, 255, 255)",
+   "fs": 14,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1108,
+     508,
+     1182,
+     525
+    ]
+   ],
+   "tRgb": [
+    255,
+    255,
+    255
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    33,
+    33,
+    32
+   ],
+   "bL": 0.015153305189216293,
+   "share": 0.9741100323624595,
+   "rect": [
+    1108,
+    508,
+    1182,
+    525
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.og-surface.og-card.og-card--flush>div.og-empty>div.og-empty-title",
+   "t": "今天没有课。",
+   "c": "rgb(33, 33, 32)",
+   "fs": 16,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     207,
+     639,
+     303,
+     657
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    207,
+    639,
+    303,
+    657
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.og-surface.og-card.og-card--flush>div.og-empty>div.og-empty-title",
+   "t": "暂时没有新通知。",
+   "c": "rgb(33, 33, 32)",
+   "fs": 16,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     943,
+     639,
+     1071,
+     657
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    943,
+    639,
+    1071,
+    657
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.shell.explorer-shell>nav.ex-bbar>button.ex-bbar-btn>span.ex-bbar-label",
+   "t": "OneGO!",
+   "c": "rgb(255, 255, 255)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1180,
+     22,
+     1229,
+     38
+    ]
+   ],
+   "tRgb": [
+    255,
+    255,
+    255
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    33,
+    33,
+    32
+   ],
+   "bL": 0.015153305189216293,
+   "share": 1,
+   "rect": [
+    1180,
+    22,
+    1229,
+    38
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  }
+ ]
+}

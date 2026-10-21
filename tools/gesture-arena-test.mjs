@@ -1,0 +1,20 @@
+/** 手势竞技场纯逻辑护栏：阈值范围 + 单所有者 + 释放后可再抢。 */
+import assert from 'node:assert/strict';
+import { GESTURE, claimGesture, releaseGesture, gestureOwner, subscribeGesture } from '../apps/desktop/src/lib/gestureArena.ts';
+let n = 0;
+const ok = (c, m) => { assert.ok(c, m); n++; console.log('✓ ' + m); };
+ok(GESTURE.longPressMs >= 380 && GESTURE.longPressMs <= 420, 'long press stays in 380–420ms band');
+ok(GESTURE.longPressSlop >= 8 && GESTURE.longPressSlop <= 10, 'long press slop 8–10px');
+ok(GESTURE.mouseSlop > 0 && GESTURE.mouseSlop < GESTURE.longPressSlop, 'mouse slop is tighter than touch slop');
+let events = 0;
+const off = subscribeGesture(() => { events++; });
+ok(gestureOwner() === null, 'starts unowned');
+ok(claimGesture('vault-drag') === true && gestureOwner() === 'vault-drag', 'vault claims gesture');
+ok(claimGesture('tab-reorder') === false, 'second owner is rejected');
+releaseGesture('vault-drag');
+ok(gestureOwner() === null, 'release clears owner');
+ok(claimGesture('tab-reorder') === true, 'next owner can claim after release');
+releaseGesture('tab-reorder');
+off();
+ok(events >= 4, 'subscribers observe claim/release transitions');
+console.log(n + ' gesture arena assertions passed');

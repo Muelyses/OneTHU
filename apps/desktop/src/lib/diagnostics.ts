@@ -10,12 +10,13 @@ import { APP_CODENAME } from "./update.js";
 import { isAndroidNavigator } from "./androidHost.js";
 import { isTauri, loadRemembered, learn, session } from "./clients.js";
 import { lastErrorText } from "./transport.js";
+import { redactNetworkLog } from "./networkLog.js";
 
 declare const __APP_VERSION__: string;
 
 /** 学号/课程号等长数字、票据值、邮箱一律遮蔽——摘要要能公开贴出来。 */
 export function redactDiagnostics(text: string): string {
-  return String(text ?? "")
+  return redactNetworkLog(String(text ?? ""))
     .replace(/(_csrf|JSESSIONID|XSRF-TOKEN|ticket|wengine_vpn_ticket)=[^&\s;"']+/gi, "$1=***")
     .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g, "***@***")
     .replace(/\b\d{7,}\b/g, (m) => `${m.slice(0, 3)}${"*".repeat(m.length - 3)}`);

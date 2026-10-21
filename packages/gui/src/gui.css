@@ -1,0 +1,33 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 单一入口样式表
+ *
+ * 应用只引这一份：import "@onethu/gui/gui.css";
+ * 顺序 = 层序：令牌 → 皮肤 → 基座 → 组件。别在应用里再引别的 UI 样式表。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* ① 令牌 */
+@import "./tokens/reference.css";
+@import "./tokens/structure.css";
+@import "./tokens/semantic.css";
+
+/* ② 皮肤（同一组语义名的另一种取值） */
+@import "./skins/neutral.css";
+@import "./skins/glass.css";
+
+/* ③ 基座（复位、滚动条、焦点、keyframes） */
+@import "./styles/base.css";
+
+/* ④ 组件 */
+@import "./styles/layout.css";
+@import "./styles/text.css";
+@import "./styles/button.css";
+@import "./styles/card.css";
+@import "./styles/row.css";
+@import "./styles/chip.css";
+@import "./styles/display.css";
+@import "./styles/form.css";
+@import "./styles/overlay.css";
+@import "./styles/pattern.css";
+@import "./styles/shell.css";
+/* ⑤ 手机统一策略：必须最后（同选择器压过组件默认） */
+@import "./styles/phone.css";

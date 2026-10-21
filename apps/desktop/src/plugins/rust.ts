@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * Rust 骨干插件运行时（桌面 sidecar + 移动内嵌双形态）：
  * - 桌面端：二进制 spawn + JSON-RPC over stdio（activate/run/dispose/interrupt）；
@@ -9,6 +10,7 @@ import { buildApi } from "./facade.js";
 import { getPlugin } from "./registry.js";
 import { logLine } from "../lib/clients.js";
 import type { OnethuApi } from "./types.js";
+import { runCancellable } from "./runLifecycle.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type RpcHandler = (ns: string, method: string, args: unknown[]) => Promise<unknown>;
@@ -31,7 +33,7 @@ export function isEmbeddedRust(id: string): boolean {
 /** 内嵌：起 App 内 agent 线程 + 门面桥，返回 activate 应答（commands 清单） */
 export async function startHarnessEmbedded(id: string): Promise<unknown> {
   const rec = getPlugin(id);
-  if (!rec) throw new Error(`插件不存在：${id}`);
+  if (!rec) throw new Error(i18n("plugins.rust.e8ce81d059b5", { id: String(id) }));
   embeddedIds.add(id);
   try {
     await ensureRpcListener();
@@ -47,7 +49,7 @@ export async function startHarnessEmbedded(id: string): Promise<unknown> {
 /** 拉起一个 rust 插件进程并完成 activate 握手（返回 activate 应答：约定含 commands 清单） */
 export async function spawnRustPlugin(id: string, binPath: string, args: string[] = []): Promise<unknown> {
   const rec = getPlugin(id);
-  if (!rec) throw new Error(`插件不存在：${id}`);
+  if (!rec) throw new Error(i18n("plugins.rust.e8ce81d059b5", { id: String(id) }));
   embeddedIds.delete(id);
   await ensureRpcListener();
   const { ensurePluginEventListener } = await import("./events.js");
@@ -139,7 +141,7 @@ export function bindRustApi(id: string, perms: Set<string>): OnethuApi {
   rpcHandlers.set(id, async (ns, method, args) => {
     const target = (api as any)[ns];
     if (!target || typeof target[method] !== "function") {
-      throw new Error(`未知接口：onethu.${ns}.${method}`);
+      throw new Error(i18n("plugins.rust.d10deb8d0c0e", { ns: String(ns), method: String(method) }));
     }
     return target[method](...args);
   });
@@ -151,11 +153,25 @@ export function unbindRustApi(id: string): void {
   rpcHandlers.delete(id);
 }
 
-export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000): Promise<unknown> {
-  if (embeddedIds.has(id)) {
-    return invoke("harness_call", { pluginId: id, method, params, timeoutMs });
-  }
-  return invoke("plugin_call", { pluginId: id, method, params, timeoutMs });
+export async function callRust(id: string, method: string, params: unknown, timeoutMs = 600_000, signal?: AbortSignal): Promise<unknown> {
+  const chat = method === "run" && (params as { command?: string } | null)?.command === "chat";
+  const suppliedRunId = (params as { runId?: unknown } | null)?.runId;
+  const runId = chat ? (typeof suppliedRunId === "string" && suppliedRunId ? suppliedRunId : crypto.randomUUID()) : undefined;
+  const runParams = runId ? { ...(params as Record<string, unknown>), runId } : params;
+  return runCancellable({
+    signal,
+    prepare: async () => {
+      if (id === "onethu.harness" && chat) {
+        const { preflightMadModel } = await import("../state/madmodel.js");
+        const warning = await preflightMadModel();
+        if (warning) return { type: "chat", ok: false, error: warning };
+      }
+      return null;
+    },
+    run: () => invoke(embeddedIds.has(id) ? "harness_call" : "plugin_call", { pluginId: id, method, params: runParams, timeoutMs }),
+    interrupt: () => notifyRust(id, "interrupt", runId ? { runId } : {}),
+    cancelled: () => ({ type: "chat", ok: true, answer: "（已打断）", interrupted: true }),
+  });
 }
 
 export async function notifyRust(id: string, method: string, params: unknown = {}): Promise<void> {

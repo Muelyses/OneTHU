@@ -1,0 +1,204 @@
+{
+  "status": "Observed cancellation, not successful transfer",
+  "viewport": {
+    "width": 320,
+    "height": 568
+  },
+  "source": "研讨项目",
+  "target": "OH capsule",
+  "observations": [
+    {
+      "sourceState": "Original third row near the fixed bottom controls",
+      "input": "Six immediate CDP move steps across the complete drag path",
+      "originalRunPassed": false,
+      "naturalCleanup": true,
+      "scrollGeometry": null,
+      "pointerEvents": [
+        {
+          "time": 3270.600000023842,
+          "type": "pointerdown",
+          "pointerId": 4,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 45,
+          "y": 484.5,
+          "active": false
+        },
+        {
+          "time": 3975,
+          "type": "pointermove",
+          "pointerId": 4,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 64.41666412353516,
+          "y": 492.5,
+          "active": true
+        },
+        {
+          "time": 3976.600000023842,
+          "type": "pointercancel",
+          "pointerId": 4,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 0,
+          "y": 0,
+          "active": false
+        },
+        {
+          "time": 3976.600000023842,
+          "type": "lostpointercapture",
+          "pointerId": 4,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 0,
+          "y": 0,
+          "active": false
+        }
+      ],
+      "touchMoves": [
+        {
+          "time": 3976.800000011921,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 4020,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 4054.600000023842,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 4076.2000000476837,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 4121.600000023842,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 4154.200000047684,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        }
+      ],
+      "contextMenus": [],
+      "draggingAfterCancel": false,
+      "ohRequestCountBeforeOriginalAttempt": 0,
+      "ohRequestCountAfter": 0
+    },
+    {
+      "sourceState": "Original third row after a real upward swipe; fully visible above OneShot",
+      "input": "Six immediate CDP move steps across the complete drag path",
+      "originalRunPassed": false,
+      "naturalCleanup": true,
+      "scrollGeometry": {
+        "label": "320 original source scroll",
+        "beforeScroll": {
+          "x": 17,
+          "y": 442,
+          "width": 276,
+          "height": 85
+        },
+        "afterScroll": {
+          "x": 17,
+          "y": 191,
+          "width": 276,
+          "height": 85
+        },
+        "oneShot": {
+          "x": 3,
+          "y": 444,
+          "width": 304,
+          "height": 40
+        }
+      },
+      "pointerEvents": [
+        {
+          "time": 6048,
+          "type": "pointerdown",
+          "pointerId": 6,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 45,
+          "y": 231.5,
+          "active": false
+        },
+        {
+          "time": 6735.699999988079,
+          "type": "pointermove",
+          "pointerId": 6,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 64.41666412353516,
+          "y": 281.6666564941406,
+          "active": true
+        },
+        {
+          "time": 6737.300000011921,
+          "type": "pointercancel",
+          "pointerId": 6,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 0,
+          "y": 0,
+          "active": false
+        },
+        {
+          "time": 6737.300000011921,
+          "type": "lostpointercapture",
+          "pointerId": 6,
+          "pointerType": "touch",
+          "trusted": true,
+          "x": 0,
+          "y": 0,
+          "active": false
+        }
+      ],
+      "touchMoves": [
+        {
+          "time": 6737.399999976158,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 6770.5,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 6838.399999976158,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        },
+        {
+          "time": 6905.300000011921,
+          "cancelled": false,
+          "cancelable": false,
+          "active": false
+        }
+      ],
+      "contextMenus": [],
+      "draggingAfterCancel": false,
+      "ohRequestCountBeforeOriginalAttempt": 1,
+      "ohRequestCountAfter": 1
+    }
+  ],
+  "interpretation": "Chrome emitted a trusted pointercancel and non-cancelable touchmove. It occurred both near the bottom controls and after the same item was fully revealed by real scrolling, so bottom-edge occlusion alone does not explain it. The sparse-input attempts did not deliver to OH; UI drag state cleaned up. Continuous 6px / 16ms touch samples successfully delivered the same scrolled item, retained in the final report. This observation does not establish a universal browser cause or claim a production fix.",
+  "productionExperiments": "Capture-phase touchmove and a no-op non-passive touchstart did not repair the sparse-input case and were reverted.",
+  "limits": "Desktop Chrome touch emulation; physical Android/iOS behavior not verified."
+}

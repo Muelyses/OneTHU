@@ -1,0 +1,279 @@
+{
+  "version": "0.11.0",
+  "locale": "en-US",
+  "capturedAt": "2026-10-21T06:07:02.886Z",
+  "passed": true,
+  "naturalCleanup": true,
+  "command": "node tools/capture-public-preview.mjs",
+  "privacy": "Only fictional data in disposable browser contexts. No real browser profile, real credentials, native app or campus service used.",
+  "externalRequestsSent": 0,
+  "blockedExternalRequests": [
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest",
+    "https://api.github.com/repos/smartThise/OneTHU/releases/latest"
+  ],
+  "entries": [
+    {
+      "key": "home-simple",
+      "file": "home-simple.png",
+      "description": "simple 模式手机首页",
+      "locale": "en-US",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-21\nDue 23:59\nChapter 2 exercises\nCalculus\nDue today\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "cb66989789b472d03cebebc86fb7153e1b16dd9cdefb9742ab82920c8f65df09",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-practical",
+      "file": "home-practical.png",
+      "description": "practical 模式手机首页",
+      "locale": "en-US",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-21\nDue 23:59\nChapter 2 exercises\nCalculus\nDue today\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nTimetable\nMore features",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "4e2aab382f5a018592d5b197b8d6ff50ff2441b994a0306ebe8e7fd9bfc06b04",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-full",
+      "file": "home-full.png",
+      "description": "full 模式手机首页",
+      "locale": "en-US",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\nFree layout",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "ac777e7173111472e0891a6db3ffecdeaddff3eb98bc871c72e64dbbabf94b08",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "learn",
+      "file": "learn.png",
+      "description": "learn 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Courses\nAcademic year demo-2026 · 3 courses\nSearch\nSemester\nRefresh\nRain Classroom and OJ assignment sync is configured in \"Settings → Data & Sync\" (after one sign-in, assignments are merged into \"All assignments\" automatically).\n3\nUnsubmitted assignments\n1\nCourse notices\n0\nCourse files\n2 hours\nDeadline reminder\nCalculus\nDemo Instructor · demo-math-1\nBuilding 6 · 6A101\nWeb Learning\nUnsubmitted 1\nNotices 0\nFiles 0\nDesign Thinking\nDemo Instructor · demo-design-1\nBuilding 3 · 3200\nWeb Learning\nUnsubmitted 1\nNotices 1\nFiles 0\nData Structures\nDemo Instructor · demo-data-1\nBuilding 4 · 4104\nWeb Learning\nUnsubmitted 1\nNotices 0\nFiles 0\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "f5bb811fc432c9f2394679654f927f337193b6ac4f6316054dcdb166b5caa61c",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "schedule",
+      "file": "schedule.png",
+      "description": "schedule 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Mon\n10/19\nTue\n10/20\nWed\n10/21\nThu\n10/22\nFri\n10/23\nSat\n10/24\nSun\n10/25\n07:00\n08:00\n09:00\n10:00\n11:00\n12:00\n13:00\n14:00\n15:00\n16:00\n17:00\n18:00\n19:00\n20:00\n21:00\n22:00\n23:00\n24:00\nCalculus\nDesign Thinking\n⏰ Chapter 2 exercises\nData Structures\n⏰ Review team research notes\n⏰ Trees and graphs\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nQuick\nStash\n0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "0086b733d5361c50f3c232626a7fe7df7f68142992ad0ae2f50b2a6564f826fc",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "tasks",
+      "file": "tasks.png",
+      "description": "tasks 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Tasks\nAcademic year demo-2026\nRefresh\nStudy\nLife\nAll courses (3)\nCalculus（1）\nData Structures（1）\nDesign Thinking（1）\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\n3\nAssignments left\n2\nDue within 3 days\nAll assignments →\nOpen Web Learning →\nCourse notifications:1 unread\nAll notifications →\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "faedd2de6848565e7b9fe3e186990dd40b4fa0a88ba937a8ee2b77871dbf33b8",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-landscape",
+      "file": "home-landscape.png",
+      "description": "homepage 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\n100%\nPen",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "0ec86dc774b0d288067bb744e94060a87f616b2b329868c9193a0f7a4f5a6fcc",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "schedule-landscape",
+      "file": "schedule-landscape.png",
+      "description": "schedule 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Mon\n10/19\nTue\n10/20\nWed\n10/21\nThu\n10/22\nFri\n10/23\nSat\n10/24\nSun\n10/25\n08:00\n10:00\n12:00\n14:00\n16:00\n18:00\n20:00\n22:00\n24:00\nCalculus\nDesign Thinking\n⏰ Chapter 2 exercises\nData Structures\n⏰ Review team research notes\n⏰ Trees and graphs\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nQuick\nStash\n0",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "8e01d69ed5de097f85c416cb2168e1800c055056f71e389f8212006b79550a4a",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "home-desktop",
+      "file": "home-desktop.png",
+      "description": "homepage 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Home\nHome\nDrag cards to arrange them; select one, then drag a corner to resize\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nMe\nOneGO!\nSaved OnePages and workspaces appear here\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\n100%\nPen",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "892a692f044b74319d921ed483658931e86b0680dacc5b08de0c8086b8b740c1",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "learn-desktop",
+      "file": "learn-desktop.png",
+      "description": "learn 模拟界面",
+      "locale": "en-US",
+      "visibleText": "Home\nWeb Learning\nCourses\nAcademic year demo-2026 · 3 courses\nSearch\nSemester\nRefresh\nRain Classroom and OJ assignment sync is configured in \"Settings → Data & Sync\" (after one sign-in, assignments are merged into \"All assignments\" automatically).\n3\nUnsubmitted assignments\n1\nCourse notices\n0\nCourse files\n2 hours\nDeadline reminder\nCalculus\nDemo Instructor · demo-math-1\nBuilding 6 · 6A101\nWeb Learning\nUnsubmitted 1\nNotices 0\nFiles 0\nDesign Thinking\nDemo Instructor · demo-design-1\nBuilding 3 · 3200\nWeb Learning\nUnsubmitted 1\nNotices 1\nFiles 0\nData Structures\nDemo Instructor · demo-data-1\nBuilding 4 · 4104\nWeb Learning\nUnsubmitted 1\nNotices 0\nFiles 0\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nMe\nOneGO!\nSaved OnePages and workspaces appear here\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "landscape",
+      "sha256": "10737b36e9dbf36fa89745d9c8cb3e8aff994694bc709c8851b632b7fec91c1f",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "vault",
+      "file": "vault.png",
+      "description": "暂存箱：模拟课程与文字",
+      "locale": "en-US",
+      "visibleText": "Stash\nStash it first, then open, share, or hand it to OH.\nMy staging box · 3\nAdd files\nShare code\nReceive\n3 items\nReading club checklist\nPrepare books and discussion questions.\nCalculus\nCourses · Demo course\nThree research directions\nCampus spaces, daily routes, and teamwork.\nShare codes issued\nPress and hold to stash · Drag onto the OH capsule to hand it to OH\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n3",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "de804f0419416119e732c4b8d766c83e1f2fc77d71a67cebd2e04be9e8a82da1",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "organization",
+      "file": "organization.png",
+      "description": "虚构学习组织：名片与管理入口",
+      "locale": "en-US",
+      "visibleText": "Enable organization collaboration\nMigrate existing projects and announcements into a private organization space. Historical member profiles are kept; a GitLab username must be linked again.\nEnable collaboration\nDemo Study Group\nCollect resources and plan the week together\nInvite members\nEdit profile\nAll organizations\nOverview\nMembers\nLibrary\nGitLab\nProjects\nAnnouncements\nOrganization overview\nMember emails, the library, and repos are real resources\nMembers\n1 members (1 with a bound email)\nOwner\nMe · tester@mails.tsinghua.edu.cn\nLibrary\nNo library yet\nGitLab organization\nNone yet (created automatically when a new repo is made)\nGitLab repos\nNo linked repos yet\nJoin method\nNot set\nAdd member\nCreate a library\nLink a repo\nAdd to Stash\nOrganization card\nCards are generated automatically from organization info; no need to create one separately\nD\n(\nO\nn\ne\nT\nH\nU\n)\nD\nDemo Study Group\nCollect resources and plan the week together\nClick to edit and write your intro\nDangerous operation\nDeletes only the local organization record; the Cloud Drive library and GitLab repos are not deleted\nDelete this organization\n2\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nCreated “Demo Study Group”\nStash\n0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "fe55671a70248a11c6c5c45b093ca8c63bb2fc47a1d6dd60d5a33f21d31f1f8d",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "xiaoda",
+      "file": "xiaoda.png",
+      "description": "清小搭模拟对话入口",
+      "locale": "en-US",
+      "visibleText": "Xiaoda\nDemo Student · 2026000000\nSign in again\nChat\nHistory\nAgents\nSkills\nNew conversation\nXiaoda · Demo model\nSay something\nJust type your question; to switch agents, pick one on the \"Agents\" page\nSend\nXiaoda\nStudy assistants · Study planner\nDemo model\nSend\nXiaoda features are experimental and for reference only; they do not replace the OneTHU Harness.\nIt also cannot dispatch OH features; this page is OneTHU's integration interface.\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "8aa231182420a2a9d357a296d5330777081e20cdbd7e2583f0697d1896086c6e",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "skills",
+      "file": "skills.png",
+      "description": "模拟轻量技能库",
+      "locale": "en-US",
+      "visibleText": "Xiaoda\nDemo Student · 2026000000\nSign in again\nChat\nHistory\nAgents\nSkills\nSkills\n1\nContributors\n1\nTotal downloads\n0\nCategory\nDemo skills · 1\nOH skill library\nA lightweight environment for desktop and mobile\nBuilt-in reference reading and QuickJS computation need no extra installation on desktop or mobile. Check a skill’s requirements before enabling it in OH.\nAvailable: text and references\nLightweight JavaScript computation\nCheck runtime\nEach computation has a 2-second and 32 MB memory limit, with no access to the network, system files or account credentials. This is not a Node environment.\nSkills requiring Python, Node, package installation or external services cannot run in OH. Save the complete files for an agent on your computer.\nDemo research notes\nImported, not enabled\nRead resources and summarize key points and tasks.\nSkill plaza\n1 in total\nD\nDemo research notes\n0 downloads · Demo\nRead resources and summarize key points and tasks.\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "2f4c048c4940be6deff08bf0e4bb1df4d1b25c21480338ee983b330e663559da",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "search",
+      "file": "search.png",
+      "description": "搜索胶囊：模拟功能与作业结果",
+      "locale": "en-US",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nStudy\nReservations\nLife\nInfo\nTimetable\n(\nO\nH\n)\nSearch\nOH\nXiaoda\nExternal assignment source sign-in\nSettings → Data & sync → Assignment sources → External assignment source sign-in\nSettings\nExternal homework\nSettings → Data & sync → Assignment sources → External homework\nSettings\nAll assignments\nAll course assignments in one place, viewed by due date\nFeatures\nRain Classroom assignment\nView Rain Classroom assignments and submissions\nFeatures\nOJ assignments\nView programming assignments and due dates\nFeatures\nTasks\nPages · Assignments · Reservations · Exams · Balance overview\nPages\nWeb Learning search\nPages · Courses / Assignments / Notices / Files\nPages\nAssignment deadline reminders\nPages · Global default reminder time · Sync with system calendar\nPages\nSync assignment due dates to the cloud calendar\nActions · Unsubmitted assignments written to the cloud calendar (with reminder alarms; fully automatic in normal cases)\nPages\nToday at a glance\nWidget · Unsubmitted assignments · Due dates · Today's courses\nPages\nUnsubmitted assignments\nWidget · Due date ascending · Tap to view details\nPages\nStash\n0\nWidget\nFree layout",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "e76658f8a1973e76e3826203124b5508b5789583edada075f6f8362a2e90acfb",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    },
+    {
+      "key": "oh",
+      "file": "oh.png",
+      "description": "OH 与搜索胶囊：模拟预览",
+      "locale": "en-US",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nStudy\nReservations\nLife\nInfo\nTimetable\n(\nO\nH\n)\nSearch\nOH\nXiaoda\nCreator mode\nThe main chat requires the full desktop environment\n\nNo Harness process in this window (browser preview or plugin not loaded). Conversation history is unavailable here and sending will have no effect.\n\nSearch mode is unaffected and works normally. Open the same entry on the desktop app (Tauri desktop version) to see the main chat.\n\nStash\n0\nWidget\nFree layout",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 2,
+      "orientation": "portrait",
+      "sha256": "33bbdafd491b8be203ef9f17c564c28849e3afa074eb193b1f2f3266fd852b5e",
+      "fixture": "Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.",
+      "source": "Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data."
+    }
+  ],
+  "errors": []
+}

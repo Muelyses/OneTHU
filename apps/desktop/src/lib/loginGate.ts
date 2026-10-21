@@ -1,27 +1,31 @@
-/** 全局登录节流闸（2026-09-17 实录：恢复环每秒整套登录链，id 服务器对设备
- *  限流——落地页变封锁页，public key 全家失败）。一次尝试计入冷却，成败都算。
- *  独立模块：clients ↔ infoLib 循环依赖，两边都要无环引用它。 */
-let lastLoginAttemptAt = 0;
+/** Shared by manual login and library-driven recovery. Only timestamps are stored. */
+const STORAGE_KEY = "onethu.login-attempt-at";
 const COOLDOWN_MS = 20_000;
+let lastLoginAttemptAt = 0;
 
-export function markLoginAttempt(): void {
-  lastLoginAttemptAt = Date.now();
+export class LoginCooldownError extends Error {
+  readonly code = "AUTH_COOLDOWN";
+  constructor(readonly retryAfterMs: number) {
+    super("Please wait before starting another login attempt.");
+    this.name = "LoginCooldownError";
+  }
 }
 
 export function loginCooldownLeftMs(): number {
-  return Math.max(0, COOLDOWN_MS - (Date.now() - lastLoginAttemptAt));
+  const now = Date.now();
+  let saved = 0;
+  try { saved = Number(globalThis.sessionStorage?.getItem(STORAGE_KEY)); } catch { /* memory fallback */ }
+  // A clock change or corrupt storage must not lock the user out indefinitely.
+  const valid = (at: number): number => Number.isFinite(at) && at > 0 && at <= now ? at : 0;
+  lastLoginAttemptAt = Math.max(valid(lastLoginAttemptAt), valid(saved));
+  return Math.max(0, COOLDOWN_MS - (now - lastLoginAttemptAt));
 }
 
-/** 「Failed to get public key」= 落地封锁页（id 按会话 cookie 封设备）。
- *  下次 libLogin 前清原生 cookie 仓换新身份（一次性）。 */
-let loginFailedPublicKey = false;
-
-export function markLoginFailedPublicKey(): void {
-  loginFailedPublicKey = true;
-}
-
-export function consumeLoginFailedPublicKey(): boolean {
-  const v = loginFailedPublicKey;
-  loginFailedPublicKey = false;
-  return v;
+/** Call once before a new full login chain, never for a 2FA continuation. */
+export function markLoginAttempt(): void {
+  const remaining = loginCooldownLeftMs();
+  if (remaining > 0) throw new LoginCooldownError(remaining);
+  lastLoginAttemptAt = Date.now();
+  // Survives refresh in this WebView; no credentials or account identifier.
+  try { globalThis.sessionStorage?.setItem(STORAGE_KEY, String(lastLoginAttemptAt)); } catch { /* memory fallback */ }
 }

@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * 图书馆页 —— 座位图（网格）+ 座位分布图 + 我的预约。
  * thu-info-lib library.ts 移植（seat.lib.tsinghua.edu.cn，roam("id") ef84f6d6…）：
@@ -8,19 +10,31 @@
  * 我的预约 = user/index/book 表，可取消（menuDel delId → _method=delete）。
  * 座位区顶部 = 区域/楼层座位分布图（libraryMap/librarySeat 的
  * Public/home/images/web/area/<id>/{seat-free,floor}.jpg，带会话抓取内联）。
+ *
+ * 2026-10-14 OneGUI 换血：Section（三处分区头）· Field+Inline+Grow（筛选条；SearchSelect /
+ * CollectStar 原样复用，保留 .ss-row 给 .filter-dd 撤底边距）· LoadingBlock（骨架）·
+ * Banner（分布图报错 / 预约与取消结果，成功=success 失败=error 语义色）· 座位格 = Btn
+ * （可约 tonal success、不可约 tonal 中性 disabled，状态色走 success-soft/-line/success 与
+ * surface-3/content-2 令牌族；电源插座 = IconPlug warning，图例同排）· 分布图 Surface(radius-md)
+ * 收边 + 内层 Stack 让 <img> 块化撑满 + Text micro 说明 ·
+ * 我的预约 = Card flush + List divided + Row（取消两步行内确认，确认键改 error 语义）。
+ * 删 .map-error 私有 CSS；.skeleton/.field/.ss-row/.chip-blue/.t-red 共享类其他页仍在用，保留。
  */
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { LibBookRecord, Library, LibraryFloor, LibrarySeat, LibrarySection } from "@onethu/core";
 import { infoUrls, isAuthError } from "@onethu/core";
-import { Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
-import { SearchSelect } from "../../components/SearchSelect.jsx";
+import {
+  Banner, Btn, Card, EmptyState, Field, IconPlug, Inline, List, LoadingBlock, Row, Section,
+  Select, Spacer, Stack, Surface, Tag, Text,
+} from "@onethu/gui";
 import { CollectStar } from "../../components/Collect.js";
+import { SearchSelect } from "../../components/SearchSelect.jsx";
 import { enc, noteAtomCache } from "../../state/atoms.js";
 import { cacheGet, cacheSet } from "../../state/cache.js";
 import { fetchImageByUrl, info, logLine, session } from "../../lib/clients.js";
 import { explainNetworkError } from "../../lib/transport.js";
 import { softRecover } from "../../lib/reload.js";
 import { useApp } from "../../state/context.js";
+import { localizeLibraryError } from "./libraryErrorText.js";
 
 function logErr(tag: string, err: unknown): void {
   void logLine(
@@ -67,7 +81,7 @@ function useAreaImage(url: string): [MapImage, () => void] {
         if (!alive) return;
         const m = err instanceof Error ? err.message : String(err);
         if (/404|not\s*found|\u4e0d\u5b58\u5728/i.test(m)) setImg({ state: "hidden", src: "" });
-        else setImg({ state: "error", src: "", msg: m.trim().slice(0, 160) || "未知原因" });
+        else setImg({ state: "error", src: "", msg: m.trim().slice(0, 160) || i18n("pages.info.librarytab.a1a9da9ee6ed") });
       });
     return () => {
       alive = false;
@@ -77,51 +91,34 @@ function useAreaImage(url: string): [MapImage, () => void] {
   return [img, retry];
 }
 
+/** 一张分布图：报错 = Banner（可重试）、加载 = LoadingBlock、就绪 = Surface 框 + 图注。 */
 function MapFigure({ img, caption, onRetry }: { img: MapImage; caption: string; onRetry?: () => void }) {
+  const uiLocale = useUiLocale();
+
   if (img.state === "error") {
     /* 抓取失败要看得见：过去静默隐藏导致「座位图凭空消失」无从判断（用户 2026-02 报） */
     return (
-      <div className="map-error" role="alert">
-        <span>
-          {caption}加载失败：{img.msg}
-        </span>
-        {onRetry ? (
-          <button className="btn" onClick={onRetry}>
-            重试
-          </button>
-        ) : null}
-      </div>
+      <Banner
+        tone="error"
+        title={i18n("pages.info.librarytab.2bc5f3d52c71", { caption: String(caption), msg: String(img.msg) })}
+        action={onRetry ? <Btn variant="outline" size="sm" onClick={onRetry}>{i18n("pages.info.librarytab.b8784c8dd563")}</Btn> : null}
+      />
     );
   }
   if (img.state === "loading") {
-    return (
-      <div
-        className="skeleton"
-        role="img"
-        aria-label={`${caption}（加载中）`}
-        style={{ width: "100%", height: 150, borderRadius: 10 }}
-      />
-    );
+    return <LoadingBlock rows={2} />;
   }
   return (
-    <figure style={{ margin: 0 }}>
-      <img
-        src={img.src}
-        alt={caption}
-        style={{
-          width: "100%",
-          height: "auto",
-          display: "block",
-          borderRadius: 8,
-          border: "1px solid var(--border-soft)",
-        }}
-      />
-      <figcaption
-        style={{ fontSize: 11, color: "var(--text-3)", marginTop: 4, textAlign: "center" }}
-      >
-        {caption}
-      </figcaption>
-    </figure>
+    <Stack gap={1}>
+      <Surface radius="md">
+        {/* Surface 是普通块：内层再坐一层 Stack 让 <img> 作为 flex 子项被块化
+            （display:block + 交叉轴 stretch 自动全宽），免一条宽高内联 */}
+        <Stack>
+          <img src={img.src} alt={caption} />
+        </Stack>
+      </Surface>
+      <Text slot="micro" tone="faint">{caption}</Text>
+    </Stack>
   );
 }
 
@@ -129,114 +126,50 @@ function MapFigure({ img, caption, onRetry }: { img: MapImage; caption: string; 
 const bySeatName = (a: LibrarySeat, b: LibrarySeat): number =>
   a.zhName.localeCompare(b.zhName, "zh-Hans-CN", { numeric: true });
 
-/** 图例色块 */
-function LegendSwatch({ usable }: { usable: boolean }) {
-  const style: CSSProperties = usable
-    ? { background: "var(--green-soft)", borderColor: "var(--green)" }
-    : { background: "var(--surface-3)", borderColor: "var(--border)" };
-  return (
-    <i
-      aria-hidden
-      style={{
-        display: "inline-block",
-        width: 10,
-        height: 10,
-        borderRadius: 3,
-        borderStyle: "solid",
-        borderWidth: 1,
-        ...style,
-      }}
-    />
-  );
-}
-
-/** 有电源座位右上角「电」角标（thu-info-app 插座状态的桌面化表达） */
-const POWER_BADGE: CSSProperties = {
-  position: "absolute",
-  top: 1,
-  right: 2,
-  fontSize: 8,
-  lineHeight: "10px",
-  fontWeight: 700,
-  color: "var(--amber)",
-};
-
-const SEAT_CELL: CSSProperties = {
-  position: "relative",
-  // R10：座位名完整展示——固定 58px 会截断长座位号（省略号），改最小宽自适应
-  minWidth: 58,
-  height: 44,
-  borderRadius: 8,
-  padding: 0,
-  fontSize: 11,
-  lineHeight: 1.1,
-  textAlign: "center",
-};
-
 function seatTip(s: LibrarySeat, usable: boolean): string {
-  const state = s.statusName ?? (s.valid ? "空闲" : "不可约");
-  return `${s.zhNameTrace || s.zhName} · ${state}${s.hasPower ? " · 有插座" : ""}${usable ? " · 点击预约" : ""}`;
+  const state = s.statusName ?? (s.valid ? i18n("pages.info.librarytab.dae661d17c2d") : i18n("pages.info.librarytab.a4c0233f1d6c"));
+  return `${s.zhNameTrace || s.zhName} · ${state}${s.hasPower ? i18n("pages.info.librarytab.36f1b7b0d4cf") : ""}${usable ? i18n("pages.info.librarytab.9ebbc08083a7") : ""}`;
 }
 
-/** 座位格：可约=按钮（点击进确认），不可约=灰块（含已约/维护等） */
+/** 座位格：可约 = tonal success 按钮（点击进确认），不可约 = tonal 中性 disabled 块。
+ *  一个控件家族吃下两种状态（高/描边/墨色全走令牌三件套），不再手写色板；
+ *  电源插座标记 = IconPlug（amber 走 warning 语义色）。 */
 function SeatCell({
   seat,
   busy,
+  picked,
   onPick,
 }: {
   seat: LibrarySeat;
   busy: boolean;
+  /** 待确认预约中的座位：tonal 选中态（外圈 outline）圈出来，不然用户找不到自己点了哪格 */
+  picked?: boolean;
   onPick: (s: LibrarySeat) => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const usable = seat.availability === "usable" && seat.valid;
-  const label = (
-    <span
-      style={{
-        display: "block",
-        padding: "0 6px",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {seat.zhName}
-    </span>
-  );
-  const badge = seat.hasPower ? <span aria-hidden style={POWER_BADGE}>电</span> : null;
+  const power = seat.hasPower ? <IconPlug size="sm" className="og-text--t-warning" /> : null;
   if (!usable) {
     return (
-      <div
-        title={seatTip(seat, false)}
-        style={{
-          ...SEAT_CELL,
-          border: "1px solid var(--border-soft)",
-          background: "var(--surface-3)",
-          color: "var(--text-3)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {badge}
-        {label}
-      </div>
+      <Btn variant="tonal" size="md" disabled titleAttr={seatTip(seat, false)} iconRight={power}>
+        {seat.zhName}
+      </Btn>
     );
   }
   return (
-    <button
-      type="button"
+    <Btn
+      variant="tonal"
+      tone="success"
+      size="md"
+      titleAttr={seatTip(seat, true)}
       disabled={busy}
+      selected={picked || undefined}
+      iconRight={power}
       onClick={() => onPick(seat)}
-      title={seatTip(seat, true)}
-      style={{
-        ...SEAT_CELL,
-        border: "1px solid var(--green)",
-        background: "var(--green-soft)",
-        color: "var(--green)",
-        cursor: "pointer",
-      }}
     >
-      {badge}
-      {label}
-    </button>
+      {seat.zhName}
+    </Btn>
   );
 }
 
@@ -258,6 +191,8 @@ export function LibraryTab({
   deepFloor?: number;
   deepSection?: number;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   /* 馆列表 */
@@ -348,7 +283,7 @@ export function LibraryTab({
     try {
       const list = await info.getLibraryList();
       // 空馆列表 ≠ 正常空态：下拉块按 libs.length>0 渲染，静默吞掉会整块消失且无 ErrorNote
-      if (list.length === 0) throw new Error("馆列表为空（数据源未返回内容，登录状态可能未建立）");
+      if (list.length === 0) throw new Error(i18n("pages.info.librarytab.53d496172b27"));
       libRecover.current = 0;
       cacheSet("library:tree", list);
       setLibs(list);
@@ -576,7 +511,7 @@ export function LibraryTab({
     if (sectionId === null) return;
     const userId = session.username;
     if (!userId) {
-      setBookError("需要先登录（未读取到学号）");
+      setBookError(i18n("pages.info.librarytab.90bd6800e5b6"));
       setPendingSeat(null);
       return;
     }
@@ -586,7 +521,7 @@ export function LibraryTab({
     setAction(null);
     try {
       await info.bookLibrarySeat({ id: seat.id, type: seat.type }, sectionId, dateChoice, userId);
-      setAction({ ok: true, text: `座位 ${seat.zhName} 预约成功，须在预约开始后 30 分钟内完成签到` });
+      setAction({ ok: true, text: i18n("pages.info.librarytab.0362227e8948", { zhName: String(seat.zhName) }) });
       void loadRecords();
       // 预约后刷新座位状态
       info
@@ -605,14 +540,14 @@ export function LibraryTab({
     const userId = session.username;
     if (!r.delId) return;
     if (!userId) {
-      setAction({ ok: false, text: "需要先登录（未读取到学号）" });
+      setAction({ ok: false, text: i18n("pages.info.librarytab.90bd6800e5b6") });
       return;
     }
     setBusyCancel(r.delId);
     setAction(null);
     try {
       await info.cancelLibBooking(r.delId, userId);
-      setAction({ ok: true, text: "已取消预约" });
+      setAction({ ok: true, text: i18n("pages.info.librarytab.328966d7d40c") });
       void loadRecords();
     } catch (err) {
       logErr("LIB-CANCEL", err);
@@ -633,52 +568,58 @@ export function LibraryTab({
   const usableCount = gridSeats.filter((s) => s.availability === "usable" && s.valid).length;
 
   return (
-    <>
-      <SectionHead title="图书馆座位" aside="seat.lib.tsinghua.edu.cn · ISeating" />
+    <Stack gap={3}>
+      <Section title={i18n("pages.info.librarytab.31c17158ebdb")} aside="seat.lib.tsinghua.edu.cn · ISeating" />
       {libState === "error" ? (
-        <ErrorNote
-          text={libError ?? ""}
-          onRetry={() => {
-            libRecover.current = 0;
-            void loadLibs();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                libRecover.current = 0;
+                void loadLibs();
+              }}
+            >{i18n("pages.info.librarytab.b8784c8dd563")}</Btn>
+          }
+        >
+          {localizeLibraryError(libError ?? "")}
+        </Banner>
       ) : null}
-      {libState === "loading" && !libs ? <SkeletonRows rows={2} /> : null}
+      {libState === "loading" && !libs ? <LoadingBlock rows={2} /> : null}
 
       {libs && libs.length > 0 ? (
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-          <div className="field" style={{ margin: 0, minWidth: 150 }}>
-            <label htmlFor="lib-lib">馆</label>
-            <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+        /* 筛选条收紧（用户点名 2026-10-14）：馆/楼层/区域走自然宽度紧凑成排（星贴各自下拉），
+           不再用 Grow 把每格铺满 1/3 窗宽留出大空档；只有日期用 Spacer 推到行尾。 */
+        <Inline gap={3} wrap vAlign="end">
+          <Field label={i18n("pages.info.librarytab.56e603f6d1da")}>
+              <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={libId != null ? String(libId) : ""}
                   onChange={(v) => setLibId(Number(v) || null)}
-                  placeholder="选择馆…"
+                  placeholder={i18n("pages.info.librarytab.6776297fac38")}
                   options={(libs ?? []).map((l) => ({
                     value: String(l.id),
-                    label: l.zhName + (!l.valid ? "（暂不可约）" : ""),
+                    label: l.zhName + (!l.valid ? i18n("pages.info.librarytab.8a2ffcb89689") : ""),
                     disabled: !l.valid,
                   }))}
                 />
-              </div>
-              {libId != null ? (
-                <CollectStar
-                  atom={{ kind: "library", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "") }}
-                  title={libs?.find((l) => l.id === libId)?.zhName ?? "图书馆"}
-                />
-              ) : null}
-            </div>
-          </div>
-          <div className="field" style={{ margin: 0, minWidth: 170 }}>
-            <label htmlFor="lib-floor">楼层</label>
-            <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+                {libId != null ? (
+                  <CollectStar
+                    atom={{ kind: "library", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "") }}
+                    title={libs?.find((l) => l.id === libId)?.zhName ?? i18n("pages.info.librarytab.266e6cb77079")}
+                  />
+                ) : null}
+              </Inline>
+            </Field>
+          <Field label={i18n("pages.info.librarytab.ce3b386bd714")}>
+              <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={floorId != null ? String(floorId) : ""}
                   onChange={(v) => setFloorId(Number(v) || null)}
-                  placeholder={!floors ? "加载中…" : floors.length === 0 ? "无可用楼层" : "选择楼层…"}
+                  placeholder={!floors ? i18n("pages.info.librarytab.4927a53bcc88") : floors.length === 0 ? i18n("pages.info.librarytab.81453cb31460") : i18n("pages.info.librarytab.fc39fa88920f")}
                   disabled={!floors || floors.length === 0}
                   options={(floors ?? []).map((f) => ({
                     value: String(f.id),
@@ -686,23 +627,20 @@ export function LibraryTab({
                     disabled: !f.valid,
                   }))}
                 />
-              </div>
-              {floorId != null && libId != null ? (
-                <CollectStar
-                  atom={{ kind: "library-f", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "", floorId, floors?.find((f) => f.id === floorId)?.zhName ?? "") }}
-                  title={floors?.find((f) => f.id === floorId)?.zhName ?? "楼层"}
-                />
-              ) : null}
-            </div>
-          </div>
-          <div className="field" style={{ margin: 0, minWidth: 170 }}>
-            <label htmlFor="lib-section">区域</label>
-            <div className="ss-row" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+                {floorId != null && libId != null ? (
+                  <CollectStar
+                    atom={{ kind: "library-f", key: enc(libId, libs?.find((l) => l.id === libId)?.zhName ?? "", floorId, floors?.find((f) => f.id === floorId)?.zhName ?? "") }}
+                    title={floors?.find((f) => f.id === floorId)?.zhName ?? i18n("pages.info.librarytab.ce3b386bd714")}
+                  />
+                ) : null}
+              </Inline>
+            </Field>
+          <Field label={i18n("pages.info.librarytab.3382870bc4ad")}>
+              <Inline gap={1} className="ss-row">
                 <SearchSelect
                   value={sectionId != null ? String(sectionId) : ""}
                   onChange={(v) => setSectionId(Number(v) || null)}
-                  placeholder={!sections ? "加载中…" : sections.length === 0 ? "无可用区域" : "选择区域…"}
+                  placeholder={!sections ? i18n("pages.info.librarytab.4927a53bcc88") : sections.length === 0 ? i18n("pages.info.librarytab.2e205d7f1965") : i18n("pages.info.librarytab.40955d56e66e")}
                   disabled={!sections || sections.length === 0}
                   options={(sections ?? []).map((sec) => ({
                     value: String(sec.id),
@@ -710,228 +648,206 @@ export function LibraryTab({
                     disabled: !sec.valid,
                   }))}
                 />
-              </div>
-              {sectionId != null && libId != null ? (
-                <CollectStar
-                  atom={{
-                    kind: "library-a",
-                    key: enc(
-                      libId,
-                      libs?.find((l) => l.id === libId)?.zhName ?? "",
-                      floorId ?? "",
-                      floors?.find((f) => f.id === floorId)?.zhName ?? "",
-                      sectionId,
-                      sections?.find((sec) => sec.id === sectionId)?.zhName ?? "",
-                    ),
-                  }}
-                  title={sections?.find((sec) => sec.id === sectionId)?.zhName ?? "区域"}
-                />
-              ) : null}
-            </div>
-          </div>
-          <div className="field" style={{ margin: 0 }}>
-            <label htmlFor="lib-date">日期</label>
-            <select
-              id="lib-date"
-              className="input"
+                {sectionId != null && libId != null ? (
+                  <CollectStar
+                    atom={{
+                      kind: "library-a",
+                      key: enc(
+                        libId,
+                        libs?.find((l) => l.id === libId)?.zhName ?? "",
+                        floorId ?? "",
+                        floors?.find((f) => f.id === floorId)?.zhName ?? "",
+                        sectionId,
+                        sections?.find((sec) => sec.id === sectionId)?.zhName ?? "",
+                      ),
+                    }}
+                    title={sections?.find((sec) => sec.id === sectionId)?.zhName ?? i18n("pages.info.librarytab.3382870bc4ad")}
+                  />
+                ) : null}
+              </Inline>
+            </Field>
+          <Spacer />
+          <Field label={i18n("pages.info.librarytab.70d0c1b33626")}>
+            <Select
+              aria-label={i18n("pages.info.librarytab.70d0c1b33626")}
               value={dateChoice}
-              onChange={(e) => setDateChoice(e.target.value === "1" ? 1 : 0)}
+              onChange={(value) => setDateChoice(value === "1" ? 1 : 0)}
             >
-              <option value={0}>今天</option>
-              <option value={1}>明天</option>
-            </select>
-          </div>
-        </div>
+              <option value={0}>{i18n("pages.info.librarytab.d5f5a7a01073")}</option>
+              <option value={1}>{i18n("pages.info.librarytab.b1d841b978fb")}</option>
+            </Select>
+          </Field>
+        </Inline>
       ) : null}
 
       {lib && floor && section ? (
-        <SectionHead
-          title="座位"
-          aside={`${lib.zhName} · ${floor.zhName} · ${section.zhName} · ${dateChoice === 0 ? "今天" : "明天"}`}
+        <Section
+          title={i18n("pages.info.librarytab.7bd9d53b62f0")}
+          aside={`${lib.zhName} · ${floor.zhName} · ${section.zhName} · ${dateChoice === 0 ? i18n("pages.info.librarytab.d5f5a7a01073") : i18n("pages.info.librarytab.b1d841b978fb")}`}
         />
       ) : null}
 
-      {/* 座位分布图（座位区顶部；多图纵向排列，宽度 100%；全失败整块隐藏） */}
+      {/* 座位分布图（座位区顶部；多图纵向排列；全失败整块隐藏） */}
       {seatMap.state !== "hidden" || floorMap.state !== "hidden" ? (
-        <Card style={{ marginTop: 12 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <Card>
+          <Stack gap={3}>
             {section && seatMap.state !== "hidden" ? (
-              <MapFigure img={seatMap} onRetry={retrySeatMap} caption={`${section.zhName} · 座位分布`} />
+              <MapFigure img={seatMap} onRetry={retrySeatMap} caption={i18n("pages.info.librarytab.8299d1d4bae5", { zhName: String(section.zhName) })} />
             ) : null}
             {floor && floorMap.state !== "hidden" ? (
-              <MapFigure img={floorMap} onRetry={retryFloorMap} caption={`${floor.zhName} · 楼层平面图`} />
+              <MapFigure img={floorMap} onRetry={retryFloorMap} caption={i18n("pages.info.librarytab.d01c30463932", { zhName: String(floor.zhName) })} />
             ) : null}
-          </div>
+          </Stack>
         </Card>
       ) : null}
 
-      {seatState === "loading" ? <SkeletonRows rows={4} /> : null}
+      {seatState === "loading" ? <LoadingBlock rows={4} /> : null}
       {seatState === "error" ? (
-        <ErrorNote
-          text={seatError ?? ""}
-          onRetry={() => {
-            // 座位区错误可能出在楼层/区域链路：链路断了从馆列表整链重载，否则仅重取座位
-            seatRecover.current = 0;
-            floorRecover.current = 0;
-            sectionRecover.current = 0;
-            if (sectionId !== null) setSeatTick((t) => t + 1);
-            else setLibTick((t) => t + 1);
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                // 座位区错误可能出在楼层/区域链路：链路断了从馆列表整链重载，否则仅重取座位
+                seatRecover.current = 0;
+                floorRecover.current = 0;
+                sectionRecover.current = 0;
+                if (sectionId !== null) setSeatTick((t) => t + 1);
+                else setLibTick((t) => t + 1);
+              }}
+            >{i18n("pages.info.librarytab.b8784c8dd563")}</Btn>
+          }
+        >
+          {localizeLibraryError(seatError ?? "")}
+        </Banner>
       ) : null}
       {seatState === "ready" && seatList.length === 0 ? (
         <Card>
-          <Empty text="该区域暂无座位数据。" />
+          <EmptyState title={i18n("pages.info.librarytab.e977820670a9")} />
         </Card>
       ) : null}
       {seatState === "ready" && seatList.length > 0 ? (
         <Card>
-          {/* 图例 */}
-          <div
-            style={{
-              display: "flex",
-              gap: 14,
-              flexWrap: "wrap",
-              alignItems: "center",
-              marginBottom: 10,
-              fontSize: 12,
-              color: "var(--text-2)",
-            }}
-          >
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-              <LegendSwatch usable /> 可约 {usableCount}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-              <LegendSwatch usable={false} /> 已约/不可约 {gridSeats.length - usableCount}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
-              <span aria-hidden style={{ fontSize: 10, fontWeight: 700, color: "var(--amber)" }}>
-                电
-              </span>
-              = 有电源插座
-            </span>
-            {seatList.length > SEAT_CAP ? (
-              <span style={{ color: "var(--text-3)" }}>
-                已显示前 {SEAT_CAP} 个（共 {seatList.length} 个）
-              </span>
-            ) : null}
-          </div>
-          {/* 座位网格：flex-wrap，窄窗口自动换行不横向溢出 */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-            {gridSeats.map((s) => (
-              <SeatCell key={s.id} seat={s} busy={busySeat !== null} onPick={pickSeat} />
-            ))}
-          </div>
+          <Stack gap={2}>
+            {/* 图例：状态=Tag 语义色；电源插座=IconPlug(warning) */}
+            <Inline gap={3} vAlign="center" wrap>
+              <Tag tone="success">{i18nRich("pages.info.librarytab.1e0034462d91", { usableCount: usableCount })}</Tag>
+              <Tag>{i18nRich("pages.info.librarytab.95003d952366", { value: gridSeats.length - usableCount })}</Tag>
+              <Inline gap={1} vAlign="center">
+                <IconPlug size="sm" className="og-text--t-warning" title={i18n("pages.info.librarytab.312d122d681e")} />
+                <Text slot="label" tone="faint">{i18n("pages.info.librarytab.733125b04b38")}</Text>
+              </Inline>
+              {seatList.length > SEAT_CAP ? (
+                <Text slot="label" tone="faint">{i18nRich("pages.info.librarytab.784c472214f9", { SEAT_CAP: SEAT_CAP, length: seatList.length })}</Text>
+              ) : null}
+            </Inline>
+            {/* 座位网格：flex-wrap，窄窗口自动换行不横向溢出 */}
+            <Inline gap={1} wrap>
+              {gridSeats.map((s) => (
+                <SeatCell key={s.id} seat={s} busy={busySeat !== null} picked={pendingSeat?.id === s.id} onPick={pickSeat} />
+              ))}
+            </Inline>
+          </Stack>
         </Card>
       ) : null}
 
       {/* 点选座位后的确认条 */}
       {pendingSeat ? (
-        <Card style={{ marginTop: 12, padding: "12px 14px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 14, fontWeight: 600 }}>预约座位 {pendingSeat.zhName}</span>
-            <span className="chip chip-blue" style={{ height: 20 }}>
-              {dateChoice === 0 ? "今天" : "明天"}
-            </span>
-          </div>
-          {locTrace ? (
-            <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>位置：{locTrace}</div>
-          ) : null}
-          <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>须在预约开始后 30 分钟内完成签到</div>
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 10 }}>
-            <button className="btn" style={{ height: 28 }} onClick={() => setPendingSeat(null)}>
-              取消
-            </button>
-            <button
-              className="btn btn-primary"
-              style={{ height: 28 }}
-              disabled={busySeat !== null}
-              onClick={() => void book(pendingSeat)}
-            >
-              {busySeat !== null ? "预约中…" : "确认预约"}
-            </button>
-          </div>
+        <Card>
+          <Stack gap={2}>
+            <Inline gap={2} vAlign="baseline" wrap>
+              <Text as="h3" slot="subtitle">{i18nRich("pages.info.librarytab.30289a8d04c0", { zhName: pendingSeat.zhName })}</Text>
+              <Tag tone="brand">{dateChoice === 0 ? i18n("pages.info.librarytab.d5f5a7a01073") : i18n("pages.info.librarytab.b1d841b978fb")}</Tag>
+            </Inline>
+            {locTrace ? (
+              <Text slot="label" tone="quiet">{i18nRich("pages.info.librarytab.c84b1d592f6d", { locTrace: locTrace })}</Text>
+            ) : null}
+            <Text slot="label" tone="quiet">{i18n("pages.info.librarytab.4e7028070d16")}</Text>
+            <Inline gap={2} justify="end">
+              <Btn variant="outline" onClick={() => setPendingSeat(null)}>{i18n("pages.info.librarytab.2cd0f3be8738")}</Btn>
+              <Btn
+                variant="solid"
+                tone="brand"
+                disabled={busySeat !== null}
+                onClick={() => void book(pendingSeat)}
+              >
+                {busySeat !== null ? i18n("pages.info.librarytab.08db97b4fd8b") : i18n("pages.info.librarytab.72944bf6d779")}
+              </Btn>
+            </Inline>
+          </Stack>
         </Card>
       ) : null}
 
-      {bookError ? <ErrorNote text={bookError} /> : null}
+      {bookError ? <Banner tone="error">{localizeLibraryError(bookError)}</Banner> : null}
 
-      {action ? (
-        <Card style={{ marginTop: 12, padding: "12px 14px" }}>
-          <span className={action.ok ? "" : "t-red"} style={{ fontSize: 13 }}>
-            {action.text}
-          </span>
-        </Card>
-      ) : null}
+      {action ? <Banner tone={action.ok ? "success" : "error"}>{localizeLibraryError(action.text)}</Banner> : null}
 
-      <SectionHead
-        title="我的预约"
-        aside="座位预约记录"
-      />
-      {recState === "loading" ? <SkeletonRows rows={2} /> : null}
+      <Section title={i18n("pages.info.librarytab.1a558735ea57")} aside={i18n("pages.info.librarytab.cdbc73064158")} />
+      {recState === "loading" ? <LoadingBlock rows={2} /> : null}
       {recState === "error" ? (
-        <ErrorNote
-          text={recError ?? ""}
-          onRetry={() => {
-            recRecover.current = 0;
-            void loadRecords();
-          }}
-        />
+        <Banner
+          tone="error"
+          action={
+            <Btn
+              variant="ghost"
+              tone="error"
+              size="sm"
+              onClick={() => {
+                recRecover.current = 0;
+                void loadRecords();
+              }}
+            >{i18n("pages.info.librarytab.b8784c8dd563")}</Btn>
+          }
+        >
+          {localizeLibraryError(recError ?? "")}
+        </Banner>
       ) : null}
       {recState === "ready" && (records ?? []).length === 0 ? (
         <Card>
-          <Empty text="暂无预约记录。" />
+          <EmptyState title={i18n("pages.info.librarytab.c3b180cc0d49")} />
         </Card>
       ) : null}
       {recState === "ready" && (records ?? []).length > 0 ? (
-        <Card className="list">
-          {(records ?? []).map((r, i) => (
-            <div className="row" key={`${r.id}-${i}`}>
-              <div className="row-main">
-                <div className="row-title">{r.pos || r.id || "预约"}</div>
-                <div className="row-sub">
-                  {r.time || "–"}
-                  {r.status ? ` · ${r.status}` : ""}
-                </div>
-              </div>
-              <div className="row-amount">
-                {r.delId ? (
-                  pendingCancel === (r.delId ?? r.id) ? (
-                    <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 12, color: "var(--text-2)" }}>确认取消该预约？</span>
-                      <button
-                        className="btn btn-primary"
-                        style={{ height: 28 }}
+        <Card flush>
+          <List divided>
+            {(records ?? []).map((r, i) => (
+              <Row
+                flush
+                key={`${r.id}-${i}`}
+                title={r.pos || r.id || i18n("pages.info.librarytab.352cdc807892")}
+                sub={`${r.time || "–"}${r.status ? ` · ${r.status}` : ""}`}
+                trailing={
+                  r.delId ? (
+                    pendingCancel === (r.delId ?? r.id) ? (
+                      <Inline gap={2} vAlign="center">
+                        <Text slot="label" tone="quiet">{i18n("pages.info.librarytab.3c4849cb1508")}</Text>
+                        <Btn
+                          variant="solid"
+                          tone="error"
+                          disabled={busyCancel !== null}
+                          onClick={() => void cancel(r)}
+                        >
+                          {busyCancel !== null ? i18n("pages.info.librarytab.0addd7784578") : i18n("pages.info.librarytab.b741efb628be")}
+                        </Btn>
+                        <Btn variant="outline" disabled={busyCancel !== null} onClick={() => setPendingCancel(null)}>{i18n("pages.info.librarytab.6b7589029582")}</Btn>
+                      </Inline>
+                    ) : (
+                      <Btn
+                        variant="outline"
                         disabled={busyCancel !== null}
-                        onClick={() => void cancel(r)}
-                      >
-                        {busyCancel !== null ? "取消中…" : "确认取消"}
-                      </button>
-                      <button
-                        className="btn"
-                        style={{ height: 28 }}
-                        disabled={busyCancel !== null}
-                        onClick={() => setPendingCancel(null)}
-                      >
-                        算了
-                      </button>
-                    </span>
-                  ) : (
-                    <button
-                      className="btn"
-                      style={{ height: 28 }}
-                      disabled={busyCancel !== null}
-                      onClick={() => setPendingCancel(r.delId ?? r.id)}
-                    >
-                      取消预约
-                    </button>
-                  )
-                ) : null}
-              </div>
-            </div>
-          ))}
+                        onClick={() => setPendingCancel(r.delId ?? r.id)}
+                      >{i18n("pages.info.librarytab.0afc4fe3d305")}</Btn>
+                    )
+                  ) : null
+                }
+              />
+            ))}
+          </List>
         </Card>
       ) : null}
-    </>
+    </Stack>
   );
 }

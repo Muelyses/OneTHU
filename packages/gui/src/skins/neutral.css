@@ -1,0 +1,16 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 皮肤 neutral（默认基准）
+ *
+ * 基准皮肤 = 实色面 + hairline 描边 + 克制阴影。它**不覆盖任何语义名**，
+ * 语义层的初值就是它 —— 所以"基准"不会漂：想改基准就改 tokens/semantic.css。
+ * 这里只负责把它声明成正式皮肤并钉住材质钩子为空。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+[data-og-skin="neutral"] {
+  --og-surface-tint: none;
+  --og-surface-blur: none;
+  --og-overlay-tint: none;
+  --og-overlay-blur: none;
+  --og-chip-tint: none;
+  --og-chip-blur: none;
+}

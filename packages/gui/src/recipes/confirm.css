@@ -1,0 +1,5 @@
+/* Product confirmation content; Modal owns layering, motion, focus and scroll. */
+.shared-confirm-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:var(--og-space-2); }
+.shared-confirm-message { white-space:pre-wrap; overflow-wrap:anywhere; line-height:var(--og-text-body-lh); }
+.shared-confirm-modal.is-danger > .og-panel-head { color:var(--og-error); }
+.shared-confirm-warning { display:block; font-size:var(--og-text-display); line-height:var(--og-text-display-lh); }

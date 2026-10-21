@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { UiText } from "../i18n/index.js";
 /**
  * 全局轻提示（原子操作反馈用）：单条覆盖式，2.8s 自动消失。
  * local/anim-delight：加了「退出相位」——消息不是瞬间消失，而是先播 200ms 淡出动画
@@ -7,13 +8,13 @@ import { useEffect, useState } from "react";
  * 底部轻提示会被滚动内容与用户注意力漏掉。
  */
 const EXIT_MS = 200;
-let current: string | null = null;
+let current: UiText | null = null;
 let center = false;
 let closing = false;
 let timer: ReturnType<typeof setTimeout> | null = null;
 let exitTimer: ReturnType<typeof setTimeout> | null = null;
 const listeners = new Set<(s: ToastState) => void>();
-export type ToastState = { msg: string | null; closing: boolean; center: boolean };
+export type ToastState = { msg: UiText | null; closing: boolean; center: boolean };
 function emit(): void {
   const snapshot: ToastState = { msg: current, closing, center };
   listeners.forEach((fn) => fn(snapshot));
@@ -51,7 +52,7 @@ export function muteToasts<T>(fn: () => T): T {
     muted = prev;
   }
 }
-export function showToast(text: string, ms = 2800, opts: { center?: boolean } = {}): void {
+export function showToast(text: UiText, ms = 2800, opts: { center?: boolean } = {}): void {
   if (muted) return;
   clearTimers();
   current = text;
@@ -62,6 +63,10 @@ export function showToast(text: string, ms = 2800, opts: { center?: boolean } = 
 export function hideToast(): void {
   clearTimers();
   beginExit();
+}
+/** Dismiss a notification owned by a departing feature, without hiding a newer toast. */
+export function hideToastIfCurrent(text: UiText): void {
+  if (current === text) hideToast();
 }
 export function useToastHost(): ToastState {
   const [state, setState] = useState<ToastState>({ msg: current, closing, center });

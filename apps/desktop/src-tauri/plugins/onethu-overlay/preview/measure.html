@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC",sans-serif;background:#5c6b78;padding:16px}
+.hm{display:inline-flex;align-items:baseline;line-height:1}
+.hm .p{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:400;font-size:1.10em}
+.hm .o{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:1.14em}
+.hm .h{font-family:-apple-system,"PingFang SC",sans-serif;font-weight:700;font-size:1.06em}
+.hm span{margin-right:.05em}
+.bub{display:inline-block;max-width:84%;padding:7px 13px;font-size:15px;line-height:1.55;color:#1C1F24;
+ background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.48));border:1px solid rgba(255,255,255,.35);
+ box-shadow:0 10px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.5)}
+.oh{border-radius:20px 20px 20px 6px}.user{border-radius:20px 20px 6px 20px}
+.chips{display:flex;gap:8px;padding:0 14px}
+.chip{height:32px;display:inline-flex;align-items:center;padding:0 12px;border-radius:999px;font-size:12px;
+ background:rgba(255,255,255,.86);color:#1C1F24;border:1px solid rgba(0,0,0,.12);white-space:nowrap}
+.row{margin-bottom:14px}
+.lab{font:11px/1.5 "SF Mono",Menlo,monospace;color:#ffe9a8}
+.zoom{transform:scale(2.6);transform-origin:0 0}
+</style></head><body>
+<div class="row"><div class="lab" id="m1">单行气泡（OH）</div><div class="bub oh" id="b1">在的，需要我做什么？</div></div>
+<div class="row"><div class="lab" id="m2">单行气泡（用户）</div><div class="bub user" id="b2">收到，我看一下</div></div>
+<div class="row"><div class="lab" id="m3">顶栏一行三胶囊</div><div class="chips" id="c3"><span class="chip">回到 OneTHU</span><span class="chip">朗读 关</span><span class="chip">收起</span></div></div>
+<div class="row" style="margin-top:26px"><div class="lab">尾角放大 2.6×（左 OH 左下收角 / 右 用户右下收角）</div>
+  <div class="zoom"><span class="bub oh" id="b3">OH</span> <span class="bub user" id="b4">用户</span></div></div>
+<div class="row" style="margin-top:40px"><div class="lab">球内 15sp 三字体混排（( O H )：mono 1.10 / serif 1.14 / sans 700 1.06）</div>
+  <div style="width:54px;height:54px;border-radius:50%;background:#fff;border:1px solid rgba(0,0,0,.1);
+       box-shadow:0 6px 14px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:15px;color:#1C1F24">
+    <span class="hm"><span class="p">(</span><span class="o">O</span><span class="h">H</span><span class="p">)</span></span></div></div>
+<script>
+ const h = e => Math.round(e.getBoundingClientRect().height*100)/100;
+ document.getElementById('m1').textContent += '  高 = ' + h(document.getElementById('b1')) + ' dp（上限 40）';
+ document.getElementById('m2').textContent += '  高 = ' + h(document.getElementById('b2')) + ' dp（上限 40）';
+ document.getElementById('m3').textContent += '  行高 = ' + Math.round(document.getElementById('c3').getBoundingClientRect().height) + ' dp；三个胶囊总宽 = '
+   + Math.round([...document.getElementById('c3').children].reduce((a,e)=>a+e.getBoundingClientRect().width,0) + 16)
+   + ' dp（可用 333dp，留边 14dp×2）';
+</script></body></html>

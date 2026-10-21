@@ -1,3 +1,5 @@
+import { getLocale as getUiLocale } from "../i18n/index.js";
+import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
 /**
  * 原子注册表（万物原子化 · 唯一事实来源）。
  *
@@ -15,7 +17,7 @@
  */
 import type { ReactNode } from "react";
 import { openThosInApp } from "../lib/thosOpen.js";
-import { IconBell, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconInfo, IconLearn, IconMail, IconPen, IconRefresh, IconSchedule, IconSearch, IconThos, IconToday, IconTrace, IconXk } from "../components/Icons.js";
+import { IconBell, IconBook, IconCalendar, IconCard, IconCheck, IconCloud, IconExternal, IconFile, IconFlag, IconFolder, IconGitLab, IconIn, IconInfo, IconLearn, IconMail, IconPen, IconPin, IconRefresh, IconSchedule, IconSearch, IconSpark, IconTabsCards, IconThos, IconToday, IconTrace, IconXiaoda, IconXk } from "../components/Icons.js";
 import {
   AgendaWidget, CardBalanceWidget, HomeworkWidget, RecentNoticesWidget, SubsNewsWidget,
   TodayClassesWidget, TodayOverviewWidget, TodayResvWidget,
@@ -25,6 +27,7 @@ import { cacheGet } from "./cache.js";
 import { getPluginAtom, pluginAtomKindOf } from "../plugins/pluginAtoms.js";
 import { WASHER_PROVIDER_LABEL, washerProviderCode, washerProviderOf } from "@onethu/core";
 import { getPluginTab } from "../plugins/tabs.js";
+import { resolveTabTitle } from "./tabTitles.js";
 import { FAVS_MAX_DEPTH, loadFavs, type AtomRef } from "./favorites.js";
 import { setSelectedSemester } from "./data.js";
 import { WasherTileStatus, ClassroomTileStatus, ClassroomRoomToday } from "../components/LiveTiles.js";
@@ -70,6 +73,30 @@ export function dec(key: string): string[] {
   return key.split("~");
 }
 
+/* 标签页原子（kind = "tab"）：任何工作标签页都能一星收藏成独立 OnePage（用户定案：
+   一星 = 页面本体成为 OnePage；打开即本页）。key = page + "~" + 编码后的 params JSON。 */
+export function tabAtomKey(page: string, params?: object | null): string {
+  const keys = Object.keys(params ?? {}).filter((k) => (params as Record<string, unknown>)[k] !== undefined).sort();
+  const clean: Record<string, unknown> = {};
+  for (const k of keys) clean[k] = (params as Record<string, unknown>)[k];
+  const body = keys.length ? encodeURIComponent(JSON.stringify(clean)).replace(/~/g, "%7E") : "";
+  return page + "~" + body;
+}
+
+export function parseTabAtomKey(key: string): { page: string; params: Record<string, unknown> | undefined } | null {
+  const i = key.indexOf("~");
+  if (i < 0) return null;
+  const page = key.slice(0, i);
+  const body = key.slice(i + 1);
+  if (!page) return null;
+  if (!body) return { page, params: undefined };
+  try {
+    return { page, params: JSON.parse(decodeURIComponent(body)) as Record<string, unknown> };
+  } catch {
+    return null;
+  }
+}
+
 /* ══════════ 动态缓存（实体页加载成功后 note；只读用于搜索） ══════════ */
 
 export interface AtomDynCache {
@@ -98,6 +125,10 @@ export interface AtomDynCache {
   thosServices?: Array<{ id: string; name: string; department?: string; url?: string }>;
   /** 讨论区话题（BbsPanel 列表页就绪后写入；bqid 为所属板块） */
   bbsThreads?: Array<{ courseId: string; bqid: string; id: string; title: string; courseName?: string; sem?: string }>;
+  /** GitLab 项目 / Issue / 合并请求（GitLab 页就绪后写入） */
+  gitlabProjects?: Array<{ id: number; name: string }>;
+  gitlabIssues?: Array<{ projectId: number; iid: number; title: string }>;
+  gitlabMergeRequests?: Array<{ projectId: number; iid: number; title: string }>;
 }
 
 const dyn: AtomDynCache = {};
@@ -130,19 +161,19 @@ interface ActionAtom {
 
 export const ACTION_ATOMS: ActionAtom[] = [
   {
-    kind: "action", key: "cal-sync-hw", title: "同步作业 DDL 到云日历", sub: "未交作业写入云日历（含提醒闹钟；平时全自动）",
+    kind: "action", key: "cal-sync-hw", get title() { return i18n("state.atoms.f3849df7f168"); }, get sub() { return i18n("state.atoms.7132ae7d734a"); },
     icon: IconBell, group: "操作",
     run: async () => {
       const r = await syncHwToCloud();
-      return r.skipped ? `作业未同步：${r.written === 0 ? "云端已是最新" : "未配置云同步"}` : `作业已同步：写入 ${r.written} 条（清理旧 ${r.removed} 条）`;
+      return r.skipped ? i18n("state.atoms.8ae04d950861", { value: String(r.written === 0 ? i18n("state.atoms.0ab15a1cb720") : i18n("state.atoms.253f54401fa7")) }) : i18n("state.atoms.7f2090267b41", { written: String(r.written), removed: String(r.removed) });
     },
   },
   {
-    kind: "action", key: "cal-sync-scan", title: "同步云日历", sub: "全量扫描云端日程变化（etag 对账）",
+    kind: "action", key: "cal-sync-scan", get title() { return i18n("state.atoms.07c9a15ad13f"); }, get sub() { return i18n("state.atoms.b9d8c8f7b02f"); },
     icon: IconRefresh, group: "操作",
     run: async () => {
       const r = await syncCloudCal();
-      return `云端共 ${r.total} 个日程（新增 ${r.added}、更新 ${r.updated}、移除 ${r.removed}）`;
+      return i18n("state.atoms.d25aafa6ed3f", { total: String(r.total), added: String(r.added), updated: String(r.updated), removed: String(r.removed) });
     },
   },
 ];
@@ -163,42 +194,66 @@ interface StaticAtom {
 
 /** 全部二级页面入口（=旧 homeCards entry 全集 + 课程信息栏 + 学堂一级） */
 export const PAGE_ATOMS: StaticAtom[] = [
-  { kind: "page", key: "schedule", title: "日程", sub: "时间轴与日程列表 · 云同步", icon: IconSchedule, group: "页面", page: "schedule" },
-  { kind: "page", key: "trace", title: "寻迹", sub: "今日日程地图 · 紧迫度标注 · 一键前往", icon: IconTrace, group: "页面", page: "trace" },
-  { kind: "page", key: "mail", title: "邮箱", sub: "收件箱 · 已发送 · 读信 · 全箱搜索", icon: IconMail, group: "页面", page: "mail" },
-  { kind: "page", key: "mail-compose", title: "写信", sub: "邮箱 · 新邮件", icon: IconPen, group: "页面", page: "mail", params: { mailCompose: true } },
-  { kind: "page", key: "cloud", title: "云盘", sub: "清华云盘 · 资料库 · 上传下载 · 分享", icon: IconCloud, group: "页面", page: "cloud" },
-  { kind: "page", key: "zhjwxk", title: "选课", sub: "选课系统 · 已选课程与候补队列（不可拆分的收藏项）", icon: IconXk, group: "页面", page: "zhjwxk" },
-  { kind: "page", key: "learn", title: "网络学堂", sub: "本学期课程总览", icon: IconLearn, group: "页面", page: "learn" },
-  { kind: "page", key: "learn-assignments", title: "全部作业", sub: "网络学堂 · 作业列表", icon: IconPen, group: "页面", page: "learn-assignments" },
-  { kind: "page", key: "learn-notices", title: "全部通知", sub: "网络学堂 · 课程通知", icon: IconBell, group: "页面", page: "learn-notices" },
-  { kind: "page", key: "learn-files", title: "全部课程文件", sub: "网络学堂 · 课件与资料", icon: IconFile, group: "页面", page: "learn-files" },
-  { kind: "page", key: "learn-search", title: "网络学堂搜索", sub: "课程 / 作业 / 通知 / 文件", icon: IconSearch, group: "页面", page: "learn-search" },
-  { kind: "page", key: "learn-semester", title: "学期切换", sub: "网络学堂 · 切换数据学期", icon: IconRefresh, group: "页面", page: "learn-semester" },
-  { kind: "page", key: "learn-hwremind", title: "作业 DDL 提醒", sub: "全局默认提醒时间 · 同步系统日历", icon: IconBell, group: "页面", page: "learn", params: { learnOpenHwRemind: true } },
-  { kind: "page", key: "info-report", title: "全部成绩", sub: "信息门户 · 历年成绩", icon: IconCheck, group: "页面", page: "info", params: { infoTab: "report" } },
-  { kind: "page", key: "info-fitness", title: "体测成绩", sub: "信息页 · 体质测试", icon: IconCheck, group: "页面", page: "info", params: { infoTab: "fitness" } },
-  { kind: "page", key: "info-exams", title: "考试安排", sub: "信息门户 · 考试日程", icon: IconFlag, group: "页面", page: "info", params: { infoTab: "exams" } },
-  { kind: "page", key: "info-evaluation", title: "教学评估", sub: "信息页 · 问卷进度", icon: IconPen, group: "页面", page: "info", params: { infoTab: "evaluation" } },
-  { kind: "page", key: "info-calendar", title: "校历", sub: "信息页 · 学期安排图片", icon: IconCalendar, group: "页面", page: "info", params: { infoTab: "calendar" } },
-  { kind: "page", key: "info-news", title: "订阅新闻", sub: "信息门户 · 订阅动态", icon: IconExternal, group: "页面", page: "info", params: { infoTab: "news" } },
-  { kind: "page", key: "info-profile", title: "个人信息", sub: "信息门户 · 学籍信息", icon: IconInfo, group: "页面", page: "info", params: { infoTab: "profile" } },
-  { kind: "page", key: "info-courseinfo", title: "courseX", sub: "课程共享计划 · 课程简介与时间地点", icon: IconInfo, group: "页面", page: "info", params: { infoTab: "courseinfo" } },
-  { kind: "page", key: "life-dorm", title: "宿舍", sub: "生活页 · 宿舍服务", icon: IconToday, group: "页面", page: "life", params: { lifeTab: "dorm" } },
-  { kind: "page", key: "life-electricity", title: "电费", sub: "生活页 · 宿舍电费余额与充值", icon: IconCard, group: "页面", page: "life", params: { lifeTab: "dorm", dormSection: "ele" } },
-  { kind: "page", key: "life-water", title: "订水", sub: "生活页 · 水站订水", icon: IconToday, group: "页面", page: "life", params: { lifeTab: "dorm", dormSection: "water" } },
-  { kind: "page", key: "life-washer", title: "洗衣机", sub: "生活页 · 设备状态", icon: IconRefresh, group: "页面", page: "life", params: { lifeTab: "washer" } },
-  { kind: "page", key: "life-hygiene", title: "卫生成绩", sub: "生活页 · 宿舍卫生检查", icon: IconFlag, group: "页面", page: "life", params: { lifeTab: "hygiene" } },
-  { kind: "page", key: "life-card", title: "校园卡", sub: "生活页 · 余额与流水", icon: IconCard, group: "页面", page: "life", params: { lifeTab: "card" } },
-  { kind: "page", key: "life-invoice", title: "电子发票", sub: "生活页 · 财务 · 发票列表", icon: IconFile, group: "页面", page: "life", params: { lifeTab: "invoice" } },
-  { kind: "page", key: "life-payroll", title: "银行代发", sub: "生活页 · 财务 · 工资到账", icon: IconToday, group: "页面", page: "life", params: { lifeTab: "payroll" } },
-  { kind: "page", key: "life-gradincome", title: "研究生收入", sub: "生活页 · 财务 · 助研津贴", icon: IconCard, group: "页面", page: "life", params: { lifeTab: "gradincome" } },
-  { kind: "page", key: "life-network", title: "校园网", sub: "生活页 · 账号与流量", icon: IconExternal, group: "页面", page: "life", params: { lifeTab: "network" } },
-  { kind: "page", key: "reserve-lib", title: "图书馆座位", sub: "预约 · 座位与签到", icon: IconSchedule, group: "页面", page: "reserve", params: { reserveTab: "lib" } },
-  { kind: "page", key: "reserve-room", title: "研讨间", sub: "预约 · 研讨间申请", icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "room" } },
-  { kind: "page", key: "reserve-classroom", title: "空教室", sub: "预约页 · 自习空闲查询", icon: IconSearch, group: "页面", page: "reserve", params: { reserveTab: "classroom" } },
-  { kind: "page", key: "reserve-sports", title: "体育预约", sub: "预约页 · 体育场馆时段预约", icon: IconSchedule, group: "页面", page: "reserve", params: { reserveTab: "sports" } },
-  { kind: "page", key: "reserve-kongjian", title: "公共空间", sub: "预约页 · 宿舍公共空间预约", icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "kongjian" } },
+  /* 一级页兜底原子（2026-10-17）：以前只有部分一级页进了注册表，OH 的 open_page
+     搜「THUBook / 在线服务 / 白板」全是空的；这里补全所有可导航一级入口。 */
+  { kind: "page", key: "homepage", get title() { return i18n("state.atoms.203c08e0d44a"); }, get sub() { return i18n("state.atoms.c6460a02e85e"); }, icon: IconToday, group: "页面", page: "homepage" },
+  { kind: "page", key: "thubook", title: "THUBook", get sub() { return i18n("state.atoms.53646ecea274"); }, icon: IconBook, group: "页面", page: "thubook" },
+  { kind: "page", key: "thos", get title() { return i18n("state.atoms.1760b98532ec"); }, get sub() { return i18n("state.atoms.0f045b9615fc"); }, icon: IconThos, group: "页面", page: "thos" },
+  { kind: "page", key: "otherinfo", get title() { return i18n("state.atoms.4ebe692f5dbb"); }, get sub() { return i18n("state.atoms.d8e3dfbe5f8a"); }, icon: IconExternal, group: "页面", page: "otherinfo" },
+  { kind: "page", key: "tasks", get title() { return i18n("state.atoms.52fdbbaeda4c"); }, get sub() { return i18n("state.atoms.371c1b0109ee"); }, icon: IconCheck, group: "页面", page: "tasks" },
+  { kind: "page", key: "services", get title() { return i18n("state.atoms.ec309ab207ef"); }, get sub() { return i18n("state.atoms.7eacf1926832"); }, icon: IconSpark, group: "页面", page: "services" },
+  { kind: "page", key: "favs", get title() { return i18n("state.atoms.60a53514eb92"); }, get sub() { return i18n("state.atoms.75ed5296c3b6"); }, icon: IconPin, group: "页面", page: "favs" },
+  { kind: "page", key: "boards", get title() { return i18n("state.atoms.0f591af87c35"); }, get sub() { return i18n("state.atoms.1cb2f2a7577c"); }, icon: IconTabsCards, group: "页面", page: "boards" },
+  { kind: "page", key: "board", title: "OnePage", get sub() { return i18n("state.atoms.b208d9df4fca"); }, icon: IconTabsCards, group: "页面", page: "board" },
+  { kind: "page", key: "contacts", get title() { return i18n("state.atoms.06657c279571"); }, get sub() { return i18n("state.atoms.37d169b450b9"); }, icon: IconIn, group: "页面", page: "contacts" },
+  { kind: "page", key: "vault", get title() { return i18n("state.atoms.804002a9c49a"); }, get sub() { return i18n("state.atoms.8bfa2692305a"); }, icon: IconIn, group: "页面", page: "vault" },
+  { kind: "page", key: "folder", get title() { return i18n("state.atoms.aeddd0584371"); }, get sub() { return i18n("state.atoms.d5a374a5b103"); }, icon: IconFolder, group: "页面", page: "folder" },
+  { kind: "page", key: "info-root", get title() { return i18n("state.atoms.e7028601e7da"); }, get sub() { return i18n("state.atoms.8fff9a5b021b"); }, icon: IconInfo, group: "页面", page: "info" },
+  { kind: "page", key: "life-root", get title() { return i18n("state.atoms.15d208d1b4c9"); }, get sub() { return i18n("state.atoms.dcd2bf114535"); }, icon: IconToday, group: "页面", page: "life" },
+  { kind: "page", key: "reserve-root", get title() { return i18n("state.atoms.352cdc807892"); }, get sub() { return i18n("state.atoms.452f594e3f7c"); }, icon: IconCalendar, group: "页面", page: "reserve" },
+  { kind: "page", key: "schedule", get title() { return i18n("state.atoms.a14f23af7016"); }, get sub() { return i18n("state.atoms.8efd83feacc8"); }, icon: IconSchedule, group: "页面", page: "schedule" },
+  { kind: "page", key: "trace", get title() { return i18n("state.atoms.60458dfb4c14"); }, get sub() { return i18n("state.atoms.5c9d7b5dddae"); }, icon: IconTrace, group: "页面", page: "trace" },
+  { kind: "page", key: "mail", get title() { return i18n("state.atoms.73075237fd0f"); }, get sub() { return i18n("state.atoms.4c30e45ecab2"); }, icon: IconMail, group: "页面", page: "mail" },
+  { kind: "page", key: "mail-compose", get title() { return i18n("state.atoms.ed80f9723a5a"); }, get sub() { return i18n("state.atoms.ac7a24ae899f"); }, icon: IconPen, group: "页面", page: "mail", params: { mailCompose: true } },
+  { kind: "page", key: "cloud", get title() { return i18n("state.atoms.f75562426e77"); }, get sub() { return i18n("state.atoms.a43f6d78f983"); }, icon: IconCloud, group: "页面", page: "cloud" },
+  { kind: "page", key: "gitlab", title: "GitLab", get sub() { return i18n("state.atoms.f951111a412f"); }, icon: IconGitLab, group: "页面", page: "gitlab" },
+  { kind: "page", key: "zhjwxk", get title() { return i18n("state.atoms.fd17d86dd268"); }, get sub() { return i18n("state.atoms.87a17e3b9851"); }, icon: IconXk, group: "页面", page: "zhjwxk" },
+  /* 清小搭（2026-10-15 用户点名「搜索栏注册可搜索」）：一级页只有进了页面原子，
+     搜索栏/命令面板/底栏检索条与 OH 的 open_page 才认得出它（否则只能靠注册表名字命中，
+     且 OH 按名打开会找不到）；顺带解锁页头星标收藏与「最近使用」回跳。 */
+  { kind: "page", key: "xiaoda", get title() { return i18n("state.atoms.b1abb3dc2271"); }, get sub() { return i18n("state.atoms.13d31ddcce2b"); }, icon: IconXiaoda, group: "页面", page: "xiaoda" },
+  { kind: "page", key: "learn", get title() { return i18n("state.atoms.aa39cac2b409"); }, get sub() { return i18n("state.atoms.bb7b63b39fd4"); }, icon: IconLearn, group: "页面", page: "learn" },
+  { kind: "page", key: "learn-assignments", get title() { return i18n("state.atoms.a1cabc0664cf"); }, get sub() { return i18n("state.atoms.b3ed0c353c77"); }, icon: IconPen, group: "页面", page: "learn-assignments" },
+  { kind: "page", key: "learn-notices", get title() { return i18n("state.atoms.bdac834d0ba2"); }, get sub() { return i18n("state.atoms.14e681cbe318"); }, icon: IconBell, group: "页面", page: "learn-notices" },
+  { kind: "page", key: "learn-files", get title() { return i18n("state.atoms.fa8fe752727c"); }, get sub() { return i18n("state.atoms.0e68f2517080"); }, icon: IconFile, group: "页面", page: "learn-files" },
+  { kind: "page", key: "learn-search", get title() { return i18n("state.atoms.62fd8d15cf0a"); }, get sub() { return i18n("state.atoms.1599af41d9c3"); }, icon: IconSearch, group: "页面", page: "learn-search" },
+  { kind: "page", key: "learn-semester", get title() { return i18n("state.atoms.231ff6cd9b63"); }, get sub() { return i18n("state.atoms.13a9d4b0c392"); }, icon: IconRefresh, group: "页面", page: "learn-semester" },
+  { kind: "page", key: "learn-hwremind", get title() { return i18n("state.atoms.3df7b5791ab9"); }, get sub() { return i18n("state.atoms.c141273da51a"); }, icon: IconBell, group: "页面", page: "learn", params: { learnOpenHwRemind: true } },
+  { kind: "page", key: "info-report", get title() { return i18n("state.atoms.ede028d7ec64"); }, get sub() { return i18n("state.atoms.95ce4af97b93"); }, icon: IconCheck, group: "页面", page: "info", params: { infoTab: "report" } },
+  { kind: "page", key: "info-fitness", get title() { return i18n("state.atoms.316da6d69b7d"); }, get sub() { return i18n("state.atoms.cce40ddbb7b9"); }, icon: IconCheck, group: "页面", page: "info", params: { infoTab: "fitness" } },
+  { kind: "page", key: "info-exams", get title() { return i18n("state.atoms.88df420f8207"); }, get sub() { return i18n("state.atoms.5531576bd063"); }, icon: IconFlag, group: "页面", page: "info", params: { infoTab: "exams" } },
+  { kind: "page", key: "info-evaluation", get title() { return i18n("state.atoms.14384c9d60cc"); }, get sub() { return i18n("state.atoms.02cb99cb0282"); }, icon: IconPen, group: "页面", page: "info", params: { infoTab: "evaluation" } },
+  { kind: "page", key: "info-calendar", get title() { return i18n("state.atoms.4792ab1440aa"); }, get sub() { return i18n("state.atoms.fc7c1ff5f380"); }, icon: IconCalendar, group: "页面", page: "info", params: { infoTab: "calendar" } },
+  { kind: "page", key: "info-news", get title() { return i18n("state.atoms.10d6105303f8"); }, get sub() { return i18n("state.atoms.7ca0b3673bc7"); }, icon: IconExternal, group: "页面", page: "info", params: { infoTab: "news" } },
+  { kind: "page", key: "info-profile", get title() { return i18n("state.atoms.640803d89773"); }, get sub() { return i18n("state.atoms.961b6374e9a5"); }, icon: IconInfo, group: "页面", page: "info", params: { infoTab: "profile" } },
+  { kind: "page", key: "info-courseinfo", title: "courseX", get sub() { return i18n("state.atoms.192b490632ec"); }, icon: IconInfo, group: "页面", page: "info", params: { infoTab: "courseinfo" } },
+  { kind: "page", key: "life-dorm", get title() { return i18n("state.atoms.3a74de9a9014"); }, get sub() { return i18n("state.atoms.1c1ece1ebe90"); }, icon: IconToday, group: "页面", page: "life", params: { lifeTab: "dorm" } },
+  { kind: "page", key: "life-electricity", get title() { return i18n("state.atoms.ab8cff9a597a"); }, get sub() { return i18n("state.atoms.56c68de9eced"); }, icon: IconCard, group: "页面", page: "life", params: { lifeTab: "dorm", dormSection: "ele" } },
+  { kind: "page", key: "life-water", get title() { return i18n("state.atoms.bb8c939d0fcd"); }, get sub() { return i18n("state.atoms.4df0d6b1cd95"); }, icon: IconToday, group: "页面", page: "life", params: { lifeTab: "dorm", dormSection: "water" } },
+  { kind: "page", key: "life-washer", get title() { return i18n("state.atoms.6acfa1db6a62"); }, get sub() { return i18n("state.atoms.390251ce8a9d"); }, icon: IconRefresh, group: "页面", page: "life", params: { lifeTab: "washer" } },
+  { kind: "page", key: "life-hygiene", get title() { return i18n("state.atoms.41d497d6e07e"); }, get sub() { return i18n("state.atoms.cf05dea41f42"); }, icon: IconFlag, group: "页面", page: "life", params: { lifeTab: "hygiene" } },
+  { kind: "page", key: "life-card", get title() { return i18n("state.atoms.caf1f095b108"); }, get sub() { return i18n("state.atoms.fe7dbfcadf51"); }, icon: IconCard, group: "页面", page: "life", params: { lifeTab: "card" } },
+  { kind: "page", key: "life-invoice", get title() { return i18n("state.atoms.92341cf02c56"); }, get sub() { return i18n("state.atoms.e703d13e3468"); }, icon: IconFile, group: "页面", page: "life", params: { lifeTab: "invoice" } },
+  { kind: "page", key: "life-payroll", get title() { return i18n("state.atoms.24be2018df29"); }, get sub() { return i18n("state.atoms.838814f1139e"); }, icon: IconToday, group: "页面", page: "life", params: { lifeTab: "payroll" } },
+  { kind: "page", key: "life-gradincome", get title() { return i18n("state.atoms.336dbe5fd82f"); }, get sub() { return i18n("state.atoms.53090df93da8"); }, icon: IconCard, group: "页面", page: "life", params: { lifeTab: "gradincome" } },
+  { kind: "page", key: "life-network", get title() { return i18n("state.atoms.dd94488f5269"); }, get sub() { return i18n("state.atoms.8e46dccaa4fb"); }, icon: IconExternal, group: "页面", page: "life", params: { lifeTab: "network" } },
+  { kind: "page", key: "reserve-lib", get title() { return i18n("state.atoms.31c17158ebdb"); }, get sub() { return i18n("state.atoms.3b7240a9d253"); }, icon: IconSchedule, group: "页面", page: "reserve", params: { reserveTab: "lib" } },
+  { kind: "page", key: "reserve-room", get title() { return i18n("state.atoms.e4d40b4d6759"); }, get sub() { return i18n("state.atoms.411769324590"); }, icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "room" } },
+  { kind: "page", key: "reserve-classroom", get title() { return i18n("state.atoms.ecc11c8afea8"); }, get sub() { return i18n("state.atoms.00a42a995295"); }, icon: IconSearch, group: "页面", page: "reserve", params: { reserveTab: "classroom" } },
+  { kind: "page", key: "reserve-sports", get title() { return i18n("state.atoms.07a0fa11958e"); }, get sub() { return i18n("state.atoms.ee6388006cb5"); }, icon: IconSchedule, group: "页面", page: "reserve", params: { reserveTab: "sports" } },
+  { kind: "page", key: "reserve-kongjian", get title() { return i18n("state.atoms.e81059e1a712"); }, get sub() { return i18n("state.atoms.3e668eb1a6ae"); }, icon: IconCalendar, group: "页面", page: "reserve", params: { reserveTab: "kongjian" } },
+  /* 临时来访人员报备（2026-10-15）：key 与 navigation.ts 的 reserve-visit 同名（搜索点行两边必须同参数）。 */
+  { kind: "page", key: "reserve-visit", get title() { return i18n("state.atoms.99f047c591bb"); }, get sub() { return i18n("state.atoms.3fb35cdc3085"); }, icon: IconFlag, group: "页面", page: "reserve", params: { reserveTab: "visit" } },
 ];
 
 /**
@@ -249,14 +304,14 @@ interface WidgetAtom {
 
 /** 点击标题跳回组件数据来源页（与今日页各卡点击行为同口径） */
 export const WIDGET_ATOMS: WidgetAtom[] = [
-  { kind: "widget", key: "today-overview", title: "今日概览", sub: "未交作业 · 截止 · 今日课程", icon: IconToday, group: "组件", body: () => <TodayOverviewWidget />, page: "today" },
-  { kind: "widget", key: "agenda", title: "日程与提醒", sub: "校历 · 学校重要事项倒计时", icon: IconCalendar, group: "组件", body: () => <AgendaWidget />, page: "schedule" },
-  { kind: "widget", key: "homework", title: "未提交作业", sub: "截止升序 · 点击查看详情", icon: IconPen, group: "组件", body: () => <HomeworkWidget />, page: "learn-assignments" },
-  { kind: "widget", key: "notices", title: "最近通知", sub: "最新课程通知", icon: IconBell, group: "组件", body: () => <RecentNoticesWidget />, page: "learn" },
-  { kind: "widget", key: "cardEntry", title: "校园卡余额", sub: "快捷入口", icon: IconCard, group: "组件", body: () => <CardBalanceWidget />, page: "life", params: { lifeTab: "card" } },
-  { kind: "widget", key: "resv", title: "今日预约", sub: "座位 · 研讨间", icon: IconSchedule, group: "组件", body: () => <TodayResvWidget />, page: "reserve" },
-  { kind: "widget", key: "classes", title: "今日课程", sub: "按开始时间排序", icon: IconToday, group: "组件", body: () => <TodayClassesWidget />, page: "schedule" },
-  { kind: "widget", key: "news", title: "订阅新闻", sub: "订阅来源优先，回退最新", icon: IconExternal, group: "组件", body: () => <SubsNewsWidget />, page: "info", params: { infoTab: "news" } },
+  { kind: "widget", key: "today-overview", get title() { return i18n("state.atoms.211d36ccbe1e"); }, get sub() { return i18n("state.atoms.14259c8a65a8"); }, icon: IconToday, group: "组件", body: () => <TodayOverviewWidget />, page: "homepage" },
+  { kind: "widget", key: "agenda", get title() { return i18n("state.atoms.c730a0bada79"); }, get sub() { return i18n("state.atoms.acbe926d0b5c"); }, icon: IconCalendar, group: "组件", body: () => <AgendaWidget />, page: "schedule" },
+  { kind: "widget", key: "homework", get title() { return i18n("state.atoms.8bb50166823f"); }, get sub() { return i18n("state.atoms.61a292c2a4a0"); }, icon: IconPen, group: "组件", body: () => <HomeworkWidget />, page: "learn-assignments" },
+  { kind: "widget", key: "notices", get title() { return i18n("state.atoms.33005938adb3"); }, get sub() { return i18n("state.atoms.959f2f8d7f57"); }, icon: IconBell, group: "组件", body: () => <RecentNoticesWidget />, page: "learn" },
+  { kind: "widget", key: "cardEntry", get title() { return i18n("state.atoms.c0c6bb8b8618"); }, get sub() { return i18n("state.atoms.5f2cfbfecf9f"); }, icon: IconCard, group: "组件", body: () => <CardBalanceWidget />, page: "life", params: { lifeTab: "card" } },
+  { kind: "widget", key: "resv", get title() { return i18n("state.atoms.9e6a260920fb"); }, get sub() { return i18n("state.atoms.499fc8e68d81"); }, icon: IconSchedule, group: "组件", body: () => <TodayResvWidget />, page: "reserve" },
+  { kind: "widget", key: "classes", get title() { return i18n("state.atoms.119099ab1bad"); }, get sub() { return i18n("state.atoms.4d8a9ed9bf01"); }, icon: IconToday, group: "组件", body: () => <TodayClassesWidget />, page: "schedule" },
+  { kind: "widget", key: "news", get title() { return i18n("state.atoms.10d6105303f8"); }, get sub() { return i18n("state.atoms.7755e6257a48"); }, icon: IconExternal, group: "组件", body: () => <SubsNewsWidget />, page: "info", params: { infoTab: "news" } },
 ];
 
 /* ══════════ 实体原子工厂 ══════════ */
@@ -310,14 +365,14 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const target: Page = `plugin:${kind.slice("plugin:".length)}:${tabId}`;
     return {
       atom: ref,
-      title: meta?.title ?? "（已失效的插件收藏项）",
+      title: meta?.title ?? i18n("state.atoms.4e2ebf869a50"),
       sub: meta?.sub ?? def.group,
       icon: svgIcon(def.iconSvg),
       group: def.group,
       open: (nav) => {
         // 目标 tab 未注册（插件停用/无 tab 形态如 OH）→ 降级提示而非跳空白页
         if (!getPluginTab(target)) {
-          showToast("该插件功能页未启用");
+          showToast(i18nMsg("state.atoms.716b8504f013"));
           return;
         }
         nav(target, undefined);
@@ -330,6 +385,17 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     return view({
       atom: ref, title: s.title, sub: s.sub, icon: s.icon, group: s.group,
       open: (nav) => nav(s.page, s.params ? { ...s.params } : undefined),
+    });
+  }
+  if (kind === "tab") {
+    const parsed = parseTabAtomKey(key);
+    if (!parsed) return null;
+    const page = parsed.page as Page;
+    const params = parsed.params as LearnNav | undefined;
+    const t = resolveTabTitle(page, params ?? null);
+    return view({
+      atom: ref, title: t.label, sub: t.full, icon: IconFile, group: "标签页",
+      open: (nav) => nav(page, params ? { ...params } as LearnNav : undefined),
     });
   }
   if (kind === "widget") {
@@ -346,8 +412,8 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     if (!id) return null;
     return view({
       atom: ref,
-      title: name || "在线服务",
-      sub: department ? "在线服务 · " + department : "在线服务",
+      title: name || i18n("state.atoms.1760b98532ec"),
+      sub: department ? i18n("state.atoms.7ecb4f45c64b") + department : i18n("state.atoms.1760b98532ec"),
       icon: IconThos,
       group: "在线服务",
       open: () => {
@@ -360,7 +426,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [id, name, teacher, sem] = dec(key);
     if (!id || !name) return null;
     return view({
-      atom: ref, title: name, sub: teacher ? "课程 · " + teacher : "课程", icon: IconLearn, group: "网络学堂",
+      atom: ref, title: name, sub: teacher ? i18n("state.atoms.b08512fcc283") + teacher : i18n("state.atoms.60db1afb4022"), icon: IconLearn, group: "网络学堂",
       open: (nav) => openLearn(nav, "learn-course", { courseId: id }, sem),
     });
   }
@@ -368,9 +434,9 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [courseId, itemId, title, courseName, sem] = dec(key);
     if (!courseId || !itemId) return null;
     const conf = {
-      assignment: { t: "作业", icon: IconPen, page: "learn-assignment-detail" as Page },
-      notice: { t: "通知", icon: IconBell, page: "learn-notice-detail" as Page },
-      file: { t: "文件", icon: IconFile, page: "learn-file-detail" as Page },
+      assignment: { t: i18n("state.atoms.b0dff016ff17"), icon: IconPen, page: "learn-assignment-detail" as Page },
+      notice: { t: i18n("state.atoms.4b6ded8a7f18"), icon: IconBell, page: "learn-notice-detail" as Page },
+      file: { t: i18n("state.atoms.39932f24fe11"), icon: IconFile, page: "learn-file-detail" as Page },
     }[kind];
     return view({
       atom: ref, title: title || conf.t, sub: (courseName ? courseName + " · " : "") + conf.t, icon: conf.icon, group: "网络学堂",
@@ -381,7 +447,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [courseId, bqid, name, courseName, sem] = dec(key);
     if (!courseId || !bqid) return null;
     return view({
-      atom: ref, title: name || "讨论区板块", sub: (courseName ? courseName + " · " : "") + "讨论区板块", icon: IconLearn, group: "网络学堂",
+      atom: ref, title: name || i18n("state.atoms.b80e3dfb7fba"), sub: (courseName ? courseName + " · " : "") + i18n("state.atoms.b80e3dfb7fba"), icon: IconLearn, group: "网络学堂",
       open: (nav) => openLearn(nav, "learn-course", { courseId, courseTab: "forum", bbsBoard: bqid }, sem),
     });
   }
@@ -389,15 +455,41 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [courseId, threadId, bqid, title, courseName, sem] = dec(key);
     if (!courseId || !threadId) return null;
     return view({
-      atom: ref, title: title || "讨论区话题", sub: (courseName ? courseName + " · " : "") + "讨论区", icon: IconLearn, group: "网络学堂",
+      atom: ref, title: title || i18n("state.atoms.564f7a2748bb"), sub: (courseName ? courseName + " · " : "") + i18n("state.atoms.9c92c9d08b05"), icon: IconLearn, group: "网络学堂",
       open: (nav) => openLearn(nav, "learn-forum-thread", { courseId, itemId: threadId, bqid: bqid || undefined }, sem),
+    });
+  }
+  if (kind === "gitlab-proj") {
+    const [id, name] = dec(key);
+    const pid = Number(id);
+    if (!pid) return null;
+    return view({
+      atom: ref, title: name || i18n("state.atoms.6aa71ddd8364"), sub: i18n("state.atoms.6aa71ddd8364"), icon: IconGitLab, group: "GitLab",
+      open: (nav) => nav("gitlab", { gitlabProject: pid }),
+    });
+  }
+  if (kind === "gitlab-issue" || kind === "gitlab-mr") {
+    const [pid, iid, title] = dec(key);
+    const projectId = Number(pid);
+    const iidNum = Number(iid);
+    if (!projectId || !iidNum) return null;
+    const isIssue = kind === "gitlab-issue";
+    return view({
+      atom: ref, title: title || (isIssue ? "Issue" : i18n("state.atoms.dd42589239f7")),
+      sub: "GitLab " + (isIssue ? "Issue" : i18n("state.atoms.dd42589239f7")), icon: isIssue ? IconPen : IconGitLab, group: "GitLab",
+      open: (nav) => nav("gitlab", {
+        gitlabProject: projectId,
+        gitlabTab: isIssue ? "issues" : "mrs",
+        gitlabKind: isIssue ? "issue" : "mr",
+        gitlabIid: iidNum,
+      }),
     });
   }
   if (kind === "news") {
     const [xxid, title, source] = dec(key);
     if (!xxid) return null;
     return view({
-      atom: ref, title: title || "新闻", sub: source || "校内通知", icon: IconExternal, group: "新闻",
+      atom: ref, title: title || i18n("state.atoms.d39567b2b9f1"), sub: source || i18n("state.atoms.6699d0be5ff8"), icon: IconExternal, group: "新闻",
       open: (nav) => nav("info", { infoNewsId: xxid }),
     });
   }
@@ -406,7 +498,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const provider = washerProviderOf(hlsh);
     if (!id) return null;
     return view({
-      atom: ref, title: name || "洗衣机楼栋", sub: (gname ? gname + " · " : "") + WASHER_PROVIDER_LABEL[provider], icon: IconRefresh, group: "洗衣机",
+      atom: ref, title: name || i18n("state.atoms.762ef1dd111f"), sub: (gname ? gname + " · " : "") + WASHER_PROVIDER_LABEL[provider], icon: IconRefresh, group: "洗衣机",
       open: (nav) => nav("life", { lifeTab: "washer", washerBuildingId: id, washerBuildingName: name, washerBuildingProvider: washerProviderCode(provider) }),
     });
   }
@@ -424,7 +516,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [searchName, name] = dec(key);
     if (!searchName) return null;
     return view({
-      atom: ref, title: name || searchName, sub: "教学楼 · 本周空闲状态", icon: IconSearch, group: "空教室",
+      atom: ref, title: name || searchName, sub: i18n("state.atoms.2498d064346e"), icon: IconSearch, group: "空教室",
       open: (nav) => nav("reserve", { reserveTab: "classroom", classroomBuilding: searchName, classroomBuildingName: name }),
     });
   }
@@ -432,7 +524,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [searchName, bName, room] = dec(key);
     if (!searchName || !room) return null;
     return view({
-      atom: ref, title: room, sub: (bName || "") + " · 教室", icon: IconSearch, group: "空教室", defaultSq: true,
+      atom: ref, title: room, sub: (bName || "") + i18n("state.atoms.02c6d939cacb"), icon: IconSearch, group: "空教室", defaultSq: true,
       tileLive: () => <ClassroomTileStatus atomKey={key} />,
       widget: () => <ClassroomRoomToday atomKey={key} />,
       open: (nav) => nav("reserve", { reserveTab: "classroom", classroomBuilding: searchName, classroomBuildingName: bName, classroomRoom: room }),
@@ -442,7 +534,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [uuid, name] = dec(key);
     if (!uuid) return null;
     return view({
-      atom: ref, title: name || "体育场馆", sub: "体育系统 · 场次预约", icon: IconSchedule, group: "体育",
+      atom: ref, title: name || i18n("state.atoms.e00b99270be7"), sub: i18n("state.atoms.21c882a8b432"), icon: IconSchedule, group: "体育",
       open: (nav) => nav("reserve", { reserveTab: "sports", sportsScene: uuid }),
     });
   }
@@ -450,7 +542,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [id, name] = dec(key);
     if (!id) return null;
     return view({
-      atom: ref, title: name || "研讨间", sub: "研讨间 · 时段申请", icon: IconCalendar, group: "研讨间",
+      atom: ref, title: name || i18n("state.atoms.e4d40b4d6759"), sub: i18n("state.atoms.64050df899dd"), icon: IconCalendar, group: "研讨间",
       open: (nav) => nav("reserve", { reserveTab: "room", libroomKind: Number(id) || undefined }),
     });
   }
@@ -458,7 +550,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [id, name] = dec(key);
     if (!id) return null;
     return view({
-      atom: ref, title: name || "图书馆", sub: "图书馆 · 座位与签到", icon: IconSchedule, group: "图书馆",
+      atom: ref, title: name || i18n("state.atoms.266e6cb77079"), sub: i18n("state.atoms.c7811f3d9d70"), icon: IconSchedule, group: "图书馆",
       open: (nav) => nav("reserve", { reserveTab: "lib", libraryId: Number(id) || undefined }),
     });
   }
@@ -466,7 +558,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [libId, libName, fId, fName] = dec(key);
     if (!libId || !fId) return null;
     return view({
-      atom: ref, title: fName || "楼层", sub: (libName || "") + " · 座位楼层", icon: IconSchedule, group: "图书馆",
+      atom: ref, title: fName || i18n("state.atoms.ce3b386bd714"), sub: (libName || "") + i18n("state.atoms.914722c592ca"), icon: IconSchedule, group: "图书馆",
       open: (nav) => nav("reserve", { reserveTab: "lib", libraryId: Number(libId) || undefined, libraryFloorId: Number(fId) || undefined }),
     });
   }
@@ -474,7 +566,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [libId, libName, fId, fName, aId, aName] = dec(key);
     if (!libId || !fId || !aId) return null;
     return view({
-      atom: ref, title: aName || "区域", sub: (libName || "") + (fName ? " · " + fName : "") + " · 座位区域", icon: IconSchedule, group: "图书馆",
+      atom: ref, title: aName || i18n("state.atoms.3382870bc4ad"), sub: (libName || "") + (fName ? " · " + fName : "") + i18n("state.atoms.d648ae3059c3"), icon: IconSchedule, group: "图书馆",
       open: (nav) => nav("reserve", { reserveTab: "lib", libraryId: Number(libId) || undefined, libraryFloorId: Number(fId) || undefined, librarySectionId: Number(aId) || undefined }),
     });
   }
@@ -482,7 +574,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [id, name] = dec(key);
     if (!id) return null;
     return view({
-      atom: ref, title: name || id, sub: "公共空间 · 活动预约", icon: IconCalendar, group: "公共空间",
+      atom: ref, title: name || id, sub: i18n("state.atoms.0b2a360ee083"), icon: IconCalendar, group: "公共空间",
       open: (nav) => nav("reserve", { reserveTab: "kongjian", kongjianSpace: id }),
     });
   }
@@ -490,7 +582,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [spId, spName, rId, rName] = dec(key);
     if (!spId || !rId) return null;
     return view({
-      atom: ref, title: rName || rId, sub: (spName || "") + " · 公共空间房间", icon: IconCalendar, group: "公共空间",
+      atom: ref, title: rName || rId, sub: (spName || "") + i18n("state.atoms.a40906b8e7b9"), icon: IconCalendar, group: "公共空间",
       open: (nav) => nav("reserve", { reserveTab: "kongjian", kongjianSpace: spId, kongjianRoom: rId }),
     });
   }
@@ -498,7 +590,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [name] = dec(key);
     if (!name) return null;
     return view({
-      atom: ref, title: name, sub: "订阅源 · 新闻动态", icon: IconExternal, group: "新闻",
+      atom: ref, title: name, sub: i18n("state.atoms.70508e3eba69"), icon: IconExternal, group: "新闻",
       open: (nav) => nav("info", { infoTab: "news", newsSubSource: name }),
     });
   }
@@ -506,7 +598,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const [cat, name, id] = dec(key);
     if (!id || !name) return null;
     return view({
-      atom: ref, title: name, sub: (cat || "Info 应用") + " · Info 应用", icon: IconExternal, group: "Info 应用",
+      atom: ref, title: name, sub: (cat || i18n("state.atoms.d4f7864690bb")) + i18n("state.atoms.c94cd3fab151"), icon: IconExternal, group: "Info 应用",
       /* 门户拒绝内嵌（X-Frame-Options 实证）：点击直接系统浏览器打开漫游链 */
       open: () => void openExternal(infoAppUrl(id)),
     });
@@ -518,7 +610,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
       atom: ref, title: a.title, sub: a.sub, icon: a.icon, group: a.group,
       open: () => {
         showToast(`${a.title}…`);
-        void a.run().then(showToast).catch((e: unknown) => showToast(`失败：${e instanceof Error ? e.message : String(e)}`));
+        void a.run().then(showToast).catch((e: unknown) => showToast(i18nMsg("state.atoms.7af0a2bf2e39", { value: String(e instanceof Error ? e.message : String(e)) })));
       },
     });
   }
@@ -532,7 +624,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     const h = getMailHead(folder, uid);
     if (!h) return null; // 缓存冷（清库/换机）：星标还在但不可解析——收藏夹渲染层会自然显示失效
     return view({
-      atom: ref, title: h.subject, sub: `${h.from || "(无发件人)"} · ${new Date(h.dateMs).toLocaleString("zh-CN", { hour12: false })}`,
+      atom: ref, title: h.subject, sub: `${h.from || i18n("state.atoms.51c306bd3174")} · ${new Date(h.dateMs).toLocaleString(getUiLocale(), { hour12: false })}`,
       icon: IconMail, group: "邮件",
       open: (nav) => nav("mail", { mailFolder: folder, mailUid: uid }),
     });
@@ -562,7 +654,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     }
     return view({
       atom: ref, title: f.title,
-      sub: (path.length > 0 ? path.join(" / ") + " · " : "") + "收藏夹（改内/改名/删除 → 收藏夹页编辑模式）",
+      sub: (path.length > 0 ? path.join(" / ") + " · " : "") + i18n("state.atoms.d66273bca391"),
       icon: IconFolder, group: "我的收藏夹",
       open: (nav) => nav("folder", { folderId: id }),
     });
@@ -572,7 +664,7 @@ export function resolveAtom(ref: AtomRef): AtomView | null {
     if (!cid || !name) return null;
     const tls = tl ? tl.split("；") : [];
     return view({
-      atom: ref, title: name, sub: (teacher ? teacher + " · " : "") + (tls.length > 0 ? tls.join("；") : "时间地点见课程详情"), icon: IconInfo, group: "courseX",
+      atom: ref, title: name, sub: (teacher ? teacher + " · " : "") + (tls.length > 0 ? tls.join("；") : i18n("state.atoms.3dcd26a9ba45")), icon: IconInfo, group: "courseX",
       open: (nav) => nav("info", { infoTab: "courseinfo" }),
     });
   }
@@ -614,28 +706,31 @@ export function searchAtoms(query: string, limit = 24): AtomHit[] {
   // —— 动态：本机缓存里已见过的实体（campus 缓存 + noteAtomCache）——
   const campus = cacheGet<{ courses: Array<{ id: string; name: string; teacherName?: string }>; homework: Array<{ courseId: string; id: string; title: string; submitted: boolean }>; notifications: Array<{ courseId: string; id: string; title: string }>; files: Array<{ courseId: string; id: string; title: string }> }>("campus")?.data;
   if (campus) {
-    for (const c of campus.courses ?? []) if (match(c.name, c.teacherName)) push(hit({ atom: { kind: "course", key: enc(c.id, c.name, c.teacherName) }, title: c.name, sub: "课程" + (c.teacherName ? " · " + c.teacherName : ""), icon: IconLearn, group: "网络学堂" }));
-    for (const h of campus.homework ?? []) if (!h.submitted && match(h.title)) push(hit({ atom: { kind: "assignment", key: enc(h.courseId, h.id, h.title) }, title: h.title, sub: "作业", icon: IconPen, group: "网络学堂" }));
-    for (const n of campus.notifications ?? []) if (match(n.title)) push(hit({ atom: { kind: "notice", key: enc(n.courseId, n.id, n.title) }, title: n.title, sub: "课程通知", icon: IconBell, group: "网络学堂" }));
-    for (const f of campus.files ?? []) if (match(f.title)) push(hit({ atom: { kind: "file", key: enc(f.courseId, f.id, f.title) }, title: f.title, sub: "课程文件", icon: IconFile, group: "网络学堂" }));
+    for (const c of campus.courses ?? []) if (match(c.name, c.teacherName)) push(hit({ atom: { kind: "course", key: enc(c.id, c.name, c.teacherName) }, title: c.name, sub: i18n("state.atoms.60db1afb4022") + (c.teacherName ? " · " + c.teacherName : ""), icon: IconLearn, group: "网络学堂" }));
+    for (const h of campus.homework ?? []) if (!h.submitted && match(h.title)) push(hit({ atom: { kind: "assignment", key: enc(h.courseId, h.id, h.title) }, title: h.title, sub: i18n("state.atoms.b0dff016ff17"), icon: IconPen, group: "网络学堂" }));
+    for (const n of campus.notifications ?? []) if (match(n.title)) push(hit({ atom: { kind: "notice", key: enc(n.courseId, n.id, n.title) }, title: n.title, sub: i18n("state.atoms.f37a13fc55b3"), icon: IconBell, group: "网络学堂" }));
+    for (const f of campus.files ?? []) if (match(f.title)) push(hit({ atom: { kind: "file", key: enc(f.courseId, f.id, f.title) }, title: f.title, sub: i18n("state.atoms.2bb745fb2e6f"), icon: IconFile, group: "网络学堂" }));
   }
   for (const b of dyn.washerGroups ?? []) if (match(b.name, b.gname)) push(hit({ atom: { kind: "washer-b", key: enc(b.id, b.name, b.provider ?? "0", b.gname) }, title: b.name, sub: b.gname, icon: IconRefresh, group: "洗衣机" }));
-  for (const b of dyn.classroomBuildings ?? []) if (match(b.name)) push(hit({ atom: { kind: "classroom-b", key: enc(b.searchName, b.name) }, title: b.name, sub: "教学楼", icon: IconSearch, group: "空教室" }));
-  for (const s of dyn.sportsScenes ?? []) if (match(s.name)) push(hit({ atom: { kind: "sports-v", key: enc(s.uuid, s.name) }, title: s.name, sub: "体育场馆", icon: IconSchedule, group: "体育" }));
-  for (const n of dyn.newsItems ?? []) if (match(n.name, n.source)) push(hit({ atom: { kind: "news", key: enc(n.xxid, n.name, n.source) }, title: n.name, sub: n.source || "校内通知", icon: IconExternal, group: "新闻" }));
-  for (const k of dyn.libroomKinds ?? []) if (match(k.kindName)) push(hit({ atom: { kind: "libroom-k", key: enc(k.kindId, k.kindName) }, title: k.kindName, sub: "研讨间", icon: IconCalendar, group: "研讨间" }));
-  for (const l of dyn.libraries ?? []) if (match(l.name)) push(hit({ atom: { kind: "library", key: enc(l.id, l.name) }, title: l.name, sub: "图书馆", icon: IconSchedule, group: "图书馆" }));
-  for (const s of dyn.newsSources ?? []) if (match(s.name)) push(hit({ atom: { kind: "news-src", key: enc(s.name) }, title: s.name, sub: "订阅源 · 新闻", icon: IconExternal, group: "新闻" }));
-  for (const s of dyn.kjSpaces ?? []) if (match(s.name)) push(hit({ atom: { kind: "kj-space", key: enc(s.id, s.name) }, title: s.name, sub: "公共空间", icon: IconCalendar, group: "公共空间" }));
-  for (const r of dyn.kjRooms ?? []) if (match(r.name, r.spaceName)) push(hit({ atom: { kind: "kj-room", key: enc(r.spaceId, r.spaceName, r.id, r.name) }, title: r.name, sub: (r.spaceName || "") + " · 公共空间", icon: IconCalendar, group: "公共空间" }));
+  for (const b of dyn.classroomBuildings ?? []) if (match(b.name)) push(hit({ atom: { kind: "classroom-b", key: enc(b.searchName, b.name) }, title: b.name, sub: i18n("state.atoms.5c8d010fd9a3"), icon: IconSearch, group: "空教室" }));
+  for (const s of dyn.sportsScenes ?? []) if (match(s.name)) push(hit({ atom: { kind: "sports-v", key: enc(s.uuid, s.name) }, title: s.name, sub: i18n("state.atoms.e00b99270be7"), icon: IconSchedule, group: "体育" }));
+  for (const n of dyn.newsItems ?? []) if (match(n.name, n.source)) push(hit({ atom: { kind: "news", key: enc(n.xxid, n.name, n.source) }, title: n.name, sub: n.source || i18n("state.atoms.6699d0be5ff8"), icon: IconExternal, group: "新闻" }));
+  for (const k of dyn.libroomKinds ?? []) if (match(k.kindName)) push(hit({ atom: { kind: "libroom-k", key: enc(k.kindId, k.kindName) }, title: k.kindName, sub: i18n("state.atoms.e4d40b4d6759"), icon: IconCalendar, group: "研讨间" }));
+  for (const l of dyn.libraries ?? []) if (match(l.name)) push(hit({ atom: { kind: "library", key: enc(l.id, l.name) }, title: l.name, sub: i18n("state.atoms.266e6cb77079"), icon: IconSchedule, group: "图书馆" }));
+  for (const s of dyn.newsSources ?? []) if (match(s.name)) push(hit({ atom: { kind: "news-src", key: enc(s.name) }, title: s.name, sub: i18n("state.atoms.b22b34bd6f57"), icon: IconExternal, group: "新闻" }));
+  for (const s of dyn.kjSpaces ?? []) if (match(s.name)) push(hit({ atom: { kind: "kj-space", key: enc(s.id, s.name) }, title: s.name, sub: i18n("state.atoms.e81059e1a712"), icon: IconCalendar, group: "公共空间" }));
+  for (const r of dyn.kjRooms ?? []) if (match(r.name, r.spaceName)) push(hit({ atom: { kind: "kj-room", key: enc(r.spaceId, r.spaceName, r.id, r.name) }, title: r.name, sub: (r.spaceName || "") + i18n("state.atoms.aae558c4b8aa"), icon: IconCalendar, group: "公共空间" }));
   for (const c of dyn.courseXCourses ?? []) if (match(c.name, c.teacher)) push(hit({ atom: { kind: "courseX-c", key: enc(c.sem, c.id, c.name, c.teacher, "") }, title: c.name, sub: "courseX" + (c.teacher ? " · " + c.teacher : ""), icon: IconInfo, group: "courseX" }));
-  for (const b of dyn.bbsBoards ?? []) if (match(b.name, b.courseName)) push(hit({ atom: { kind: "bbs-board", key: enc(b.courseId, b.bqid, b.name, b.courseName ?? "", b.sem ?? "") }, title: b.name, sub: (b.courseName ? b.courseName + " · " : "") + "讨论区板块", icon: IconLearn, group: "网络学堂" }));
-  for (const t of dyn.bbsThreads ?? []) if (match(t.title, t.courseName)) push(hit({ atom: { kind: "forum", key: enc(t.courseId, t.id, t.bqid, t.title, t.courseName ?? "", t.sem ?? "") }, title: t.title, sub: (t.courseName ? t.courseName + " · " : "") + "讨论区话题", icon: IconLearn, group: "网络学堂" }));
-  for (const a of INFO_APPS) if (match(a.name, a.cat)) push(hit({ atom: { kind: "infoapp", key: enc(a.cat, a.name, a.id) }, title: a.name, sub: a.cat + " · Info 应用", icon: IconExternal, group: "Info 应用" }));
+  for (const b of dyn.bbsBoards ?? []) if (match(b.name, b.courseName)) push(hit({ atom: { kind: "bbs-board", key: enc(b.courseId, b.bqid, b.name, b.courseName ?? "", b.sem ?? "") }, title: b.name, sub: (b.courseName ? b.courseName + " · " : "") + i18n("state.atoms.b80e3dfb7fba"), icon: IconLearn, group: "网络学堂" }));
+  for (const t of dyn.bbsThreads ?? []) if (match(t.title, t.courseName)) push(hit({ atom: { kind: "forum", key: enc(t.courseId, t.id, t.bqid, t.title, t.courseName ?? "", t.sem ?? "") }, title: t.title, sub: (t.courseName ? t.courseName + " · " : "") + i18n("state.atoms.564f7a2748bb"), icon: IconLearn, group: "网络学堂" }));
+  for (const a of INFO_APPS) if (match(a.name, a.cat)) push(hit({ atom: { kind: "infoapp", key: enc(a.cat, a.name, a.id) }, title: a.name, sub: a.cat + i18n("state.atoms.c94cd3fab151"), icon: IconExternal, group: "Info 应用" }));
   // 在线服务目录（ThosPage 打开过一次即入缓存）——OH「一句话打开亲友来访」即命中这里
-  for (const s of dyn.thosServices ?? []) if (match(s.name, s.department)) push(hit({ atom: { kind: "thos-service", key: enc(s.id, s.name, s.department ?? "") }, title: s.name, sub: (s.department ? s.department + " · " : "") + "在线服务", icon: IconThos, group: "在线服务" }));
+  for (const s of dyn.thosServices ?? []) if (match(s.name, s.department)) push(hit({ atom: { kind: "thos-service", key: enc(s.id, s.name, s.department ?? "") }, title: s.name, sub: (s.department ? s.department + " · " : "") + i18n("state.atoms.1760b98532ec"), icon: IconThos, group: "在线服务" }));
+  for (const p of dyn.gitlabProjects ?? []) if (match(p.name)) push(hit({ atom: { kind: "gitlab-proj", key: enc(p.id, p.name) }, title: p.name, sub: i18n("state.atoms.6aa71ddd8364"), icon: IconGitLab, group: "GitLab" }));
+  for (const i of dyn.gitlabIssues ?? []) if (match(i.title)) push(hit({ atom: { kind: "gitlab-issue", key: enc(i.projectId, i.iid, i.title) }, title: i.title, sub: "GitLab Issue", icon: IconPen, group: "GitLab" }));
+  for (const m of dyn.gitlabMergeRequests ?? []) if (match(m.title)) push(hit({ atom: { kind: "gitlab-mr", key: enc(m.projectId, m.iid, m.title) }, title: m.title, sub: i18n("state.atoms.e642c7fc3df2"), icon: IconGitLab, group: "GitLab" }));
   // 收藏夹跳转原子（全部夹：根 + 子，标题命中即出）
-  for (const f of Object.values(loadFavs().folders)) if (match(f.title)) push(hit({ atom: { kind: "folder", key: f.id }, title: f.title, sub: "收藏夹 · 点击直达", icon: IconFolder, group: "我的收藏夹" }));
+  for (const f of Object.values(loadFavs().folders)) if (match(f.title)) push(hit({ atom: { kind: "folder", key: f.id }, title: f.title, sub: i18n("state.atoms.855afaa70605"), icon: IconFolder, group: "我的收藏夹" }));
 
   return out.slice(0, limit);
 }

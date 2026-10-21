@@ -1,3 +1,6 @@
+import { getLocale as getUiLocale } from "../../i18n/index.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 在线服务（THOS 服务大厅原生化，上游 thu-info-app 5774b4a9 移植）。
  *
@@ -32,35 +35,36 @@ const TASK_KINDS: ThosTaskKind[] = ["active", "todo", "completed", "drafts", "un
 const PRIMARY: ThosTaskKind[] = ["active", "todo", "completed"];
 
 const KIND_LABEL: Record<ThosTaskKind, string> = {
-  active: "进行中",
-  todo: "待我处理",
-  completed: "已办结",
-  drafts: "草稿",
-  unread: "抄送",
-  phases: "阶段性事项",
+  get active() { return i18n("pages.info.thospage.dc9591e56d50"); },
+  get todo() { return i18n("pages.info.thospage.c37f9cc76310"); },
+  get completed() { return i18n("pages.info.thospage.3229d61dcb0a"); },
+  get drafts() { return i18n("pages.info.thospage.2a2fd29bd27a"); },
+  get unread() { return i18n("pages.info.thospage.2934c3ab3025"); },
+  get phases() { return i18n("pages.info.thospage.988a99c7772c"); },
 };
 
 const STATUS_LABEL: Record<string, string> = {
-  退回修改: "已退回 · 需修改",
-  待我处理: "待我处理",
-  正在办理: "正在办理",
-  已办结: "已办结",
-  办理成功: "办理成功",
-  办理失败: "办理未成功，请重试",
-  已撤回: "已撤回",
-  草稿: "草稿",
-  未阅: "未阅",
-  已阅: "已阅",
-  待办理: "待办理",
+  get 退回修改() { return i18n("pages.info.thospage.0eb3fb1deb49"); },
+  get 待我处理() { return i18n("pages.info.thospage.c37f9cc76310"); },
+  get 正在办理() { return i18n("pages.info.thospage.9f829ede589a"); },
+  get 已办结() { return i18n("pages.info.thospage.3229d61dcb0a"); },
+  get 办理成功() { return i18n("pages.info.thospage.fccb47619552"); },
+  get 办理失败() { return i18n("pages.info.thospage.c4b2699a8f46"); },
+  get 已撤回() { return i18n("pages.info.thospage.0462a8aa7036"); },
+  get 草稿() { return i18n("pages.info.thospage.2a2fd29bd27a"); },
+  get 未阅() { return i18n("pages.info.thospage.69c9c65d8f40"); },
+  get 已阅() { return i18n("pages.info.thospage.25f4520c3f09"); },
+  get 待办理() { return i18n("pages.info.thospage.1fbc49548f86"); },
 };
 
 /** 「任务已被XX办理」站方文案（上游 getThosTaskStatusLabel 同款兜底） */
 function statusLabel(status: string): string {
   if (STATUS_LABEL[status]) return STATUS_LABEL[status]!;
+  // These delimiters come from the server protocol, not the current UI locale.
   const prefix = "任务已被";
   const suffix = "办理";
   if (status.startsWith(prefix) && status.endsWith(suffix)) {
-    return `已由 ${status.slice(prefix.length, status.length - suffix.length)} 办理`;
+    return i18n("pages.info.thospage.999fe423c060", { value: String(status.slice(prefix.length, status.length - suffix.length)) });
   }
   return status;
 }
@@ -71,7 +75,7 @@ const PHASE_STATE: Record<string, string> = {
   "4": "成功",
   "5": "失败",
 };
-const phaseLabel = (state: string): string => PHASE_STATE[state] ?? "状态未知";
+const phaseLabel = (state: string): string => PHASE_STATE[state] ?? i18n("pages.info.thospage.93e474c68ed5");
 
 function favKey(userId: string): string {
   return `thos-favorites:${userId}`;
@@ -107,12 +111,12 @@ function loadFavorites(userId: string): string[] {
 }
 
 const DATE_LABEL: Record<ThosTaskKind, string> = {
-  completed: "办结时间",
-  drafts: "最后修改",
-  active: "申请时间",
-  todo: "申请时间",
-  unread: "抄送时间",
-  phases: "申请时间",
+  get completed() { return i18n("pages.info.thospage.46591ce50306"); },
+  get drafts() { return i18n("pages.info.thospage.f33047eb02ec"); },
+  get active() { return i18n("pages.info.thospage.e9b5d944cc4b"); },
+  get todo() { return i18n("pages.info.thospage.e9b5d944cc4b"); },
+  get unread() { return i18n("pages.info.thospage.eafda4eeec88"); },
+  get phases() { return i18n("pages.info.thospage.e9b5d944cc4b"); },
 };
 
 /** 还没匹配上的预置关键词（仅用于日志说明"为什么常用里少一项"） */
@@ -121,6 +125,8 @@ function SEED_KEYWORDS_LEFT(done: string[]): string[] {
 }
 
 export function ThosPage() {
+  const uiLocale = useUiLocale();
+
   const { user, navParams } = useApp();
   const userId = user?.username ?? "";
   const demo = userId === "8888";
@@ -175,7 +181,7 @@ export function ThosPage() {
           if (!alive()) return;
           setTasks((prev) => ({ ...prev, [kind]: page }));
         } catch {
-          warnings.push(`${KIND_LABEL[kind]}列表加载失败`);
+          warnings.push(i18n("pages.info.thospage.495cf63fdc4b", { value: String(KIND_LABEL[kind]) }));
         }
       }
       if (!alive()) return;
@@ -183,14 +189,14 @@ export function ThosPage() {
         const page = await helper.getThosServices();
         if (alive()) setServices(page);
       } catch {
-        warnings.push("服务列表没有加载出来，请刷新后重试");
+        warnings.push(i18n("pages.info.thospage.0e41d094eba1"));
       }
       if (alive()) {
         setUpdated(Date.now());
         setError(warnings.length ? warnings.join("\n") : undefined);
       }
     } catch {
-      if (alive()) setError("连不上在线服务，登录可能已过期，请重新登录");
+      if (alive()) setError(i18n("pages.info.thospage.06f80187d7bf"));
     } finally {
       if (alive()) setBusy(false);
     }
@@ -249,7 +255,7 @@ export function ThosPage() {
         const names = items.filter((x) => ids.includes(x.id)).map((x) => x.name);
         const pending = SEED_KEYWORDS_LEFT(done);
         return m.logLine(
-          `[THOS-SEED] 常用服务预置：${names.join(" / ") || "无"}${pending.length ? `（未匹配待补：${pending.join("、")}）` : ""}`,
+          i18n("pages.info.thospage.bb2cae6b0875", { value: String(names.join(" / ") || i18n("pages.info.thospage.484d55613910")), value2: String(pending.length ? i18n("pages.info.thospage.b5f8825f95c9", { value: String(pending.join("、")) }) : "") }),
         );
       })
       .catch(() => undefined);
@@ -268,7 +274,7 @@ export function ThosPage() {
     try {
       localStorage.setItem(favKey(userId), JSON.stringify(next));
     } catch {
-      setError("收藏未保存，请再试一次");
+      setError(i18n("pages.info.thospage.86febfb3e7d2"));
     }
   };
 
@@ -280,7 +286,7 @@ export function ThosPage() {
   const openOfficial = async (url: string) => {
     try {
       const { logLine } = await import("../../lib/clients.js");
-      await logLine(`[THOS-UI] openOfficial 入口 demo=${demo} url=${url.slice(0, 60)}`);
+      await logLine(i18n("pages.info.thospage.140a1c482046", { demo: String(demo), value: String(url.slice(0, 60)) }));
     } catch { /* noop */ }
     if (demo || !url) return;
     const { openThosInApp } = await import("../../lib/thosOpen.js");
@@ -304,7 +310,7 @@ export function ThosPage() {
           .includes(query.toLowerCase()),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pending, query, tab],
+    [uiLocale, pending, query, tab],
   );
   const serviceRows = useMemo(() => {
     const rows = (services?.items ?? []).filter(
@@ -322,7 +328,7 @@ export function ThosPage() {
       const rb = rank.get(b.id) ?? Number.MAX_SAFE_INTEGER;
       return ra - rb;
     });
-  }, [services, onlyFavorites, favorites, query, recent]);
+  }, [uiLocale, services, onlyFavorites, favorites, query, recent]);
   const page = tab === "services" ? services : tasks[tab];
   const complete = page?.complete && (tab !== "todo" || tasks.active?.complete);
 
@@ -335,64 +341,62 @@ export function ThosPage() {
   return (
     <>
       <PageHead
-        title="在线服务"
-        meta={updated ? `更新于 ${new Date(updated).toLocaleTimeString()}` : undefined}
+        title={i18n("pages.info.thospage.1760b98532ec")}
+        meta={updated ? i18n("pages.info.thospage.e22e82c70130", { value: String(new Date(updated).toLocaleTimeString(getUiLocale())) }) : undefined}
         actions={
-          <button className="btn btn-ghost" onClick={() => void load()} disabled={busy}>
-            刷新
-          </button>
+          <Btn variant="ghost" onClick={() => void load()} disabled={busy}>{i18n("pages.info.thospage.aee887434131")}</Btn>
         }
       />
       {demo ? (
         <Card>
-          <Empty text="演示模式：8888 账号的在线服务数据为虚构，官方页动作已禁用。" />
+          <Empty text={i18n("pages.info.thospage.62f90e43bd66")} />
         </Card>
       ) : null}
       <div className="thos-note">
         <div className="thos-note-row">
-          <span className="thos-note-tag">首次</span>
-          <span>自动填充账号密码登录，随后进入服务大厅，可在大厅里选择业务。</span>
+          <span className="thos-note-tag">{i18n("pages.info.thospage.f64725f34d2f")}</span>
+          <span>{i18n("pages.info.thospage.29d3ecc76e82")}</span>
         </div>
         <div className="thos-note-row">
-          <span className="thos-note-tag">之后</span>
-          <span>点选服务直接跳转对应页面，不再经过服务大厅。</span>
+          <span className="thos-note-tag">{i18n("pages.info.thospage.28ff471d9a22")}</span>
+          <span>{i18n("pages.info.thospage.878ec8189307")}</span>
         </div>
       </div>
       <input
         className="thos-search"
-        aria-label="搜索在线服务"
+        aria-label={i18n("pages.info.thospage.331de2fc99b4")}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={
           tab === "services"
             ? onlyFavorites
-              ? "搜索常用服务"
-              : "搜索服务目录（名称/部门）"
-            : "搜索事项（标题/节点/编号）"
+              ? i18n("pages.info.thospage.12c57c59c0e5")
+              : i18n("pages.info.thospage.6cec66ddc5bd")
+            : i18n("pages.info.thospage.46f58ccc646a")
         }
       />
 
-      <div className="thos-tabs" role="tablist" aria-label="在线服务分类">
+      <div className="thos-tabs" role="tablist" aria-label={i18n("pages.info.thospage.11176caff12e")}>
         {PRIMARY.map((kind) => tabBtn(kind, `${KIND_LABEL[kind]} ${counts?.[kind as keyof ThosCounts] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }))}
         {(["drafts", "unread", "phases"] as ThosTaskKind[]).map((kind) =>
           tabBtn(kind, `${KIND_LABEL[kind]} ${(counts as Record<string, number | undefined> | undefined)?.[kind] ?? "—"}`, tab === kind, () => { setTab(kind); setQuery(""); setOnlyFavorites(false); }),
         )}
-        {tabBtn("services-fav", `常用 ${favorites.length}`, tab === "services" && onlyFavorites, () => { setTab("services"); setOnlyFavorites(favorites.length > 0); setQuery(""); })}
-        {tabBtn("services-all", "全部服务", tab === "services" && !onlyFavorites, () => { setTab("services"); setOnlyFavorites(false); setQuery(""); })}
+        {tabBtn("services-fav", i18n("pages.info.thospage.8490af08b937", { length: String(favorites.length) }), tab === "services" && onlyFavorites, () => { setTab("services"); setOnlyFavorites(favorites.length > 0); setQuery(""); })}
+        {tabBtn("services-all", i18n("pages.info.thospage.fb5173fe90c7"), tab === "services" && !onlyFavorites, () => { setTab("services"); setOnlyFavorites(false); setQuery(""); })}
       </div>
 
 
       {error ? <ErrorNote text={error} onRetry={() => void load()} /> : null}
       {busy && !page ? <SkeletonRows rows={4} /> : null}
       {!(tab === "services" && onlyFavorites) && !complete && page ? (
-        <div className="thos-partial">结果可能不完整（分页读取未全部完成）</div>
+        <div className="thos-partial">{i18n("pages.info.thospage.d18813b79070")}</div>
       ) : null}
-      {busy && page ? <div className="thos-partial">刷新中…</div> : null}
+      {busy && page ? <div className="thos-partial">{i18n("pages.info.thospage.7f3c8312816f")}</div> : null}
 
       {tab === "services" ? (
-        <SectionHead title={onlyFavorites ? "常用服务" : "服务目录"} aside={`${serviceRows.length} 项`} />
+        <SectionHead title={onlyFavorites ? i18n("pages.info.thospage.33fa02daa93e") : i18n("pages.info.thospage.df883956af9f")} aside={i18n("pages.info.thospage.42e970981c31", { length: String(serviceRows.length) })} />
       ) : (
-        <SectionHead title={KIND_LABEL[tab]} aside={`${taskRows.length} 项`} />
+        <SectionHead title={KIND_LABEL[tab]} aside={i18n("pages.info.thospage.42e970981c31", { length: String(taskRows.length) })} />
       )}
 
       {tab === "services" ? (
@@ -402,7 +406,7 @@ export function ThosPage() {
               <div className="row" style={{ animation: "none" }}>
                 <button
                   className="row-main thos-service-open"
-                  aria-label={`打开服务 ${item.name}`}
+                  aria-label={i18n("pages.info.thospage.4d3041bdd062", { name: String(item.name) })}
                   onClick={() => {
                     recall(item.id);
                     void openOfficial(item.url);
@@ -411,10 +415,10 @@ export function ThosPage() {
                   <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <strong>{item.name}</strong>
                   </span>
-                  <span className="dim">{item.department || "部门未提供"}</span>
+                  <span className="dim">{item.department || i18n("pages.info.thospage.12ccb7addd30")}</span>
                   {item.kind ? (
                     <span className="chip chip-amber">
-                      {item.kind === "form" ? "表单" : item.kind === "guide" ? "指南" : item.kind === "integration" ? "集成" : "服务组"}
+                      {item.kind === "form" ? i18n("pages.info.thospage.62abf78cc507") : item.kind === "guide" ? i18n("pages.info.thospage.6eadeddb7e70") : item.kind === "integration" ? i18n("pages.info.thospage.4115d63bd549") : i18n("pages.info.thospage.80b6b1b5c91c")}
                     </span>
                   ) : null}
                 </button>
@@ -428,8 +432,8 @@ export function ThosPage() {
                   <button
                     type="button"
                     className="icon-btn"
-                    aria-label={favorites.includes(item.id) ? `取消常用 ${item.name}` : `加入常用 ${item.name}`}
-                    title={favorites.includes(item.id) ? "取消常用" : "钉在常用"}
+                    aria-label={favorites.includes(item.id) ? i18n("pages.info.thospage.a58e18d60b61", { name: String(item.name) }) : i18n("pages.info.thospage.ee51d7ac2424", { name: String(item.name) })}
+                    title={favorites.includes(item.id) ? i18n("pages.info.thospage.f32e91f5b0fb") : i18n("pages.info.thospage.5dc0133c1690")}
                     style={{ color: favorites.includes(item.id) ? "var(--accent, #4176e6)" : "var(--text-3, #999)", flex: "none" }}
                     onClick={() => favorite(item.id)}
                   >
@@ -454,10 +458,10 @@ export function ThosPage() {
                   <strong>{item.title}</strong>
                   <span className="chip chip-amber">{statusLabel(item.status)}</span>
                   {item.workflowStatus ? <span className="chip">{statusLabel(item.workflowStatus)}</span> : null}
-                  {item.node ? <span className="dim">节点：{item.node}</span> : null}
-                  {item.summary ? <span className="dim">摘要：{item.summary}</span> : null}
+                  {item.node ? <span className="dim">{i18nRich("pages.info.thospage.a9b2c95f8b82", { node: item.node })}</span> : null}
+                  {item.summary ? <span className="dim">{i18nRich("pages.info.thospage.b6eb3442ad57", { summary: item.summary })}</span> : null}
                   {item.progress !== undefined ? (
-                    <span className="thos-progress" aria-label={`进度 ${item.progress}%`}>
+                    <span className="thos-progress" aria-label={i18n("pages.info.thospage.fea285d83b06", { progress: String(item.progress) })}>
                       <span className="thos-progress-bar">
                         <span style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
                       </span>
@@ -477,12 +481,12 @@ export function ThosPage() {
           <Empty
             text={
               tab === "services" && onlyFavorites && !query && complete
-                ? "还没有常用服务——去「全部服务」里点 ★ 收藏"
+                ? i18n("pages.info.thospage.2dd0064fe9e5")
                 : query
-                  ? "没有匹配项"
+                  ? i18n("pages.info.thospage.8151e8704a7c")
                   : complete
-                    ? "暂无事项"
-                    : "暂无数据"
+                    ? i18n("pages.info.thospage.994178605d6f")
+                    : i18n("pages.info.thospage.497c85690c4c")
             }
           />
         </Card>

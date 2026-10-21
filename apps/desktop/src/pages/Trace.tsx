@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 寻迹：今日日程的地图投送。
  * - 数据：今日课程/考试（教务）+ 云日历 + 本地日程（同一合并口径，与日程页一致）
@@ -42,7 +44,7 @@ const URGENCY_COLOR: Record<Urgency, string> = {
   done: "#8a8f98",    // 已结束
 };
 const URGENCY_LABEL: Record<Urgency, string> = {
-  ok: "充裕", warn: "留意", urgent: "紧张", live: "进行中", done: "已结束",
+  get ok() { return i18n("pages.trace.0c06ad91bdc0"); }, get warn() { return i18n("pages.trace.8e4e3e495ec9"); }, get urgent() { return i18n("pages.trace.313c224671ff"); }, get live() { return i18n("pages.trace.dc9591e56d50"); }, get done() { return i18n("pages.trace.d79b1d0e5c61"); },
 };
 
 interface TraceEvent {
@@ -84,7 +86,9 @@ function urgencyOf(ev: TraceEvent, etaSec: number | null, now: number): Urgency 
 /* ───────── 页面 ───────── */
 
 export function TracePage(): React.ReactNode {
-  const { status } = useApp();
+  const uiLocale = useUiLocale();
+
+  const { status, navParams } = useApp();
   const campus = useCampusData();
   const cal = useCloudCal();
 
@@ -209,6 +213,8 @@ export function TracePage(): React.ReactNode {
     const today = ymd(new Date());
     const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
     const dayEnd = dayStart.getTime() + 86_400_000 - 1;
+    const target=navParams?.traceTarget;
+    if(target?.location){const start=new Date(`${target.date??today}T${target.startTime??'08:00'}:00`).getTime();return [{title:target.title,location:target.location,startMs:start,endMs:new Date(`${target.date??today}T${target.endTime??'09:00'}:00`).getTime(),kind:'course' as const}];}
     const out: TraceEvent[] = [];
     const sched = (campus.data?.schedule ?? []) as ScheduleEntry[];
     for (const e of sched) {
@@ -238,7 +244,7 @@ export function TracePage(): React.ReactNode {
       }
     }
     return out.sort((a, b) => a.startMs - b.startMs);
-  }, [campus.data?.schedule, cal.cloudEvents, cal.localEvents]);
+  }, [uiLocale, campus.data?.schedule, cal.cloudEvents, cal.localEvents, navParams?.traceTarget]);
 
   /* ── 地点解析 + ETA（origin/mode/事件变化时重算） ── */
   useEffect(() => {
@@ -305,7 +311,7 @@ export function TracePage(): React.ReactNode {
       setMarkers(ms);
       if (ms.length === 0 && bad.length === 0 && todayEvents.length === 0) setErr(null);
     })().catch(() => {
-      if (alive) setErr("地点解析失败，请稍后重试。");
+      if (alive) setErr(i18n("pages.trace.86f12a62f286"));
     });
     return () => { alive = false; };
   }, [todayEvents, origin, mode, keyReady]);
@@ -441,65 +447,58 @@ export function TracePage(): React.ReactNode {
     localStorage.setItem(LS_APP, a);
   };
 
-  const modeLabel = TRAVEL_MODES.find((m) => m.id === mode)?.label ?? "步行";
-  const appLabel = MAP_APPS.find((a) => a.id === mapApp)?.label ?? "高德";
+  const modeLabel = TRAVEL_MODES.find((m) => m.id === mode)?.label ?? i18n("pages.trace.3a8b5cef5790");
+  const appLabel = MAP_APPS.find((a) => a.id === mapApp)?.label ?? i18n("pages.trace.7c25d6aa499e");
 
   return (
     <>
       <PageHead
-        title="寻迹"
-        meta={`今日 ${todayEvents.length} 个日程 · ${markers?.length ?? "…"} 处地点${unresolved.length > 0 ? ` · ${unresolved.length} 处未识别` : ""}`}
+        title={i18n("pages.trace.60458dfb4c14")}
+        meta={i18n("pages.trace.8b7769259b36", { length: String(todayEvents.length), value: String(markers?.length ?? "…"), value2: String(unresolved.length > 0 ? i18n("pages.trace.1fa4df1cef8e", { length: String(unresolved.length) }) : "") })}
         actions={
           <>
-            <PageAtomStar atomKey="trace" title="寻迹" />
-            <label className="trace-opt" title="常用交通方式（决定标注上的路程时间）">
+            <PageAtomStar atomKey="trace" title={i18n("pages.trace.60458dfb4c14")} />
+            <label className="trace-opt" title={i18n("pages.trace.0806c400fd4e")}>
               <select value={mode} onChange={(e) => setModePersist(e.target.value as TravelMode)}>
                 {TRAVEL_MODES.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
               </select>
-              <span>{modeLabel}时间</span>
+              <span>{i18nRich("pages.trace.b346ef69dee9", { modeLabel: modeLabel })}</span>
             </label>
-            <label className="trace-opt" title="前往时调起的地图应用">
+            <label className="trace-opt" title={i18n("pages.trace.92bd3ef7fe0e")}>
               <select value={mapApp} onChange={(e) => setAppPersist(e.target.value as MapApp)}>
-                {MAP_APPS.map((a) => <option key={a.id} value={a.id}>{a.label}地图</option>)}
+                {MAP_APPS.map((a) => <option key={a.id} value={a.id}>{i18nRich("pages.trace.e1be450ce158", { label: a.label })}</option>)}
               </select>
-              <span>用{appLabel}前往</span>
+              <span>{i18nRich("pages.trace.d407c45a6be7", { appLabel: appLabel })}</span>
             </label>
           </>
         }
       />
 
       {keyReady === false ? (
-        <div className="trace-note trace-note-err">
-          高德 Web 服务 Key 未配置：POI 定位与路程估算不可用（地图与今日日程仍可查看）。将 apps/desktop/src-tauri/.env.example 复制为同目录 .env，填入 TRACE_AMAP_KEY=&lt;你的key&gt; 后重启应用。
-        </div>
+        <div className="trace-note trace-note-err">{i18n("pages.trace.dc07c04f3fc3")}</div>
       ) : null}
       {err ? <div className="trace-note trace-note-err">{err}</div> : null}
       {geoDenied ? (
-        <div className="trace-note">
-          系统未授予定位权限（可能已被拒绝两次，Android 不会再弹窗）。已改用清华园中心计算 ETA。
-          <button className="btn trace-retry" onClick={() => void locate()}>再次请求</button>
-          <button className="btn trace-retry" onClick={() => void import("@tauri-apps/api/core").then((m) => m.invoke("open_app_settings").catch(() => undefined))}>
-            去系统设置
-          </button>
+        <div className="trace-note">{i18n("pages.trace.1495efc7f9ea")}<Btn variant="outline" onClick={() => void locate()}>{i18n("pages.trace.670255cd0aa2")}</Btn>
+          <Btn variant="outline" onClick={() => void import("@tauri-apps/api/core").then((m) => m.invoke("open_app_settings").catch(() => undefined))}>{i18n("pages.trace.2e62f22af588")}</Btn>
         </div>
       ) : null}
       {origin?.source === "default" ? (
-        <div className="trace-note">未获取到定位（已回退清华园中心），ETA 以此计算。
-          <button className="btn trace-retry" onClick={() => void locate()}>重试定位</button>
+        <div className="trace-note">{i18n("pages.trace.8139cfa5561e")}<Btn variant="outline" onClick={() => void locate()}>{i18n("pages.trace.90d38e9ca33b")}</Btn>
         </div>
       ) : null}
       {origin?.source === "saved" ? (
-        <div className="trace-note">使用最近一次定位的位置计算 ETA。<button className="btn trace-retry" onClick={() => void locate()}>重新定位</button></div>
+        <div className="trace-note">{i18n("pages.trace.6ba698180160")}<Btn variant="outline" onClick={() => void locate()}>{i18n("pages.trace.88363068b601")}</Btn></div>
       ) : null}
       {unresolved.length > 0 ? (
-        <div className="trace-note" title={unresolved.join("、")}>未在海淀区找到地点：{unresolved.join("、")}</div>
+        <div className="trace-note" title={unresolved.join("、")}>{i18nRich("pages.trace.5b63f4ed45c0", { value: unresolved.join("、") })}</div>
       ) : null}
 
       <div className="trace-map-wrap">
         <div ref={mapDivRef} className="trace-map" />
         {markers != null && markers.length === 0 ? (
           <div className="trace-empty">
-            {todayEvents.length === 0 ? "今天没有带地点的日程。" : "今日日程的地点都没能定位到海淀区的 POI。"}
+            {todayEvents.length === 0 ? i18n("pages.trace.29355e7406dd") : i18n("pages.trace.9da67f02d762")}
           </div>
         ) : null}
 
@@ -509,10 +508,10 @@ export function TracePage(): React.ReactNode {
             <div className="trace-card-title">
               <span className="trace-card-dot" style={{ background: URGENCY_COLOR[selected.urgency] }} />
               {selected.poi.name}
-              <button className="trace-card-x" aria-label="关闭" onClick={requestCardClose}>✕</button>
+              <button className="trace-card-x" aria-label={i18n("pages.trace.3fd47edce45b")} onClick={requestCardClose}>✕</button>
             </div>
             <div className="trace-card-sub">
-              {selected.poi.address || "清华大学"} · {URGENCY_LABEL[selected.urgency]}
+              {selected.poi.address || i18n("pages.trace.07a6d4925ba8")} · {URGENCY_LABEL[selected.urgency]}
               {selected.urgency !== "done" && selected.etaSec != null ? ` · ${modeLabel} ${fmtEta(selected.etaSec)}` : ""}
             </div>
             <div className="trace-card-evs">
@@ -522,20 +521,18 @@ export function TracePage(): React.ReactNode {
                   <div className="trace-card-ev" key={i} style={{ "--ev": URGENCY_COLOR[u] } as React.CSSProperties}>
                     <span className="trace-card-ev-time">{hmOf(ev.startMs)}–{hmOf(ev.endMs)}</span>
                     <span className="trace-card-ev-title">{ev.title}</span>
-                    <span className="trace-card-ev-kind">{ev.kind === "exam" ? "考试" : ev.kind === "course" ? "课程" : "日程"}</span>
+                    <span className="trace-card-ev-kind">{ev.kind === "exam" ? i18n("pages.trace.d26ef0190d6c") : ev.kind === "course" ? i18n("pages.trace.60db1afb4022") : i18n("pages.trace.a14f23af7016")}</span>
                   </div>
                 );
               })}
             </div>
-            <button className="btn btn-primary trace-card-go" onClick={() => onGo(selected)}>
-              前往（{appLabel}地图）
-            </button>
+            <Btn variant="solid" tone="brand" onClick={() => onGo(selected)}>{i18nRich("pages.trace.913697098fd5", { appLabel: appLabel })}</Btn>
           </div>
         ) : null}
 
         {/* 图例 */}
         <div className="trace-legend">
-          {[["ok", "裕量>30分"], ["warn", "≤30分"], ["urgent", "≤10分"], ["live", "进行中"], ["done", "已结束"]].map(([u, label]) => (
+          {[["ok", i18n("pages.trace.2e663293d4c1")], ["warn", i18n("pages.trace.65fd2f343c63")], ["urgent", i18n("pages.trace.a0767a01e52a")], ["live", i18n("pages.trace.dc9591e56d50")], ["done", i18n("pages.trace.d79b1d0e5c61")]].map(([u, label]) => (
             <span key={u} className="trace-legend-item"><i style={{ background: URGENCY_COLOR[u as Urgency] }} />{label}</span>
           ))}
         </div>

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * R20-B3：雨课堂资源加载 IO 薄层 —— 加密字体缓存 + 图片代理重试。
  *
@@ -135,14 +136,14 @@ export async function loadYktFont(url: string, opts: { force?: boolean; cookies?
  * 组件回「放弃代理 → 占位框」。
  */
 export async function fetchYktImageAsDataUrl(url: string, cookies: string): Promise<string> {
-  if (!isTauri) throw new Error("非 Tauri 环境无图片代理通道");
+  if (!isTauri) throw new Error(i18n("lib.yktassets.5950a346694f"));
   const out = await tauriInvoke<{ mime?: string; data?: string }>("fetch_binary", {
     url,
     cookies: shouldAttachYktCookies(url) ? cookies : "",
     referer: YKT_ASSET_REFERER,
   });
   if (!out || !/^image\//i.test(out.mime ?? "") || (out.data?.length ?? 0) < 80) {
-    throw new Error(`图片代理响应非图片（mime=${out?.mime ?? "空"} bytes=${out?.data?.length ?? 0}）`);
+    throw new Error(i18n("lib.yktassets.29516ecba0fc", { value: String(out?.mime ?? "空"), value2: String(out?.data?.length ?? 0) }));
   }
   return `data:${out.mime};base64,${out.data}`;
 }

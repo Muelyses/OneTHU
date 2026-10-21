@@ -1,0 +1,49 @@
+{
+  "checks": 52,
+  "results": [
+    {
+      "material": {
+        "bg": "color(srgb 1 1 1 / 0.3)",
+        "blur": "blur(22px) saturate(1.6)"
+      },
+      "probe": {
+        "kind": "image",
+        "wall": [
+          74,
+          108,
+          136
+        ],
+        "layers": [
+          {
+            "a": 1,
+            "rgb": [
+              255,
+              255,
+              255
+            ]
+          },
+          {
+            "a": 0.3,
+            "rgb": [
+              255,
+              255,
+              255
+            ]
+          }
+        ],
+        "bg": 1,
+        "color": "rgb(33, 33, 32)",
+        "lock": null,
+        "seenVisible": true,
+        "seen": true,
+        "isSettled": true,
+        "ownText": true
+      },
+      "plate": {
+        "bg": "color(srgb 1 1 1 / 0.3)",
+        "blur": "blur(22px) saturate(1.6)"
+      }
+    }
+  ],
+  "errors": []
+}

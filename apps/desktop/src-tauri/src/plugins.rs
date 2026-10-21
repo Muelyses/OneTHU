@@ -44,10 +44,8 @@ pub async fn plugin_spawn(
     bin_path: String,
     args: Option<Vec<String>>,
 ) -> Result<(), String> {
-    let path = PathBuf::from(&bin_path);
-    if !path.is_file() {
-        return Err(format!("插件二进制不存在：{bin_path}"));
-    }
+    let path = crate::native_security::plugin_binary(&crate::plugins_root(&app)?,
+        &plugin_id, &PathBuf::from(&bin_path))?;
     plugin_kill_inner(&state, &plugin_id).await;
 
     let mut cmd = Command::new(&path);
@@ -64,9 +62,9 @@ pub async fn plugin_spawn(
     let mut child = cmd
         .spawn()
         .map_err(|e| format!("插件进程启动失败：{e}"))?;
-    let mut stdin = child.stdin.take().ok_or("无法取得插件 stdin")?;
-    let stdout = child.stdout.take().ok_or("无法取得插件 stdout")?;
-    let stderr = child.stderr.take().ok_or("无法取得插件 stderr")?;
+    let mut stdin = child.stdin.take().ok_or("无法取得插件 stdin".to_string())?;
+    let stdout = child.stdout.take().ok_or("无法取得插件 stdout".to_string())?;
+    let stderr = child.stderr.take().ok_or("无法取得插件 stderr".to_string())?;
 
     let pending: PendingMap = Arc::new(Mutex::new(HashMap::new()));
     let proc = Arc::new(ProcIo {
@@ -78,7 +76,7 @@ pub async fn plugin_spawn(
         .procs
         .lock()
         .map_err(|_| "宿主状态锁中毒")?
-        .insert(plugin_id.clone(), proc);
+        .insert(plugin_id.clone(), proc.clone());
 
     // stderr → log 事件（Rust eprintln! 直达 UI）
     {
@@ -100,6 +98,7 @@ pub async fn plugin_spawn(
         let app = app.clone();
         let pid = plugin_id.clone();
         let host = app.clone();
+        let original_proc = proc.clone();
         tauri::async_runtime::spawn(async move {
             let mut lines = BufReader::new(stdout).lines();
             while let Ok(Some(line)) = lines.next_line().await {
@@ -122,9 +121,7 @@ pub async fn plugin_spawn(
                 if method.is_none() {
                     // host 发起调用的应答
                     if let Some(tx) = id.as_ref().and_then(|i| i.as_u64()).and_then(|i| {
-                        host.state::<PluginHost>().procs.lock().ok().and_then(|m| m.get(&pid).cloned()).and_then(|p| {
-                            p.pending.lock().ok().and_then(|mut map| map.remove(&i))
-                        })
+                        original_proc.pending.lock().ok().and_then(|mut map| map.remove(&i))
                     }) {
                         let outcome = if let Some(e) = msg.get("error") {
                             Err(e.to_string())
@@ -146,19 +143,11 @@ pub async fn plugin_spawn(
                         let m = params.get("method").and_then(|v| v.as_str()).unwrap_or("");
                         let args = params.get("args").cloned().unwrap_or(Value::Array(vec![]));
                         let result = storage_call(&app, &pid, m, args);
-                        if let Some(proc) = host
-                            .state::<PluginHost>()
-                            .procs
-                            .lock()
-                            .ok()
-                            .and_then(|mm| mm.get(&pid).cloned())
-                        {
-                            let _ = write_line(
-                                &proc,
-                                &json!({"jsonrpc": "2.0", "id": id, "result": result}),
-                            )
-                            .await;
-                        }
+                        let response = match result {
+                            Ok(value) => json!({"jsonrpc": "2.0", "id": id, "result": value}),
+                            Err(error) => json!({"jsonrpc": "2.0", "id": id, "error": {"code": -32001, "message": error}}),
+                        };
+                        let _ = write_line(&original_proc, &response).await;
                         continue;
                     }
                     // 其余 onethu.call：转 webview 门面执行后回写
@@ -181,8 +170,13 @@ pub async fn plugin_spawn(
                 }
             }
             // stdout 关闭 = 进程退出：摘表 + 通知 UI
-            host.state::<PluginHost>().procs.lock().ok().and_then(|mut m| m.remove(&pid));
-            let _ = app.emit("plugin-event", json!({"pluginId": pid, "method": "exit", "params": {}}));
+            let removed = host.state::<PluginHost>().procs.lock().ok().and_then(|mut map| {
+                if map.get(&pid).is_some_and(|current| Arc::ptr_eq(current, &original_proc)) { map.remove(&pid) }
+                else { None }
+            });
+            if removed.is_some() {
+                let _ = app.emit("plugin-event", json!({"pluginId": pid, "method": "exit", "params": {}}));
+            }
         });
     }
 
@@ -195,43 +189,53 @@ pub async fn plugin_spawn(
 
 /// 宿主侧插件存储：app_data/plugin-storage/<pluginId>.json 单文件 KV。
 /// 只服务 stdio 插件的 storage.* 桥调用（读循环内直答，毫秒级、无 IPC 上限）。
-fn storage_call(app: &tauri::AppHandle, pid: &str, method: &str, args: Value) -> Value {
+fn storage_call(app: &tauri::AppHandle, pid: &str, method: &str, args: Value) -> Result<Value, String> {
+    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?.join("plugin-storage");
+    storage_call_at(&dir, pid, method, args)
+}
+
+fn storage_call_at(dir: &std::path::Path, pid: &str, method: &str, args: Value) -> Result<Value, String> {
     use std::collections::BTreeMap;
-    let Ok(dir) = app.path().app_data_dir().map(|d| d.join("plugin-storage")) else {
-        return Value::Null;
+    crate::native_security::plugin_id(pid)?;
+    crate::native_security::confined_path(dir, std::path::Path::new(""))?;
+    std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
+    let file = crate::native_security::confined_path(dir, std::path::Path::new(&format!("{pid}.json")))?;
+    let mut map: BTreeMap<String, Value> = match std::fs::read_to_string(&file) {
+        Ok(text) => serde_json::from_str(&text).map_err(|e| format!("插件存储损坏，未覆盖：{e}"))?,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => BTreeMap::new(),
+        Err(error) => return Err(format!("读取插件存储失败：{error}")),
     };
-    let _ = std::fs::create_dir_all(&dir);
-    let file = dir.join(format!("{}.json", pid));
-    let mut map: BTreeMap<String, Value> = std::fs::read_to_string(&file)
-        .ok()
-        .and_then(|s| serde_json::from_str(&s).ok())
-        .unwrap_or_default();
     match method {
-        "get" => {
-            let key = args.get(0).and_then(|v| v.as_str()).unwrap_or("");
-            map.get(key).cloned().unwrap_or(Value::Null)
+        "get" => Ok(map.get(args.get(0).and_then(Value::as_str).ok_or("storage.get 缺少 key")?)
+            .cloned().unwrap_or(Value::Null)),
+        "set" | "remove" => {
+            let key = args.get(0).and_then(Value::as_str).ok_or("storage 缺少 key")?;
+            if method == "set" { map.insert(key.to_string(), args.get(1).cloned().unwrap_or(Value::Null)); }
+            else { map.remove(key); }
+            let body = serde_json::to_vec(&map).map_err(|e| e.to_string())?;
+            crate::native_security::private_atomic_write(&file, &body)?;
+            Ok(Value::Null)
         }
-        "set" => {
-            let key = args.get(0).and_then(|v| v.as_str()).unwrap_or("").to_string();
-            map.insert(key, args.get(1).cloned().unwrap_or(Value::Null));
-            if let Ok(body) = serde_json::to_string(&map) {
-                let tmp = file.with_extension("json.tmp");
-                if std::fs::write(&tmp, &body).is_ok() {
-                    let _ = std::fs::rename(&tmp, &file); // 原子替换，防写半截
-                }
-            }
-            Value::Null
-        }
-        "remove" => {
-            let key = args.get(0).and_then(|v| v.as_str()).unwrap_or("");
-            map.remove(key);
-            if let Ok(body) = serde_json::to_string(&map) {
-                let _ = std::fs::write(&file, body);
-            }
-            Value::Null
-        }
-        "keys" => json!(map.keys().cloned().collect::<Vec<String>>()),
-        _ => Value::Null,
+        "keys" => Ok(json!(map.keys().cloned().collect::<Vec<String>>())),
+        _ => Err("未知插件存储方法".into()),
+    }
+}
+
+#[cfg(test)]
+mod storage_security_tests {
+    use super::*;
+    #[test]
+    fn errors_are_reported_and_corrupt_content_is_preserved() {
+        let root = std::env::temp_dir().join(format!("onethu-storage-security-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        storage_call_at(&root, "sample", "set", json!(["key", {"value": 1}])).unwrap();
+        assert_eq!(storage_call_at(&root, "sample", "get", json!(["key"])).unwrap(), json!({"value": 1}));
+        assert!(storage_call_at(&root, "../escape", "set", json!(["key", 1])).is_err());
+        std::fs::write(root.join("sample.json"), "{corrupt").unwrap();
+        assert!(storage_call_at(&root, "sample", "set", json!(["key", 2])).is_err());
+        assert_eq!(std::fs::read_to_string(root.join("sample.json")).unwrap(), "{corrupt");
+        assert!(storage_call_at(&root.join("sample.json"), "other", "set", json!(["key", 1])).is_err());
+        std::fs::remove_dir_all(root).unwrap();
     }
 }
 

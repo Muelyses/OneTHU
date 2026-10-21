@@ -74,6 +74,11 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
   // ---------- 工具 ----------
 
   private val resolver get() = activity.contentResolver
+  private val binding get() = activity.getSharedPreferences("onethu-calendar-binding", android.content.Context.MODE_PRIVATE)
+
+  private fun saveCalendarId(id: Long) {
+    check(binding.edit().putLong("calendarId", id).commit()) { "保存系统日历绑定失败" }
+  }
 
   private fun hasCalendarPermission(): Boolean =
     ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED &&
@@ -104,20 +109,28 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
     Calendars.SYNC_EVENTS
   )
 
+  /** Legacy Android ownership is verifiable by the app-only local account, not display name alone. */
+  private fun findOwnedCalendar(title: String): Long? {
+    val saved = binding.getLong("calendarId", -1)
+    val where = if (saved >= 0) "${Calendars._ID}=?" else "(${Calendars.NAME}=? OR ${Calendars.CALENDAR_DISPLAY_NAME}=?)"
+    val args = if (saved >= 0) arrayOf(ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL, saved.toString())
+      else arrayOf(ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL, title, title)
+    (resolver.query(localAccountUri(Calendars.CONTENT_URI), calendarProjection,
+      "${Calendars.ACCOUNT_NAME}=? AND ${Calendars.ACCOUNT_TYPE}=? AND $where", args, null
+    ) ?: throw IllegalStateException("无法读取系统日历账户" )).use { cursor ->
+      val idIdx = cursor.getColumnIndex(Calendars._ID)
+      if (idIdx >= 0 && cursor.moveToFirst()) {
+        val id = cursor.getLong(idIdx)
+        if (saved != id) saveCalendarId(id)
+        return id
+      }
+    }
+    return null
+  }
+
   /** 找到（或创建）OneTHU 专属日历，返回其 _id */
   private fun findOrCreateCalendar(title: String): Long {
-    // 先找：本账户 + 日历名
-    resolver.query(
-      localAccountUri(Calendars.CONTENT_URI),
-      calendarProjection,
-      "${Calendars.ACCOUNT_NAME}=? AND ${Calendars.ACCOUNT_TYPE}=? AND (${Calendars.NAME}=? OR ${Calendars.CALENDAR_DISPLAY_NAME}=?)",
-      arrayOf(ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL, title, title),
-      null
-    )?.use { cursor ->
-      val idIdx = cursor.getColumnIndex(Calendars._ID)
-      if (idIdx >= 0 && cursor.moveToFirst()) return cursor.getLong(idIdx)
-    }
-
+    findOwnedCalendar(title)?.let { return it }
     // 再建
     val values = ContentValues().apply {
       put(Calendars.ACCOUNT_NAME, ACCOUNT_NAME)
@@ -134,6 +147,7 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
     val uri = resolver.insert(localAccountUri(Calendars.CONTENT_URI), values)
       ?: throw IllegalStateException("创建系统日历失败")
     val id = android.content.ContentUris.parseId(uri)
+    saveCalendarId(id)
     Logger.info(TAG, "已创建系统日历「$title」#$id")
     return id
   }
@@ -157,6 +171,7 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
 
   /** 幂等同步：清窗口旧事件 → 全量重写 */
   @Command
+  @Synchronized
   fun sync(invoke: Invoke) {
     try {
       if (!hasCalendarPermission()) {
@@ -166,36 +181,50 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
       val args = invoke.parseArgs(SyncArgs::class.java)
       val calId = findOrCreateCalendar(args.calendarTitle)
 
-      // 1) 清窗口旧事件（按 dtstart 过滤；本次要写的范围与上次完全一致，覆盖式清理）
-      val removed = resolver.delete(
-        Events.CONTENT_URI,
-        "${Events.CALENDAR_ID}=? AND ${Events.DTSTART}>=? AND ${Events.DTSTART}<=?",
-        arrayOf(calId.toString(), args.windowStartMs.toString(), args.windowEndMs.toString())
-      )
+      // Preserve the last written range so moving/removing an old long-range event
+      // also removes its old instance. Capture IDs before inserting replacements.
+      val start = minOf(args.windowStartMs, binding.getLong("windowStart", args.windowStartMs))
+      val end = maxOf(args.windowEndMs, binding.getLong("windowEnd", args.windowEndMs))
+      check(binding.edit().putLong("windowStart", start).putLong("windowEnd", end).commit()) { "保存同步范围失败" }
+      val oldIds = ArrayList<Long>()
+      (resolver.query(Events.CONTENT_URI, arrayOf(Events._ID),
+        "${Events.CALENDAR_ID}=? AND ${Events.DTEND}>=? AND ${Events.DTSTART}<=?",
+        arrayOf(calId.toString(), start.toString(), end.toString()), null
+      ) ?: throw IllegalStateException("无法读取已有系统日历事件")).use { cursor -> while (cursor.moveToNext()) oldIds.add(cursor.getLong(0)) }
 
-      // 2) 分批写入（含提醒 back-reference；华为机器上大批量 applyBatch 分段更稳）
+      fun deleteIds(ids: List<Long>): Int {
+        var count = 0
+        for (chunk in ids.chunked(200)) {
+          count += resolver.delete(Events.CONTENT_URI,
+            "${Events.CALENDAR_ID}=? AND ${Events._ID} IN (${chunk.joinToString(",") { "?" }})",
+            (listOf(calId.toString()) + chunk.map { it.toString() }).toTypedArray())
+        }
+        return count
+      }
+      fun insertBatch(batch: List<EventArg>): List<Long> {
       val ops = ArrayList<ContentProviderOperation>()
-      var added = 0
-      for (ev in args.events) {
+      val eventIndexes = ArrayList<Int>()
+      for (ev in batch) {
         val eventValues = ContentValues().apply {
           put(Events.CALENDAR_ID, calId)
           put(Events.TITLE, ev.title)
-          put(Events.DTSTART, ev.startMs)
-          put(Events.DTEND, ev.endMs)
-          put(Events.EVENT_TIMEZONE, TZ)
-          put(Events.EVENT_END_TIMEZONE, TZ)
+          put(Events.DTSTART, if (ev.allDay) campusAllDayUtc(ev.startMs) else ev.startMs)
+          put(Events.DTEND, if (ev.allDay) campusAllDayUtc(ev.endMs) else ev.endMs)
+          put(Events.EVENT_TIMEZONE, if (ev.allDay) "UTC" else TZ)
+          put(Events.EVENT_END_TIMEZONE, if (ev.allDay) "UTC" else TZ)
           put(Events.AVAILABILITY, Events.AVAILABILITY_BUSY)
           put(Events.STATUS, Events.STATUS_CONFIRMED)
           if (ev.allDay) put(Events.ALL_DAY, 1)
           if (!ev.location.isNullOrBlank()) put(Events.EVENT_LOCATION, ev.location)
           if (!ev.notes.isNullOrBlank()) put(Events.DESCRIPTION, ev.notes)
           val alarm = ev.alarmMinutes
-          if (alarm != null && alarm > 0) put(Events.HAS_ALARM, 1)
+          if (alarm != null && alarm >= 0) put(Events.HAS_ALARM, 1)
         }
         ops.add(ContentProviderOperation.newInsert(Events.CONTENT_URI).withValues(eventValues).build())
         val eventOpIndex = ops.size - 1
+        eventIndexes.add(eventOpIndex)
         val alarm = ev.alarmMinutes
-        if (alarm != null && alarm > 0) {
+        if (alarm != null && alarm >= 0) {
           val reminderValues = ContentValues().apply {
             put(Reminders.MINUTES, alarm)
             put(Reminders.METHOD, Reminders.METHOD_DEFAULT)
@@ -207,15 +236,12 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
               .build()
           )
         }
-        added += 1
-        if (ops.size >= 300) {
-          resolver.applyBatch(CalendarContract.AUTHORITY, ArrayList(ops))
-          ops.clear()
-        }
       }
-      if (ops.isNotEmpty()) {
-        resolver.applyBatch(CalendarContract.AUTHORITY, ArrayList(ops))
+      val results = resolver.applyBatch(CalendarContract.AUTHORITY, ops)
+      return eventIndexes.mapNotNull { index -> results[index].uri?.let { android.content.ContentUris.parseId(it) } }
       }
+      val removed = replaceCalendarMirror(args.events.toList(), oldIds, ::insertBatch, ::deleteIds)
+      val added = args.events.size
 
       Logger.info(TAG, "系统日历同步完成：+$added / -$removed")
       val result = JSObject()
@@ -231,6 +257,7 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
 
   /** 移除 OneTHU 专属日历（连同事件） */
   @Command
+  @Synchronized
   fun removeCalendar(invoke: Invoke) {
     try {
       if (!hasCalendarPermission()) {
@@ -238,12 +265,14 @@ class OnethuCalendarPlugin(private val activity: android.app.Activity) : Plugin(
         return
       }
       val args = invoke.parseArgs(CalendarTitleArgs::class.java)
-      val deleted = resolver.delete(
-        localAccountUri(Calendars.CONTENT_URI),
-        "${Calendars.ACCOUNT_NAME}=? AND ${Calendars.ACCOUNT_TYPE}=? AND (${Calendars.NAME}=? OR ${Calendars.CALENDAR_DISPLAY_NAME}=?)",
-        arrayOf(ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL, args.calendarTitle, args.calendarTitle)
-      )
-      Logger.info(TAG, "已移除系统日历 x$deleted")
+      val id = findOwnedCalendar(args.calendarTitle)
+      if (id != null) {
+        val removed = resolver.delete(localAccountUri(Calendars.CONTENT_URI),
+          "${Calendars._ID}=? AND ${Calendars.ACCOUNT_NAME}=? AND ${Calendars.ACCOUNT_TYPE}=?",
+          arrayOf(id.toString(), ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL))
+        check(removed == 1) { "专属日历尚未移除，请重试" }
+      }
+      check(binding.edit().clear().commit()) { "清理系统日历绑定失败" }
       invoke.resolve(JSObject())
     } catch (ex: Exception) {
       val message = ex.message ?: "移除系统日历失败"

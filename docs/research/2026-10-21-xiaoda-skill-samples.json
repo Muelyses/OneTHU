@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-21",
+  "overview": {
+    "skillCount": 273,
+    "contributorCount": 152,
+    "downloadCount": 59003
+  },
+  "samples": [
+    {
+      "id": "5b5f86ee-2678-42bf-9043-e4e553620376",
+      "name": "pandoc-image-skill-lite",
+      "detailCode": 0,
+      "downloadStatus": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 47236,
+      "zip": true,
+      "sha256": "111617f86832ad2737756958a02e7fa128de578f52f2aa629eb9d3bf2bf471ba",
+      "files": 21,
+      "expandedBytes": 130201,
+      "skillPaths": [
+        "SKILL.md"
+      ],
+      "scriptPaths": [
+        "scripts/docx_omml.py",
+        "scripts/docx_writer.py",
+        "scripts/image_to_pptx.py",
+        "scripts/latex_to_docx.py",
+        "scripts/latex_to_md.py",
+        "scripts/ocr_latex.py",
+        "scripts/pic.py"
+      ],
+      "hasBytecode": false,
+      "hasSymlinks": false,
+      "unsafePaths": []
+    },
+    {
+      "id": "65789aa5-ece4-45b8-9dfe-03cba98ae75e",
+      "name": "high-eq-consultant",
+      "detailCode": 0,
+      "downloadStatus": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 13770,
+      "zip": true,
+      "sha256": "732991e3684d978f67100a42ad147464de04854472bae5e1634db8e9c19bd08c",
+      "files": 8,
+      "expandedBytes": 23304,
+      "skillPaths": [
+        "SKILL.md"
+      ],
+      "scriptPaths": [
+        "scripts/render_prompt.py"
+      ],
+      "hasBytecode": false,
+      "hasSymlinks": false,
+      "unsafePaths": []
+    },
+    {
+      "id": "1b239f5f-d510-4f4d-838c-14f8f36d70be",
+      "name": "travel-outside-tsinghua",
+      "detailCode": 0,
+      "downloadStatus": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 220000,
+      "zip": true,
+      "sha256": "0e1a1d58fe6ace64fa2d32959a7003390280cc5da16bbae22140c397f7f1d19c",
+      "files": 50,
+      "expandedBytes": 641019,
+      "skillPaths": [
+        "SKILL.md"
+      ],
+      "scriptPaths": [
+        "scripts/__init__.py",
+        "scripts/skill_config.py",
+        "scripts/remote_amap.py",
+        "scripts/skill.py",
+        "scripts/remote_mcp.py"
+      ],
+      "hasBytecode": true,
+      "hasSymlinks": false,
+      "unsafePaths": []
+    },
+    {
+      "id": "10a45653-8bd9-4a1a-b31d-e2122f9969cf",
+      "name": "reference-checker",
+      "detailCode": 0,
+      "downloadStatus": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 28080,
+      "zip": true,
+      "sha256": "99cbbffd3f0b92755ade5b193286413891a93824659b6c1be72f95e87810a005",
+      "files": 19,
+      "expandedBytes": 62478,
+      "skillPaths": [
+        "SKILL.md"
+      ],
+      "scriptPaths": [
+        "scripts/reference_preflight.py"
+      ],
+      "hasBytecode": false,
+      "hasSymlinks": false,
+      "unsafePaths": []
+    },
+    {
+      "id": "600ff72f-333c-48ff-a779-791df7ed1134",
+      "name": "fuxi",
+      "detailCode": 0,
+      "downloadStatus": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 96237,
+      "zip": true,
+      "sha256": "33c38bedfcabe6bc0181aeb98702d01202098b0c097eadb39775059bfdd64bb8",
+      "files": 40,
+      "expandedBytes": 223997,
+      "skillPaths": [
+        "SKILL.md"
+      ],
+      "scriptPaths": [
+        "scripts/fuxi-chart.mjs",
+        "scripts/fuxi-guide.mjs",
+        "scripts/fuxi-knowledge.mjs",
+        "scripts/fuxi-report.mjs",
+        "scripts/fuxi-score-validation.mjs",
+        "scripts/fuxi-search.mjs",
+        "scripts/package-plugin.mjs",
+        "scripts/validate-project.mjs"
+      ],
+      "hasBytecode": false,
+      "hasSymlinks": false,
+      "unsafePaths": [],
+      "nodeEngines": {
+        "node": ">=20"
+      },
+      "npmDependencies": {
+        "ajv": "8.20.0",
+        "ajv-formats": "3.0.1",
+        "iztro": "2.5.8",
+        "lunar-javascript": "1.7.3"
+      }
+    },
+    {
+      "id": "48bb4cba-0cd7-4a70-9337-2bf9adebae96",
+      "name": "academic-writer",
+      "detailCode": 0,
+      "downloadStatus": 200,
+      "contentType": "application/octet-stream",
+      "bytes": 5504,
+      "zip": true,
+      "sha256": "b9a7678131cc4bd60cc92b8ac5785cc1bbf555d2590798f3b9cd68509a1b0b9b",
+      "files": 3,
+      "expandedBytes": 12697,
+      "skillPaths": [
+        "SKILL.md"
+      ],
+      "scriptPaths": [],
+      "hasBytecode": false,
+      "hasSymlinks": false,
+      "unsafePaths": []
+    }
+  ],
+  "scope": "Authenticated plaza snapshot and six downloaded ZIPs inspected as data only. No skills or installers executed; no dependency packages installed. Not representative statistics of all 273 skills."
+}

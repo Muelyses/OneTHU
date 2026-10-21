@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 寻迹（trace）：高德 Web 服务 REST 客户端 + 坐标换算 + 导航深链。
  *
@@ -243,9 +244,9 @@ function writePoiCache(q: string, poi: Poi | null): void {
 
 export type TravelMode = "walk" | "bike" | "drive";
 export const TRAVEL_MODES: Array<{ id: TravelMode; label: string }> = [
-  { id: "walk", label: "步行" },
-  { id: "bike", label: "骑行" },
-  { id: "drive", label: "驾车" },
+  { id: "walk", get label() { return i18n("lib.trace.3a8b5cef5790"); } },
+  { id: "bike", get label() { return i18n("lib.trace.e81f910c0f2b"); } },
+  { id: "drive", get label() { return i18n("lib.trace.7f21257362cb"); } },
 ];
 
 export async function routeEta(
@@ -281,10 +282,10 @@ export async function routeEta(
 
 export type MapApp = "amap" | "qq" | "baidu" | "apple";
 export const MAP_APPS: Array<{ id: MapApp; label: string }> = [
-  { id: "amap", label: "高德" },
-  { id: "qq", label: "腾讯" },
-  { id: "baidu", label: "百度" },
-  { id: "apple", label: "苹果" },
+  { id: "amap", get label() { return i18n("lib.trace.7c25d6aa499e"); } },
+  { id: "qq", get label() { return i18n("lib.trace.53874092e000"); } },
+  { id: "baidu", get label() { return i18n("lib.trace.455ece81de56"); } },
+  { id: "apple", get label() { return i18n("lib.trace.50537dab7650"); } },
 ];
 
 export function navUrl(
@@ -352,7 +353,7 @@ export function navOpenUrl(
 export function fmtEta(sec: number | null): string {
   if (sec == null) return "?";
   const m = Math.round(sec / 60);
-  if (m < 1) return "<1分";
-  if (m < 60) return `${m}分`;
-  return `${Math.floor(m / 60)}时${m % 60}分`;
+  if (m < 1) return i18n("lib.trace.a02caf9878b5");
+  if (m < 60) return i18n("lib.trace.d5b54d668a13", { m: String(m) });
+  return i18n("lib.trace.c76e20944989", { value: String(Math.floor(m / 60)), value2: String(m % 60) });
 }

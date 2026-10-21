@@ -1,3 +1,6 @@
+import { courseDisplayName, courseSearchNames } from "../../lib/learnLanguage.js";
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 全局搜索（learnX Search）：课程/作业/通知/文件相关性搜索，分节展示。
  * 打分模型：查询串按空白切词 + 中文 2-gram；字段权重 标题 10/词、正文 2/词、
@@ -104,12 +107,14 @@ function stripHtml(html?: string): string {
 
 /** 相对最高分的比例宽度小进度条 */
 function ScoreBar({ score, max }: { score: number; max: number }) {
+  const uiLocale = useUiLocale();
+
   if (max <= 0) return null;
   const pct = Math.max(3, Math.round((score / max) * 100));
   return (
     <div
       aria-hidden
-      title={`相关度 ${score}`}
+      title={i18n("pages.learn.searchpage.b55dafd1fe2c", { score: String(score) })}
       style={{ marginTop: 5, maxWidth: 280, height: 3, borderRadius: 999, background: "var(--accent-soft)", overflow: "hidden" }}
     >
       <div style={{ height: "100%", width: `${pct}%`, borderRadius: 999, background: "var(--accent)" }} />
@@ -119,6 +124,8 @@ function ScoreBar({ score, max }: { score: number; max: number }) {
 
 /** 命中词高亮：<mark> 风格 span（背景 var(--accent-soft)），贪心最长匹配、自动跳过重叠 */
 function Highlight({ text, tokens }: { text: string; tokens: string[] }) {
+  const uiLocale = useUiLocale();
+
   if (!text || tokens.length === 0) return <>{text}</>;
   const lower = text.toLowerCase();
   const ordered = [...tokens].sort((a, b) => b.length - a.length);
@@ -158,6 +165,8 @@ function Highlight({ text, tokens }: { text: string; tokens: string[] }) {
 }
 
 function SearchCourseRow({ c, tokens, score, max, delay }: { c: CourseInfo; tokens: string[]; score: number; max: number; delay: number }) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const go = () => navigate("learn-course", { courseId: c.id, from: "learn-search" });
   return (
@@ -174,7 +183,7 @@ function SearchCourseRow({ c, tokens, score, max, delay }: { c: CourseInfo; toke
         <div className="row-title"><Highlight text={c.name} tokens={tokens} /></div>
         <div className="row-sub">
           <Highlight text={c.teacherName} tokens={tokens} />
-          {c.courseIndex ? ` · 班号 ${c.courseIndex}` : ""}
+          {c.courseIndex ? i18n("pages.learn.searchpage.2c798e584b65", { courseIndex: String(c.courseIndex) }) : ""}
         </div>
         <ScoreBar score={score} max={max} />
       </div>
@@ -183,6 +192,8 @@ function SearchCourseRow({ c, tokens, score, max, delay }: { c: CourseInfo; toke
 }
 
 function SearchHomeworkRow({ h, courseName, tokens, score, max, delay }: { h: Homework; courseName?: string; tokens: string[]; score: number; max: number; delay: number }) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   // R20-B2b：外部作业行此前直接 navigate 站内详情（漏接：外部源没有站内详情记录）。
   // 统一收敛到 openHomeworkRow 三态分流（雨课堂参数齐备 → 原生详情；其余外部源 →
@@ -200,11 +211,11 @@ function SearchHomeworkRow({ h, courseName, tokens, score, max, delay }: { h: Ho
     >
       <div className="row-when">
         <b>{h.deadline.slice(5, 10)}</b>
-        <span>{h.deadline.slice(11, 16)} 截止</span>
+        <span>{i18nRich("pages.learn.searchpage.e272d62dae3f", { value: h.deadline.slice(11, 16) })}</span>
       </div>
       <div className="row-main">
         <div className="row-title"><Highlight text={h.title} tokens={tokens} /></div>
-        <div className="row-sub"><Highlight text={courseName ?? "课程"} tokens={tokens} /></div>
+        <div className="row-sub"><Highlight text={courseName ?? i18n("pages.learn.searchpage.60db1afb4022")} tokens={tokens} /></div>
         <ScoreBar score={score} max={max} />
       </div>
       <span className={`chip ${chip.cls}`}>
@@ -217,6 +228,8 @@ function SearchHomeworkRow({ h, courseName, tokens, score, max, delay }: { h: Ho
 }
 
 function SearchNoticeRow({ n, courseName, tokens, score, max, delay }: { n: Notification; courseName?: string; tokens: string[]; score: number; max: number; delay: number }) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const go = () => navigate("learn-notice-detail", { courseId: n.courseId, itemId: n.id, from: "learn-search" });
   return (
@@ -234,11 +247,11 @@ function SearchNoticeRow({ n, courseName, tokens, score, max, delay }: { n: Noti
       </div>
       <div className="row-main">
         <div className="row-title">
-          {n.important ? <span className="flag" title="标记为重要" /> : null}
+          {n.important ? <span className="flag" title={i18n("pages.learn.searchpage.86809a4acfcd")} /> : null}
           <Highlight text={n.title} tokens={tokens} />
         </div>
         <div className="row-sub">
-          <Highlight text={courseName ?? "课程"} tokens={tokens} />
+          <Highlight text={courseName ?? i18n("pages.learn.searchpage.60db1afb4022")} tokens={tokens} />
           {" · "}
           {n.publisher}
         </div>
@@ -250,6 +263,8 @@ function SearchNoticeRow({ n, courseName, tokens, score, max, delay }: { n: Noti
 }
 
 function SearchFileRow({ f, courseName, tokens, score, max, delay }: { f: CourseFile; courseName?: string; tokens: string[]; score: number; max: number; delay: number }) {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const go = () => navigate("learn-file-detail", { courseId: f.courseId, itemId: f.id, from: "learn-search" });
   return (
@@ -267,7 +282,7 @@ function SearchFileRow({ f, courseName, tokens, score, max, delay }: { f: Course
       </div>
       <div className="row-main">
         <div className="row-title"><Highlight text={f.title} tokens={tokens} /></div>
-        <div className="row-sub"><Highlight text={courseName ?? "课程"} tokens={tokens} /></div>
+        <div className="row-sub"><Highlight text={courseName ?? i18n("pages.learn.searchpage.60db1afb4022")} tokens={tokens} /></div>
         <ScoreBar score={score} max={max} />
       </div>
       {f.fileType ? <span className="chip chip-gray">{f.fileType.toUpperCase()}</span> : null}
@@ -279,15 +294,17 @@ function SearchFileRow({ f, courseName, tokens, score, max, delay }: { f: Course
 /* ---------- 页面 ---------- */
 
 export function SearchPage() {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const { data, state } = useLearnData();
   const [q, setQ] = useState("");
 
-  const tokens = useMemo(() => tokenize(q), [q]);
+  const tokens = useMemo(() => tokenize(q), [uiLocale, q]);
 
   const results = useMemo(() => {
     if (!data || tokens.length === 0) return null;
-    const courseNameOf = (id: string) => (data.courses.find((c) => c.id === id)?.name ?? "").toLowerCase();
+    const courseNameOf = (id: string) => (() => { const course = data.courses.find((c) => c.id === id); return course ? courseSearchNames(course).toLowerCase() : ""; })();
 
     const courses = rankRows(
       data.courses.map((c) => ({
@@ -354,23 +371,23 @@ export function SearchPage() {
       ...[...courses, ...homework, ...notifications, ...files].map((r) => r.score),
     );
     return { courses, homework, notifications, files, maxScore };
-  }, [data, tokens]);
+  }, [uiLocale, data, tokens]);
 
   const byCourse = useMemo(
-    () => new Map((data?.courses ?? []).map((c) => [c.id, c.name])),
-    [data],
+    () => new Map((data?.courses ?? []).map((c) => [c.id, courseDisplayName(c)])),
+    [uiLocale, data],
   );
 
   return (
     <>
       <div className="page-head">
         <div>
-          <h1>搜索</h1>
-          <div className="page-head-meta">搜课程、作业、通知、文件（含正文与附件）</div>
+          <h1>{i18n("pages.learn.searchpage.44ce7ae909bb")}</h1>
+          <div className="page-head-meta">{i18n("pages.learn.searchpage.17682363a9a2")}</div>
         </div>
         <div className="page-head-actions">
-          <PageAtomStar atomKey="learn-search" title="网络学堂搜索" />
-          <button className="btn btn-ghost" onClick={() => navigate("learn")}>← 返回</button>
+          <PageAtomStar atomKey="learn-search" title={i18n("pages.learn.searchpage.62fd8d15cf0a")} />
+          <Btn variant="ghost" onClick={() => navigate("learn")}>{i18n("pages.learn.searchpage.3a14a3c2be4d")}</Btn>
         </div>
       </div>
 
@@ -380,25 +397,25 @@ export function SearchPage() {
           autoFocus
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="输入关键词，如“实验”“考试”“讲义”…"
-          aria-label="搜索关键词"
+          placeholder={i18n("pages.learn.searchpage.f23863aa0138")}
+          aria-label={i18n("pages.learn.searchpage.c00a21fdf784")}
         />
         {q ? (
-          <button className="btn btn-ghost" onClick={() => setQ("")}>清除</button>
+          <Btn variant="ghost" onClick={() => setQ("")}>{i18n("pages.learn.searchpage.bce2377283c2")}</Btn>
         ) : null}
       </div>
 
       {state === "loading" && !data ? (
         <SkeletonRows rows={5} />
       ) : !results ? (
-        <Card><Empty text="输入关键词开始搜索。" /></Card>
+        <Card><Empty text={i18n("pages.learn.searchpage.5bfa28095ca1")} /></Card>
       ) : results.courses.length + results.homework.length + results.notifications.length + results.files.length === 0 ? (
-        <Card><Empty text={`没有与“${q.trim()}”相关的内容。`} /></Card>
+        <Card><Empty text={i18n("pages.learn.searchpage.60fdae9866fc", { value: String(q.trim()) })} /></Card>
       ) : (
         <>
           {results.courses.length > 0 ? (
             <>
-              <SectionHead title="课程" aside={`${results.courses.length} 门`} />
+              <SectionHead title={i18n("pages.learn.searchpage.60db1afb4022")} aside={i18n("pages.learn.searchpage.3c4f5c2c4407", { length: String(results.courses.length) })} />
               <Card className="list">
                 {results.courses.map((r, i) => (
                   <SearchCourseRow
@@ -416,7 +433,7 @@ export function SearchPage() {
 
           {results.homework.length > 0 ? (
             <>
-              <SectionHead title="作业" aside={`${results.homework.length} 条`} />
+              <SectionHead title={i18n("pages.learn.searchpage.b0dff016ff17")} aside={i18n("pages.learn.searchpage.0d57c59fcd2e", { length: String(results.homework.length) })} />
               <Card className="list">
                 {results.homework.map((r, i) => (
                   <SearchHomeworkRow
@@ -435,7 +452,7 @@ export function SearchPage() {
 
           {results.notifications.length > 0 ? (
             <>
-              <SectionHead title="通知" aside={`${results.notifications.length} 条`} />
+              <SectionHead title={i18n("pages.learn.searchpage.4b6ded8a7f18")} aside={i18n("pages.learn.searchpage.0d57c59fcd2e", { length: String(results.notifications.length) })} />
               <Card className="list">
                 {results.notifications.map((r, i) => (
                   <SearchNoticeRow
@@ -454,7 +471,7 @@ export function SearchPage() {
 
           {results.files.length > 0 ? (
             <>
-              <SectionHead title="文件" aside={`${results.files.length} 个`} />
+              <SectionHead title={i18n("pages.learn.searchpage.39932f24fe11")} aside={i18n("pages.learn.searchpage.de69d15875e7", { length: String(results.files.length) })} />
               <Card className="list">
                 {results.files.map((r, i) => (
                   <SearchFileRow

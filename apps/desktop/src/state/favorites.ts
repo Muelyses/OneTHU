@@ -309,3 +309,10 @@ export function toggleSidebarFold(d: FavsData, id: string, isDefault: boolean): 
 export function resetFavs(): FavsData {
   return emptyFavs();
 }
+
+/** atomKeyOf 的逆运算：存储键（"kind|key…"）→ AtomRef（OnePage 的 atom-link 只存键，渲染期重建） */
+export function atomRefFromKey(stored: string): AtomRef | null {
+  const i = stored.indexOf("|");
+  if (i <= 0) return null;
+  return { kind: stored.slice(0, i), key: stored.slice(i + 1) };
+}

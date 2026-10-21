@@ -1,0 +1,307 @@
+{
+  "locale": "en-US",
+  "passed": true,
+  "naturalCleanup": true,
+  "externalRequestsSent": 0,
+  "source": "Actual app UI; isolated fictional services and English sample content; no rendered text replacement.",
+  "entries": [
+    {
+      "key": "simple-home-done",
+      "file": "simple-home-done.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "3875d51862441277acf44b66ede84e483878854e557e718cd0fb32a564a5c066",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable"
+    },
+    {
+      "key": "search-simple",
+      "file": "search-simple.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "96cca7e475edfd0b83ee46898e77e9aa53584d0b26879b8fa42f910e29c563a1",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nStudy\nReservations\nLife\nInfo\nTimetable\n(\nO\nH\n)\nSearch\nOH\nAll assignments\nAll course assignments in one place, viewed by due date\nFeatures\nRain Classroom assignment\nView Rain Classroom assignments and submissions\nFeatures\nOJ assignments\nView programming assignments and due dates\nFeatures\nTasks\nPages · Assignments · Reservations · Exams · Balance overview\nPages\nWeb Learning search\nPages · Courses / Assignments / Notices / Files\nPages\nAssignment deadline reminders\nPages · Global default reminder time · Sync with system calendar\nPages\nSync assignment due dates to the cloud calendar\nActions · Unsubmitted assignments written to the cloud calendar (with reminder alarms; fully automatic in normal cases)\nPages"
+    },
+    {
+      "key": "oh-simple",
+      "file": "oh-simple.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "517dc2725bc15761e3fbcd57cb5db84b81e78947b3b05af0f8bc246a3ce13971",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nStudy\nReservations\nLife\nInfo\nTimetable\n(\nO\nH\n)\nSearch\nOH\nThe main chat requires the full desktop environment\n\nNo Harness process in this window (browser preview or plugin not loaded). Conversation history is unavailable here and sending will have no effect.\n\nSearch mode is unaffected and works normally. Open the same entry on the desktop app (Tauri desktop version) to see the main chat."
+    },
+    {
+      "key": "practical-home-done",
+      "file": "practical-home-done.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "e6408858c36c64b23cc645c7ba6b2b9d179eabaca4c451fa5ef9fa153acb3ba0",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nTimetable\nMore features"
+    },
+    {
+      "key": "practical-more",
+      "file": "practical-more.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "ede83c9814330e717d80ca387b837ef96f900b03b8d14d1e7e31352e9e274cce",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nTimetable\nMore features\nMore features\nYour campus toolbox\nOpen directly, or keep the ones you use nearby.\nBottom quick entries\n01\nStudy\n02\nReservations\n03\nLife\n04\nTimetable\nAll\n41\nStudy\n13\nSchedule\n3\nLife\n10\nReservations\n6\nAdministration\n9\nStudy\n13 items\nWeb Learning\nThis semester's course overview\n1\nAll assignments\nAll course assignments in one place, viewed by due date\nAll notices\nStudy\nAll course files\nStudy\nWeb Learning search\nStudy\nSwitch semester\nStudy\nRain Classroom assignment\nView Rain Classroom assignments and submissions\nOJ assignments\nView programming assignments and due dates\nGrades\nStudy\nCourse info\nStudy\nExam schedule\nView exam times and exam rooms\nTeaching evaluation\nFill in course evaluations and teaching surveys\nCourse selection\nView course selection, dropping, and waitlist\nSchedule\n3 items\nTasks\nAll Tasks and reminders\nTimetable\nView courses and schedule by time\n4\nAcademic calendar\nSchedule\nLife\n10 items\nLife\nOverview of life services\n3\nCampus card\nView balance and transaction records\nDorm electricity\nCheck dorm electricity usage and balance\nWasher\nCheck washer and dryer status\nDorm\nLife\nHygiene score\nLife\nCampus network\nLife\nInvoices\nLife\nPayroll\nView your deposits and payout records\nGraduate stipend\nView your deposits and payout records\nReservations\n6 items\nLibrary seats\nReservations\nSeminar room\nReservations\nEmpty classroom\nReservations\nSports reservations\nReservations\nPublic space\nReservations\nTemporary visitor registration\nVisitor registration for family and friends · My registrations · Visitor check-in\nAdministration\n9 items\nMail\nAdministration\nCloud Drive\nAdministration\nGitLab\nAdministration\nOnline services\nFind campus services and apply online\nPersonal info\nAdministration\nFitness test results\nAdministration\nNews\nBrowse campus news and notices\nTHUBook\nAdministration\nOther Info apps\nAdministration\nStash, Contacts, Board, Plugins page and Xiaoda are Full mode features."
+    },
+    {
+      "key": "practical-home-customized",
+      "file": "practical-home-customized.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "dc634a6ac05a420110dcf5ac52d921534dc328cdfa2fbb8ff50d4214125d68a7",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nSearch or ask OH\nCloud Drive\nReservations\nLife\nTimetable\nMore features\nPlaced in entry 1 (Cloud Drive)"
+    },
+    {
+      "key": "search-practical",
+      "file": "search-practical.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "11a6b25f1ffb4ac882ec735243bd196d084cd088aed990758db425325acc40f6",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nCloud Drive\nReservations\nLife\nTimetable\nMore features\n(\nO\nH\n)\nSearch\nOH\nAll assignments\nAll course assignments in one place, viewed by due date\nFeatures\nRain Classroom assignment\nView Rain Classroom assignments and submissions\nFeatures\nOJ assignments\nView programming assignments and due dates\nFeatures\nTasks\nPages · Assignments · Reservations · Exams · Balance overview\nPages\nWeb Learning search\nPages · Courses / Assignments / Notices / Files\nPages\nAssignment deadline reminders\nPages · Global default reminder time · Sync with system calendar\nPages\nSync assignment due dates to the cloud calendar\nActions · Unsubmitted assignments written to the cloud calendar (with reminder alarms; fully automatic in normal cases)\nPages\nPlaced in entry 1 (Cloud Drive)"
+    },
+    {
+      "key": "oh-practical",
+      "file": "oh-practical.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "e777de0c4c90f3eeb6411d8948d0821495280e04211d297de8ac0da505d1b193",
+      "visibleText": "OneTHUHome\nSettings\n01 / Tasks\nToday’s tasks\n\nWork through what you need to do, one item at a time.\n\n10-22\nDue 18:00\nReview team research notes\nDesign Thinking\nDue tomorrow\n10-24\nDue 23:59\nTrees and graphs\nData Structures\n3 days to deadline\n02 / Classes\nToday’s classes\n\nWhere your next class is.\n\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\n(\nO\nH\n)\nCloud Drive\nReservations\nLife\nTimetable\nMore features\n(\nO\nH\n)\nSearch\nOH\nThe main chat requires the full desktop environment\n\nNo Harness process in this window (browser preview or plugin not loaded). Conversation history is unavailable here and sending will have no effect.\n\nSearch mode is unaffected and works normally. Open the same entry on the desktop app (Tauri desktop version) to see the main chat.\n\nPlaced in entry 1 (Cloud Drive)"
+    },
+    {
+      "key": "board-full",
+      "file": "board-full.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 1024,
+        "height": 620
+      },
+      "sha256": "ed21fdfaf4bcb555d552c5b7018a63b9a2a0486e99d794af7ac5e68494c2d4ca",
+      "visibleText": "Home\nHome\nDrag cards to arrange them; select one, then drag a corner to resize\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nMe\nOneGO!\nSaved OnePages and workspaces appear here\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\n100%\nPen"
+    },
+    {
+      "key": "workspaces",
+      "file": "workspaces.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "f4c4cf44eb856043c6cb49991d06fa63dba3aa0d0c023e7dea093f8b71848cb6",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\nFree layout\nOneGO!\nDone\nMy favorites\nWorkspace\nWorkspace\nThe grouping a tab belongs to; deduplicated by instance when restored\nNo workspaces yet. Save the current group of tabs so you can return to this working state in one tap; you can also use \"⋯\" on a single tab in the tab bar above to move it into a workspace.\nFeature catalog is on Home ↓"
+    },
+    {
+      "key": "onego",
+      "file": "onego.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "ebfbda3a382cfa7836eb14121a26130281bb8ddcf3d30cc9a84e0cfe8a40de8e",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\nFree layout\nOneGO!\nDone\nMy favorites\nWorkspace\nMy OnePages\nHome\nClock · main dock · free canvas\nNew\nNo OnePages yet. Create one — it is a board where you can place widgets freely.\nAll OnePages\nRename / change icon / reorder / delete in the list\nStash\nStash any item first, then organize it or create a share code\nA OnePage is a board: press and hold a widget to move it; use the bottom-right corner to edit and add.\nOneFlow\nNo OneFlows yet. Say \"create a flow\" in the OH chat to make one.\nFeature catalog is on Home ↓"
+    },
+    {
+      "key": "plugins",
+      "file": "plugins.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "28c60ce2d6b0e14d6b6c15b9946ecdf65b430be26d97641db601a96141abff08",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\nFree layout\nMy card\nPersonal settings\nPlugins\n(\nO\nH\n)\nHarness\nPlugins\nvia onethu.* public APIs extend OneTHU — permission gating, session self-healing, and 45s timeouts are handled by the host\nMy plugins\nPlugin market\nInstall plugin\nInstalled\n00\nRunning\n00\nIdle\nAvailable commands\n00\nBuilt-in core\n00\nAll 0\nThemes 0\nGeneral 0\nThe rack is empty\nInstall your first plugin to add a new capability module to OneTHU.\nInstall plugin"
+    },
+    {
+      "key": "appearance",
+      "file": "appearance.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "9ac1f0fae91bc7e40ab1938be00682993421b004e480195fb0766e85d0ee2da4",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\nFree layout\nMy card\nPersonal settings\nPlugins\n(\nO\nH\n)\nHarness\nSettings\nTour\nManage sections\nUsage mode\nCurrent: Full mode · Organize freely\nSwitch mode\nLanguage\nChange the interface language while keeping your current page and drafts.\n简体中文\nEnglish\nAccount\nNotifications & reminders\nDesktop widgets\nAppearance & layout\nData & sync\nDownloads & storage\nHelp\nAbout\nAppearance & layout\nHome layout\nRestore default home layout\nRestore Home widgets, arrangement, and scaling to the default layout; other OnePages are kept.\nRestore defaults\nWorkspace\nSearch & capsule\nA combined entry that merges the bottom-bar capsule and the floating ball\nOpens by default when the capsule is clicked\nSearch mode finds features, assignments, and files and jumps straight to them; OH mode goes directly into the chat\nSearch\nOH\nRecent searches\nNo records yet\nClear records\nFavorites\nRestore default favorites\nDelete all user favorites and collapse state (default top-level entries are unaffected and always stay in the left sidebar). Features remain on their original pages; favorites are just shortcuts.\nExport (copy JSON)\nImport\nRestore defaults\nAppearance\nGlass level\nThe default level is a neutral, glass-free surface; the other three are three glass styles.\nClear\nNone\nTranslucent\nBalanced\nTheme\nCurrent: Graphite · default Enable / disable themes on the \"Plugins\" page.\nInstall theme\nManage themes\nGraphite · default\nNeutral surface levels, black-and-white primary actions, and a clear text hierarchy\nIn use ✓\nAmethyst\nViolet paper, deep purple text, and a purple accent.\nApply\nTsinghua purple\nTsinghua purple accent, soft lavender surfaces, and clear ink tones.\nApply\nCeladon\nTeal accent with a refreshing light green paper.\nApply\nWarm sand\nWarm beige paper, brown text, and a sand gold accent.\nApply\nMidnight blue\nNavy accent with cool, light blue surfaces.\nApply\nDeep night\nA dark workbench with a steel blue accent, suitable for day-night switching.\nApply\nFollow system day/night\nWhen enabled, switches automatically with the system dark mode: \"Light theme\" in light mode, \"Dark theme\" in dark mode.\nFollow system color\nNot supported by the current system; the \"Tsinghua Purple\" theme will be used after enabling.\nWallpaper\nOne for the whole window: drawn on the shell background, with panels and bars showing it through.\nUpload to library…\nSync to Cloud Drive\nRestore from Cloud Drive\nAurora\nDusk\nMatcha\nInk\n0/12 wallpapers saved; your own wallpapers show a ✕ in the top-right corner to delete, built-in gradients cannot be deleted\nSync includes images and videos in the library; restoring overwrites this device\nDynamic wallpaper sound\nMuted by default; a gesture is needed to unmute when a video wallpaper has audio (browser autoplay policy).\nOneShot shortcuts\nShortcut 1\nContacts\nStash\nStudy\nAll assignments\nAll notices\nAll course files\nWeb Learning search\nSwitch semester\nRain Classroom assignment\nOJ assignments\nGrades\nCourse info\nExam schedule\nTeaching evaluation\nCourse selection\nXiaoda\nTasks\nLife\nTimetable\nDirections\nAcademic calendar\nCampus card\nDorm electricity\nWasher\nDorm\nHygiene score\nCampus network\nInvoices\nPayroll\nGraduate stipend\nLibrary seats\nSeminar room\nEmpty classroom\nSports reservations\nPublic space\nTemporary visitor registration\nMail\nCloud Drive\nGitLab\nOnline services\nPersonal info\nFitness test results\nNews\nTHUBook\nOther Info apps\nPlugin system\nDeveloper panel\nReservations\nInfo\nShortcut 2\nContacts\nStash\nStudy\nAll assignments\nAll notices\nAll course files\nWeb Learning search\nSwitch semester\nRain Classroom assignment\nOJ assignments\nGrades\nCourse info\nExam schedule\nTeaching evaluation\nCourse selection\nXiaoda\nTasks\nLife\nTimetable\nDirections\nAcademic calendar\nCampus card\nDorm electricity\nWasher\nDorm\nHygiene score\nCampus network\nInvoices\nPayroll\nGraduate stipend\nLibrary seats\nSeminar room\nEmpty classroom\nSports reservations\nPublic space\nTemporary visitor registration\nMail\nCloud Drive\nGitLab\nOnline services\nPersonal info\nFitness test results\nNews\nTHUBook\nOther Info apps\nPlugin system\nDeveloper panel\nReservations\nInfo\nShortcut 3\nContacts\nStash\nStudy\nAll assignments\nAll notices\nAll course files\nWeb Learning search\nSwitch semester\nRain Classroom assignment\nOJ assignments\nGrades\nCourse info\nExam schedule\nTeaching evaluation\nCourse selection\nXiaoda\nTasks\nLife\nTimetable\nDirections\nAcademic cal"
+    },
+    {
+      "key": "simple-home",
+      "file": "simple-home.png",
+      "locale": "en-US",
+      "source": "home-simple",
+      "sha256": "cb66989789b472d03cebebc86fb7153e1b16dd9cdefb9742ab82920c8f65df09"
+    },
+    {
+      "key": "practical-home",
+      "file": "practical-home.png",
+      "locale": "en-US",
+      "source": "home-practical",
+      "sha256": "4e2aab382f5a018592d5b197b8d6ff50ff2441b994a0306ebe8e7fd9bfc06b04"
+    },
+    {
+      "key": "full-home-mobile",
+      "file": "full-home-mobile.png",
+      "locale": "en-US",
+      "source": "home-full",
+      "sha256": "ac777e7173111472e0891a6db3ffecdeaddff3eb98bc871c72e64dbbabf94b08"
+    },
+    {
+      "key": "schedule",
+      "file": "schedule.png",
+      "locale": "en-US",
+      "source": "schedule",
+      "sha256": "0086b733d5361c50f3c232626a7fe7df7f68142992ad0ae2f50b2a6564f826fc"
+    },
+    {
+      "key": "vault",
+      "file": "vault.png",
+      "locale": "en-US",
+      "source": "vault",
+      "sha256": "de804f0419416119e732c4b8d766c83e1f2fc77d71a67cebd2e04be9e8a82da1"
+    },
+    {
+      "key": "organization",
+      "file": "organization.png",
+      "locale": "en-US",
+      "source": "organization",
+      "sha256": "fe55671a70248a11c6c5c45b093ca8c63bb2fc47a1d6dd60d5a33f21d31f1f8d"
+    },
+    {
+      "key": "learn",
+      "file": "learn.png",
+      "locale": "en-US",
+      "source": "learn",
+      "sha256": "f5bb811fc432c9f2394679654f927f337193b6ac4f6316054dcdb166b5caa61c"
+    },
+    {
+      "key": "data",
+      "file": "data.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "5c20f2777a1b5b59be86a2e9d5afd009402551715e7bdb625f60fd15706c4948",
+      "visibleText": "Home\nTemplate\n10/21 Wed\n10:00\nGet today sorted.\nMain features\nTasks\nCourses\nSchedule\nDirections\nContacts\nEmail\nCloud\nGitLab\nXiaoda\nMore features\nAll features\nToday's tasks\nCalculus\nChapter 2 exercises\nWeb Learning\n<1 day\nDue soon · 10-21 23:59\nDesign Thinking\nReview team research notes\nWeb Learning\n2 days\nDue in · 10-22 18:00\nData Structures\nTrees and graphs\nWeb Learning\n4 days\nDue in · 10-24 23:59\nView all tasks →\nToday's classes\n09:50\nCalculus\nBuilding 6 · 6A101\n13:30\nDesign Thinking\nBuilding 3 · 3200\nLatest news\nNo subscribed news yet\nCampus card balance\n–\nLife page · transactions and top-ups\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0\nWidget\nFree layout\nMy card\nPersonal settings\nPlugins\n(\nO\nH\n)\nHarness\nSettings\nTour\nManage sections\nUsage mode\nCurrent: Full mode · Organize freely\nSwitch mode\nLanguage\nChange the interface language while keeping your current page and drafts.\n简体中文\nEnglish\nAccount\nNotifications & reminders\nDesktop widgets\nAppearance & layout\nData & sync\nDownloads & storage\nHelp\nAbout\nData & sync\nCloud sync\nSchedule cloud sync (Tsinghua email calendar)\nUse your Tsinghua email's calendar service to sync manually added schedules across devices — schedules added in OneTHU appear in the system calendar / other devices signed in with the same account. To get an app password: webmail (mails.tsinghua.edu.cn) → Settings → client-specific password.\nSave and verify\nSystem calendar sync\nThis platform does not support writing directly to the system calendar; export an .ics from the \"Schedule\" page and import it.\nExternal homework\nMerges each platform's assignment deadlines into \"All assignments\" and \"Today\"; read-only fetch (title / course / due date). It never submits or downloads problem content. Sign-in info is stored encrypted on this device and used only to read assignments.\nRain Classroom\nRain Classroom\nNot signed in\nSign in with WeChat QR\nSMS verification code (currently unavailable)\nRain Classroom now requires a captcha, so direct SMS sign-in is unavailable for now. Please scan with WeChat or the Yudou app.\nOJ platforms\nSign in with the method that suits you\nOJ platform sign-in\nTUOJ (AI edition) Not signed in\nTUOJ (classic edition) Not signed in\nTyche Not signed in\nDSA OJ Not signed in\nClick to expand sign-in\nTUOJ (AI edition)\nNot signed in\nUnified Authentication sign-in\n▸username and password\nAutomatic sign-in did not succeed（Cannot read properties of undefined (reading 'invoke')）. Click \"Unified Authentication sign-in\" to retry.\nTUOJ (classic edition)\nNot signed in\nUnified Authentication sign-in\n▸username and password\nAutomatic sign-in did not succeed（Cannot read properties of undefined (reading 'invoke')）. Click \"Unified Authentication sign-in\" to retry.\nTyche\nNot signed in\nSign in\nDSA OJ\nNot signed in\nSign in\nFetch scope and refresh\nApplies to all sources; overdue assignments are still shown.\nKeep only future\ndays (overdue ones are still shown)\nSave\nRefresh now\n▸Advanced: manually paste browser sign-in info\nRain Classroom：Not signed in · 0 items\nTUOJ (AI edition)：Not signed in · 0 items\nTUOJ (classic edition)：Not signed in · 0 items\nTyche：Not signed in · 0 items\nDSA OJ：Not signed in · 0 items"
+    },
+    {
+      "key": "xiaoda-chat",
+      "file": "xiaoda-chat.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "5a22da25c71daafccf93378c4773cea2b052b7e16cdc1b4eb6c078d05e5bcf0f",
+      "visibleText": "Xiaoda\nDemo Student · 2026000000\nSign in again\nChat\nHistory\nAgents\nSkills\nContinue conversation\nContinued from earlier content · Xiaoda\nNew conversation\nDemo Student\n\nHelp me plan this week’s revision.\n\nD\nX\nXiaoda\n\nStart by listing the key topics for each course, then split revision into daily tasks. Which course would you like to begin with?\n\nSend\nXiaoda\nStudy assistants · Study planner\nDemo model\nSend\nThe agent cannot be changed once a conversation starts; tap \"New conversation\" first to switch.\nXiaoda features are experimental and for reference only; they do not replace the OneTHU Harness.\nIt also cannot dispatch OH features; this page is OneTHU's integration interface.\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0"
+    },
+    {
+      "key": "xiaoda-skills",
+      "file": "xiaoda-skills.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "2f4c048c4940be6deff08bf0e4bb1df4d1b25c21480338ee983b330e663559da",
+      "visibleText": "Xiaoda\nDemo Student · 2026000000\nSign in again\nChat\nHistory\nAgents\nSkills\nSkills\n1\nContributors\n1\nTotal downloads\n0\nCategory\nDemo skills · 1\nOH skill library\nA lightweight environment for desktop and mobile\nBuilt-in reference reading and QuickJS computation need no extra installation on desktop or mobile. Check a skill’s requirements before enabling it in OH.\nAvailable: text and references\nLightweight JavaScript computation\nCheck runtime\nEach computation has a 2-second and 32 MB memory limit, with no access to the network, system files or account credentials. This is not a Node environment.\nSkills requiring Python, Node, package installation or external services cannot run in OH. Save the complete files for an agent on your computer.\nDemo research notes\nImported, not enabled\nRead resources and summarize key points and tasks.\nSkill plaza\n1 in total\nD\nDemo research notes\n0 downloads · Demo\nRead resources and summarize key points and tasks.\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n0"
+    },
+    {
+      "key": "vault-send-preview",
+      "file": "vault-send-preview.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "23567a50b8980714e5ce62ed347800da41c9c666760dbea3c6313a1e3e422241",
+      "visibleText": "Stash\nStash it first, then open, share, or hand it to OH.\nMy staging box · 1\nAdd files\nShare code\nReceive\n1 items\nCourse notes\nReview limits and continuity. Bring two questions to the group.\nShare codes issued\nPress and hold to stash · Drag onto the OH capsule to hand it to OH\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n1\nShare content\nMy staging box\n1 items · A snapshot is saved when created\nInclude this Stash\nCombined share · Include card\nCreate share code\nNFC is currently unreliable. Please use a share code whenever possible. NFC isn't supported on this device; share with a copied share code instead\nThe share code, QR code, and NFC use the same content; receiving requires a network connection."
+    },
+    {
+      "key": "vault-send-code",
+      "file": "vault-send-code.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "2f27ed840e663cd9ab1011640e51099de699a284db5f4007108e2ec64f8a88ae",
+      "visibleText": "Stash\nStash it first, then open, share, or hand it to OH.\nMy staging box · 1\nAdd files\nShare code\nReceive\n1 items\nCourse notes\nReview limits and continuity. Bring two questions to the group.\nShare codes issued · 1\nPress and hold to stash · Drag onto the OH capsule to hand it to OH\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n1\nShare content\nShare code ready\n1 items from “My staging box”\nON-HFEW-MXW4-P15B-9B89\nAnyone holding this share code can receive it; only send it to people you want to share with.\nCopy share code\nSend via NFC\nRevoke share\nAdjust share content\nNFC is currently unreliable. Please use a share code whenever possible. NFC isn't supported on this device; share with a copied share code instead\nThe share code, QR code, and NFC use the same content; receiving requires a network connection."
+    },
+    {
+      "key": "vault-receive",
+      "file": "vault-receive.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "42f08147b8f87a93182e304a6ae61f4fca688e2b308669bcc081fa74552f59de",
+      "visibleText": "Stash\nStash it first, then open, share, or hand it to OH.\nMy staging box · 1\nAdd files\nShare code\nReceive\n1 items\nCourse notes\nReview limits and continuity. Bring two questions to the group.\nShare codes issued · 1\nPress and hold to stash · Drag onto the OH capsule to hand it to OH\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nStash\n1\nReceive content\nThe box will be saved as a new Stash; the original content is kept.\nReceived share codes\nPaste from clipboard\nReceive share code\nYou can also\nScan QR code\nReceive via NFC\nNFC is currently unreliable. Please use a share code whenever possible. NFC isn't supported on this device; share with a copied share code instead\nThe share code, QR code, and NFC use the same content; receiving requires a network connection."
+    },
+    {
+      "key": "vault-received",
+      "file": "vault-received.png",
+      "locale": "en-US",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "3264866c195897f2bf4887e9413dca36cd7a109eccef3d3f1d011cf2532440ec",
+      "visibleText": "Stash\nStash it first, then open, share, or hand it to OH.\nMy staging box · 1\nMy staging box · 1\nAdd files\nShare code\nReceive\n1 items\nCourse notes\nReview limits and continuity. Bring two questions to the group.\nShare codes issued\nPress and hold to stash · Drag onto the OH capsule to hand it to OH\n1\nTabs\n(\nO\nH\n)\nSearch or ask OH\nStudy\nReservations\nLife\nInfo\nTimetable\nReceived 1 items, saved into a new Stash\nStash\n1\nReceive content\nReceived 1 items, saved into a new Stash\nDone\nContinue receiving\nNFC is currently unreliable. Please use a share code whenever possible. NFC isn't supported on this device; share with a copied share code instead\nThe share code, QR code, and NFC use the same content; receiving requires a network connection."
+    },
+    {
+      "key": "search",
+      "file": "search.png",
+      "locale": "en-US",
+      "source": "Approved public capture or actual drag recording",
+      "sha256": "e76658f8a1973e76e3826203124b5508b5789583edada075f6f8362a2e90acfb"
+    },
+    {
+      "key": "oh",
+      "file": "oh.png",
+      "locale": "en-US",
+      "source": "Approved public capture or actual drag recording",
+      "sha256": "33bbdafd491b8be203ef9f17c564c28849e3afa074eb193b1f2f3266fd852b5e"
+    },
+    {
+      "key": "vault-drag-start",
+      "file": "vault-drag-start.png",
+      "locale": "en-US",
+      "source": "Approved public capture or actual drag recording",
+      "sha256": "f7ce15e64df6fafb3d29560059704fefadc924e995ea8a57180b52921b7efe75"
+    },
+    {
+      "key": "vault-drag-done",
+      "file": "vault-drag-done.png",
+      "locale": "en-US",
+      "source": "Approved public capture or actual drag recording",
+      "sha256": "d39e511dfa1a907482297640f57e738a4372a86891b008720329b7a1fe6072ad"
+    }
+  ],
+  "errors": []
+}

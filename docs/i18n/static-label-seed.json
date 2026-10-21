@@ -1,0 +1,1008 @@
+{
+  "messages": {
+    "enum.label.2118cbc10988": {
+      "zh-CN": "学习",
+      "en-US": "Study"
+    },
+    "enum.label.a14f23af7016": {
+      "zh-CN": "日程",
+      "en-US": "Schedule"
+    },
+    "enum.label.15d208d1b4c9": {
+      "zh-CN": "生活",
+      "en-US": "Life"
+    },
+    "enum.label.352cdc807892": {
+      "zh-CN": "预约",
+      "en-US": "Reservations"
+    },
+    "enum.label.e79890c96ee6": {
+      "zh-CN": "行政",
+      "en-US": ""
+    },
+    "enum.label.e806fbbe8ec6": {
+      "zh-CN": "插件",
+      "en-US": "Plugins"
+    },
+    "enum.label.5c55a67935af": {
+      "zh-CN": "全部",
+      "en-US": ""
+    },
+    "enum.label.1760b98532ec": {
+      "zh-CN": "在线服务",
+      "en-US": "Online services"
+    },
+    "enum.label.8289e67df525": {
+      "zh-CN": "科研",
+      "en-US": ""
+    },
+    "enum.label.6ac380cbd716": {
+      "zh-CN": "人事",
+      "en-US": ""
+    },
+    "enum.label.aaabe42b5a23": {
+      "zh-CN": "党建",
+      "en-US": ""
+    },
+    "enum.label.506c068a2a1e": {
+      "zh-CN": "财务",
+      "en-US": ""
+    },
+    "enum.label.b0938ffbd07c": {
+      "zh-CN": "外事",
+      "en-US": ""
+    },
+    "enum.label.6e098153a586": {
+      "zh-CN": "采购",
+      "en-US": ""
+    },
+    "enum.label.ef94275bd96f": {
+      "zh-CN": "实验设备",
+      "en-US": ""
+    },
+    "enum.label.5f45bb826b16": {
+      "zh-CN": "资产",
+      "en-US": ""
+    },
+    "enum.label.21255f717947": {
+      "zh-CN": "校园生活",
+      "en-US": ""
+    },
+    "enum.label.3deae16f1adb": {
+      "zh-CN": "公共服务",
+      "en-US": ""
+    },
+    "enum.label.a0f88ca9398c": {
+      "zh-CN": "就业离校",
+      "en-US": ""
+    },
+    "enum.label.31c5f1aaa0d5": {
+      "zh-CN": "满意度调查",
+      "en-US": ""
+    },
+    "enum.label.e310bbf0e506": {
+      "zh-CN": "北大",
+      "en-US": ""
+    },
+    "enum.label.a17b8666e5d9": {
+      "zh-CN": "北大研",
+      "en-US": ""
+    },
+    "enum.label.d7d6b21c2cf5": {
+      "zh-CN": "北外",
+      "en-US": ""
+    },
+    "enum.label.e96da2049129": {
+      "zh-CN": "课程编号",
+      "en-US": ""
+    },
+    "enum.label.bd2d74b297d1": {
+      "zh-CN": "课程名称",
+      "en-US": ""
+    },
+    "enum.label.fc0c0d12a458": {
+      "zh-CN": "总学时数",
+      "en-US": ""
+    },
+    "enum.label.e842a5dff916": {
+      "zh-CN": "总学分",
+      "en-US": ""
+    },
+    "enum.label.3b806a76e492": {
+      "zh-CN": "课程内容简介",
+      "en-US": ""
+    },
+    "enum.label.541fbddf4725": {
+      "zh-CN": "Course Description",
+      "en-US": ""
+    },
+    "enum.label.be67cc45b9f0": {
+      "zh-CN": "考核安排",
+      "en-US": ""
+    },
+    "enum.label.3303b56982a0": {
+      "zh-CN": "联系人",
+      "en-US": ""
+    },
+    "enum.label.a914a7b52cec": {
+      "zh-CN": "教材及参考书",
+      "en-US": ""
+    },
+    "enum.label.4a3572036143": {
+      "zh-CN": "上课教师",
+      "en-US": ""
+    },
+    "enum.label.8459c1e91bc0": {
+      "zh-CN": "选课指导语",
+      "en-US": ""
+    },
+    "enum.label.ea664afac033": {
+      "zh-CN": "先修要求",
+      "en-US": ""
+    },
+    "enum.label.75bd5f68e277": {
+      "zh-CN": "教师教学特色",
+      "en-US": ""
+    },
+    "enum.label.1eed24ed8f6f": {
+      "zh-CN": "Office Hour",
+      "en-US": ""
+    },
+    "enum.label.f2260568b289": {
+      "zh-CN": "成绩评定标准",
+      "en-US": ""
+    },
+    "enum.label.f24ccb00a8ab": {
+      "zh-CN": "参考书",
+      "en-US": ""
+    },
+    "enum.label.9151a836f996": {
+      "zh": "GitLab",
+      "en": ""
+    },
+    "enum.label.d4f7864690bb": {
+      "zh": "Info 应用",
+      "en": ""
+    },
+    "enum.label.26ee9467d4b0": {
+      "zh": "courseX",
+      "en": ""
+    },
+    "enum.label.ef7be5be3c13": {
+      "zh": "体育",
+      "en": ""
+    },
+    "enum.label.e81059e1a712": {
+      "zh": "公共空间",
+      "en": ""
+    },
+    "enum.label.266e6cb77079": {
+      "zh": "图书馆",
+      "en": ""
+    },
+    "enum.label.4c11cd93c142": {
+      "zh": "我的收藏夹",
+      "en": ""
+    },
+    "enum.label.ed31fbb483ee": {
+      "zh": "操作",
+      "en": ""
+    },
+    "enum.label.d39567b2b9f1": {
+      "zh": "新闻",
+      "en": ""
+    },
+    "enum.label.a626aad412b7": {
+      "zh": "标签页",
+      "en": ""
+    },
+    "enum.label.6acfa1db6a62": {
+      "zh": "洗衣机",
+      "en": ""
+    },
+    "enum.label.e4d40b4d6759": {
+      "zh": "研讨间",
+      "en": ""
+    },
+    "enum.label.ecc11c8afea8": {
+      "zh": "空教室",
+      "en": ""
+    },
+    "enum.label.783d638053ea": {
+      "zh": "组件",
+      "en": ""
+    },
+    "enum.label.aa39cac2b409": {
+      "zh": "网络学堂",
+      "en": ""
+    },
+    "enum.label.3d708e8e8b1f": {
+      "zh": "邮件",
+      "en": ""
+    },
+    "enum.label.452c7b10d57a": {
+      "zh": "页面",
+      "en": ""
+    },
+    "components.experiencemodepicker.463e4036289e": {
+      "zh-CN": "只留必需",
+      "en-US": "Essentials only"
+    },
+    "components.experiencemodepicker.bc2310856d94": {
+      "zh-CN": "常用在手边",
+      "en-US": "Frequent picks at hand"
+    },
+    "components.experiencemodepicker.96d67525c77e": {
+      "zh-CN": "自由组织",
+      "en-US": "Organize freely"
+    },
+    "pages.info.visittab.af16cc0b5325": {
+      "zh-CN": "已按你的说明填好草稿：核对后点「提交报备」。",
+      "en-US": "Draft filled in from your notes: review it, then tap \"Submit registration\"."
+    },
+    "pages.info.visittab.65897f00fbc6": {
+      "zh-CN": "已按你的要求填好并自动提交报备。",
+      "en-US": "Filled in and submitted the registration automatically as you asked."
+    },
+    "pages.info.visittab.8d66f991153b": {
+      "zh-CN": "读取报备信息失败：请点「重新加载」再试一次。",
+      "en-US": "Failed to load registration info: tap \"Reload\" and try again."
+    },
+    "pages.info.visittab.0b0682ac2f83": {
+      "zh-CN": "提交没有成功：请检查填写内容后重试，或到官方页面提交。",
+      "en-US": "Submission did not go through: check the fields and try again, or submit on the official page."
+    },
+    "pages.info.visittab.7c4768ed455b": {
+      "zh-CN": "登录状态已失效，请重新登录后再试",
+      "en-US": "Your session has expired. Sign in and try again."
+    },
+    "pages.info.visittab.488837fe85bd": {
+      "zh-CN": "请求未成功（编号 {value}）",
+      "en-US": "Request did not succeed (code {value})"
+    },
+    "pages.info.visittab.e3301e2db296": {
+      "zh-CN": "临时来访报备系统返回了无法识别的内容（HTTP {value}）",
+      "en-US": "The temporary visit registration system returned unrecognized content (HTTP {value})"
+    },
+    "pages.info.visittab.95f5bc49c2c0": {
+      "zh-CN": "临时来访报备系统没有下发登录令牌",
+      "en-US": "The temporary visit registration system did not issue a sign-in token"
+    },
+    "pages.info.visittab.fcafad5054ea": {
+      "zh-CN": "统一身份认证跳转次数过多，请稍后重试",
+      "en-US": "Too many identity-authentication redirects. Please try again later."
+    },
+    "pages.info.visittab.7a786a6f0ace": {
+      "zh-CN": "本机没有记住账号密码：请先在设置里记住密码，或打开官方页面手动登录一次",
+      "en-US": "No account or password remembered on this device: remember the password in Settings first, or sign in once on the official page."
+    },
+    "pages.info.visittab.0dc9677cab64": {
+      "zh-CN": "统一身份认证页面形态不认识（HTTP {value}），请稍后重试",
+      "en-US": "Unrecognized identity-authentication page (HTTP {value}). Please try again later."
+    },
+    "pages.info.visittab.7cfaed11d6a4": {
+      "zh-CN": "统一身份认证要求二次验证：请先到官方页面完成一次验证",
+      "en-US": "Identity authentication requires a second verification step: complete one verification on the official page first."
+    },
+    "pages.info.visittab.86889497e1c5": {
+      "zh-CN": "统一身份认证没有返回漫游票据，请稍后重试",
+      "en-US": "Identity authentication did not return a roaming ticket. Please try again later."
+    },
+    "pages.info.visittab.962b844284e8": {
+      "zh-CN": "表单预载没有返回模型标识",
+      "en-US": "The prefilled form did not return a model identifier"
+    },
+    "pages.info.visittab.48ea9c8f9a02": {
+      "zh-CN": "表单模型解析失败",
+      "en-US": "Failed to parse the form model"
+    },
+    "pages.info.visittab.8da17766bce7": {
+      "zh-CN": "请先勾选「本人确认」再提交",
+      "en-US": "Tick the “I confirm” box before submitting"
+    },
+    "pages.info.visittab.00afe7c5403e": {
+      "zh-CN": "请至少填写一位来访人后再提交",
+      "en-US": "Add at least one visitor before submitting"
+    },
+    "pages.info.visittab.f8a7bfe03fb8": {
+      "zh-CN": "来访人身份证号不能为空，请补齐后再提交",
+      "en-US": "A visitor ID number is empty. Fill it in and submit again."
+    },
+    "pages.info.visittab.9f2554ab6827": {
+      "zh-CN": "来访人手机号需要 11 位，请补齐后再提交",
+      "en-US": "A visitor phone number needs 11 digits. Fill it in and submit again."
+    },
+    "pages.info.visittab.47ae9eb80e64": {
+      "zh-CN": "这条报备需要先选流转分支：请打开官方页面完成这一步",
+      "en-US": "This registration needs a routing branch first: open the official page to complete this step."
+    },
+    "pages.info.visittab.34c680feb9c9": {
+      "zh-CN": "发送成功",
+      "en-US": "Sent"
+    },
+    "state.seafile.deleteOwnerOnly": {
+      "zh-CN": "只有资料库所有者可以删除整个资料库",
+      "en-US": "Only the library owner can delete the entire library."
+    },
+    "pages.cloudpage.deleteLibrary": {
+      "zh-CN": "删除资料库",
+      "en-US": "Delete library"
+    },
+    "pages.cloudpage.deleteLibraryNamed": {
+      "zh-CN": "删除资料库「{name}」",
+      "en-US": "Delete library “{name}”"
+    },
+    "pages.cloudpage.deleteLibraryConfirm": {
+      "zh-CN": "确定删除资料库「{name}」及其中的全部文件吗？这会删除云端资料库，所有共享给好友或组织成员的访问也会失效。",
+      "en-US": "Delete the library “{name}” and all its files? This deletes the cloud library and removes access for every friend or organization member it was shared with."
+    },
+    "pages.cloudpage.deleteLibraryOrgConfirm": {
+      "zh-CN": "「{name}」已关联组织：{organizations}。删除的是整个云端资料库及其中的全部文件，不只是移除组织中的关联；所有成员会失去访问。确定删除吗？",
+      "en-US": "“{name}” is linked to these organizations: {organizations}. This deletes the entire cloud library and all its files, not just its organization links. All members will lose access. Delete it?"
+    },
+    "pages.cloudpage.libraryDeleted": {
+      "zh-CN": "已删除资料库「{name}」",
+      "en-US": "Deleted library “{name}”."
+    },
+    "state.seafile.nativeRestartRequired": {
+      "zh-CN": "此资料库缺少可核实的归属信息，已暂停对它自动建库、删除与同步；请先刷新资料库列表。旧版客户端请更新并重启。",
+      "en-US": "Ownership information for this library is unavailable. Automatic creation, deletion and sync for it are paused. Refresh the library list; update and restart older clients."
+    },
+    "state.seafile.duplicatePersonalLibraries": {
+      "zh-CN": "发现多个同名且有内容的个人资料库，无法安全选择。请先在云盘确认要使用的资料库。",
+      "en-US": "Several personal libraries have the same name and contain data. Review them in cloud storage before choosing which one to use."
+    },
+    "state.seafile.libraryCreationUnconfirmed": {
+      "zh-CN": "上次建库结果尚未确认，已暂停自动创建，避免重复。请刷新云盘确认，或手动创建所需资料库后重试。",
+      "en-US": "The previous library creation is still unconfirmed. Automatic creation is paused to prevent duplicates. Refresh cloud storage to check, or create the required library manually, then retry."
+    },
+    "profile.sync.offline": {
+      "zh-CN": "连接云盘后，自动同步名片、好友与组织索引",
+      "en-US": "Connect cloud storage to sync your card, contacts and organization index"
+    },
+    "profile.sync.pending": {
+      "zh-CN": "有本地更改，等待同步…",
+      "en-US": "Local changes are waiting to sync…"
+    },
+    "profile.sync.syncing": {
+      "zh-CN": "正在同步名片、好友与组织索引…",
+      "en-US": "Syncing your card, contacts and organization index…"
+    },
+    "profile.sync.synced": {
+      "zh-CN": "名片、好友与组织索引已同步",
+      "en-US": "Your card, contacts and organization index are synced"
+    },
+    "profile.sync.paused": {
+      "zh-CN": "资料同步已暂停，请检查云盘连接及 OneTHU-Profile 私有资料库权限",
+      "en-US": "Profile sync paused. Check the cloud connection and private permissions of OneTHU-Profile"
+    },
+    "profile.sync.now": {
+      "zh-CN": "立即同步",
+      "en-US": "Sync now"
+    },
+    "profile.sync.conflict": {
+      "zh-CN": "有更改需要你确认，其余内容已自动同步",
+      "en-US": "Some changes need your choice. Everything else is synced"
+    },
+    "profile.sync.personal": {
+      "zh-CN": "个人名片冲突",
+      "en-US": "Personal card conflict"
+    },
+    "profile.sync.local": {
+      "zh-CN": "本机内容",
+      "en-US": "Local version"
+    },
+    "profile.sync.remote": {
+      "zh-CN": "云端内容",
+      "en-US": "Cloud version"
+    },
+    "profile.sync.preview": {
+      "zh-CN": "合并预览",
+      "en-US": "Merge preview"
+    },
+    "profile.sync.keepLocal": {
+      "zh-CN": "保留本机",
+      "en-US": "Keep local"
+    },
+    "profile.sync.useRemote": {
+      "zh-CN": "使用云端，丢弃本机变更",
+      "en-US": "Use cloud, discard local changes"
+    },
+    "profile.sync.merge": {
+      "zh-CN": "确认合并",
+      "en-US": "Confirm merge"
+    },
+    "profile.sync.deleted": {
+      "zh-CN": "已删除",
+      "en-US": "Deleted"
+    },
+    "profile.sync.mergeHelp": {
+      "zh-CN": "默认自动合并不同字段和列表条目。此处有同一字段的矛盾或删除冲突；手动合并会保留双方条目，同一字段优先本机，删除冲突保留记录。",
+      "en-US": "Different fields and list items merge automatically. These items have same-field or deletion conflicts. A manual merge keeps entries from both sides, favors local values for competing fields, and retains edited records when deletion conflicts."
+    },
+    "profile.field.name": {
+      "zh-CN": "姓名 / 名称",
+      "en-US": "Name"
+    },
+    "profile.field.bio": {
+      "zh-CN": "个人简介",
+      "en-US": "Bio"
+    },
+    "profile.field.phone": {
+      "zh-CN": "手机号",
+      "en-US": "Phone"
+    },
+    "profile.field.website": {
+      "zh-CN": "个人网址",
+      "en-US": "Website"
+    },
+    "profile.field.social": {
+      "zh-CN": "社交媒体",
+      "en-US": "Social media"
+    },
+    "profile.field.brief": {
+      "zh-CN": "简介",
+      "en-US": "Summary"
+    },
+    "profile.field.note": {
+      "zh-CN": "备注",
+      "en-US": "Note"
+    },
+    "profile.field.members": {
+      "zh-CN": "成员",
+      "en-US": "Members"
+    },
+    "profile.field.role": {
+      "zh-CN": "角色",
+      "en-US": "Role"
+    },
+    "profile.field.email": {
+      "zh-CN": "邮箱",
+      "en-US": "Email"
+    },
+    "profile.field.projects": {
+      "zh-CN": "项目",
+      "en-US": "Projects"
+    },
+    "profile.field.announcements": {
+      "zh-CN": "公告",
+      "en-US": "Announcements"
+    },
+    "profile.field.title": {
+      "zh-CN": "标题",
+      "en-US": "Title"
+    },
+    "profile.field.body": {
+      "zh-CN": "正文",
+      "en-US": "Content"
+    },
+    "profile.field.description": {
+      "zh-CN": "说明",
+      "en-US": "Description"
+    },
+    "profile.field.status": {
+      "zh-CN": "状态",
+      "en-US": "Status"
+    },
+    "profile.field.libraries": {
+      "zh-CN": "资料库",
+      "en-US": "Libraries"
+    },
+    "profile.field.gitlabRepos": {
+      "zh-CN": "代码仓库",
+      "en-US": "Repositories"
+    },
+    "profile.field.image": {
+      "zh-CN": "图片",
+      "en-US": "Image"
+    },
+    "profile.field.owner": {
+      "zh-CN": "负责人",
+      "en-US": "Owner"
+    },
+    "profile.sync.field": {
+      "zh-CN": "冲突字段",
+      "en-US": "Conflicting field"
+    },
+    "profile.sync.privateValue": {
+      "zh-CN": "私密字段（不展开显示）",
+      "en-US": "Private field (hidden)"
+    },
+    "profile.sync.record": {
+      "zh-CN": "记录",
+      "en-US": "Record"
+    },
+    "profile.sync.thisDevice": {
+      "zh-CN": "这台设备",
+      "en-US": "This device"
+    },
+    "profile.sync.otherDevice": {
+      "zh-CN": "另一台设备",
+      "en-US": "Other device"
+    },
+    "profile.sync.combined": {
+      "zh-CN": "两边合在一起",
+      "en-US": "Both combined"
+    },
+    "profile.sync.deletedHere": {
+      "zh-CN": "这一边已经删除了它",
+      "en-US": "Deleted on this device"
+    },
+    "profile.sync.confirmDelete": {
+      "zh-CN": "确认删除这条记录",
+      "en-US": "Delete this record"
+    },
+    "profile.sync.useCombined": {
+      "zh-CN": "两边都保留",
+      "en-US": "Keep both"
+    },
+    "profile.sync.keepCard": {
+      "zh-CN": "保留这张名片",
+      "en-US": "Keep this card"
+    },
+    "profile.sync.useOtherCard": {
+      "zh-CN": "使用另一张名片",
+      "en-US": "Use the other card"
+    },
+    "profile.sync.keepVersion": {
+      "zh-CN": "保留这一版",
+      "en-US": "Keep this version"
+    },
+    "profile.sync.useOtherVersion": {
+      "zh-CN": "使用另一版",
+      "en-US": "Use the other version"
+    },
+    "profile.sync.review": {
+      "zh-CN": "看一下",
+      "en-US": "Review"
+    },
+    "profile.sync.chooseVersion": {
+      "zh-CN": "选你想保留的内容",
+      "en-US": "Choose what to keep"
+    },
+    "profile.sync.later": {
+      "zh-CN": "稍后再说",
+      "en-US": "Decide later"
+    },
+    "profile.sync.visualHelp": {
+      "zh-CN": "两台设备对同一处做了不同修改。选你想保留的卡片或内容，其他不冲突的修改都会保留。",
+      "en-US": "Both devices changed the same thing differently. Choose the card or content you want to keep. Other compatible changes will be kept."
+    },
+    "profile.sync.notSet": {
+      "zh-CN": "未填写",
+      "en-US": "Not set"
+    },
+    "profile.role.owner": {
+      "zh-CN": "所有者",
+      "en-US": "Owner"
+    },
+    "profile.role.member": {
+      "zh-CN": "成员",
+      "en-US": "Member"
+    },
+    "profile.role.guest": {
+      "zh-CN": "访客",
+      "en-US": "Guest"
+    },
+    "profile.status.planned": {
+      "zh-CN": "待开始",
+      "en-US": "Planned"
+    },
+    "profile.status.active": {
+      "zh-CN": "进行中",
+      "en-US": "In progress"
+    },
+    "profile.status.done": {
+      "zh-CN": "已完成",
+      "en-US": "Done"
+    },
+    "login.error.cooldown": {
+      "zh-CN": "刚刚已尝试登录，请等待 {seconds} 秒后再试。刷新不会缩短等待时间。",
+      "en-US": "A sign-in was just attempted. Wait {seconds} seconds before trying again. Refreshing will not shorten the wait."
+    },
+    "login.error.inProgress": {
+      "zh-CN": "已有登录正在进行，请完成验证，或返回登录页后再试。",
+      "en-US": "A sign-in is already in progress. Complete verification, or go back to the sign-in page to start again."
+    },
+    "login.error.prepareFailed": {
+      "zh-CN": "统一认证没有返回可用的登录表单。请稍等后重试；若仍失败，请复制诊断摘要协助排查。",
+      "en-US": "University authentication did not return a usable sign-in form. Wait before retrying; if it persists, copy the diagnostic summary for troubleshooting."
+    },
+    "login.error.trustLimit": {
+      "zh-CN": "统一认证提示信任设备数量已达上限。请到 id.tsinghua.edu.cn 管理旧的信任设备，再返回登录；验证时也可以不勾选「信任此设备」。",
+      "en-US": "University authentication reports that the trusted device limit has been reached. Manage old trusted devices at id.tsinghua.edu.cn, then sign in again. You can also leave “Trust this device” unchecked during verification."
+    },
+    "login.error.restricted": {
+      "zh-CN": "服务器暂时限制了请求，请稍等后再试，避免连续登录或刷新。",
+      "en-US": "The server is temporarily limiting requests. Wait before retrying, and avoid repeated sign-ins or refreshes."
+    },
+    "login.error.invalidForm": {
+      "zh-CN": "统一认证返回了无法安全处理的登录表单，已停止提交。请稍后重试；若仍失败，请复制诊断摘要。",
+      "en-US": "University authentication returned a sign-in form that cannot be processed safely. Submission was stopped. Try again later; if it persists, copy the diagnostic summary."
+    },
+    "login.error.confirmationLoop": {
+      "zh-CN": "统一认证反复要求确认设备，本次登录已停止。请稍等后重试；也可到 id.tsinghua.edu.cn 检查信任设备。",
+      "en-US": "University authentication repeatedly requested device confirmation, so this sign-in was stopped. Wait before retrying, or check trusted devices at id.tsinghua.edu.cn."
+    },
+    "skills.library": {
+      "zh-CN": "OH 技能库",
+      "en-US": "OH skill library"
+    },
+    "skills.runtime": {
+      "zh-CN": "电脑与手机共用的轻量环境",
+      "en-US": "A lightweight environment for desktop and mobile"
+    },
+    "skills.runtimeBody": {
+      "zh-CN": "内置资料阅读与 QuickJS 纯计算环境，电脑手机无需另装软件。先检查技能要求，再启用给 OH。",
+      "en-US": "Built-in reference reading and QuickJS computation need no extra installation on desktop or mobile. Check a skill’s requirements before enabling it in OH."
+    },
+    "skills.externalBody": {
+      "zh-CN": "需要 Python、Node、安装依赖或外部服务的技能，当前不能在 OH 运行。可保存完整技能文件，交给电脑上的 Agent 使用。",
+      "en-US": "Skills requiring Python, Node, package installation or external services cannot run in OH. Save the complete files for an agent on your computer."
+    },
+    "skills.empty": {
+      "zh-CN": "尚未导入技能。在下方广场选择技能，下载并检查。",
+      "en-US": "No imported skills yet. Choose a skill from the plaza below to download and inspect."
+    },
+    "skills.failed": {
+      "zh-CN": "技能操作未完成",
+      "en-US": "Skill action could not be completed"
+    },
+    "skills.enabled": {
+      "zh-CN": "OH 已启用",
+      "en-US": "Enabled in OH"
+    },
+    "skills.disabled": {
+      "zh-CN": "已导入，未启用",
+      "en-US": "Imported, not enabled"
+    },
+    "skills.external": {
+      "zh-CN": "需电脑 Agent",
+      "en-US": "Requires a desktop agent"
+    },
+    "skills.compatible": {
+      "zh-CN": "可用：文字与资料",
+      "en-US": "Available: text and references"
+    },
+    "skills.enable": {
+      "zh-CN": "启用给 OH",
+      "en-US": "Enable in OH"
+    },
+    "skills.disable": {
+      "zh-CN": "停止给 OH 使用",
+      "en-US": "Disable in OH"
+    },
+    "skills.enableBody": {
+      "zh-CN": "OH 可按需读取此技能的说明与资料。启用表示允许将这些内容发送给你选择的模型；技能不会获得额外权限。",
+      "en-US": "OH can read this skill’s instructions and references as needed. Enabling allows those contents to be sent to your chosen model; the skill gains no additional permissions."
+    },
+    "skills.export": {
+      "zh-CN": "保存给电脑 Agent",
+      "en-US": "Save for a desktop agent"
+    },
+    "skills.exportHelp": {
+      "zh-CN": "电脑：选择文件夹并保存完整技能目录。手机：保存 ZIP 到下载位置，传到电脑后解压。自行让 Agent 接入，不会自动安装依赖。",
+      "en-US": "Desktop: choose a folder for the complete skill directory. Mobile: save a ZIP to Downloads, then transfer and unpack it on your computer. Connect it to your agent yourself; dependencies are not installed automatically."
+    },
+    "skills.exported": {
+      "zh-CN": "已保存：{path}",
+      "en-US": "Saved to: {path}"
+    },
+    "skills.saved": {
+      "zh-CN": "已保存",
+      "en-US": "Saved"
+    },
+    "skills.delete": {
+      "zh-CN": "移除本机技能",
+      "en-US": "Remove from this device"
+    },
+    "skills.localOnly": {
+      "zh-CN": "技能和启用状态仅保存在此设备、当前账号下。更新包后需要重新启用。",
+      "en-US": "Skills and activation are local to this device and account. Updated packages need to be enabled again."
+    },
+    "skills.import": {
+      "zh-CN": "下载并检查",
+      "en-US": "Download and inspect"
+    },
+    "skills.importing": {
+      "zh-CN": "正在下载并检查…",
+      "en-US": "Downloading and inspecting…"
+    },
+    "skills.importBody": {
+      "zh-CN": "先下载完整技能包并检查内容，不执行脚本。下载上限 8 MB，解压后上限 32 MB。",
+      "en-US": "Download and inspect the complete package first. No scripts are executed. Limit: 8 MB download, 32 MB unpacked."
+    },
+    "skills.fileCount": {
+      "zh-CN": "{count} 个文件",
+      "en-US": "{count} files"
+    },
+    "skills.version": {
+      "zh-CN": "版本 {version}",
+      "en-US": "Version {version}"
+    },
+    "skills.requirement.python": {
+      "zh-CN": "Python 环境",
+      "en-US": "Python runtime"
+    },
+    "skills.requirement.node": {
+      "zh-CN": "Node / JS 依赖",
+      "en-US": "Node / JS dependencies"
+    },
+    "skills.requirement.native": {
+      "zh-CN": "系统命令或原生程序",
+      "en-US": "System commands or native programs"
+    },
+    "skills.requirement.installer": {
+      "zh-CN": "需额外安装",
+      "en-US": "Additional installation needed"
+    },
+    "skills.requirement.external-service": {
+      "zh-CN": "外部服务或密钥",
+      "en-US": "External services or keys"
+    },
+    "skills.requirement.unknown-file": {
+      "zh-CN": "待确认的文件类型",
+      "en-US": "Unverified file types"
+    },
+    "skills.error.login": {
+      "zh-CN": "请先登录 OneTHU 与清小搭，再重试。",
+      "en-US": "Sign in to OneTHU and Xiaoda, then try again."
+    },
+    "skills.error.download": {
+      "zh-CN": "技能包下载未完成，请稍后重试。",
+      "en-US": "The skill package could not be downloaded. Try again later."
+    },
+    "skills.error.large": {
+      "zh-CN": "技能包超过轻量环境的大小、文件数量或压缩比例限制。",
+      "en-US": "The skill exceeds the lightweight environment’s size, file-count or compression limits."
+    },
+    "skills.error.package": {
+      "zh-CN": "下载内容不是有效的技能 ZIP 包。",
+      "en-US": "The downloaded content is not a valid skill ZIP package."
+    },
+    "skills.error.manifest": {
+      "zh-CN": "技能包需要唯一的 SKILL.md 入口。",
+      "en-US": "The package needs a single unambiguous SKILL.md entry."
+    },
+    "skills.error.path": {
+      "zh-CN": "技能包含不安全或重复路径，已拒绝导入。",
+      "en-US": "The package contains unsafe or duplicate paths and was rejected."
+    },
+    "skills.error.disabled": {
+      "zh-CN": "此技能尚未启用给 OH。",
+      "en-US": "This skill is not enabled in OH."
+    },
+    "skills.error.fullMode": {
+      "zh-CN": "技能仅在完整模式中开放。",
+      "en-US": "Skills are available in Full mode only."
+    },
+    "login.error.restartVerification": {
+      "zh-CN": "本次验证流程已结束，请重新发送验证码，或返回登录页重新验证。",
+      "en-US": "This verification session has ended. Request a new code, or return to the sign-in page to verify again."
+    },
+    "skills.javascript": {
+      "zh-CN": "轻量 JavaScript 计算",
+      "en-US": "Lightweight JavaScript computation"
+    },
+    "skills.runtimeLimits": {
+      "zh-CN": "每次计算最多 2 秒、32 MB 内存；不接触网络、系统文件或账号凭据。不能当作 Node 环境使用。",
+      "en-US": "Each computation has a 2-second and 32 MB memory limit, with no access to the network, system files or account credentials. This is not a Node environment."
+    },
+    "skills.check": {
+      "zh-CN": "检查运行环境",
+      "en-US": "Check runtime"
+    },
+    "skills.checked": {
+      "zh-CN": "运行环境检查通过",
+      "en-US": "Runtime check passed"
+    },
+    "skills.error.runtime": {
+      "zh-CN": "运行环境检查失败，请更新并重启应用。",
+      "en-US": "The runtime check failed. Update and restart the app."
+    },
+    "skills.error.time": {
+      "zh-CN": "计算超过 2 秒，已停止。",
+      "en-US": "Computation stopped after exceeding 2 seconds."
+    },
+    "skills.error.script": {
+      "zh-CN": "脚本未能完成：可能需要此环境没有的功能，或超出内存、堆栈与输出限制。",
+      "en-US": "The script could not finish. It may need unavailable capabilities or exceed memory, stack or output limits."
+    },
+    "skills.error.code": {
+      "zh-CN": "代码、输入或输出超过 64 KB 限制。",
+      "en-US": "Code, input or output exceeds the 64 KB limit."
+    },
+    "login.error.changeMethod": {
+      "zh-CN": "当前验证码已绑定原验证方式。请返回登录页重新登录，再选择其他方式。",
+      "en-US": "The current code is tied to the original verification method. Return to sign-in and choose another method in a new verification session."
+    },
+    "skills.search": {
+      "zh-CN": "搜索技能名称或用途",
+      "en-US": "Search skills by name or purpose"
+    },
+    "skills.noResults": {
+      "zh-CN": "没有找到匹配的技能。",
+      "en-US": "No matching skills found."
+    },
+    "skills.error.notFound": {
+      "zh-CN": "找不到这个技能或文件，请刷新技能库。",
+      "en-US": "This skill or file was not found. Refresh the skill library."
+    },
+    "skills.error.input": {
+      "zh-CN": "计算输入无效，需要有效的 JSON 数据。",
+      "en-US": "Invalid computation input. Valid JSON data is required."
+    },
+    "skills.error.output": {
+      "zh-CN": "计算没有返回可用的 JSON 结果。",
+      "en-US": "The computation did not return a usable JSON result."
+    },
+    "skills.error.text": {
+      "zh-CN": "此文件不是可读取的 UTF-8 文本。请导出后用本地程序打开。",
+      "en-US": "This is not readable UTF-8 text. Export it and open it with a local application."
+    },
+    "skills.error.textSize": {
+      "zh-CN": "文本超过单次读取的 256 KB 限制，请导出后阅读。",
+      "en-US": "The text exceeds the 256 KB reading limit. Export it to read locally."
+    },
+    "skills.error.busy": {
+      "zh-CN": "技能库正忙，请稍后重试。",
+      "en-US": "The skill library is busy. Try again shortly."
+    },
+    "skills.error.generic": {
+      "zh-CN": "技能操作未能完成，请更新应用后重试。",
+      "en-US": "The skill action could not be completed. Update the app and try again."
+    },
+    "tour.xiaoda.title": {
+      "zh-CN": "清小搭 in OneTHU",
+      "en-US": "Qingxiaoda in OneTHU"
+    },
+    "tour.xiaoda.chapter": {
+      "zh-CN": "清小搭",
+      "en-US": "Qingxiaoda"
+    },
+    "tour.xiaoda.lead": {
+      "zh-CN": "在 OneTHU 里使用清小搭、专用智能体，也能把兼容的轻量技能交给 OH。",
+      "en-US": "Chat with Qingxiaoda, choose a specialist agent, and enable compatible lightweight skills for OH, all in OneTHU."
+    },
+    "tour.xiaoda.chat": {
+      "zh-CN": "对话：选择模型提问，历史记录可接着聊。",
+      "en-US": "Chat: choose a model and ask. Continue earlier conversations from History."
+    },
+    "tour.xiaoda.agents": {
+      "zh-CN": "智能体：按任务选助手，点「找它聊」。",
+      "en-US": "Agents: choose an assistant for your task and select “Chat with it”."
+    },
+    "tour.xiaoda.skills": {
+      "zh-CN": "技能：导入并检查，兼容的轻量技能可启用给 OH。",
+      "en-US": "Skills: import and check a package, then enable compatible lightweight skills for OH."
+    },
+    "tour.xiaoda.limits": {
+      "zh-CN": "需 Python、Node 或外部服务？保存给电脑 Agent。",
+      "en-US": "Skills needing Python, Node or external services can be saved for an agent on your computer."
+    },
+    "tour.xiaoda.action": {
+      "zh-CN": "打开清小搭",
+      "en-US": "Open Qingxiaoda"
+    },
+    "tour.xiaoda.before": {
+      "zh-CN": "从清小搭对话开始，也可选择专用智能体。",
+      "en-US": "Start a Qingxiaoda conversation, or choose a specialist agent."
+    },
+    "tour.xiaoda.after": {
+      "zh-CN": "在技能页检查兼容性，再启用给 OH。",
+      "en-US": "Check compatibility in Skills, then enable the skill for OH."
+    },
+    "tour.essentials.title": {
+      "zh-CN": "搜索、OH 与插件",
+      "en-US": "Search, OH and plugins"
+    },
+    "tour.essentials.chapter": {
+      "zh-CN": "搜索与 OH",
+      "en-US": "Search & OH"
+    },
+    "tour.essentials.lead.full": {
+      "zh-CN": "从搜索胶囊找到功能，再用 OneTHU Harness（小 OH）和插件扩展能力。",
+      "en-US": "Find features in the search capsule, then do more with OneTHU Harness (OH) and plugins."
+    },
+    "tour.essentials.lead.compact": {
+      "zh-CN": "搜索和 OneTHU Harness（小 OH）都保留；插件扩展可在完整模式使用。",
+      "en-US": "Search and OneTHU Harness (OH) remain available. Switch to Full mode to use plugin extensions."
+    },
+    "tour.essentials.search": {
+      "zh-CN": "搜索：在胶囊输入名称，找当前模式的功能与内容。",
+      "en-US": "Search: type in the capsule to find features and content available in this mode."
+    },
+    "tour.essentials.oh.full": {
+      "zh-CN": "OH：切到小 OH 描述任务，由工具读取实际数据。",
+      "en-US": "OH: switch to the assistant and describe your task. Tools retrieve actual data."
+    },
+    "tour.essentials.oh.compact": {
+      "zh-CN": "OH：保留对话与自填 API，也可扫码连接微信、飞书。",
+      "en-US": "OH: chat with your own API provider, or scan to connect WeChat and Feishu."
+    },
+    "tour.essentials.plugins.full": {
+      "zh-CN": "插件：在「我的」管理扩展、主题与插件功能页。",
+      "en-US": "Plugins: manage extensions, themes and plugin pages from My."
+    },
+    "tour.essentials.plugins.compact": {
+      "zh-CN": "插件可增加主题和功能；在设置切到完整模式后使用。",
+      "en-US": "Plugins add themes and features. Switch to Full mode in settings to use them."
+    },
+    "tour.essentials.openSearch": {
+      "zh-CN": "试试搜索",
+      "en-US": "Try search"
+    },
+    "tour.essentials.openOh": {
+      "zh-CN": "打开小 OH",
+      "en-US": "Open OH"
+    },
+    "tour.essentials.openPlugins": {
+      "zh-CN": "打开插件页",
+      "en-US": "Open plugins"
+    },
+    "tour.essentials.openMode": {
+      "zh-CN": "查看使用模式",
+      "en-US": "View modes"
+    },
+    "tour.essentials.before": {
+      "zh-CN": "点胶囊，输入名称，找到功能与校园内容。",
+      "en-US": "Open the capsule and search for features or campus content."
+    },
+    "tour.essentials.after": {
+      "zh-CN": "切到小 OH 对话；插件与主题在完整模式管理。",
+      "en-US": "Switch to OH to chat. Manage plugins and themes in Full mode."
+    },
+    "tour.vault.drag.title": {
+      "zh-CN": "暂存箱：长按、拖入、再分享",
+      "en-US": "Staging box: hold, drag and share"
+    },
+    "tour.vault.drag.lead": {
+      "zh-CN": "长按支持拖动的内容，移到暂存箱按钮后松手；先在本机收纳，再按需分享。",
+      "en-US": "Hold a supported item, drag it onto the staging button, then release. Collect locally and share when needed."
+    },
+    "tour.vault.drag.hold": {
+      "zh-CN": "长按作业、文件或白板组件，提起后开始移动。",
+      "en-US": "Hold an assignment, file or whiteboard component, then lift and drag."
+    },
+    "tour.vault.drag.drop": {
+      "zh-CN": "拖到暂存箱按钮的高亮区域，松手完成收纳。",
+      "en-US": "Drag into the highlighted area around the staging button and release."
+    },
+    "tour.vault.drag.sources": {
+      "zh-CN": "还支持标签页、工作区、搜索结果、日程与名片。",
+      "en-US": "Tabs, workspaces, search results, events and cards are also supported."
+    },
+    "tour.vault.drag.more": {
+      "zh-CN": "邮件、云盘、GitLab 项目及已接入的设置条目也可收纳。",
+      "en-US": "Mail, cloud items, GitLab projects and integrated settings entries can also be collected."
+    },
+    "tour.vault.drag.limit": {
+      "zh-CN": "只有已接入拖动的内容可收纳；远端文件可能需要先缓存。",
+      "en-US": "Only integrated drag sources are supported. Remote files may need caching first."
+    },
+    "tour.vault.drag.before": {
+      "zh-CN": "按住示例作业，等待提起，再向暂存箱移动。",
+      "en-US": "Hold the example assignment until it lifts, then drag toward the staging box."
+    },
+    "tour.vault.drag.after": {
+      "zh-CN": "拖进高亮区域松手，再打开箱子查看内容。",
+      "en-US": "Release inside the highlighted area, then open the box to view the item."
+    },
+    "state.vault.defaultName": {
+      "zh-CN": "我的暂存箱",
+      "en-US": "My staging box"
+    },
+    "enum.label.tuojAI": {
+      "zh-CN": "TUOJ（AI 版）",
+      "en-US": "TUOJ (AI edition)"
+    },
+    "enum.label.tuojClassic": {
+      "zh-CN": "TUOJ（经典版）",
+      "en-US": "TUOJ (classic edition)"
+    },
+    "enum.label.ojPlatforms": {
+      "zh-CN": "OJ 平台",
+      "en-US": "OJ platforms"
+    }
+  }
+}

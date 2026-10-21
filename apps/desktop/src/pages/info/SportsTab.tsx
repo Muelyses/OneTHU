@@ -1,3 +1,6 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
+import { Input } from "@onethu/gui";
 /**
  * 体育场馆预约 —— SportsTab（thu-info-app sports 系列（sportsDetail/sportsRecord）移植）。
  * 两段式只读 + 预约：
@@ -44,6 +47,8 @@ const SPORTS_UNAVAILABLE = "体育预约暂不可用，请在「清华体育」A
 const PHONE_RE = /^(1[3-9][0-9]|15[036789]|18[89])\d{8}$/;
 
 export function SportsTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   /* —— 场馆/日期选择 —— */
@@ -134,14 +139,14 @@ export function SportsTab() {
       setNoticeMsg(null);
       try {
         await info.unsubscribeSportsReservation(bookId);
-        setNoticeMsg("已退订。");
+        setNoticeMsg(i18n("pages.info.sportstab.81ec63d2a4cc"));
         await Promise.all([
           fetchRecords(),
           loadResources(venue, date),
         ]);
       } catch (err) {
         logTabErr("SPORTS-UNSUB", err);
-        setNoticeMsg(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : `退订失败：${tabErrorText(err)}`);
+        setNoticeMsg(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n("pages.info.sportstab.2759ad2a6b6c", { value: String(tabErrorText(err)) }));
       } finally {
         setUnsubbing(null);
       }
@@ -153,17 +158,17 @@ export function SportsTab() {
   const savePhone = useCallback(async () => {
     const p = phone.trim();
     if (!PHONE_RE.test(p)) {
-      setPhoneMsg("请输入正确的 11 位手机号");
+      setPhoneMsg(i18n("pages.info.sportstab.722df4de2e57"));
       return;
     }
     setPhoneBusy(true);
     setPhoneMsg(null);
     try {
       await info.updateSportsPhoneNumber(p);
-      setPhoneMsg("手机号已保存到体育系统");
+      setPhoneMsg(i18n("pages.info.sportstab.5e119f7a81fe"));
     } catch (err) {
       logTabErr("SPORTS-PHONE", err);
-      setPhoneMsg(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : `保存失败：${tabErrorText(err)}`);
+      setPhoneMsg(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n("pages.info.sportstab.a3299407580e", { value: String(tabErrorText(err)) }));
     } finally {
       setPhoneBusy(false);
     }
@@ -179,7 +184,7 @@ export function SportsTab() {
     } catch (err) {
       logTabErr("SPORTS-CAPTCHA", err);
       setCaptcha(null);
-      setCaptchaErr(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : `验证码拉取失败：${tabErrorText(err)}`);
+      setCaptchaErr(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n("pages.info.sportstab.edb3f8bb40a5", { value: String(tabErrorText(err)) }));
     } finally {
       setCaptchaLoading(false);
     }
@@ -211,13 +216,13 @@ export function SportsTab() {
         picked.resHash,
         true, // skipPayment：用户场景免费，不接支付流
       );
-      setNoticeMsg(`预约成功：${venue.name} · ${date} · ${picked.timeSession} · ${picked.fieldName}（免费场地无需支付；如需付费请到体育系统办理）`);
+      setNoticeMsg(i18n("pages.info.sportstab.208514882cd8", { name: String(venue.name), date: String(date), timeSession: String(picked.timeSession), fieldName: String(picked.fieldName) }));
       setCaptchaOpen(false);
       setCode("");
       await Promise.all([loadResources(venue, date), fetchRecords()]);
     } catch (err) {
       logTabErr("SPORTS-BOOK", err);
-      setCaptchaErr(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : `预约失败：${tabErrorText(err)}（可点击验证码图刷新后重试）`);
+      setCaptchaErr(isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n("pages.info.sportstab.210e2fea0238", { value: String(tabErrorText(err)) }));
       void refreshCaptcha();
     } finally {
       setBooking(false);
@@ -237,14 +242,14 @@ export function SportsTab() {
       const tb = b[0].split("-")[0]?.trim() ?? "";
       return ta.localeCompare(tb, "zh-Hans-CN", { numeric: true });
     });
-  }, [res]);
+  }, [uiLocale, res]);
 
   const closed = res !== null && res.init <= 0;
   const phoneOk = PHONE_RE.test(phone.trim());
 
   return (
     <>
-      <SectionHead title="场馆与日期" aside={res?.count ? `最多可约 ${res.count} 片` : "体育系统 · 网上预约"} />
+      <SectionHead title={i18n("pages.info.sportstab.ed8263515e2f")} aside={res?.count ? i18n("pages.info.sportstab.d814910bfbc4", { count: String(res.count) }) : i18n("pages.info.sportstab.5d220af4df4c")} />
       <div className="chips" style={{ marginBottom: 10 }}>
         {SPORTS_VENUES.map((v) => (
           <button
@@ -270,14 +275,12 @@ export function SportsTab() {
             setDate(d);
             if (d) void loadResources(venue, d);
           }}
-          aria-label="预约日期"
+          aria-label={i18n("pages.info.sportstab.35bc4552c921")}
         />
-        <button className="btn btn-ghost" onClick={() => void loadResources(venue, date)} disabled={resState === "loading"}>
-          刷新
-        </button>
+        <Btn variant="ghost" onClick={() => void loadResources(venue, date)} disabled={resState === "loading"}>{i18n("pages.info.sportstab.aee887434131")}</Btn>
       </div>
 
-      <SectionHead title={`时段与场地 · ${venue.name}`} aside={closed ? "当前不在开放预约时段" : undefined} />
+      <SectionHead title={i18n("pages.info.sportstab.d328b0d4ae31", { name: String(venue.name) })} aside={closed ? i18n("pages.info.sportstab.70d143e6729b") : undefined} />
       {resState === "error" ? (
         resUnavailable ? (
           <ErrorNote text={SPORTS_UNAVAILABLE} onRetry={() => void loadResources(venue, date)} />
@@ -288,12 +291,12 @@ export function SportsTab() {
       {resState === "loading" ? (
         <SkeletonRows rows={5} />
       ) : resState === "ready" && sessions.length === 0 ? (
-        <TabEmpty text="该场馆当日暂无可预约时段（可能未开放或已约满）。" />
+        <TabEmpty text={i18n("pages.info.sportstab.0e9546c6723c")} />
       ) : resState === "ready" ? (
         <>
           {closed ? (
             <Card style={{ marginBottom: 12 }}>
-              <div className="empty">当前不在开放预约时段（开放时间以体育系统为准），以下仅展示现状。</div>
+              <div className="empty">{i18n("pages.info.sportstab.b172e1bbb00d")}</div>
             </Card>
           ) : null}
           {sessions.map(([session, fields]) => (
@@ -303,8 +306,8 @@ export function SportsTab() {
                   <thead>
                     <tr>
                       <th>{session}</th>
-                      <th className="num">状态</th>
-                      <th className="num">费用</th>
+                      <th className="num">{i18n("pages.info.sportstab.6320b4a8722a")}</th>
+                      <th className="num">{i18n("pages.info.sportstab.7fe8603c084e")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -325,10 +328,10 @@ export function SportsTab() {
                                   : "chip chip-gray"
                             }
                           >
-                            {picked?.resId === r.resId ? "已选" : r.bookId ? "已预约" : r.locked ? "锁定" : bookable(r) ? "可约" : "不可约"}
+                            {picked?.resId === r.resId ? i18n("pages.info.sportstab.7ecf1cde6486") : r.bookId ? i18n("pages.info.sportstab.82c6a357291a") : r.locked ? i18n("pages.info.sportstab.ff9872a023e3") : bookable(r) ? i18n("pages.info.sportstab.d1d50368fefe") : i18n("pages.info.sportstab.a4c0233f1d6c")}
                           </span>
                         </td>
-                        <td className="num">{r.cost === undefined ? "–" : r.cost === 0 ? "免费" : `¥${r.cost}`}</td>
+                        <td className="num">{r.cost === undefined ? "–" : r.cost === 0 ? i18n("pages.info.sportstab.649a0fc7237e") : `¥${r.cost}`}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -342,28 +345,17 @@ export function SportsTab() {
       {/* 预约卡（选中场地后出现） */}
       {picked ? (
         <>
-          <SectionHead title="预约" aside={`${venue.name} · ${date} · ${picked.timeSession} · ${picked.fieldName}`} />
+          <SectionHead title={i18n("pages.info.sportstab.352cdc807892")} aside={`${venue.name} · ${date} · ${picked.timeSession} · ${picked.fieldName}`} />
           <Card style={{ marginBottom: 16 }}>
             <div className="field">
-              <label htmlFor="sports-phone">手机号（用于接收预约通知）</label>
+              <label htmlFor="sports-phone">{i18n("pages.info.sportstab.56a0480f18eb")}</label>
               <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  id="sports-phone"
-                  className="input"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="11 位手机号"
-                  inputMode="numeric"
-                />
-                <button className="btn btn-ghost" onClick={() => void savePhone()} disabled={phoneBusy || !phoneOk} title="保存到体育系统，接收短信通知">
-                  {phoneBusy ? "保存中…" : "保存"}
-                </button>
+                <Input value={phone} onChange={(value) => setPhone(value)} placeholder={i18n("pages.info.sportstab.2f332d18c42d")} inputMode="numeric" />
+                <Btn variant="ghost" onClick={() => void savePhone()} disabled={phoneBusy || !phoneOk} titleAttr={i18n("pages.info.sportstab.9b0dac77aebd")}>{phoneBusy ? i18n("pages.info.sportstab.ff509c9ba052") : i18n("pages.info.sportstab.a3030bf8f16d")}</Btn>
               </div>
             </div>
             {phoneMsg ? <div style={{ marginTop: -6, marginBottom: 8, fontSize: 12, color: "var(--text-3)" }}>{phoneMsg}</div> : null}
-            <button className="btn btn-primary" onClick={openCaptcha} disabled={!phoneOk}>
-              {phoneOk ? "预约（下一步：验证码）" : "请先填写 11 位手机号"}
-            </button>
+            <Btn variant="solid" tone="brand" onClick={openCaptcha} disabled={!phoneOk}>{phoneOk ? i18n("pages.info.sportstab.08eb78cf3163") : i18n("pages.info.sportstab.dbb234c0abe9")}</Btn>
           </Card>
         </>
       ) : null}
@@ -371,11 +363,8 @@ export function SportsTab() {
       {/* 验证码面板（交互复用 NetworkTab usereg 验证码面板：图可点刷新 + 输入 + 提交） */}
       {captchaOpen && picked ? (
         <Card style={{ marginBottom: 16, padding: 18 }}>
-          <div style={{ fontWeight: 600, marginBottom: 10, fontSize: 14 }}>预约验证码</div>
-          <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 14, lineHeight: 1.6 }}>
-            {venue.name} · {date} · {picked.timeSession} · {picked.fieldName}
-            {picked.cost ? ` · ¥${picked.cost}` : " · 免费"}；点击右侧图可刷新验证码。
-          </div>
+          <div style={{ fontWeight: 600, marginBottom: 10, fontSize: 14 }}>{i18n("pages.info.sportstab.d851993c4e6a")}</div>
+          <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 14, lineHeight: 1.6 }}>{i18nRich("pages.info.sportstab.a4d97ae215ba", { name: venue.name, date: date, timeSession: picked.timeSession, fieldName: picked.fieldName, value: picked.cost ? ` · ¥${picked.cost}` : i18n("pages.info.sportstab.705fc6e91775") })}</div>
           <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", marginBottom: 6 }}>
             <div
               onClick={() => !captchaLoading && void refreshCaptcha()}
@@ -391,14 +380,14 @@ export function SportsTab() {
                 overflow: "hidden",
                 flexShrink: 0,
               }}
-              title="点击刷新验证码"
+              title={i18n("pages.info.sportstab.6baa450e31c0")}
             >
               {captchaLoading ? (
-                <span style={{ fontSize: 12, opacity: 0.6 }}>加载中…</span>
+                <span style={{ fontSize: 12, opacity: 0.6 }}>{i18n("pages.info.sportstab.4927a53bcc88")}</span>
               ) : captcha ? (
-                <img src={captcha} alt="验证码" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={captcha} alt={i18n("pages.info.sportstab.bb015c60bafc")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
-                <span style={{ fontSize: 12, opacity: 0.6 }}>点击重试</span>
+                <span style={{ fontSize: 12, opacity: 0.6 }}>{i18n("pages.info.sportstab.965fb250e5fd")}</span>
               )}
             </div>
             <input
@@ -407,21 +396,17 @@ export function SportsTab() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") void doBook();
               }}
-              placeholder="验证码"
+              placeholder={i18n("pages.info.sportstab.bb015c60bafc")}
               style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)", fontSize: 14 }}
             />
-            <button className="btn btn-primary" onClick={() => void doBook()} disabled={booking || !code.trim()}>
-              {booking ? "提交中…" : "确认预约"}
-            </button>
-            <button className="btn btn-ghost" onClick={() => { setCaptchaOpen(false); setCode(""); }}>
-              取消
-            </button>
+            <Btn variant="solid" tone="brand" onClick={() => void doBook()} disabled={booking || !code.trim()}>{booking ? i18n("pages.info.sportstab.18931020ad52") : i18n("pages.info.sportstab.72944bf6d779")}</Btn>
+            <Btn variant="ghost" onClick={() => { setCaptchaOpen(false); setCode(""); }}>{i18n("pages.info.sportstab.2cd0f3be8738")}</Btn>
           </div>
           {captchaErr ? <div style={{ marginTop: 10, fontSize: 13, lineHeight: 1.5, color: "#d33" }}>{captchaErr}</div> : null}
         </Card>
       ) : null}
 
-      <SectionHead title="我的预约" aside="未支付/已支付记录（不接支付流，仅展示状态）" />
+      <SectionHead title={i18n("pages.info.sportstab.1a558735ea57")} aside={i18n("pages.info.sportstab.4401db92a33a")} />
       {recState === "error" ? (
         recUnavailable ? (
           <ErrorNote text={SPORTS_UNAVAILABLE} onRetry={() => void fetchRecords()} />
@@ -432,7 +417,7 @@ export function SportsTab() {
       {recState === "loading" && !records ? (
         <SkeletonRows rows={4} />
       ) : (records?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无预约记录。" />
+        <TabEmpty text={i18n("pages.info.sportstab.c3b180cc0d49")} />
       ) : (
         <>
           {noticeMsg ? (
@@ -443,23 +428,17 @@ export function SportsTab() {
           <Card className="list">
             {records!.map((r, i) => (
               <div className="row" key={`${r.name}-${r.time}-${i}`} style={{ animationDelay: `${Math.min(i, 12) * 25}ms` }}>
-                <span className={/未支付/.test(r.method) ? "chip chip-amber" : "chip chip-green"}>{r.method || "已预约"}</span>
+                <span className={/未支付/.test(r.method) ? "chip chip-amber" : "chip chip-green"}>{r.method || i18n("pages.info.sportstab.82c6a357291a")}</span>
                 <div className="row-main">
                   <div className="row-title">{r.name} · {r.field}</div>
                   <div className="row-sub">{r.time}{r.price ? ` · ¥${r.price}` : ""}</div>
                 </div>
                 {r.bookId ? (
-                  <button
-                    className="btn btn-ghost"
-                    disabled={unsubbing !== null}
-                    onClick={() => {
-                      if (globalThis.confirm?.(`确定退订「${r.name} ${r.field} ${r.time}」？`)) {
+                  <Btn variant="ghost" disabled={unsubbing !== null} onClick={() => {
+                      if (globalThis.confirm?.(i18n("pages.info.sportstab.8353d850c8c6", { name: String(r.name), field: String(r.field), time: String(r.time) }))) {
                         void unsubscribe(r.bookId!);
                       }
-                    }}
-                  >
-                    {unsubbing === r.bookId ? "退订中…" : "退订"}
-                  </button>
+                    }}>{unsubbing === r.bookId ? i18n("pages.info.sportstab.4e3d949d0cda") : i18n("pages.info.sportstab.660aa1f65abc")}</Btn>
                 ) : null}
               </div>
             ))}

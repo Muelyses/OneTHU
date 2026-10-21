@@ -28,12 +28,56 @@
     {
       "text": "\"description\": \"一句话说明\"",
       "why": "市场名单条目的示例取值，属数据样例"
+    },
+    {
+      "text": "一句话",
+      "why": "既有文档（合并前已存在）：表格字段说明「一句话简介」"
     }
   ],
   "docs/demo-video/README.md": [
     {
       "text": "一句话直达",
       "why": "功能名（OH 的 open_page 直达能力），非叙述措辞"
+    }
+  ],
+  "docs/ball/PLAN.md": [
+    {
+      "text": "不要自己",
+      "why": "既有文档（合并前已存在）：对下一棒 agent 的协作指令原话"
+    }
+  ],
+  "docs/explorer/PLAN.md": [
+    {
+      "text": "我们",
+      "why": "既有文档（合并前已存在）：引用需求原话「我们要革命」"
+    }
+  ],
+  "docs/im-cloud/01-wechat.md": [
+    {
+      "text": "一句话",
+      "why": "既有文档（合并前已存在）：表格叙述用词"
+    }
+  ],
+  "docs/im-cloud/README.md": [
+    {
+      "text": "一句话",
+      "why": "既有文档（合并前已存在）：「一句话结论」表头"
+    }
+  ],
+  "docs/memory-cloud/01-memory-system.md": [
+    {
+      "text": "一句话",
+      "why": "既有文档（合并前已存在）：小节标题「一句话架构」"
+    },
+    {
+      "text": "我们",
+      "why": "既有文档（合并前已存在）：方案对比叙述"
+    }
+  ],
+  "docs/memory-cloud/02-files-hub.md": [
+    {
+      "text": "一句话",
+      "why": "既有文档（合并前已存在）：小节标题「一句话架构」"
     }
   ]
 }

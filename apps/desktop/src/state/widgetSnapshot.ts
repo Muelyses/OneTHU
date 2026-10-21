@@ -1,3 +1,4 @@
+import { buildWidgetLocale, widgetText, type WidgetLocaleSnapshot } from "./widgetText.js";
 /**
  * 桌面小组件快照（纯计算，可测）：把「这块小组件要显示的东西」压成原生能画的数据。
  *
@@ -14,7 +15,7 @@ import { parseLearnTime } from "@onethu/core/src/learn/time.js";
 import { courseColor, urgencyColor } from "../lib/courseColor.js";
 import { encodeWidgetTarget } from "./widgetTarget.js";
 import { effectiveRemind, type HwRemindState } from "./hwRemind.js";
-import { scheduleStart, type PlanHomework, type PlanScheduleEntry } from "./notifyPlan.js";
+import { scheduleStart, type PlanEventEntry, type PlanHomework, type PlanScheduleEntry } from "./notifyPlan.js";
 
 /** 与 Kotlin 侧约定的快照结构 */
 export interface WidgetRow {
@@ -35,16 +36,16 @@ export interface WidgetRow {
    * 缺省（0/undefined）＝非时间性行（插件行、实时状态行），原生保持快照原文。 */
   /** 事件开始时刻（epoch ms）：课程上课 / DDL 截止 */
   at?: number;
-  /** 事件结束时刻（epoch ms）：课程下课；DDL 无此字段（过点即失效） */
+  /** 事件结束时刻（epoch ms）：课程下课；DDL 与日程无此字段（过点即失效，不留「进行中」态） */
   until?: number;
   /** 行的类型（原生据此重算次行与过期判定） */
-  rel?: "class" | "ddl";
+  rel?: "class" | "ddl" | "event";
   /** 上课地点（class 行专用；原生「正在上课」重排次行用） */
   loc?: string;
 }
 
 /** 插件小组件的槽位内容（snapshot 里的形态，槽位号为 map 键） */
-export interface WidgetSlotContent {
+export interface WidgetSlotContent extends WidgetLocaleSnapshot {
   title: string;
   rows: WidgetRow[];
   footer: string;
@@ -56,7 +57,7 @@ export interface WidgetSlotInput extends WidgetSlotContent {
   slot: string;
 }
 
-export interface WidgetSnapshot {
+export interface WidgetSnapshot extends WidgetLocaleSnapshot {
   title: string;
   updatedAt: number;
   /** 快照归属的那一天（epoch ms）。原生隔天重画时据此换标题、并把前一天的课行清掉 */
@@ -68,12 +69,12 @@ export interface WidgetSnapshot {
   /** 列表形态标记：原生据此选布局（缺省即 list，兼容插件槽位内容） */
   kind?: "list";
   /** 行数的静态账（原生重画时重算可见数，消失的行不再计入） */
-  counts?: { classes: number; ddls: number; more: number; hadClass: boolean };
+  counts?: { classes: number; ddls: number; events: number; more: number; hadClass: boolean };
 }
 
 /** 图标组形态：若干原子图标并列（收藏夹 = 内嵌的文件夹）。
  *  落点一律是已编码字符串（`encodeWidgetTarget` 的产物），构造器不再拆开重组。 */
-export interface WidgetGridSnapshot {
+export interface WidgetGridSnapshot extends WidgetLocaleSnapshot {
   kind: "grid";
   updatedAt: number;
   title: string;
@@ -84,7 +85,7 @@ export interface WidgetGridSnapshot {
 }
 
 /** 快捷方式形态：一个图标 + 一行名称（1×1 起；拖大后图标居中显示） */
-export interface WidgetShortcutSnapshot {
+export interface WidgetShortcutSnapshot extends WidgetLocaleSnapshot {
   kind: "shortcut";
   updatedAt: number;
   label: string;
@@ -96,7 +97,7 @@ export interface WidgetShortcutSnapshot {
 export type WidgetInstanceContent = WidgetSnapshot | WidgetGridSnapshot | WidgetShortcutSnapshot;
 
 /** 推送载荷：实例内容 + 插件槽位内容 + 是否允许原生修剪已移除实例的内容 */
-export interface WidgetPushPayload {
+export interface WidgetPushPayload extends WidgetLocaleSnapshot {
   instances: Record<string, WidgetInstanceContent>;
   slots: Record<string, WidgetSlotContent>;
   /** 只有在成功读到「桌面上有哪些实例」时才允许修剪——
@@ -112,8 +113,12 @@ export interface WidgetPushPayload {
 export const WIDGET_MAX_ROWS = 20;
 
 export interface WidgetSnapshotInput {
+  language?: WidgetLocaleSnapshot;
   schedule?: PlanScheduleEntry[] | null;
   homework?: PlanHomework[] | null;
+  /** 自定义日程（本地 + 云同步，按 rrule 展开后的场次）；只有勾了
+   *  「在桌面小组件显示」（`inWidget`）的场次进卡片 */
+  events?: PlanEventEntry[] | null;
   remind: HwRemindState;
   now: number;
   /** 最多带几行候选（缺省 WIDGET_MAX_ROWS）。原生再按实际高度截断，故这里只需给足。 */
@@ -137,21 +142,23 @@ function clip(s: string, n: number): string {
   return t.length > n ? `${t.slice(0, n)}…` : t;
 }
 
-/** 「还有 40 分钟」/「还有 3 小时」/「还有 2 天」 */
-function left(ms: number): string {
-  const m = Math.max(1, Math.round(ms / 60_000));
-  if (m < 60) return `还有 ${m} 分钟`;
-  if (m < 2880) return `还有 ${Math.round(m / 60)} 小时`;
-  return `还有 ${Math.round(m / 1440)} 天`;
+/** 某时刻所在自然日的最后一毫秒（全天日程的失效点） */
+function dayEndOf(ms: number): number {
+  const d = new Date(ms);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - 1;
 }
 
 /**
  * 生成快照。
  *
- * 排序取「今天最先发生的事」：课程按上课时间，DDL 按截止时间，两者合排后取前 N 行——
- * 用户瞄一眼小组件要看到的是「接下来干什么」，而不是分类清单。
+ * 排序取「今天最先发生的事」：课程按上课时间，DDL 按截止时间，勾了提醒的自定义日程按它的
+ * 失效时刻（定时日程=开始，全天日程=当天结束），几者合排后取前 N 行——用户瞄一眼小组件要
+ * 看到的是「接下来干什么」，而不是分类清单。
  */
 export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot {
+  const language = input.language ? { locale: input.language.locale, widgetText: input.language.widgetText } : buildWidgetLocale();
+  const words = widgetText(language);
+  const dayLabel = (at: number): string => ymd(at) === today ? words.text("today") : words.date(at);
   const now = input.now;
   const today = ymd(now);
   const maxRows = Math.max(1, input.maxRows ?? WIDGET_MAX_ROWS);
@@ -159,7 +166,7 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
   interface Entry {
     at: number;
     row: WidgetRow;
-    kind: "class" | "ddl";
+    kind: "class" | "ddl" | "event";
   }
   const entries: Entry[] = [];
 
@@ -186,8 +193,8 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
       kind: "class",
       // 课程用课表里的同一个颜色：用户在课表里认的就是「紫色那门课」
       row: {
-        text: `${hm(start)} ${clip(e.courseName ?? "课程", 14)}`,
-        sub: isOngoing ? `正在上课${loc ? " · " + loc : ""}` : [loc, leftMs > 60_000 ? left(leftMs) : ""].filter(Boolean).join(" · ") || undefined,
+        text: words.text("classRow", { time: hm(start), title: clip(e.courseName ?? words.text("course"), 14) }),
+        sub: isOngoing ? words.join([words.text("ongoing"), loc]) : words.join([loc, leftMs > 60_000 ? words.left(leftMs) : ""]) || undefined,
         color: courseColor(String(e.courseName ?? "")),
         strong: isOngoing,
         // 机器字段：原生渲染时按当前时钟重算倒计时/正在上课/过期剔除（R21）
@@ -213,13 +220,45 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
       at: dl,
       kind: "ddl",
       row: {
-        text: `DDL ${clip(h.title ?? "作业", 14)}`,
-        sub: `${ymd(dl) === today ? "今天" : `${new Date(dl).getMonth() + 1}/${new Date(dl).getDate()}`} ${hm(dl)} · ${left(leftDdl)}`,
+        text: words.text("ddlRow", { title: clip(h.title ?? words.text("homework"), 14) }),
+        sub: words.text("relativeRow", { day: dayLabel(dl), time: hm(dl), remaining: words.left(leftDdl) }),
         color: urgencyColor(leftDdl),
         strong: leftDdl <= 6 * 3600_000,   // 6 小时内：加粗，别让它淹在列表里
         // 机器字段：原生重算「还有 X」，过点即失效剔除（R21）
         at: dl,
         rel: "ddl",
+      },
+    });
+  }
+
+  /* 勾了「在桌面小组件显示」的自定义日程：与 DDL 同一套行（未到点 → 倒计时，到点即失效），
+   * 只有脚注按「项日程」单独计数。
+   *
+   * `at` 取「这件事还值得留在卡片上的那个时刻」，与 DDL 的截止同理：
+   *   · 定时日程 = 开始时刻（到点就该去做这件事了）；
+   *   · 全天日程 = 当天结束（整天都该看得见，当天过完才消失）。
+   * 于是「还有 X」对定时日程是距开始、对全天日程是距当天结束——两者都是「还剩多久」。 */
+  const eventHorizon = now + 7 * 86_400_000;
+  for (const e of input.events ?? []) {
+    if (e.inWidget !== true) continue;
+    const start = Number(e.start);
+    if (!Number.isFinite(start)) continue;
+    const end = Number(e.end);
+    const at = e.allDay === true
+      ? (Number.isFinite(end) && end > start ? end - 1 : dayEndOf(start))
+      : start;
+    if (at <= now || at > eventHorizon) continue;
+    const leftEvent = at - now;
+    entries.push({
+      at,
+      kind: "event",
+      row: {
+        text: words.text("eventRow", { title: clip(e.summary ?? words.text("event"), 14) }),
+        sub: words.text("relativeRow", { day: dayLabel(at), time: hm(at), remaining: words.left(leftEvent) }),
+        color: urgencyColor(leftEvent),
+        strong: leftEvent <= 6 * 3600_000,
+        at,
+        rel: "event",
       },
     });
   }
@@ -237,46 +276,54 @@ export function buildWidgetSnapshot(input: WidgetSnapshotInput): WidgetSnapshot 
    * 的 nativeRender）：显示几行 + 还有几项，两者之和恒等于仍有效的条目总数。 */
   const shownClasses = rows.filter((r) => r.rel === "class").length;
   const shownDdls = rows.filter((r) => r.rel === "ddl").length;
+  const shownEvents = rows.filter((r) => r.rel === "event").length;
   const classCount = entries.filter((e) => e.kind === "class").length;
   const ddlCount = entries.filter((e) => e.kind === "ddl").length;
-  const more = Math.max(0, entries.length - (shownClasses + shownDdls));
+  const eventCount = entries.filter((e) => e.kind === "event").length;
+  const more = Math.max(0, entries.length - (shownClasses + shownDdls + shownEvents));
   const parts: string[] = [];
-  if (shownClasses) parts.push(`${shownClasses} 节课`);
-  if (shownDdls) parts.push(`${shownDdls} 个截止`);
+  if (shownClasses) parts.push(words.count("classes", shownClasses));
+  if (shownDdls) parts.push(words.count("ddls", shownDdls));
+  if (shownEvents) parts.push(words.count("events", shownEvents));
   const footer = parts.length === 0
-    ? (hadClass ? "今天的课已上完" : "今天没有课与截止")
-    : `${parts.join(" · ")}${more > 0 ? ` · 还有 ${more} 项` : ""}`;
+    ? words.text(hadClass ? "completed" : "empty")
+    : words.join([...parts, more > 0 ? words.count("more", more) : ""]);
 
   return {
-    title: `今天 ${new Date(now).getMonth() + 1}月${new Date(now).getDate()}日`,
+    ...language,
+    title: words.title(now),
     updatedAt: now,
     titleAt: now,
-    target: "today",
+    target: "homepage",
     rows,
     footer,
-    counts: { classes: classCount, ddls: ddlCount, more, hadClass },
+    counts: { classes: classCount, ddls: ddlCount, events: eventCount, more, hadClass },
   };
 }
 
 /** 序列化为推送用的 JSON（原生只认字符串载荷） */
 /** 空列表内容（绑定不可用时的兜底：不推空卡，直接回落日程与 DDL） */
 export function buildGridSnapshot(input: {
+  language?: WidgetLocaleSnapshot;
   title: string;
   items: Array<{ label: string; icon?: string; target: string }>;
   target: string;
   params?: Record<string, unknown>;
   now: number;
 }): WidgetGridSnapshot {
+  const language = input.language ? { locale: input.language.locale, widgetText: input.language.widgetText } : buildWidgetLocale();
   return {
+    ...language,
     kind: "grid",
     updatedAt: input.now,
-    title: String(input.title || "收藏"),
+    title: String(input.title || widgetText(language).text("favorites")),
     target: encodeWidgetTarget(input.target || "folder", input.params ?? null),
     items: input.items.slice(0, 8).map((it) => ({ label: String(it.label ?? ""), icon: it.icon, target: it.target })),
   };
 }
 
 export function buildShortcutSnapshot(input: {
+  language?: WidgetLocaleSnapshot;
   label: string;
   sub?: string;
   icon?: string;
@@ -284,18 +331,21 @@ export function buildShortcutSnapshot(input: {
   params?: Record<string, unknown>;
   now: number;
 }): WidgetShortcutSnapshot {
+  const language = input.language ? { locale: input.language.locale, widgetText: input.language.widgetText } : buildWidgetLocale();
   return {
+    ...language,
     kind: "shortcut",
     updatedAt: input.now,
     label: String(input.label ?? ""),
     sub: input.sub ? String(input.sub) : undefined,
     icon: input.icon,
-    target: encodeWidgetTarget(input.target || "today", input.params ?? null),
+    target: encodeWidgetTarget(input.target || "homepage", input.params ?? null),
   };
 }
 
 /** 详情形态：就是列表形态（标题 + 若干行 + 脚注），拉得越高行数越多 */
 export function buildDetailSnapshot(input: {
+  language?: WidgetLocaleSnapshot;
   title: string;
   rows: WidgetRow[];
   footer?: string;
@@ -304,12 +354,14 @@ export function buildDetailSnapshot(input: {
   now: number;
   maxRows?: number;
 }): WidgetSnapshot {
+  const language = input.language ? { locale: input.language.locale, widgetText: input.language.widgetText } : buildWidgetLocale();
   return {
+    ...language,
     kind: "list",
-    title: String(input.title || "详情"),
+    title: String(input.title || widgetText(language).text("detail")),
     updatedAt: input.now,
-    titleAt: input.now,
-    target: encodeWidgetTarget(input.target || "today", input.params ?? null),
+    titleAt: 0,
+    target: encodeWidgetTarget(input.target || "homepage", input.params ?? null),
     rows: input.rows.slice(0, Math.max(1, input.maxRows ?? WIDGET_MAX_ROWS)).map((r) => ({
       text: String(r.text ?? ""),
       sub: r.sub ? String(r.sub) : undefined,
@@ -328,7 +380,8 @@ export function serializeWidgetPush(p: WidgetPushPayload): string {
     if (!content) continue;
     instances[String(id)] = content;
   }
-  return JSON.stringify({ instances, slots: p.slots ?? {}, prune: p.prune === true });
+  const language = p.locale && p.widgetText ? { locale: p.locale, widgetText: p.widgetText } : buildWidgetLocale();
+  return JSON.stringify({ ...language, instances, slots: p.slots ?? {}, prune: p.prune === true });
 }
 
 export function serializeWidgetSnapshot(s: WidgetSnapshot): string {

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 作业 DDL 提醒时间（两级模型，用户拍板 2026-09-09）：
  * ① 全局默认节点：所有作业共用（网络学堂首页「DDL 提醒」卡设置）；
@@ -129,7 +130,7 @@ export function effectiveRemind(s: HwRemindState, id: string): number {
 
 /** "30 分钟" / "2 小时" / "3 天"（给铃铛标签与选项） */
 export function fmtRemindOffset(m: number): string {
-  if (m < 60) return `${m} 分钟`;
-  if (m % 1440 === 0) return `${m / 1440} 天`;
-  return `${Math.round(m / 60)} 小时`;
+  if (m < 60) return i18n("state.hwremind.8d2f9af2212a", { count: m });
+  if (m % 1440 === 0) return i18n("state.hwremind.1a009fb8a332", { count: m / 1440 });
+  return i18n("state.hwremind.1789166f275b", { count: Math.round(m / 60) });
 }

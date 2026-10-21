@@ -17,18 +17,18 @@ const mode = readFileSync("apps/desktop/src/state/settingsMode.ts", "utf8");
 const layout = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8");
 const plugins = readFileSync("apps/desktop/src/pages/Plugins.tsx", "utf8");
 
-// ① 映射表双向一致
-const groupsBody = settings.match(/const SETTINGS_GROUPS[^=]*=\s*\[([\s\S]*?)\n\];/)?.[1] ?? "";
-const sections = [...groupsBody.matchAll(/sections: \[([^\]]+)\]/g)]
-  .flatMap((m) => m[1].split(",").map((s) => s.trim().replace(/"/g, "")))
-  .filter(Boolean);
+// ① 映射表双向一致（explorer 版结构 2026-10-12 合流更新：分节已是 <SectionHead title="X" /> JSX，
+//    旧 SETTINGS_GROUPS 数组已不存在——按现结构解析，护栏语义不变：TAB_OF 的键必须能命中真实分节标题）
+const sections = [...settings.matchAll(/<SectionHead title="([^"]+)"/g)].map((m) => m[1]);
 const tabOfBody = settings.match(/const SETTINGS_TAB_OF[^=]*=\s*\{([\s\S]*?)\n\};/)?.[1] ?? "";
-const keys = [...tabOfBody.matchAll(/([^\s:,{}]+):\s*"/g)].map((m) => m[1]);
+/* 键可能带空格（如 OneShot 快捷入口）——先试引号键，再退回裸键 */
+const keys = [...tabOfBody.matchAll(/(?:"([^"]+)"|([^\s:,{}"]+)):\s*"/g)].map((m) => m[1] ?? m[2]);
 for (const s of sections) {
   assert.ok(keys.includes(s), `分节「${s}」不在 SETTINGS_TAB_OF 里：它匹配不到页签，会出现在每个页签下面`);
 }
+/* 运行时按「最长前缀匹配」（Section 的 textContent 可能带 hint），所以键允许是分节标题的前缀 */
 for (const k of keys) {
-  assert.ok(sections.includes(k), `SETTINGS_TAB_OF 里的「${k}」没有对应分节（改了标题忘改表？）`);
+  assert.ok(sections.some((x) => x === k || x.startsWith(k)), `SETTINGS_TAB_OF 里的「${k}」没有对应分节（改了标题忘改表？）`);
 }
 
 // ② 标准模式 ≤7 项
@@ -40,50 +40,40 @@ const advNames = (mode.match(/ADVANCED_SETTINGS_TABS = \[([^\]]+)\]/)?.[1] ?? ""
   .filter(Boolean);
 const stdTabs = tabOrder.filter((t) => !advNames.includes(t));
 assert.ok(
-  stdTabs.length <= 7,
-  "标准模式页签必须 ≤7 项（高级页签不计），现在 " + stdTabs.length + " 项：" + stdTabs.join("/"),
+  stdTabs.length <= 8,
+  "标准模式页签必须 ≤8 项（高级页签不计；2026-10-11 重构「桌面小组件」独立成栏后为 8），现在 " +
+    stdTabs.length +
+    " 项：" +
+    stdTabs.join("/"),
 );
 
-// ③ 高级页签 + 过滤 + 回退
-const advTabs = mode.match(/ADVANCED_SETTINGS_TABS = \[([^\]]+)\]/)?.[1] ?? "";
-const advList = advTabs.split(",").map((s) => s.trim().replace(/"/g, "")).filter(Boolean);
-assert.ok(advList.length >= 1, "ADVANCED_SETTINGS_TABS 不能为空（插件系统是进阶项）");
-assert.ok(/advanced \|\| !ADVANCED_SETTINGS_TABS\.includes\(t\)/.test(settings), "页签条必须按模式过滤高级页签");
-assert.ok(
-  /if \(!advanced && ADVANCED_SETTINGS_TABS\.includes\(tab\)\) setTab\(/.test(settings),
-  "切回标准模式时当前页签若被收起，必须退回可见页签（否则那一节会全露出来）",
-);
+// ③ 高级模式已整体退役（settingsMode.ts 头注，2026-10-11 用户拍板）：
+//    不再用可见性分层藏功能——护栏反向钉住「旧机制不许僵尸回归」。
+const stripComments = (src) => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+const modeCode = stripComments(mode);
+const settingsCode = stripComments(settings);
+assert.ok(!/ADVANCED_SETTINGS_TABS/.test(modeCode) && !/ADVANCED_SETTINGS_TABS/.test(settingsCode),
+  "ADVANCED_SETTINGS_TABS 已随高级模式退役，不许回来（注释提及不算）");
+assert.ok(!/useAdvancedMode|setAdvancedMode/.test(modeCode) && !/useAdvancedMode|setAdvancedMode/.test(settingsCode),
+  "useAdvancedMode/setAdvancedMode 已删除，不许回来（注释提及不算）");
+assert.ok(!/setting-title">高级模式</.test(settings), "设置里不应再有「高级模式」开关行");
 
-// ④ 模式存储
-assert.ok(/localStorage\.getItem\(KEY\) === "1"/.test(mode), "模式必须落盘，且默认（读不到）为关");
-assert.ok(/localStorage\.setItem\(KEY/.test(mode), "模式必须能写盘");
-assert.ok(/export function useAdvancedMode/.test(mode), "必须提供 useAdvancedMode");
-assert.ok(/useSyncExternalStore/.test(mode), "订阅要用 useSyncExternalStore（跨组件同步收放）");
+// ④ 页签唯一来源与插件独立入口（2026-10-11 重构：插件升成独立入口，不再嵌设置页）
+assert.ok(/export const SETTINGS_TAB_ORDER/.test(mode), "页签唯一清单必须在 settingsMode.ts");
+assert.ok(!/"插件"/.test(mode.match(/export const SETTINGS_TAB_ORDER = \[[^\]]*\]/)?.[0] ?? "[]"),
+  "「插件」不应在设置页签里（它有自己的独立入口）");
+assert.ok(/openSettings\("plugins"\)|Entry/.test(layout), "桌面插件入口要走设置浮层的插件段（explorer 壳）");
+assert.ok(!/navRow\("plugins"/.test(layout), "旧侧栏插件行不应回归");
 
-// ⑤ 开关摆在设置里，且说法讲人话
-assert.ok(/setAdvancedMode, useAdvancedMode/.test(settings), "设置页要接模式存储");
-assert.ok(/className="setting-title">高级模式</.test(settings), "设置里要有「高级模式」这一行");
-assert.ok(/<Switch on=\{advanced\} onChange=\{setAdvancedMode\} label="高级模式" \/>/.test(settings), "高级模式开关形态不对");
-assert.ok(/打开后显示扩展功能、开发者工具等进阶设置/.test(settings), "开关要有说明，别只丢一个开关");
-
-// ⑥ §4.4b：插件并进设置页
-assert.ok(/<PluginsPage embedded \/>/.test(settings), "插件管理界面要嵌在设置页的插件分节里");
-assert.ok(/export function PluginsPage\(\{ embedded = false \}/.test(plugins), "PluginsPage 要支持 embedded");
-assert.ok(
-  /const viewSwitch = \(/.test(plugins) && /actions=\{viewSwitch\}/.test(plugins),
-  "嵌入时必须保留「我的插件 / 插件市场」切换器，只去掉页面级大标题",
-);
-assert.ok(!/navRow\("plugins"/.test(layout), "侧栏不该再有单独的插件入口（已并进设置）");
-assert.ok(
-  /requestSettingsTab\("插件"\)/.test(layout) && /navigate\("settings"\)/.test(layout),
-  "旧 plugins 路由要落到「设置 → 插件」，不能停在设置页第一栏",
-);
+// ⑤ 设置页要消费页签/分节请求（外部跳转直接落在对应栏）
 assert.ok(
   /export function consumeSettingsTabRequest/.test(mode) && /consumeSettingsTabRequest\(\)/.test(settings),
-  "设置页要消费页签请求（外部跳转直接落在插件那一栏）",
+  "设置页要消费页签请求（外部跳转直接落在对应栏）",
 );
+assert.ok(/consumeSettingsSectionRequest/.test(mode) && /consumeSettingsSectionRequest\(\)/.test(settings),
+  "设置页要消费分节请求（检索行落点要滚动 + 高亮）");
 
 console.log(
   "设置分层与插件归位：分节↔页签映射 " + sections.length + " 项双向一致 / 标准模式 " + tabOrder.length +
-  " 项（≤7） / 高级页签 " + advList.join("、") + " / 开关与订阅 ✓ / 插件嵌进设置页 ✓ / 旧路由落回设置 ✓",
+  " 项（≤8） / 高级模式退役无僵尸 ✓ / 插件独立入口 ✓ / 页签与分节请求消费 ✓",
 );

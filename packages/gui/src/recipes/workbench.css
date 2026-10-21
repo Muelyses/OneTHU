@@ -1,0 +1,1059 @@
+/* OneGUI Workbench. Product composition, using only public semantic/structure roles.
+   Desktop and mobile share content and actions; their navigation placement remains familiar. */
+html:root {
+  --explorer-top-h: var(--og-workbench-tabs-h);
+  --explorer-bar-h: var(--og-workbench-header-h);
+}
+html:root body { background: var(--og-canvas); }
+html:root .explorer-shell { background: var(--og-canvas); }
+html:root .explorer-shell.has-shell-wallpaper { background: transparent; }
+html:root .explorer-topbar {
+  padding-inline: var(--og-space-5);
+  background: var(--og-chrome);
+  min-height: var(--og-workbench-tabs-h);
+  gap: var(--og-space-3);
+}
+html:root .ex-tab { height: var(--og-ctl-h-md); padding-inline: var(--og-space-2); border-radius: var(--og-radius-sm); }
+html:root .ex-tab.is-active { background: var(--og-selection-fill); border-color: transparent; box-shadow: none; }
+html:root .ex-tab-title { font-size: var(--og-text-label); font-weight: var(--og-weight-medium); }
+html:root .ex-bbar { padding-inline: var(--og-space-5); border: 0; gap: var(--og-space-6); }
+html:root .ex-bbar-center { width: 100%; max-width: var(--og-page-max-narrow); justify-self: center; }
+html:root .ex-bbar-center .ohx-capsule {
+  height: var(--og-ctl-h-lg); margin: 0; border-radius: var(--og-radius-control);
+  background: var(--og-workbench-well); border-color: transparent; justify-content: flex-start;
+  padding-inline: var(--og-space-4);
+}
+html:root .ex-bbar-center .ohx-capsule:hover { border-color: var(--og-line-2); }
+html:root .ex-bbar-btn { min-height: var(--og-ctl-h-lg); }
+html:root #ex-bbar-onego-btn { background: var(--og-action); color: var(--og-action-on); border-radius: var(--og-radius-control); padding-inline: var(--og-space-5); }
+html:root #ex-bbar-onego-btn:hover { background: var(--og-action-hover); }
+.workbench-wordmark { font-size: var(--og-text-subtitle); font-weight: var(--og-weight-bold); letter-spacing: var(--og-tracking-title); white-space: nowrap; }
+.workbench-wordmark > span { color: var(--og-content-3); font-size: var(--og-text-label); font-weight: var(--og-weight-regular); letter-spacing: normal; }
+html:root #ex-bbar-tabs-btn > .ex-bbar-label { display: none; }
+html:root .ex-rail { background: var(--og-chrome); padding: var(--og-space-3); }
+html:root .ex-rail .ex-tab { padding: 0 var(--og-space-2); height: var(--og-ctl-h-lg); min-height: var(--og-ctl-h-lg); }
+@media (min-width: 841px) {
+  html:root:not(.is-phone) .explorer-shell > .ex-bbar { height: var(--og-workbench-header-h) !important; }
+  html:root:not(.is-phone) .explorer-topbar { top: var(--og-workbench-header-h); }
+  html:root:not(.is-phone) .explorer-content { padding-top: calc(var(--og-workbench-header-h) + var(--og-workbench-tabs-h) + var(--og-space-5)) !important; }
+}
+
+/* Home is a deliberate three-part document: introduction, services, then free canvas.
+   The world below retains its stored coordinates and remains unbounded. */
+html:root .explorer-shell > .explorer-content.is-home-canvas {
+  padding-top: calc(var(--og-workbench-header-h) + var(--og-workbench-tabs-h)) !important;
+  padding-bottom: var(--og-space-8);
+}
+html:root .home-tab.home-free {
+  display: flex; flex-direction: column; gap: var(--og-space-7);
+  width: 100%; max-width: none; height: auto;
+  padding: var(--og-space-8) var(--og-workbench-gutter) var(--og-space-8);
+}
+html:root .home-chrome-layer {
+  position: relative; inset: auto; margin: 0 auto; width: 100%; max-width: var(--og-workbench-max);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--og-space-7) var(--og-space-8);
+  z-index: var(--og-z-sticky); pointer-events: none;
+}
+.workbench-intro { align-self: center; min-width: 0; color: var(--og-content-1); }
+.workbench-eyebrow { display: block; font-size: var(--og-text-label); font-weight: var(--og-weight-medium); color: var(--og-content-2); margin-bottom: var(--og-space-4); }
+.workbench-title { margin: 0; font-size: var(--og-workbench-hero); font-weight: var(--og-weight-semibold); line-height: var(--og-workbench-hero-lh); letter-spacing: var(--og-tracking-title); }
+.workbench-description { margin: var(--og-space-3) 0 0; font-size: var(--og-text-body); line-height: var(--og-text-body-lh); color: var(--og-content-3); }
+html:root .home-chrome-layer .chrome-block { position: relative; inset: auto; pointer-events: auto; }
+html:root .home-chrome-layer .chrome-time { align-items: flex-end; justify-content: center; }
+html:root .chrome-clock { text-align: right; background: transparent; border-radius: 0; box-shadow: none; }
+html:root .chrome-clock-time { font-family: var(--og-font-ui); font-size: var(--og-workbench-clock); font-weight: var(--og-weight-regular); letter-spacing: -.06em; line-height: 1.12; font-variant-numeric: tabular-nums; }
+html:root .chrome-clock-colon { animation: none; color: inherit; }
+html:root .chrome-clock-date { font-size: var(--og-text-label); color: var(--og-content-2); margin: 0 0 var(--og-space-2); }
+html:root .home-chrome-layer .chrome-dock {
+  grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; align-items: center;
+  gap: var(--og-space-3); padding: var(--og-space-5) var(--og-space-6);
+  background: var(--og-workbench-paper); border: 1px solid var(--og-line-1); border-radius: var(--og-radius-card);
+  box-shadow: var(--og-elev-1); backdrop-filter: var(--og-surface-blur);
+}
+.workbench-section-label { font-size: var(--og-text-label); color: var(--og-content-3); font-weight: var(--og-weight-medium); }
+html:root .hs-dock-actions { grid-column: 2; grid-row: 1; align-items: center; gap: var(--og-space-1); }
+html:root .hs-dock-actions .og-chip { background: transparent; border-color: transparent; color: var(--og-content-2); }
+html:root .hs-dock-actions .og-chip:hover { background: var(--og-hover); }
+html:root .hs-dock-row {
+  grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--og-workbench-service-h), 1fr));
+  width: 100%; max-width: none; padding: 0; gap: var(--og-space-2); border: 0;
+  border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none;
+}
+html:root .hs-dock-sphere {
+  min-height: var(--og-workbench-service-h); height: auto; padding: var(--og-space-3) var(--og-space-2);
+  border-radius: var(--og-radius-control); background: transparent; border: 0;
+}
+html:root .hs-dock-sphere .og-btn-label { display: flex; align-items: center; flex-direction: column; gap: var(--og-space-3); }
+html:root .hs-dock-sphere .sphere-ball { width: var(--og-icon-xl); height: var(--og-icon-xl); background: transparent; border: 0; box-shadow: none; border-radius: 0; transform: none; color: var(--og-content-1); }
+html:root .hs-dock-sphere:hover { background: var(--og-workbench-well); }
+html:root .hs-dock-sphere .sphere-name { font-size: var(--og-text-label); color: var(--og-content-2); max-width: 100%; }
+html:root .home-free > .freeboard-wrap { width: 100%; max-width: var(--og-workbench-max); margin-inline: auto; min-height: 0; }
+.workbench-board-head { display: flex; justify-content: space-between; align-items: center; gap: var(--og-space-4); padding-bottom: var(--og-space-5); }
+.workbench-board-head h2 { margin: 0 0 var(--og-space-1); font-size: var(--og-text-title); font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); }
+.workbench-board-head > div > span { font-size: var(--og-text-label); color: var(--og-content-3); }
+.workbench-board-actions { display: flex; gap: var(--og-space-2); flex: none; }
+html:root .home-free .freeboard {
+  position: relative; inset: auto; min-height: var(--og-workbench-canvas-min);
+  background-image: radial-gradient(var(--og-workbench-grid-ink) 1px, transparent 1px);
+  background-size: var(--og-workbench-grid) var(--og-workbench-grid);
+  border-radius: var(--og-radius-card);
+}
+html:root .free-item { background: var(--og-workbench-paper); border: 1px solid var(--og-line-1); border-radius: var(--og-radius-card); box-shadow: var(--og-elev-1); }
+html:root .free-item:hover { border-color: var(--og-line-2); }
+html:root .free-item > :first-child { padding: var(--og-space-3); }
+html:root .free-item > .free-note { padding: 0; }
+html:root .free-item .og-empty { color: var(--og-content-2); }
+html:root :is(.free-fab, .board-fab, .hard-refresh-fab, .top-fab) { width: var(--og-ctl-h-lg); min-width: var(--og-ctl-h-lg); height: var(--og-ctl-h-lg); border-radius: var(--og-radius-control); box-shadow: var(--og-elev-1); }
+html:root .free-fab::after { display: none; }
+html:root .free-fab:active { transform: none; }
+
+/* Settings is an application window, with persistent categories and a reading pane. */
+html:root .settings-mask { padding: var(--og-space-8); align-items: center; justify-content: center; }
+html:root .settings-panel {
+  width: min(var(--og-workbench-settings-w), 100%); height: min(88dvh, 100%);
+  border: 1px solid var(--og-line-2); border-radius: var(--og-radius-2xl); overflow: hidden;
+  box-shadow: var(--og-elev-3); background: var(--og-menu-fill);
+}
+html:root .settings-head { min-height: var(--og-workbench-header-h); padding: var(--og-space-3) var(--og-space-5); border-bottom: 1px solid var(--og-line-1); background: var(--og-chrome); }
+.workbench-settings-brand { font-size: var(--og-text-subtitle); font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); }
+html:root .settings-head > .og-iconbtn { margin-left: auto; }
+html:root .settings-seg { gap: var(--og-space-1); }
+html:root .settings-seg-item { height: var(--og-ctl-h-md); padding-inline: var(--og-space-3); border: 0; border-radius: var(--og-radius-sm); background: transparent; color: var(--og-content-2); font-size: var(--og-text-label); }
+html:root .settings-seg-item.is-active { background: var(--og-selection-fill); color: var(--og-content-1); }
+html:root .explorer-settings-body { padding: 0; }
+.workbench-settings { padding: var(--og-space-6); }
+.workbench-settings > .og-pagehead { padding: 0 var(--og-space-2) var(--og-space-6); }
+/* 使用模式卡片：和下面的设置板块之间留出呼吸，横向与 PageHead 标题对齐 */
+.workbench-settings-mode { margin: 0 var(--og-space-2) var(--og-space-5); }
+.workbench-settings-layout { display: grid; grid-template-columns: var(--og-workbench-settings-nav) minmax(0, 1fr); gap: var(--og-space-7); }
+.workbench-settings-nav { align-self: start; position: sticky; top: var(--og-space-4); }
+html:root .workbench-settings-tabs { display: flex; flex-wrap: nowrap; flex-direction: column; align-items: stretch; gap: var(--og-space-1); background: transparent; border: 0; padding: 0; }
+html:root .workbench-settings-nav button { justify-content: flex-start; text-align: left; width: 100%; min-height: var(--og-ctl-h-lg); padding-inline: var(--og-space-4); border: 0; border-radius: var(--og-radius-control); color: var(--og-content-2); background: transparent; font-size: var(--og-text-body); box-shadow: none; }
+html:root .workbench-settings-nav button.is-active { background: var(--og-selection-fill); color: var(--og-content-1); font-weight: var(--og-weight-semibold); }
+.workbench-settings-content { min-width: 0; padding-right: var(--og-space-2); }
+.workbench-settings-title { margin-bottom: var(--og-space-6); }
+.workbench-settings-title h2 { margin: 0 0 var(--og-space-2); font-size: var(--og-text-title); letter-spacing: var(--og-tracking-title); font-weight: var(--og-weight-semibold); }
+.workbench-settings-title p { margin: 0; color: var(--og-content-3); font-size: var(--og-text-body); }
+html:root :is(.workbench-settings-content, .workbench-settings-content > [data-settings-section]) > :is(.og-card, .og-settings) { margin-bottom: var(--og-space-5); border-radius: var(--og-radius-lg); box-shadow: none; }
+html:root .workbench-settings-content .og-settings-row { padding-block: var(--og-space-4); }
+html:root :is(.workbench-settings-content, .workbench-settings-content > [data-settings-section]) > .og-section { margin: var(--og-space-5) 0 var(--og-space-3); }
+
+/* Search is a command palette: quiet list, generous input and clear grouping. */
+html:root .dock-panel { border-radius: var(--og-radius-card); border-color: var(--og-line-2); box-shadow: var(--og-elev-3); }
+html:root .ohx-searchpane { padding: var(--og-space-5); gap: var(--og-space-4); }
+html:root .ohx-searchbar { min-height: var(--og-ctl-h-lg); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-control); background: var(--og-workbench-well); }
+html:root .ohx-history-head { font-size: var(--og-text-label); margin-bottom: var(--og-space-3); color: var(--og-content-3); }
+html:root .ohx-results { gap: var(--og-space-1); }
+html:root .ohx-hit { padding: var(--og-space-4); border: 0; background: transparent; border-radius: var(--og-radius-control); gap: var(--og-space-3); }
+html:root .ohx-hit:hover { background: var(--og-workbench-well); }
+html:root .ohx-hit-name { font-size: var(--og-text-body); font-weight: var(--og-weight-medium); }
+html:root .ohx-hit-sub { font-size: var(--og-text-label); color: var(--og-content-3); }
+html:root .ohx-hit-tag { color: var(--og-content-2); border: 0; border-radius: var(--og-radius-xs); background: var(--og-surface-3); padding: var(--og-space-1) var(--og-space-2); font-size: var(--og-text-micro); }
+html:root :is(.ex-sheet, .hs-more, .hs-menu) { border-radius: var(--og-radius-card); padding: var(--og-space-5); border-color: var(--og-line-1); }
+html:root :is(.hs-more-head, .ex-sheet-head) { font-size: var(--og-text-title); font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); }
+
+/* Paper surfaces remain readable with wallpaper and with glass opacity enabled. */
+html:root .has-shell-wallpaper .workbench-intro { padding: var(--og-space-5); border-radius: var(--og-radius-card); background: var(--og-menu-fill); }
+html:root .has-shell-wallpaper .workbench-board-head { padding: var(--og-space-4); border-radius: var(--og-radius-card); background: var(--og-menu-fill); margin-bottom: var(--og-space-4); }
+/* The 首页 title plate is a surface like the topbar/cards: on the glass skin it must
+   transmit the wallpaper + tint instead of staying an opaque white sheet. */
+html:root[data-og-skin="glass"] .has-shell-wallpaper .workbench-board-head {
+  background: var(--og-fill-surface);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+  backdrop-filter: var(--og-surface-blur);
+}
+
+html:root.is-phone .workbench-wordmark { display: none; }
+html:root.is-phone #ex-bbar-tabs-btn > .ex-bbar-label { display: inline; }
+html:root.is-phone .explorer-topbar { padding-inline: var(--og-space-4); justify-content:space-between; }
+html:root.is-phone .explorer-topbar .tb-spring { display:none; }
+html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-top: var(--og-workbench-tabs-h) !important; }
+html:root.is-phone .home-tab.home-free { padding-top: var(--og-space-6); gap: var(--og-space-6); }
+html:root.is-phone .home-chrome-layer { gap: var(--og-space-5) var(--og-space-2); }
+html:root.is-phone .workbench-intro { grid-column: 1 / -1; padding-right: var(--og-space-8); }
+html:root.is-phone .workbench-eyebrow { margin-bottom: var(--og-space-2); }
+html:root.is-phone .workbench-description { font-size: var(--og-text-label); }
+html:root.is-phone .home-chrome-layer .chrome-time { position: absolute; right: 0; top: 0; }
+html:root.is-phone .chrome-clock-date { display: none; }
+html:root.is-phone .chrome-clock-time { font-size: var(--og-text-title); line-height: var(--og-text-title-lh); letter-spacing: var(--og-tracking-title); }
+html:root.is-phone .home-chrome-layer .chrome-dock { padding: var(--og-space-4) var(--og-space-3); gap: var(--og-space-2); }
+html:root.is-phone .hs-dock-row { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--og-space-1); }
+html:root.is-phone .hs-dock-sphere { min-width: 0; padding: var(--og-space-2) 0; }
+html:root.is-phone .hs-dock-sphere .og-btn-label { gap: var(--og-space-2); }
+html:root.is-phone .hs-dock-sphere .sphere-name { font-size: var(--og-text-micro); }
+html:root.is-phone .workbench-board-head h2 { font-size: var(--og-text-subtitle); }
+html:root.is-phone .workbench-board-head > div > span { display: none; }
+html:root.is-phone .workbench-board-actions { gap: var(--og-space-1); }
+html:root.is-phone .workbench-board-actions .og-btn { padding-inline: var(--og-space-3); }
+html:root.is-phone .ex-bbar { padding-inline: var(--og-space-2); gap: var(--og-space-1); border-top: 1px solid var(--og-line-1); }
+html:root.is-phone #ex-bbar-onego-btn { padding-inline: var(--og-space-3); background: transparent; color: var(--og-content-1); }
+html:root.is-phone .ex-bbar-center .ohx-capsule { min-width: 0; padding-inline: var(--og-space-2); border-radius: var(--og-radius-full); }
+/* 手机常态提示作为一组居中；收藏/未读浮在右侧，对称留位，不再用单边空槽推偏。 */
+html:root.is-phone .ex-bbar-center .ohx-capsule:not(.is-open):not(.is-hold) {
+  position: relative;
+  justify-content: center;
+  padding-inline: var(--og-space-2);
+}
+html:root.is-phone .ex-bbar-center .ohx-capsule .ohx-slot { display: none; }
+html:root.is-phone .ex-bbar-center .ohx-capsule:not(.is-open):not(.is-hold) .harness-mark { margin-left: 0; }
+html:root.is-phone .ex-bbar-center .ohx-capsule .ohx-capsule-ph {
+  flex: 0 1 auto !important;
+  margin-right: 0 !important;
+  text-align: center;
+}
+html:root.is-phone .ex-bbar-center .ohx-capsule:not(.is-open):not(.is-hold):has(.ohx-star, .ohx-capsule-badge) {
+  padding-inline: calc(var(--og-ctl-chip-h-sm) + var(--og-space-3));
+}
+html:root.is-phone .ex-bbar-center .ohx-capsule:not(.is-open):not(.is-hold):has(.ohx-star):has(.ohx-capsule-badge) {
+  padding-inline: calc(var(--og-ctl-chip-h-sm) + var(--og-space-3) + var(--og-space-5));
+}
+html:root.is-phone .ex-bbar-center .ohx-capsule:not(.is-open):not(.is-hold) :is(.ohx-star, .ohx-capsule-badge) {
+  position: absolute;
+  right: var(--og-space-2);
+  margin: 0;
+}
+html:root.is-phone .ex-bbar-center .ohx-capsule:not(.is-open):not(.is-hold):has(.ohx-star) .ohx-capsule-badge {
+  right: calc(var(--og-space-2) + var(--og-ctl-chip-h-sm) + var(--og-space-1));
+}
+
+
+html:root.is-phone .settings-mask { padding: 0; }
+html:root.is-phone .settings-panel { width: 100%; height: 100%; border: 0; border-radius: 0; }
+html:root.is-phone .settings-head { flex-wrap: nowrap; padding: var(--og-space-2); min-height: var(--og-workbench-tabs-h); }
+html:root.is-phone .workbench-settings-brand { display: none; }
+html:root.is-phone .settings-seg { position: static; transform: none; margin: 0; order: 0; flex: 1; width: auto; min-width: 0; }
+html:root.is-phone .settings-seg-item { min-height: var(--og-ctl-h-sm); padding-inline: var(--og-space-2); }
+html:root.is-phone .workbench-settings { padding: var(--og-space-4); }
+html:root.is-phone .workbench-settings > .og-pagehead { padding: var(--og-space-2) 0 var(--og-space-5); }
+html:root.is-phone .workbench-settings-layout { display: flex; flex-direction: column; gap: var(--og-space-5); }
+html:root.is-phone .workbench-settings-nav { position: static; width: 100%; }
+html:root.is-phone .workbench-settings-tabs { flex-direction: row; }
+html:root.is-phone .workbench-settings-nav button { width: auto; white-space: nowrap; }
+html:root.is-phone .workbench-settings-content { padding: 0; }
+html:root.is-phone .workbench-settings-title { margin-bottom: var(--og-space-4); }
+html:root.is-phone .workbench-settings-title h2 { font-size: var(--og-text-subtitle); }
+html:root.is-phone .workbench-settings-title p { display: none; }
+@media (max-width: 1050px) and (min-width: 841px) {
+  html:root .workbench-wordmark > span { display: none; }
+  html:root .settings-mask { padding: var(--og-space-5); }
+}
+
+/* Service library and catalog: the same entry, inside standard OneGUI Modal. */
+.workbench-service-library { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--og-grid-min-sm), 1fr)); gap: var(--og-space-3); }
+.workbench-service-cell { position: relative; border: 1px solid var(--og-line-1); border-radius: var(--og-radius-lg); background: var(--og-surface-2); padding: var(--og-space-2); }
+.workbench-service-cell > .hs-dock-sphere { width: 100%; }
+.workbench-service-toggle { position: absolute; top: var(--og-space-1); right: var(--og-space-1); }
+.workbench-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--og-space-6); }
+.workbench-catalog-group h3 { margin: 0 0 var(--og-space-3); color: var(--og-content-3); font-size: var(--og-text-label); font-weight: var(--og-weight-medium); }
+.workbench-catalog-entry { width: 100%; height: auto; min-height: var(--og-ctl-h-lg); justify-content: space-between; padding: var(--og-space-3); text-align: left; }
+.workbench-catalog-entry .og-btn-label { display: flex; flex-direction: column; align-items: flex-start; gap: var(--og-space-1); white-space: normal; }
+.workbench-catalog-entry small { color: var(--og-content-3); font-size: var(--og-text-label); font-weight: var(--og-weight-regular); line-height: var(--og-text-label-lh); }
+.workbench-opacity { display: flex; gap: var(--og-space-2); flex-wrap: wrap; }
+html:root.is-phone .workbench-catalog { grid-template-columns: minmax(0, 1fr); }
+html:root.is-phone .workbench-service-library { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+html:root .free-item .wg-card > .workbench-widget-title {
+  flex: 0 0 auto; padding: var(--og-space-1) var(--og-space-2) var(--og-space-2);
+  color: var(--og-content-3); font-size: var(--og-text-label); line-height: var(--og-text-label-lh); font-weight: var(--og-weight-medium);
+}
+html:root .workbench-settings-tabs { overflow: auto; scrollbar-width: none; }
+html:root .ohx-modeswitch { padding: var(--og-space-1); border: 0; border-radius: var(--og-radius-control); background: var(--og-workbench-well); }
+html:root .ohx-modeswitch > .og-btn { padding-inline: var(--og-space-3); border-radius: var(--og-radius-sm); }
+html:root .ohx-modeswitch > .og-btn.is-active { background: var(--og-surface-1); color: var(--og-content-1); box-shadow: var(--og-elev-1); }
+
+/* Layout containment: long pages grow; only explicit list/panel bodies scroll. */
+html:root .explorer-panel:not(.is-home-canvas):not(.is-onepage-canvas) { overflow: visible; }
+/* Each persistent tab owns its gutters. Home/OnePage can remain edge-to-edge
+   without changing the horizontal spacing of pages opened by their widgets. */
+html:root .explorer-shell:not(.is-simple) > .explorer-content { padding-inline: 0 !important; }
+html:root .explorer-shell:not(.is-simple) .explorer-panel[data-tab-page]:not(.is-home-canvas):not(.is-onepage-canvas):not([data-tab-page="schedule"]) {
+  padding-inline: var(--og-workbench-gutter);
+}
+html:root .explorer-settings-body { min-width: 0; min-height: 0; }
+html:root .workbench-plugin-settings { padding: var(--og-space-6); }
+html:root .settings-seg { position: static; transform: none; min-width: 0; }
+html:root .settings-seg-item { flex-shrink: 0; }
+html:root .settings-head > .og-iconbtn { flex-shrink: 0; }
+html:root .workbench-board-head { flex-wrap: wrap; }
+html:root .workbench-board-actions { flex-wrap: wrap; }
+html:root .free-fab-col { right: var(--og-space-3); bottom: calc(var(--og-space-10) * 2 + var(--og-space-3)); }
+html:root.is-phone .free-fab-col { bottom: calc(var(--og-workbench-header-h) + var(--og-safe-bottom) + var(--og-space-10) * 2 + var(--og-space-3)); }
+html:root .ex-sheet-body > * { flex-shrink: 0; }
+html:root .ex-sheet-body { min-width: 0; }
+html:root .og-settings-row-control > :is(input, select, textarea, .og-input, .og-select) { max-width: 100%; min-width: 0; }
+html:root.is-phone .workbench-plugin-settings { padding: var(--og-space-4); }
+html:root.is-phone .home-chrome-layer { grid-template-columns: minmax(0, 1fr) auto; }
+html:root.is-phone .workbench-intro { grid-column: 1; padding-right: 0; }
+html:root.is-phone .home-chrome-layer .chrome-time { position: static; align-self: start; }
+
+/* OH actions and mode tabs are separate rows; their touch targets cannot overlap. */
+html:root .dock-head { display: grid !important; grid-template-columns: auto minmax(0, 1fr); flex-shrink: 0; }
+html:root .dock-head .ohx-modeswitch { position: static; transform: none; margin: 0; justify-self: end; max-width: 100%; }
+html:root .dock-head .dock-ops { grid-column: 1 / -1; flex-wrap: wrap !important; }
+html:root .dock-handle, html:root .dock-input-row { flex-shrink: 0; }
+html:root .dock-oh-missing { flex: 1; min-height: 0; overflow: auto; margin: var(--og-space-4); }
+html:root .ohx-hit { flex-shrink: 0; flex-wrap: wrap; }
+html:root .ohx-hit-sub { white-space: normal; overflow-wrap: anywhere; flex-basis: 100%; order: 1; }
+html:root .ohx-hit-tag { margin-left: auto; }
+html:root .ohx-history { max-height: 40%; overflow: auto; }
+html:root.is-phone .ex-sheet { padding: var(--og-space-3); min-height: min(var(--og-workbench-sheet-min), calc(100dvh - var(--og-safe-top))); }
+html:root.is-phone .ex-sheet-head { flex-wrap: wrap; padding: var(--og-space-2); }
+html:root.is-phone .ex-sheet-head .ex-sec-head-note { display: none; }
+html:root.is-phone .ex-sheet.is-mob-half { height: min(60dvh, calc(100dvh - var(--og-safe-top))); }
+html:root.is-phone .ex-sheet.is-mob-full { height: calc(100dvh - var(--og-safe-top)); }
+html:root.is-phone .onepage-sheet { max-height: calc(100dvh - var(--og-workbench-header-h) - var(--og-safe-top) - var(--og-safe-bottom) - var(--og-space-3)); }
+
+html:root .explorer-ctxmenu { max-width: calc(100vw - var(--og-space-4) * 2); max-height: calc(100dvh - var(--og-space-4) * 2); overflow: auto; }
+html:root .settings-panel { min-height: 0; max-height: 100%; }
+
+/* A full-height phone sheet cannot overshoot above the viewport on entry. */
+html:root.is-phone .ex-sheet { animation-name: m-sheet-up; }
+html:root.is-phone .ex-sheet.is-mob-drag { animation: none; }
+html:root.is-phone .ex-sheet.is-closing { animation-name: m-sheet-down; }
+
+html:root .hs-dock-sphere .og-btn-label { min-width: 0; max-width: 100%; }
+html:root .hs-dock-sphere .sphere-name { white-space: normal; overflow-wrap: anywhere; line-height: var(--og-text-label-lh); }
+html:root .og-settings-row-control > .og-inline { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+
+html:root .ex-sheet-head > .og-btn { margin-left: auto; flex-shrink: 0; }
+
+/* Rail slots must fit even before hover: 56px contains a 44px icon lane. */
+html:root .ex-rail { padding-inline: var(--og-space-1); }
+html:root.tabs-vertical.rail-narrow .ex-rail .ex-tab-main { flex: 1 1 auto !important; width: 100% !important; }
+html:root.tabs-vertical.rail-narrow .ex-rail:hover,
+html:root.tabs-vertical.rail-narrow .ex-rail:focus-within { z-index: var(--og-z-rail); }
+
+/* Both segment implementations use the same track and active pair. */
+html:root .segmented { background: var(--og-segment-track); border: 1px solid var(--og-segment-line); padding: var(--og-space-1); border-radius: var(--og-radius-control); }
+html:root .segmented button { border-radius: var(--og-radius-sm); transition: none; background: transparent; color: var(--og-content-2); }
+html:root .segmented button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); box-shadow: none; }
+html:root .seg-track button { position: relative; z-index: 1; }
+html:root .seg-track button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); }
+html:root .seg-track .seg-pill { visibility: hidden; }
+html:root .segmented:has(.seg-pill.is-ready) button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); }
+html:root .segmented button.is-active :is(.og-btn-label, .og-text) { color: inherit; }
+html:root .seg-track .seg-pill { height: auto; top: var(--og-space-1); bottom: var(--og-space-1); background: var(--og-segment-active); border-radius: var(--og-radius-sm); border: 0; padding: 0; min-height: 0; }
+
+/* Note paper is opaque and keeps dark ink in either application scheme. */
+html:root .free-item.is-note { background: var(--og-note-paper); border-color: color-mix(in srgb, var(--og-note-ink) 18%, var(--og-note-paper)); }
+html:root :is(.free-item.is-note[data-note-tone="pink"], .free-note[data-tone="pink"]) { --og-note-paper: var(--og-note-pink); }
+html:root :is(.free-item.is-note[data-note-tone="blue"], .free-note[data-tone="blue"]) { --og-note-paper: var(--og-note-blue); }
+html:root :is(.free-item.is-note[data-note-tone="green"], .free-note[data-tone="green"]) { --og-note-paper: var(--og-note-green); }
+html:root .free-note { background: var(--og-note-paper); border: 0; color: var(--og-note-ink); }
+html:root :is(.free-note-text, .free-note-editor, .is-note .free-folded) { color: var(--og-note-ink); }
+html:root .free-note-hint { color: var(--og-note-quiet); }
+html:root .free-note-dot { background: var(--og-note-quiet); }
+
+/* Theme selection has its own full-width composition, independent of List row slots. */
+.theme-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--og-space-3); }
+.theme-choice { min-width: 0; display: flex; align-items: center; border: 1px solid var(--og-line-2); border-radius: var(--og-radius-card); background: var(--og-surface-1); overflow: hidden; }
+.theme-choice.is-selected { border-color: var(--og-content-1); box-shadow: inset 0 0 0 1px var(--og-content-1); }
+.theme-choice-main { border: 0; border-radius: inherit; background: transparent; color: var(--og-content-1); display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--og-space-3); padding: var(--og-space-4); width: 100%; min-width: 0; text-align: left; cursor: pointer; }
+.theme-choice-main:hover { background: var(--og-hover); }
+.theme-choice-copy { min-width: 0; display: grid; gap: var(--og-space-1); }
+.theme-choice-copy > span { font-size: var(--og-text-label); color: var(--og-content-2); overflow-wrap: anywhere; }
+.theme-choice-status { grid-column: 2; font-size: var(--og-text-label); color: var(--og-content-2); }
+.theme-choice-main:focus-visible { outline: 2px solid var(--og-focus-color); outline-offset: -4px; }
+html:root .theme-swatch { display: grid; grid-template-columns: repeat(3, 16px); gap: 3px; padding: 6px; border: 1px solid var(--og-line-2); border-radius: var(--og-radius-sm); background: var(--theme-preview-canvas); flex: none; width: auto; height: auto; }
+.theme-swatch > i { width: 16px; height: 28px; border-radius: 4px; background: var(--theme-preview-accent); }
+.theme-swatch > i:nth-child(2) { background: var(--theme-preview-paper); border: 1px solid var(--og-line-2); }
+.theme-swatch > i:nth-child(3) { background: var(--theme-preview-canvas); border: 1px solid var(--og-line-2); }
+
+/* Material belongs on standalone surfaces; controls and nested card bodies stay opaque/clear. */
+html:root[data-og-skin="glass"] :is(.explorer-topbar, .ex-bbar, .ex-rail) { background: var(--og-fill-surface); backdrop-filter: var(--og-surface-blur); -webkit-backdrop-filter: var(--og-surface-blur); }
+html:root[data-og-skin="glass"] :is(.settings-panel, .theme-pick-panel, .ex-sheet, .og-modal-panel, .board-viewport-tools) { background: var(--og-fill-overlay); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+html:root[data-og-skin="glass"] :is(.free-item:not(.is-note), .card, .home-card) { background: var(--og-fill-surface); backdrop-filter: var(--og-surface-blur); -webkit-backdrop-filter: var(--og-surface-blur); }
+html:root[data-og-skin="glass"] .free-item :is(.card, .home-card, .wg-card) { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+/* 便笺纸跟随玻璃材质：默认仍是实色纸（黄/粉/蓝/绿），玻璃皮肤下变成同档透光的有色玻璃。
+   便笺文字/图标仍由 textContrast 引擎按实际合成底色取字色，浅色纸与深色纸都读得清。 */
+html:root[data-og-skin="glass"] .free-item.is-note {
+  background: color-mix(in srgb, var(--og-note-paper) var(--og-note-opacity), transparent);
+  border-color: color-mix(in srgb, var(--og-note-ink) 14%, transparent);
+  -webkit-backdrop-filter: var(--og-note-blur);
+  backdrop-filter: var(--og-note-blur);
+}
+html:root[data-og-skin="glass"] .free-item.is-note:not(.is-selected) { box-shadow: var(--og-material-shadow); }
+html:root[data-og-skin="glass"] .free-item.is-note .free-note { background: transparent; }
+
+html:root[data-og-skin="glass"] .has-shell-wallpaper :is(.explorer-panel, .explorer-content) { background: transparent; }
+@media (prefers-reduced-transparency: reduce) {
+  html:root[data-og-skin="glass"] { --og-fill-surface: var(--og-surface-1); --og-fill-overlay: var(--og-surface-overlay); --og-surface-blur: none; --og-overlay-blur: none; --og-note-opacity: 100%; --og-note-blur: none; }
+}
+
+/* Home components use the same persisted geometry as every other board item. */
+html:root .free-item[data-widget="text"] { background: transparent; border-color: transparent; box-shadow: none; backdrop-filter: none; }
+html:root .free-item > .wg-title { display: flex; align-items: center; height: 100%; margin: 0; font-size: var(--og-workbench-hero); line-height: 1.2; font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); white-space: pre-wrap; }
+html:root .free-item[data-widget="clock"] .wg-card { display: grid; align-items: center; }
+html:root .free-item .chrome-clock { text-align: left; padding: var(--og-space-3); }
+.home-services-widget { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: center; gap: var(--og-space-3); height: 100%; }
+.home-services-widget > .hs-dock-actions { display: flex; grid-column: 2; grid-row: 1; }
+html:root .home-services-widget .hs-dock-row { grid-column: 1 / -1; }
+html:root .homework-carousel-widget { display: flex; flex-direction: column; min-height: 0; height: 100%; }
+html:root .homework-carousel-widget .hw-carousel-row { flex: 1; min-height: 0; }
+html:root .homework-carousel-widget .hw-carousel { height: 100%; min-height: 0; }
+html:root .free-item .hw-card { background: var(--og-surface-2); border: 1px solid var(--og-line-2); box-shadow: var(--og-elev-1); }
+.homework-clear { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--og-space-2); color: var(--og-content-2); }
+.homework-clear > span { font-size: var(--og-text-title); }
+.homework-clear > strong { font-size: var(--og-text-subtitle); font-weight: var(--og-weight-medium); }
+.homework-clear > p { margin: 0; font-size: var(--og-text-label); color: var(--og-content-3); }
+html:root .free-item .wg-card:has(> .homework-carousel-widget) { display: flex; flex-direction: column; }
+html:root .free-item .wg-card > .homework-carousel-widget { flex: 1; }
+html:root .home-free .freeboard { margin-bottom: var(--og-board-tool-clearance); }
+html:root .freeboard-wrap .freeboard { background-image: none; }
+html:root .free-item.is-selected { z-index: 100; }
+html:root .free-toolbar { top: 30px; bottom: auto; left: var(--og-space-2); right: var(--og-space-2); width: max-content; max-width: calc(100% - 16px); flex-wrap: wrap; z-index: 5; background: var(--og-surface-overlay); border: 1px solid var(--og-line-2); box-shadow: var(--og-elev-menu); }
+html:root .board-viewport-tools { position: fixed; z-index: var(--og-z-board-tools); bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--og-space-1); padding: var(--og-space-2); max-width: calc(100vw - 24px); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); }
+.board-tool-divider { align-self: stretch; width: 1px; background: var(--og-line-2); margin: var(--og-space-1); }
+html:root .board-viewport-tools .free-pen-panel { position: absolute; bottom: calc(100% + var(--og-space-3)); right: 0; z-index: 1; display: flex; align-items: center; gap: var(--og-space-2); width: max-content; padding: var(--og-space-2) var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-toolbar { position: static; top: auto; right: auto; display: flex; align-items: center; gap: var(--og-space-2); padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+html:root .board-viewport-tools .free-pen-panel .board-pen-swatch { width: var(--og-space-6); height: var(--og-space-6); border: 2px solid var(--og-line-2); border-radius: var(--og-radius-full); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-swatch.is-on { border-color: var(--og-content-1); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-act { padding: var(--og-space-1) var(--og-space-2); border-radius: var(--og-radius-sm); color: var(--og-content-2); font-size: var(--og-text-label); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-act:hover:not(:disabled) { background: var(--og-hover); color: var(--og-content-1); }
+html:root .board-viewport-tools .free-pen-panel .board-pen-act:disabled { color: var(--og-content-3); }
+html:root .workbench-board-head { position: relative; z-index: var(--og-z-sticky); }
+html:root.is-phone .board-viewport-tools { bottom: calc(var(--og-board-mobile-tool-bottom) + env(safe-area-inset-bottom)); }
+html:root.is-phone .home-services-widget { grid-template-columns: minmax(0, 1fr); }
+html:root.is-phone .home-services-widget > .hs-dock-actions { grid-column: 1; grid-row: 2; }
+html:root.is-phone .home-services-widget .hs-dock-row { grid-row: 3; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+html:root .free-item { touch-action: pan-y; }
+/* 手机「自由摆放」：条目就是可拖拽对象，垂直手势不能再交给页面滚动（否则只能横拖）。
+   阅读顺序（默认）仍保留 pan-y，列表可以正常上下滚。 */
+html:root.is-phone .freeboard-wrap.phone-canvas .free-item { touch-action: none; }
+html:root.is-phone .freeboard-wrap.phone-canvas .free-item.is-selected { cursor: grab; }
+html:root.is-phone .freeboard-wrap.phone-canvas .free-item.is-selected:active { cursor: grabbing; }
+html:root .free-item > .wg-card { flex: 1 1 auto; min-height: 0; padding: var(--og-space-3); overflow: auto; }
+html:root.is-phone .free-item .chrome-clock-date { display: block; }
+html:root.is-phone .free-item .chrome-clock-time { font-size: var(--og-workbench-clock); line-height: 1.12; letter-spacing: -.06em; }
+
+html:root .theme-choice-main { height: auto; min-height: 0; white-space: normal; justify-content: stretch; }
+.theme-choice-main > .og-btn-label { display: contents; }
+html:root .hw-card { transform: translate(-50%, -50%) translateY(var(--hw-y, 0px)) scale(var(--hw-scale, 1)); opacity: var(--hw-alpha, 1); z-index: var(--hw-layer, 100); height: var(--hw-height, 168px); }
+html:root .free-handle { width: var(--og-space-6); height: var(--og-space-6); }
+html:root .free-handle::after { top: var(--og-space-2); left: var(--og-space-2); background: var(--og-focus-color); border: 1px solid var(--og-surface-1); }
+html:root .fh-nw { left: calc(-1 * var(--og-space-3)); top: calc(-1 * var(--og-space-3)); cursor: nwse-resize; }
+html:root .fh-ne { right: calc(-1 * var(--og-space-3)); left: auto; top: calc(-1 * var(--og-space-3)); cursor: nesw-resize; }
+html:root .fh-sw { left: calc(-1 * var(--og-space-3)); bottom: calc(-1 * var(--og-space-3)); top: auto; cursor: nesw-resize; }
+html:root .fh-se { right: calc(-1 * var(--og-space-3)); left: auto; bottom: calc(-1 * var(--og-space-3)); top: auto; cursor: nwse-resize; }
+html:root .fh-e { right: calc(-1 * var(--og-space-3)); left: auto; top: calc(50% - var(--og-space-3)); cursor: ew-resize; }
+html:root .fh-s { bottom: calc(-1 * var(--og-space-3)); top: auto; left: calc(50% - var(--og-space-3)); cursor: ns-resize; }
+
+html:root .free-toolbar button { width: auto; min-width: var(--og-space-7); padding-inline: var(--og-space-2); white-space: nowrap; flex: none; }
+html:root .free-item .wg-card > .workbench-widget-title { flex: 0 0 auto; }
+/* Editing sheets must cover persistent navigation; their confirm action stays clickable. */
+html:root .add-drawer-mask { z-index: var(--og-z-overlay); background: var(--og-scrim); opacity: 1; }
+html:root .add-drawer { z-index: var(--og-z-modal); background: var(--og-fill-overlay); color: var(--og-content-1); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+
+/* The canvas fits the viewport at 100%; only deliberate zoom creates a wider world. */
+html:root .free-item.is-selected .free-handle { opacity: 1; touch-action: none; }
+html:root .free-item.is-selected > .free-handle { padding: 0; }
+html:root.is-phone .board-viewport-tools { gap: 0; padding: var(--og-space-1); }
+html:root.is-phone .board-viewport-tools .og-iconbtn { flex-shrink: 0; }
+html:root[data-og-skin="glass"] :is(.free-item:not(.is-note):not([data-widget="text"]), .og-surface:not(.og-surface--plain), .explorer-topbar, .ex-bbar, .ex-rail, .board-viewport-tools, .settings-panel, .dock-panel) { box-shadow: var(--og-material-shadow); }
+html:root[data-og-skin="glass"] .free-item .og-surface { box-shadow: none; }
+html:root[data-og-skin="glass"] .free-item[data-widget="text"] { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+html:root.is-phone .board-viewport-tools { flex-wrap: wrap; justify-content: center; width: max-content; }
+
+/* Capsule press feedback is shared by pointer and keyboard activation. */
+html:root .ex-bbar-center .ohx-capsule { transition: transform 140ms ease, background var(--og-dur-2), border-color var(--og-dur-2); }
+html:root .ex-bbar-center .ohx-capsule.is-press:not(.is-hold) { transform: scale(.97); }
+html:root .ex-bbar-center .ohx-capsule.is-rebound { animation: og-capsule-rebound 360ms cubic-bezier(.22,1,.36,1); }
+@keyframes og-capsule-rebound { 0% { transform: scale(.97); } 45% { transform: scale(1.015); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  html:root .ex-bbar-center .ohx-capsule { transition: none; }
+  html:root .ex-bbar-center .ohx-capsule.is-press:not(.is-hold) { transform: none; }
+  html:root .ex-bbar-center .ohx-capsule.is-rebound { animation: none; }
+}
+html:root[data-og-motion="reduced"] .ex-bbar-center .ohx-capsule { transition: none; animation: none; transform: none; }
+/* Canvas panels grow in document flow. They must chain wheel/touch scrolling
+   to the document when their own scroll range is exhausted (often zero). */
+html:root .explorer-panel:is(.is-home-canvas, .is-onepage-canvas),
+html:root .freeboard { overscroll-behavior: auto; }
+
+/* Add-widget picker (right-click blank and the ＋ button share it): the search field
+   keeps its control height, sections scroll inside one pane, and the sheet is draggable. */
+html:root .add-overview > .og-input { flex: 0 0 auto; }
+html:root .add-overview .add-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--og-space-3); padding-bottom: var(--og-space-2); }
+html:root .add-overview .add-scroll .add-grid { flex: none; min-height: 0; overflow: visible; }
+html:root .add-overview .add-section { display: flex; flex-direction: column; gap: var(--og-space-2); }
+html:root .add-overview .add-section-title { color: var(--og-content-2); font-size: var(--og-text-label); font-weight: var(--og-weight-medium); padding: 0 var(--og-space-1); }
+html:root .add-overview .free-add-list { max-height: none; overflow: visible; }
+html:root .add-drawer { height: var(--sheet-h, 50vh); }
+html:root .add-drawer.is-detail { height: var(--sheet-h, 60vh); }
+html:root .add-drawer.is-tall { height: var(--sheet-h, 86dvh); }
+html:root .add-drawer.is-detail.is-tall { height: var(--sheet-h, 86dvh); }
+
+/* Plugin tab glyphs (page-declared SVG) align with the built-in 14px tab icons. */
+html:root .ex-tab-plugin-glyph { display: inline-flex; align-items: center; justify-content: center; width: var(--og-icon-sm); height: var(--og-icon-sm); }
+html:root .ex-tab-plugin-glyph svg { width: 100%; height: 100%; }
+
+/* ══════════ 暂存箱（Phase 1：混合对象 + 拖入 + 口令） ══════════ */
+/* 只用 OneGUI 令牌：新 UI 不再长私有 chrome。 */
+.vault-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--og-space-3); margin-bottom: var(--og-space-4); }
+.vault-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-2); }
+.vault-action-groups { display: grid; gap: var(--og-space-2); margin-bottom: var(--og-space-3); }
+.vault-action-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-2); }
+.vault-action-label { flex: none; min-width:var(--og-space-10); font-size:var(--og-text-micro); font-weight:var(--og-weight-semibold); color:var(--og-content-3); letter-spacing:.06em; }
+.vault-share { display: grid; gap: var(--og-space-2); margin: var(--og-space-3) 0; padding: var(--og-space-3); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); }
+.vault-share-code { display: block; font-family: var(--og-font-mono); font-size: var(--og-text-micro); line-height: var(--og-text-micro-lh); color: var(--og-content-1); overflow-wrap: anywhere; user-select: all; }
+.vault-footer-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--og-space-2); margin-top: var(--og-space-3); }
+html:root .vault-drop { position: fixed; left: 50%; bottom: calc(var(--og-space-8) + env(safe-area-inset-bottom)); z-index: var(--og-z-modal); display: flex; align-items: center; gap: var(--og-space-2); padding: var(--og-space-2) var(--og-space-4); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); background: var(--og-surface-overlay); box-shadow: var(--og-elev-menu); color: var(--og-content-1); transform: translateX(-50%); transition: transform .16s ease-out, border-color .16s ease-out; }
+html:root .vault-drop.is-hover { border-color: var(--og-focus-color); transform: translateX(-50%) scale(1.06); }
+.vault-drop-icon { display: inline-flex; align-items: center; justify-content: center; color: var(--og-content-2); }
+.vault-drop-main { display: grid; min-width: 0; }
+.vault-drop-title { max-width: 54vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--og-text-label); }
+.vault-drop-sub { font-size: var(--og-text-micro); color: var(--og-content-2); }
+body.is-vault-dragging { user-select: none; -webkit-user-select: none; }
+@media (max-width: 839.98px) {
+  html:root .vault-drop { bottom: calc(var(--og-space-10) + env(safe-area-inset-bottom)); }
+  .vault-toolbar { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root .vault-drop { transition: none; }
+  html:root .vault-drop.is-hover { transform: translateX(-50%); }
+}
+
+/* 暂存箱文件落区：桌面可拖入 OS 文件；不占视觉焦点。 */
+.vault-file-drop { display: grid; gap: var(--og-space-1); margin-top: var(--og-space-3); padding: var(--og-space-4); border: 1px dashed var(--og-line-2); border-radius: var(--og-radius-md); background: var(--og-surface-2); transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out); }
+.vault-file-drop.is-hot { border-color: var(--og-focus-color); background: var(--og-surface-3); }
+
+/* 手机常驻暂存箱入口：在底栏之上、sheet/OH 面板之下；不占底栏三槽。 */
+/* 手机常驻入口：浮在底栏/FAB 上方，避开右下刷新列（否则会被底栏裁掉、与刷新球重叠）。
+   right = 2*space10 + space2 ≈ 72px，bottom = 3*space10 ≈ 96px。 */
+html:root .vault-dock { position: fixed; right: calc(var(--og-space-10) * 2 + var(--og-space-2) + env(safe-area-inset-right)); bottom: calc(var(--og-space-10) * 3 + env(safe-area-inset-bottom)); z-index: var(--og-z-drawer); display: none; }
+html.is-phone .vault-dock { display: inline-flex; }
+html.is-phone .vault-dock .og-btn { box-shadow: var(--og-elev-menu); border: 1px solid var(--og-line-2); border-radius: var(--og-radius-full); }
+.vault-dock-label { font-size: var(--og-text-micro); color: var(--og-content-2); }
+.vault-dock-count { min-width: var(--og-space-4); padding: 0 var(--og-space-1); border-radius: var(--og-radius-full); background: var(--og-fill-chip); color: var(--og-content-1); font-size: var(--og-text-micro); text-align: center; }
+
+/* 我的 OneTHU 名片：头像 + 资料 + 组织/通讯录列表（只用令牌，不写私有 chrome）。 */
+.name-card { display: grid; gap: var(--og-space-3); }
+.name-card-head { display: flex; align-items: center; gap: var(--og-space-3); }
+.name-card-avatar { width: var(--og-space-10); height: var(--og-space-10); flex: none; border-radius: var(--og-radius-full); object-fit: cover; background: var(--og-surface-2); }
+.name-card-avatar-empty { display: inline-flex; align-items: center; justify-content: center; color: var(--og-content-2); font-size: var(--og-text-title); }
+.name-card-id { display: grid; gap: var(--og-space-1); min-width: 0; }
+.name-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--og-space-1); }
+.name-card-actions .og-btn { padding-inline: var(--og-space-2); }
+.name-card-contacts { display: grid; gap: var(--og-space-2); }
+
+/* 暂存箱动画：条目入场 / 落点出现（只动 transform/opacity；减弱动效全关）。 */
+.vault-item-in { animation: m-rise var(--dur-3) var(--ease-out) both; }
+html:root .vault-drop { animation: m-pop var(--dur-2) var(--ease-spring) both; }
+@media (prefers-reduced-motion: reduce) {
+  .vault-item-in { animation: none; }
+  html:root .vault-drop { animation: none; }
+}
+
+/* 口令二维码：NFC 接入前给手机互相扫的兜底（纯展示，不发起扫描）。 */
+.vault-qr { display: flex; justify-content: center; padding: var(--og-space-2); border-radius: var(--og-radius-md); background: var(--og-surface-overlay); }
+
+/* 名片/碰一碰动效：名片入场、NFC 贴近呼吸、二维码出现（只动 transform/opacity）。 */
+.name-card { animation: m-spring-in var(--dur-3) var(--ease-spring) both; }
+.vault-qr { animation: m-pop var(--dur-2) var(--ease-spring) both; }
+.vault-nfc-reading { animation: m-breathe 1.2s var(--ease-in-out) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .name-card, .vault-qr { animation: none; }
+  .vault-nfc-reading { animation: none; }
+}
+
+/* 桌面 OS 文件拖入：全屏提示层，只在检测到 Files 拖动时出现。 */
+html:root .vault-file-overlay { position: fixed; inset: 0; z-index: var(--og-z-overlay); display: flex; align-items: center; justify-content: center; background: var(--og-scrim); pointer-events: none; }
+.vault-file-overlay-box { display: grid; justify-items: center; gap: var(--og-space-2); padding: var(--og-space-8); border: 1px dashed var(--og-line-2); border-radius: var(--og-radius-xl); background: var(--og-surface-overlay); color: var(--og-content-1); box-shadow: var(--og-elev-menu); animation: m-spring-in var(--dur-3) var(--ease-spring) both; }
+.vault-file-overlay-sub { font-size: var(--og-text-micro); color: var(--og-content-2); }
+@media (prefers-reduced-motion: reduce) { .vault-file-overlay-box { animation: none; } }
+
+/* Navigation workbench: tabs → address capsule → bookmarks; four independent shortcuts. */
+html:root:not(.is-phone) .explorer-topbar { top: 0; }
+html:root:not(.is-phone) .ex-bbar { top: var(--og-workbench-tabs-h); }
+html:root:not(.is-phone) .explorer-shell > .explorer-content { padding-top: calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h) + var(--og-navigation-clearance)) !important; padding-bottom: var(--og-shortcut-clearance); }
+html:root:not(.is-phone).tabs-vertical .ex-bbar { top: 0; }
+html:root:not(.is-phone).tabs-vertical .onego-bookmarks { top: var(--og-workbench-header-h); }
+html:root:not(.is-phone).tabs-vertical .explorer-shell > .explorer-content { padding-top: calc(var(--og-workbench-header-h) + var(--og-navigation-clearance)) !important; }
+.onego-bookmarks { position: fixed; z-index: var(--og-z-header); top: calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h)); left: 0; right: 0; height: var(--og-text-display); display:flex; align-items:center; gap:var(--og-space-1); padding: 0 var(--og-space-5); border-bottom:1px solid var(--og-line-1); background:var(--og-chrome); color:var(--og-content-1); }
+.onego-manager { flex:none; border-radius:var(--og-radius-sm); }
+.onego-bookmark-track { flex:1; min-width:0; display:flex; align-items:center; gap:var(--og-space-1); overflow:hidden; }
+.onego-bookmark { flex:none; max-width:var(--og-bookmark-max); border-radius:var(--og-radius-sm); }
+.onego-bookmark .og-btn-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.onego-bookmark-empty { color:var(--og-content-3); font-size:var(--og-text-label); padding-inline:var(--og-space-3); }
+.onego-bookmark-measure { position:absolute; visibility:hidden; pointer-events:none; display:flex; width:max-content; height:0; overflow:hidden; }
+.onego-bookmark-overflow { position:absolute; right:var(--og-space-3); top:100%; width:var(--og-bookmark-menu-width); max-height:60dvh; overflow:auto; padding:var(--og-space-2); display:flex; flex-direction:column; border:1px solid var(--og-line-2); background:var(--og-menu-fill); box-shadow:var(--og-elev-menu); border-radius:var(--og-radius-card); }
+.onego-bookmark-overflow .onego-bookmark { max-width:100%; justify-content:flex-start; }
+.oneshot { position:fixed; bottom:calc(var(--og-space-4) + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--og-space-3); width:min(var(--og-oneshot-max),calc(100vw - var(--og-exchange-card-width))); z-index:var(--og-z-board-tools); pointer-events:none; }
+html:root .oneshot-button { height:var(--og-space-9); min-width:0; border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); pointer-events:auto; border:1px solid var(--og-line-2); gap:var(--og-space-2); }
+.oneshot-button .og-btn-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+html:root .board-viewport-tools { left:auto; right:var(--og-space-3); bottom:var(--og-board-tools-bottom); transform:none; flex-direction:column; flex-wrap:nowrap; width:auto; max-height:calc(100dvh - var(--og-bookmark-menu-width)); overflow:auto; }
+/* 画笔色板/撤销/清空是浮在工具栏**上方**的绝对定位面板（bottom:100%+gap）。
+   工具栏 overflow:auto 会把它整块裁掉 → 笔一开就「色板不见了」且点不到
+   （2026-10-19 用户实测）。开笔时放开裁切，让面板能溢出到工具栏外面。 */
+html:root .board-viewport-tools.is-pen-open { overflow:visible; }
+html:root .hard-refresh-fab { bottom:var(--refresh-fab-bottom, var(--og-refresh-bottom)); }
+html:root .top-fab { bottom:var(--og-top-button-bottom); }
+html:root.is-phone .oneshot { bottom:calc(var(--explorer-bar-h) + var(--og-space-5) + env(safe-area-inset-bottom)); width:calc(100vw - var(--og-space-4)); gap:calc(var(--og-space-1) * 1.25); }
+html:root.is-phone .oneshot-button { height:var(--og-space-8); font-size:var(--og-text-label); padding-inline:calc(var(--og-space-2) - 1px); gap:var(--og-space-1); }
+html:root.is-phone .oneshot-button svg { width:var(--og-space-4); height:var(--og-space-4); }
+
+/* 课表页：五连条常驻会压住底部日程 —— 收成一枚小按钮，浮在「日程设置」上方；
+   小按钮可上下拖动（--oneshot-drag 记忆位置），展开/收起走网格行高动效。 */
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule {
+  left:auto; right:var(--og-space-3); transform:none;
+  /* 设置钮相对日程 stage，OneShot 相对视口；使用同一份底栏和浮钮净空。 */
+  bottom:calc(var(--og-c-schedule-chrome-bottom, 0px) + var(--og-c-schedule-dock-bottom, var(--og-space-10)) + var(--og-ctl-h-sm) + var(--og-space-3) + var(--oneshot-drag, 0px));
+  width:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0;
+  transition:bottom var(--og-dur-3) var(--og-ease-spring);
+}
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging { transition:none; }
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-slots-wrap {
+  display:grid; grid-template-rows:1fr; padding-bottom:var(--og-space-2); opacity:1;
+  transition:grid-template-rows var(--og-dur-3) var(--og-ease-spring), padding-bottom var(--og-dur-2) var(--og-ease-standard), opacity var(--og-dur-2) var(--og-ease-standard);
+}
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-slots-wrap.is-collapsed {
+  grid-template-rows:0fr; padding-bottom:0; opacity:0; pointer-events:none;
+}
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-slots {
+  min-height:0; overflow:hidden;
+  display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--og-space-2);
+  width:min(var(--og-oneshot-max),calc(100vw - var(--og-space-6)));
+}
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-schedule-drag {
+  display:inline-flex; flex:none; cursor:grab; touch-action:none; -webkit-user-select:none; user-select:none;
+}
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-schedule-toggle {
+  pointer-events:auto; border-radius:var(--og-radius-full); box-shadow:var(--og-elev-2); padding-inline:var(--og-space-3);
+}
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging .oneshot-schedule-drag { cursor:grabbing; }
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule.is-dragging .oneshot-schedule-toggle { box-shadow:var(--og-elev-3); }
+html:root.is-schedule-page .explorer-shell .oneshot.is-schedule .oneshot-placement { bottom:calc(100% + var(--og-space-2)); }
+html:root.is-phone .explorer-shell > .explorer-content { padding-bottom:var(--og-mobile-content-clearance) !important; }
+html:root.is-phone .board-viewport-tools { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + env(safe-area-inset-bottom)); max-height:42dvh; right:calc(var(--og-space-1) * 1.25); }
+html:root.is-phone .hard-refresh-fab { bottom:var(--refresh-fab-bottom, calc(var(--explorer-bar-h) + var(--og-mobile-tools-gap) + var(--og-space-8) + env(safe-area-inset-bottom))); right:var(--refresh-fab-right, calc(var(--og-space-10) - 6px)); }
+html:root.is-phone .top-fab { bottom:calc(var(--explorer-bar-h) + var(--og-mobile-top-gap) + env(safe-area-inset-bottom)); right:calc(var(--og-space-10) - 6px); }
+/* The edge handle owns its gestures; the page edge remains available to system Back. */
+.vault-safe-area { position:fixed; visibility:hidden; pointer-events:none; padding:var(--og-safe-top) var(--og-safe-right) var(--og-safe-bottom) var(--og-safe-left); }
+.vault-floating-anchor { position:fixed; z-index:var(--og-z-board-tools); visibility:hidden; width:var(--og-vault-anchor-w); height:var(--og-vault-anchor-h); }
+.vault-floating-anchor.is-ready { visibility:visible; }
+.vault-anchor { flex:none; color:var(--og-content-1); }
+html:root .vault-box-button { position:relative; width:100%; height:100%; min-height:var(--og-vault-anchor-h); gap:var(--og-space-1); border-radius:var(--og-radius-control); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); padding-inline:var(--og-space-2); touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; cursor:grab; transition:box-shadow var(--og-dur-2) var(--og-ease-standard); }
+.vault-box-button .og-btn-label { display:inline-flex; align-items:center; gap:var(--og-space-1); font-variant-numeric:tabular-nums; }
+.vault-box-label { position:absolute; top:50%; translate:0 -50%; padding:var(--og-space-2) var(--og-space-3); border-radius:var(--og-radius-control); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-1); white-space:nowrap; opacity:0; pointer-events:none; transition:opacity var(--og-dur-2) var(--og-ease-standard); }
+.vault-anchor.is-right .vault-box-label { right:calc(100% + var(--og-space-2)); }
+.vault-anchor.is-left .vault-box-label { left:calc(100% + var(--og-space-2)); }
+.vault-anchor:focus-within .vault-box-label { opacity:1; }
+@media(hover:hover) { .vault-anchor:hover .vault-box-label { opacity:1; } }
+.vault-anchor.is-moving .vault-box-label,.vault-anchor.is-transfer .vault-box-label { opacity:0; }
+.vault-anchor.is-moving .vault-box-button { cursor:grabbing; }
+.vault-box-count { display:grid; place-items:center; min-width:var(--og-space-4); padding-inline:var(--og-space-1); border-radius:var(--og-radius-full); background:color-mix(in srgb,var(--og-action-on) 16%,transparent); font-size:var(--og-text-micro); }
+.vault-anchor.is-transfer { z-index:var(--og-z-menu); }
+
+.vault-anchor-menu { position:fixed; z-index:var(--og-z-menu); display:grid; gap:var(--og-space-2); padding:var(--og-space-3); overflow:auto; background:var(--og-fill-overlay); color:var(--og-content-1); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); box-shadow:var(--og-elev-menu); backdrop-filter:var(--og-overlay-blur); }
+.vault-anchor-menu p { margin:0; padding:var(--og-space-1); color:var(--og-content-3); font-size:var(--og-text-micro); }
+/* A transparent scan stays local to the entrance and never covers a page. */
+.vault-accept-layer { position:fixed; inset:0; z-index:var(--og-z-menu); overflow:clip; pointer-events:none; }
+.vault-accept-halo { position:absolute; width:var(--og-vault-halo-size); height:var(--og-vault-halo-size); translate:-50% -50%; pointer-events:none; color:var(--og-content-2); animation:vault-accept-appear var(--og-dur-2) var(--og-ease-decelerate); }
+.vault-accept-scan { position:absolute; inset:0; border-radius:50%; background:conic-gradient(from 0deg,transparent 0deg 200deg,color-mix(in srgb,currentColor 8%,transparent) 240deg,color-mix(in srgb,currentColor 32%,transparent) 290deg,color-mix(in srgb,currentColor 75%,transparent) 318deg,currentColor 330deg,color-mix(in srgb,currentColor 55%,transparent) 342deg,color-mix(in srgb,currentColor 12%,transparent) 354deg,transparent 360deg); mask-image:radial-gradient(circle closest-side,transparent 0 64%,currentColor 76% 82%,transparent 100%); animation:vault-accept-scan var(--og-vault-radar-period) linear infinite; }
+.vault-accept-halo.is-hover { color:var(--og-success); }
+@keyframes vault-accept-scan { to { transform:rotate(360deg); } }
+@keyframes vault-accept-appear { from { opacity:0; scale:.9; } to { opacity:1; scale:1; } }
+@media(prefers-reduced-motion:reduce) { .vault-accept-halo,.vault-accept-scan { animation:none; } .vault-accept-scan { opacity:.65; } }
+html:root[data-og-motion="reduced"] :is(.vault-accept-halo,.vault-accept-scan) { animation:none; }
+html:root[data-og-motion="reduced"] .vault-accept-scan { opacity:.65; }
+.transfer-oh-hint { position:fixed; z-index:var(--og-z-tooltip); transform:translate(-50%,-100%); padding:calc(var(--og-space-1) * 1.5) var(--og-space-4); border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); font-size:var(--og-text-label); white-space:nowrap; pointer-events:none; animation:transfer-reveal var(--og-dur-2) var(--og-ease-standard); }
+.transfer-oh-hint.is-below { transform:translate(-50%,0); }
+.transfer-oh-hint.is-active { background:var(--og-focus-color); }
+body.is-vault-dragging .vault-floating-anchor,body.is-vault-dragging .explorer-topbar,body.is-vault-dragging .ex-bbar { z-index:var(--og-z-menu); }
+body.is-vault-dragging .ohx-capsule { box-shadow:0 0 0 calc(var(--og-space-1) * .5) color-mix(in srgb,var(--og-focus-color) 40%,transparent),var(--og-elev-2); animation:transfer-breathe 1.6s ease-in-out infinite; }
+body.is-vault-dragging .ohx-capsule.is-vault-drop-hover { box-shadow:0 0 0 var(--og-space-1) var(--og-focus-color),var(--og-elev-3); animation:none; }
+html:root[data-og-skin="glass"] .onego-bookmarks { background:var(--og-fill-surface); backdrop-filter:var(--og-surface-blur); }
+html:root .oneshot-button:hover:not(:disabled) { background:var(--og-action-hover,var(--og-action)); translate:0 calc(var(--og-space-1) * -.5); }
+html:root .oneshot-button:active:not(:disabled) { translate:0 0; }
+@keyframes transfer-reveal { from { opacity:0; translate:0 -8px; } to { opacity:1; translate:0 0; } }
+@keyframes transfer-breathe { 50% { box-shadow:0 0 0 calc(var(--og-space-2) - 1px) color-mix(in srgb,var(--og-focus-color) 22%,transparent),var(--og-elev-2); } }
+@media(prefers-reduced-motion:reduce) { body.is-vault-dragging .ohx-capsule,.transfer-oh-hint { animation:none; } }
+.exchange-feedback { text-align:center; padding:var(--og-space-6); }
+.exchange-feedback p { min-height:var(--og-ctl-h-lg); line-height:1.6; color:var(--og-content-2); }
+.exchange-stage { position:relative; height:var(--og-exchange-stage-height); display:grid; place-items:center; }
+.exchange-stage > i { position:absolute; width:var(--og-exchange-card-width); height:var(--og-exchange-card-width); border:1px solid var(--og-line-2); border-radius:50%; animation:exchange-radar 2.4s ease-out infinite; }
+.exchange-stage > i:nth-child(2) { animation-delay:.8s; }
+.exchange-stage > i:nth-child(3) { animation-delay:1.6s; }
+.exchange-card { position:relative; width:var(--og-exchange-card-width); aspect-ratio:1.586; display:flex; flex-direction:column; justify-content:space-between; padding:var(--og-space-4); background:var(--og-action); color:var(--og-action-on); border-radius:var(--og-space-3); box-shadow:var(--og-elev-3); transform:rotate(-9deg); animation:exchange-float 2s ease-in-out infinite; }
+.exchange-card span { font-size:var(--og-text-micro); text-align:left; }
+.exchange-card b { font-size:var(--og-text-label); }
+.exchange-stage svg { position:relative; width:var(--og-exchange-check-size); height:var(--og-exchange-check-size); stroke:var(--og-success); stroke-width:6; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:100; animation:exchange-check .6s ease-out; }
+.exchange-error { color:var(--og-error); font-size:var(--og-refresh-bottom); font-weight:var(--og-weight-semibold); }
+.exchange-feedback.is-success .exchange-stage i { border-color:var(--og-success); animation-iteration-count:1; }
+.exchange-feedback.is-error .exchange-stage i { animation:none; border-color:var(--og-error); }
+@keyframes exchange-radar { from { transform:scale(.5); opacity:.7; } to { transform:scale(1.5); opacity:0; } }
+@keyframes exchange-float { 50% { transform:translateY(-10px) rotate(4deg); } }
+@keyframes exchange-check { from { stroke-dashoffset:100; transform:scale(.7); } to { stroke-dashoffset:0; transform:scale(1); } }
+@media(prefers-reduced-motion:reduce) { .exchange-stage > i,.exchange-card,.exchange-stage svg { animation:none; } }
+html:root[data-og-motion="reduced"] :is(.exchange-stage > i,.exchange-card,.exchange-stage svg,.ohx-capsule,.transfer-oh-hint) { animation:none; }
+/* Bottom shortcut dock owns its clearance; canvas pages must scroll clear of it. */
+html:root:not(.is-phone) .explorer-shell > .explorer-content.is-home-canvas { padding-bottom:calc(var(--og-shortcut-clearance) + var(--og-space-4)) !important; }
+html:root.is-phone .explorer-shell > .explorer-content.is-home-canvas { padding-bottom:var(--og-mobile-content-clearance) !important; }
+
+/* 实用模式「更多功能」面板：一行 = 功能按钮 + 放进入口；
+   点「放进入口」后面板收起，底部四个入口进入待选态（亮编号），点哪个放哪个 */
+.practical-feature-row { display:flex; align-items:center; gap:var(--og-space-2); }
+.practical-feature-row .workbench-catalog-entry { flex:1; min-width:0; }
+.practical-current { display:grid; gap:var(--og-space-2); }
+.practical-assign-slots { display:flex; flex-wrap:wrap; gap:var(--og-space-2); }
+.oneshot.is-placing .oneshot-button.is-place-target { position:relative; border-color:var(--og-accent-soft-line); box-shadow:0 0 0 2px var(--og-accent-soft-line), var(--og-elev-2); }
+.oneshot-place-badge { position:absolute; top:-7px; right:-4px; min-width:18px; height:18px; padding:0 5px; border-radius:999px; background:var(--og-accent); color:var(--og-accent-on); font-size:11px; line-height:18px; font-weight:700; text-align:center; }
+/* 「我的」四栏在手机上保持一行：等宽、不换行、必要时横向滚动。 */
+html:root.is-phone .settings-seg { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+html:root.is-phone .settings-seg .settings-seg-item { flex:1 1 0; min-width:0; justify-content:center; white-space:nowrap; }
+@media(prefers-reduced-motion:reduce) { .oneshot-button { transition:none; } }
+/* Content pages scroll clear of the fixed shortcut dock (desktop + phone). */
+html:root:not(.is-phone) .explorer-panel { padding-bottom:var(--og-shortcut-clearance); }
+html:root.is-phone .explorer-panel { padding-bottom:var(--og-mobile-content-clearance); }
+
+/* Feedback 2026-10-18: keep navigation geometry stable in both rail widths. */
+html:root.tabs-vertical { --og-active-rail-width: var(--og-rail-full-width); }
+html:root.tabs-vertical.rail-narrow { --og-active-rail-width: var(--og-rail-narrow-width); }
+html:root:not(.is-phone).tabs-vertical .onego-bookmarks { left: var(--og-active-rail-width); }
+html:root .ex-rail > .ex-tabstrip-wrap { height: auto; flex: 1 1 0; min-height: 0; }
+html:root .ex-rail .ex-tabstrip { min-height: 0; }
+html:root .ex-rail-actions { flex: none; flex-direction: column; flex-wrap: nowrap; align-items: flex-start; padding-inline: var(--og-space-1); }
+html:root.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-rail-actions { align-items: flex-start; }
+html:root .ex-rail .ex-tab { padding-inline: 0; gap: 0; max-width: none; }
+html:root .ex-rail .ex-tab-main { padding: 0; gap: 0; }
+html:root .ex-rail .ex-tab-glyph { flex: none; width: var(--og-ctl-h-lg); display: inline-flex; justify-content: center; }
+html:root .ex-rail .ex-tab-glyph :is(svg, img) { width: var(--og-icon-md); height: var(--og-icon-md); }
+html:root .ex-rail .ex-tab-add { width: var(--og-ctl-h-lg); margin-left: 0; flex: none; }
+html:root .og-pagehead { margin-bottom: var(--og-space-6); }
+html:root .og-pagehead .og-text--title { font-size: var(--og-text-title); line-height: var(--og-text-title-lh); }
+html:root .seg-indi { height: var(--og-space-2); margin-block: var(--og-space-2); }
+html:root .board-viewport-tools .og-btn-label { overflow: visible; }
+/* Only the outer widget owns a material; no nested opaque card hides its glass. */
+html:root .free-item :is(.wg-card, .og-card, .home-card) { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+/* 组件卡体溢出时**静默滚动**：可滚但不出滚动条（用户反馈「不需要 slider 的地方出现滑动条，
+   主页组件重灾区」——时钟卡内容只溢出 2px 也画了一根拇指；卡片本来就能拖动改尺寸，
+   滚动条只是噪声）。滚动能力保留：拖矮卡片后内容仍可用滚轮/触控看到。 */
+html:root .free-item > :first-child,
+html:root .free-item > .wg-card,
+html:root .free-item .wg-card > *:not(.wg-entry),
+html:root .free-item :is(.home-card-body, .home-card-body > .list, .wg-card .list) { scrollbar-width: none; }
+html:root .free-item > :first-child::-webkit-scrollbar,
+html:root .free-item > .wg-card::-webkit-scrollbar,
+html:root .free-item .wg-card > *:not(.wg-entry)::-webkit-scrollbar,
+html:root .free-item :is(.home-card-body, .home-card-body > .list, .wg-card .list)::-webkit-scrollbar { width: 0; height: 0; }
+html:root .free-item[data-widget="clock"] > .wg-card { overflow: hidden; }
+/* Opacity animation with forwards fill creates a permanent backdrop root. */
+html:root :is(.settings-mask, .og-scrim, .ex-sheet-mask):not(.is-closing) { animation-fill-mode: backwards; }
+html:root[data-og-skin="glass"] :is(.settings-mask, .og-scrim, .ex-sheet-mask) { backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+html:root[data-og-skin="glass"] :is(.explorer-ctxmenu, .ex-ctxmenu, .onego-bookmark-overflow) { background: var(--og-fill-overlay); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+
+html:root .dock-input-row { flex-wrap: wrap; }
+.dock-composer { display: flex; flex: 1 0 100%; align-items: flex-end; gap: var(--og-space-2); }
+.dock-composer > .og-input { flex: 1; min-width: 0; }
+
+/* Sticky tabs need an opaque paint layer: glass must never show adjacent text. */
+html:root .ex-tabstrip .ex-tab.is-home { background-color:var(--og-canvas); isolation:isolate; }
+html:root .ex-tabstrip .ex-tab.is-home.is-active { background-image:linear-gradient(var(--og-selection-fill),var(--og-selection-fill)); }
+.simple-header { position:fixed; inset:0 0 auto; height:var(--og-workbench-header-h); display:flex; align-items:center; justify-content:space-between; padding-inline:var(--og-space-5); background:var(--og-canvas); z-index:var(--og-z-sticky); }
+html:root .explorer-shell.is-simple > .explorer-content { margin-inline:0 !important; padding:var(--og-workbench-header-h) var(--og-space-4) calc(var(--og-workbench-header-h) + var(--og-space-9) + var(--og-space-9)) !important; }
+html:root .explorer-shell.is-simple > .ex-bbar { position:fixed; inset:auto 0 0 !important; height:calc(var(--og-workbench-header-h) + env(safe-area-inset-bottom)) !important; display:flex; justify-content:center; background:var(--og-canvas); padding-bottom:env(safe-area-inset-bottom); }
+html:root .explorer-shell.is-simple .oneshot { bottom:calc(var(--og-workbench-header-h) + var(--og-space-3) + env(safe-area-inset-bottom)); width:min(var(--og-oneshot-max),calc(100vw - var(--og-space-4))); }
+.simple-home { max-width:var(--og-page-max-narrow); margin-inline:auto; display:grid; gap:var(--og-space-6); padding-block:var(--og-space-5); }
+.simple-home h2 { font-size:var(--og-text-title); margin:0 0 var(--og-space-3); }
+html:root .simple-panel { overflow:visible; }
+
+.simple-settings { padding:var(--og-space-4); }
+
+.org-notice-body { white-space:pre-wrap; overflow-wrap:anywhere; line-height:var(--og-text-body-lh); }
+
+.vault-exchange-actions { display:flex; flex-wrap:wrap; gap:var(--og-space-2); }
+.vault-combination { padding-block:var(--og-space-3); }
+.vault-combination summary { cursor:pointer; color:var(--og-content-2); margin-bottom:var(--og-space-2); }
+
+/* Compact experiences: one quiet header, two content sections, one clear dock. */
+html:root .simple-header { gap:var(--og-space-4); padding-inline:var(--og-workbench-gutter); border-bottom:1px solid var(--og-line-1); }
+.simple-wordmark { font-weight:var(--og-weight-bold); letter-spacing:var(--og-tracking-title); }
+.simple-home-label { color:var(--og-content-3); margin-inline-start:var(--og-space-3); padding-inline-start:var(--og-space-3); border-left:1px solid var(--og-line-2); }
+.simple-header-date { flex:1; text-align:center; color:var(--og-content-3); font-size:var(--og-text-label); }
+html:root .simple-home { width:100%; max-width:var(--og-workbench-max); grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:var(--og-space-8); padding:var(--og-space-9) var(--og-space-5); }
+.simple-section-head { margin-bottom:var(--og-space-5); }
+.simple-section-head > span { font-size:var(--og-text-micro); color:var(--og-content-3); letter-spacing:var(--og-tracking-title); }
+.simple-section-head h2 { font-size:var(--og-text-display); font-weight:var(--og-weight-semibold); letter-spacing:var(--og-tracking-title); margin:var(--og-space-3) 0 var(--og-space-2); }
+.simple-section-head p { margin:0; color:var(--og-content-3); font-size:var(--og-text-label); }
+html:root .simple-home section > .og-card { border-radius:var(--og-radius-xl); box-shadow:none; }
+html:root .explorer-shell.is-simple .ex-bbar-center .ohx-capsule { border:1px solid var(--og-line-2); background:var(--og-surface-1); border-radius:var(--og-radius-full); }
+html:root .explorer-shell.is-simple .ex-bbar { border:0; }
+html:root .explorer-shell.is-simple .oneshot-button { box-shadow:var(--og-elev-1); }
+.oneshot-placement { position:absolute; bottom:calc(100% + var(--og-space-3)); left:0; right:0; display:flex; align-items:center; justify-content:space-between; gap:var(--og-space-3); padding:var(--og-space-3) var(--og-space-4); background:var(--og-surface-overlay); color:var(--og-content-1); border:1px solid var(--og-line-2); border-radius:var(--og-radius-card); box-shadow:var(--og-elev-2); pointer-events:auto; }
+html:root .oneshot-place-badge { top:calc(var(--og-space-2) * -1); right:calc(var(--og-space-1) * -1); min-width:var(--og-space-5); height:var(--og-space-5); padding:0 var(--og-space-1); border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); font-size:var(--og-text-micro); line-height:var(--og-space-5); }
+/* Service library has its own bounded content scroller; the search and categories stay usable. */
+html:root .practical-library { width:min(calc(var(--og-page-max-narrow) + var(--og-space-10) * 4),calc(100vw - var(--og-space-6))); }
+html:root .practical-library .og-panel-body { overflow:hidden; display:flex; flex-direction:column; gap:var(--og-space-4); }
+.practical-library-intro { display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--og-space-3); }
+.practical-library-kicker { font-size:var(--og-text-label); font-weight:var(--og-weight-semibold); }
+.practical-pinned { padding:var(--og-space-4); border-radius:var(--og-radius-lg); background:var(--og-workbench-well); }
+.practical-section-label { display:block; font-size:var(--og-text-micro); color:var(--og-content-3); margin-bottom:var(--og-space-3); }
+.practical-pinned-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--og-space-3); }
+.practical-pinned-item { display:flex; align-items:center; gap:var(--og-space-2); min-width:0; font-size:var(--og-text-label); }
+.practical-pinned-item > span:last-child { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.practical-slot-number { font-size:var(--og-text-micro); color:var(--og-content-3); font-variant-numeric:tabular-nums; }
+.practical-library-layout { display:grid; grid-template-columns:calc(var(--og-space-10) * 2) minmax(0,1fr); gap:var(--og-space-5); min-height:0; }
+.practical-categories { display:flex; flex-direction:column; gap:var(--og-space-1); overflow:auto; max-height:45dvh; }
+html:root .practical-categories .og-btn { flex:none; width:100%; justify-content:space-between; padding-inline:var(--og-space-3); color:var(--og-content-2); }
+.practical-categories .og-btn-label { display:flex; justify-content:space-between; width:100%; gap:var(--og-space-2); }
+.practical-categories .og-btn-label > span { font-size:var(--og-text-micro); color:var(--og-content-3); }
+html:root .practical-categories .og-btn[aria-pressed="true"] { background:var(--og-selection-fill); color:var(--og-content-1); font-weight:var(--og-weight-semibold); }
+.practical-library-results { overflow:auto; max-height:45dvh; min-height:0; padding-inline-end:var(--og-space-2); scrollbar-width:thin; scrollbar-color:var(--og-line-2) transparent; overscroll-behavior:contain; }
+.practical-service-group + .practical-service-group { margin-top:var(--og-space-6); }
+.practical-service-group > header { display:flex; align-items:baseline; gap:var(--og-space-3); margin-bottom:var(--og-space-3); }
+.practical-service-group h3 { font-size:var(--og-text-label); margin:0; }
+.practical-service-group header > span { color:var(--og-content-3); font-size:var(--og-text-micro); }
+.practical-service-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--og-space-2); }
+.practical-feature-row { min-width:0; gap:0; border:1px solid var(--og-line-1); border-radius:var(--og-radius-lg); background:var(--og-surface-1); transition:border-color var(--og-dur-2); }
+.practical-feature-row:hover { border-color:var(--og-line-2); }
+html:root .practical-feature-open.og-btn { display:flex; width:100%; min-width:0; height:auto; min-height:var(--og-ctl-h-lg); padding:var(--og-space-3); background:transparent; text-align:start; justify-content:flex-start; }
+.practical-feature-open .og-btn-label { display:flex; align-items:center; gap:var(--og-space-3); min-width:0; width:100%; }
+.practical-feature-icon { flex:none; width:var(--og-space-8); height:var(--og-space-8); display:grid; place-items:center; background:var(--og-workbench-well); border-radius:var(--og-radius-sm); color:var(--og-content-2); }
+.practical-feature-icon svg { width:var(--og-space-4); height:var(--og-space-4); }
+.practical-feature-copy { min-width:0; display:grid; gap:var(--og-space-1); }
+.practical-feature-copy strong { font-size:var(--og-text-label); font-weight:var(--og-weight-medium); white-space:normal; line-height:var(--og-text-body-lh); }
+.practical-feature-copy small { font-size:var(--og-text-micro); font-weight:var(--og-weight-regular); color:var(--og-content-3); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+html:root .practical-feature-pin { flex:none; margin-right:var(--og-space-1); color:var(--og-content-3); }
+html:root .practical-feature-pin.is-pinned { color:var(--og-content-1); background:var(--og-selection-fill); }
+.practical-no-results { display:grid; justify-items:start; gap:var(--og-space-3); padding:var(--og-space-7) var(--og-space-4); }
+.practical-library-footnote { border-top:1px solid var(--og-line-1); padding-top:var(--og-space-3); }
+/* Mode chooser: small, truthful previews instead of three black slabs of text. */
+.experience-mode-picker { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--og-space-3); }
+html:root .experience-mode-option.og-btn { position:relative; width:100%; height:auto; padding:var(--og-space-4); white-space:normal; text-align:start; background:var(--og-surface-1); border:1px solid var(--og-line-2); border-radius:var(--og-radius-lg); }
+html:root .experience-mode-option.og-btn.is-selected { border-color:var(--og-content-1); box-shadow:inset 0 0 0 1px var(--og-content-1); }
+.experience-mode-option .og-btn-label { display:flex; flex-direction:column; gap:var(--og-space-4); width:100%; min-width:0; }
+.experience-mode-preview { width:100%; aspect-ratio:1.7; border:1px solid var(--og-line-2); background:var(--og-workbench-well); border-radius:var(--og-radius-sm); display:flex; flex-direction:column; padding:var(--og-space-2); gap:var(--og-space-2); }
+.mode-preview-header { height:var(--og-space-1); width:35%; background:var(--og-content-3); border-radius:var(--og-radius-full); }
+.mode-preview-body { display:grid; grid-template-columns:1.2fr 1fr; gap:var(--og-space-1); flex:1; }
+.mode-preview-body i { background:var(--og-surface-1); border:1px solid var(--og-line-1); border-radius:var(--og-radius-xs); }
+.mode-preview-nav { display:flex; justify-content:center; gap:var(--og-space-1); }
+.mode-preview-nav i { width:15%; height:var(--og-space-2); background:var(--og-content-1); border-radius:var(--og-radius-full); }
+.is-practical .mode-preview-nav i:last-child { background:var(--og-content-3); }
+.is-full .mode-preview-body { grid-template-columns:1fr 1fr 1fr; }
+.is-full .mode-preview-body i:nth-child(2) { margin-top:var(--og-space-2); }
+.experience-mode-copy { display:flex; flex-direction:column; gap:var(--og-space-2); font-weight:var(--og-weight-regular); line-height:var(--og-text-body-lh); }
+.experience-mode-copy strong { font-size:var(--og-text-subtitle); font-weight:var(--og-weight-semibold); }
+.experience-mode-copy > span:not(.experience-mode-tag),.experience-mode-copy small { font-size:var(--og-text-label); color:var(--og-content-2); }
+.experience-mode-copy small { color:var(--og-content-3); }
+.experience-mode-tag { font-size:var(--og-text-micro); color:var(--og-content-3); }
+.experience-mode-check { position:absolute; top:var(--og-space-2); right:var(--og-space-2); width:var(--og-space-5); height:var(--og-space-5); border-radius:var(--og-radius-full); background:var(--og-canvas); display:grid; place-items:center; font-size:var(--og-text-micro); }
+html:root.is-phone .simple-home { grid-template-columns:minmax(0,1fr); padding:var(--og-space-6) 0; gap:var(--og-space-7); }
+html:root.is-phone .simple-section-head h2 { font-size:var(--og-text-title); }
+html:root.is-phone .simple-section-head { margin-bottom:var(--og-space-3); }
+html:root.is-phone .simple-header { padding-inline:var(--og-space-3); gap:var(--og-space-2); }
+html:root.is-phone .simple-header-date { display:none; }
+html:root.is-phone .simple-header > .og-btn:last-child { margin-left:auto; }
+html:root.is-phone .practical-library { width:100%; }
+html:root.is-phone .practical-library-layout { grid-template-columns:minmax(0,1fr); gap:var(--og-space-3); }
+html:root.is-phone .practical-categories { flex-direction:row; scrollbar-width:thin; max-height:none; padding-bottom:var(--og-space-1); }
+html:root.is-phone .practical-categories .og-btn { width:auto; }
+html:root.is-phone .practical-service-grid { grid-template-columns:minmax(0,1fr); }
+html:root.is-phone .practical-library-results { max-height:38dvh; }
+html:root.is-phone .practical-pinned { padding:var(--og-space-3); }
+html:root.is-phone .practical-pinned-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--og-space-2); }
+html:root.is-phone .experience-mode-picker { grid-template-columns:minmax(0,1fr); }
+html:root.is-phone .experience-mode-option .og-btn-label { flex-direction:row; align-items:center; }
+html:root.is-phone .experience-mode-preview { width:25%; flex:none; }
+html:root.is-phone .experience-mode-copy { gap:var(--og-space-1); }
+html:root.is-phone .experience-mode-copy strong { font-size:var(--og-text-body); }
+html:root.is-phone .experience-mode-copy small { display:none; }
+
+
+html:root.is-phone .oneshot-button { font-size:var(--og-text-micro); padding-inline:var(--og-space-1); gap:calc(var(--og-space-1) / 2); }
+html:root.is-phone .oneshot-button .og-btn-icon { width:var(--og-space-4); flex:none; }
+html:root.is-phone .oneshot-button .og-btn-label { min-width:0; }
+html:root.is-phone .oneshot-button[aria-expanded] .og-btn-label { white-space:normal; overflow:visible; line-height:1.1; max-width:2.2em; }
+
+.practical-feature-open .og-btn-label { flex-direction:row; }
+.experience-mode-option .og-btn-label { white-space:normal; overflow:visible; }
+.experience-mode-copy { min-width:0; flex:1; }
+html:root .toast-host { z-index:var(--og-z-toast); }
+
+
+/* Shared mobile reading and settings composition. */
+/* ══ OH 限额动作卡（429）════════════════════════════════════════════════════
+   学校 MadModel 免费档被限流时不显示原始报错，给一张能点的卡：
+   一键续签 / 去设置自己的 API。 */
+.dock-notice {
+  display: grid;
+  gap: var(--og-space-2);
+  width: fit-content;
+  max-width: min(calc(var(--og-space-8) * 11.5), 100%);
+  padding: var(--og-space-3) var(--og-space-4);
+  border: 1px solid var(--og-warning-line);
+  border-radius: var(--og-radius-lg);
+  background: var(--og-warning-soft);
+}
+.dock-notice-title {
+  font-size: var(--og-text-body);
+  font-weight: var(--og-weight-semibold);
+  color: var(--og-content-1);
+}
+.dock-notice-sub {
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-2);
+}
+.dock-notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--og-space-2);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════════
+   手机端文字/排布统一策略（2026-10-19）
+   ----------------------------------------------------------------------------
+   用户反馈：「手机版很多文字省略号回来了」「很多文字在左边挤成一堆，右边单独放一个组件」。
+   根因是历史手机档把行布局钉成单行 nowrap + 单行省略（见上面 839 档的
+   `.row { flex-wrap: nowrap !important }`），再叠加若干「一行文字 + 右件」的容器。
+   这里在文件末尾统一收口（晚于所有默认规则、含手机旧档，故能覆盖）：
+    ① 列表行允许换行，文字最多两行、不再单行省略；
+    ② 旧版各类「标题/副题/摘要」文本不再 nowrap，改为两行（或三行）截断；
+    ③ 页面/卡片头等「左标题 + 右操作」容器一律 wrap，操作放不下就换行。
+   ══════════════════════════════════════════════════════════════════════════ */
+html:root.is-phone .row {
+  flex-wrap: wrap !important;
+  align-items: flex-start;
+  row-gap: calc(var(--og-space-1) / 2);
+}
+html:root.is-phone .row-main { flex: 1 1 10ch; min-width: 0; }
+html:root.is-phone .row-title,
+html:root.is-phone .row-sub {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+html:root.is-phone .row-title { font-size: var(--og-text-label); line-height: var(--og-text-label-lh); }
+html:root.is-phone .row-sub { margin-top: 0; font-size: var(--og-text-micro); line-height: var(--og-text-micro-lh); }
+
+/* 旧版列表/卡片里的各类文本：手机端两行封顶，替换单行省略 */
+html:root.is-phone :is(
+  .tl-title, .tl-sub,
+  .washer-name, .washer-sub,
+  .home-entry-name, .home-entry-hint,
+  .fav-tile-sub,
+  .mail-row-from, .mail-row-subject,
+  .mail-detail-from, .mail-detail-to, .mail-detail-subject,
+  .svc-row-sub,
+  .mine-name, .mine-meta-value,
+  .overview-line-title,
+  .ex-row-title, .ex-row-sub, .ex-sec-head-note, .ex-tip, .wall-name,
+  .ohx-hit-name, .ohx-hit-sub,
+  .sphere-name,
+  .identity-card-details,
+  .pal-row-sub,
+  .error-line
+) {
+  white-space: normal !important;
+  text-overflow: clip !important;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* 卡片/区块头：左标题 + 右操作 一律允许换行，操作不挤标题 */
+html:root.is-phone :is(
+  .home-card-head, .section-head, .page-head,
+  .mail-row-top, .overview-line, .balance-row, .wg-card-line,
+  .setting-row, .identity-panel-actions, .name-card-actions
+) {
+  flex-wrap: wrap;
+  row-gap: calc(var(--og-space-3) / 2);
+}
+html:root.is-phone .section-head > :first-child,
+html:root.is-phone .page-head > :first-child {
+  flex: 1 1 100%;
+}
+/* 手机端不出现横向滚动：这些容器允许收缩 */
+html:root.is-phone :is(.row, .section-head, .page-head, .setting-row) { max-width: 100%; }
+
+/* 手机端设置栏目：横向 segment 换成下拉（用户 2026-10-19：外观与布局/数据与下载那个 segment 不直观） */
+.workbench-settings-phone-nav { display: none; }
+html:root.is-phone .workbench-settings-phone-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  margin-bottom: var(--og-space-2);
+}
+html:root.is-phone .workbench-settings-phone-nav .og-select { flex: 1 1 auto; min-width: 0; }
+
+
+/* 手机档：设置行说明给到三行（OneGUI 的 -webkit-line-clamp:2 在 390 宽下会把
+   「在应用内的窗口打开清华统一身份认证，自动填入账号密码…」这类说明切在半句） */
+html.is-phone .og-settings-row-sub { -webkit-line-clamp: 3; }
+
+/* ══════════ 手机档：设置浮层（用户口径「重叠 / 巨大按钮 / 截断的内容」）══════════
+   ① 面要实：桌面是右侧推入的抽屉，"深"玻璃档（alpha .2~.3）叠在窄栏上还看得过去；
+      手机是**整屏**浮层，首页的卡片、坞、时钟会整片透出来 = 用户看到的"重叠"。
+      这里把面板拉回浮层档（--og-fill-overlay）+ 更大模糊，透出来的只剩一层雾。
+   ② 遮罩走 --og-scrim 语义令牌（0.42/0.58），比原来写死的 0.32 更压得住。
+   ③ 头部三段（标题 / 分段 / 关闭）在 390 宽会互相压：分段条改**独立一行**、整行横滑，
+      不再绝对居中飘在标题上（截断的「OneTHU Harness」就是这么来的）。
+   ④ 设置行：OneGUI 是 flex 横排 + control flex:0 0 auto，窄屏下主列被压成一字一行
+      （实测「恢复默认收藏夹」竖成七个字、三个按钮挤成巨型块）。手机档改可换行 +
+      主列给 60% 底线：小控件（开关/分段）仍在右，宽控件（多按钮）自己落到下一行。 */
+html.is-phone .settings-head { flex-wrap: wrap; padding: var(--og-space-2) var(--og-space-3); }
+html.is-phone .settings-seg {
+  position: static;
+  transform: none;
+  order: 3;
+  width: 100%;
+  margin: var(--og-space-1) 0 0;
+  padding-bottom: var(--og-space-1);
+  -webkit-overflow-scrolling: touch;
+}
+html.is-phone .settings-seg::-webkit-scrollbar { display: none; }
+html.is-phone .explorer-settings-body { padding: var(--og-space-3) var(--og-space-3) var(--og-space-6); }
+html.is-phone .og-settings-row { flex-wrap: wrap; row-gap: var(--og-space-3); }
+html.is-phone .og-settings-row-main { flex: 1 1 calc(var(--og-space-8) * 5); min-width: 60%; }
+html.is-phone .og-settings-row-control { flex-wrap: wrap; justify-content: flex-start; }
+html.is-phone .og-settings-row-value { flex: 0 0 auto; }
+
+/* A browser resolves touch-action at the nearest scrolling descendant. The
+   inner widget scrollers must also yield to free-canvas manipulation; setting
+   only the outer item allows a real vertical touch to cancel the drag. Reading
+   order retains native card scrolling and the canvas gutters always pan. */
+html:root .freeboard-wrap:not(.is-reading) .free-item,
+html:root .freeboard-wrap:not(.is-reading) .free-item * { touch-action: none; }
+
+/* Corners stay at their exact screen coordinate at every canvas scale. The
+   visible dot is small; the finger target is the shared large-control size. */
+html:root .freeboard-world .free-handle {
+  width: var(--og-ctl-h-lg);
+  height: var(--og-ctl-h-lg);
+  transform: scale(calc(1 / var(--board-z, 1))) translate(-50%, -50%);
+  transform-origin: 0 0;
+}
+html:root .free-handle::after { top: calc(50% - var(--og-space-1)); left: calc(50% - var(--og-space-1)); }
+html:root .fh-nw { left: 0; top: 0; right: auto; bottom: auto; }
+html:root .fh-ne { left: 100%; top: 0; right: auto; bottom: auto; }
+html:root .fh-sw { left: 0; top: 100%; right: auto; bottom: auto; }
+html:root .fh-se { left: 100%; top: 100%; right: auto; bottom: auto; }
+html:root .fh-e { left: 100%; top: 50%; right: auto; bottom: auto; }
+html:root .fh-s { left: 50%; top: 100%; right: auto; bottom: auto; }
+
+/* Canvas feedback must remain above navigation when the canvas itself pans. */
+html:root .board-note {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h) + var(--og-navigation-clearance) + var(--og-space-3));
+  bottom: auto;
+  transform: translateX(-50%);
+  z-index: var(--og-z-toast);
+  max-width: calc(100vw - var(--og-space-6));
+  padding: var(--og-space-2) var(--og-space-4);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-lg);
+  background: var(--og-surface-overlay);
+  color: var(--og-content-1);
+  font-size: var(--og-text-label);
+  box-shadow: var(--og-elev-menu);
+  pointer-events: none;
+}
+html:root.is-phone .board-note { top: calc(var(--og-workbench-tabs-h) + var(--og-space-3)); }

@@ -53,6 +53,9 @@ fi
 echo "· JDK $JAVA_HOME"
 echo "· SDK $ANDROID_HOME"
 echo "· NDK $NDK_HOME"
+# QuickJS ships desktop bindings; Android bindings need the NDK sysroot instead
+# of the host Xcode/Linux headers. Keep this scoped to Android bindgen.
+export BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android="--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/$(ls "$NDK_HOME/toolchains/llvm/prebuilt" | head -1)/sysroot -I$NDK_HOME/toolchains/llvm/prebuilt/$(ls "$NDK_HOME/toolchains/llvm/prebuilt" | head -1)/sysroot/usr/include/aarch64-linux-android"
 
 # ---------- 2. 工程就位（Tauri 生成的工程不入库）----------
 PREV_LINK=""

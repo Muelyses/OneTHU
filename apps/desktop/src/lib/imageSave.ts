@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 手机端「保存图片到相册」的字节通道。
  *
@@ -85,15 +86,15 @@ export async function resolveImageBase64(src: string): Promise<{ mime: string; b
   }
   const dataUrl = await fetchImageAsDataUrl(src).catch(() => fetchImageByUrl(src));
   const out = splitDataUrl(dataUrl);
-  if (!out) throw new Error("图片内容无法解析");
+  if (!out) throw new Error(i18n("lib.imagesave.e43a97fda804"));
   return out;
 }
 
 /** 保存到系统相册；返回落点显示名（Android 为「相册/OneTHU」），失败抛出原因。 */
 export async function saveImageToGallery(src: string, alt?: string): Promise<string> {
   const { mime, base64 } = await resolveImageBase64(src);
-  if (!base64) throw new Error("图片内容为空");
-  if (base64.length > MAX_B64_LEN) throw new Error("图片过大，无法保存");
+  if (!base64) throw new Error(i18n("lib.imagesave.23ba2e35420a"));
+  if (base64.length > MAX_B64_LEN) throw new Error(i18n("lib.imagesave.811a20b9c112"));
   const r = await invoke<{ dir?: string }>("save_image_to_gallery", {
     data: base64,
     mime,

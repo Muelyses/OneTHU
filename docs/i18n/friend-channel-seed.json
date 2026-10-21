@@ -1,0 +1,16 @@
+{
+  "messages": {
+    "state.friendchannel.sessionChanged": {
+      "zh-CN": "云盘账号或好友通道已改变，请重新打开通道后重试。",
+      "en-US": "The cloud account or friend channel changed. Reopen the channel and try again."
+    },
+    "state.friendchannel.identityUnavailable": {
+      "zh-CN": "无法确认当前云盘账号邮箱，请重新连接云盘。",
+      "en-US": "Your cloud account email could not be verified. Reconnect your cloud drive."
+    },
+    "state.friendchannel.partialRefresh": {
+      "zh-CN": "部分消息未能读取，已保留读取成功的消息，请稍后刷新。",
+      "en-US": "Some messages could not be read. Available messages were kept. Refresh again later."
+    }
+  }
+}

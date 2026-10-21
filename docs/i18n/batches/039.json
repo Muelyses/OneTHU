@@ -1,0 +1,1314 @@
+{
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "lib.onboardinglessons.938cf6754eca",
+      "source": "首页是一块自由画布，组件的位置和大小随手调。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 35,
+          "context": "return i18n(\"lib.onboardinglessons.938cf6754eca\");"
+        }
+      ],
+      "translation": "Home is a free canvas; adjust widget position and size as you like.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.9521224b68f9",
+      "source": "装插件扩展组件、主题与 MCP 工具。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 79,
+          "context": "return i18n(\"lib.onboardinglessons.9521224b68f9\");"
+        }
+      ],
+      "translation": "Install plugins to extend widgets, themes and MCP tools.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.96110462ab73",
+      "source": "打开外观设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 86,
+          "context": "return i18n(\"lib.onboardinglessons.96110462ab73\");"
+        }
+      ],
+      "translation": "Open appearance settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.9697b3ac8ab8",
+      "source": "打开收发入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 52,
+          "context": "return i18n(\"lib.onboardinglessons.9697b3ac8ab8\");"
+        }
+      ],
+      "translation": "Open the share entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.9d06bd60c326",
+      "source": "插件页安装管理，给 OH 配模型源。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 80
+        }
+      ],
+      "translation": "Install and manage plugins on the Plugins page, and configure model sources for OH.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.a2fc98611a51",
+      "source": "打开就看到今日待办与要上的课程，无需整理页面。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 103,
+          "context": "return i18n(\"lib.onboardinglessons.a2fc98611a51\");"
+        }
+      ],
+      "translation": "Open it and see today's tasks and classes right away, no page arranging needed.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.a497b5391775",
+      "source": "查看数据设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 96,
+          "context": "return i18n(\"lib.onboardinglessons.a497b5391775\");"
+        }
+      ],
+      "translation": "Open data settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.a5ba218d1130",
+      "source": "随时点左上角「首页」回到今天。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 104
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 118
+        }
+      ],
+      "translation": "Tap \"Home\" in the top-left corner at any time to return to today.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.a77d0e6c7c2d",
+      "source": "四个入口，随你安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 127,
+          "context": "return i18n(\"lib.onboardinglessons.a77d0e6c7c2d\");"
+        }
+      ],
+      "translation": "Four entries, arranged your way",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.a7d4fd864624",
+      "source": "邀请成员时可用口令，并设有效期。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 56
+        }
+      ],
+      "translation": "You can invite members with a share code and set an expiry date.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.abeb15db61bc",
+      "source": "外观与工作台：全都可调",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 84,
+          "context": "return i18n(\"lib.onboardinglessons.abeb15db61bc\");"
+        }
+      ],
+      "translation": "Appearance and workspace: everything is adjustable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.b0e75e43d9da",
+      "source": "打开组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 57,
+          "context": "return i18n(\"lib.onboardinglessons.b0e75e43d9da\");"
+        }
+      ],
+      "translation": "Open Organizations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.b262a001f2d3",
+      "source": "看看插件页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 81,
+          "context": "return i18n(\"lib.onboardinglessons.b262a001f2d3\");"
+        }
+      ],
+      "translation": "Visit the Plugins page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.b53e0caf08d4",
+      "source": "看看今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 105,
+          "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
+        },
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 119,
+          "context": "return i18n(\"lib.onboardinglessons.b53e0caf08d4\");"
+        }
+      ],
+      "translation": "See today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.b54256466693",
+      "source": "成员身份与访问权限由服务器确认。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 56
+        }
+      ],
+      "translation": "Membership identity and access permissions are confirmed by the server.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.b63a952e8a2d",
+      "source": "按学习、日程、生活、预约等目录寻找，也可以搜索。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 123
+        }
+      ],
+      "translation": "Browse the directory by Study, Schedule, Life, Reservations and more, or just search.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.bab05287556d",
+      "source": "展开更多功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 124,
+          "context": "return i18n(\"lib.onboardinglessons.bab05287556d\");"
+        }
+      ],
+      "translation": "Expand more features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.bb1ddb4acdff",
+      "source": "点顶栏＋或搜索开新标签，拖动可换序。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 70
+        }
+      ],
+      "translation": "Tap the + in the top bar or search to open a new tab; drag to reorder.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.befddfd12f6f",
+      "source": "OH 搜索胶囊始终可用；自己的 API 在设置里填写。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 118
+        }
+      ],
+      "translation": "The OH search capsule is always available; fill in your own API in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.c0def71d3a4b",
+      "source": "OH 搜索胶囊始终可用；可在设置里填自己的 API。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 109
+        }
+      ],
+      "translation": "The OH search capsule is always available; you can enter your own API in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.cb18708acfd3",
+      "source": "可按需触发：手动、定时或事件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 75
+        }
+      ],
+      "translation": "Trigger on demand: manually, on a schedule, or by event.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.d202897590a6",
+      "source": "生成短口令后发送，对方联网接收这组内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 45,
+          "context": "return i18n(\"lib.onboardinglessons.d202897590a6\");"
+        }
+      ],
+      "translation": "Create a short share code and send it; the other side receives the bundle once online.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.d66e6fe01e59",
+      "source": "看看底部五入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 110,
+          "context": "return i18n(\"lib.onboardinglessons.d66e6fe01e59\");"
+        }
+      ],
+      "translation": "See the five bottom entries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.d6dc9c00faa7",
+      "source": "调整常用入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 129,
+          "context": "return i18n(\"lib.onboardinglessons.d6dc9c00faa7\");"
+        }
+      ],
+      "translation": "Adjust your frequent entries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.d79d92647cba",
+      "source": "去学习页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 91,
+          "context": "return i18n(\"lib.onboardinglessons.d79d92647cba\");"
+        }
+      ],
+      "translation": "Go to the Study page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.da33da7edc5c",
+      "source": "创建组织即绑定组织名片，成员按权限协作。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 55,
+          "context": "return i18n(\"lib.onboardinglessons.da33da7edc5c\");"
+        }
+      ],
+      "translation": "Creating an organization binds its card; members collaborate by permission.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.dcdb4647f456",
+      "source": "日程支持云日历与系统日历同步。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 95
+        }
+      ],
+      "translation": "Schedule supports cloud calendar and system calendar sync.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.e225304e8091",
+      "source": "OneGO! 收好常用页面、工作区与 OneFlow。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 74,
+          "context": "return i18n(\"lib.onboardinglessons.e225304e8091\");"
+        }
+      ],
+      "translation": "OneGO! keeps your frequent pages, workspaces and OneFlows at hand.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.e27c03ed11b7",
+      "source": "校园服务：完整模式的聚合",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 89,
+          "context": "return i18n(\"lib.onboardinglessons.e27c03ed11b7\");"
+        }
+      ],
+      "translation": "Campus services: the Full mode hub",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.e84b694246af",
+      "source": "打开 OneGO!",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 76,
+          "context": "return i18n(\"lib.onboardinglessons.e84b694246af\");"
+        }
+      ],
+      "translation": "Open OneGO!",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.eb8b58642cd4",
+      "source": "生活与信息汇集校园服务；课表看时间安排。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 109
+        }
+      ],
+      "translation": "Life and Info gather campus services; the Timetable shows your time.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.eb8d4b7fd8d5",
+      "source": "每个页面都是一枚标签，工作区保存一组页面。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 69,
+          "context": "return i18n(\"lib.onboardinglessons.eb8d4b7fd8d5\");"
+        }
+      ],
+      "translation": "Every page is a tab, and a workspace saves a set of pages.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.ec9325752ccc",
+      "source": "在「更多功能」里点功能右侧的 + 号。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 128
+        }
+      ],
+      "translation": "In \"More features\", tap the + on the right of a feature.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.ed00d331fead",
+      "source": "点「＋」添加组件；按住拖动调整位置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 36
+        }
+      ],
+      "translation": "Tap \"+\" to add a widget; press and drag to reposition it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.edf2196ae042",
+      "source": "接收可粘贴口令或识别二维码；限定邮箱需对应账号。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 46
+        }
+      ],
+      "translation": "To receive, paste a share code or scan a QR code; email-restricted shares require the matching account.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.f0286e41a800",
+      "source": "双击便笺与文字编辑；OnePage 可另建白板。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 36
+        }
+      ],
+      "translation": "Double-tap notes and text to edit; a OnePage can also become its own Board.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.f544c165cc0d",
+      "source": "右键或长按组件，选择「改变大小」或固定。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 36
+        }
+      ],
+      "translation": "Right-click or long-press a widget, then choose \"Resize\" or pin it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.f9d887f9253a",
+      "source": "设置→外观与布局：主题、壁纸、字号。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 85
+        }
+      ],
+      "translation": "Settings → Appearance & layout: theme, wallpaper, font size.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.fd6248cc4365",
+      "source": "可给本机应用开放 OH MCP（默认关闭）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 80
+        }
+      ],
+      "translation": "You can expose the OH MCP to apps on this machine (off by default).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.fdb99497532e",
+      "source": "学习、预约、生活、课表、信息，固定在底部。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 108,
+          "context": "return i18n(\"lib.onboardinglessons.fdb99497532e\");"
+        }
+      ],
+      "translation": "Study, Reservations, Life, Timetable and Info, fixed at the bottom.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.fe79c11b666f",
+      "source": "需要更多功能时，可在设置里切换模式。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 104
+        }
+      ],
+      "translation": "When you need more features, switch modes in Settings.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.2e072265be7f",
+      "source": "（没有回复）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 344,
+          "context": "String(r?.answer ?? r?.error ?? \"\").trim() || i18n(\"lib.overlayandroid.2e072265be7f\")"
+        }
+      ],
+      "translation": "(No reply)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.38793c1c1c23",
+      "source": "相册",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 364,
+          "context": "return i18n(\"lib.overlayandroid.38793c1c1c23\");"
+        }
+      ],
+      "translation": "Photo library",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.4d46b1512ea6",
+      "source": "附件：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(name ?? \"（未命名）\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 394,
+          "context": "text: i18n(\"lib.overlayandroid.4d46b1512ea6\", { value: String(name ?? i18n(\"lib.overlayandroid.89a7d926bd0e\")) })"
+        }
+      ],
+      "translation": "Attachment: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.6e3a10ade7c7",
+      "source": "拍照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 363,
+          "context": "return i18n(\"lib.overlayandroid.6e3a10ade7c7\");"
+        }
+      ],
+      "translation": "Take photo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.89a7d926bd0e",
+      "source": "（未命名）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 394,
+          "context": "name ?? i18n(\"lib.overlayandroid.89a7d926bd0e\")"
+        }
+      ],
+      "translation": "(Untitled)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.9e07e3c0532d",
+      "source": "上传",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 365,
+          "context": "return i18n(\"lib.overlayandroid.9e07e3c0532d\");"
+        }
+      ],
+      "translation": "Upload",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.c638cd4dde22",
+      "source": "（出错了：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 351,
+          "context": "text: i18n(\"lib.overlayandroid.c638cd4dde22\", { value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "(Error: {value})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.c7225dbf105e",
+      "source": "附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 370,
+          "context": "ATTACH_LABEL[kind] ?? i18n(\"lib.overlayandroid.c7225dbf105e\")"
+        }
+      ],
+      "translation": "Attachment",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.overlayandroid.d7111ec9e5c7",
+      "source": "（打开{label}失败：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        },
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 378,
+          "context": "text: i18n(\"lib.overlayandroid.d7111ec9e5c7\", { label: String(label), value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "(Failed to open {label}: {value})",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "lib.overlayandroid.d873d782b371",
+      "source": "（附件发送失败：{value}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(e instanceof Error ? e.message : String(e))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 413,
+          "context": "text: i18n(\"lib.overlayandroid.d873d782b371\", { value: String(e instanceof Error ? e.message : String(e)) })"
+        }
+      ],
+      "translation": "(Attachment failed to send: {value})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.overlayandroid.f11889f79829",
+      "source": "（附件已交给 OH）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/overlayAndroid.ts",
+          "line": 406,
+          "context": "reply || i18n(\"lib.overlayandroid.f11889f79829\")"
+        }
+      ],
+      "translation": "(Attachment handed to OH)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pdf.runtime.0c6ad6379eeb",
+      "source": "Math.sumPrecise: 元素必须是 number",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pdf-runtime.ts",
+          "line": 100,
+          "context": "new TypeError(i18n(\"lib.pdf.runtime.0c6ad6379eeb\"))"
+        }
+      ],
+      "translation": "Math.sumPrecise: elements must be numbers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.311456c35da6",
+      "source": "嵌入内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 624,
+          "context": "return i18n(\"lib.pptxrender.311456c35da6\");"
+        }
+      ],
+      "translation": "Embedded content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.465bf7f89508",
+      "source": "压缩包内未找到 ppt/slides/slideN.xml（可能不是 .pptx）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 663,
+          "context": "new Error(i18n(\"lib.pptxrender.465bf7f89508\"))"
+        }
+      ],
+      "translation": "ppt/slides/slideN.xml not found in the archive (may not be a .pptx)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.53f92c063963",
+      "source": "对象",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 604,
+          "context": "isDgm ? \"SmartArt\" : i18n(\"lib.pptxrender.53f92c063963\")"
+        }
+      ],
+      "translation": "Object",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.5547406e74d1",
+      "source": "图片过大未渲染",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 580,
+          "context": "known ? i18n(\"lib.pptxrender.5547406e74d1\") : i18n(\"lib.pptxrender.e957a1c1958c\")"
+        }
+      ],
+      "translation": "Image too large, not rendered",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.8cb443ab8379",
+      "source": "图表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 604,
+          "context": "isChart ? i18n(\"lib.pptxrender.8cb443ab8379\") : isDgm ? \"SmartArt\" : i18n(\"lib.pptxrender.53f92c063963\")"
+        }
+      ],
+      "translation": "Chart",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.b5c59e63ba8f",
+      "source": "未能解析任何幻灯片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 745,
+          "context": "new Error(i18n(\"lib.pptxrender.b5c59e63ba8f\"))"
+        }
+      ],
+      "translation": "No slides could be parsed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.pptxrender.e957a1c1958c",
+      "source": "图片（格式不支持）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/pptxRender.ts",
+          "line": 580,
+          "context": "known ? i18n(\"lib.pptxrender.5547406e74d1\") : i18n(\"lib.pptxrender.e957a1c1958c\")"
+        }
+      ],
+      "translation": "Image (format not supported)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.qrscan.b3a1f9364b8c",
+      "source": "当前环境不支持二维码识别（需要较新的系统 WebView）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/qrScan.ts",
+          "line": 17,
+          "context": "new Error(i18n(\"lib.qrscan.b3a1f9364b8c\"))"
+        }
+      ],
+      "translation": "QR code scanning isn't supported in this environment (a newer system WebView is required)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.378968f3ae7e",
+      "source": "云盘返回了不支持的分享链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 13,
+          "context": "new Error(i18n(\"lib.shortcode.378968f3ae7e\"))"
+        }
+      ],
+      "translation": "The cloud drive returned an unsupported share link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.67ab8f79df50",
+      "source": "不是 OneTHU 短口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 32,
+          "context": "new Error(i18n(\"lib.shortcode.67ab8f79df50\"))"
+        }
+      ],
+      "translation": "Not a OneTHU short share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.8421942a683e",
+      "source": "短口令含有无法识别的字符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 38,
+          "context": "new Error(i18n(\"lib.shortcode.8421942a683e\"))"
+        }
+      ],
+      "translation": "The short share code contains unrecognized characters",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.aef75cc315e1",
+      "source": "短口令格式不完整",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 28,
+          "context": "new Error(i18n(\"lib.shortcode.aef75cc315e1\"))"
+        }
+      ],
+      "translation": "The short share code is incomplete",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.shortcode.bf3d8cf6fe66",
+      "source": "短口令应有四组、每组四个字符，请完整复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/shortCode.ts",
+          "line": 34,
+          "context": "new Error(i18n(\"lib.shortcode.bf3d8cf6fe66\"))"
+        }
+      ],
+      "translation": "A short share code should be four groups of four characters; please copy it in full",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.speech.1737f29c47c1",
+      "source": "桌面端暂不支持原生语音识别：点「点击输入，长按说话」用键盘输入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/speech.ts",
+          "line": 62,
+          "context": "isAndroid\n    ? i18n(\"lib.speech.4eb4956de694\")\n    : i18n(\"lib.speech.1737f29c47c1\")"
+        }
+      ],
+      "translation": "Native speech recognition isn't supported on desktop yet: tap \"Tap to input, hold to speak\" and type with the keyboard",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.speech.4eb4956de694",
+      "source": "此设备未提供系统语音识别：先在系统设置里启用「语音服务」再长按",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/speech.ts",
+          "line": 61,
+          "context": "isAndroid\n    ? i18n(\"lib.speech.4eb4956de694\")\n    : i18n(\"lib.speech.1737f29c47c1\")"
+        }
+      ],
+      "translation": "This device has no system speech recognition: enable \"Speech services\" in system settings first, then hold",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.suggest.132e3b256a4c",
+      "source": "和你在用的地方同类",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/suggest.ts",
+          "line": 84,
+          "context": "why: i18n(\"lib.suggest.132e3b256a4c\")"
+        }
+      ],
+      "translation": "Similar to where you're working",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.suggest.548b0e407001",
+      "source": "多数人天天用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/suggest.ts",
+          "line": 93,
+          "context": "why: i18n(\"lib.suggest.548b0e407001\")"
+        }
+      ],
+      "translation": "Used daily by most people",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.suggest.c02a34b5141f",
+      "source": "顺手看看",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/suggest.ts",
+          "line": 99,
+          "context": "why: i18n(\"lib.suggest.c02a34b5141f\")"
+        }
+      ],
+      "translation": "Worth a look",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.thosopen.76024592a2c9",
+      "source": "应用内打开失败：{value}（改用浏览器）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(reason.slice(0, 80))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/thosOpen.ts",
+          "line": 47,
+          "context": "showToast(i18nMsg(\"lib.thosopen.76024592a2c9\", { value: String(reason.slice(0, 80)) }), 9000)"
+        }
+      ],
+      "translation": "Failed to open in app: {value} (falling back to browser)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.3a8b5cef5790",
+      "source": "步行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 247,
+          "context": "return i18n(\"lib.trace.3a8b5cef5790\");"
+        }
+      ],
+      "translation": "Walk",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.455ece81de56",
+      "source": "百度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 287,
+          "context": "return i18n(\"lib.trace.455ece81de56\");"
+        }
+      ],
+      "translation": "Baidu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.50537dab7650",
+      "source": "苹果",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 288,
+          "context": "return i18n(\"lib.trace.50537dab7650\");"
+        }
+      ],
+      "translation": "Apple Maps",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.53874092e000",
+      "source": "腾讯",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 286,
+          "context": "return i18n(\"lib.trace.53874092e000\");"
+        }
+      ],
+      "translation": "Tencent",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.7c25d6aa499e",
+      "source": "高德",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 285,
+          "context": "return i18n(\"lib.trace.7c25d6aa499e\");"
+        }
+      ],
+      "translation": "Amap",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.7f21257362cb",
+      "source": "驾车",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 249,
+          "context": "return i18n(\"lib.trace.7f21257362cb\");"
+        }
+      ],
+      "translation": "Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.a02caf9878b5",
+      "source": "<1分",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 356,
+          "context": "return i18n(\"lib.trace.a02caf9878b5\");"
+        }
+      ],
+      "translation": "<1 min",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.c76e20944989",
+      "source": "{value}时{value2}分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.floor(m / 60))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(m % 60)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 358,
+          "context": "return i18n(\"lib.trace.c76e20944989\", { value: String(Math.floor(m / 60)), value2: String(m % 60) });"
+        }
+      ],
+      "translation": "{value} h {value2} min",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

@@ -4,10 +4,12 @@
 //! - IMAP: mails.tsinghua.edu.cn:993 (implicit TLS)
 //! - SMTP: smtp.tsinghua.edu.cn:465  (implicit TLS)
 //!
-//! 会话策略：每条命令独立连接（IMAP 会话短命干净，学生量级毫秒级握手成本），
+//! 会话策略：每条命令独立连接，网络操作在阻塞工作线程执行，
 //! 不在 Rust 侧持有任何登录态。
 
 use serde::{Deserialize, Serialize};
+use std::net::ToSocketAddrs;
+use std::time::Duration;
 
 const IMAP_HOST: &str = "mails.tsinghua.edu.cn";
 const SMTP_HOST: &str = "smtp.tsinghua.edu.cn";
@@ -58,7 +60,15 @@ pub struct SendArgs {
 type ImapSession = imap::Session<rustls_connector::TlsStream<std::net::TcpStream>>;
 
 fn imap_connect(email: &str, auth: &str) -> Result<ImapSession, String> {
-    let stream = std::net::TcpStream::connect((IMAP_HOST, 993)).map_err(|e| format!("无法连接邮箱服务器：{}", e))?;
+    let addresses = (IMAP_HOST, 993).to_socket_addrs().map_err(|e| format!("无法解析邮箱服务器：{}", e))?;
+    let mut connected = None;
+    for address in addresses {
+        match std::net::TcpStream::connect_timeout(&address, Duration::from_secs(10)) {
+            Ok(stream) => { connected = Some(stream); break; }
+            Err(_) => continue,
+        }
+    }
+    let stream = connected.ok_or("无法连接邮箱服务器，请检查网络后重试")?;
     stream.set_read_timeout(Some(std::time::Duration::from_secs(30))).ok();
     stream.set_write_timeout(Some(std::time::Duration::from_secs(30))).ok();
     let tls = rustls_connector::RustlsConnectorConfig::new_with_webpki_root_certs()   // 0.23：roots_certs→root_certs，connect 配置不再可失败
@@ -73,7 +83,7 @@ fn imap_connect(email: &str, auth: &str) -> Result<ImapSession, String> {
 fn first_addr<'a>(a: Option<&'a mail_parser::Address<'a>>) -> Option<&'a mail_parser::Addr<'a>> {
     match a? {
         mail_parser::Address::List(v) => v.first(),
-        mail_parser::Address::Group(g) => g.first().map(|g| &g.addresses[0] as &mail_parser::Addr).or(None).or_else(|| None),
+        mail_parser::Address::Group(g) => g.iter().flat_map(|group| group.addresses.iter()).next(),
     }
 }
 
@@ -94,23 +104,59 @@ fn parse_head(raw: &[u8]) -> (String, String, i64) {
     (subject, from, date_ms)
 }
 
-/// 收件列表（最新 limit 封，只取头 + 已读标记；不动服务器状态）
+// Both ends of IMAP sequence ranges are inclusive.
+fn page_range(total: u32, limit: u32, before: Option<u32>) -> Option<(u32, u32)> {
+    let end = before.map(|value| value.saturating_sub(1).min(total)).unwrap_or(total);
+    if end == 0 { return None; }
+    Some((end.saturating_sub(limit.clamp(1, 200) - 1).max(1), end))
+}
+
+fn search_criteria(query: &str) -> Result<Option<String>, String> {
+    if query.chars().any(|ch| matches!(ch, '\r' | '\n' | '\0')) {
+        return Err("搜索内容不能包含换行".into());
+    }
+    let query = query.trim();
+    if query.is_empty() { return Ok(None); }
+    let escaped = query.replace('\\', "\\\\").replace('"', "\\\"");
+    Ok(Some(format!("OR SUBJECT \"{}\" FROM \"{}\"", escaped, escaped)))
+}
+
+// IMAP and lettre transports block. Keep all network work off the IPC/event loop.
 #[tauri::command]
-pub fn mail_list(email: String, auth: String, folder: String, limit: u32, before_seq: Option<u32>) -> Result<MailListOut, String> {
+pub async fn mail_list(email: String, auth: String, folder: String, limit: u32, before_seq: Option<u32>) -> Result<MailListOut, String> {
+    tauri::async_runtime::spawn_blocking(move || mail_list_impl(email, auth, folder, limit, before_seq))
+        .await.map_err(|_| "邮箱后台任务意外结束".to_string())?
+}
+#[tauri::command]
+pub async fn mail_search(email: String, auth: String, folder: String, query: String, limit: u32) -> Result<Vec<MailHead>, String> {
+    tauri::async_runtime::spawn_blocking(move || mail_search_impl(email, auth, folder, query, limit))
+        .await.map_err(|_| "邮箱后台任务意外结束".to_string())?
+}
+#[tauri::command]
+pub async fn mail_read(email: String, auth: String, folder: String, uid: u32) -> Result<MailBody, String> {
+    tauri::async_runtime::spawn_blocking(move || mail_read_impl(email, auth, folder, uid))
+        .await.map_err(|_| "邮箱后台任务意外结束".to_string())?
+}
+#[tauri::command]
+pub async fn mail_mark_seen(email: String, auth: String, folder: String, uid: u32) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || mail_mark_seen_impl(email, auth, folder, uid))
+        .await.map_err(|_| "邮箱后台任务意外结束".to_string())?
+}
+#[tauri::command]
+pub async fn mail_send(args: SendArgs) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || mail_send_impl(args))
+        .await.map_err(|_| "邮箱后台任务意外结束".to_string())?
+}
+
+/// 收件列表（最新 limit 封，只取头 + 已读标记；不动服务器状态）
+fn mail_list_impl(email: String, auth: String, folder: String, limit: u32, before_seq: Option<u32>) -> Result<MailListOut, String> {
     let mut sess = imap_connect(&email, &auth)?;
     let total = sess
         .select(&folder)
         .map_err(|e| format!("打开「{}」失败：{}", folder, tidy_imap_err(&e)))?
         .exists;
-    let (heads, min_seq) = if total == 0 {
-        (Vec::new(), 0)
-    } else {
-        // 分页：不带 beforeSeq = 最新一页；带 = 该序列号之前的更旧一页
-        let (from_seq, to_seq) = match before_seq {
-            Some(b) if b >= 1 => (b.saturating_sub(limit).max(1), b - 1),
-            _ => (total.saturating_sub(limit).max(1), total),
-        };
-        let range = if to_seq < from_seq { "1:1".to_string() } else { format!("{}:{}", from_seq, to_seq) };
+    let (heads, min_seq) = if let Some((from_seq, to_seq)) = page_range(total, limit, before_seq) {
+        let range = format!("{}:{}", from_seq, to_seq);
         let fetches = sess
             .fetch(&range, "(UID FLAGS BODY.PEEK[HEADER.FIELDS (SUBJECT FROM DATE)])")
             .map_err(|e| format!("拉取失败：{}", tidy_imap_err(&e)))?;
@@ -126,21 +172,16 @@ pub fn mail_list(email: String, auth: String, folder: String, limit: u32, before
         // 服务器按 seq 升序给：翻成最新在前
         out.reverse();
         (out, from_seq)
+    } else {
+        (Vec::new(), 0)
     };
     sess.logout().ok();
     Ok(MailListOut { total, min_seq, heads })
 }
 
 /// 全箱搜索（主题 OR 发件人；返回最新在前，最多 limit 封）
-#[tauri::command]
-pub fn mail_search(email: String, auth: String, folder: String, query: String, limit: u32) -> Result<Vec<MailHead>, String> {
-    let q = query.trim().to_string();
-    if q.is_empty() {
-        return Ok(Vec::new());
-    }
-    // IMAP 字符串字面量转义（引号/反斜杠），拼 OR 查询
-    let esc = q.replace("\\", "\\\\").replace("\"", "\\\"");
-    let criteria = format!("OR SUBJECT \"{}\" FROM \"{}\"", esc, esc);
+fn mail_search_impl(email: String, auth: String, folder: String, query: String, limit: u32) -> Result<Vec<MailHead>, String> {
+    let Some(criteria) = search_criteria(&query)? else { return Ok(Vec::new()); };
     let mut sess = imap_connect(&email, &auth)?;
     sess.select(&folder).map_err(|e| format!("打开「{}」失败：{}", folder, tidy_imap_err(&e)))?;
     let uids = sess
@@ -150,7 +191,7 @@ pub fn mail_search(email: String, auth: String, folder: String, query: String, l
     if !uids.is_empty() {
         let mut sorted: Vec<u32> = uids.into_iter().collect();
         sorted.sort_unstable();
-        let from = sorted.len().saturating_sub(limit as usize);
+        let from = sorted.len().saturating_sub(limit.clamp(1, 200) as usize);
         let set: Vec<String> = sorted[from..].iter().map(|u| u.to_string()).collect();
         let fetches = sess
             .uid_fetch(set.join(","), "(UID FLAGS BODY.PEEK[HEADER.FIELDS (SUBJECT FROM DATE)])")
@@ -169,8 +210,7 @@ pub fn mail_search(email: String, auth: String, folder: String, query: String, l
 }
 
 /// 读一封（UID 定位；text/html 分开给，前端优先文本后 iframe 沙箱渲染）
-#[tauri::command]
-pub fn mail_read(email: String, auth: String, folder: String, uid: u32) -> Result<MailBody, String> {
+fn mail_read_impl(email: String, auth: String, folder: String, uid: u32) -> Result<MailBody, String> {
     let mut sess = imap_connect(&email, &auth)?;
     let _ = sess
         .select(&folder)
@@ -213,8 +253,7 @@ pub fn mail_read(email: String, auth: String, folder: String, uid: u32) -> Resul
 }
 
 /// 标记已读（读信的伴随动作；单独命令便于失败静默重试）
-#[tauri::command]
-pub fn mail_mark_seen(email: String, auth: String, folder: String, uid: u32) -> Result<(), String> {
+fn mail_mark_seen_impl(email: String, auth: String, folder: String, uid: u32) -> Result<(), String> {
     let mut sess = imap_connect(&email, &auth)?;
     sess.select(&folder).map_err(|e| tidy_imap_err(&e).to_string())?;
     sess.uid_store(uid.to_string(), "+FLAGS (\\Seen)").map_err(|e| tidy_imap_err(&e).to_string())?;
@@ -223,8 +262,7 @@ pub fn mail_mark_seen(email: String, auth: String, folder: String, uid: u32) -> 
 }
 
 /// 发信（SMTP 465 implicit TLS）
-#[tauri::command]
-pub fn mail_send(args: SendArgs) -> Result<(), String> {
+fn mail_send_impl(args: SendArgs) -> Result<(), String> {
     use lettre::message::header::ContentType;
     use lettre::transport::smtp::authentication::Credentials;
     use lettre::{Message, SmtpTransport, Transport};
@@ -247,12 +285,12 @@ pub fn mail_send(args: SendArgs) -> Result<(), String> {
         .map_err(|e| format!("组装邮件失败：{}", e))?;
 
     let creds = Credentials::new(args.email.clone(), args.auth.clone());
-    // 465 = implicit TLS（SmtpTransport::relay 是 587 STARTTLS 语义；relayed() 之后再
-    // 明确 port(465) 会握手错误）——用 smtps 专用构造 + rustls
+    // lettre::relay uses implicit TLS; starttls_relay is the distinct STARTTLS API.
     let mailer = SmtpTransport::relay(SMTP_HOST)
         .map_err(|e| format!("SMTP 连接失败：{}", e))?
         .port(465)
         .credentials(creds)
+        .timeout(Some(Duration::from_secs(30)))
         .build();
     mailer
         .send(&mail)
@@ -293,6 +331,41 @@ fn strip_html(html: &str) -> String {
 mod tests {
     use super::*;
 
+    #[test]
+    fn offline_page_ranges_are_exact_and_do_not_repeat_last_message() {
+        assert_eq!(page_range(100, 50, None), Some((51, 100)));
+        assert_eq!(page_range(100, 50, Some(51)), Some((1, 50)));
+        assert_eq!(page_range(100, 50, Some(1)), None);
+        assert_eq!(page_range(100, 50, Some(0)), None);
+        assert_eq!(page_range(0, 50, None), None);
+        assert_eq!(page_range(3, 50, None), Some((1, 3)));
+        assert_eq!(page_range(3, 50, Some(100)), Some((1, 3)));
+        assert_eq!(page_range(3, 0, None), Some((3, 3)));
+        assert_eq!(page_range(500, u32::MAX, None), Some((301, 500)));
+    }
+
+    #[test]
+    fn offline_empty_address_groups_do_not_panic() {
+        let empty = mail_parser::Address::Group(vec![mail_parser::Group { name: None, addresses: vec![] }]);
+        assert!(first_addr(Some(&empty)).is_none());
+        let groups = mail_parser::Address::Group(vec![
+            mail_parser::Group { name: None, addresses: vec![] },
+            mail_parser::Group { name: None, addresses: vec![mail_parser::Addr { name: None, address: Some("fixture@example.invalid".into()) }] },
+        ]);
+        assert_eq!(first_addr(Some(&groups)).unwrap().address.as_deref(), Some("fixture@example.invalid"));
+        let (_, from, _) = parse_head(b"From: Undisclosed recipients:;\r\nSubject: Fixture\r\n\r\n");
+        assert!(from.is_empty());
+    }
+
+    #[test]
+    fn offline_search_cannot_inject_imap_lines() {
+        assert!(search_criteria("  ").unwrap().is_none());
+        assert_eq!(search_criteria("fixture").unwrap().unwrap(), "OR SUBJECT \"fixture\" FROM \"fixture\"");
+        for query in ["a\r\nb", "a\nb", "a\0b"] { assert!(search_criteria(query).is_err()); }
+        let escaped = search_criteria("a\"b\\c").unwrap().unwrap();
+        assert!(escaped.contains("a\\\"b\\\\c"));
+    }
+
     fn env_email() -> String {
         std::env::var("TSINGHUA_EMAIL").unwrap()
     }
@@ -306,18 +379,18 @@ mod tests {
     fn live_list_and_read() {
         let email = std::env::var("TSINGHUA_EMAIL").unwrap();
         let auth = std::env::var("TSINGHUA_AUTH").unwrap();
-        let p1 = mail_list(email.clone(), auth.clone(), "INBOX".into(), 3, None).unwrap();
+        let p1 = mail_list_impl(email.clone(), auth.clone(), "INBOX".into(), 3, None).unwrap();
         assert!(!p1.heads.is_empty(), "收件箱几百封，至少 3 封");
         assert!(p1.total > 100, "总数应远超一页：{}", p1.total);
         for h in &p1.heads {
             println!("uid={} seen={} {} | {}", h.uid, h.seen, h.date_ms, h.subject);
             println!("  from: {}", h.from);
         }
-        let p2 = mail_list(email.clone(), auth.clone(), "INBOX".into(), 3, Some(p1.min_seq)).unwrap();
+        let p2 = mail_list_impl(email.clone(), auth.clone(), "INBOX".into(), 3, Some(p1.min_seq)).unwrap();
         assert!(!p2.heads.is_empty() && p2.min_seq < p1.min_seq, "第二页应更旧且 min_seq 递减");
         println!("分页无缝：p1 头 uid={} p2 尾 uid={}（不同批）", p1.heads[0].uid, p2.heads.last().unwrap().uid);
         let heads = p1.heads.clone();
-        let body = mail_read(email, auth, "INBOX".into(), heads[0].uid).unwrap();
+        let body = mail_read_impl(email, auth, "INBOX".into(), heads[0].uid).unwrap();
         println!("首封正文前 200 字：{}", body.text.chars().take(200).collect::<String>());
         println!("html 部分：{}", body.html.is_some());
     }
@@ -351,12 +424,12 @@ mod tests {
     fn live_search() {
         let email = std::env::var("TSINGHUA_EMAIL").unwrap();
         let auth = std::env::var("TSINGHUA_AUTH").unwrap();
-        let heads = mail_search(email, auth, "INBOX".into(), "GitHub".into(), 10).unwrap();
+        let heads = mail_search_impl(email, auth, "INBOX".into(), "GitHub".into(), 10).unwrap();
         assert!(!heads.is_empty(), "收件箱应有 GitHub 通知");
         assert!(heads.len() <= 10);
         assert!(heads.iter().all(|h| h.subject.to_lowercase().contains("github") || h.from.to_lowercase().contains("github")));
         println!("搜索命中 {} 封，最新主题：{}", heads.len(), heads[0].subject);
-        let empty = mail_search(env_email(), env_auth(), "INBOX".into(), "  ".into(), 10).unwrap();
+        let empty = mail_search_impl(env_email(), env_auth(), "INBOX".into(), "  ".into(), 10).unwrap();
         assert!(empty.is_empty());
     }
 
@@ -367,7 +440,7 @@ mod tests {
         let email = std::env::var("TSINGHUA_EMAIL").unwrap();
         let auth = std::env::var("TSINGHUA_AUTH").unwrap();
         let stamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
-        mail_send(SendArgs {
+        mail_send_impl(SendArgs {
             email: email.clone(),
             auth: auth.clone(),
             to: vec![email.clone()],
@@ -380,7 +453,7 @@ mod tests {
         let mut arrived = false;
         for _ in 0..10 {
             std::thread::sleep(std::time::Duration::from_secs(2));
-            let heads = mail_list(email.clone(), auth.clone(), "INBOX".into(), 10, None).unwrap().heads;
+            let heads = mail_list_impl(email.clone(), auth.clone(), "INBOX".into(), 10, None).unwrap().heads;
             if heads.iter().any(|h| h.subject.contains(&format!("OneTHU 邮箱链路自检 {}", stamp))) {
                 arrived = true;
                 break;

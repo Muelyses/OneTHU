@@ -1,34 +1,126 @@
-/** 侧栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关） */
-import { Children, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, useSyncExternalStore } from "react";
+import { startMobileNavigation } from "../state/mobileNavigation.js";
+import { FriendInboxButton, FriendInboxMonitor } from "./FriendInvitations.js";
+import { allSearchRows } from "../state/searchRows.js";
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { BrandLogo } from "./BrandLogo.js";
+import { useExperienceMode, useIsSimpleLike, useSimpleRoute } from "../state/experienceMode.js";
+import { SimpleHeader } from "./SimpleExperience.js";
+import { IconBtn, IconUser } from "@onethu/gui";
+/** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
+ *  dev-explorer 革命（2026-10-12）：侧边栏、移动抽屉、五格底栏整体退役——
+ *  顶栏 = 首页 Logo（恒在）+ 标签条 + 搜索 + 设置齿轮；底栏三入口（标签页 | OH | OneGO）
+ *  在 explorer/BottomBar；设置/插件/OH 是高于任何标签页的浮层（state/explorer.ts 的
+ *  overlay store 即旧 Entry 状态机，goEntry/useEntry 在此薄重导出保持全库兼容）。 */
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { useThemes } from "../state/theme.js";
 import { useApp } from "../state/context.js";
 import { topLevelPage, type LearnNav, type Page } from "../state/app.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
-import { useSidebarCollapsed } from "../state/uiPrefs.js";
-import { requestSettingsTab } from "../state/settingsMode.js";
+import {
+  HOME_TAB_ID,
+  activeTab,
+  closeSettings,
+  duplicateTab,
+  focusTab,
+  openSettings,
+  overlaySnapshot,
+  subscribeOverlay,
+  useExplorerState,
+  useOverlayEntry,
+  type OverlayEntry,
+} from "../state/explorer.js";
+import { HarnessMark } from "./HarnessMark.js";
 import { NAV_REGISTRY } from "../state/navigation.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
-import { IconArrowUp, IconChevron, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMenu, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconSearch, IconBook } from "./Icons.js";
+import { IconHome, IconArrowUp, IconChevron, IconCopyTab, IconFolder, IconFolderPlus, IconInfo, IconLearn, IconMore, IconPen, IconPlug, IconRefresh, IconSchedule, IconSettings, IconSidebarRail, IconStar, IconToday, IconXk, IconCard, IconCalendar, FolderIcon, IconExternal, IconThos, IconTrace, IconMail, IconCloud, IconBook, IconGitLab, IconXiaoda } from "./Icons.js";
+import { ContextMenuLayer, useContextMenu } from "./ContextMenu.js";
+import {
+  clearPageChrome, pageChromeSnapshot, readPageChrome, subscribePageChrome, syncPageChrome,
+  type PageMenuItem,
+} from "../state/pageChrome.js";
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
 import { checkUpdateSilently } from "../lib/update.js";
-import { useBottomNavPill, useNavIndicator, useSegPill } from "../lib/motion.js";
+import { useSegPill } from "../lib/motion.js";
 import { ErrorLine } from "./Details.js";
-import { CommandPalette, shortcutLabel } from "./CommandPalette.js";
-import { openPalette } from "../state/palette.js";
+import { CommandPalette } from "./CommandPalette.js";
+import { TabStrip } from "./explorer/TabStrip.js";
+import { ShellWallpaperLayer } from "./explorer/WallpaperVideo.js";
+import { ContextMenuHost } from "./explorer/ContextMenu.js";
+import { WorkspaceEditorHost } from "./explorer/WorkspaceEditor.js";
+import { FolderIconPickerHost } from "./explorer/FolderIconPicker.js";
+import { OneShot } from "./explorer/OneShot.js";
+import { OneGoBar } from "./explorer/OneGoBar.js";
+import { VaultDropTarget } from "./vault/VaultDropTarget.js";
+import { VaultSheetHost } from "./vault/VaultSheet.js";
+import { useTabLayoutMode } from "../state/tabLayout.js";
+
+/* ══ OneGUI 适配层 ═════════════════════════════════════════════════════════
+ * 下面这七个原语（SectionHead / Card / Empty / ErrorNote / SkeletonRows / Switch）
+ * 曾经是"手写 DOM + global.css 的类"，热力覆盖 60/40/31/28/30/8 个文件。
+ * 现在实现体整体换成 @onethu/gui 的组件：**名字与 props 一字不动**，
+ * 于是 60+ 个调用点在一刻之间全部改由 OneGUI 渲染，页面再逐个迁到直接 import。
+ * 迁移完成后这一层会被删除（它不是第二套实现，只是过渡期的转接头）。 */
+import {
+  Banner as OGBanner,
+  Btn as OGBtn,
+  Card as OGCard,
+  EmptyState as OGEmptyState,
+  LoadingBlock as OGLoadingBlock,
+  PageHead as OGPageHead,
+  Section as OGSection,
+  Switch as OGSwitch,
+} from "@onethu/gui";
+import { useIsPhone } from "../state/phoneSheets.js";
+import { BottomBar } from "./explorer/BottomBar.js";
+import { TabDrawer } from "./explorer/TabDrawer.js";
+import { OneGoSheet } from "./explorer/OneGoSheet.js";
+import { SettingsOverlay } from "./explorer/SettingsOverlay.js";
+import "../styles/explorer.css";
+import "../styles/explorer-ui.css";
+import "../styles/explorer-home.css";
 
 /** 开发者面板（仅 dev 构建）：右上角 commit 徽标 + 前端日志/诊断/导出。
  *  正式版里 __ONETHU_DEV__ 折叠为 false → 这句动态 import 被 rollup 删除，
  *  dev 面板整块不进产物（守卫 tools/devtools-test.mjs，构建后再 grep dist 复核）。 */
 const DevPanel = __ONETHU_DEV__ ? lazy(() => import("./DevPanel.js")) : null;
+/* 检索落点自查（仅 dev）：?searchland=selfcheck 逐行程序化搜+点击，console 打 45 行 hit/fallback 表。 */
+const SearchLandingSelfcheck = __ONETHU_DEV__ ? lazy(() => import("./SearchLandingSelfcheck.js")) : null;
 
 /**
- * 默认一级入口（万物原子化定案）：钉死不可删隐，仅可在侧栏折叠进
- * 「已折叠收藏夹（N）」组；一切功能原子锚定在这些原位页面，用户收藏夹
- * 只是原子的跳转入口层。今日 = 首页恒在最上；设置 = 钉底。
+ * 一级功能目录（全库导入的数据源，保持原数组不动）：完整目录现渲染在首页
+ * 「功能目录」卡（explorer/HomeTab），侧栏已退役但这份数据仍是唯一事实来源。
  */
-/** 插件动态 tab（useSyncExternalStore 订阅；渲染在固定 NAV 之后） */
+export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
+  // 「今日」那一格已删（用户 2026-10-15 点名）：它就是首页自己（page id 仍叫 today），
+  // 目录里再列一遍等于「首页 → 首页」；而且它是程序坞默认球的第一颗
+  //（homeSpheres 的 docked = NAV.slice(0,8)）。删掉后老用户持久化的 "home" 球
+  // 会被 sanitize 的 NAV 白名单自动过滤掉，不用写迁移。
+  { page: "tasks", get label() { return i18n("components.layout.52fdbbaeda4c"); }, icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
+  // R30：这一栏现在同时收纳网络学堂与雨课堂的课程，侧栏用中性的「课程」；
+  // 「网络学堂」保留为**来源名**（课程卡/作业行上的来源徽标、今日页等处不改）。
+  { page: "learn", get label() { return i18n("components.layout.60db1afb4022"); }, icon: IconLearn },
+  { page: "schedule", get label() { return i18n("components.layout.a14f23af7016"); }, icon: IconSchedule },
+  { page: "trace", get label() { return i18n("components.layout.60458dfb4c14"); }, icon: IconTrace },
+  { page: "contacts", get label() { return i18n("components.layout.06657c279571"); }, icon: IconMail },
+  { page: "mail", get label() { return i18n("components.layout.73075237fd0f"); }, icon: IconMail },
+  { page: "cloud", get label() { return i18n("components.layout.f75562426e77"); }, icon: IconCloud },
+  { page: "gitlab", label: "GitLab", icon: IconGitLab },
+  { page: "thubook", label: "THUBook", icon: IconBook },
+  /* 清小搭（2026-10-15 用户点名「加入一级功能区程序坞」）：一级页，排在 thubook 之后——
+     前八颗（程序坞默认球 = NAV.slice(0,8)）一颗不动，它作为第九颗出现在坞上；
+     它是 homeSpheres 白名单（known）的一员，否则 sanitize 会把持久化的这颗球吃掉。 */
+  { page: "xiaoda", get label() { return i18n("components.layout.b1abb3dc2271"); }, icon: IconXiaoda },
+  { page: "info", get label() { return i18n("components.layout.e7028601e7da"); }, icon: IconInfo },
+  { page: "life", get label() { return i18n("components.layout.15d208d1b4c9"); }, icon: IconCard },
+  { page: "reserve", get label() { return i18n("components.layout.352cdc807892"); }, icon: IconCalendar },
+  { page: "zhjwxk", get label() { return i18n("components.layout.fd17d86dd268"); }, icon: IconXk },
+  { page: "thos", get label() { return i18n("components.layout.1760b98532ec"); }, icon: IconThos },
+  { page: "otherinfo", get label() { return i18n("components.layout.4ebe692f5dbb"); }, icon: IconExternal },
+];
+
+/** 插件动态 tab（useSyncExternalStore 订阅；PageHead 的 navLabel 消歧也用它） */
 function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: object) => ReactNode }> {
   const tabs = useSyncExternalStore(subscribePluginTabs, pluginTabsSnapshot, pluginTabsSnapshot);
   return tabs.map((t) => ({
@@ -44,103 +136,110 @@ function usePluginNavEntries(): Array<{ page: Page; label: string; icon: (p: obj
   }));
 }
 
-/** 侧边栏分区顺序（§2.8.1）；分组名与 navigation.ts 的 category 同名，新 IA 另加「总览」 */
-const NAV_GROUP_ORDER = ["总览", "学习", "日程", "生活", "预约", "行政"] as const;
+export { BrandLogo } from "./BrandLogo.js";
 
-/** 页面 → 侧栏分区：取自导航注册表；今日/待办是 M1 新 IA，不在注册表里 */
-function navCategoryOf(page: Page): string {
-  if (page === "today" || page === "tasks") return "总览";
-  return NAV_REGISTRY.find((e) => e.page === page)?.category ?? "行政";
-}
+/** 顶栏：首页 Logo（点击回首页，恒在不变）+ 标签条 + 搜索 + 设置齿轮（恒在不变）。
+ *  滚过 8px 浮起阴影（沿用旧顶栏的层次手法）。 */
+/** 竖版标签栏：左侧栏（横版时不渲染）；同时给根节点打 tabs-vertical，主内容区据此让出左栏 */
+/** 竖版侧栏底部：复制 / 设置 / 宽窄切换（完整 ↔ 窄）。窄模式下竖排 */
+function RailActions({ narrow, onToggleNarrow }: { narrow: boolean; onToggleNarrow: () => void }): ReactNode {
+  const uiLocale = useUiLocale();
 
-/**
- * 底部 5 Tab（UI/UX 改造方案 §2.2，M1 beta）：移动端（≤840px，§2.8.1 统一断点）固定底栏。
- * 服务/收藏两个直达页
- * 是本批次新增（pages/ServicesPage、pages/FavsHomePage）；「待办」暂指
- * learn-assignments（全部作业），§2.3-4 升级为独立 tab 页后再换实现。
- * 长尾功能仍走抽屉/服务目录页，底栏只承担 §1.2 的 core 直达。
- */
-const BOTTOM_NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
-  { page: "today", label: "今日", icon: IconToday },
-  { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
-  { page: "services", label: "服务", icon: IconInfo },
-  { page: "favs", label: "收藏", icon: IconStar, activePages: ["favs", "folder"] },
-  { page: "settings", label: "我的", icon: IconSettings },
-];
-
-/** 移动端底部导航条（CSS 侧 ≤840px 显示；桌面恒隐藏） */
-function BottomNav({ page, navigate }: { page: Page; navigate: (p: Page, params?: LearnNav) => void }): ReactNode {
-  /* 蓝色胶囊是单个滑动元素：切换时按共享的导航运动（平滑 + 惯性回弹）水平移动，
-     不再是每一项各自的 ::before 就地淡入。当前项由钩子自己在 DOM 里找（无激活项即隐藏）。 */
-  const [navRef, pillRef] = useBottomNavPill();
+  const { activeId } = useExplorerState();
+  const canDup = activeId !== HOME_TAB_ID;
   return (
-    <nav className="bottom-nav" aria-label="底部导航" ref={navRef}>
-      <span className="bottom-nav-pill" ref={pillRef} aria-hidden="true" />
-      {BOTTOM_NAV.map((item) => {
-        const active = item.page === page || item.activePages?.includes(page) === true;
-        const Icon = item.icon;
-        return (
-          <button
-            key={item.page}
-            className={"bottom-nav-item" + (active ? " is-active" : "")}
-            onClick={() => navigate(item.page)}
-            aria-current={active ? "page" : undefined}
-          >
-            <Icon />
-            <span>{item.label}</span>
-          </button>
-        );
-      })}
-    </nav>
+    <div className="ex-rail-actions">
+      <FriendInboxButton />
+      <IconBtn label={i18n("components.layout.fb32cf481c29")} icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
+      <IconBtn label={i18n("components.layout.7f1d9dd04cd1")} icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
+      <button
+        className="icon-btn ex-rail-width"
+        onClick={onToggleNarrow}
+        aria-pressed={narrow}
+        aria-label={narrow ? i18n("components.layout.b5c07fc4f827") : i18n("components.layout.0be1eb29d29d")}
+        title={narrow ? i18n("components.layout.76fb5d2b725f") : i18n("components.layout.6ac6519ea0d3")}
+      >
+        <IconSidebarRail width={16} height={16} />
+      </button>
+    </div>
   );
 }
 
-export const NAV: Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }> = [
-  { page: "today", label: "今日", icon: IconToday },
-  /* 与移动端底栏的桥：底栏那五项不整体搬进侧边栏（太臃肿），只补一个「待办」——
-     桌面端此前完全没有待办入口。其余四项侧边栏本来就各有对应（服务→信息/在线服务、
-     收藏→收藏夹分组、我的→设置），因此只差这一个。 */
-  { page: "tasks", label: "待办", icon: IconPen, activePages: ["tasks", "learn-assignments", "learn-assignment-detail", "learn-ykt-detail"] },
-  { page: "learn", label: "网络学堂", icon: IconLearn },
-  { page: "schedule", label: "日程", icon: IconSchedule },
-  { page: "trace", label: "寻迹", icon: IconTrace },
-  { page: "mail", label: "邮箱", icon: IconMail },
-  { page: "cloud", label: "云盘", icon: IconCloud },
-  { page: "thubook", label: "THUbook", icon: IconBook },
-  { page: "info", label: "信息", icon: IconInfo },
-  { page: "life", label: "生活", icon: IconCard },
-  { page: "reserve", label: "预约", icon: IconCalendar },
-  { page: "zhjwxk", label: "选课", icon: IconXk },
-  { page: "thos", label: "在线服务", icon: IconThos },
-  { page: "otherinfo", label: "其他 Info 应用", icon: IconExternal },
-];
+const RAIL_NARROW_KEY = "ex-rail-narrow";
 
-/** (One / THU) 品牌标识：五列网格，括号代码体，One 衬线紧凑撑满与 THU 逐列对齐。
- *  主题插件可整体替换（theme.logo 提供 inline SVG 时优先渲染）。 */
-export function BrandLogo({ size = 14 }: { size?: number }) {
-  const themed = useThemes().logoSvg;
-  if (themed) {
-    return (
-      <span
-        className="brand-logo brand-logo-themed"
-        style={{ fontSize: size, display: "inline-flex", alignItems: "center" }}
-        aria-label="OneTHU"
-        /* 主题受信代码，同插件边界 */
-        dangerouslySetInnerHTML={{ __html: themed }}
-      />
-    );
-  }
+function TabRail(): ReactNode {
+  const uiLocale = useUiLocale();
+
+  /* 手机（dev-explorer 二轮拍板）：竖栏永不出现——html.is-phone 下只允许横标签页；
+     即便存过「竖版」默认值，这里也把 tabs-vertical 类一起收回，内容区不让位。 */
+  const phone = useIsPhone();
+  const mode = useTabLayoutMode();
+  const [narrow, setNarrow] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(RAIL_NARROW_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    document.documentElement.classList.toggle("tabs-vertical", mode === "v" && !phone);
+  }, [mode, phone]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("rail-narrow", mode === "v" && !phone && narrow);
+    try {
+      localStorage.setItem(RAIL_NARROW_KEY, narrow ? "1" : "0");
+    } catch {
+      /* 存不了就只在本次会话生效 */
+    }
+  }, [mode, narrow, phone]);
+  if (mode !== "v" || phone) return null;
   return (
-    <span className="brand-logo" style={{ fontSize: size }} aria-label="OneTHU">
-      <span className="p">(</span>
-      <span className="word"><i>O</i><i>n</i><i>e</i></span>
-      <span />
-      <span className="p"> </span>
-      <span className="u">T</span>
-      <span className="u">H</span>
-      <span className="u">U</span>
-      <span className="p">)</span>
-    </span>
+    <aside className="ex-rail" aria-label={i18n("components.layout.a626aad412b7")}>
+      <TabStrip />
+      <RailActions narrow={narrow} onToggleNarrow={() => setNarrow((v) => !v)} />
+    </aside>
+  );
+}
+
+function TopBar(): ReactNode {
+  const uiLocale = useUiLocale();
+
+  const layout = useTabLayoutMode();
+  /* 手机（A2/A3，2026-10-16 改口径）：顶栏只留一个圆形首页钮（房子），复制钮不要；
+     **标签条彻底退役**——横竖都不渲染，换标签只走底栏「标签页」抽屉。 */
+  const phone = useIsPhone();
+  const [scrolled, setScrolled] = useState(false);
+  const { activeId } = useExplorerState();
+  const canDup = activeId !== HOME_TAB_ID;
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // 竖版：顶栏退场，标签与复制/设置都在左侧栏（手机不适用：顶栏恒 minimal）
+  if (layout === "v" && !phone) return null;
+  return (
+    <header className={"explorer-topbar" + (scrolled ? " is-scrolled" : "")}>
+      {/* dev-explorer（用户拍板）：OneTHU 品牌标与「首页」标签并成 TabStrip 首位，左上单独的
+          Logo 钮退役——复制按钮成为顶栏最左；首页仍恒在（TabStrip 首位不可关） */}
+      {/* 竖版：复制 / 设置移到左侧栏底部，顶栏只保留横版标签条 */}
+      {phone ? (
+        /* 手机档（2026-10-16 用户口径）：顶部只留一个**圆形房子钮**回首页——
+           横竖都不再有标签条（换标签只走底栏「标签页」抽屉）。此前是 OneTHU monogram 玻璃片。 */
+        <button className="ex-tb-home-mark" onClick={() => focusTab(HOME_TAB_ID)} aria-label={i18n("components.layout.203c08e0d44a")} title={i18n("components.layout.203c08e0d44a")}>
+          <IconHome width={19} height={19} />
+        </button>
+      ) : layout === "h" ? (
+        <IconBtn label={i18n("components.layout.fb32cf481c29")} icon={<IconCopyTab width={16} height={16} />} onClick={() => duplicateTab(activeId)} disabled={!canDup} />
+      ) : null}
+      {layout === "h" && !phone ? <TabStrip /> : null}
+      <span className="tb-spring" aria-hidden="true" />
+      {/* 页面级操作「···」：白板等页面经 pageChrome 声明的菜单在此展开（无菜单时不渲染） */}
+      <ChromeMore />
+      <FriendInboxButton />
+      <IconBtn label={i18n("components.layout.7f1d9dd04cd1")} icon={<IconUser size="sm" />} onClick={() => openSettings("profile")} />
+    </header>
   );
 }
 
@@ -160,6 +259,8 @@ export function SegmentedOverflow({
   style?: CSSProperties;
   children: ReactNode;
 }) {
+  const uiLocale = useUiLocale();
+
   const [rowRef, pillRef] = useSegPill();
   const indiRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLElement>(null);
@@ -203,9 +304,13 @@ export function SegmentedOverflow({
     if (!el) return;
     const ro = new ResizeObserver(() => update());
     ro.observe(el);
+    for (const child of el.children) ro.observe(child);
+    const mo = new MutationObserver(update);
+    mo.observe(el, { childList: true, subtree: true, characterData: true });
     el.addEventListener("scroll", update, { passive: true });
     return () => {
       ro.disconnect();
+      mo.disconnect();
       el.removeEventListener("scroll", update);
     };
   }, [update]);
@@ -285,6 +390,8 @@ export function SegmentedOverflow({
 
 /** Slogan：One 衬线 · THUer 现代黑体 · 其余等宽 · 句尾 OneTHU 用完整品牌标识 */
 export function Slogan({ size = 13 }: { size?: number }) {
+  const uiLocale = useUiLocale();
+
   return (
     <span className="slogan" style={{ fontSize: size }}>
       <span className="s-one">One</span>
@@ -296,310 +403,64 @@ export function Slogan({ size = 13 }: { size?: number }) {
   );
 }
 
-/** 侧栏 / 抽屉共用的导航容器：内含当前项指示条（.nav-indicator，拉伸平移由 useNavIndicator 驱动） */
-function NavBody({ label, children }: { label: string; children: ReactNode }) {
-  const [rowRef, barRef] = useNavIndicator();
-  return (
-    <nav className="nav" aria-label={label} ref={rowRef}>
-      <span className="nav-indicator" ref={barRef} aria-hidden="true" />
-      {children}
-    </nav>
-  );
-}
-
+/** Explorer 外壳：顶栏 + 内容（TabHost）+ 底栏三入口 + 命令面板 + 设置浮层。 */
 export function Shell({ children }: { children: ReactNode }) {
-  const { page: rawPage, navigate, navParams } = useApp();
+  const uiLocale = useUiLocale();
 
-  const favs = useFavs();
-  const [sbCollapsed, setSbCollapsed] = useSidebarCollapsed(); // PC 侧栏折叠（§2.8.1）
-  const pluginNav = usePluginNavEntries();
-  const navAll = [...NAV, ...pluginNav];
-  const page = topLevelPage(rawPage);
-  const [navOpen, setNavOpen] = useState(false);
-  const [navClosing, setNavClosing] = useState(false);
-  /** 顶栏滚动浮起（local/anim-delight）：滚过 8px 后加阴影，做出"页面在顶栏下滚动"的层次 */
-  const [topbarScrolled, setTopbarScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setTopbarScrolled(window.scrollY > 8);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  /** 「已折叠收藏夹（N）」组展开态（会话态，不持久化） */
-  const [foldedOpen, setFoldedOpen] = useState(false);
-  /* §4.4b：插件已并进设置页。旧链接/历史记录里的 plugins 路由统一落到「设置 → 插件」，
-     侧栏不再保留单独入口（标准/高级都一样，高级只决定设置里那一栏显示与否）。 */
-  useEffect(() => {
-    if (page !== "plugins") return;
-    requestSettingsTab("插件");
-    navigate("settings");
-  }, [page, navigate]);
-
-  const closeNav = useCallback(() => {
-    setNavClosing(true);
-    window.setTimeout(() => {
-      setNavOpen(false);
-      setNavClosing(false);
-    }, 240);
-  }, []);
-
+  useEffect(startMobileNavigation, []);
+  const mode = useExperienceMode();
+  const simple = useIsSimpleLike(); /* 极简与实用共用简洁壳 */
+  useEffect(() => { document.documentElement.dataset.experience = mode; return () => { delete document.documentElement.dataset.experience; }; }, [mode]);
+  const explorer = useExplorerState();
+  const activePageTab = explorer.tabs.find((t) => t.id === explorer.activeId);
+  const simpleRoute = useSimpleRoute();
+  const scheduleActive = (simple ? simpleRoute.page : activePageTab?.page) === "schedule";
+  useEffect(() => { document.documentElement.classList.toggle("is-schedule-page", scheduleActive); return () => document.documentElement.classList.remove("is-schedule-page"); }, [scheduleActive]);
+  const contentCanvasClass = explorer.activeId === HOME_TAB_ID
+    ? " is-home-canvas"
+    : activePageTab?.page === "board"
+      ? " is-onepage-canvas"
+      : "";
   /* 启动：GitHub Releases 静默检查新版本（一次；失败静默，不打扰） */
   useEffect(() => {
     void checkUpdateSilently(showToast);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const isFolderActive = (id: string) => page === "folder" && navParams?.folderId === id;
-
-  /** 侧栏一条导航项：主按钮 + 行尾折叠钮（hover 浮现；已折叠项的行尾钮是展开钮） */
-  const navRow = (key: string, opts: { active: boolean; label: string; icon: ReactNode; onClick: () => void; folded?: boolean; onFold?: () => void }) => (
-    <div className="nav-row" key={key}>
-      <button className={"nav-item" + (opts.active ? " is-active" : "")} onClick={opts.onClick}>
-        {opts.icon}
-        <span>{opts.label}</span>
-      </button>
-      {opts.onFold ? (
-        <button
-          className={"nav-fold" + (opts.folded ? " is-folded" : "")}
-          title={opts.folded ? "从折叠组展开" : "折叠进「已折叠收藏夹」"}
-          aria-label={(opts.folded ? "展开" : "折叠") + opts.label}
-          onClick={(e) => {
-            e.stopPropagation();
-            opts.onFold!();
-          }}
-        >
-          {opts.folded ? "»" : "«"}
-        </button>
-      ) : null}
-    </div>
-  );
-
-  /** 侧栏/抽屉共用导航内容 */
-  const navContent = (onAfter?: () => void) => {
-    const unfoldedDefaults = NAV.filter(({ page: p }) => !favs.data.foldedDefaults.includes(p));
-    // 分区小标题（§2.8.1）：分组取自导航注册表的 category，新 IA 的今日/待办归「总览」。
-    // 只插小标题、不重排类内顺序；未注册的页面兜底进「行政」。
-    const navGrouped: Array<
-      | { kind: "label"; text: string }
-      | { kind: "item"; page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }
-    > = (() => {
-      const groups = new Map<string, Array<{ page: Page; label: string; icon: (p: object) => ReactNode; activePages?: Page[] }>>();
-      for (const it of unfoldedDefaults) {
-        const cat = navCategoryOf(it.page);
-        const list = groups.get(cat);
-        if (list) list.push(it);
-        else groups.set(cat, [it]);
-      }
-      const out: typeof navGrouped = [];
-      for (const cat of NAV_GROUP_ORDER) {
-        const list = groups.get(cat);
-        if (!list) continue;
-        out.push({ kind: "label", text: cat });
-        for (const it of list) out.push({ kind: "item", ...it });
-      }
-      return out;
-    })();
-    const foldedDefaults = NAV.filter(({ page: p }) => favs.data.foldedDefaults.includes(p));
-    const unfoldedUser = favs.data.order.filter((id) => !favs.data.foldedRoots.includes(id));
-    const foldedUser = favs.data.order.filter((id) => favs.data.foldedRoots.includes(id));
-    const foldedCount = foldedDefaults.length + foldedUser.length;
-    return (
-      <>
-        {/* 默认一级入口（内置）：今日恒在最上（不可折叠），其余可折叠 */}
-        {navGrouped.map((row) => {
-          if (row.kind === "label") return <div className="nav-label" key={"g-" + row.text}>{row.text}</div>;
-          const Icon = row.icon;
-          return navRow("d-" + row.page, {
-            active: page === row.page || row.activePages?.includes(page) === true,
-            label: row.label,
-            icon: <Icon />,
-            onClick: () => {
-              onAfter?.();
-              navigate(row.page);
-            },
-            folded: false,
-            onFold: row.page === "today" ? undefined : () => favs.foldSidebar(row.page, true),
-          });
-        })}
-        {/* 插件功能页分组：与内置入口视觉分离 */}
-        {pluginNav.length ? (
-          <>
-            <div className="nav-label">插件功能页</div>
-            {pluginNav.map(({ page: p, label, icon: Icon }) =>
-              navRow("pl-" + p, {
-                active: page === p,
-                label,
-                icon: <Icon />,
-                onClick: () => {
-                  onAfter?.();
-                  navigate(p);
-                },
-                folded: false,
-              }),
-            )}
-          </>
-        ) : null}
-        {/* 收藏夹分组 */}
-        <div className="nav-label">收藏夹</div>
-        {/* 用户收藏夹（根层）：跳转入口层；段内限高滚动——收藏夹再多也不把
-            「新建收藏夹 / 已折叠收藏夹」推到滚动边缘挤成半截 */}
-        <div className="nav-folders-scroll">
-          {unfoldedUser.map((id) =>
-            navRow("u-" + id, {
-              active: isFolderActive(id),
-              label: favs.data.folders[id]?.title ?? "收藏夹",
-              icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
-              onClick: () => {
-                onAfter?.();
-                navigate("folder", { folderId: id });
-              },
-              folded: false,
-              onFold: () => favs.foldSidebar(id, false),
-            }),
-          )}
-        </div>
-        <button
-          className="nav-item nav-new"
-          onClick={() => {
-            const id = favs.create("新建收藏夹", null);
-            if (id) {
-              onAfter?.();
-              navigate("folder", { folderId: id });
-            }
-          }}
-        >
-          <IconFolderPlus />
-          <span>新建收藏夹</span>
-        </button>
-        {/* 折叠组：默认入口与用户收藏夹都收这里，点一下展开 */}
-        {foldedCount > 0 ? (
-          <>
-            <button
-              className={"nav-item nav-folded-toggle" + (foldedOpen ? " is-open" : "")}
-              aria-expanded={foldedOpen}
-              onClick={() => setFoldedOpen((o) => !o)}
-            >
-              <IconFolder />
-              <span>已折叠收藏夹（{foldedCount}）</span>
-              <IconChevron width={13} height={13} className="row-caret" />
-            </button>
-            {foldedOpen ? (
-              <div className="nav-folded-body">
-                {foldedDefaults.map(({ page: p, label, icon: Icon }) =>
-                  navRow("fd-" + p, {
-                    active: page === p,
-                    label,
-                    icon: <Icon />,
-                    onClick: () => {
-                      onAfter?.();
-                      navigate(p);
-                    },
-                    folded: true,
-                    onFold: () => favs.foldSidebar(p, true),
-                  }),
-                )}
-                {foldedUser.map((id) =>
-                  navRow("fu-" + id, {
-                    active: isFolderActive(id),
-                    label: favs.data.folders[id]?.title ?? "收藏夹",
-                    icon: <FolderIcon name={favs.data.folders[id]?.icon} />,
-                    onClick: () => {
-                      onAfter?.();
-                      navigate("folder", { folderId: id });
-                    },
-                    folded: true,
-                    onFold: () => favs.foldSidebar(id, false),
-                  }),
-                )}
-              </div>
-            ) : null}
-          </>
-        ) : null}
-        {/* 钉底固定项：插件 + 设置——不进收藏夹体系，不可折叠不可改序 */}
-        <div className="nav-sep" aria-hidden />
-        {navRow("settings", {
-          active: page === "settings",
-          label: "设置",
-          icon: <IconSettings />,
-          onClick: () => {
-            onAfter?.();
-            navigate("settings");
-          },
-        })}
-      </>
-    );
-  };
-
-  /** 移动端顶栏标题：收藏夹页显示收藏夹名 */
-  const topbarTitle =
-    page === "folder" && navParams?.folderId
-      ? favs.data.folders[navParams.folderId]?.title ?? "收藏夹"
-      : navAll.find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : page === "services" ? "服务" : page === "favs" ? "收藏" : "OneTHU");
-
   return (
-    <div className="shell">
-      <aside className={"sidebar" + (sbCollapsed ? " is-collapsed" : "")} aria-label="主导航">
-        <div className="brand">
-          <BrandLogo size={16} />
-        </div>
-        {/* 命令面板入口（§2.8.4）：不逼人记快捷键，旁边顺手写出当前平台的键位 */}
-        <button className="sb-search" onClick={openPalette} title={"搜索功能（" + shortcutLabel() + "）"}>
-          <IconSearch width={14} height={14} />
-          <span className="sb-search-label">搜索功能</span>
-          <kbd className="sb-kbd">{shortcutLabel()}</kbd>
-        </button>
-        <NavBody label="主导航">{navContent()}</NavBody>
-        <div className="sidebar-foot">
-          <button
-            className="sidebar-collapse"
-            onClick={() => setSbCollapsed(!sbCollapsed)}
-            title={sbCollapsed ? "展开侧边栏" : "折叠侧边栏"}
-            aria-label={sbCollapsed ? "展开侧边栏" : "折叠侧边栏"}
-            aria-expanded={!sbCollapsed}
-          >
-            <IconChevron width={16} height={16} style={{ transform: "rotate(180deg)" }} />
-          </button>
-          <span className="foot-badge">
-            <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
-            {DESENSITIZE_BUILD ? "脱敏演示版" : "就绪"}
-          </span>
-        </div>
-      </aside>
-      {/* 移动端：左滑抽屉（≤860px 由 CSS 显示；入口是页头标题胶囊） */}
-      {navOpen ? (
-        <>
-          <div className={"drawer-mask" + (navClosing ? " drawer-mask-closing" : "")} onClick={() => { if (!navClosing) closeNav(); }} />
-          <aside className={"drawer" + (navClosing ? " drawer-closing" : "")} aria-label="导航抽屉">
-            <div className="drawer-brand">
-              <BrandLogo size={15} />
-            </div>
-            <NavBody label="抽屉导航">{navContent(() => closeNav())}</NavBody>
-            <div className="drawer-foot">
-              <span className="foot-badge">
-                <span className="dot" style={{ background: DESENSITIZE_BUILD ? "var(--amber)" : "var(--green)" }} />
-                {DESENSITIZE_BUILD ? "脱敏演示版" : "就绪"}
-              </span>
-            </div>
-          </aside>
-        </>
-      ) : null}
-      <main className="content">
-        {/* 移动端顶栏：汉堡菜单 + 品牌标识，桌面隐藏（桌面走侧栏） */}
-        <header className={"mobile-topbar" + (topbarScrolled ? " is-scrolled" : "")}>
-          <button className="topbar-menu" onClick={() => setNavOpen(true)} aria-label="打开导航菜单">
-            <IconMenu width={18} height={18} />
-          </button>
-          <div className="topbar-brand">
-            <BrandLogo size={11} />
-            <span className="topbar-title">{topbarTitle}</span>
-          </div>
-        </header>
-        {children}
-      </main>
-      {/* M1 beta：移动端底部 5 Tab（CSS ≤860px 显示） */}
-      <BottomNav page={rawPage} navigate={navigate} />
-      {/* 命令面板：⌘/Ctrl+K 或侧栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
+    <div className={"shell explorer-shell" + (simple ? " is-simple" : "")}>
+      {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
+      <ShellWallpaperLayer />
+      {!simple && <FriendInboxMonitor />}
+      {/* 长按/右键菜单 Provider + 菜单宿主（PR 55 白板语义并入 explorer shell）：
+          Provider 不产生 DOM，布局不变；TopBar 的「···」与页面 useContextMenu 都依赖它 */}
+      <ContextMenuLayer>
+      {simple ? <SimpleHeader/> : <><TopBar /><TabRail /></>}
+      <main
+        className={"content explorer-content" + (simple ? "" : contentCanvasClass)}
+        data-active-page={simple ? simpleRoute.page : (activePageTab?.page ?? "homepage")}
+      >{children}</main>
+      </ContextMenuLayer>
+      <BottomBar />
+      {!simple && <OneGoBar />}
+      <OneShot scheduleMode={scheduleActive} />
+      {!simple && <><VaultSheetHost />
+      {/* 标签页抽屉与 OneGO 抽屉（portal 自管理开合，挂一次即可） */}
+      <TabDrawer />
+      <OneGoSheet />
+      <ContextMenuHost />
+      <WorkspaceEditorHost />
+      <FolderIconPickerHost />
+      <VaultDropTarget /></>}
+      {/* 命令面板：⌘/Ctrl+K 或顶栏按钮唤起；挂在 shell 顶层，任何页面都能用 */}
       <CommandPalette />
+      {/* 设置浮层（个人设置 / 插件 / OneTHU Harness）：不是标签页，高于任何标签页 */}
+      <SettingsOverlay />
+      {/* dev 构建「检索落点自查路由」(?searchland=selfcheck)：release 里整块被 rollup 剥离，不进导航 */}
+      {SearchLandingSelfcheck ? (
+        <Suspense fallback={null}>
+          <SearchLandingSelfcheck />
+        </Suspense>
+      ) : null}
       <HardRefreshButton />
       {DevPanel ? (
         <Suspense fallback={null}>
@@ -610,37 +471,197 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-/** 硬刷新悬浮按钮：固定右下角，所有页面可见（含登录/双因素页）。
+/** 硬刷新悬浮按钮：默认右下角，自动避开右下的其他浮层按钮
+ *  （OneShot、日程设置、白板工具栏、暂存箱、回到顶层…），永远落在最靠右下的空位；
+ *  按住可拖动（位置按设备记住，存在 onethu.ui.refreshFab.v1）。
  *  生产环境 tauri 资源走自定义协议不进 HTTP 缓存，reload 即全量重载；
  *  移动端没有右键/⌘R，这是页面卡死/白屏后的唯一恢复出口。 */
+const REFRESH_POS_KEY = "onethu.ui.refreshFab.v1";
+type FabPos = { right: number; bottom: number };
+/** Stable scrollbar gutters may shrink the root box without changing clientWidth. */
+const fabViewportWidth = (): number => Math.min(window.innerWidth,
+  document.documentElement.clientWidth || window.innerWidth,
+  document.documentElement.getBoundingClientRect().width || window.innerWidth);
+function readFabPos(): FabPos | null {
+  try {
+    const raw = localStorage.getItem(REFRESH_POS_KEY);
+    if (!raw) return null;
+    const v = JSON.parse(raw) as Partial<FabPos>;
+    if (Number.isFinite(v.right) && Number.isFinite(v.bottom)) return { right: Number(v.right), bottom: Number(v.bottom) };
+  } catch { /* 坏数据就当没摆过 */ }
+  return null;
+}
+/** 右下角可能出现的浮件：自动找位的避让清单（只认真正压在同一象限里的）。 */
+const FAB_OBSTACLES = ".ex-bbar, .oneshot, .schedule-dock, .board-viewport-tools, .free-fab-col, .vault-dock, .vault-anchor, .top-fab, .chat-dock, .dock-panel, .ex-mini";
+
 export function HardRefreshButton() {
+  const uiLocale = useUiLocale();
+
   const [showTop, setShowTop] = useState(false);
+  const [stored, setStored] = useState<FabPos | null>(readFabPos);
+  const [auto, setAuto] = useState<FabPos | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const fabRef = useRef<HTMLButtonElement | null>(null);
+  const dragRef = useRef<{ x: number; y: number; right: number; bottom: number; moved: boolean; pointerId: number } | null>(null);
+  const skipClick = useRef(false);
+  const posRef = useRef<FabPos | null>(null);
+  const explorer = useExplorerState();
+  const mode = useExperienceMode();
+  const simpleRoute = useSimpleRoute();
+  const pos = stored ?? auto ?? { right: 18, bottom: 18 };
+  posRef.current = pos;
+
   useEffect(() => {
-    const on = () => setShowTop(window.scrollY > 240);
+    const on = (): void => setShowTop(window.scrollY > 240);
     window.addEventListener("scroll", on, { passive: true });
     on();
     return () => window.removeEventListener("scroll", on);
   }, []);
+
+  /** 找「最靠右下又谁都不压」的位置：从右下角起步，撞上谁就往上让，实在挤再往左挪。 */
+  const compute = useCallback((): FabPos => {
+    const btn = fabRef.current;
+    const w = btn?.offsetWidth || 40;
+    const h = btn?.offsetHeight || 40;
+    const vw = fabViewportWidth();
+    const vh = window.innerHeight;
+    const margin = 14;
+    const obstacles = Array.from(document.querySelectorAll<HTMLElement>(FAB_OBSTACLES))
+      .filter((el) => el !== btn && !el.contains(btn) && !btn?.contains(el))
+      .map((el) => el.getBoundingClientRect())
+      .filter((r) => r.width > 1 && r.height > 1 && r.bottom > vh * 0.5 && r.right > vw * 0.4);
+    let right = margin;
+    let bottom = margin;
+    for (let i = 0; i < 12; i++) {
+      const box = { left: vw - right - w, right: vw - right, top: vh - bottom - h, bottom: vh - bottom };
+      const hit = obstacles.find((r) => !(r.right <= box.left || r.left >= box.right || r.bottom <= box.top || r.top >= box.bottom));
+      if (!hit) break;
+      const above = vh - hit.top + 8;
+      if (above + h > vh * 0.7) { right += w + 10; bottom = margin; }
+      else bottom = above;
+      if (right > vw * 0.7) break;
+    }
+    return { right, bottom };
+  }, []);
+
+  /* 没手动摆过就自动找位：首帧、布局稳定后、窗口变化、切换标签页（浮件随之增减）都重找。 */
+  useEffect(() => {
+    if (stored) return;
+    const place = (): void => { if (!dragRef.current) setAuto(compute()); };
+    place();
+    const timers = [200, 700, 1600].map((ms) => window.setTimeout(place, ms));
+    window.addEventListener("resize", place);
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      window.removeEventListener("resize", place);
+    };
+  }, [stored, compute, explorer.activeId, mode, simpleRoute.page, showTop]);
+
+  /* 手动摆过之后，窗口变小/旋转也要留在屏幕里。 */
+  useEffect(() => {
+    if (!stored) return;
+    const clamp = (): void => {
+      const btn = fabRef.current;
+      const w = btn?.offsetWidth || 40;
+      const h = btn?.offsetHeight || 40;
+      setStored((p) => {
+        if (!p) return p;
+        const next = {
+          right: Math.max(4, Math.min(p.right, fabViewportWidth() - w - 4)),
+          bottom: Math.max(4, Math.min(p.bottom, window.innerHeight - h - 4)),
+        };
+        if (next.right === p.right && next.bottom === p.bottom) return p;
+        try { localStorage.setItem(REFRESH_POS_KEY, JSON.stringify(next)); } catch { /* memory still updates */ }
+        return next;
+      });
+    };
+    clamp(); // A position from another window size must be visible on the first mount too.
+    const observer = new ResizeObserver(clamp);
+    if (fabRef.current) observer.observe(fabRef.current);
+    observer.observe(document.documentElement);
+    window.addEventListener("resize", clamp);
+    return () => { observer.disconnect(); window.removeEventListener("resize", clamp); };
+  }, [stored]);
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    if (e.button !== 0) return;
+    skipClick.current = false;
+    dragRef.current = { x: e.clientX, y: e.clientY, right: pos.right, bottom: pos.bottom, moved: false, pointerId: e.pointerId };
+    // Capture keeps fast movements outside this small button attached to it.
+    // Until the drag threshold is crossed, leave its position and click alone.
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onPointerMove = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    const d = dragRef.current;
+    if (!d || d.pointerId !== e.pointerId) return;
+    const dx = e.clientX - d.x;
+    const dy = e.clientY - d.y;
+    if (!d.moved) {
+      if (Math.hypot(dx, dy) < (e.pointerType === "touch" ? 12 : 10)) return;
+      d.moved = true;
+      e.currentTarget.setPointerCapture(e.pointerId);
+      setDragging(true);
+    }
+    const btn = fabRef.current;
+    const w = btn?.offsetWidth || 40;
+    const h = btn?.offsetHeight || 40;
+    const next = {
+      right: Math.max(4, Math.min(d.right - dx, fabViewportWidth() - w - 4)),
+      bottom: Math.max(4, Math.min(d.bottom - dy, window.innerHeight - h - 4)),
+    };
+    posRef.current = next;
+    setStored(next);
+  };
+  const onPointerUp = (e: ReactPointerEvent<HTMLButtonElement>): void => {
+    const d = dragRef.current;
+    if (!d || d.pointerId !== e.pointerId) return;
+    dragRef.current = null;
+    setDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    if (!d.moved) return;
+    skipClick.current = true;
+    try { localStorage.setItem(REFRESH_POS_KEY, JSON.stringify(posRef.current ?? pos)); } catch { /* 存不下就只记内存 */ }
+  };
+  const fabStyle = {
+    "--refresh-fab-right": `${pos.right}px`,
+    "--refresh-fab-bottom": `${pos.bottom}px`,
+  } as CSSProperties;
+  const fabH = fabRef.current?.offsetHeight || 40;
+  const topStyle = {
+    "--refresh-fab-right": `${pos.right}px`,
+    "--refresh-fab-bottom": `${pos.bottom + fabH + 8}px`,
+  } as CSSProperties;
   return (
     <>
       {showTop ? (
         <button
           className="hard-refresh-fab top-fab"
-          title="回到顶层"
-          aria-label="回到顶层"
+          style={topStyle}
+          title={i18n("components.layout.61156d427af0")}
+          aria-label={i18n("components.layout.61156d427af0")}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <IconArrowUp width={18} height={18} />
         </button>
       ) : null}
       <button
-      className="hard-refresh-fab"
-      title="硬刷新（整页重载）"
-      aria-label="硬刷新"
-      onClick={() => window.location.reload()}
-    >
-      <IconRefresh width={18} height={18} />
-    </button>
+        ref={fabRef}
+        className={"hard-refresh-fab" + (dragging ? " is-dragging" : "")}
+        style={fabStyle}
+        title={i18n("components.layout.7a007b29bf56")}
+        aria-label={i18n("components.layout.f9e31e1d63d5")}
+        onClick={(e) => {
+          if (skipClick.current && e.detail !== 0) { skipClick.current = false; return; }
+          skipClick.current = false;
+          window.location.reload();
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <IconRefresh width={18} height={18} />
+      </button>
     </>
   );
 }
@@ -649,43 +670,230 @@ export function PageHead({
   title,
   meta,
   actions,
+  menu,
 }: {
   /** 页标题；收藏夹重命名等场景可传受控输入（ReactNode） */
   title: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;
+  /** 页面级操作（白板的「添加组件 / 套用模板 / 编辑」等）：手机上收进顶栏「···」菜单。
+   *  与 actions 的分工是「页面级操作 vs 工具栏」。 */
+  menu?: PageMenuItem[];
 }) {
-  const { page } = useApp();
-  const pluginNav = usePluginNavEntries();
-  // 窄屏顶栏已展示当前页名：与导航名相同的标题不再重复渲染（详情页等子标题不受影响）
-  const navLabel = [...NAV, ...pluginNav].find((n) => n.page === page)?.label ?? (page === "plugins" ? "插件" : undefined);
-  // 统一断点读取（§2.8.1）：此前各组件自写 matchMedia，改断点必漏
-  const expanded = useExpanded();
-  const dupOnTopbar = !expanded && typeof title === "string" && title === navLabel;
+  const uiLocale = useUiLocale();
+
+  /* 把菜单同步给顶栏。**本 PageHead 的稳定 token**：页切换期间可能同时存在两代 PageHead，
+     卸载时只允许清掉自己写进去的那份（见 pageChrome.clearPageChrome）。 */
+  const chromeToken = useRef<object>({});
+  const headRef = useRef<HTMLDivElement | null>(null);
+  /* 预览里的「页面」不算页面：添加组件抽屉用真实卡体当预览，像搜索页这类卡体自带 PageHead，
+     会把抽屉里的空菜单写进全局 chrome、收起时再清空 → 顶栏「···」消失（霖 2026-10-11 现场）。
+     这里把「自己是不是在预览里」记在 ref 上，同步与清理两处都据此跳过。 */
+  const inPreviewRef = useRef(false);
+  useEffect(() => {
+    const el = headRef.current;
+    inPreviewRef.current = !!el && !!el.closest(".add-preview-box, .widget-size-box, .add-drawer");
+    if (inPreviewRef.current) return;
+    syncPageChrome({ back: null, menu: menu ?? [] }, chromeToken.current);
+    /* 故意不带依赖数组：每次渲染都同步 live（onSelect 闭包要最新一次渲染的）。 */
+  });
+  useEffect(() => () => {
+    if (inPreviewRef.current) return;
+    clearPageChrome(chromeToken.current);
+  }, []);
   return (
-    <header className="page-head">
-      <div>
-        {dupOnTopbar ? null : <h1>{title}</h1>}
-        {meta ? <div className="page-head-meta">{meta}</div> : null}
-      </div>
-      {actions ? <div className="page-head-actions">{actions}</div> : null}
-    </header>
+    <div ref={headRef}>
+      {/* 渲染体走 OneGUI：标题字阶、meta、动作位与其它页面同源（旧 .page-head 的类不再产出） */}
+      {title != null || meta != null || actions != null ? <OGPageHead title={title} meta={meta} actions={actions} /> : null}
+    </div>
+  );
+}
+
+/* ══════════ Entry 状态机（薄重导出）：store 本体在 state/explorer.ts 的设置浮层 ══════════
+   旧语义映射：entry = "settings"|"plugins"|"oh" 即浮层的三段；goEntry = 打开/切换浮层。
+   全库既有调用方（searchRows 落点 / OhSettingsPage / Plugins.tsx）零改动。 */
+export type Entry = OverlayEntry;
+
+export function goEntry(next: Entry): void {
+  openSettings(next);
+}
+export function entrySnapshot(): Entry {
+  return overlaySnapshot() ?? "plugins";
+}
+export function subscribeEntry(f: () => void): () => void {
+  return subscribeOverlay(f);
+}
+/** 组件里读当前入口态（只在浮层挂载的页面里用；关闭时兜底 "plugins" 与旧默认一致） */
+export function useEntry(): Entry {
+  return useOverlayEntry() ?? "plugins";
+}
+
+/** 设置浮层内用的关闭（✕ / Esc） */
+export { closeSettings };
+
+/** 行级直达用的稳定 id：`row-<slug>`（对设置行）/ `sec-<slug>`（对分节）。 */
+export function slugOf(text: string): string {
+  const t = text.trim().replace(/\s+/g, "-").replace(/[「」（）()·:：,，.。/]/g, "").slice(0, 24);
+  return t || "item";
+}
+
+/** Copy explicit source anchors only. Labels can change without changing IDs. */
+export function markSettingsRows(): void {
+  document.querySelectorAll<HTMLElement>("[id^=row-], [id^=sec-]").forEach(node => {
+    if (!node.dataset.setId) node.dataset.setId = node.id;
+  });
+}
+
+/** Stable row/section IDs first. Legacy title requests remain compatible, but never mint IDs. */
+export function focusSettingsTarget(target: string, root: ParentNode = document): boolean {
+  const want = target.trim();
+  if (!want) return false;
+  const row = allSearchRows().find(item => item.id === want || item.title === want || item.breadcrumb?.at(-1) === want);
+  const ids = new Set([want, `row-${want}`, `sec-${want}`, `row-${slugOf(want)}`, `sec-${slugOf(want)}`]);
+  if (row) ids.add(`row-${row.id}`);
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>("[data-set-id], [id]"));
+  const rendered = (node: HTMLElement): HTMLElement => getComputedStyle(node).display === "contents"
+    ? Array.from(node.querySelectorAll<HTMLElement>("*")).find(child => child.getClientRects().length > 0) ?? node : node;
+  const visible = (node: HTMLElement): boolean => !node.closest("[hidden]") && rendered(node).getClientRects().length > 0;
+  let hit = nodes.find(node => visible(node) && (ids.has(node.dataset.setId ?? "") || ids.has(node.id)));
+  // Older callers can still request a section ID; the theme lives in Appearance.
+  if (!hit) {
+    const section = want === "主题" ? "外观" : want;
+    hit = Array.from(root.querySelectorAll<HTMLElement>("[data-settings-section]"))
+      .find(node => visible(node) && node.dataset.settingsSection === section);
+  }
+  // Compatibility for external plugin actions that have not adopted an explicit anchor.
+  if (!hit && !row) {
+    hit = Array.from(root.querySelectorAll<HTMLElement>(".setting-row,.section-head,.og-settings-row,.og-section,button"))
+      .find(node => visible(node) && !node.classList.contains("plg-danger") && (node.textContent ?? "").trim() === want);
+  }
+  if (!hit) return false;
+  hit = rendered(hit);
+  hit.scrollIntoView({ block: "center", behavior: "smooth" });
+  hit.classList.add("row-focus");
+  const focused = hit;
+  window.setTimeout(() => focused.classList.remove("row-focus"), 1800);
+  return true;
+}
+
+/** 窄栏判定（**容器实际宽度**驱动）：< threshold 就降级，避免文字挤成竖排糊字。
+ *  用 ResizeObserver 实测被包裹容器的宽度；无法测量时按"宽"处理（不误伤大屏）。 */
+export function useNarrowBox(threshold = 300): [React.RefObject<HTMLDivElement | null>, boolean] {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setNarrow(el.clientWidth > 0 && el.clientWidth < threshold));
+    ro.observe(el);
+    setNarrow(el.clientWidth > 0 && el.clientWidth < threshold);
+    return () => ro.disconnect();
+  }, [threshold]);
+  return [ref, narrow];
+}
+
+/** 1.5 级入口框：设置 | 插件 | OneTHU Harness —— 现挂在设置浮层内部做快速换段。
+ *  手机与桌面同款（LevelBox 原样保留，goEntry 直接换浮层段）。 */
+export function LevelBox(): ReactNode {
+  const uiLocale = useUiLocale();
+
+  const entry = useEntry(); // 高亮**唯一来源**
+  const [boxRef, narrow] = useNarrowBox(300);
+  /* 窄栏：只渲染图标（title/aria-label 承载全名），**禁止文字换行**；宽栏：文字完整不截断 */
+  const cells: Array<{ id: Entry; label: string; icon: ReactNode }> = [
+    { id: "profile", label: i18n("components.layout.487e926379fe"), icon: <IconUser /> },
+    { id: "settings", label: i18n("components.layout.df3d58c7d84b"), icon: <IconSettings /> },
+    { id: "plugins", label: i18n("components.layout.e806fbbe8ec6"), icon: <IconPlug /> },
+    { id: "oh", label: "OneTHU Harness", icon: <HarnessMark size={13} /> },
+  ];
+  const cell = (c: { id: Entry; label: string; icon: ReactNode }): ReactNode => (
+    <button
+      className={"nav-item" + (entry === c.id ? " is-active" : "")}
+      title={c.label}
+      aria-label={c.label}
+      style={{
+        flex: narrow ? "1 1 0" : c.id === "oh" ? "1.5 1 0" : "1 1 0",
+        minWidth: 0,
+        height: 26,
+        justifyContent: "center",
+        padding: 0,
+        fontSize: narrow ? undefined : "var(--text-xs)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "clip",
+      }}
+      onClick={() => goEntry(c.id)}
+    >
+      {narrow ? c.icon : c.label}
+    </button>
+  );
+  return (
+    <div
+      ref={boxRef}
+      style={{
+        display: "flex", alignItems: "center", gap: 2, padding: 2, marginBottom: 12,
+        border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
+        background: "var(--md-sys-color-surface-container-lowest)",
+      }}
+    >
+      {cells.map((c) => cell(c))}
+    </div>
+  );
+}
+
+/**
+ * 顶栏右上「···」：开当前页声明的页面级操作菜单（复用长按菜单的宿主与展开动画）。
+ *
+ * **必须渲染在 ContextMenuLayer 内部**：`useContextMenu()` 只对 Provider 的子节点生效，
+ * 放在外层会拿到 NOOP——表现就是「点了没反应」。
+ */
+function ChromeMore() {
+  const uiLocale = useUiLocale();
+
+  const ctx = useContextMenu();
+  const chrome = useSyncExternalStore(subscribePageChrome, pageChromeSnapshot, pageChromeSnapshot);
+  const moreRef = useRef<HTMLButtonElement | null>(null);
+  if (!chrome.hasMenu) return null;
+  const openMenu = (): void => {
+    const r = moreRef.current?.getBoundingClientRect();
+    /* dev 追加一条取景框入口（复制一份数组，别改共享的页面菜单）——
+       它是除 Cmd+Shift+P 之外的第二条路：不依赖 ONETHU_DEV 徽标 */
+    const items = [...readPageChrome().menu];
+    if (import.meta.env.DEV) {
+      items.push({
+        key: "dev-phone-frame",
+        label: i18n("components.layout.56043fcf0aa1"),
+        onSelect: () => { window.location.href = window.location.pathname + "?phone-frame=1"; },
+      });
+    }
+    ctx.open({ x: r ? r.right - r.width / 2 : window.innerWidth - 24, y: r ? r.bottom : 48, items });
+  };
+  return (
+    <button
+      type="button"
+      className="topbar-more"
+      ref={moreRef}
+      onClick={openMenu}
+      aria-label={i18n("components.layout.9f07d2ce4115")}
+      aria-haspopup="menu"
+    >
+      <IconMore width={18} height={18} />
+    </button>
   );
 }
 
 export function SectionHead({
+  id,
   title,
   aside,
 }: {
+  id?: string;
   title: string;
   aside?: ReactNode;
 }) {
-  return (
-    <div className="section-head">
-      <h2>{title}</h2>
-      {aside ? <span className="section-aside">{aside}</span> : null}
-    </div>
-  );
+  const uiLocale = useUiLocale();
+
+  return <OGSection id={id} title={title} aside={aside} />;
 }
 
 export function Card({
@@ -697,11 +905,18 @@ export function Card({
   style?: CSSProperties;
   children: ReactNode;
 }) {
-  return (
-    <div className={`card ${className}`} style={style}>
+  const uiLocale = useUiLocale();
+
+  // 旧约定：className 里带 "list" 表示"内容自己贴边"（行自带内边距）→ 贴边卡
+  const flush = /(^|\s)(list|stat-click|course-card)(\s|$)/.test(className);
+  const rest = className.replace(/(^|\s)list(\s|$)/g, " ").trim();
+  const card = (
+    <OGCard flush={flush} className={rest || undefined}>
       {children}
-    </div>
+    </OGCard>
   );
+  // 旧调用点有的用 style 传宽度等几何：包一层（不把 style 泄漏进库组件）
+  return style ? <div style={style}>{card}</div> : card;
 }
 
 /* 空状态：text 必填，icon/hint/action 可选（B5b）。
@@ -717,42 +932,30 @@ export function Empty({
   hint?: string;
   action?: ReactNode;
 }) {
-  return (
-    <div className="empty">
-      {icon ? <div className="empty-icon" aria-hidden="true">{icon}</div> : null}
-      <div className="empty-title">{text}</div>
-      {hint ? <div className="empty-hint">{hint}</div> : null}
-      {action ? <div className="empty-action">{action}</div> : null}
-    </div>
-  );
+  const uiLocale = useUiLocale();
+
+  return <OGEmptyState title={text} icon={icon} hint={hint} action={action} />;
 }
 
 export function ErrorNote({ text, onRetry }: { text: string; onRetry?: () => void }) {
+  const uiLocale = useUiLocale();
+
   return (
-    <div className="error-note">
-      <ErrorLine text={text} />
-      {onRetry ? (
-        <button className="btn btn-ghost" onClick={onRetry}>
-          重试
-        </button>
-      ) : null}
-    </div>
+    <OGBanner
+      tone="error"
+      title={<ErrorLine text={text} />}
+      action={onRetry ? <OGBtn variant="ghost" tone="error" size="sm" onClick={onRetry}>{i18n("components.layout.b8784c8dd563")}</OGBtn> : null}
+    />
   );
 }
 
 export function SkeletonRows({ rows = 4 }: { rows?: number }) {
+  const uiLocale = useUiLocale();
+
   return (
-    <Card>
-      {Array.from({ length: rows }, (_, i) => (
-        <div className="row" key={i} style={{ animation: "none" }}>
-          <div className="skeleton" style={{ width: 64, height: 32 }} />
-          <div className="row-main">
-            <div className="skeleton" style={{ width: "55%", height: 13 }} />
-            <div className="skeleton" style={{ width: "30%", height: 10, marginTop: 7 }} />
-          </div>
-        </div>
-      ))}
-    </Card>
+    <OGCard pad="none">
+      <OGLoadingBlock rows={rows} />
+    </OGCard>
   );
 }
 
@@ -765,13 +968,10 @@ export function Switch({
   onChange: (v: boolean) => void;
   label: string;
 }) {
-  return (
-    <button
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      className={"switch" + (on ? " on" : "")}
-      onClick={() => onChange(!on)}
-    />
-  );
+  const uiLocale = useUiLocale();
+
+  return <OGSwitch checked={on} onChange={() => onChange(!on)} aria-label={label} />;
 }
+
+/* 保留未用引用防 tree-shake 误报：这些图标被 NAV 数据表引用 */
+void IconFolder; void IconFolderPlus; void IconInfo; void IconLearn; void IconPen; void IconPlug; void IconSchedule; void IconStar; void IconToday; void IconXk; void IconCard; void IconCalendar; void FolderIcon; void IconExternal; void IconThos; void IconTrace; void IconMail; void IconCloud; void IconBook; void topLevelPage; void NAV_REGISTRY; void IconChevron;

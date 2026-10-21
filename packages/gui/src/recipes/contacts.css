@@ -1,0 +1,596 @@
+/* 通讯录与拟物名片：卡片比例、纸面层次、堆叠与弹出。
+ *
+ * 硬约束（docs/onegui/10-contract.md + exp 单源补充）：
+ * - 颜色只用 --og-* 语义/结构令牌（含 color-mix 派生），本文件零字面色；
+ * - 尺寸走 --og-space-* / --og-geo-* / 结构令牌，媒体查询断点除外；
+ * - 动效只动 transform / opacity / box-shadow，时长与曲线全走 --og-dur-* / --og-ease-*，
+ *   因此全局 [data-og-motion="reduced"] 与 prefers-reduced-motion 会自动降级；
+ * - 名片比例 1.586 : 1（真实银行卡），纸纹/压印/钢印都由令牌派生，深浅主题同源。
+ */
+
+/* ══ 名片纸卡：真实银行卡比例 1.586 : 1 ═══════════════════════════════════ */
+.friend-inbox-entry { position: relative; display: inline-flex; flex-shrink: 0; }
+.friend-inbox-badge {
+  position: absolute; inset-block-start: 0; inset-inline-end: 0;
+  min-width: var(--og-space-4); padding-inline: var(--og-space-1);
+  border-radius: var(--og-radius-full); background: var(--og-accent);
+  color: var(--og-content-on-accent); font-size: var(--og-text-micro); text-align: center;
+  pointer-events: none;
+}
+.friend-invitations { margin-block-end: var(--og-space-4); }
+.friend-invitation {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--og-space-3); flex-wrap: wrap;
+  padding-block-start: var(--og-space-3); border-top: var(--og-geo-hairline) solid var(--og-line-2);
+  overflow-wrap: anywhere;
+}
+.identity-card {
+  --og-c-identity-pad: clamp(var(--og-space-3), 3.2vw, var(--og-space-5));
+  --og-c-identity-name: clamp(var(--og-text-subtitle), 4.4vw, var(--og-text-title));
+  --og-c-identity-ink: color-mix(in srgb, var(--og-content-1) 3%, transparent);
+  /* 纸面受光：亮色主题的纸是米白的，深色主题只给一点点光泽，避免糊掉文字对比 */
+  --og-c-identity-sheen: color-mix(in srgb, var(--og-contrast-ink-light) 55%, transparent);
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--og-space-2);
+  aspect-ratio: 1.586;
+  width: 100%;
+  max-width: var(--og-identity-card-max);
+  margin-inline: auto;
+  overflow: hidden;
+  padding: var(--og-c-identity-pad);
+  text-align: left;
+  color: var(--og-content-1);
+  background: var(--og-surface-1);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-xl);
+  /* 压印：外投影 + 顶部一道高光边（真实卡片的厚纸边） */
+  box-shadow: var(--og-elev-2), inset 0 var(--og-geo-hairline) 0 var(--og-contrast-ink-light);
+}
+
+html[data-og-scheme="dark"] .identity-card {
+  --og-c-identity-sheen: color-mix(in srgb, var(--og-contrast-ink-light) 9%, transparent);
+}
+
+/* ══ 自定义卡面（封面图）：图片层 + 可读性蒙层 + 按背景亮度自动字色 ═══════
+ * 字色在保存时按图片平均亮度算好（light=白字 / dark=黑字），这里只消费 ink 类；
+ * 蒙层保证任何照片上正文都读得清，且组织名片不吃封面。 */
+.identity-card-cover {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.identity-card-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.identity-card-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* 顶部也要压一点：白字方案下品牌行/芯片落在亮照片上才看得清 */
+  background: linear-gradient(180deg, color-mix(in srgb, var(--og-media-shadow) 34%, transparent) 0%, color-mix(in srgb, var(--og-media-shadow) 20%, transparent) 34%, color-mix(in srgb, var(--og-media-shadow) 64%, transparent) 100%);
+}
+.identity-card.has-cover .identity-card-stock,
+.identity-card.has-cover .identity-card-watermark { display: none; }
+.identity-card.has-cover .identity-card-brand,
+.identity-card.has-cover .identity-card-name {
+  /* !important：全局文字自动对比度会给元素写内联 color，卡面字色必须以封面为准 */
+  color: var(--og-c-cover-ink-strong) !important;
+  text-shadow: 0 var(--og-geo-hairline) 0 var(--og-c-cover-shadow), 0 var(--og-geo-hairline) calc(var(--og-space-1) * .75) var(--og-c-cover-shadow);
+}
+.identity-card.has-cover .identity-card-kind,
+.identity-card.has-cover .identity-card-line,
+.identity-card.has-cover .identity-card-details,
+.identity-card.has-cover .identity-seal { color: var(--og-c-cover-ink-soft) !important; }
+.identity-card.has-cover .identity-card-chip {
+  border-color: color-mix(in srgb, var(--og-c-cover-ink-soft) 45%, transparent);
+  background: color-mix(in srgb, var(--og-c-cover-ink-soft) 14%, transparent);
+  box-shadow: inset 0 var(--og-geo-hairline) 0 color-mix(in srgb, var(--og-c-cover-ink-soft) 35%, transparent);
+}
+.identity-card.has-cover .identity-seal {
+  border-color: color-mix(in srgb, var(--og-c-cover-ink-soft) 55%, transparent);
+  box-shadow: inset 0 0 0 var(--og-geo-hairline) color-mix(in srgb, var(--og-c-cover-ink-soft) 20%, transparent);
+}
+.identity-card.has-cover .identity-card-avatar,
+.identity-card.has-cover .identity-monogram {
+  box-shadow: 0 0 0 var(--og-geo-hairline) color-mix(in srgb, var(--og-c-cover-ink-soft) 45%, transparent);
+}
+.identity-card.is-cover-light {
+  --og-c-cover-ink-strong: var(--og-media-ink-light);
+  --og-c-cover-ink-soft: color-mix(in srgb, var(--og-media-ink-light) 86%, transparent);
+  --og-c-cover-shadow: color-mix(in srgb, var(--og-media-shadow) 50%, transparent);
+}
+.identity-card.is-cover-dark {
+  --og-c-cover-ink-strong: var(--og-media-ink-dark);
+  --og-c-cover-ink-soft: color-mix(in srgb, var(--og-media-ink-dark) 74%, transparent);
+  --og-c-cover-shadow: color-mix(in srgb, var(--og-media-ink-light) 45%, transparent);
+}
+.identity-card.is-cover-dark .identity-card-cover::after {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--og-media-ink-light) 34%, transparent) 0%, color-mix(in srgb, var(--og-media-ink-light) 16%, transparent) 38%, color-mix(in srgb, var(--og-media-ink-light) 58%, transparent) 100%);
+}
+
+/* 卡面编辑器：卡片预览 + 拖动取景 + 缩放 */
+.cover-editor-stage {
+  position: relative;
+  width: 100%;
+  max-width: var(--og-identity-card-max);
+  margin-inline: auto;
+  cursor: grab;
+  touch-action: none;
+  border-radius: var(--og-radius-xl);
+  user-select: none;
+}
+.cover-editor-stage:active { cursor: grabbing; }
+.cover-editor-zoom {
+  display: grid;
+  gap: var(--og-space-2);
+}
+
+
+/* 纸料：防盗底纹（同心圆）+ 横纵纸纹 + 斜向面阶渐变 */
+.identity-card-stock {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--og-surface-1);
+  background-image:
+    radial-gradient(120% 85% at 8% -12%, var(--og-c-identity-sheen), transparent 58%),
+    repeating-radial-gradient(circle at 92% 118%,
+      transparent 0 calc(var(--og-space-3) - var(--og-geo-hairline)),
+      color-mix(in srgb, var(--og-content-1) 2.4%, transparent) calc(var(--og-space-3) - var(--og-geo-hairline)) var(--og-space-3)),
+    repeating-linear-gradient(90deg,
+      transparent 0 calc(var(--og-space-1) * 0.5),
+      var(--og-c-identity-ink) calc(var(--og-space-1) * 0.5) calc(var(--og-space-1) * 0.75)),
+    repeating-linear-gradient(0deg,
+      transparent 0 calc(var(--og-space-1) * 0.75),
+      color-mix(in srgb, var(--og-content-1) 2.4%, transparent) calc(var(--og-space-1) * 0.75) var(--og-space-1)),
+    linear-gradient(132deg, var(--og-surface-1) 0%, var(--og-surface-2) 54%, var(--og-surface-3) 100%);
+}
+
+/* 压印水印：卡片中间的防伪大字（名字首字），只做材质，不承载信息 */
+.identity-card-watermark {
+  position: absolute;
+  z-index: -1;
+  right: var(--og-space-4);
+  bottom: calc(var(--og-space-6) + var(--og-space-2));
+  font-size: calc(var(--og-space-10) * 2);
+  font-weight: var(--og-weight-bold);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: color-mix(in srgb, var(--og-content-1) 6%, transparent);
+  transform: rotate(-8deg);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 品牌行 */
+.identity-card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--og-space-2);
+  min-width: 0;
+}
+.identity-card-brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--og-content-1);
+}
+/* 卡片里的标准品牌 logo：就是全局那个上下两排的 (One / THU) 字标，
+   颜色跟随卡片字色（封面方案下由 .has-cover 覆盖）。 */
+.identity-card .brand-logo { color: inherit; }
+.identity-card.has-cover .identity-card-brand .brand-logo { color: var(--og-c-cover-ink-strong) !important; }
+.identity-card-kind {
+  flex: none;
+  font-size: var(--og-text-micro);
+  font-weight: var(--og-weight-medium);
+  letter-spacing: 0.16em;
+  color: var(--og-content-3);
+}
+
+/* 芯片 + 人像：中间行吸收剩余高度 */
+.identity-card-middle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--og-space-2);
+  min-height: 0;
+}
+.identity-card-chip {
+  position: relative;
+  flex: none;
+  width: calc(var(--og-space-6) + var(--og-space-2));
+  height: calc(var(--og-space-4) + var(--og-space-1));
+  border: var(--og-geo-hairline) solid var(--og-line-2);
+  border-radius: var(--og-radius-xs);
+  background: linear-gradient(128deg, var(--og-surface-2), var(--og-surface-1) 46%, var(--og-surface-3));
+  box-shadow: inset 0 var(--og-geo-hairline) 0 var(--og-contrast-ink-light);
+}
+.identity-card-chip::before,
+.identity-card-chip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--og-geo-hairline);
+  background: color-mix(in srgb, var(--og-line-3) 75%, transparent);
+}
+.identity-card-chip::before { top: calc(50% - var(--og-geo-xs)); }
+.identity-card-chip::after { bottom: calc(50% - var(--og-geo-xs)); }
+
+.identity-card-person {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-3);
+  min-width: 0;
+}
+.identity-card-avatar,
+.identity-monogram {
+  width: calc(var(--og-space-8) + var(--og-space-1));
+  height: calc(var(--og-space-8) + var(--og-space-1));
+  flex: none;
+  border-radius: var(--og-radius-md);
+  object-fit: cover;
+  box-shadow: 0 var(--og-geo-hairline) 0 var(--og-contrast-ink-light);
+}
+.identity-monogram {
+  display: grid;
+  place-items: center;
+  background: var(--og-action);
+  color: var(--og-action-on);
+  font-size: var(--og-text-title);
+  font-weight: var(--og-weight-semibold);
+}
+.identity-card-id {
+  display: grid;
+  gap: calc(var(--og-space-1) / 2);
+  min-width: 0;
+}
+.identity-card-name {
+  font-size: var(--og-c-identity-name);
+  line-height: var(--og-text-title-lh);
+  font-weight: var(--og-weight-semibold);
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  /* 压印字：阴影取纸色，亮色纸上是凸起，深色纸上是刻入 */
+  text-shadow: 0 var(--og-geo-hairline) 0 color-mix(in srgb, var(--og-surface-1) 80%, transparent);
+}
+.identity-card-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-2);
+  overflow-wrap: anywhere;
+}
+
+/* 联系行 + 钢印 */
+.identity-card-bottom {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--og-space-2);
+  min-width: 0;
+}
+.identity-card-details {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--og-text-micro);
+  line-height: var(--og-text-micro-lh);
+  color: var(--og-content-3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.identity-seal {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--og-space-7);
+  height: var(--og-space-7);
+  border: calc(var(--og-space-1) / 2) solid color-mix(in srgb, var(--og-content-3) 55%, transparent);
+  border-radius: 50%;
+  color: var(--og-content-3);
+  font-size: var(--og-text-micro);
+  font-weight: var(--og-weight-semibold);
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-indent: 0.1em;
+  transform: rotate(-12deg);
+  box-shadow: inset 0 0 0 var(--og-geo-hairline) color-mix(in srgb, var(--og-content-3) 20%, transparent);
+}
+
+/* 组织名片：深一档的纸料 + 强调色描边 */
+.identity-card.is-organization {
+  border-color: var(--og-accent-soft-line);
+}
+.identity-card.is-organization .identity-card-stock {
+  background-image:
+    radial-gradient(120% 85% at 8% -12%, var(--og-c-identity-sheen), transparent 58%),
+    repeating-linear-gradient(90deg,
+      transparent 0 calc(var(--og-space-1) * 0.5),
+      var(--og-c-identity-ink) calc(var(--og-space-1) * 0.5) calc(var(--og-space-1) * 0.75)),
+    linear-gradient(146deg, var(--og-surface-2) 0%, var(--og-surface-3) 58%, var(--og-surface-4) 100%);
+}
+
+/* 三档：卡片夹里的实物 / 我的名片 / 弹出的大卡 */
+.identity-card--deck { max-width: none; }
+.identity-card--hero { max-width: var(--og-identity-card-max); }
+.identity-card--detail { max-width: 100%; }
+
+/* ══ 我的名片面板（我的 → 我的名片） ═════════════════════════════════════ */
+.identity-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--og-space-10) * 5)), 1fr));
+  align-items: start;
+  gap: var(--og-space-5);
+}
+.identity-panel-show {
+  display: grid;
+  gap: var(--og-space-4);
+  justify-items: center;
+  min-width: 0;
+}
+/* 名片按钮组：等宽网格（桌面各一排四列、手机两列），不再参差换行 */
+.identity-panel-actions {
+  display: grid;
+  /* 桌面优先排 4 列（两组各 4 个动作各占一排），窄一点自动落 2–3 列 */
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: var(--og-space-2);
+  width: 100%;
+}
+.identity-panel-actions > .og-btn { width: 100%; justify-content: center; }
+/* 等宽格子里宁可两行也不省略：按钮文字允许换行（全端一致） */
+.identity-panel-actions .og-btn-label {
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+  line-height: 1.25;
+  text-align: center;
+}
+html:root.is-phone .identity-panel-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.identity-panel-exchange { display: grid; gap: var(--og-space-2); width: 100%; text-align: center; }
+.identity-panel-exchange > .og-inline { justify-content: center; }
+.identity-panel-meta { min-width: 0; }
+.identity-panel-meta .og-card-body {
+  display: grid;
+  gap: var(--og-space-3);
+}
+
+/* ══ 通讯录页与名片夹 ════════════════════════════════════════════════════ */
+.contacts-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-5);
+  width: 100%;
+  max-width: var(--og-contacts-page-max);
+  margin-inline: auto;
+}
+.contacts-tabs { display: flex; }
+.contacts-orgs { display: grid; gap: var(--og-space-3); }
+
+/* ══ 组织主页（page=org）：完整页面，不是卡片/弹层 ═════════════════════════ */
+.org-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-5);
+  width: 100%;
+  max-width: var(--og-contacts-page-max);
+  margin-inline: auto;
+}
+.org-tabs { display: flex; }
+.org-page .vault-share-code { display: block; overflow-x: auto; white-space: nowrap; }
+.org-page .og-list .og-row { align-items: center; }
+
+.contact-cabinet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-4);
+  min-width: 0;
+}
+
+.contact-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--og-space-3);
+}
+.contact-toolbar .contact-search {
+  flex: 1 1 var(--og-ctl-form-narrow);
+  min-width: 0;
+}
+
+/* 卡片夹：桌面多列网格 */
+.contact-deck {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--og-contact-card-min)), 1fr));
+  align-items: start;
+  gap: calc(var(--og-space-6) + var(--og-space-3));
+  padding: var(--og-space-2) var(--og-space-2) var(--og-space-3);
+}
+
+/* 每张卡都是落在桌面上的实物：轻微歪斜 + 层叠投影 */
+.contact-slot {
+  --og-c-contact-tilt: -1.1deg;
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  transform: rotate(var(--og-c-contact-tilt));
+  transition: transform var(--og-dur-3) var(--og-ease-spring);
+}
+.contact-slot:nth-child(3n + 2) { --og-c-contact-tilt: 0.8deg; }
+.contact-slot:nth-child(3n) { --og-c-contact-tilt: -0.3deg; }
+.contact-slot.is-mine { --og-c-contact-tilt: 1.2deg; }
+
+@media (hover: hover) {
+  .contact-slot:hover,
+  .contact-slot:focus-within {
+    z-index: 2;
+    transform: rotate(0deg) translateY(calc(var(--og-space-2) * -1));
+  }
+  html:root .contact-card-pick:hover .identity-card {
+    box-shadow:
+      var(--og-elev-3),
+      calc(var(--og-space-1) * 1.5) var(--og-space-3) 0 var(--og-surface-2),
+      var(--og-space-3) var(--og-space-6) 0 var(--og-surface-3);
+  }
+}
+
+/* 卡片按钮：只是卡片的拾取器，本身不画底 */
+html:root .contact-card-pick {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--og-radius-xl);
+  background: none;
+  color: inherit;
+  white-space: normal;
+  text-align: left;
+}
+html:root .contact-card-pick::after { display: none; }
+html:root .contact-card-pick:focus-visible { box-shadow: var(--og-ring); }
+html:root .contact-card-pick .og-btn-label {
+  display: block;
+  width: 100%;
+  white-space: normal;
+}
+html:root .contact-card-pick .identity-card {
+  box-shadow:
+    var(--og-elev-2),
+    var(--og-space-1) var(--og-space-2) 0 var(--og-surface-2),
+    calc(var(--og-space-2) + var(--og-space-1)) var(--og-space-4) 0 var(--og-surface-3);
+  transition: box-shadow var(--og-dur-2) var(--og-ease-standard);
+}
+
+/* 星标：别在卡片角上的图钉（兄弟节点，绝不嵌进按钮里） */
+html:root .contact-star {
+  position: absolute;
+  top: calc(var(--og-space-1) * -1.5);
+  right: calc(var(--og-space-1) * -1.5);
+  z-index: 3;
+  color: var(--og-content-3);
+  background: var(--og-surface-1);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-full);
+  box-shadow: var(--og-elev-1);
+}
+html:root .contact-star.is-selected {
+  color: var(--og-content-1);
+  background: var(--og-accent-soft);
+  border-color: var(--og-accent-soft-line);
+}
+html:root .contact-star.is-selected .og-icon { fill: currentColor; }
+
+/* ══ 弹出的大卡 ═════════════════════════════════════════════════════════ */
+.contact-detail {
+  display: grid;
+  gap: var(--og-space-5);
+  min-width: 0;
+}
+.contact-detail-stage {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.contact-detail-stage .identity-card {
+  max-width: 100%;
+  animation: og-contact-card-in var(--og-dur-3) var(--og-ease-spring) both;
+}
+@keyframes og-contact-card-in {
+  from { opacity: 0; transform: translateY(var(--og-space-3)) rotate(-1.4deg) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.contact-channel {
+  display: grid;
+  gap: var(--og-space-3);
+  padding: var(--og-space-3);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-md);
+  background: var(--og-surface-2);
+}
+
+/* ══ 手机：一列卡片堆叠（略倾斜 + 层叠阴影 + 点击弹出全屏大卡） ═════════ */
+html:root.is-phone .contact-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: var(--og-space-2) var(--og-space-1) var(--og-space-4);
+}
+html:root.is-phone .contact-slot {
+  --og-c-contact-tilt: -1.4deg;
+  margin-top: calc(var(--og-space-6) * -1);
+}
+html:root.is-phone .contact-slot:first-child { margin-top: 0; }
+html:root.is-phone .contact-slot:nth-child(3n + 2) { --og-c-contact-tilt: 1.1deg; }
+html:root.is-phone .contact-slot:nth-child(3n) { --og-c-contact-tilt: -0.6deg; }
+html:root.is-phone .contact-slot.is-mine { --og-c-contact-tilt: 1deg; }
+/* 手机：星标别在卡片内右上角（堆叠时不会被上一张压住），卡片右上角的类型字让位 */
+html:root.is-phone .contact-star {
+  top: var(--og-space-2);
+  right: var(--og-space-2);
+}
+html:root.is-phone .identity-card-kind { display: none; }
+/* 手机：带说明的区块头允许换行，标题不被右侧按钮挤成两行 */
+html:root.is-phone .org-cards-head {
+  flex-wrap: wrap;
+  align-items: center;
+}
+html:root.is-phone .org-cards-head .og-section-titles { flex-wrap: wrap; }
+html:root.is-phone .contact-detail-modal { width: 100%; }
+html:root.is-phone .contact-detail-modal .og-panel-body { padding: var(--og-space-4); }
+
+/* 我的 → 我的名片：设置浮层的翻页段（四栏）在手机上收紧 */
+html:root .settings-seg { flex-wrap: wrap; }
+html:root.is-phone .settings-head { flex-wrap: wrap; }
+html:root.is-phone .settings-head .workbench-settings-brand { display: none; }
+html:root.is-phone .settings-seg { flex: 1; gap: 0; }
+html:root.is-phone .settings-seg-item { padding-inline: calc(var(--og-space-3) / 2); font-size: var(--og-text-micro); }
+
+/* ══ 减少动态效果：倾斜/上浮/入场都不做位移，只保留状态 ═════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .contact-slot,
+  .contact-detail-stage .identity-card,
+  html:root .contact-card-pick .identity-card {
+    transition: none;
+    animation: none;
+  }
+  .contact-slot:hover,
+  .contact-slot:focus-within {
+    transform: rotate(var(--og-c-contact-tilt));
+  }
+}
+html[data-og-motion="reduced"] .contact-slot,
+html[data-og-motion="reduced"] .contact-detail-stage .identity-card,
+html[data-og-motion="reduced"] .contact-card-pick .identity-card {
+  transition: none;
+  animation: none;
+}
+html[data-og-motion="reduced"] .contact-slot:hover,
+html[data-og-motion="reduced"] .contact-slot:focus-within {
+  transform: rotate(var(--og-c-contact-tilt));
+}
+/* 设置里的「使用模式」：默认一行摘要，点「切换模式」才展开（用户 2026-10-19：别一大块挡着） */
+.experience-mode-control { width: 100%; }
+.experience-mode-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--og-space-3);
+  flex-wrap: wrap;
+}
+.experience-mode-summary-text { display: grid; gap: var(--og-space-1); min-width: 0; }

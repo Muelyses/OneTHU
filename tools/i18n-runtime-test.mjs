@@ -1,0 +1,70 @@
+/** Runtime behavior, independent from generated catalog coverage and translation quality. */
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const require = createRequire(new URL("../apps/desktop/package.json", import.meta.url));
+const React = require("react");
+const { renderToStaticMarkup } = require("react-dom/server");
+const data = new Map([["onethu.locale", "not-a-registered-language"]]);
+globalThis.localStorage = { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) };
+globalThis.document = { documentElement: { lang: "" } };
+globalThis.window = new EventTarget();
+window.localStorage = localStorage;
+let channelCloses = 0;
+globalThis.BroadcastChannel = class {
+  postMessage() {}
+  close() { channelCloses++; }
+};
+const i18n = await import("../apps/desktop/src/i18n/index.ts");
+const format = await import("../apps/desktop/src/i18n/messageFormat.ts");
+let count = 0;
+const check = (condition, label) => { assert.ok(condition, label); count++; };
+check(i18n.getLocale() === "zh-CN", "Unknown stored locale falls back without registering arbitrary input");
+check(i18n.availableLocales().some(item => item.code === "en-US"), "English is registered in Node as well as Vite");
+const stop1 = i18n.installI18n(), stop2 = i18n.installI18n();
+check(document.documentElement.lang === "zh-CN", "Install sets document.lang before a language change");
+let emitted = 0;
+const unsubscribe = i18n.subscribeLocale(() => emitted++);
+const labels = i18n.localizedList(["common.cancel", "common.confirm"]);
+const pending = i18n.msg("common.cancel");
+check(Object.isFrozen(pending), "Pending descriptors are immutable");
+i18n.setLocale("en-US");
+check(i18n.resolveMessage(pending) === "Cancel", "Already-created descriptor resolves in the new language");
+check(labels[0] === "Cancel" && labels.join("/") === "Cancel/Confirm", "Module label arrays resolve lazily through normal array access");
+check(Array.isArray(labels) && labels.slice().length === 2, "Lazy labels preserve array operations");
+check(document.documentElement.lang === "en-US" && data.get("onethu.locale") === "en-US", "Set persists locale and updates document language");
+check(emitted === 1, "One real locale change emits once");
+i18n.setLocale("en-US");
+i18n.setLocale("__proto__");
+check(emitted === 1 && i18n.getLocale() === "en-US", "No-op and invalid locale do not trigger subscribers");
+check(i18n.resolveMessage("用户输入 <b>原文</b>") === "用户输入 <b>原文</b>", "User or plugin strings stay unchanged");
+check(i18n.tOr("test.missing", "{zero}/{off}/{empty}/{literal}", { zero: 0, off: false, empty: "", literal: "$& {other}" }) === "0/false//$& {other}", "Interpolation preserves zero, false and literal replacement syntax");
+check(i18n.tOr("test.missing", "Hello {name}", { name: "<img onerror=alert(1)>" }) === "Hello <img onerror=alert(1)>", "Interpolation produces text, not markup or executable code");
+check(i18n.tOr("test.missing", "{name}", {}) === "{name}", "Missing parameters remain diagnosable");
+check(i18n.t("__proto__") === "__proto__", "Message lookup does not read inherited object keys");
+const missing = [];
+check(format.interpolateMessage("{a} {b}", { a: "A" }, key => missing.push(key)) === "A {b}" && missing.join() === "b", "Missing-value diagnostics identify the actual slot");
+check(format.interpolateMessage("{count, plural, one {one} other {other}}", {}, () => {}) === "{count, plural, one {one} other {other}}", "Unsupported ICU text is not executed");
+const html = renderToStaticMarkup(React.createElement("p", null, i18n.rich("<script>{link}</script>", {
+  link: React.createElement("a", { href: "https://example.invalid/" }, "safe"),
+})));
+check(html.includes("&lt;script&gt;") && html.includes("<a ") && !html.includes("<script>"), "Rich slots are trusted React nodes while translated markup stays escaped");
+check(i18n.plural({ one: "common.confirm", other: "common.cancel", zero: "common.submit" }, 0) === "Submit", "Explicit zero branch is supported");
+check(i18n.plural({ one: "common.confirm", other: "common.cancel" }, 1) === "Confirm", "English one branch uses Intl.PluralRules");
+check(i18n.plural({ one: "common.confirm", other: "common.cancel" }, 2) === "Cancel", "English other branch uses Intl.PluralRules");
+const instant = Date.UTC(2026, 9, 20, 17, 0);
+const options = { day: "numeric", hour: "numeric", hourCycle: "h23" };
+check(i18n.formatDate(instant, options) === new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Shanghai", ...options }).format(instant), "Date formatting keeps the campus timezone");
+check(i18n.formatNumber(1234.5) === "1,234.5" && i18n.formatDate(NaN) === "—", "Numbers localize and invalid dates are explicit");
+const storage = new Event("storage");
+Object.assign(storage, { key: "onethu.locale", newValue: "zh-CN", storageArea: localStorage });
+window.dispatchEvent(storage);
+check(i18n.getLocale() === "zh-CN" && document.documentElement.lang === "zh-CN", "Storage events update the other window");
+check(labels[0] === "取消" && i18n.resolveMessage(pending) === "取消", "Existing arrays and descriptors switch back without reconstruction");
+check(i18n.plural({ one: "common.confirm", other: "common.cancel" }, 1) === "取消", "Chinese plural selection uses its own locale rules");
+stop1();
+check(channelCloses === 0, "Sibling provider cleanup preserves the shared listener");
+stop2(); stop2();
+check(channelCloses === 1, "Final cleanup closes the channel once and is idempotent");
+unsubscribe();
+check(i18n.localeCodes().includes("zh-CN"), "The default locale always remains available");
+console.log(`i18n runtime: ${count} checks passed`);

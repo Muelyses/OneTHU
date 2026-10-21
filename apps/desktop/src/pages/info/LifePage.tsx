@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 生活聚合页 —— 宿舍（家园网电费 + 清华水站订水）/ 洗衣机 / 卫生成绩 / 校园卡 /
  * 财务组（电子发票 · 银行代发 · 研究生收入）/ 校园网。
@@ -9,13 +11,13 @@
  *
  * 子栏直达（首页入口化）：navigate("life", { lifeTab }) 指定初始 tab（缺省宿舍），
  * 与 InfoPage 的 infoNewsId 同款消费模式（挂载初值 + navParams 身份触发的
- * effect）；页内切换不回写参数。
+ * effect）；页内切换回写到标签 params（标签名随栏目变化）。
  *
  * 栏目管理（tabLayout）：栏目可选择隐藏 + ↑↓ 调序，localStorage 持久化；
  * 当前 tab 被隐藏时回落到第一个可见栏目。
  */
 import { useEffect, useState } from "react";
-import { PageAtomStar } from "../..//components/Collect.js";
+import { RootPageStar } from "../../components/Collect.js";
 import { Empty, PageHead, SegmentedOverflow } from "../../components/Layout.js";
 import { TabManageModal } from "../../components/TabManageModal.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../../lib/tabLayout.js";
@@ -35,20 +37,22 @@ export type LifeTab =
   | "invoice" | "payroll" | "gradincome" | "network";
 
 export const TABS: Array<{ id: LifeTab; label: string }> = [
-  { id: "dorm", label: "宿舍" },
-  { id: "washer", label: "洗衣机" },
-  { id: "hygiene", label: "卫生成绩" },
-  { id: "card", label: "校园卡" },
-  { id: "invoice", label: "电子发票" },
-  { id: "payroll", label: "银行代发" },
-  { id: "gradincome", label: "研究生收入" },
-  { id: "network", label: "校园网" },
+  { id: "dorm", get label() { return i18n("pages.info.lifepage.3a74de9a9014"); } },
+  { id: "washer", get label() { return i18n("pages.info.lifepage.6acfa1db6a62"); } },
+  { id: "hygiene", get label() { return i18n("pages.info.lifepage.41d497d6e07e"); } },
+  { id: "card", get label() { return i18n("pages.info.lifepage.caf1f095b108"); } },
+  { id: "invoice", get label() { return i18n("pages.info.lifepage.92341cf02c56"); } },
+  { id: "payroll", get label() { return i18n("pages.info.lifepage.24be2018df29"); } },
+  { id: "gradincome", get label() { return i18n("pages.info.lifepage.336dbe5fd82f"); } },
+  { id: "network", get label() { return i18n("pages.info.lifepage.dd94488f5269"); } },
 ];
 const TAB_IDS = TABS.map((t) => t.id);
 const DEFAULT_LAYOUT: TabLayout = { order: TAB_IDS, hidden: [] };
 
 export function LifePage() {
-  const { navParams } = useApp();
+  const uiLocale = useUiLocale();
+
+  const { navParams, navigate } = useApp();
   const [tab, setTab] = useState<LifeTab>(() => navParams?.lifeTab ?? "dorm");
   /** 已激活过的 tab 保持挂载：切回即显（数据在 hook 里，无需重复请求） */
   const [visited, setVisited] = useState<ReadonlySet<LifeTab>>(() => new Set([navParams?.lifeTab ?? "dorm"]));
@@ -79,20 +83,24 @@ export function LifePage() {
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
   };
 
+  /* 子栏目回写到标签 params：标签名（生活·宿舍/洗衣机…）与一星原子才随栏目变化 */
+  useEffect(() => {
+    if (!effTab || navParams?.lifeTab === effTab) return;
+    navigate("life", { lifeTab: effTab });
+  }, [effTab, navParams?.lifeTab, navigate]);
+
   return (
     <>
       <PageHead
-        title="生活"
+        title={i18n("pages.info.lifepage.15d208d1b4c9")}
         actions={
           <>
-            <PageAtomStar atomKey={"life-" + (effTab ?? "")} title="生活页 · 当前栏目" />
-            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
-              管理栏目
-            </button>
+            <RootPageStar page="life" title={i18n("pages.info.lifepage.15d208d1b4c9")} />
+            <Btn variant="outline" onClick={() => setManageOpen(true)} titleAttr={i18n("pages.info.lifepage.fa0124c14866")}>{i18n("pages.info.lifepage.12526376d387")}</Btn>
           </>
         }
       />
-      <SegmentedOverflow ariaLabel="生活功能" style={{ marginBottom: 14 }}>
+      <SegmentedOverflow ariaLabel={i18n("pages.info.lifepage.420754341ee2")} style={{ marginBottom: 14 }}>
         {visibleIds.map((id) => (
           <button
             key={id}
@@ -107,7 +115,7 @@ export function LifePage() {
       </SegmentedOverflow>
 
       {effTab === null ? (
-        <Empty text="所有栏目已隐藏，点击右上「管理栏目」恢复。" />
+        <Empty text={i18n("pages.info.lifepage.f221af82663b")} />
       ) : (
         <>
           {/* 模块头由栏目名与各 tab 内部分区标题承担（WasherTab 自带「洗衣机」头） */}
@@ -125,7 +133,7 @@ export function LifePage() {
       <TabManageModal
         open={manageOpen}
         onClose={() => setManageOpen(false)}
-        title="管理生活栏目"
+        title={i18n("pages.info.lifepage.b735bde6b0d7")}
         tabs={TABS}
         layout={layout}
         onApply={applyLayout}

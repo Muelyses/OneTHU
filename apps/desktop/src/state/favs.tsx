@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 用户收藏夹 Context：全局唯一实例 + 即时持久化 + storage 事件跨窗口同步。
  * 所有收藏夹读写都走这里（组件不得直接碰 localStorage）。
@@ -40,6 +41,8 @@ export interface FavsApi {
 const Ctx = createContext<FavsApi | null>(null);
 
 export function FavsProvider({ children }: { children: ReactNode }) {
+  const uiLocale = useUiLocale();
+
   const [data, setData] = useState<FavsData>(() => loadFavs());
 
   // 任何变更即时落盘
@@ -139,7 +142,7 @@ export function FavsProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<FavsApi>(
     () => ({ data, create, remove, rename, toggleAtomIn, addAtom, foldersContaining, hasAtomIn, swap, removeAt, setVariant, foldSidebar, replaceAll, itemsOf, setIcon, moveRoot: moveRootFn }),
-    [data, create, remove, rename, toggleAtomIn, addAtom, foldersContaining, hasAtomIn, swap, removeAt, setVariant, foldSidebar, replaceAll, itemsOf, setIcon, moveRootFn],
+    [uiLocale, data, create, remove, rename, toggleAtomIn, addAtom, foldersContaining, hasAtomIn, swap, removeAt, setVariant, foldSidebar, replaceAll, itemsOf, setIcon, moveRootFn],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

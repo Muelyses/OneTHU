@@ -28,7 +28,10 @@ assert.ok(
   /\/Mac\|iPhone\|iPad\/i\.test\(ua\) \? "⌘K" : "Ctrl K"/.test(pal),
   "快捷键提示要按平台显示（Windows 上印 ⌘K 就是错的）",
 );
-assert.ok(/shortcutLabel/.test(layout), "侧栏入口要用同一份平台提示，别写死");
+/* explorer 壳（2026-10-12 合流更新）：侧栏已退役，命令面板只有键盘唤起 + 面板内 kbd 提示
+   ——平台提示的唯一展示处就是 CommandPalette 自己，护栏改为钉它的定义与使用在同文件。 */
+assert.ok(/export function shortcutLabel/.test(pal) && (pal.match(/shortcutLabel\(\)/g) || []).length >= 1,
+  "命令面板的平台快捷键提示必须用同一份 shortcutLabel，别写死");
 
 // ② 结果同源
 assert.ok(/from "\.\.\/state\/searchAll\.js"/.test(pal), "面板结果要取自 searchAll（与服务页同源）");
@@ -41,8 +44,8 @@ assert.ok(/pageAtomRef\(/.test(pal) && /resolveAtom\(/.test(pal), "功能行要�
 assert.ok(/navigate\(row\.entry\.page, row\.entry\.params\)/.test(pal), "没有同名原子的条目要按注册表的 page/params 跳");
 assert.ok(/requestSettingsTab\(row\.tab\)/.test(pal), "设置页签行要落到对应那一栏，而不是设置首页");
 
-// ④ 入口与挂载
-assert.ok(/openPalette/.test(layout) && /<CommandPalette \/>/.test(layout), "面板要挂在布局顶层，且侧栏要有点击入口");
+// ④ 入口与挂载（explorer 壳：侧栏退役后点击入口取消，键盘 ⌘K + 面板内平台提示自足）
+assert.ok(/<CommandPalette \/>/.test(layout), "面板要挂在布局顶层");
 assert.ok(/\.pal-mask \{ position: fixed/.test(css), "遮罩要 fixed（不被滚动容器裁掉，同 SearchSelect 的教训）");
 assert.ok(/\.pal \{[^}]*max-height: 70vh/s.test(css), "面板自身要能滚动，结果多时不撑破屏幕");
 

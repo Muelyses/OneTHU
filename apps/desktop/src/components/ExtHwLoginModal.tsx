@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 外部作业源「登录雨课堂」通道弹窗（R11 16.3）。
  *
@@ -33,22 +35,22 @@ import {
 /** 退场：内联 animation 覆盖入场（本项目不给内联几何弹层写 CSS 规则） */
 const maskOut: React.CSSProperties = { animation: "m-fade-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
 const panelOut: React.CSSProperties = { animation: "m-pop-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
-const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", padding: "16px 18px" };
+const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "var(--og-scrim)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
+const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 380, maxHeight: "78vh", overflowY: "auto", background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", boxShadow: "var(--og-elev-menu)", padding: "16px 18px" };
 
 type YktChannel = "qr" | "web" | "sms";
 
 /** R17 23.2：短信通道停用说明（与设置页文案一致） */
-const YKT_SMS_DISABLED_NOTE = "雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码。";
+const YKT_SMS_DISABLED_NOTE = () => i18n("components.exthwloginmodal.c7a7c7509a05");
 
 const YKT_CHANNELS: Array<{ key: YktChannel; label: string; hint: string; disabled?: boolean }> = [
-  { key: "qr", label: "微信扫码", hint: "打开微信或雨豆APP 扫描二维码" },
+  { key: "qr", get label() { return i18n("components.exthwloginmodal.78c3c2e4d511"); }, get hint() { return i18n("components.exthwloginmodal.f28740ebbaec"); } },
   // R18b 25.3.2：桌面端原生 WebView 窗口实测卡死，隐藏该入口（二维码在桌面可用）；
   // 仅 Android 应用内全屏 WebView 保留官方网页登录。
   ...(YKT_WEB_LOGIN_AVAILABLE
-    ? [{ key: "web" as const, label: "官方网页登录", hint: "支持扫码 / 手机号 + 图形验证码 + 短信（应用内网页）" }]
+    ? [{ key: "web" as const, get label() { return i18n("components.exthwloginmodal.0a5f3151f8a9"); }, get hint() { return i18n("components.exthwloginmodal.a55cb5714764"); } }]
     : []),
-  { key: "sms", label: "手机验证码", hint: YKT_SMS_DISABLED_NOTE, disabled: true },
+  { key: "sms", get label() { return i18n("components.exthwloginmodal.fe5af3dd75ff"); }, get hint() { return YKT_SMS_DISABLED_NOTE(); }, disabled: true },
 ];
 
 /** 合并写入雨课堂凭据（保留 TUOJ/Tyche 等既有配置）后刷新 */
@@ -64,6 +66,8 @@ export async function saveYuketang(cookie: string): Promise<void> {
 
 /** 雨课堂扫码登录面板（微信 / 雨豆APP）——与设置页共用同一实现 */
 export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string) => void; onCancel: () => void }) {
+  const uiLocale = useUiLocale();
+
   const [qr, setQr] = useState<{ qrContent: string; expireAt: number } | null>(null);
   const [status, setStatus] = useState<"loading" | "waiting" | "expired" | "error">("loading");
   const [err, setErr] = useState<string | null>(null);
@@ -117,7 +121,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
           return;
         }
         setStatus("error");
-        setErr(r.message ?? "登录未完成");
+        setErr(r.message ?? i18n("components.exthwloginmodal.96b3620be2f0"));
       });
     return () => {
       // 卸载 / 刷新 / 取消：中止长轮询 + 停保活，不留悬挂请求与通知
@@ -134,12 +138,12 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
 
   const statusText =
     status === "loading"
-      ? "正在获取二维码…"
+      ? i18n("components.exthwloginmodal.ad5aaf33d6ce")
       : status === "expired"
-        ? "二维码已过期，正在刷新…"
+        ? i18n("components.exthwloginmodal.2246ac32dbba")
         : status === "error"
           ? null
-          : "请用微信或雨豆APP 扫描二维码";
+          : i18n("components.exthwloginmodal.eb13f4204eea");
 
   const hintStyle: React.CSSProperties = {
     fontSize: 12,
@@ -147,7 +151,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
     marginTop: 8,
     padding: "6px 8px",
     borderRadius: 8,
-    background: "rgba(26,111,212,0.08)",
+    background: "var(--og-accent-soft)",
     color: "var(--text-1, #1f2329)",
     textAlign: "left",
   };
@@ -159,7 +163,7 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
         padding: 12,
         border: "1px solid var(--border, #e5e5e5)",
         borderRadius: 10,
-        background: "var(--surface-2, rgba(0,0,0,0.02))",
+        background: "var(--og-surface-2)",
       }}
     >
       <div style={{ textAlign: "center" }}>
@@ -180,35 +184,26 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
               color: "var(--text-2)",
             }}
           >
-            {status === "error" ? "—" : "加载中…"}
+            {status === "error" ? "—" : i18n("components.exthwloginmodal.4927a53bcc88")}
           </div>
         )}
         {statusText ? <div style={{ fontSize: 13, marginTop: 8 }}>{statusText}</div> : null}
         {qr && status === "waiting" ? (
-          <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>二维码约 5 分钟有效，过期自动刷新</div>
+          <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>{i18n("components.exthwloginmodal.7a78a769870e")}</div>
         ) : null}
         {/* R18b 25.3.3：本机扫码会切走 App，MIUI/HyperOS 冻结进程会掐断长轮询导致确认丢失。
             R18c：Android 前台服务保活生效后改为「本机扫码也可用」提示；未生效（非 Android /
             权限被拒）保留「另一台设备」引导。 */}
         {keepAliveOn ? (
-          <div style={hintStyle}>
-            已开启<b>扫码保活</b>：本机扫码也可用（切到微信期间请勿清理通知）。
-          </div>
+          <div style={hintStyle}>{i18n("components.exthwloginmodal.8a4ef3e48e4e")}<b>{i18n("components.exthwloginmodal.9122f70abae5")}</b>{i18n("components.exthwloginmodal.c581f565a259")}</div>
         ) : (
-          <div style={hintStyle}>
-            建议用<b>另一台设备</b>（平板 / 电脑微信）扫码，并<b>保持本页在前台</b>；
-            本机扫码会切走 App，可能被系统冻结导致登录失败。
-          </div>
+          <div style={hintStyle}>{i18n("components.exthwloginmodal.5f3fad354ea2")}<b>{i18n("components.exthwloginmodal.25c27fb1eedc")}</b>{i18n("components.exthwloginmodal.8373be2175f3")}<b>{i18n("components.exthwloginmodal.97528819c903")}</b>{i18n("components.exthwloginmodal.dc98136ba1e9")}</div>
         )}
         {err ? <div style={{ color: "var(--red, #c04848)", fontSize: 12, marginTop: 8 }}>{err}</div> : null}
       </div>
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10 }}>
-        <button className="btn" onClick={() => setNonce((n) => n + 1)}>
-          刷新二维码
-        </button>
-        <button className="btn btn-ghost" onClick={handleCancel}>
-          取消
-        </button>
+        <Btn variant="outline" onClick={() => setNonce((n) => n + 1)}>{i18n("components.exthwloginmodal.20cc23f01ce2")}</Btn>
+        <Btn variant="ghost" onClick={handleCancel}>{i18n("components.exthwloginmodal.2cd0f3be8738")}</Btn>
       </div>
     </div>
   );
@@ -225,6 +220,8 @@ export function YktQrPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string
 let yktWebPanels = 0;
 
 export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: string) => void; onCancel: () => void }) {
+  const uiLocale = useUiLocale();
+
   const [phase, setPhase] = useState<"opening" | "ready" | "reading">("opening");
   const [err, setErr] = useState<string | null>(null);
   // 成功读回后由 onSuccess 关闭本面板；标记避免卸载清理把已关窗口再关一次（幂等，仅省一次调用）
@@ -260,7 +257,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
       .catch((e: unknown) => {
         if (!alive) return;
         setPhase("ready");
-        setErr(`打开登录窗口失败：${e instanceof Error ? e.message : String(e)}`);
+        setErr(i18n("components.exthwloginmodal.d500d53ea60e", { value: String(e instanceof Error ? e.message : String(e)) }));
       });
     return () => {
       alive = false;
@@ -284,7 +281,7 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
       })
       .catch((e: unknown) => {
         setPhase("ready");
-        setErr(`${e instanceof Error ? e.message : String(e)}\n${YKT_WEB_FALLBACK_HINT}`);
+        setErr(`${e instanceof Error ? e.message : String(e)}\n${YKT_WEB_FALLBACK_HINT()}`);
       });
   };
 
@@ -295,30 +292,24 @@ export function YktWebLoginPanel({ onSuccess, onCancel }: { onSuccess: (cookie: 
         padding: 12,
         border: "1px solid var(--border, #e5e5e5)",
         borderRadius: 10,
-        background: "var(--surface-2, rgba(0,0,0,0.02))",
+        background: "var(--og-surface-2)",
       }}
     >
-      <div style={{ fontSize: 13, lineHeight: 1.6 }}>
-        已打开官方登录窗口，请在其中完成<b>微信扫码</b>，或<b>手机号 + 图形验证码 + 短信验证码</b>登录。
-        <br />
-        登录成功后回到本页，点击「我已登录，读取会话」。
-      </div>
+      <div style={{ fontSize: 13, lineHeight: 1.6 }}>{i18n("components.exthwloginmodal.0bcb1544085c")}<b>{i18n("components.exthwloginmodal.78c3c2e4d511")}</b>{i18n("components.exthwloginmodal.b6317a47633c")}<b>{i18n("components.exthwloginmodal.3161f2096285")}</b>{i18n("components.exthwloginmodal.ba36bea2e130")}<br />{i18n("components.exthwloginmodal.e84563c59584")}</div>
       {err ? (
         <div style={{ color: "var(--red, #c04848)", fontSize: 12, marginTop: 8, whiteSpace: "pre-wrap" }}>{err}</div>
       ) : null}
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 10, flexWrap: "wrap" }}>
-        <button className="btn btn-primary" disabled={phase === "reading"} onClick={read}>
-          {phase === "reading" ? "读取中…" : "我已登录，读取登录信息"}
-        </button>
-        <button className="btn btn-ghost" onClick={onCancel}>
-          取消
-        </button>
+        <Btn variant="solid" tone="brand" disabled={phase === "reading"} onClick={read}>{phase === "reading" ? i18n("components.exthwloginmodal.346ff60e6c7c") : i18n("components.exthwloginmodal.81c3e95469e8")}</Btn>
+        <Btn variant="ghost" onClick={onCancel}>{i18n("components.exthwloginmodal.2cd0f3be8738")}</Btn>
       </div>
     </div>
   );
 }
 
 export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const uiLocale = useUiLocale();
+
   const [channel, setChannel] = useState<YktChannel>("qr");
   const [closing, requestClose] = useExitPhase(onClose, open);
   if (!open) return null;
@@ -327,9 +318,9 @@ export function ExtHwLoginModal({ open, onClose }: { open: boolean; onClose: () 
     <div style={closing ? { ...maskStyle, ...maskOut } : maskStyle} onClick={requestClose}>
       <div style={closing ? { ...panelStyle, ...panelOut } : panelStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-          <b>登录雨课堂</b>
+          <b>{i18n("components.exthwloginmodal.da697122c040")}</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={requestClose}>✕</button>
+          <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10 }}>

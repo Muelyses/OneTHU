@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 通知与小组件自检（编排可测，副作用全部注入）。
  *
@@ -59,33 +60,33 @@ export async function runNotifyDoctor(deps: NotifyDoctorDeps): Promise<DoctorRep
     const warned = steps.filter((s) => s.status === "warn").length;
     const ok = failed === 0;
     const summary = ok
-      ? `自检通过：${steps.length} 项${warned ? `（${warned} 项提示）` : ""}`
-      : `自检失败：${failed} 项不通过${warned ? `、${warned} 项提示` : ""}——见下方第一处「不通过」`;
+      ? i18n("state.notifydoctor.c273c2086a0d", { length: String(steps.length), value: String(warned ? i18n("state.notifydoctor.6726f815e5dd", { warned: String(warned) }) : "") })
+      : i18n("state.notifydoctor.7941c9adf8cc", { failed: String(failed), value: String(warned ? i18n("state.notifydoctor.91e36d30a350", { warned: String(warned) }) : "") });
     return { ok, steps, summary };
   };
 
   /* ① 平台后端 */
   const st = await deps.status(false);
   if (!st.backend || st.backend === "none") {
-    push("backend", "平台后端", "fail", "本平台没有通知后端，提醒不会发出（桌面端 Linux 等未接入平台属正常）");
+    push("backend", i18n("state.notifydoctor.3712f8280c0c"), "fail", i18n("state.notifydoctor.42ab62b890f5"));
     return finish();
   }
-  push("backend", "平台后端", "ok", st.backend);
+  push("backend", i18n("state.notifydoctor.3712f8280c0c"), "ok", st.backend);
 
   /* ② 授权 */
   if (!st.granted) {
-    push("permission", "通知授权", "fail", "未授权：提醒发不出去。请在系统设置里为本应用打开通知权限，然后重新自检");
+    push("permission", i18n("state.notifydoctor.6dfd9883ec6d"), "fail", i18n("state.notifydoctor.d9540c4fcc17"));
     return finish();
   }
-  push("permission", "通知授权", "ok", "已授权");
+  push("permission", i18n("state.notifydoctor.6dfd9883ec6d"), "ok", i18n("state.notifydoctor.521e65ffc7d0"));
 
   /* ③ 精确提醒（仅 Android 有此概念） */
   if (st.backend === "android") {
     push(
       "exact",
-      "精确提醒",
+      i18n("state.notifydoctor.89f5f5eed848"),
       st.exact ? "ok" : "warn",
-      st.exact ? "已允许精确提醒" : "未允许：系统可能延迟几分钟投递（不会丢）。可在系统设置「闹钟与提醒」里允许",
+      st.exact ? i18n("state.notifydoctor.cafc3774b86b") : i18n("state.notifydoctor.c8b5af17e6d2"),
     );
   }
 
@@ -95,23 +96,23 @@ export async function runNotifyDoctor(deps: NotifyDoctorDeps): Promise<DoctorRep
     if (ws) {
       const placed = ws.hostPlaced + Object.values(ws.slotsPlaced).reduce((a, b) => a + b, 0);
       const slotInfo = Object.entries(ws.slotsPlaced)
-        .map(([k, v]) => `槽位${k}:${v}`)
+        .map(([k, v]) => i18n("state.notifydoctor.60d7f4ea2680", { k: String(k), v: String(v) }))
         .join(" ");
-      const titles = Object.entries(ws.slotTitles).map(([k, t]) => `可自选尺寸${k}=${t}`).join("；");
+      const titles = Object.entries(ws.slotTitles).map(([k, t]) => i18n("state.notifydoctor.5e0a3ee20f6b", { k: String(k), t: String(t) })).join("；");
       const providerInfo =
         ws.providersRegistered.length === 0
-          ? "系统没有读到任何小组件尺寸（清单合并可能没生效，请把这条反馈给开发者）"
-          : `系统读到 ${ws.providersRegistered.length} 个小组件尺寸（${ws.providersRegistered.join("、")}）`;
+          ? i18n("state.notifydoctor.f8cd5feb5360")
+          : i18n("state.notifydoctor.76e3238d6fee", { length: String(ws.providersRegistered.length), value: String(ws.providersRegistered.join("、")) });
       const widgetStatus: DoctorStep["status"] = ws.providersRegistered.length === 0 ? "fail" : ws.hasSnapshot ? "ok" : "warn";
       push(
         "widget",
-        "小组件",
+        i18n("state.notifydoctor.e8898c88f026"),
         widgetStatus,
         [
           providerInfo,
-          ws.hasSnapshot ? `快照已于 ${fmtTime(ws.snapshotAt)} 生成` : "还没有快照（打开应用并刷新一次数据即可生成）",
-          placed > 0 ? `桌面已放 ${placed} 个（宿主 ${ws.hostPlaced}）${slotInfo}` : "桌面尚未放置任何小组件",
-          titles || "（当前无插件占用槽位）",
+          ws.hasSnapshot ? i18n("state.notifydoctor.f1e21a111247", { value: String(fmtTime(ws.snapshotAt)) }) : i18n("state.notifydoctor.0b1efad5cf18"),
+          placed > 0 ? i18n("state.notifydoctor.962a6e0b8f61", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n("state.notifydoctor.f088b81ae9c7"),
+          titles || i18n("state.notifydoctor.a7320eda2464"),
         ].join("；"),
       );
     }
@@ -123,33 +124,33 @@ export async function runNotifyDoctor(deps: NotifyDoctorDeps): Promise<DoctorRep
     const r = await deps.scheduleProbe({
       id: DOCTOR_PROBE_ID,
       at: now + PROBE_LEAD_MS,
-      title: "OneTHU 自检探针",
+      title: i18n("state.notifydoctor.3d485e1438c5"),
       body: "这条是自检写入的探针，稍后会被撤销。",
     });
     probeScheduled = r.ok;
     if (!r.ok) {
-      push("schedule", "排程写入", "fail", `原生拒绝了排程：${r.reason ?? "未知原因"}`);
+      push("schedule", i18n("state.notifydoctor.34fa93f1c10b"), "fail", i18n("state.notifydoctor.18be67a09527", { value: String(r.reason ?? i18n("state.notifydoctor.a1a9da9ee6ed")) }));
     } else {
       const ids = await deps.pending().catch(() => [] as string[]);
       const seen = ids.includes(DOCTOR_PROBE_ID);
       push(
         "schedule",
-        "排程写入",
+        i18n("state.notifydoctor.34fa93f1c10b"),
         seen ? "ok" : "warn",
-        seen ? "已写入系统调度并可回读" : "写入成功，但系统待投递列表里读不到（可能被系统限流或立即触发）",
+        seen ? i18n("state.notifydoctor.09acfa2e9fc5") : i18n("state.notifydoctor.3644e9a2e134"),
       );
     }
   } catch (e) {
-    push("schedule", "排程写入", "fail", `排程调用异常：${String(e).slice(0, 100)}`);
+    push("schedule", i18n("state.notifydoctor.34fa93f1c10b"), "fail", i18n("state.notifydoctor.b28333fd00e3", { value: String(String(e).slice(0, 100)) }));
   } finally {
     // 无论成败都撤掉探针，不给用户留垃圾通知
     await deps.cancel([DOCTOR_PROBE_ID]).catch(() => undefined);
-    push("cleanup", "探针清理", "ok", probeScheduled ? "已撤销探针" : "无探针需要撤销");
+    push("cleanup", i18n("state.notifydoctor.b1a8b45ace8b"), "ok", probeScheduled ? i18n("state.notifydoctor.ad16c86b6da1") : i18n("state.notifydoctor.0c9fc2c91156"));
   }
 
   /* ⑥ 真实投递（会弹一条通知，放最后） */
   const sent = await deps.testSend().catch(() => false);
-  push("deliver", "投递测试", sent ? "ok" : "fail", sent ? "已发出测试通知——若没看到，检查系统「勿扰」或通知分组" : "投递被拒绝（见上一步与权限状态）");
+  push("deliver", i18n("state.notifydoctor.a14a16f450ae"), sent ? "ok" : "fail", sent ? i18n("state.notifydoctor.58f371818c4f") : i18n("state.notifydoctor.3edfd112e604"));
 
   return finish();
 }

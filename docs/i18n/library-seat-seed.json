@@ -1,0 +1,16 @@
+{
+  "messages": {
+    "library.session.recoveryFailed": {
+      "zh-CN": "图书馆登录状态未能恢复，请先重试；若仍失败，请在设置中重新登录",
+      "en-US": "Your library session could not be restored. Try again; if it still fails, sign in again in Settings."
+    },
+    "library.session.unavailable": {
+      "zh-CN": "暂时无法连接图书馆账号，请重试；若仍失败，请在设置中重新登录",
+      "en-US": "Your library account could not be connected. Try again; if it still fails, sign in again in Settings."
+    },
+    "library.session.expired": {
+      "zh-CN": "图书馆登录状态已失效，请重试",
+      "en-US": "Your library session has expired. Please try again."
+    }
+  }
+}

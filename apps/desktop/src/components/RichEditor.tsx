@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -38,6 +39,8 @@ export function RichEditor(props: {
   placeholder?: string;
   maxHeight?: number;
 }) {
+  const uiLocale = useUiLocale();
+
   return (
     <div className="rich-editor" style={{ maxHeight: props.maxHeight ?? 320, overflowY: "auto" }}>
       <ReactQuill
@@ -46,7 +49,7 @@ export function RichEditor(props: {
         onChange={props.onChange}
         modules={MODULES}
         formats={FORMATS}
-        placeholder={props.placeholder ?? "输入正文，支持格式与图片"}
+        placeholder={props.placeholder ?? i18n("components.richeditor.64816f04e3d4")}
       />
     </div>
   );

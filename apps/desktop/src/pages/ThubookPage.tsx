@@ -1,49 +1,21 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { Input } from "@onethu/gui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { stripInlineColors } from "../lib/htmlTheme.js";
+import { sanitizeDisplayHtml } from "../lib/safeHtml.js";
 import type { ReactNode } from "react";
 import { Card, PageHead } from "../components/Layout.js";
 import { universalFetch } from "../lib/transport.js";
 import { ErrorLine } from "../components/Details.js";
+import { normalizeThubookPath, parseThubookToc, type ThubookGroup, type ThubookPageLink } from "../lib/thubookToc.js";
 
-/** THUbook（thubook.help，VuePress 2 预渲染静态站）内嵌阅读器。
+/** THUBook（thubook.help，VuePress 2 预渲染静态站）内嵌阅读器。
  *  目录 = 抓各分组页预渲染侧边栏（带汉字标题，sitemap 只有拼音文件名）；
  *  正文 = <main> 提取（剔除 icon/svg 壳层、图片补全域名+限高）；
  *  x-frame-options: DENY → 不能 iframe。 */
 
 const BASE = "https://thubook.help";
 const CACHE = new Map<string, { title: string; html: string }>();
-
-interface TocGroup {
-  label: string;
-  path: string;
-  children: Array<{ label: string; path: string }>;
-}
-
-/** 从预渲染 HTML 抽侧边栏目录（组级链接 + 各组子链接，全部带汉字） */
-function extractSidebar(html: string): { title: string; groups: TocGroup[] } {
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  const title: string = doc.querySelector("title")?.textContent?.trim()?.replace(/ - .*/, "") ?? "";
-  const groups: TocGroup[] = [];
-  const seenGroup = new Set<string>();
-  doc.querySelectorAll(".sidebar-links > .sidebar-link, .sidebar > .sidebar-links > div > a").forEach((a) => {
-    const href = a.getAttribute("href")?.split("#")[0];
-    const label = a.textContent?.trim();
-    if (!href || !label || seenGroup.has(href)) return;
-    seenGroup.add(href);
-    groups.push({ label, path: href, children: [] });
-  });
-  // 组内子页：sidebar-sub-headers 前的分组区块各自配对太脆——直接全站 a 去重兜底
-  if (!groups.length) {
-    doc.querySelectorAll(".sidebar a[href^='/thubook/']").forEach((a) => {
-      const href = a.getAttribute("href")?.split("#")[0];
-      const label = a.textContent?.trim();
-      if (!href || !label || seenGroup.has(href)) return;
-      seenGroup.add(href);
-      groups.push({ label, path: href, children: [] });
-    });
-  }
-  return { title, groups };
-}
 
 /** 正文提取：main 优先；剔除 script/style/icon/svg/导航壳；img 补域名+限高；链接改绝对 */
 function extractMain(html: string): { title: string; html: string } {
@@ -64,12 +36,7 @@ function extractMain(html: string): { title: string; html: string } {
   const title = doc.querySelector("title")?.textContent?.trim() ?? "";
   // 源站正文带行内颜色会压过主题令牌（深色主题下正文仍是黑字，用户实录 2026-09-20）
   // → 出解析时就去色，正文颜色一律由 .thubook-body 继承主题令牌
-  return { title, html: stripInlineColors(main?.innerHTML ?? "") };
-}
-
-function groupOf(path: string): string {
-  const parts = decodeURIComponent(path).replace(/\.html$/, "").split("/").filter(Boolean);
-  return parts.length >= 2 ? (parts[parts.length - 2] as string) : "";
+  return { title, html: sanitizeDisplayHtml(stripInlineColors(main?.innerHTML ?? "")) };
 }
 
 const BODY_STYLE = `
@@ -90,6 +57,14 @@ const BODY_STYLE = `
 .thubook-body blockquote { border-left: 3px solid var(--border, #e5e6eb); margin: .8em 0; padding: .2em 1em; color: var(--text-2, #555); }
 .thubook-body img { max-width: min(100%, 480px); max-height: 320px; height: auto; border-radius: 8px; display: block; margin: .6em 0; }
 .thubook-body hr { border: none; border-top: 1px solid var(--border, #e5e6eb); margin: 1.2em 0; }
+
+.thubook-toc-list { display: grid; gap: 2px; }
+.thubook-toc-page { display: block; width: 100%; text-align: left; font: inherit; font-size: 12.5px; padding: 6px 8px; border-radius: 7px; border: none; cursor: pointer; background: transparent; color: var(--text-2); }
+.thubook-toc-page:hover { background: var(--surface-3); }
+.thubook-toc-page.is-active { background: var(--og-accent); color: var(--og-accent-on); }
+.thubook-toc-page.is-child { padding-left: 20px; }
+.thubook-toc-group { margin-top: 8px; }
+.thubook-toc-group-label { font-size: 11.5px; font-weight: 700; letter-spacing: .02em; color: var(--og-content-2); padding: 6px 8px 3px; border-top: 1px solid var(--border); }
 @media (max-width: 839.98px) {
   .thubook-shell { grid-template-columns: 1fr !important; height: auto !important; }
   .thubook-toc { max-height: 180px; }
@@ -97,7 +72,10 @@ const BODY_STYLE = `
 `;
 
 export default function ThubookPage(): ReactNode {
-  const [groups, setGroups] = useState<TocGroup[]>([]);
+  const uiLocale = useUiLocale();
+
+  const [tocPages, setTocPages] = useState<ThubookPageLink[]>([]);
+  const [tocGroups, setTocGroups] = useState<ThubookGroup[]>([]);
   const [current, setCurrent] = useState<string>("/thubook/");
   const [page, setPage] = useState<{ title: string; html: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -106,51 +84,22 @@ export default function ThubookPage(): ReactNode {
   const [q, setQ] = useState("");
   const bodyRef = useRef<HTMLDivElement | null>(null);
 
-  // 目录：抓首页侧边栏（组级）→ 并发抓各组页侧边栏合并子页（限 6 路）
+  // 目录：首页 navbar 的 dropdown 已含完整两级目录（根页 + 四个分组的全部页面），
+  // 一次请求取全；不再逐组抓页面合并（那会把整站侧边栏塞进每个组 → 重复/扁平）。
   useEffect(() => {
     void (async () => {
       try {
         const home = await universalFetch(`${BASE}/thubook/`);
+        if (!home.ok) throw new Error(i18n("pages.thubookpage.5bdcbd092642", { status: String(home.status) }));
         const homeText = await home.text();
-        if (!home.ok) throw new Error(`手册页暂时打不开，请稍后再试：HTTP ${home.status}`);
-        const homeExt = extractSidebar(homeText);
-        const top = homeExt.groups.length ? homeExt.groups : [{ label: "手册首页", path: "/thubook/", children: [] }];
-        const cache: Map<string, { title: string; html: string }> = new Map();
-        cache.set("/thubook/", extractMain(homeText));
-        const results: TocGroup[] = [...top];
-        let idx = 0;
-        const workers = Array.from({ length: Math.min(6, top.length) }, async () => {
-          while (idx < top.length) {
-            const g = top[idx++] as TocGroup;
-            if (CACHE.has(g.path)) cache.set(g.path, CACHE.get(g.path)!);
-            else {
-              try {
-                const res = await universalFetch(`${BASE}${g.path}`);
-                if (!res.ok) continue;
-                const text = await res.text();
-                cache.set(g.path, extractMain(text));
-                const sub = extractSidebar(text);
-                const kids: Array<{ label: string; path: string }> = [];
-                const seen = new Set<string>([g.path]);
-                for (const s of sub.groups) {
-                  if (seen.has(s.path)) continue;
-                  seen.add(s.path);
-                  kids.push({ label: s.label, path: s.path });
-                }
-                results[results.findIndex((r) => r.path === g.path)] = { ...g, children: kids };
-              } catch {
-                /* 单组失败不影响其他组 */
-              }
-            }
-          }
-        });
-        await Promise.all(workers);
-        for (const [k, v] of cache) CACHE.set(k, v);
-        setGroups(results);
-        const home2 = CACHE.get("/thubook/");
-        if (home2) setPage(home2);
+        const toc = parseThubookToc(homeText);
+        setTocPages(toc.pages);
+        setTocGroups(toc.groups);
+        const ext = extractMain(homeText);
+        CACHE.set("/thubook/", ext);
+        setPage(ext);
       } catch (e) {
-        setErr(`目录加载失败：${e instanceof Error ? e.message : String(e)}（检查网络）`);
+        setErr(i18n("pages.thubookpage.2958a7f94d7e", { value: String(e instanceof Error ? e.message : String(e)) }));
       } finally {
         setTocLoading(false);
       }
@@ -160,7 +109,7 @@ export default function ThubookPage(): ReactNode {
   const load = useCallback(async (rawPath: string): Promise<void> => {
     // 规范化（服务器语义实测 2026-09-19）：/thubook/xxx.html → 308，/thubook/xxx → 200，
     // /thubook/xxx/ → 308——统一剥 .html 后缀即可；目录根 /thubook/ 保持原样。
-    const path = rawPath.replace(/\.html$/i, "");
+    const path = normalizeThubookPath(rawPath) ?? "/thubook/";
     const hit = CACHE.get(path);
     if (hit) {
       setCurrent(path);
@@ -170,14 +119,14 @@ export default function ThubookPage(): ReactNode {
     setLoading(true);
     setErr("");
     try {
-      const res = await universalFetch(`${BASE}${path}`);
-      if (!res.ok) throw new Error(`手册页暂时打不开，请稍后再试：HTTP ${res.status}`);
+      const res = await universalFetch(new URL(path, BASE).href);
+      if (!res.ok) throw new Error(i18n("pages.thubookpage.5bdcbd092642", { status: String(res.status) }));
       const ext = extractMain(await res.text());
       CACHE.set(path, ext);
       setCurrent(path);
       setPage(ext);
     } catch (e) {
-      setErr(`页面加载失败：${e instanceof Error ? e.message : String(e)}`);
+      setErr(i18n("pages.thubookpage.e8540f108cac", { value: String(e instanceof Error ? e.message : String(e)) }));
     } finally {
       setLoading(false);
     }
@@ -193,9 +142,9 @@ export default function ThubookPage(): ReactNode {
       if (!a || !href) return;
       ev.preventDefault();
       if (href.startsWith(`${BASE}/`)) {
-        void load(href.slice(BASE.length).split("#")[0] || "/thubook/");
+        void load(href);
       } else if (href.startsWith("/") && !href.startsWith("//")) {
-        void load(href.split("#")[0] || "/thubook/");
+        void load(href);
       } else if (/^https?:\/\//.test(href)) {
         void import("@tauri-apps/plugin-opener").then((m) => m.openUrl(href)).catch(() => undefined);
       }
@@ -204,77 +153,64 @@ export default function ThubookPage(): ReactNode {
     return () => el.removeEventListener("click", onClick);
   }, [page, load]);
 
-  const qLower = q.toLowerCase();
-  const visible = useMemo(
-    () =>
-      groups
-        .map((g) => {
-          const kids = qLower ? g.children.filter((c) => c.label.toLowerCase().includes(qLower) || groupOf(c.path).includes(qLower)) : g.children;
-          const selfHit = !qLower || g.label.toLowerCase().includes(qLower) || kids.length > 0;
-          return selfHit ? { ...g, children: kids } : null;
-        })
-        .filter((g): g is TocGroup => g !== null),
-    [groups, qLower],
-  );
+  const qLower = q.trim().toLowerCase();
+  const visible = useMemo(() => {
+    const hit = (x: ThubookPageLink): boolean => !qLower || x.label.toLowerCase().includes(qLower) || x.path.toLowerCase().includes(qLower);
+    const pages = tocPages.filter(hit);
+    const groups = tocGroups
+      .map((g) => {
+        const labelHit = Boolean(qLower) && g.label.toLowerCase().includes(qLower);
+        const items = labelHit ? g.items : g.items.filter(hit);
+        return { label: g.label, items, keep: !qLower || labelHit || items.length > 0 };
+      })
+      .filter((g) => g.keep);
+    return { pages, groups };
+  }, [uiLocale, tocPages, tocGroups, qLower]);
+  const total = tocPages.length + tocGroups.reduce((n, g) => n + g.items.length, 0);
 
   return (
     <>
-      <PageHead title="THUbook" meta="清华手册 · thubook.help" />
+      <PageHead title="THUBook" meta={i18n("pages.thubookpage.c982f207f09f") + (total ? " · " + String(total) + i18n("pages.thubookpage.78548675f31a") : "")} />
       <style>{BODY_STYLE}</style>
       <div className="thubook-shell" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 10, height: "calc(100vh - 150px)" }}>
         <Card className="thubook-toc" style={{ overflowY: "auto", padding: 10 }}>
-          <input
-            className="input"
-            placeholder="搜索手册…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            style={{ width: "100%", marginBottom: 8, fontSize: 12.5 }}
-          />
-          {tocLoading ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>目录加载中…</div> : null}
-          <div style={{ display: "grid", gap: 2 }}>
-            {visible.map((g) => {
-              return (
-                <div key={g.path}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <button
-                      onClick={() => void load(g.path)}
-                      style={{
-                        flex: 1, textAlign: "left", fontSize: 13, fontWeight: 700, padding: "7px 8px", borderRadius: 7,
-                        border: "none", cursor: "pointer", background: current === g.path ? "var(--accent, #6d7ff0)" : "transparent",
-                        color: current === g.path ? "#fff" : "var(--text-1, #1f2329)",
-                      }}
-                    >
-                      {g.label}
-                    </button>
-                  </div>
-                  {g.children.map((c) => (
-                        <button
-                          key={c.path}
-                          onClick={() => void load(c.path)}
-                          style={{
-                            display: "block", width: "100%", textAlign: "left", fontSize: 12.5, padding: "5px 8px 5px 20px",
-                            borderRadius: 7, border: "none", cursor: "pointer",
-                            background: current === c.path ? "var(--accent, #6d7ff0)" : "transparent",
-                            color: current === c.path ? "#fff" : "var(--text-2, #555)",
-                          }}
-                        >
-                          {c.label}
-                        </button>
-                      ))}
-                </div>
-              );
-            })}
-            {!tocLoading && !visible.length ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>无匹配</div> : null}
+          <div style={{ width: "100%", marginBottom: 8, fontSize: 12.5 }}>{<Input placeholder={i18n("pages.thubookpage.49505a8ee266")} value={q} onChange={(value) => setQ(value)} />}</div>
+          {tocLoading ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.c6d508cdf07d")}</div> : null}
+          <div className="thubook-toc-list">
+            {visible.pages.map((p) => (
+              <button
+                key={p.path}
+                className={"thubook-toc-page" + (current === p.path ? " is-active" : "")}
+                onClick={() => void load(p.path)}
+              >
+                {p.label}
+              </button>
+            ))}
+            {visible.groups.map((g) => (
+              <div key={g.label} className="thubook-toc-group">
+                <div className="thubook-toc-group-label">{g.label}</div>
+                {g.items.map((c) => (
+                  <button
+                    key={c.path}
+                    className={"thubook-toc-page is-child" + (current === c.path ? " is-active" : "")}
+                    onClick={() => void load(c.path)}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            ))}
+            {!tocLoading && !visible.pages.length && !visible.groups.length ? <div style={{ fontSize: 12, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.7a54f3fc4716")}</div> : null}
           </div>
         </Card>
         <Card style={{ overflowY: "auto", padding: "16px 22px" }}>
           {err ? (
-            <ErrorLine text={err} style={{ color: "#e5484d", fontSize: 13, marginBottom: 10 }} />
+            <ErrorLine text={err} style={{ fontSize: 13, marginBottom: 10 }} />
           ) : null}
-          {loading ? <div style={{ fontSize: 12.5, color: "var(--text-3, #999)" }}>加载中…</div> : null}
+          {loading ? <div style={{ fontSize: 12.5, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.4927a53bcc88")}</div> : null}
           {/* 正文：站点预渲染 HTML 注入（script/icon/svg 已剔除，图片补全域名+限高） */}
           <div className="thubook-body" ref={bodyRef} dangerouslySetInnerHTML={{ __html: page?.html ?? "" }} />
-          {!page && !loading && !err ? <div style={{ fontSize: 13, color: "var(--text-3, #999)" }}>左侧选择一页开始阅读</div> : null}
+          {!page && !loading && !err ? <div style={{ fontSize: 13, color: "var(--text-3, #999)" }}>{i18n("pages.thubookpage.281cf61ea21e")}</div> : null}
         </Card>
       </div>
     </>

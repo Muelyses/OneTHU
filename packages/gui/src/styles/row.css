@@ -1,0 +1,188 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 行与列表（List / Row）
+ *
+ * 全站唯一"一行东西"的模型：左件（图标/头像）+ 主列（标题/副题/元信息）+ 右件（动作/箭头）。
+ * 邮箱行、云盘文件行、作业行、设置行、通知行、插件行 —— 全是同一个 Row，只换槽位内容。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.og-list {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.og-list--gap-1 { gap: var(--og-space-1); }
+.og-list--gap-2 { gap: var(--og-space-2); }
+.og-list--gap-3 { gap: var(--og-space-3); }
+
+.og-list--divided > .og-row + .og-row {
+  border-top: 1px solid var(--og-line-1);
+}
+
+.og-list--flush > .og-row {
+  border-radius: var(--og-space-0);
+}
+
+/* ── 行 ── */
+.og-row {
+  --og-c-row-h: var(--og-row-h);
+  --og-c-row-pad-x: var(--og-row-pad-x);
+  --og-c-row-pad-y: var(--og-space-2);
+  --og-c-row-radius: var(--og-radius-md);
+  --og-c-row-gap: var(--og-space-3);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--og-c-row-gap);
+  min-height: var(--og-c-row-h);
+  padding: var(--og-c-row-pad-y) var(--og-c-row-pad-x);
+  border-radius: var(--og-c-row-radius);
+  color: var(--og-content-1);
+  text-align: left;
+  text-decoration: none;
+  background: transparent;
+  transition:
+    background-color var(--og-dur-1) var(--og-ease-standard),
+    border-color var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-row--sm { --og-c-row-h: calc(var(--og-row-h) - var(--og-space-1)); --og-c-row-pad-y: var(--og-space-1); }
+.og-row--lg { --og-c-row-h: calc(var(--og-row-h) + var(--og-space-2)); --og-c-row-pad-y: var(--og-space-3); }
+.og-row--flush { --og-c-row-radius: var(--og-radius-lg); --og-c-row-pad-x: var(--og-card-pad); }
+.og-row--compact { --og-c-row-gap: var(--og-space-2); }
+
+.og-row--interactive {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  .og-row--interactive:hover { background: var(--og-hover); }
+}
+
+.og-row--interactive:active { background: var(--og-press); }
+
+.og-row.is-selected {
+  background: var(--og-selected);
+}
+
+.og-row.is-disabled {
+  opacity: var(--og-disabled-opacity);
+  pointer-events: none;
+}
+
+.og-row.is-active {
+  background: var(--og-accent-soft);
+}
+
+/* 左件：图标/头像/表情/复选框，统一盒子，宽度对齐（一屏内所有行左边界必须齐） */
+.og-row-leading {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-icon-xl);
+  height: var(--og-icon-xl);
+  color: var(--og-content-2);
+}
+
+.og-row-leading--wide {
+  width: auto;
+  min-width: var(--og-icon-xl);
+}
+
+.og-row-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-0);
+}
+
+.og-row-line {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  min-width: 0;
+}
+
+.og-row-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: var(--og-text-body);
+  line-height: var(--og-text-body-lh);
+  font-weight: var(--og-weight-medium);
+  color: var(--og-content-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.og-row-sub {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.og-row-trailing {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  color: var(--og-content-3);
+  font-size: var(--og-text-label);
+}
+
+.og-row-caret {
+  flex: 0 0 auto;
+  color: var(--og-content-3);
+  transition: transform var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-row.is-open .og-row-caret { transform: rotate(90deg); }
+
+/* 行内嵌套的行（详情页里的一层） */
+.og-row--nested {
+  padding-inline: var(--og-card-pad);
+  border-radius: var(--og-space-0);
+}
+
+/* 空态底座 */
+.og-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-2);
+  padding: var(--og-space-7) var(--og-space-4);
+  text-align: center;
+  color: var(--og-content-3);
+}
+
+.og-empty-icon {
+  color: var(--og-content-3);
+  opacity: 0.7;
+}
+
+.og-empty-title {
+  font-size: var(--og-text-subtitle);
+  font-weight: var(--og-weight-semibold);
+  color: var(--og-content-1);
+}
+
+.og-empty-hint {
+  font-size: var(--og-text-label);
+  color: var(--og-content-3);
+  max-width: 42ch;
+}
+
+.og-empty-action {
+  margin-top: var(--og-space-2);
+}

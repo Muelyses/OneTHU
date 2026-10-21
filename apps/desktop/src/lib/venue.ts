@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 体育场馆系统（sports.tsinghua.edu.cn）桌面装配：
  * - VenueClient + token 生命周期（localStorage 持久化 + JWT exp 校验）
@@ -33,7 +34,7 @@ venueClient.setToken(readStoredToken());
 export class VenueTwoFactorRequired extends Error {
   methods: TwoFactorMethod[];
   constructor(methods: TwoFactorMethod[]) {
-    super("该账号需要二次认证");
+    super(i18n("lib.venue.9ae22ae4d71c"));
     this.name = "VenueTwoFactorRequired";
     this.methods = methods;
   }
@@ -161,7 +162,7 @@ async function casFormRelogin(): Promise<void> {
   const remembered = await loadRemembered();
   const username = session.username;
   if (!username || !remembered?.password) {
-    throw new VenueAuthRequiredError("本机无记住的统一身份凭证");
+    throw new VenueAuthRequiredError(i18n("lib.venue.7f658db5a72c"));
   }
   const ID = "https://id.tsinghua.edu.cn";
   const pickUni = (src: string): string | null => /[?&]uniToken=([^&\s"'<>]+)/.exec(src)?.[1] ?? null;
@@ -243,7 +244,7 @@ async function casFormRelogin(): Promise<void> {
   await logLine(`[VENUE-SSO] 表单到手 final=${finalUrl.slice(0, 160)} sm2=${/sm2publicKey/.test(formHtml)}`);
   if (!/sm2publicKey/.test(formHtml)) {
     await logLine(`[VENUE-SSO] 链尾非表单 final=${finalUrl.slice(0, 200)} body=${formHtml.slice(0, 160).replace(/\s+/g, " ")}`);
-    throw new VenueAuthRequiredError("CAS 链尾不是登录表单");
+    throw new VenueAuthRequiredError(i18n("lib.venue.85e08a6d9846"));
   }
   const form = core.parseCasFormHtml(formHtml, false);
   const enc = core.sm2crypto.encryptPassword(remembered.password, form.publicKey);
@@ -342,11 +343,11 @@ export async function venueSubmit2FA(type: string, code: string): Promise<boolea
   try {
     json = JSON.parse(text);
   } catch {
-    throw new VenueApiError("二次认证接口返回异常", "2FA");
+    throw new VenueApiError(i18n("lib.venue.93692dc0f921"), "2FA");
   }
-  if (json.result !== "success") throw new VenueApiError(json.msg ?? "验证码错误或已过期", "2FA");
+  if (json.result !== "success") throw new VenueApiError(json.msg ?? i18n("lib.venue.62fb79046777"), "2FA");
   const redirectUrl = json.object?.redirectUrl;
-  if (!redirectUrl) throw new VenueApiError("二次认证未返回跳转地址", "2FA");
+  if (!redirectUrl) throw new VenueApiError(i18n("lib.venue.cb8fdb80eef2"), "2FA");
   const html = await http.text(redirectUrl.startsWith("http") ? redirectUrl : ID + redirectUrl, { direct: true });
   if (!html.includes("登录成功")) throw new VenueApiError(extractCasReason(html), "2FA");
   const anchor = /<a[^>]+href="([^"]+)"/i.exec(html)?.[1];

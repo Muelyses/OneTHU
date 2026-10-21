@@ -1,0 +1,17 @@
+{
+  "comment": "护栏用的 NAV 替身（一级页顺序与 components/Layout.tsx 的 NAV 同形；清小搭在第 9 位＝前八颗默认球之外）",
+  "pages": [
+    { "page": "tasks", "label": "待办" },
+    { "page": "learn", "label": "课程" },
+    { "page": "schedule", "label": "日程" },
+    { "page": "trace", "label": "寻迹" },
+    { "page": "mail", "label": "邮箱" },
+    { "page": "cloud", "label": "云盘" },
+    { "page": "gitlab", "label": "GitLab" },
+    { "page": "thubook", "label": "THUBook" },
+    { "page": "xiaoda", "label": "清小搭" },
+    { "page": "info", "label": "信息" },
+    { "page": "life", "label": "生活" },
+    { "page": "reserve", "label": "预约" }
+  ]
+}

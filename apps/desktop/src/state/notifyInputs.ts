@@ -71,8 +71,11 @@ function collectCalendarEvents(now: number): PlanEventEntry[] {
       summary: occ.summary,
       location: occ.location ?? null,
       start: occ.start,
+      end: occ.end,
       allDay: occ.allDay === true,
       alarmMinutes: typeof src?.alarmMinutes === "number" ? src.alarmMinutes : null,
+      // 「在桌面小组件显示」是事件自带的私有标记（X-ONETHU-WIDGET），与提前量一样按 uid 取回
+      inWidget: src?.onethuWidget === true,
     });
   }
   return out;

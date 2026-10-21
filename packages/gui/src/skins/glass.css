@@ -1,0 +1,44 @@
+/* Material axis, calibrated to the original clear/rich/deep glass family.
+ * Surfaces transmit the wallpaper; textContrast samples the resulting stack.
+ * Actions/inputs/segments and note paper keep their semantic opaque pairs.
+ */
+[data-og-skin="glass"] {
+  --og-material-opacity: 44%;
+  /* 便笺纸也走材质轴：同档透光 + 背景模糊（文字/图标仍由对比度引擎兜底）。 */
+  --og-note-opacity: var(--og-material-opacity);
+  --og-note-blur: var(--og-surface-blur);
+  --og-material-overlay-opacity: 74%;
+  --og-blur-1: 20px;
+  --og-saturate: 155%;
+  --og-fill-surface: color-mix(in srgb, var(--og-surface-1) var(--og-material-opacity), transparent);
+  --og-fill-overlay: color-mix(in srgb, var(--og-menu-fill) var(--og-material-overlay-opacity), transparent);
+  --og-fill-chip: var(--og-composer-fill);
+  --og-card-fill: var(--og-fill-surface);
+  --og-surface-tint: none;
+  --og-overlay-tint: none;
+  --og-chip-tint: none;
+  --og-surface-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
+  --og-overlay-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
+  --og-chip-blur: none;
+  --og-material-rim: color-mix(in srgb, var(--og-contrast-ink-light) 48%, transparent);
+  --og-material-shadow: var(--og-elev-2), inset 0 1px 0 var(--og-material-rim);
+}
+[data-og-skin="glass"][data-og-skin-level="clear"] {
+  --og-material-opacity: 30%;
+  --og-material-overlay-opacity: 60%;
+  --og-blur-1: 22px;
+  --og-saturate: 160%;
+}
+[data-og-skin="glass"][data-og-skin-level="rich"] {
+  --og-material-opacity: 60%;
+  --og-material-overlay-opacity: 74%;
+  --og-blur-1: 20px;
+}
+[data-og-skin="glass"][data-og-skin-level="deep"] {
+  --og-material-opacity: 74%;
+  --og-material-overlay-opacity: 82%;
+  --og-blur-1: 20px;
+}
+[data-og-skin="glass"][data-og-scheme="dark"] { --og-material-opacity: 14%; }
+[data-og-skin="glass"][data-og-skin-level="clear"][data-og-scheme="dark"] { --og-material-opacity: 6%; }
+[data-og-skin="glass"][data-og-skin-level="deep"][data-og-scheme="dark"] { --og-material-opacity: 20%; }

@@ -1,3 +1,6 @@
+import { labelForId } from "../i18n/staticLabels.js";
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { Btn, Input, Row, Sheet, Stack, Text } from "@onethu/gui";
 /**
  * 收藏星标 + 收藏弹层 + 收藏项搜索添加弹层（万物收藏项化 UI 件）。
  * - CollectStar：行尾/卡头星标按钮，点亮态 = 已收进任意用户收藏夹；
@@ -12,43 +15,198 @@ import { useExitPhase } from "../lib/useExitPhase.js";
 import { Empty } from "./Layout.js";
 import { IconChevron, IconFolderPlus, IconSearch, IconStar } from "./Icons.js";
 import { useFavs } from "../state/favs.js";
-import { pageAtomRef, resolveAtom, searchAtoms, type AtomHit } from "../state/atoms.js";
+import { atomKeyOf } from "../state/favorites.js";
+import { addAtomToBoard, addAtomToHome, boardItemCount, createOnePageForAtom, onePagesWithAtom, removeAtomFromBoard, removeOnePage, userOnePages } from "../state/onePage.js";
+import { pageAtomRef, resolveAtom, searchAtoms, tabAtomKey, type AtomHit } from "../state/atoms.js";
+import { confirmOk } from "../lib/confirm.js";
 import type { AtomRef } from "../state/favorites.js";
 
-/** 星标按钮：已收录点亮；点击开弹层 */
+/** 星标按钮（元素收藏；2026-10-15 起不再直接建板，先问落点：首页 / 已有 OnePage / 新建） */
 export function CollectStar({ atom, title }: { atom: AtomRef; title?: string }) {
-  const favs = useFavs();
-  const [open, setOpen] = useState(false);
-  const on = favs.foldersContaining(atom).length > 0;
+  const uiLocale = useUiLocale();
+
+  const view = resolveAtom(atom);
+  const name = view?.title ?? title ?? "OnePage";
+  const full = view?.sub ?? title ?? "";
+  const { lit, uncollect } = useAtomStar(atom, name, full);
+  const [picking, setPicking] = useState(false);
   return (
     <>
       <button
         type="button"
-        className={"collect-star" + (on ? " is-on" : "")}
-        aria-label={(on ? "已收藏，点击管理" : "收藏") + (title ? "：" + title : "")}
-        title={on ? "已收藏 · 点击管理" : "收藏"}
+        data-vault-catch={JSON.stringify({ type: "atom", title: name, sub: full || undefined, atom, source: "页面元素" })}
+        className={"collect-star" + (lit ? " is-on" : "")}
+        aria-label={(lit ? i18n("components.collect.a6cc61b5dea6") : i18n("components.collect.3b5439064adf")) + (title ? "：" + title : "")}
+        title={lit ? i18n("components.collect.a0adbab10e0a") : i18n("components.collect.0293d5e40498")}
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
-          setOpen(true);
+          if (lit) void uncollect();
+          else setPicking(true);
         }}
       >
         <IconStar width={14} height={14} />
       </button>
-      {open ? <CollectModal atom={atom} onClose={() => setOpen(false)} /> : null}
+      {picking ? <OnePageLandingSheet atom={atom} name={name} full={full} onClose={() => setPicking(false)} /> : null}
     </>
   );
 }
 
+/**
+ * 「收藏到…」落点选择（用户 2026-10-15 定案）：
+ *   ① 首页（最常用，排第一）② 已有 OnePage（逐块列出来）③ **最后**才是新建 OnePage。
+ * 元素收藏（CollectStar）走这里；标签页收藏（OnePageStar/RootPageStar/PageAtomStar）
+ * 仍是一星成页——用户明确「是元素，不是标签页」。
+ */
+export function OnePageLandingSheet({ atom, name, full, onClose }: { atom: AtomRef; name: string; full: string; onClose: () => void }) {
+  const uiLocale = useUiLocale();
+
+  const key = atomKeyOf(atom);
+  const [boards, setBoards] = useState(() => userOnePages());
+  const [note, setNote] = useState<string | null>(null);
+  const doPick = (fn: () => { added: unknown; reason?: string } | void): void => {
+    const r = fn();
+    if (r && !r.added) {
+      setNote(r.reason === "duplicate" ? i18n("components.collect.d73a6ca3de8c") : i18n("components.collect.2435ae5dae6e"));
+      return;
+    }
+    onClose();
+  };
+  return (
+    <Sheet open onClose={onClose} title={i18n("components.collect.3b5439064adf")}>
+      <Stack gap={1}>
+        <Text slot="micro" tone="faint">{full || name}</Text>
+        <Row
+          title={i18n("components.collect.203c08e0d44a")}
+          sub={i18n("components.collect.dff310bf02e7")}
+          onClick={() => doPick(() => addAtomToHome(key))}
+        />
+        {boards.map((b) => (
+          <Row
+            key={b.id}
+            title={b.name}
+            sub={i18n("components.collect.d549d18c3da5")}
+            onClick={() => doPick(() => addAtomToBoard(b.id, key))}
+          />
+        ))}
+        <Row
+          title={i18n("components.collect.8b9db911f1d9")}
+          sub={i18n("components.collect.fd68c869f722", { name: String(name) })}
+          onClick={() => { createOnePageForAtom(name, key); onClose(); }}
+        />
+        {note ? <Text slot="micro" tone="faint">{note}</Text> : null}
+      </Stack>
+    </Sheet>
+  );
+}
+
+/**
+ * 元素级星标状态（与标签页的 useOnePageStar 分开）：
+ * - lit = 任意一块板（含首页）上有这颗原子的入口；
+ * - uncollect = 从**所有**板上摘掉入口（不删板）；若某块用户板因此变空，
+ *   那多半是当初为它建的空壳 → 问一句再收掉（保持旧「取消 = 收回」的手感）。
+ */
+export function useAtomStar(ref: AtomRef | null, name: string, full: string): { lit: boolean; uncollect: () => Promise<void> } {
+  const key = ref ? atomKeyOf(ref) : null;
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const on = (): void => setTick((t) => t + 1);
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
+  void tick;
+  const lit = key ? onePagesWithAtom(key).length > 0 : false;
+  const uncollect = async (): Promise<void> => {
+    if (!key) return;
+    const homes = onePagesWithAtom(key);
+    for (const b of homes) removeAtomFromBoard(b.id, key);
+    const emptied = homes.filter((b) => b.kind !== "system" && boardItemCount(b.id) === 0);
+    if (emptied.length > 0) {
+      const names = emptied.map((b) => `「${b.name}」`).join("、");
+      const ok = await confirmOk(i18nMsg("components.collect.42c5be15d1a3", { names: String(names) }));
+      if (ok) for (const b of emptied) removeOnePage(b.id);
+    }
+    void name;
+  };
+  return { lit, uncollect };
+}
+
 /** 「收藏到…」弹层：多选收藏夹 + 当场新建 */
-/** 页头页面收藏项星标：聚合页随当前 tab 换目标（key 未注册时不渲染） */
+/**
+ * 一星 OnePage（页头 / 标签共用语义，用户定案 2026-10-12）：
+ * - 未收录 → 新建以名字命名的独立 OnePage，并把该原子放进去；
+ * - 已收录 → 先用应用内确认弹窗（window.confirm 在 Tauri 下静默 false，不可用）再删除该 OnePage 本体。
+ */
+export function useOnePageStar(ref: AtomRef | null, name: string, full: string): { lit: boolean; toggle: () => Promise<void> } {
+  const key = ref ? atomKeyOf(ref) : null;
+  const [tick, setTick] = useState(0);
+  /* 板文档没有订阅器：听全局变更事件 + 手动 bump（星标是低频操作，够用） */
+  useEffect(() => {
+    const on = (): void => setTick((t) => t + 1);
+    window.addEventListener("onethu.boards.changed", on);
+    return () => window.removeEventListener("onethu.boards.changed", on);
+  }, []);
+  const board = key ? onePagesWithAtom(key)[0] : undefined;
+  void tick;
+  const toggle = async (): Promise<void> => {
+    if (!ref || !key) return;
+    if (!board) {
+      createOnePageForAtom(name, key);
+      return;
+    }
+    const ok = await confirmOk(
+      i18nMsg("components.collect.1831b25872ac", { name: String(name), full: String(full) }),
+    );
+    if (ok) removeOnePage(board.id);
+  };
+  return { lit: board !== undefined, toggle };
+}
+
+/** 一星按钮：点亮 = 已有独立 OnePage 收录该页 */
+export function OnePageStar({ atom, name, full, title }: { atom: AtomRef | null; name: string; full: string; title?: string }) {
+  const uiLocale = useUiLocale();
+
+  const { lit, toggle } = useOnePageStar(atom, name, full);
+  if (!atom) return null;
+  return (
+    <button
+      type="button"
+      className={"collect-star" + (lit ? " is-on" : "")}
+      aria-label={(lit ? i18n("components.collect.825750d712cc") : i18n("components.collect.009a73342eab")) + (title ? "：" + title : "")}
+      aria-pressed={lit}
+      title={lit ? i18n("components.collect.cb013b74bfc3") : i18n("components.collect.82ae0981093e")}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        void toggle();
+      }}
+    >
+      <IconStar width={14} height={14} />
+    </button>
+  );
+}
+
+/** 页头页面收藏项星标（一级页面本体）：key 命中 PAGE_ATOMS 才渲染 */
 export function PageAtomStar({ atomKey, title }: { atomKey: string; title: string }) {
+  const uiLocale = useUiLocale();
+
   const ref = pageAtomRef(atomKey);
+  const view = ref ? resolveAtom(ref) : null;
   if (!ref) return null;
-  return <CollectStar atom={ref} title={title} />;
+  return <OnePageStar atom={ref} name={view?.title ?? title} full={view?.sub ?? title} title={title} />;
+}
+
+/** 一级页面（无具体子栏目参数）的页头星标：收藏的是页面本体，不是当前子栏目 */
+export function RootPageStar({ page, title }: { page: string; title: string }) {
+  const uiLocale = useUiLocale();
+
+  const ref: AtomRef = { kind: "tab", key: tabAtomKey(page) };
+  return <OnePageStar atom={ref} name={title} full={title} title={title} />;
 }
 
 export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => void }) {
+  const uiLocale = useUiLocale();
+
   const favs = useFavs();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
@@ -102,7 +260,7 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
             <button
               type="button"
               className="collect-fold"
-              aria-label={open ? "收起子收藏夹" : "展开子收藏夹"}
+              aria-label={open ? i18n("components.collect.50e97624c5e3") : i18n("components.collect.fddd88197f10")}
               aria-expanded={open}
               onClick={(e) => {
                 /* 在 label 内点折叠钮：拦掉 label 默认行为，避免顺带勾选/取消勾选 */
@@ -124,7 +282,7 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
           <span className="collect-row-icon"><IconFolderPlus width={15} height={15} style={{ opacity: 0.5 }} /></span>
           <span className="collect-row-text">
             <span className="collect-row-title">{f.title}</span>
-            <span className="collect-row-sub">{f.items.length} 项</span>
+            <span className="collect-row-sub">{i18nRich("components.collect.42e970981c31", { length: f.items.length })}</span>
           </span>
         </label>,
       );
@@ -153,41 +311,29 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
 
   return createPortal(
     <div className={"home-modal-mask" + (closing ? " is-closing" : "")} onClick={requestClose}>
-      <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="收藏到收藏夹" onClick={(e) => e.stopPropagation()}>
+      <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label={i18n("components.collect.2a1b5ec13325")} onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
-          <h3>收藏到…</h3>
-          <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+          <h3>{i18n("components.collect.3b5439064adf")}</h3>
+          <Btn variant="ghost" onClick={requestClose}>{i18n("components.collect.3fd47edce45b")}</Btn>
         </div>
         <div className="home-modal-body">
-          <div className="home-modal-hint">
-            「{view?.title ?? "收藏项"}」可同时收进多个收藏夹；收藏夹只是跳转入口，原功能始终锚定在默认页面。
-          </div>
+          <div className="home-modal-hint">{i18nRich("components.collect.d72f03fc2d80", { value: view?.title ?? i18n("components.collect.21558137d9ce") })}</div>
           {roots.length === 0 && !creating ? (
-            <Empty text="还没有收藏夹——在左侧栏「新建收藏夹」，或点下方直接建一个。" />
+            <Empty text={i18n("components.collect.ab7ad5551d3c")} />
           ) : (
             treeRows
           )}
           {creating ? (
             <div className="collect-new">
-              <input
-                className="input"
-                autoFocus
-                placeholder="收藏夹名称…"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => {
+              <Input autoFocus placeholder={i18n("components.collect.8d2693309aed")} value={name} onChange={(value) => setName(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") createAndAdd();
                   if (e.key === "Escape") setCreating(false);
-                }}
-              />
-              <button className="btn btn-primary" disabled={!name.trim()} onClick={createAndAdd}>建并收藏</button>
-              <button className="btn btn-ghost" onClick={() => setCreating(false)}>取消</button>
+                }} />
+              <Btn variant="solid" tone="brand" disabled={!name.trim()} onClick={createAndAdd}>{i18n("components.collect.4d7f68e3ecf8")}</Btn>
+              <Btn variant="ghost" onClick={() => setCreating(false)}>{i18n("components.collect.2cd0f3be8738")}</Btn>
             </div>
           ) : (
-            <button className="btn collect-new-btn" onClick={() => setCreating(true)}>
-              <IconFolderPlus width={14} height={14} />
-              新建收藏夹
-            </button>
+            <Btn variant="outline" onClick={() => setCreating(true)}><IconFolderPlus width={14} height={14} />{i18n("components.collect.fdf0b569d820")}</Btn>
           )}
         </div>
       </div>
@@ -197,17 +343,19 @@ export function CollectModal({ atom, onClose }: { atom: AtomRef; onClose: () => 
 }
 
 /** 收藏项搜索添加弹层（收藏夹页「添加」） */
-export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹", hint }: {
+export function AtomPickerModal({ onPick, onClose, title = i18n("components.collect.5c662104bb5a"), hint }: {
   onPick: (atom: AtomRef) => void;
   onClose: () => void;
   /** 标题与说明可覆盖：收藏夹「添加收藏项」与小组件「选一个收藏项」共用同一个搜索层 */
   title?: string;
   hint?: string;
 }) {
+  const uiLocale = useUiLocale();
+
   const [q, setQ] = useState("");
   const [picked, setPicked] = useState<AtomRef | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const results = useMemo<AtomHit[]>(() => searchAtoms(q), [q]);
+  const results = useMemo<AtomHit[]>(() => searchAtoms(q), [uiLocale, q]);
 
   const [closing, requestClose] = useExitPhase(onClose);
   useEffect(() => {
@@ -221,10 +369,10 @@ export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹",
 
   return createPortal(
     <div className={"home-modal-mask" + (closing ? " is-closing" : "")} onClick={requestClose}>
-      <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label="搜索并添加收藏项" onClick={(e) => e.stopPropagation()}>
+      <div className={"home-modal collect-modal" + (closing ? " is-closing" : "")} role="dialog" aria-modal="true" aria-label={i18n("components.collect.35b079aaa129")} onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
           <h3>{title}</h3>
-          <button className="btn btn-ghost" onClick={requestClose}>关闭</button>
+          <Btn variant="ghost" onClick={requestClose}>{i18n("components.collect.3fd47edce45b")}</Btn>
         </div>
         <div className="home-modal-body">
           <div className="collect-search">
@@ -232,20 +380,17 @@ export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹",
             <input
               ref={inputRef}
               className="input"
-              placeholder="搜索任意收藏项：页面 / 组件 / 课程 / 作业 / 新闻 / 楼栋 / 场馆…"
+              placeholder={i18n("components.collect.1ea086c584c3")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
           </div>
           {q.trim() === "" ? (
-            <div className="home-modal-hint">
-              {hint ? <>{hint}<br /></> : null}
-              支持搜索：全部功能页面与今日组件；本机已见过的实体（课程、作业、文件、通知、新闻、洗衣机楼栋、教学楼、体育场馆、研讨间类型、图书馆）——先打开过对应页面，具体实体才会进入搜索。
-            </div>
+            <div className="home-modal-hint">{i18nRich("components.collect.db7e4035e164", { value: hint ? <>{hint}<br /></> : null })}</div>
           ) : results.length === 0 ? (
             <Empty
-              text="没有匹配的收藏项——试试更短的关键词，或先去对应页面打开一次。"
-              action={<button className="btn btn-ghost" onClick={() => setQ("")}>清空关键词</button>}
+              text={i18n("components.collect.eda81c807737")}
+              action={<Btn variant="ghost" onClick={() => setQ("")}>{i18n("components.collect.0a90c17daa69")}</Btn>}
             />
           ) : (
             results.map((h) => {
@@ -264,7 +409,7 @@ export function AtomPickerModal({ onPick, onClose, title = "添加到收藏夹",
                     <div className="home-entry-name">{h.title}</div>
                     {h.sub ? <div className="home-entry-hint">{h.sub}</div> : null}
                   </div>
-                  <span className="collect-hit-group">{h.group}</span>
+                  <span className="collect-hit-group">{labelForId(h.group)}</span>
                 </button>
               );
             })

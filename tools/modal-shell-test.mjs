@@ -10,6 +10,11 @@ import { readFileSync } from "node:fs";
 const CSS = readFileSync("apps/desktop/src/styles/global.css", "utf8");
 const TOK = readFileSync("packages/ui/src/tokens.css", "utf8");
 const MOT = readFileSync("apps/desktop/src/styles/motion.css", "utf8");
+/* 插件抽屉/表单弹窗已全面收编 OneGUI Modal/Sheet（.og-scrim/.og-panel/.og-sheet--bottom）：
+   圆角、退场相位、portal 都由库承担，这里直接核对库里的那条事实源。 */
+const GUI_OVERLAY = readFileSync("packages/gui/src/styles/overlay.css", "utf8");
+const GUI_BASE = readFileSync("packages/gui/src/styles/base.css", "utf8");
+const GUI_OVERLAY_TSX = readFileSync("packages/gui/src/components/overlay.tsx", "utf8");
 
 const fails = [];
 const ok = (cond, msg) => {
@@ -52,7 +57,7 @@ ok(sheet.includes("env(safe-area-inset-bottom)"), "抽屉应留安全区内边�
 ok(/animation:\s*m-sheet-up/.test(sheet), "抽屉应有上滑动画");
 ok(MOT.includes("@keyframes m-sheet-up"), "motion.css 缺少 m-sheet-up 关键帧");
 ok(block(".home-modal::before").includes("border-radius: var(--r-pill)"), "抽屉应有把手（纯 CSS ::before，胶囊令牌）");
-ok(CSS.includes(".plg-sheet { width: 100%; max-width: 100%; max-height: 92dvh; border-radius: var(--md-sys-shape-corner-large)"), "插件抽屉圆角也应令牌化");
+ok(/\.og-sheet--bottom \{[^}]*max-height: 92dvh/.test(GUI_OVERLAY) && /\.og-sheet--bottom \{[^}]*border-radius: var\(--og-radius-2xl\) var\(--og-radius-2xl\) 0 0/.test(GUI_OVERLAY), "OneGUI 底部表应满宽/限高 92dvh/只圆上面两角（插件抽屉已收编）");
 
 /* [4] 抽屉内卡片：灰阶分层、去描边、有状态层 */
 for (const sel of [".wb-kind {", ".wb-row {"]) {
@@ -66,16 +71,14 @@ ok(block(".btn::after,").includes(".wb-row::after"), "共享状态层应包含 .
 ok(!/\.wb-kind:hover[^{]*\{[^}]*border-color/.test(CSS), ".wb-kind hover 不该再改描边");
 
 /* [5] 退场：整族必须有退场动画（缺了弹层会"啪"地消失） */
-ok(CSS.includes(".plg-mask.is-closing") && CSS.includes(".home-modal-mask.is-closing"), "遮罩退场动画缺失");
-ok(/\.plg-sheet\.is-closing,[\s\S]{0,120}m-pop-out/.test(CSS), "面板退场动画缺失（桌面缩小淡出）");
-ok(/html\.is-phone \.plg-sheet\.is-closing,\nhtml\.is-phone \.home-modal\.is-closing \{\n  animation: m-sheet-down/.test(CSS), "手机抽屉退场应往下滑");
-ok(CSS.includes("@keyframes m-fade-out") && CSS.includes("@keyframes m-sheet-down"), "退场关键帧缺失");
-ok(/is-closing[\s\S]{0,80}emphasized-accelerate/.test(CSS), "退场应用 accelerate 曲线（离场加速）");
+ok(/\.og-scrim\.is-closing \{\s*animation: og-fade-out[^}]*accelerate/.test(GUI_OVERLAY) && GUI_BASE.includes("@keyframes og-fade-out"), "遮罩退场动画缺失（OneGUI）");
+ok(/\.og-panel\.is-closing \{\s*animation: og-pop-out[^}]*accelerate/.test(GUI_OVERLAY) && GUI_BASE.includes("@keyframes og-pop-out"), "面板退场动画缺失（桌面缩小淡出，OneGUI）");
+ok(/\.og-sheet--bottom\.is-closing \{\s*animation: og-sheet-down/.test(GUI_OVERLAY) && GUI_OVERLAY.includes("@keyframes og-sheet-down"), "手机底部表退场应往下滑（OneGUI）");
+ok(CSS.includes(".home-modal-mask.is-closing"), "旧首页弹层遮罩退场动画缺失");
 
 /* [6] 弹层必须 portal 到 body：否则祖先的动画/变换会成为 position:fixed 的包含块，
        遮罩只盖住所在页面那一块（R24 霖实测：插件设置页只把插件页那块遮罩变黑） */
-const PLG = readFileSync("apps/desktop/src/pages/Plugins.tsx", "utf8");
-ok(/return createPortal\(/.test(PLG) && PLG.includes("document.body"), "插件设置弹层未 portal 到 body");
+ok(/return createPortal\(/.test(GUI_OVERLAY_TSX) && GUI_OVERLAY_TSX.includes("document.body"), "OneGUI 弹层未 portal 到 body（祖先动画会成为 position:fixed 的包含块）");
 const RCH = readFileSync("apps/desktop/src/pages/info/CardTab.tsx", "utf8");
 ok(/const \[closing, setClosing\] = useState/.test(RCH), "校园卡充值弹窗缺退场相位（closing）");
 ok(RCH.indexOf("setClosing(false)") < RCH.indexOf("if (!open)"), "closing 状态必须在早返回之前（hook 顺序）");

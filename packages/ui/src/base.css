@@ -18,7 +18,10 @@ html {
 body {
   margin: 0;
   /* 页面底比卡片低一级（§3）：卡片 = container-lowest，靠色阶而不是描边分层 */
-  background: var(--md-sys-color-surface-container-low);
+  background:
+    radial-gradient(44rem 34rem at 40% 30%, color-mix(in srgb, var(--md-sys-color-primary) 5%, transparent), transparent 62%),
+    radial-gradient(40rem 30rem at 64% 68%, color-mix(in srgb, var(--md-sys-color-primary) 3%, transparent), transparent 64%),
+    color-mix(in srgb, var(--md-sys-color-surface-container-low) 100%, transparent);
   color: var(--text-1);
   font-family: var(--font-ui);
   font-size: var(--text-base);

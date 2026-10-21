@@ -1,0 +1,1411 @@
+{
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "state.vaultshare.b713d28a9ae7",
+      "source": "升级后的分享不可读取",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 337,
+          "context": "secured.reason??i18n(\"state.vaultshare.b713d28a9ae7\")"
+        }
+      ],
+      "translation": "The upgraded share cannot be read",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.b8aeb1a1f261",
+      "source": "读取云盘清单失败：{error}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 483,
+          "context": "reason: i18n(\"state.vaultshare.b8aeb1a1f261\", { error: e instanceof Error ? e.message : String(e) })"
+        }
+      ],
+      "translation": "Failed to read the cloud drive manifest: {error}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.c4591b5b1fe8",
+      "source": "口令无法解析",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 366,
+          "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 444,
+          "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
+        }
+      ],
+      "translation": "The share code cannot be parsed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.c5479cb871fa",
+      "source": "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 453,
+          "context": "reason: i18n(\"state.vaultshare.c5479cb871fa\")"
+        }
+      ],
+      "translation": "Invalid email format, like studentID@mails.tsinghua.edu.cn",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.c97b00b652fa",
+      "source": "旧私密分享尚未升级，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 335,
+          "context": "upgraded.reason??i18n(\"state.vaultshare.c97b00b652fa\")"
+        }
+      ],
+      "translation": "This legacy private share has not been upgraded yet. Please try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.cb2fdf85ee42",
+      "source": "更换接收范围未完成，请重试：{error}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error?e.message:String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 502,
+          "context": "reason:i18n(\"state.vaultshare.cb2fdf85ee42\", { error: e instanceof Error?e.message:String(e) })"
+        }
+      ],
+      "translation": "Changing the recipient scope was not completed. Please try again: {error}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.ced6988b78e7",
+      "source": "分享里没有可接收的内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 383,
+          "context": "checked.reason || i18n(\"state.vaultshare.ced6988b78e7\")"
+        }
+      ],
+      "translation": "There is nothing to receive in this share",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.d2880ea01ca6",
+      "source": "请先连接清华云盘，再分享暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 356,
+          "context": "new Error(i18n(\"state.vaultshare.d2880ea01ca6\"))"
+        }
+      ],
+      "translation": "Connect to Tsinghua Cloud Drive first, then share your Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.dd39d27f2eaf",
+      "source": "这条口令限定给 {recipient} 接收；当前连接的云盘账号是 {currentAccount}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "recipient",
+          "expression": "want"
+        },
+        {
+          "name": "currentAccount",
+          "expression": "mine"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 544,
+          "context": "return i18n(\"state.vaultshare.dd39d27f2eaf\", { recipient: want, currentAccount: mine });"
+        }
+      ],
+      "translation": "This share code is restricted to {recipient}; the currently connected cloud drive account is {currentAccount}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.de371c09cf24",
+      "source": "更换接收范围仍待完成，请重试：{error}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error?e.message:String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 441,
+          "context": "reason:i18n(\"state.vaultshare.de371c09cf24\", { error: e instanceof Error?e.message:String(e) })"
+        }
+      ],
+      "translation": "Changing the recipient scope is still pending. Please try again: {error}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.df690d6050a8",
+      "source": "不是 OneTHU 分享口令（应以 ONV1. 开头）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 193,
+          "context": "reason: i18n(\"state.vaultshare.df690d6050a8\")"
+        }
+      ],
+      "translation": "Not a OneTHU share code (it should start with ONV1.)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.e1b89010df35",
+      "source": "请先连接清华云盘，再生成分享口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 311,
+          "context": "new Error(i18n(\"state.vaultshare.e1b89010df35\"))"
+        }
+      ],
+      "translation": "Connect to Tsinghua Cloud Drive first, then create a share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.ee75d1a72727",
+      "source": "分享缺少读取链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 375,
+          "context": "reason: i18n(\"state.vaultshare.ee75d1a72727\")"
+        }
+      ],
+      "translation": "The share is missing a read link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.f6d2148271ab",
+      "source": "请先连接清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 415,
+          "context": "new Error(i18n(\"state.vaultshare.f6d2148271ab\"))"
+        }
+      ],
+      "translation": "Connect to Tsinghua Cloud Drive first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.fab167848c3e",
+      "source": "云盘未返回新分享链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 494,
+          "context": "new Error(i18n(\"state.vaultshare.fab167848c3e\"))"
+        }
+      ],
+      "translation": "The cloud drive did not return a new share link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultsharelog.7aec0d4e2435",
+      "source": "{count} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "e.scope.total"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShareLog.ts",
+          "line": 94,
+          "context": "parts ? i18n(\"state.vaultsharelog.f9aa135776f2\", { count: e.scope.total, contents: parts }) : i18n(\"state.vaultsharelog.7aec0d4e2435\", { count: e.scope.total })"
+        }
+      ],
+      "translation": "{count} items",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultsharelog.f9aa135776f2",
+      "source": "{count} 项 · {contents}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count",
+          "expression": "e.scope.total"
+        },
+        {
+          "name": "contents",
+          "expression": "parts"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShareLog.ts",
+          "line": 94,
+          "context": "parts ? i18n(\"state.vaultsharelog.f9aa135776f2\", { count: e.scope.total, contents: parts }) : i18n(\"state.vaultsharelog.7aec0d4e2435\", { count: e.scope.total })"
+        }
+      ],
+      "translation": "{count} items · {contents}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.17b2bd6e97e6",
+      "source": "视频超过 12MB，请先剪短再试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 349,
+          "context": "error: i18n(\"state.wallpaper.17b2bd6e97e6\")"
+        }
+      ],
+      "translation": "The video is over 12MB. Trim it first and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.47afb8f5d184",
+      "source": "这张图处理失败，换一张试试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 386,
+          "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 403,
+          "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 410,
+          "context": "error: i18n(\"state.wallpaper.47afb8f5d184\")"
+        }
+      ],
+      "translation": "This image could not be processed. Try another one",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.8bd1eebd6969",
+      "source": "壁纸库满员（{limit} 张），删一张再入库",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "limit",
+          "expression": "LIBRARY_MAX"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 307,
+          "context": "return i18n(\"state.wallpaper.8bd1eebd6969\", { limit: LIBRARY_MAX });"
+        }
+      ],
+      "translation": "The wallpaper library is full ({limit} items). Remove one before adding a new wallpaper",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.b1afa0df864c",
+      "source": "本机存不下这份壁纸，请删几张库里旧的再试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 130,
+          "context": "showToast(i18nMsg(\"state.wallpaper.b1afa0df864c\"))"
+        }
+      ],
+      "translation": "Not enough local space for this wallpaper. Delete a few old ones from the library and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.b53cdead995f",
+      "source": "暮色",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 161,
+          "context": "return i18n(\"state.wallpaper.b53cdead995f\");"
+        }
+      ],
+      "translation": "Dusk",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.b7f2922f045c",
+      "source": "壁纸只认图片或视频",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 374,
+          "context": "error: i18n(\"state.wallpaper.b7f2922f045c\")"
+        }
+      ],
+      "translation": "Wallpapers accept images or videos only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.b900150b992d",
+      "source": "这个视频读不出来，换一个试试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 367,
+          "context": "error: i18n(\"state.wallpaper.b900150b992d\")"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 369,
+          "context": "error: i18n(\"state.wallpaper.b900150b992d\")"
+        }
+      ],
+      "translation": "This video cannot be read. Try another one",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.c1ff4d488144",
+      "source": "极光",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 160,
+          "context": "return i18n(\"state.wallpaper.c1ff4d488144\");"
+        }
+      ],
+      "translation": "Aurora",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.cdc37c08fb5b",
+      "source": "动态壁纸只认 mp4 / webm",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 348,
+          "context": "error: i18n(\"state.wallpaper.cdc37c08fb5b\")"
+        }
+      ],
+      "translation": "Live wallpapers accept mp4 / webm only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.fa67a660d4b7",
+      "source": "抹茶",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 162,
+          "context": "return i18n(\"state.wallpaper.fa67a660d4b7\");"
+        }
+      ],
+      "translation": "Matcha",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpaper.fe4786177622",
+      "source": "墨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 163,
+          "context": "return i18n(\"state.wallpaper.fe4786177622\");"
+        }
+      ],
+      "translation": "Ink",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.connectBeforeRestore",
+      "source": "云盘还没连接：先到「云盘」页连接后再恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 98,
+          "context": "msg: i18n(\"state.wallpsync.connectBeforeRestore\")"
+        }
+      ],
+      "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then restore",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.connectBeforeUpload",
+      "source": "云盘还没连接：先到「云盘」页连接后再同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 73,
+          "context": "msg: i18n(\"state.wallpsync.connectBeforeUpload\")"
+        }
+      ],
+      "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then sync",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.invalidArchive",
+      "source": "云盘上的壁纸档案读不出来，请先重新同步一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 109,
+          "context": "msg: i18n(\"state.wallpsync.invalidArchive\")"
+        }
+      ],
+      "translation": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.noArchive",
+      "source": "云盘上还没有壁纸档案，请先在别的设备同步一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 115,
+          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
+        }
+      ],
+      "translation": "There is no wallpaper archive on the cloud drive yet. Sync from another device first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.restored",
+      "source": "已恢复云盘壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 111,
+          "context": "msg: i18n(\"state.wallpsync.restored\")"
+        }
+      ],
+      "translation": "Cloud drive wallpapers restored",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.restoreFailed",
+      "source": "恢复没成功（{error}），请检查云盘后再试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 117,
+          "context": "msg: i18n(\"state.wallpsync.restoreFailed\", {error:raw})"
+        }
+      ],
+      "translation": "Restore failed ({error}). Check the cloud drive and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.unknownCause",
+      "source": "原因不明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 123,
+          "context": "s.replace(/\\s+/g, \" \").slice(0, 60) || i18n(\"state.wallpsync.unknownCause\")"
+        }
+      ],
+      "translation": "Unknown cause",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.uploaded",
+      "source": "壁纸已同步到云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 89,
+          "context": "msg: i18n(\"state.wallpsync.uploaded\")"
+        }
+      ],
+      "translation": "Wallpapers synced to the cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.uploadFailed",
+      "source": "同步没成功（{error}），请检查云盘后再试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 91,
+          "context": "msg: i18n(\"state.wallpsync.uploadFailed\", {error:shortErr(e)})"
+        }
+      ],
+      "translation": "Sync failed ({error}). Check the cloud drive and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.0a9c46115749",
+      "source": "阵雪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 54,
+          "context": "return i18n(\"state.weather.0a9c46115749\");"
+        }
+      ],
+      "translation": "Snow showers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.124d60580dfa",
+      "source": "雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 50,
+          "context": "return i18n(\"state.weather.124d60580dfa\");"
+        }
+      ],
+      "translation": "Rain",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.30c379777e5d",
+      "source": "多云",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 46,
+          "context": "return i18n(\"state.weather.30c379777e5d\");"
+        }
+      ],
+      "translation": "Cloudy",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.448c8292f481",
+      "source": "阵雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 53,
+          "context": "return i18n(\"state.weather.448c8292f481\");"
+        }
+      ],
+      "translation": "Showers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.4ba0128b1216",
+      "source": "{mins} 分钟前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "mins",
+          "expression": "String(mins)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 158,
+          "context": "return i18n(\"state.weather.4ba0128b1216\", { mins: String(mins) });"
+        }
+      ],
+      "translation": "{mins} minutes ago",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.53058fe2e03c",
+      "source": "雪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 52,
+          "context": "return i18n(\"state.weather.53058fe2e03c\");"
+        }
+      ],
+      "translation": "Snow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.6379ede5c239",
+      "source": "晴",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 44,
+          "context": "return i18n(\"state.weather.6379ede5c239\");"
+        }
+      ],
+      "translation": "Sunny",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.690c01945f17",
+      "source": "{value} 小时前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(mins / 60))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 159,
+          "context": "return i18n(\"state.weather.690c01945f17\", { value: String(Math.round(mins / 60)) });"
+        }
+      ],
+      "translation": "{value} hours ago",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.6ac58535bcad",
+      "source": "雷阵雨伴冰雹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 56,
+          "context": "return i18n(\"state.weather.6ac58535bcad\");"
+        }
+      ],
+      "translation": "Thunderstorm with hail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.6aec964d8012",
+      "source": "基本晴",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 45,
+          "context": "return i18n(\"state.weather.6aec964d8012\");"
+        }
+      ],
+      "translation": "Mostly sunny",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.78df214e37ef",
+      "source": "阴",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 47,
+          "context": "return i18n(\"state.weather.78df214e37ef\");"
+        }
+      ],
+      "translation": "Overcast",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.853385be3d5a",
+      "source": "雾",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 48,
+          "context": "return i18n(\"state.weather.853385be3d5a\");"
+        }
+      ],
+      "translation": "Fog",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.86879622e5c9",
+      "source": "冻雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 51,
+          "context": "return i18n(\"state.weather.86879622e5c9\");"
+        }
+      ],
+      "translation": "Freezing rain",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.9ddc77d8932a",
+      "source": "雷阵雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 55,
+          "context": "return i18n(\"state.weather.9ddc77d8932a\");"
+        }
+      ],
+      "translation": "Thunderstorm",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.a16db8e97c85",
+      "source": "毛毛雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 49,
+          "context": "return i18n(\"state.weather.a16db8e97c85\");"
+        }
+      ],
+      "translation": "Drizzle",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.a53568b517c6",
+      "source": "响应缺字段",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 124,
+          "context": "new Error(i18n(\"state.weather.a53568b517c6\"))"
+        }
+      ],
+      "translation": "Response is missing fields",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.de6785d99e02",
+      "source": "刚刚",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 157,
+          "context": "return i18n(\"state.weather.de6785d99e02\");"
+        }
+      ],
+      "translation": "Just now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.151ca3a1d924",
+      "source": "打开应用刷新余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 104,
+          "context": "footer: i18n(\"state.widgetdetail.151ca3a1d924\")"
+        }
+      ],
+      "translation": "Open the app to refresh the balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.2961168962be",
+      "source": "周三",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Wed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.32963bd5b54b",
+      "source": "更新 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(hm(c.at))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 106,
+          "context": "c.at ? i18n(\"state.widgetdetail.32963bd5b54b\", { value: String(hm(c.at)) }) : null"
+        }
+      ],
+      "translation": "Updated {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.43ee729add24",
+      "source": "最近 {length} 笔",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(tx.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 122,
+          "context": "tx.length > 0 ? i18n(\"state.widgetdetail.43ee729add24\", { length: String(tx.length) }) : i18n(\"state.widgetdetail.78cb4d388a74\")"
+        }
+      ],
+      "translation": "Last {length} transactions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.49d152e83aa0",
+      "source": "还有 {m} 分钟",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "m",
+          "expression": "String(m)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 73,
+          "context": "return i18n(\"state.widgetdetail.49d152e83aa0\", { m: String(m) });"
+        }
+      ],
+      "translation": "{m} minutes left",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.572388f3b096",
+      "source": "周五",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Fri",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.5e28169afd2e",
+      "source": "还有 {value} 天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(m / 1440))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 75,
+          "context": "return i18n(\"state.widgetdetail.5e28169afd2e\", { value: String(Math.round(m / 1440)) });"
+        }
+      ],
+      "translation": "{value} days left",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.63ec276c6386",
+      "source": "待定",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 137,
+          "context": "e.location ?? i18n(\"state.widgetdetail.63ec276c6386\")"
+        }
+      ],
+      "translation": "TBD",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.6f43edec5585",
+      "source": "还有 {value} 小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(m / 60))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 74,
+          "context": "return i18n(\"state.widgetdetail.6f43edec5585\", { value: String(Math.round(m / 60)) });"
+        }
+      ],
+      "translation": "{value} hours left",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.78cb4d388a74",
+      "source": "点一下进校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 122,
+          "context": "tx.length > 0 ? i18n(\"state.widgetdetail.43ee729add24\", { length: String(tx.length) }) : i18n(\"state.widgetdetail.78cb4d388a74\")"
+        }
+      ],
+      "translation": "Tap to open your campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.7c7d83951705",
+      "source": "{length} 次待上",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(upcoming.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 141,
+          "context": "footer: i18n(\"state.widgetdetail.7c7d83951705\", { length: String(upcoming.length) })"
+        }
+      ],
+      "translation": "{length} sessions remaining",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.8032af4a590f",
+      "source": "未提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 153,
+          "context": "hw.submitted ? i18n(\"state.widgetdetail.bc37a6110a07\") : i18n(\"state.widgetdetail.8032af4a590f\")"
+        }
+      ],
+      "translation": "Not submitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.8d97572592f3",
+      "source": "截止 {value} {value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(dayLabel(at, deps.now))"
+        },
+        {
+          "name": "value2",
+          "expression": "String(hm(at))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 152,
+          "context": "text: i18n(\"state.widgetdetail.8d97572592f3\", { value: String(dayLabel(at, deps.now)), value2: String(hm(at)) })"
+        }
+      ],
+      "translation": "Due {value} {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.widgetdetail.919ddbbd91c0",
+      "source": "交易",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 115,
+          "context": "t.name || i18n(\"state.widgetdetail.919ddbbd91c0\")"
+        }
+      ],
+      "translation": "Transactions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.b1d841b978fb",
+      "source": "明天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 66,
+          "context": "return i18n(\"state.widgetdetail.b1d841b978fb\");"
+        }
+      ],
+      "translation": "Tomorrow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.bc37a6110a07",
+      "source": "已提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 153,
+          "context": "hw.submitted ? i18n(\"state.widgetdetail.bc37a6110a07\") : i18n(\"state.widgetdetail.8032af4a590f\")"
+        }
+      ],
+      "translation": "Submitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.c430f4c12eaa",
+      "source": "周一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Mon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 106,
+          "context": "c.cardId ? i18n(\"state.widgetdetail.e4e667d5cf68\", { cardId: String(c.cardId) }) : i18n(\"state.widgetdetail.caf1f095b108\")"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.d1378a68e620",
+      "source": "周二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Tue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.d5f5a7a01073",
+      "source": "今天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 65,
+          "context": "return i18n(\"state.widgetdetail.d5f5a7a01073\");"
+        }
+      ],
+      "translation": "Today",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.e4e667d5cf68",
+      "source": "卡号 {cardId}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "cardId",
+          "expression": "String(c.cardId)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 106,
+          "context": "c.cardId ? i18n(\"state.widgetdetail.e4e667d5cf68\", { cardId: String(c.cardId) }) : i18n(\"state.widgetdetail.caf1f095b108\")"
+        }
+      ],
+      "translation": "Card no. {cardId}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.e7988d6fa621",
+      "source": "近期没有安排",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 132,
+          "context": "footer: i18n(\"state.widgetdetail.e7988d6fa621\")"
+        }
+      ],
+      "translation": "Nothing scheduled recently",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.e9d3b01a5a00",
+      "source": "周四",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Thu",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.ee239f394329",
+      "source": "周日",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Sun",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.f9aa11dbb15c",
+      "source": "周六",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 64,
+          "context": "[i18n(\"state.widgetdetail.ee239f394329\"), i18n(\"state.widgetdetail.c430f4c12eaa\"), i18n(\"state.widgetdetail.d1378a68e620\"), i18n(\"state.widgetdetail.2961168962be\"), i18n(\"state.widgetdetail.e9d3b01a5a00\"), i18n(\"state.widgetdetail.572388f3b096\"), i18n(\"state.widgetdetail.f9aa11dbb15c\")]"
+        }
+      ],
+      "translation": "Sat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgetdetail.fe022cf5dcb5",
+      "source": "已提交或已过期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgetDetail.ts",
+          "line": 148,
+          "context": "footer: i18n(\"state.widgetdetail.fe022cf5dcb5\")"
+        }
+      ],
+      "translation": "Submitted or overdue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

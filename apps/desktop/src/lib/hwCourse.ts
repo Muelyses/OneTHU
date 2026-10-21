@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 作业 → 课程 聚合（待办页「按课程检索」下拉的取数层）。
  *
@@ -33,7 +34,7 @@ export function hwCourseKey(h: Homework): string {
 /** 课程展示名 */
 export function hwCourseLabel(h: Homework, courseMap: Map<string, string>, sourceName: SourceNameOf): string {
   if (h.source) return h.courseName?.trim() || sourceName(h.source) || h.source;
-  return courseMap.get(h.courseId) ?? "课程";
+  return courseMap.get(h.courseId) ?? i18n("lib.hwcourse.60db1afb4022");
 }
 
 /** 按真实课程聚合：网络学堂在前、外部源在后，组内按课名排序（zh 排序） */

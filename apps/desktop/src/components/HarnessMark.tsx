@@ -1,5 +1,8 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 /** Harness 品牌标识 (OH)：代码风括号 + 衬线 O + 苹方/黑体 H——与 OneTHU (One/THU) 同族混排 */
 export function HarnessMark({ size = 14, className = "" }: { size?: number; className?: string }) {
+  const uiLocale = useUiLocale();
+
   return (
     <span className={"harness-mark " + className} style={{ fontSize: size }} aria-label="OneTHU Harness">
       <span className="p">(</span>

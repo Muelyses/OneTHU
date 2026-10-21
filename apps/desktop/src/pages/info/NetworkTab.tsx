@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn, Text } from "@onethu/gui";
 /**
  * 校园网 —— usereg 自服务（thu-info-app network.tsx 移植 + 用户示例页增强）。
  * 数据：账号/状态/用户组（/users+/home）、流量/时长（/home w3 计费组表）、
@@ -19,6 +21,8 @@ type NetworkRow = [string, string];
 const NEED_CAPTCHA = /需要验证码登录/;
 
 export function NetworkTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [rows, setRows] = useState<NetworkRow[] | null>(null);
   const [devices, setDevices] = useState<NetworkDevice[] | null>(null);
@@ -50,7 +54,7 @@ export function NetworkTab() {
       setCaptcha(await info.getNetworkVerificationImage());
     } catch (err) {
       logTabErr("NETWORK-CAPTCHA", err);
-      setLoginErr(`验证码拉取失败：${err instanceof Error ? err.message : String(err)}`);
+      setLoginErr(i18n("pages.info.networktab.edb3f8bb40a5", { value: String(err instanceof Error ? err.message : String(err)) }));
       setCaptcha(null);
     } finally {
       setCaptchaLoading(false);
@@ -71,22 +75,22 @@ export function NetworkTab() {
       if (acc.status === "fulfilled") {
         const a = acc.value;
         out.push(
-          ["账号", a.username || "–"],
-          ["姓名", a.realName || "–"],
-          ["状态", a.status || "–"],
-          ["用户组", a.userGroup || "–"],
+          [i18n("pages.info.networktab.311bb313fdec"), a.username || "–"],
+          [i18n("pages.info.networktab.50b5b1d2abef"), a.realName || "–"],
+          [i18n("pages.info.networktab.6320b4a8722a"), a.status || "–"],
+          [i18n("pages.info.networktab.963ead08d78d"), a.userGroup || "–"],
         );
       }
       if (bal.status === "fulfilled") {
         const b = bal.value;
-        out.push(["已用流量", b.usedBytes || "–"], ["已用时长", b.usedSeconds || "–"]);
+        out.push([i18n("pages.info.networktab.decb065f369c"), b.usedBytes || "–"], [i18n("pages.info.networktab.e4e1122260bc"), b.usedSeconds || "–"]);
       }
       if (cnt.status === "fulfilled") {
         setDevCount(cnt.value);
-        out.push(["终端连接数", String(cnt.value)]);
+        out.push([i18n("pages.info.networktab.32c49e5592c4"), String(cnt.value)]);
       } else if (acc.status === "fulfilled") {
         const a = acc.value;
-        if (a.allowedDevices != null) out.push(["允许设备数", String(a.allowedDevices)]);
+        if (a.allowedDevices != null) out.push([i18n("pages.info.networktab.cca768b12e76"), String(a.allowedDevices)]);
       }
       setDevices(devs.status === "fulfilled" ? devs.value : null);
       const accErr = acc.status === "rejected" ? acc.reason : null;
@@ -146,7 +150,7 @@ export function NetworkTab() {
     setCountMsg(null);
     try {
       await info.setNetworkDeviceCount(n);
-      setCountMsg(`已改为 ${n}`);
+      setCountMsg(i18n("pages.info.networktab.6de4ef1bdc04", { n: String(n) }));
       setDevCount(n);
     } catch (err) {
       setCountMsg(err instanceof Error ? err.message : String(err));
@@ -160,17 +164,17 @@ export function NetworkTab() {
     if (pwdBusy) return;
     setPwdMsg(null);
     if (pwd1 !== pwd2) {
-      setPwdMsg("两次输入不一致");
+      setPwdMsg(i18n("pages.info.networktab.355fc1ddcfad"));
       return;
     }
     if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^*().~])[^\s]{8,19}$/.test(pwd1)) {
-      setPwdMsg("格式不符：8~19 位，含字母+数字+特殊字符(!@#$%^*().~)至少各一");
+      setPwdMsg(i18n("pages.info.networktab.ee38ec30b36a"));
       return;
     }
     setPwdBusy(true);
     try {
       await info.changeNetworkPassword(pwd1);
-      setPwdMsg("密码已修改（下次连接 Tsinghua-Secure 用新密码）");
+      setPwdMsg(i18n("pages.info.networktab.be8995021004"));
       setPwd1("");
       setPwd2("");
       setShowPwd(false);
@@ -196,20 +200,20 @@ export function NetworkTab() {
 
   return (
     <>
-      <SectionHead title="校园网" aside="usereg 自服务 · 验证码登录" />
+      <SectionHead title={i18n("pages.info.networktab.dd94488f5269")} aside={i18n("pages.info.networktab.aed9c158c9ae")} />
       {state === "error" ? (
         needLogin ? (
-          <ErrorNote text="校园网未登录（它与统一身份认证是两回事）。可在本页用验证码自助登录。" onRetry={() => void load()} />
+          <ErrorNote text={i18n("pages.info.networktab.f37abc08ae82")} onRetry={() => void load()} />
         ) : (
-          <ErrorNote text="该功能暂时不可用（获取失败，可稍后重试）" onRetry={() => void load()} />
+          <ErrorNote text={i18n("pages.info.networktab.d48b614e9571")} onRetry={() => void load()} />
         )
       ) : null}
 
       {state === "captcha" ? (
         <Card style={{ marginBottom: 20, padding: 18 }}>
-          <div style={{ fontWeight: 600, marginBottom: 10, fontSize: 14 }}>usereg 验证码登录</div>
-          <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 14, lineHeight: 1.6 }}>
-            密码与 INFO 密码一致；输入右侧图内验证码后登录（与网页端流程相同）。
+          <div style={{ fontWeight: 600, marginBottom: 10, fontSize: 14 }}>{i18n("pages.info.networktab.cd24d9aacefa")}</div>
+          <div style={{ marginBottom: 14, lineHeight: 1.6 }}>
+            <Text as="div" slot="label" tone="quiet">{i18n("pages.info.networktab.8494fa9c8467")}</Text>
           </div>
           <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", marginBottom: 6 }}>
             <div
@@ -220,20 +224,20 @@ export function NetworkTab() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "1px solid var(--border, #ccc)",
+                border: "1px solid var(--og-line-2)",
                 borderRadius: 8,
                 cursor: "pointer",
                 overflow: "hidden",
                 flexShrink: 0,
               }}
-              title="点击刷新验证码"
+              title={i18n("pages.info.networktab.6baa450e31c0")}
             >
               {captchaLoading ? (
-                <span style={{ fontSize: 12, opacity: 0.6 }}>加载中…</span>
+                <Text slot="label" tone="faint">{i18n("pages.info.networktab.4927a53bcc88")}</Text>
               ) : captcha ? (
-                <img src={captcha} alt="验证码" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={captcha} alt={i18n("pages.info.networktab.bb015c60bafc")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
-                <span style={{ fontSize: 12, opacity: 0.6 }}>点击重试</span>
+                <Text slot="label" tone="faint">{i18n("pages.info.networktab.965fb250e5fd")}</Text>
               )}
             </div>
             <input
@@ -242,15 +246,13 @@ export function NetworkTab() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") void doLogin(code.trim());
               }}
-              placeholder="验证码"
-              style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)", fontSize: 14 }}
+              placeholder={i18n("pages.info.networktab.bb015c60bafc")}
+              style={{ width: 130, height: 38, padding: "0 10px", borderRadius: 8, border: "1px solid var(--og-line-2)", fontSize: 14 }}
             />
-            <button className="btn" onClick={() => void doLogin(code.trim())} disabled={loginBusy || !code.trim()}>
-              {loginBusy ? "登录中…" : "登录 usereg"}
-            </button>
+            <Btn variant="outline" onClick={() => void doLogin(code.trim())} disabled={loginBusy || !code.trim()}>{loginBusy ? i18n("pages.info.networktab.3f06ed8f8c38") : i18n("pages.info.networktab.4cd6b2e0e4c4")}</Btn>
           </div>
           {loginErr ? (
-            <div style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: "#d33" }}>{loginErr}</div>
+            <div style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: "var(--og-error)" }}>{loginErr}</div>
           ) : null}
         </Card>
       ) : null}
@@ -263,8 +265,8 @@ export function NetworkTab() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>项目</th>
-                  <th className="num">信息</th>
+                  <th>{i18n("pages.info.networktab.79f326be4409")}</th>
+                  <th className="num">{i18n("pages.info.networktab.e7028601e7da")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -280,7 +282,7 @@ export function NetworkTab() {
 
           {devices && devices.length > 0 ? (
             <>
-              <SectionHead title="在线设备" aside={`${devices.length} 台 · 可下线`} />
+              <SectionHead title={i18n("pages.info.networktab.ef611c008f80")} aside={i18n("pages.info.networktab.66265029155c", { length: String(devices.length) })} />
               <Card style={{ padding: 0, overflow: "hidden" }}>
                 <div className="list">
                   {devices.map((d, i) => (
@@ -288,15 +290,13 @@ export function NetworkTab() {
                       <div className="row-main">
                         <div className="row-title" style={{ fontFamily: "monospace", fontWeight: 600 }}>
                           {d.ip4 || "–"}
-                          {d.ip6 ? <span style={{ opacity: 0.6, fontSize: 10 }}> · {d.ip6}</span> : null}
+                          {d.ip6 ? <Text slot="micro" tone="faint"> · {d.ip6}</Text> : null}
                         </div>
                         <div className="row-sub">
-                          {[d.mac ? `MAC ${d.mac}` : "", d.loggedAt ? `登录 ${d.loggedAt}` : ""].filter(Boolean).join(" · ") || "–"}
+                          {[d.mac ? `MAC ${d.mac}` : "", d.loggedAt ? i18n("pages.info.networktab.63d5dc2e839a", { loggedAt: String(d.loggedAt) }) : ""].filter(Boolean).join(" · ") || "–"}
                         </div>
                       </div>
-                      <button className="chip chip-offline" onClick={() => void doLogoutDevice(d)}>
-                        下线
-                      </button>
+                      <button className="chip chip-offline" onClick={() => void doLogoutDevice(d)}>{i18n("pages.info.networktab.9da8e7301f4e")}</button>
                     </div>
                   ))}
                 </div>
@@ -304,41 +304,37 @@ export function NetworkTab() {
             </>
           ) : null}
 
-          <SectionHead title="管理" aside="终端连接数 · Tsinghua-Secure 密码" />
+          <SectionHead title={i18n("pages.info.networktab.bb6d995724f4")} aside={i18n("pages.info.networktab.21ef4abafb6f")} />
           <Card style={{ padding: 18 }}>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              <span style={{ fontSize: 13 }}>终端连接数（当前 {devCount ?? "–"}）</span>
+              <span style={{ fontSize: 13 }}>{i18nRich("pages.info.networktab.71534747219b", { value: devCount ?? "–" })}</span>
               <input
                 value={newCount}
                 onChange={(e) => setNewCount(e.target.value.replace(/[^\d]/g, ""))}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") void doSetCount();
                 }}
-                placeholder="新数量"
+                placeholder={i18n("pages.info.networktab.e6a28243ce79")}
                 type="number"
                 min={1}
-                style={{ width: 90, height: 34, padding: "0 10px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
+                style={{ width: 90, height: 34, padding: "0 10px", borderRadius: 8, border: "1px solid var(--og-line-2)" }}
               />
-              <button className="btn" onClick={() => void doSetCount()} disabled={countBusy || !newCount}>
-                {countBusy ? "提交中…" : "修改"}
-              </button>
-              <span style={{ fontSize: 12, opacity: 0.7 }}>账号下每个静态 IP 计一个连接数，谨慎修改</span>
+              <Btn variant="outline" onClick={() => void doSetCount()} disabled={countBusy || !newCount}>{countBusy ? i18n("pages.info.networktab.18931020ad52") : i18n("pages.info.networktab.37090f456516")}</Btn>
+              <Text slot="label" tone="faint">{i18n("pages.info.networktab.6d9f04d2e157")}</Text>
             </div>
-            {countMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "#0866c6" }}>{countMsg}</div> : null}
+            {countMsg ? <div style={{ marginTop: 8, fontSize: 13, color: "var(--og-info)" }}>{countMsg}</div> : null}
 
-            <div style={{ borderTop: "1px solid var(--border, #eee)", margin: "16px 0", opacity: 0.5 }} />
+            <div style={{ borderTop: "1px solid var(--og-line-1)", margin: "16px 0", opacity: 0.5 }} />
             {!showPwd ? (
-              <button className="btn-ghost" onClick={() => setShowPwd(true)}>
-                修改 Tsinghua-Secure 密码
-              </button>
+              <Btn variant="ghost" onClick={() => setShowPwd(true)}>{i18n("pages.info.networktab.9bc45ac6f5f0")}</Btn>
             ) : (
               <div style={{ display: "grid", gap: 12, maxWidth: 420 }}>
                 <input
                   type="password"
                   value={pwd1}
                   onChange={(e) => setPwd1(e.target.value)}
-                  placeholder="新密码"
-                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
+                  placeholder={i18n("pages.info.networktab.515e9c7cf7b2")}
+                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--og-line-2)" }}
                 />
                 <input
                   type="password"
@@ -347,23 +343,17 @@ export function NetworkTab() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") void doChpwd();
                   }}
-                  placeholder="确认新密码"
-                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--border, #ccc)" }}
+                  placeholder={i18n("pages.info.networktab.6fde05a916c6")}
+                  style={{ height: 38, padding: "0 12px", borderRadius: 8, border: "1px solid var(--og-line-2)" }}
                 />
-                <div style={{ fontSize: 12, opacity: 0.7, lineHeight: 1.6 }}>
-                  8~19 位，字母区分大小写，不能与用户名相同，至少含数字、字母、特殊字符(仅限 !@#$%^*().~)中的两种
-                </div>
+                <div style={{ fontSize: 12, opacity: 0.7, lineHeight: 1.6 }}>{i18n("pages.info.networktab.04cb682d2b8d")}</div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button className="btn" onClick={() => void doChpwd()} disabled={pwdBusy || !pwd1}>
-                    {pwdBusy ? "提交中…" : "提交"}
-                  </button>
-                  <button className="btn-ghost" onClick={() => setShowPwd(false)}>
-                    取消
-                  </button>
+                  <Btn variant="outline" onClick={() => void doChpwd()} disabled={pwdBusy || !pwd1}>{pwdBusy ? i18n("pages.info.networktab.18931020ad52") : i18n("pages.info.networktab.08a85f4ab4ba")}</Btn>
+                  <Btn variant="ghost" onClick={() => setShowPwd(false)}>{i18n("pages.info.networktab.2cd0f3be8738")}</Btn>
                 </div>
               </div>
             )}
-            {pwdMsg ? <div style={{ marginTop: 10, fontSize: 13, color: "#0866c6" }}>{pwdMsg}</div> : null}
+            {pwdMsg ? <div style={{ marginTop: 10, fontSize: 13, color: "var(--og-info)" }}>{pwdMsg}</div> : null}
           </Card>
         </>
       ) : null}

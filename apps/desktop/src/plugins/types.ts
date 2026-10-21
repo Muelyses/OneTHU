@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 插件系统类型（v1）
  *
@@ -30,10 +31,15 @@ export type PluginPermission =
   | "mail:write" // 清华邮箱发信（写操作，需确认）
   | "cloud:read" // 清华云盘资料库/目录/搜索/下载（Seafile）
   | "cloud:write" // 清华云盘上传/分享（写操作，需确认）
+  | "memory:read" // OH 记忆检索/读取/清单（只读）
+  | "memory:write" // OH 记忆写入/追加/改写/归档（写操作，需确认）
+  | "gitlab:read" // 清华 GitLab 项目/仓库文件/Issue/合并请求/流水线（只读）
+  | "gitlab:write" // 清华 GitLab 新建 Issue、评论、关闭或重开（写操作，需确认）
   | "nav" // 应用内页面跳转
   | "ui" // toast 提示
   | "storage" // 插件私有键值存储
   | "net:external" // 外部网络请求（大模型 API 等）
+  | "ws:external" // 外部 WebSocket 长连接（宿主 Rust WS 桥；WebView 的 WS 在 macOS 26.5 受限环境不可用）
   | "tsinghua:sdk" // 以用户登录态访问任意清华校内服务（自定义服务接入 SDK；安装时重点确认）
   | "clipboard:read" // 读取系统剪贴板（敏感：可读密码管理器复制的口令）
   | "plugins:call" // 列出并执行其他已启用插件的命令（联动插件；OH 对话工具化需要）
@@ -47,40 +53,45 @@ export type PluginPermission =
   | "notify"; // 发送系统通知（三端；内容与时刻由插件自定）
 
 export const PLUGIN_PERMISSIONS: ReadonlyArray<{ id: PluginPermission; label: string; desc: string }> = [
-  { id: "user:read", label: "读取基本信息", desc: "姓名/学号/院系与登录状态" },
-  { id: "info:read", label: "读取信息门户", desc: "成绩、考试、新闻、校历、空教室、缴费记录等只读查询" },
-  { id: "learn:read", label: "读取网络学堂", desc: "课程/作业/通知/文件/讨论区只读查询" },
-  { id: "learn:write", label: "网络学堂发帖", desc: "讨论区发帖/回帖（写操作，需确认）" },
-  { id: "venue:read", label: "读取体育场馆", desc: "场馆场景/可约场地/我的预约只读查询" },
-  { id: "venue:book", label: "预约与取消场馆", desc: "体育场馆预约与取消（写操作，需确认）" },
-  { id: "xk:read", label: "读取选课数据", desc: "选课目录/已选/志愿/社区评价只读查询" },
-  { id: "kongjian:book", label: "预约公共空间", desc: "宿舍公共空间预约与取消（写操作，需确认）" },
-  { id: "cal:read", label: "读取日程", desc: "云同步日历与本地日程的只读查询" },
-  { id: "cal:write", label: "管理日程", desc: "新建/编辑/删除日程（云或本地，写操作）" },
-  { id: "mail:read", label: "读取邮箱", desc: "清华邮箱收件箱/已发送查询、读信与全箱搜索" },
-  { id: "mail:write", label: "发邮件", desc: "从清华邮箱发信（写操作，需确认）" },
-  { id: "cloud:read", label: "读取云盘", desc: "清华云盘资料库、目录浏览、库内搜索与下载" },
-  { id: "cloud:write", label: "上传/分享云盘", desc: "上传文件到云盘、生成分享链接（写操作，需确认）" },
-  { id: "card:read", label: "读取校园卡", desc: "余额与消费流水（只读，不含充值）" },
-  { id: "dorm:read", label: "读取宿舍信息", desc: "电费余额/缴费记录/卫生分（只读）" },
-  { id: "library:read", label: "查询图书馆", desc: "楼层/区域/座位分布/预约记录 + 研讨间资源查询" },
-  { id: "library:book", label: "预约图书馆", desc: "座位与研讨间的预约/取消（写操作）" },
-  { id: "network:read", label: "读取校园网账户", desc: "余额/在线设备/账号信息（只读）" },
-  { id: "nav", label: "应用内跳转", desc: "跳转到应用的任意页面与子栏" },
-  { id: "ui", label: "显示提示", desc: "弹出 toast 消息" },
-  { id: "storage", label: "本地存储", desc: "插件私有键值存储（卸载即清除）" },
-  { id: "net:external", label: "外部网络请求", desc: "直接请求任意外部网络地址（HTTP(S)）（大模型 API 等）" },
-  { id: "widget", label: "桌面小组件", desc: "向 Android 桌面小组件声明要显示的内容（渲染与取值由宿主完成，插件不写原生代码）" },
-  { id: "notify", label: "发送系统通知", desc: "向系统通知中心推送通知（三端），内容与时刻由插件决定" },
-  { id: "css", label: "注入全局样式", desc: "注入影响整个应用外观的 CSS（安装时重点确认）" },
-  { id: "clipboard:read", label: "读取剪贴板", desc: "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）" },
-  { id: "plugins:call", label: "调用其他插件", desc: "列出并执行其他已启用插件的命令（含写操作）" },
-  { id: "tsinghua:sdk", label: "访问任意校内服务", desc: "以你的登录态访问任意清华校内系统（自定义服务接入）" },
-  { id: "theme", label: "主题控制", desc: "查询与应用主题、参与昼夜跟随调度（可改变全局外观）" },
-  { id: "llm", label: "模型对话", desc: "经内置 Harness 调用大模型（清华免费档或你的自费 API）" },
-  { id: "exthw:read", label: "读取外部作业源", desc: "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照" },
-  { id: "exthw:refresh", label: "刷新外部作业源", desc: "触发外部作业源网络刷新" },
-  { id: "webview", label: "应用内网页", desc: "在应用内打开网页（Android 桌面模式浏览）" },
+  { id: "user:read", get label() { return i18n("plugins.types.db8046b7bb4f"); }, get desc() { return i18n("plugins.types.dd2d1636c619"); } },
+  { id: "info:read", get label() { return i18n("plugins.types.92acc8140843"); }, get desc() { return i18n("plugins.types.e98935ae658f"); } },
+  { id: "learn:read", get label() { return i18n("plugins.types.cf01361e883f"); }, get desc() { return i18n("plugins.types.d7ca0f2e28a2"); } },
+  { id: "learn:write", get label() { return i18n("plugins.types.112f4f9c033a"); }, get desc() { return i18n("plugins.types.eeb2d48d3eaa"); } },
+  { id: "venue:read", get label() { return i18n("plugins.types.6dc54a9470ed"); }, get desc() { return i18n("plugins.types.c958b2f88de5"); } },
+  { id: "venue:book", get label() { return i18n("plugins.types.1004769bdb4e"); }, get desc() { return i18n("plugins.types.5171b9b529e4"); } },
+  { id: "xk:read", get label() { return i18n("plugins.types.27922c7aab59"); }, get desc() { return i18n("plugins.types.1ff6bbfc90da"); } },
+  { id: "kongjian:book", get label() { return i18n("plugins.types.2cc9c0bad3d7"); }, get desc() { return i18n("plugins.types.3fb5a1122255"); } },
+  { id: "cal:read", get label() { return i18n("plugins.types.056ff6cc3d7e"); }, get desc() { return i18n("plugins.types.bb44113c1bc4"); } },
+  { id: "cal:write", get label() { return i18n("plugins.types.dcaf20f7619c"); }, get desc() { return i18n("plugins.types.c4aa15d951ce"); } },
+  { id: "mail:read", get label() { return i18n("plugins.types.08eccad108d6"); }, get desc() { return i18n("plugins.types.efe0261e5829"); } },
+  { id: "mail:write", get label() { return i18n("plugins.types.b15c42776a94"); }, get desc() { return i18n("plugins.types.556c5fcee2ec"); } },
+  { id: "cloud:read", get label() { return i18n("plugins.types.627dd0f3fd6e"); }, get desc() { return i18n("plugins.types.9f61b41430d2"); } },
+  { id: "cloud:write", get label() { return i18n("plugins.types.48e21aca2214"); }, get desc() { return i18n("plugins.types.b5df04d0e95e"); } },
+  { id: "memory:read", get label() { return i18n("plugins.types.7ad8378abec1"); }, get desc() { return i18n("plugins.types.9665288d3db6"); } },
+  { id: "memory:write", get label() { return i18n("plugins.types.9f78589bce11"); }, get desc() { return i18n("plugins.types.0e3c0e14077d"); } },
+  { id: "gitlab:read", get label() { return i18n("plugins.types.3821452a894a"); }, get desc() { return i18n("plugins.types.0b0aeead7381"); } },
+  { id: "gitlab:write", get label() { return i18n("plugins.types.48ad7913a562"); }, get desc() { return i18n("plugins.types.c4fad583342d"); } },
+  { id: "card:read", get label() { return i18n("plugins.types.0dc09ebd6c0e"); }, get desc() { return i18n("plugins.types.584c7658f468"); } },
+  { id: "dorm:read", get label() { return i18n("plugins.types.78a788aeb3ed"); }, get desc() { return i18n("plugins.types.3c455efb9961"); } },
+  { id: "library:read", get label() { return i18n("plugins.types.14dceca5d51a"); }, get desc() { return i18n("plugins.types.feef1c678595"); } },
+  { id: "library:book", get label() { return i18n("plugins.types.5d78a4c234e1"); }, get desc() { return i18n("plugins.types.c6cb8feb5896"); } },
+  { id: "network:read", get label() { return i18n("plugins.types.27d28e1cb812"); }, get desc() { return i18n("plugins.types.b47c2c0ce65a"); } },
+  { id: "nav", get label() { return i18n("plugins.types.781fead7e82d"); }, get desc() { return i18n("plugins.types.4b9d52da5277"); } },
+  { id: "ui", get label() { return i18n("plugins.types.b2101414fb98"); }, get desc() { return i18n("plugins.types.c0c4378797b8"); } },
+  { id: "storage", get label() { return i18n("plugins.types.7015255aa19b"); }, get desc() { return i18n("plugins.types.062675c673b0"); } },
+  { id: "net:external", get label() { return i18n("plugins.types.b0709765f8a8"); }, get desc() { return i18n("plugins.types.b4ccc4a10048"); } },
+  { id: "ws:external", get label() { return i18n("plugins.types.6f73980048f5"); }, get desc() { return i18n("plugins.types.c6990190c123"); } },
+  { id: "widget", get label() { return i18n("plugins.types.28b0433b1b95"); }, get desc() { return i18n("plugins.types.e821edec359c"); } },
+  { id: "notify", get label() { return i18n("plugins.types.c26692150916"); }, get desc() { return i18n("plugins.types.0b73861126d5"); } },
+  { id: "css", get label() { return i18n("plugins.types.db1b60955a4e"); }, get desc() { return i18n("plugins.types.94d7e3d8ab44"); } },
+  { id: "clipboard:read", get label() { return i18n("plugins.types.e059f380bf07"); }, get desc() { return i18n("plugins.types.50500d372141"); } },
+  { id: "plugins:call", get label() { return i18n("plugins.types.1a2130a92d14"); }, get desc() { return i18n("plugins.types.c73bd6334e39"); } },
+  { id: "tsinghua:sdk", get label() { return i18n("plugins.types.2601413e9019"); }, get desc() { return i18n("plugins.types.ef2ab4dbea94"); } },
+  { id: "theme", get label() { return i18n("plugins.types.33a65099fe72"); }, get desc() { return i18n("plugins.types.01e0b2699c29"); } },
+  { id: "llm", get label() { return i18n("plugins.types.4bcb26f88d39"); }, get desc() { return i18n("plugins.types.2f907548af0c"); } },
+  { id: "exthw:read", get label() { return i18n("plugins.types.1daf510cf2b5"); }, get desc() { return i18n("plugins.types.5bbe605e0a01"); } },
+  { id: "exthw:refresh", get label() { return i18n("plugins.types.ec461a12a38e"); }, get desc() { return i18n("plugins.types.40a17d15ad1e"); } },
+  { id: "webview", get label() { return i18n("plugins.types.a245f4a0189e"); }, get desc() { return i18n("plugins.types.e41be5c33320"); } },
 ];
 
 /** 插件设置项：安装后由应用代为渲染表单（插件不自带 UI） */
@@ -93,6 +104,9 @@ export interface PluginSettingField {
   type?: "text" | "password" | "textarea" | "select";
   /** select 类型的选项集 */
   options?: Array<{ value: string; label: string }>;
+  /** select 选项**运行时**从实时 settings 取 JSON 数组（如 MadModel 站点清单实况），
+   *  与静态 options 合并；该项缺失或解析失败就退回静态 options */
+  optionsFrom?: string;
   placeholder?: string;
   default?: string;
 }
@@ -116,6 +130,19 @@ export interface PluginManifest {
   /** 插件类别（2026-09-13 主题系统立项）：theme=主题插件（导出 theme 定义，
    *  免 default(ctx)），general=通用能力插件（默认，导出 default(ctx)） */
   category?: "general" | "theme";
+  /* ── 视觉/身份字段（2026-10-11 市场升级，**全部可选、向后兼容**：老插件不写照常显示）── */
+  /** 作者 logo：URL 或仓库相对路径（svg/png 都行）；列表与详情都用它 */
+  logo?: string;
+  /** 列表缩略图（比 logo 更"图片化"的那张）；缺失回落 logo，再缺失回落 monogram */
+  thumbnail?: string;
+  /** 详情页简介图（可多张，按数组顺序展示；点开可放大） */
+  screenshots?: string[];
+  /** 详情正文（markdown；缺失回落 description） */
+  readme?: string;
+  /** 主页/文档地址 */
+  homepage?: string;
+  /** 许可证标识（MIT / Apache-2.0 …） */
+  license?: string;
 }
 
 /** 插件注册的命令：显示在插件管理页，可带一段文本输入（agent prompt 等） */
@@ -217,6 +244,8 @@ export interface OnethuApi {
     homework(semesterId?: string): Promise<Array<import("@onethu/core").Homework & { courseName: string }>>;
     notifications(semesterId?: string): Promise<Array<import("@onethu/core").Notification & { courseName: string }>>;
     files(courseId: string, semesterId?: string): Promise<import("@onethu/core").CourseFile[]>;
+    /** 下载课件/附件到下载目录，返回本地路径（fileId/filename 来自 files 列表） */
+    download(fileId: string, filename?: string): Promise<string>;
     reply(wlkcid: string, threadId: string, content: string): Promise<void>;
     post(wlkcid: string, bqid: string, title: string, html: string): Promise<void>;
     bbsBoards(wlkcid: string): Promise<import("@onethu/core").LearnBbsBoard[]>;
@@ -288,11 +317,204 @@ export interface OnethuApi {
     /** 分享链接（expireDays=0 永久） */
     share(repoId: string, path: string, expireDays: number): Promise<{ link: string; token: string }>;
   };
+  memory: {
+    /** 四段检索（无向量）：query 空格分词 + tags/type/folder 过滤 → 命中列表 */
+    search(q: { query?: string; tags?: string[]; type?: string; folder?: string; limit?: number }): Promise<Array<{
+      permalink: string; title: string; type: string; tags: string[]; path: string;
+      modified: string; score: number; snippet: string; via?: string;
+    }>>;
+    /** 按 permalink 读全文（超 8KB 截断） */
+    read(permalink: string): Promise<string>;
+    /** 目录/标签清单（不读正文） */
+    list(opts?: { folder?: string; tag?: string }): Promise<Array<{
+      permalink: string; title: string; type: string; folder: string; tags: string[]; modified: string;
+    }>>;
+    /** 全量重扫重建账本（排障/同步后对齐） */
+    refresh(): Promise<{ count: number }>;
+    ready(): Promise<boolean>;
+    /** 新建实体（title 重复会拒绝并引导 append） */
+    write(input: {
+      title: string;
+      observations: Array<{ category: string; text: string; context?: string }>;
+      relations?: Array<{ rel: string; target: string; context?: string }>;
+      tags?: string[];
+      type?: string;
+      folder?: string;
+      origin?: string;
+    }): Promise<{ permalink: string; path: string }>;
+    append(permalink: string, category: string, text: string, context?: string): Promise<{ ok: true }>;
+    edit(permalink: string, find: string, replace: string): Promise<{ ok: true }>;
+    /** 软删除 → .trash/ */
+    delete(permalink: string, reason?: string): Promise<{ trashedTo: string }>;
+  };
+  /** 用户扩展层（OH 元工具）：用户工具 / OneFlow / 用户生成组件 */
+  ext: {
+    skillSearch(query?: string): Promise<unknown>;
+    skillCompute(code: string, input: unknown): Promise<unknown>;
+    skillRun(id: string, path: string, input: unknown): Promise<unknown>;
+    skillLoad(id: string): Promise<unknown>;
+    skillReadFile(id: string, path: string): Promise<unknown>;
+    toolCreate(name: string, description: string, steps: unknown): void;
+    toolList(): Array<{ id: string; name: string; description: string }>;
+    toolRun(id: string): Promise<{ ok: boolean; error?: string }>;
+    toolDelete(id: string): void;
+    flowCreate(name: string, trigger: unknown, steps: unknown): { id: string };
+    flowList(): Array<{ id: string; name: string; trigger: unknown; enabled: boolean; lastRun?: number; lastOk?: boolean; lastError?: string }>;
+    flowRun(id: string): Promise<{ ok: boolean; error?: string }>;
+    /** 改名字 / 触发方式 / 步骤 / 启停（OH 的 ext_flow_update；UI 启停开关同一条） */
+    flowUpdate(id: string, patch: { name?: string; trigger?: unknown; steps?: unknown; enabled?: boolean }): { ok: boolean };
+    flowSetEnabled(id: string, on: boolean): { ok: boolean };
+    flowDelete(id: string): void;
+    widgetCreate(name: string, html: string, x?: number, y?: number): { id: string };
+    widgetList(): Array<{ id: string; name: string; createdAt: number }>;
+    widgetDelete(id: string): void;
+    onePageCreate(name: string, icon?: string): { id: string };
+    onePageList(): Array<{ id: string; name: string; kind: string; icon: string }>;
+    onePageDelete(id: string): { ok: boolean; reason?: string };
+    onePageRename(id: string, name: string): void;
+    onePageSetIcon(id: string, icon: string): { ok: boolean };
+    onePageOpen(id: string): void;
+    onePageItems(boardId: string): Array<{ id: string; kind: string; text?: string; x: number; y: number; w: number; h: number }>;
+    onePageAddItem(boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }>;
+    onePageMoveItem(boardId: string, itemId: string, x: number, y: number): void;
+    onePageRemoveItem(boardId: string, itemId: string): void;
+    /** 收藏落点（2026-10-15）：把一颗原子放到**首页**（不给 boardId）或某块 OnePage
+     *  （给 boardId）。与收藏面板同一份实现，自带查重与落位；返回 ok=false + reason
+     *  （duplicate = 板上已经有它；no-board = 板不存在）。不碰坐标。 */
+    onePageAddAtom(target: { to?: string; boardId?: string } | null, atomKey: string): { ok: boolean; boardId: string; added?: string; reason?: string };
+    /** 首页程序坞（2026-10-15）：一级页 ∪ 插件功能页（pageId 形如 plugin:<插件>:<页>）
+     *  停靠/取消停靠一颗球；不传 pageId = 只读快照（含可停靠清单与名字）。
+     *  认不出的 pageId 抛错并列出可停靠项。可调用形态与 .set 同一实现（rpc 分发是平铺两段式）。 */
+    homeDock: ((pageId?: string, on?: boolean) => {
+      ok: boolean;
+      pageId: string;
+      label: string;
+      docked: string[];
+      dockable: string[];
+      entries: Array<{ page: string; label: string; plugin: boolean }>;
+    }) & {
+      set(pageId?: string, on?: boolean): {
+        ok: boolean;
+        pageId: string;
+        label: string;
+        docked: string[];
+        dockable: string[];
+        entries: Array<{ page: string; label: string; plugin: boolean }>;
+      };
+    };
+    workspaceList(): Array<{ id: string; name: string; live: boolean; tabs: number }>;
+    workspaceCreate(name: string, tabIds?: unknown): { id: string };
+    workspaceOpen(id: string): boolean;
+    /** 收起活板（只折叠，不关标签/不删定义） */
+    workspaceCollapse(id: string): boolean;
+    /** 真正关闭活板（关成员标签 + 移除定义；破坏性） */
+    workspaceClose(id: string): boolean;
+    workspaceDissolve(id: string): boolean;
+    workspaceDelete(id: string): boolean;
+    tabList(): Array<{ id: string; title: string; page: string }>;
+    tabOpen(page: string): { id: string };
+    tabClose(id: string): boolean;
+    tabDuplicate(id: string): { id: string };
+    tabFocus(id: string): boolean;
+    wallpaperSet(scope: string, ref: string | null): void;
+    wallpaperGet(): { global: string | null };
+    voiceSet(patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };
+    voiceGet(): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string };
+    prefSet(patch: unknown): void;
+    prefGet(): { capsuleTap: string; voiceTarget: string };
+    themeScheduleSet(opts: unknown): { followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null };
+    notifySet(patch: unknown): unknown;
+    notifyGet(): unknown;
+    hwTimelineSet(minutes: number): { minutes: number };
+    hwReminderSet(id: string, minutes: number | null): void;
+    eventAdd(ev: unknown): Promise<{ uid: string }>;
+    eventDelete(uid: string): Promise<void>;
+    eventList(): Array<{ uid: string; summary: string; start: number; end: number; allDay?: boolean }>;
+    pluginInstalledList(): Promise<Array<{ id: string; name: string; enabled: boolean }>>;
+    pluginInstallFromRepo(repo: string, entry?: string): Promise<{ id: string; name: string }>;
+    pluginEnableToggle(id: string, on: boolean): Promise<void>;
+    pluginUninstall(id: string): Promise<void>;
+    themeApply(name: string, vars: unknown): { id: string };
+    themeList(): Array<{ id: string; name: string; active: boolean }>;
+    themeActivate(id: string | null): void;
+    themeDelete(id: string): void;
+    phoneWidgetSet(title: string, rows: unknown): { ok: boolean; rows: number };
+  };
   kongjian: {
     page(opts?: { spaceId?: string; roomId?: string; date?: string }): Promise<import("@onethu/core").KongjianPage>;
     my(): Promise<import("@onethu/core").KongjianRecord[]>;
     book(bookUrl: string, info_: { name: string; sid: string; tel: string; other: string }): Promise<string>;
     cancel(target: string): Promise<void>;
+  };
+  /** 清华 GitLab（git.tsinghua.edu.cn）：项目、仓库文件、Issue、合并请求与流水线。
+   *  id 为项目数字 id（`projects()` / `search()` 返回元素的 id），iid 为项目内编号
+   *  （Issue 与合并请求各自计数，等于网页地址里的那个号）。 */
+  /** 临时来访人员报备（visit.tsinghua.edu.cn）：只填充「报备草稿」并把预约页切到该栏；
+   *  提交由用户在页面上确认后完成（不受人代劳）。 */
+  visit: {
+    fill(patch: Record<string, unknown>, opts?: { open?: boolean }): { ok: boolean; opened: boolean; filled: string[] };
+  };
+  gitlab: {
+    /** 我参与的项目（page 从 1 起，每页 50 条） */
+    projects(page?: number): Promise<import("@onethu/info-lib").GitProject[]>;
+    /** 我星标的项目 */
+    starred(page?: number): Promise<import("@onethu/info-lib").GitProject[]>;
+    /** 按名称搜索项目 */
+    search(search: string, page?: number): Promise<import("@onethu/info-lib").GitProject[]>;
+    /** 项目详情 */
+    project(id: number): Promise<import("@onethu/info-lib").GitProjectDetail>;
+    /** 分支列表（默认分支排在最前） */
+    branches(id: number): Promise<import("@onethu/info-lib").GitBranch[]>;
+    /** 目录内容：path 传空串表示根目录，ref 传分支名 */
+    tree(id: number, path: string, ref: string, page?: number): Promise<import("@onethu/info-lib").GitFile[]>;
+    /** 文件正文（sha 取自 tree 返回元素的 id；二进制文件会得到乱码） */
+    file(id: number, sha: string): Promise<string>;
+    issues(id: number, opts?: { state?: "opened" | "closed" | "all"; search?: string; page?: number }): Promise<import("@onethu/info-lib").GitIssue[]>;
+    issue(id: number, iid: number): Promise<import("@onethu/info-lib").GitIssue>;
+    /** Issue 评论（含系统动态，`system: true` 的条目为状态变更记录） */
+    issueNotes(id: number, iid: number): Promise<import("@onethu/info-lib").GitNote[]>;
+    mergeRequests(id: number, opts?: { state?: "opened" | "closed" | "all"; search?: string; page?: number }): Promise<import("@onethu/info-lib").GitMergeRequest[]>;
+    mergeRequest(id: number, iid: number): Promise<import("@onethu/info-lib").GitMergeRequest>;
+    mergeRequestNotes(id: number, iid: number): Promise<import("@onethu/info-lib").GitNote[]>;
+    /** 流水线记录（ref 传分支名，空串为全部） */
+    pipelines(id: number, opts?: { ref?: string; page?: number }): Promise<import("@onethu/info-lib").GitPipeline[]>;
+    /** 某次流水线的作业 */
+    jobs(id: number, pipelineId: number): Promise<import("@onethu/info-lib").GitJob[]>;
+    /** 作业日志（纯文本，带 ANSI 颜色码） */
+    jobTrace(id: number, jobId: number): Promise<string>;
+    /** 新建 Issue（写操作） */
+    createIssue(id: number, title: string, description: string): Promise<import("@onethu/info-lib").GitIssue>;
+    /** 评论 Issue 或合并请求（写操作） */
+    comment(kind: "issue" | "mr", id: number, iid: number, body: string): Promise<import("@onethu/info-lib").GitNote>;
+    /** 改写自己已有的评论（写操作；noteId 取自 issueNotes / mergeRequestNotes 的元素 id，
+     *  GitLab 只允许作者本人改） */
+    updateComment(kind: "issue" | "mr", id: number, iid: number, noteId: number, body: string): Promise<import("@onethu/info-lib").GitNote>;
+    /** 讨论（评论线程）：首条评论 + 回复；`individual_note` 为真的讨论只有一条 */
+    discussions(kind: "issue" | "mr", id: number, iid: number, page?: number): Promise<import("@onethu/info-lib").GitDiscussion[]>;
+    /** 回复某条评论（写操作，附在该讨论末尾） */
+    reply(kind: "issue" | "mr", id: number, iid: number, discussionId: string, body: string): Promise<import("@onethu/info-lib").GitNote>;
+    /** 删除一条评论（写操作；GitLab 只允许作者本人删） */
+    deleteComment(kind: "issue" | "mr", id: number, iid: number, discussionId: string, noteId: number): Promise<void>;
+    /** 解决 / 重新打开整个讨论（写操作；GitLab 网页上评论右侧那个 Resolve） */
+    resolveDiscussion(kind: "issue" | "mr", id: number, iid: number, discussionId: string, resolved: boolean): Promise<void>;
+    /** 指派（写操作；userIds 传空数组取消全部指派） */
+    assignees(kind: "issue" | "mr", id: number, iid: number, userIds: number[]): Promise<void>;
+    /** 议题 / 合并请求的条数（服务端 x-total：进行中 / 已关闭 / 全部） */
+    requestCounts(kind: "issue" | "mr", id: number): Promise<{ opened: number; closed: number; all: number }>;
+    /** 表情回应（award emoji）：挂在议题 / 合并请求本体，或挂在某条评论上（传 noteId） */
+    awards(kind: "issue" | "mr", id: number, iid: number, noteId?: number): Promise<import("@onethu/info-lib").GitAward[]>;
+    /** 贴一个表情回应（写操作；name 取 thumbsup / thumbsdown / laugh / hooray / confused / heart / eyes / rocket） */
+    react(kind: "issue" | "mr", id: number, iid: number, name: string, noteId?: number): Promise<import("@onethu/info-lib").GitAward>;
+    /** 取消某个表情回应（写操作；awardId 取自 awards 元素的 id） */
+    unreact(kind: "issue" | "mr", id: number, iid: number, awardId: number, noteId?: number): Promise<void>;
+    /** 合并请求的文件变更与差异 */
+    mergeRequestChanges(id: number, iid: number): Promise<import("@onethu/info-lib").GitMergeRequestChanges>;
+    /** 新建合并请求（写操作；源分支与目标分支不能相同） */
+    createMergeRequest(id: number, sourceBranch: string, targetBranch: string, title: string, description: string): Promise<import("@onethu/info-lib").GitMergeRequest>;
+    /** 合入合并请求（写操作；不代删源分支、不改提交信息） */
+    mergeMergeRequest(id: number, iid: number): Promise<import("@onethu/info-lib").GitMergeRequest>;
+    /** 关闭或重新打开（写操作；kind 取 "issue" 或 "mr"，state 取 "close" 或 "reopen"） */
+    setState(kind: "issue" | "mr", id: number, iid: number, state: "close" | "reopen"): Promise<void>;
   };
   coursex: {
     semesters(): Promise<import("@onethu/core").CourseXSemester[]>;
@@ -341,11 +563,18 @@ export interface OnethuApi {
   };
   nav: {
     /** 应用内跳转（page 见接口指南「页面路由」；params 如 { reserveTab: "room" }） */
-    go(page: string, params?: Record<string, unknown>): void;
+    go(page: string, params?: Record<string, unknown>): boolean;
     /** 按关键词检索全应用可跳转原子（功能页面 / 今日组件 / 本机已见过的课程·作业·通知·
      *  在线服务等）。只查静态注册表 + 本机缓存，**绝不发起校园请求**；
      *  与 nav.openAtom 配对即「一句话直达」。需 nav 权限 */
     searchAtoms(query: string, limit?: number): Promise<Array<{ kind: string; key: string; title: string; sub?: string; group: string }>>;
+    /** 检索行级直达（2026-10-12 task-22）：routeId 或 query → searchRows 注册表唯一命中 →
+     *  与检索条点行完全同链（goSearchRow：家族 → OH 档位/插件视图 → 行滚动高亮）。
+     *  查无 → { ok:false, reason }，调用方（OH）应改口复述而不是硬猜。需 nav 权限 */
+    searchRow(ref: { routeId?: string; query?: string }): Promise<{ ok: boolean; id?: string; title?: string; breadcrumb?: string[]; landedOn?: string; note?: string; reason?: string; candidates?: Array<{ id: string; title: string }> }>;
+    /** 检索行路由表（searchRows 唯一真源的只读投影，routes.json 同形）——
+     *  给 Rust 侧 ui_navigate 做本地匹配与缓存兜底。需 nav 权限 */
+    routeTable(): Promise<Array<{ id: string; title: string; desc: string; aliases: string[]; breadcrumb: string[]; kind: string; tier: string; view: string; tab: string; section: string; note: string }>>;
     /** 打开一个原子（等价用户点收藏夹里的那一项：跳功能页 / 切聚合页页签 / 开服务页）。
      *  该原子未注册或已失效时返回 false——**不会跳空白页**，调用方据此回话。需 nav 权限 */
     openAtom(ref: { kind: string; key: string }): Promise<boolean>;
@@ -461,11 +690,33 @@ export interface OnethuApi {
      *  返回标准 Response（可用 res.json()/res.text()）。 */
     fetch(url: string, init?: { method?: string; headers?: Record<string, string>; body?: string }): Promise<Response>;
   };
+  ws: {
+    /** 打开外部 WebSocket（宿主 Rust 桥；需 ws:external 权限）。返回 sessionId。
+     *  头部可注入 Origin 等任意握手头（宿主无跨源限制）。10 分钟空闲会被宿主自动清扫；每插件并发上限 8。 */
+    open(url: string, opts?: { headers?: Record<string, string>; connectTimeoutMs?: number }): Promise<string>;
+    /** 发一帧：text=文本帧；b64=二进制帧（base64） */
+    send(session: string, data: string, encoding?: "text" | "b64"): Promise<void>;
+    /** 拉一帧（阻塞至超时）。kind: "text"|"binary"|"closed"；超时抛「recv 超时」。 */
+    recv(session: string, timeoutMs?: number): Promise<{ kind: "text" | "binary" | "closed"; text?: string; b64?: string } | null>;
+    /** 关闭一条会话 */
+    close(session: string): Promise<void>;
+    /** 清空本插件全部会话（停用/卸载自动调用；也可插件自选提前清） */
+    closeAll(): Promise<void>;
+  };
   plugins: {
     /** 列出已启用 JS 插件及其命令（联动插件工具发现）。需 plugins:call 权限 */
     list(): Promise<Array<{ pluginId: string; pluginName: string; commands: Array<{ id: string; title: string; inputLabel?: string }> }>>;
     /** 执行已启用插件的命令（高危：命令可能含写操作，由插件内部两段确认兜底）。需 plugins:call 权限 */
     call(pluginId: string, cmdId: string, input?: string): Promise<unknown>;
+  };
+  /** 极客模式：浏览器探索（桌面 Only；能力最小面） */
+  browser: {
+    probe(): Promise<unknown>;
+    launch(mode: string): Promise<unknown>;
+    navigate(url: string): Promise<void>;
+    eval(js: string): Promise<unknown>;
+    snapshot(): Promise<unknown>;
+    close(): Promise<unknown>;
   };
   ts: {
     /** 会话探活：返回主会话当前可用性。需 tsinghua:sdk 权限。 */
@@ -536,11 +787,13 @@ export interface PluginRecord {
   enabled: boolean;
   settings: Record<string, string>;
   installedAt: number;
+  /** 公告热通道（manifest.announce 启用；notice.digest 变化视为新公告；宿主负责拉取与展示） */
+  notice?: { digest: string; at: number; text: string };
 }
 
 /** 权限不足时抛出 */
 export class PluginPermissionError extends Error {
   constructor(permission: string, what: string) {
-    super(`插件未获授权「${permission}」，无法执行：${what}`);
+    super(i18n("plugins.types.0a267e07b231", { permission: permission, action: what }));
   }
 }

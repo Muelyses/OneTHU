@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * core 客户端装配：统一会话（CampusSession）+ 凭证存储。
  * 一次 CAS 登录 → learn / info 共享会话；Tauri 桌面端走 Rust 网络层（无 CORS）。
@@ -18,8 +19,10 @@ import {
   type TwoFactorMethod,
 } from "@onethu/core";
 import { universalFetch, nativeFetch, nativeSeedCookies, nativeCookieClear, isTauri, setHopCookieProvider, setHopLogger, setHopUrlWrapper } from "./transport.js";
-import { loginCooldownLeftMs, markLoginFailedPublicKey } from "./loginGate.js";
+import { loginCooldownLeftMs } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
+import { redactNetworkLog } from "./networkLog.js";
+import { loginFailureDiagnostic } from "./loginErrors.js";
 import { withPrivacy } from "./privacy.js";
 
 export type { TwoFactorMethod };
@@ -49,33 +52,37 @@ export const store = localStorageStore();
 const SESSION_FILE = "session";
 const SECRET_FILE = "credentials";
 
-export async function fileRead(name: string): Promise<string | null> {
-  if (!isTauri) return null;
+/** strict 供日历/邮箱等不能把 I/O 失败当成功的事务使用；其他调用保持旧兜底。 */
+export interface StateFileOptions { strict?: boolean }
+export async function fileRead(name: string, options: StateFileOptions = {}): Promise<string | null> {
+  if (!isTauri) return options.strict ? globalThis.localStorage.getItem(`onethu.state-file.${name}`) : null;
   try {
     const { invoke } = await import("@tauri-apps/api/core");
+    // state_read 对 NotFound 返回 null，其他真实 I/O 错误拒绝。
     return await invoke<string | null>("state_read", { name });
-  } catch {
+  } catch (error) {
+    if (options.strict) throw error;
     return null;
   }
 }
 
-export async function fileWrite(name: string, content: string): Promise<void> {
-  if (!isTauri) return;
+export async function fileWrite(name: string, content: string, options: StateFileOptions = {}): Promise<void> {
+  if (!isTauri) { if (options.strict) globalThis.localStorage.setItem(`onethu.state-file.${name}`, content); return; }
   try {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("state_write", { name, content });
-  } catch {
-    /* 文件存储尽力而为：失败不阻塞主流程 */
+  } catch (error) {
+    if (options.strict) throw error;
   }
 }
 
-export async function fileDelete(name: string): Promise<void> {
-  if (!isTauri) return;
+export async function fileDelete(name: string, options: StateFileOptions = {}): Promise<void> {
+  if (!isTauri) { if (options.strict) globalThis.localStorage.removeItem(`onethu.state-file.${name}`); return; }
   try {
     const { invoke } = await import("@tauri-apps/api/core");
     await invoke("state_delete", { name });
-  } catch {
-    /* ignore */
+  } catch (error) {
+    if (options.strict) throw error;
   }
 }
 
@@ -297,22 +304,19 @@ http.onAuthRequired(async () => {
 export async function logLine(text: string): Promise<void> {
   try {
     const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("log_debug", { line: new Date().toISOString() + " | " + text });
+    await invoke("log_debug", { line: new Date().toISOString() + " | " + redactNetworkLog(text) });
   } catch {
     /* noop */
   }
 }
 
-// R10：图书馆首页全量转储（log_debug 单行有截断，分块绕过）
+// Keep the diagnostic hook without persisting the page body or hidden fields.
 void (async () => {
   try {
     const { InfoClient } = await import("@onethu/core");
     InfoClient.onDebugDump = (label, content) => {
-      const CHUNK = 6000;
-      const n = Math.ceil(content.length / CHUNK);
-      for (let i = 0; i < n; i++) {
-        void logLine(`DUMP ${label} ${i + 1}/${n}: ${content.slice(i * CHUNK, (i + 1) * CHUNK)}`);
-      }
+      // Full school pages can contain student data and hidden authentication fields.
+      void logLine(`DUMP ${label}: omitted page body (${content.length} characters)`);
     };
   } catch {
     /* 钩子失败不影响主流程 */
@@ -320,6 +324,8 @@ void (async () => {
 })();
 
 async function dumpDebug(err: unknown): Promise<void> {
+  const authDiagnostic = loginFailureDiagnostic(err);
+  if (authDiagnostic) await logLine(authDiagnostic);
   if (err instanceof Error && isTauri) {
     const debug = (err as Error & { debug?: string }).debug;
     await logLine("ERR " + err.message + (debug ? "\n" + debug : ""));
@@ -338,20 +344,40 @@ function retryTuojAfterTrust(): void {
  *  docs/INFOLIB-PIPELINE-REVIEW.md P2）。单一 webvpn 管线：不再有直连/webvpn
  *  降级舞蹈——webvpn 从校内校外都可达，拓扑唯一才是双环境适配的本质。
  *  opts.remember（默认 true）：成功后把密码混淆存本机，boot 恢复失败时静默重登。 */
-export async function login(
+type ClientLoginResult = { state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string };
+let clientLoginRequest: { username: string; p: Promise<ClientLoginResult> } | null = null;
+
+export function login(username: string, password: string, opts: { remember?: boolean } = {}): Promise<ClientLoginResult> {
+  if (clientLoginRequest) {
+    if (clientLoginRequest.username === username) return clientLoginRequest.p;
+    return Promise.reject(Object.assign(new Error("Another login is in progress."), { code: "AUTH_IN_PROGRESS" }));
+  }
+  const p = performLogin(username, password, opts);
+  clientLoginRequest = { username, p };
+  const clear = () => { if (clientLoginRequest?.p === p) clientLoginRequest = null; };
+  void p.then(clear, clear);
+  return p;
+}
+
+async function performLogin(
   username: string,
   password: string,
   opts: { remember?: boolean } = {},
 ): Promise<{ state: "ready" } | { state: "need-2fa"; methods: TwoFactorMethod[]; debugHtml: string }> {
-  const { initInfoLib, libLogin, setLibFinger3, helper } = await import("./infoLib.js");
+  void logLine("AUTH-PHASE import-login");
+  const { libLogin, setLibFinger3, helper, assertLoginAccount } = await import("./infoLib.js");
+  assertLoginAccount(username, password);
+  void logLine("AUTH-PHASE fingerprint-start");
   const fingerprint = await currentFingerprint();
+  session.fingerprint = fingerprint;
+  void logLine("AUTH-PHASE fingerprint-ready");
   // （2026-09-18 决策）轮换实验撤除：强制 2FA 的链路被 keepalive/静默重登/
   // lib 僵尸链三面夹击，稳定性失控。回归简单：fp 固定，登录一次 2FA 到位；
   // finger3 缺失时选课靠死结自愈兜底（确认失败→清账直登，实测可用）。
   const remember = opts.remember ?? true;
-  pendingSecret = { username, password, remember };
   if (!remember) await clearRemembered().catch(() => undefined);
-
+  assertLoginAccount(username, password);
+  pendingSecret = { username, password, remember };
   setLibFinger3(session.finger3);
   helper.fingerprint = fingerprint;
   try {
@@ -365,6 +391,7 @@ export async function login(
         const fresh = getSelfFinger3() ||
           (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
         session.finger3 = fresh || session.finger3 || "";
+        setLibFinger3(session.finger3);
       }
       session.injectCredentials(username, password);
       await persist();
@@ -395,8 +422,6 @@ export async function login(
   } catch (err) {
     if (err instanceof Error) await dumpDebug(err);
     await logLine("LOGIN-ERR " + String(err));
-    // 封锁页特征（2026-09-17 实录）：下次 libLogin 前清原生仓换新身份
-    if (String(err).includes("public key")) markLoginFailedPublicKey();
     throw err;
   }
 }
@@ -424,7 +449,7 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 }
 
 export async function verify2FA(type: string, code: string, trust: boolean): Promise<TwoFactorMethod[] | null> {
-  const { libVerify2FA, helper, getSelfFinger3 } = await import("./infoLib.js");
+  const { libVerify2FA, helper, getSelfFinger3, setLibFinger3 } = await import("./infoLib.js");
   try {
     await libVerify2FA(type, code, trust);
     session.state = "ready";
@@ -435,6 +460,7 @@ export async function verify2FA(type: string, code: string, trust: boolean): Pro
       const fresh = getSelfFinger3() ||
         (helper as unknown as { fingerGenPrint?: string }).fingerGenPrint || "";
       session.finger3 = fresh || session.finger3 || "";
+      setLibFinger3(session.finger3);
       await logLine(`FINGER3 verify 落盘 len=${session.finger3.length}`).catch(() => undefined);
     }
     if (pendingSecret) session.injectCredentials(pendingSecret.username, pendingSecret.password);
@@ -484,10 +510,11 @@ export async function persist(): Promise<void> {
 
 export async function currentFingerprint(): Promise<string> {
   const saved = await store.loadSession();
-  if (saved?.fingerprint) return saved.fingerprint;
+  if (saved?.fingerprint) return session.fingerprint = saved.fingerprint;
   // 首次生成即落盘（demo 的 redux-persist 初值语义）：否则登录中途崩溃会
   // 重新随机，设备信任（fingerPrint 比对）永远建立不起来
   const fp = makeFingerprint();
+  session.fingerprint = fp;
   await store
     .saveSession({
       username: "",
@@ -526,6 +553,9 @@ export async function resumeSession(): Promise<boolean> {
       }
     }
   }
+  // Identity survives a failed first login and logout (both can have an empty jar).
+  if (saved?.fingerprint) session.fingerprint = saved.fingerprint;
+  if (saved?.finger3) session.finger3 = saved.finger3;
   if (!saved || !saved.cookiesJson || saved.cookiesJson === "{}") {
     await logLine("RESUME no-saved-session");
     return false;
@@ -646,6 +676,13 @@ export async function logout(): Promise<void> {
   // 体育系统 token 与会话解耦但跟随登出清空（防串账号）
   const { venueLogout } = await import("./venue.js");
   venueLogout();
+  // 云盘 token 跟随登出清空：共享设备换账号后不能继续读写上一个账号的云盘（强制云盘口径）。
+  try {
+    const { clearSeafileToken } = await import("../state/seafile.js");
+    await clearSeafileToken();
+  } catch {
+    /* 云盘未初始化/已清空 */
+  }
   // R10：图书馆静态 token 同步清空（防串账号/防旧 token 撞新会话）
   info.resetStaticSessionCaches();
   // lib 链登出（webvpn LOGOUT + 共享 jar 清空）
@@ -706,7 +743,9 @@ export async function downloadLearnFile(fileId: string, filename: string): Promi
  * 返回落盘位置；用户取消返回 null（取消不是错误，调用方别弹报错）。
  */
 export async function saveLearnUrlAs(url: string, filename: string): Promise<string | null> {
-  const target = withLearnCsrf(normalizeWebvpnUrl(url));
+  // 取数形态与图片/预览一致：直连 learn 域没有会话，必须换成 webvpn 包装形态；
+  // Rust 侧 save_file_as 再补上原生仓 cookie + 主 webview UA（见 fetch_attachment）。
+  const target = sessionUrl(url);
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)
@@ -718,8 +757,9 @@ export async function saveLearnUrlAs(url: string, filename: string): Promise<str
 /** 任意 learn 资源下载（作业/通知附件端点与课件不同，由 core 解析出完整 downloadUrl）。
  *  落盘名以前端传入的 filename 为准；Rust 侧会用响应 Content-Disposition 的真名兜底。 */
 export async function downloadLearnUrl(url: string, filename: string): Promise<string> {
-  // 归一：历史缓存/其它路径可能给出双重包装的 webvpn 地址（真机 404 事故），这里兜住
-  const target = withLearnCsrf(normalizeWebvpnUrl(url));
+  // 同上：先归一 + 换成 webvpn 包装形态（历史缓存/其它路径可能给出双重包装的地址，
+  // sessionUrl 内部已含 normalizeWebvpnUrl 兜底），否则直连 learn 域只会拿到登录页。
+  const target = sessionUrl(url);
   const jarCookies = http.jar
     .getCookies(new URL(target))
     .map((c) => `${c.name}=${c.value}`)
@@ -728,28 +768,70 @@ export async function downloadLearnUrl(url: string, filename: string): Promise<s
   return invoke("download_file", { url: target, cookies: jarCookies, filename });
 }
 
-/** 正文图片 → dataURL：webview 的 <img> 不携带应用会话 Cookie，
- *  直挂 learn 地址只会得到登录页；须由应用侧带 Cookie 抓取后内联。 */
-export async function fetchImageAsDataUrl(url: string): Promise<string> {
-  const target = withLearnCsrf(normalizeWebvpnUrl(url));
-  const jarCookies = http.jar
-    .getCookies(new URL(target))
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
-  const { invoke } = await import("@tauri-apps/api/core");
-  // Referer 显式传入（webvpn 包装 URL 不含 learn 字样，Rust 侧域名判断会漏带）
-  const out = await invoke<{ mime: string; data: string }>("fetch_binary", {
-    url: target,
-    cookies: jarCookies,
-    referer: "https://learn.tsinghua.edu.cn/f/wlxt/index.jsp",
-  });
-  // mime 守卫（2026-09-13 用户实锤「通知/作业图片渲染不出来但讨论区好」）：
-  // 会话墙/404 返回 HTML，字节照样抓回来——不校验就把登录页当图片塞 <img>，
-  // 静默碎图且 catch 永不触发。非 image/* 或字节过小一律按失败抛出走回退链。
-  if (!out || !/^image\//i.test(out.mime ?? "") || (out.data?.length ?? 0) < 80) {
-    throw new Error(`图片直连响应非图片（mime=${out?.mime} bytes=${out.data?.length ?? 0}）`);
+/** 校园二进制取数统一走**数据链同一个会话世界**：webvpn 包装域 + 原生通道（nativeFetch）。
+ *
+ *  2026-10-12 真机实录（通知正文图片全碎，同一 URL 只差取数形态）：
+ *   ① 正文里的图片 src 是**直连** learn 域的 URL，而本应用的 learn 会话只活在 webvpn
+ *      **包装域**里——直连实测回 69 字节 `location.href="/"` 跳转页（无会话），
+ *      同一 URL 换成包装形态即 200 `image/jpeg` 40–71 KB；
+ *   ② 旧路 `fetch_binary` 自带 Mac UA + 只吃 JS 侧 cookie，而 wengine 会话票按 UA 指纹
+ *      校验（见 src-tauri/src/lib.rs 原生通道那句注释），包装域请求会被判「票无效」
+ *      → 同样回登录页。故图片与附件预览都不再走 fetch_binary，改用与 http_native/
+ *      数据链同一只 client（原生 cookie 仓 + 主 webview UA）。
+ *  失败由调用方处理（碎图/提示）。 */
+const IMG_MAX_BYTES = 12 * 1024 * 1024;
+
+/** 校园 URL → 会话可达形态：先归一双重包装，再按 host 分流决定是否包装，最后补 learn 的
+ *  `_csrf`。图片（clients 内）与附件预览（components/FilePreview.tsx）共用这一份规则。 */
+export function sessionUrl(url: string, forceWrap = false): string {
+  let target = normalizeWebvpnUrl(url);
+  try {
+    const host = new URL(target).hostname;
+    if (http.webVPNEncoder && host && (forceWrap || !CAMPUS_PUBLIC_HOSTS.has(host))) {
+      target = http.webVPNEncoder(target);
+    }
+  } catch {
+    /* 非 http URL 原样尝试 */
   }
-  return `data:${out.mime};base64,${out.data}`;
+  return withLearnCsrf(target);
+}
+
+/** 字节 → base64（分块防参数栈溢出；几十 MB 的预览文件也走这里）。 */
+export function bytesToBase64(bytes: Uint8Array): string {
+  let bin = "";
+  const CHUNK = 0x8000;
+  for (let i = 0; i < bytes.length; i += CHUNK) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+  }
+  return btoa(bin);
+}
+
+/** 「登录墙」判定：短响应 + 跳转/登录页特征（判据与 Rust fetch_binary 同源）。
+ *  认出来才能让上层走「请重新登录」提示，而不是退化成一个莫名的解析失败。 */
+export function isLoginWallBody(mime: string, buf: Uint8Array): boolean {
+  if (/^image\//i.test(mime)) return false;
+  const head = new TextDecoder().decode(buf.subarray(0, 512)).trimStart();
+  return /location\.href/i.test(head) || /^<(!doctype|html)/i.test(head);
+}
+
+async function fetchImageDataUrl(url: string, forceWrap: boolean): Promise<string> {
+  const resp = await nativeFetch(sessionUrl(url, forceWrap), { method: "GET" });
+  const mime = (resp.headers.get("content-type") ?? "").split(";")[0]?.trim() ?? "";
+  const buf = new Uint8Array(await resp.arrayBuffer());
+  if (buf.length > IMG_MAX_BYTES) throw new Error(i18n("lib.clients.dc300032c143", { length: String(buf.length) }));
+  if (isLoginWallBody(mime, buf)) throw new Error(i18n("lib.clients.193d04db6243"));
+  // mime 守卫（2026-09-13 用户实锤「通知/作业图片渲染不出来但讨论区好」）：会话墙/404
+  // 返回 HTML，字节照样抓回来——不校验就把登录页当图片塞 <img>，静默碎图且 catch 永不触发。
+  if (!/^image\//i.test(mime) || buf.length < 80) {
+    throw new Error(i18n("lib.clients.cbad5bdfa19f", { mime: String(mime), length: String(buf.length) }));
+  }
+  return `data:${mime};base64,${bytesToBase64(buf)}`;
+}
+
+/** 正文图片 → dataURL：webview 的 <img> 不携带应用会话 Cookie，直挂 learn 地址只会得到
+ *  登录页；须由应用侧带会话抓取后内联（取数形态见 fetchImageDataUrl 注释）。 */
+export async function fetchImageAsDataUrl(url: string): Promise<string> {
+  return fetchImageDataUrl(url, false);
 }
 
 /** 校内 host 分流（HttpClient.request 同名单）：公网站点直连，其余（seat.lib 等
@@ -765,48 +847,10 @@ const CAMPUS_PUBLIC_HOSTS = new Set([
   "oauth.tsinghua.edu.cn",
 ]);
 
-/** 任意校内图片 URL → dataURL（fetchImageAsDataUrl 的「会话 + 包装」版）：
- *  ① 非公网 host 按 HttpClient 分流规则经 webvpnWrap 包装（座位分布图所在
- *     seat.lib 与 api.php 同域，会话建立在 wengine 服务端，直连必然匿名）；
- *  ② Cookie 取包装目标域 + 解码真实域两桶合并（HttpClient #cookieHeaderFor 同语义）；
- *  ③ 复用 Rust fetch_binary 抓字节转 dataURL。失败由调用方处理（隐藏图块）。 */
+/** 任意校内图片 URL → dataURL（forceWrap=true 时无视 host 分流强制包装——学网图片在
+ *  校园网外的真终点）。取数形态与 fetchImageAsDataUrl 完全一致（包装域 + 原生通道）。 */
 export async function fetchImageByUrl(url: string, forceWrap = false): Promise<string> {
-  let target = url;
-  try {
-    const host = new URL(url).hostname;
-    if (http.webVPNEncoder && host && (forceWrap || !CAMPUS_PUBLIC_HOSTS.has(host))) {
-      target = http.webVPNEncoder(url);
-    }
-  } catch {
-    /* 非 http URL 原样尝试 */
-  }
-  const seen = new Set<string>();
-  const pairs: string[] = [];
-  const buckets = new Set<string>([target, webvpnDecodeUrl(target) ?? "", url]);
-  for (const bucket of buckets) {
-    if (!bucket) continue;
-    let cookies: Array<{ name: string; value: string }> = [];
-    try {
-      cookies = http.jar.getCookies(new URL(bucket));
-    } catch {
-      continue;
-    }
-    for (const c of cookies) {
-      if (seen.has(c.name)) continue;
-      seen.add(c.name);
-      pairs.push(`${c.name}=${c.value}`);
-    }
-  }
-  const { invoke } = await import("@tauri-apps/api/core");
-  const out = await invoke<{ mime: string; data: string }>("fetch_binary", {
-    url: target,
-    cookies: pairs.join("; "),
-    referer: "https://learn.tsinghua.edu.cn/f/wlxt/index.jsp",
-  });
-  if (!out || !/^image\//i.test(out.mime ?? "") || (out.data?.length ?? 0) < 80) {
-    throw new Error(`图片包装响应非图片（mime=${out?.mime} bytes=${out.data?.length ?? 0}）`);
-  }
-  return `data:${out.mime};base64,${out.data}`;
+  return fetchImageDataUrl(url, forceWrap);
 }
 
 export { isTauri };

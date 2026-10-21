@@ -1,3 +1,6 @@
+import { localizedList as i18nList } from "../../i18n/index.js";
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 空教室 —— info.getClassroomList + getClassroomState（thu-info-app
  * classroomList/classroomDetail 移植）。两级只读视图：教学楼列表 → 本周状态，
@@ -17,15 +20,17 @@ type LoadState = "loading" | "error" | "ready";
 type ClassroomBuilding = Awaited<ReturnType<typeof info.getClassroomList>>[number];
 type ClassroomResult = Awaited<ReturnType<typeof info.getClassroomState>>;
 
-const SLOT_LABELS = ["第1节", "第2节", "第3节", "第4节", "第5节", "第6节"];
+const SLOT_LABELS = i18nList(["pages.info.classroomtab.a56b6a95398f","pages.info.classroomtab.2dd165667e41","pages.info.classroomtab.02a2307c8310","pages.info.classroomtab.5e1fc6ee5293","pages.info.classroomtab.80ef6265f230","pages.info.classroomtab.d8403e58a242"]);
 
 /** 大节筛选：勾选框下拉（可多选大节，只看所选大节全空闲的教室） */
 function SlotFilterDropdown({ value, onChange }: { value: Set<number>; onChange: (s: Set<number> | ((prev: Set<number>) => Set<number>)) => void }) {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState(false);
   const label =
     value.size === 0
-      ? "大节筛选：全部教室"
-      : `大节筛选：${[...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join("、")}`;
+      ? i18n("pages.info.classroomtab.d3151b17255b")
+      : i18n("pages.info.classroomtab.ee90805b2f64", { value: String([...value].sort((a, b) => a - b).map((i) => SLOT_LABELS[i]).join("、")) });
   return (
     <div className="filter-dd">
       <button type="button" className="input filter-dd-btn" onClick={() => setOpen((o) => !o)}>
@@ -54,9 +59,7 @@ function SlotFilterDropdown({ value, onChange }: { value: Set<number>; onChange:
               </label>
             ))}
             {value.size > 0 ? (
-              <button type="button" className="btn btn-ghost" style={{ marginTop: 4 }} onClick={() => onChange(new Set())}>
-                清空（显示全部）
-              </button>
+              <Btn variant="ghost" onClick={() => onChange(new Set())}>{i18n("pages.info.classroomtab.8c4cb748dde9")}</Btn>
             ) : null}
           </div>
         </>
@@ -77,6 +80,8 @@ export function ClassroomTab({
   /** 要高亮滚动的教室名 */
   deepRoom?: string;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   /* —— 一级：教学楼列表 —— */
@@ -171,8 +176,8 @@ export function ClassroomTab({
   return (
     <>
       <SectionHead
-        title="教学楼"
-        aside={bState === "ready" ? `${buildings?.length ?? 0} 栋 · 点击查询本周状态` : "教学 Tina · 教室资源"}
+        title={i18n("pages.info.classroomtab.5c8d010fd9a3")}
+        aside={bState === "ready" ? i18n("pages.info.classroomtab.baa795a5668d", { value: String(buildings?.length ?? 0) }) : i18n("pages.info.classroomtab.ed844405c301")}
       />
       {bState === "error" ? (
         <TabError unavailable={bUnavailable} text={bError} onRetry={() => void loadBuildings()} />
@@ -180,7 +185,7 @@ export function ClassroomTab({
       {bState === "loading" && !buildings ? (
         <SkeletonRows rows={4} />
       ) : (buildings?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无教室资源数据（可能不在上课周期，或服务暂未开放）。" />
+        <TabEmpty text={i18n("pages.info.classroomtab.fb523dfd65ce")} />
       ) : (
         <SearchSelect
           value={sel?.searchName ?? ""}
@@ -188,7 +193,7 @@ export function ClassroomTab({
             const b = buildings!.find((x) => x.searchName === v);
             if (b) void loadState(b);
           }}
-          placeholder="选择教学楼…"
+          placeholder={i18n("pages.info.classroomtab.3214411c2d00")}
           options={buildings!.map((b) => ({ value: b.searchName, label: b.name }))}
         />
       )}
@@ -196,11 +201,11 @@ export function ClassroomTab({
       {sel ? (
         <>
           <SectionHead
-            title={`${sel.name} · 本周`}
+            title={i18n("pages.info.classroomtab.66491a8adc2f", { name: String(sel.name) })}
             aside={
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <span>{result?.currentWeekNumber
-                ? `第 ${result.currentWeekNumber} 教学周 · 今日空闲 ${freeToday} 间${selSlots.size > 0 ? ` · 所选 ${selSlots.size} 节全空闲 ${rows.length} 间` : ""}（下表为今日）`
+                ? i18n("pages.info.classroomtab.02773293c3fd", { currentWeekNumber: String(result.currentWeekNumber), freeToday: String(freeToday), value: String(selSlots.size > 0 ? i18n("pages.info.classroomtab.e9805d3099de", { size: String(selSlots.size), length: String(rows.length) }) : "") })
                 : undefined
             }</span>
               <CollectStar atom={{ kind: "classroom-b", key: enc(sel.searchName, sel.name) }} title={sel.name} />
@@ -220,8 +225,8 @@ export function ClassroomTab({
                 <TabEmpty
                   text={
                     selSlots.size > 0
-                      ? "没有教室在所选大节全部空闲——试着少选几节或清空筛选。"
-                      : "该教学楼本周暂无教室状态数据（可能不在上课周期）。"
+                      ? i18n("pages.info.classroomtab.3301179d613a")
+                      : i18n("pages.info.classroomtab.e484707c2386")
                   }
                 />
               ) : (
@@ -229,7 +234,7 @@ export function ClassroomTab({
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th>教室</th>
+                      <th>{i18n("pages.info.classroomtab.df7a65bb1371")}</th>
                       {SLOT_LABELS.map((sl) => (
                         <th key={sl} className="num">
                           {sl}
@@ -250,7 +255,7 @@ export function ClassroomTab({
                           const free = (r.status?.[todayCol * 6 + si] ?? -1) === AVAILABLE;
                           return (
                             <td key={sl} className="num">
-                              <span className={free ? "chip chip-green" : "chip chip-gray"}>{free ? "空闲" : "占用"}</span>
+                              <span className={free ? "chip chip-green" : "chip chip-gray"}>{free ? i18n("pages.info.classroomtab.dae661d17c2d") : i18n("pages.info.classroomtab.c0aa76aebce6")}</span>
                             </td>
                           );
                         })}

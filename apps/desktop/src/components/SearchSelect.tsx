@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { Input } from "@onethu/gui";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -9,9 +11,8 @@ export interface SearchSelectOption {
   disabled?: boolean;
 }
 
-/** 面板层级：要在所有应用内弹层之上（首启导览 2000、绑定弹层 1200 等），
- *  但让开通知/门禁那一档（9999+）。 */
-const PANEL_Z = 9000;
+/** Use the shared menu layer so this portal remains usable inside OneGUI Modal. */
+const PANEL_Z = "var(--og-z-menu)";
 
 /** 预约/信息页通用可搜索下拉（PR #7 洗衣机楼栋选择的泛化，2026-09-02）：
  *  - 选项 ≥6 个自动带搜索框（按 label 模糊匹配，大小写不敏感），少于 6 个退化为普通下拉
@@ -26,7 +27,7 @@ export function SearchSelect({
   value,
   onChange,
   options,
-  placeholder = "请选择…",
+  placeholder = i18n("components.searchselect.4242d6b50c86"),
   disabled,
 }: {
   value: string;
@@ -35,6 +36,8 @@ export function SearchSelect({
   placeholder?: string;
   disabled?: boolean;
 }) {
+  const uiLocale = useUiLocale();
+
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const btnRef = useRef<HTMLButtonElement | null>(null);
@@ -88,7 +91,7 @@ export function SearchSelect({
     open && box ? (
       <>
         <div
-          style={{ position: "fixed", inset: 0, zIndex: PANEL_Z }}
+          style={{ position: "fixed", inset: 0, zIndex: "calc(var(--og-z-menu) - 1)" }}
           onClick={() => setOpen(false)}
         />
         <div
@@ -97,7 +100,7 @@ export function SearchSelect({
             position: "fixed",
             left: box.left,
             width: box.width,
-            zIndex: PANEL_Z + 1,
+            zIndex: PANEL_Z,
             maxHeight: box.maxH,
             display: "flex",
             flexDirection: "column",
@@ -108,16 +111,11 @@ export function SearchSelect({
           }}
         >
           {searchable ? (
-            <input
-              className="input search-dd-search"
-              placeholder="搜索…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <Input placeholder={i18n("components.searchselect.a249f60ce7e8")} value={query} onChange={(value) => setQuery(value)} />
           ) : null}
           <div className="search-dd-list" style={{ overflowY: "auto", flex: 1, minHeight: 0 }}>
             {shown.length === 0 ? (
-              <div className="search-dd-empty">无匹配项</div>
+              <div className="search-dd-empty">{i18n("components.searchselect.336cba9a9241")}</div>
             ) : (
               groups.map((g, gi) => (
                 <div key={g.name ?? `g${gi}`}>

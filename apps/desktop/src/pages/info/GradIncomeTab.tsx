@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 研究生收入 —— info.getGraduateIncome（thu-info-app income.tsx 移植）。
  * 近 12 个月助研津贴/补助发放记录（发放日期 · 项目 · 实发）。
@@ -26,6 +27,8 @@ function recentRange(): { begin: string; end: string } {
 }
 
 export function GradIncomeTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [rows, setRows] = useState<GradIncomeRow[] | null>(null);
   const [state, setState] = useState<LoadState>("loading");
@@ -63,7 +66,7 @@ export function GradIncomeTab() {
 
   return (
     <>
-      <SectionHead title="近 12 个月发放记录" aside="财务系统 · 计税后实发" />
+      <SectionHead title={i18n("pages.info.gradincometab.fc240ea62ae1")} aside={i18n("pages.info.gradincometab.215db61815eb")} />
       {state === "error" ? (
         <TabError unavailable={unavailable} text={error} onRetry={() => void load()} />
       ) : null}
@@ -71,15 +74,15 @@ export function GradIncomeTab() {
       {state === "loading" && !rows ? (
         <SkeletonRows rows={5} />
       ) : state === "none" ? (
-        <TabEmpty text="研究生专项目，本科生无此数据。" />
+        <TabEmpty text={i18n("pages.info.gradincometab.ac0b8e78172e")} />
       ) : state !== "ready" ? null : (rows?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无收入记录（助研津贴等发放后才可查询）。" />
+        <TabEmpty text={i18n("pages.info.gradincometab.3fcc227e6ab6")} />
       ) : (
         <>
           <Card className="stat-card" style={{ marginBottom: 12 }}>
             <div className="row-main">
               <div className="stat-num">¥{total.toFixed(2)}</div>
-              <div className="stat-label">近 12 个月实发合计</div>
+              <div className="stat-label">{i18n("pages.info.gradincometab.9416e865d2ff")}</div>
             </div>
           </Card>
           <Card className="list">
@@ -89,10 +92,10 @@ export function GradIncomeTab() {
                   <b>{r.ym || r.date || "–"}</b>
                 </div>
                 <div className="row-main">
-                  <div className="row-title">{r.name || "发放"}</div>
+                  <div className="row-title">{r.name || i18n("pages.info.gradincometab.02dede2858a3")}</div>
                   <div className="row-sub">
                     {r.department || ""}
-                    {r.tax ? ` · 计税 ¥${r.tax.toFixed(2)}` : ""}
+                    {r.tax ? i18n("pages.info.gradincometab.fea0225bbfc4", { value: String(r.tax.toFixed(2)) }) : ""}
                   </div>
                 </div>
                 <div className="row-amount">
@@ -103,7 +106,7 @@ export function GradIncomeTab() {
           </Card>
           <div style={{ marginTop: 12 }}>
             <Card>
-              <div className="empty">仅展示近 12 个月记录；更早记录请在财务系统查询。</div>
+              <div className="empty">{i18n("pages.info.gradincometab.e603089879c7")}</div>
             </Card>
           </div>
         </>

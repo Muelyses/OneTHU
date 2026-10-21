@@ -1,10 +1,10 @@
 /**
  * 远端 HTML 的主题适配：把「源站写死的颜色」剥掉，让正文继承应用主题令牌。
  *
- * 为什么需要：THUbook（thubook.help）正文是整段 HTML 直接注入渲染的，源站正文里
+ * 为什么需要：THUBook（thubook.help）正文是整段 HTML 直接注入渲染的，源站正文里
  * 普遍带行内颜色（`style="color:#000"`、`<font color="#333">`、`bgcolor="#fff"`）。
  * 行内样式优先级高于我们的 `.thubook-body { color: var(--text-1) }`，于是在**深色主题下
- * 正文仍是黑字**（用户实录 2026-09-20：THUbook 正文黑夜模式还是黑字）。
+ * 正文仍是黑字**（用户实录 2026-09-20：THUBook 正文黑夜模式还是黑字）。
  *
  * 做法：只摘掉颜色类声明/属性（color / background / background-color / bgcolor /
  *  font 的 color），其余样式（字号、加粗、对齐、宽高）原样保留——不做通用 sanitize，

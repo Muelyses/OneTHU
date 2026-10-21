@@ -1,6 +1,6 @@
 //! 插件命令（JS 入口；平台内部分发）
 use tauri::{AppHandle, Runtime};
-#[cfg(target_os = "android")]
+#[cfg(any(target_os = "android", target_os = "macos"))]
 use tauri::Manager;
 
 use crate::{SyncPayload, SyncResult};
@@ -37,6 +37,7 @@ pub async fn request_permission<R: Runtime>(app: AppHandle<R>) -> Result<bool, S
 /// 幂等同步：窗口内清旧 → 全量重写，返回 { added, removed }
 #[tauri::command]
 pub async fn sync<R: Runtime>(app: AppHandle<R>, payload: SyncPayload) -> Result<SyncResult, String> {
+    crate::ownership::validate_payload(&payload)?;
     #[cfg(target_os = "android")]
     {
         let handle = app.state::<crate::OnethuCalendar<R>>().0.clone();
@@ -47,8 +48,8 @@ pub async fn sync<R: Runtime>(app: AppHandle<R>, payload: SyncPayload) -> Result
     }
     #[cfg(target_os = "macos")]
     {
-        let _ = &app;
-        crate::macos::sync(payload)
+        let path = app.path().app_data_dir().map_err(|e| e.to_string())?.join("system-calendar-binding.json");
+        crate::macos::sync(payload, &path)
     }
     #[cfg(not(any(target_os = "android", target_os = "macos")))]
     {
@@ -70,8 +71,8 @@ pub async fn remove_calendar<R: Runtime>(app: AppHandle<R>) -> Result<(), String
     }
     #[cfg(target_os = "macos")]
     {
-        let _ = &app;
-        crate::macos::remove_calendar()
+        let path = app.path().app_data_dir().map_err(|e| e.to_string())?.join("system-calendar-binding.json");
+        crate::macos::remove_calendar(&path)
     }
     #[cfg(not(any(target_os = "android", target_os = "macos")))]
     {

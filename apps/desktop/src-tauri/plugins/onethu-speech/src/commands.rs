@@ -59,6 +59,25 @@ pub async fn speech_poll<R: Runtime>(app: AppHandle<R>) -> Result<String, String
     }
 }
 
+/// 当前输入电平 0..1（SpeechRecognizer.onRmsChanged 归一化）：驱动灵动岛波纹点。
+/// 不可用平台/尚未开始识别一律 0——JS 侧据此退化为时间正弦，不出现空转或 NaN。
+#[tauri::command]
+pub async fn speech_level<R: Runtime>(app: AppHandle<R>) -> Result<f64, String> {
+    #[cfg(target_os = "android")]
+    {
+        let handle = app.state::<crate::OnethuSpeech<R>>().0.clone();
+        let v: serde_json::Value = handle
+            .run_mobile_plugin("speechLevel", serde_json::json!({}))
+            .map_err(|e| e.to_string())?;
+        Ok(v.get("level").and_then(|l| l.as_f64()).unwrap_or(0.0))
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = &app;
+        Ok(0.0)
+    }
+}
+
 /// 停止识别（最终文本此后仍可由 poll 拿一次）
 #[tauri::command]
 pub async fn speech_stop<R: Runtime>(app: AppHandle<R>) -> Result<(), String> {

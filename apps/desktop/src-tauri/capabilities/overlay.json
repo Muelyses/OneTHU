@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "overlay",
+  "description": "全局悬浮球窗口（桌面 label=oh-orb）：只给最小权限——能发/收事件、能用语音合成与语音输入插件；不包含主窗口的云盘/邮件等权限。",
+  "windows": ["oh-orb"],
+  "permissions": [
+    "core:default",
+    "onethu-tts:default",
+    "onethu-speech:default"
+  ]
+}

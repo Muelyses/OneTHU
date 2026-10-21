@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 灵动岛胶囊智能文本：屏幕底部胶囊的状态一句话。
  *
@@ -5,7 +6,7 @@
  * ① 30 分钟内即将开始的日程 → 「地点·还有X分钟」
  * ② 提醒窗口内临近 DDL 的未交作业 → 「作业名·还有X分钟/小时/天」（窗口=用户设的
  *    提醒时间；未设提醒的默认 2 小时内才现身，避免常驻刷屏）
- * ③ 「聊点什么吧！」
+ * ③ 「点击输入，长按说话」（无智能文案时的入口文案）
  *
  * 数据源为模块级快照（getCampusSnapshot/getLearnSnapshot，无网络副作用），
  * 15 秒 tick + 渲染时读取；ChatDock 任何重渲染都会拿到最新快照。
@@ -15,13 +16,16 @@ import { parseLearnTime } from "@onethu/core";
 import { getCampusSnapshot, getLearnSnapshot } from "./data.js";
 import { effectiveRemind, getHwRemindState, type HwRemindState } from "./hwRemind.js";
 
-export const ISLAND_DEFAULT_TEXT = "聊点什么吧！";
+/** 灵动岛入口文案（2026-10-10 用户拍板）：单击进输入框、长按说话。 */
+export const ISLAND_ENTRY_TEXT = "点击输入，长按说话";
+/** 无智能文案时的胶囊文本 = 入口文案（旧的「聊点什么吧！」由它取代）。 */
+export const ISLAND_DEFAULT_TEXT = ISLAND_ENTRY_TEXT;
 
 function fmtLeft(ms: number): string {
   const m = Math.max(1, Math.round(ms / 60_000));
-  if (m < 60) return `还有${m}分钟`;
-  if (m < 2880) return `还有${Math.round(m / 60)}小时`;
-  return `还有${Math.round(m / 1440)}天`;
+  if (m < 60) return i18n("state.island.55d3dfb01bc9", { m: String(m) });
+  if (m < 2880) return i18n("state.island.f61e332cda51", { value: String(Math.round(m / 60)) });
+  return i18n("state.island.b1b5b78e6398", { value: String(Math.round(m / 1440)) });
 }
 
 function ymd(d: Date): string {
@@ -57,7 +61,7 @@ export function computeIslandText(
     if (dl <= now) continue;
     const windowMs = effectiveRemind(hwRemind, h.id ?? "") * 60_000;
     if (dl - now > windowMs) continue;
-    const t = h.title ?? "作业";
+    const t = h.title ?? i18n("state.island.b0dff016ff17");
     const title = t.length > 12 ? `${t.slice(0, 12)}…` : t;
     if (!best || dl < best.at) best = { text: `${title}·${fmtLeft(dl - now)}`, at: dl };
   }

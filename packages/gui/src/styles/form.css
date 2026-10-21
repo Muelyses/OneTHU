@@ -1,0 +1,428 @@
+/* OneGUI · 表单族：全站唯一的输入/开关/滑条模型（Input / Select / Check / Switch / Slider…）
+ *
+ * 输入类与卡片相反：**必须保留 1px 描边**（描边是输入语言），聚焦时描边转强 + 焦点环。
+ * 所有控件高度只从 --og-ctl-h-* 来，横向内边距只从 --og-ctl-pad-x-* 来 —— 组件不写尺寸。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 字段包装：标签 + 控件 + 提示/错误 ── */
+.og-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-1);
+  min-width: 0;
+}
+
+.og-field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-1);
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  font-weight: var(--og-weight-medium);
+  color: var(--og-content-2);
+}
+
+.og-field-required { color: var(--og-error); }
+
+.og-field-hint {
+  font-size: var(--og-text-label);
+  color: var(--og-content-3);
+}
+
+.og-field-error {
+  font-size: var(--og-text-label);
+  color: var(--og-error);
+}
+
+/* ── 输入壳：Input / TextArea / Select / SearchField / NumberField 共用 ── */
+.og-input {
+  --og-c-input-h: var(--og-ctl-h-md);
+  --og-c-input-pad-x: var(--og-ctl-pad-x-md);
+  --og-c-input-fill: var(--og-input-fill);
+  --og-c-input-line: var(--og-line-2);
+  --og-c-input-ink: var(--og-content-1);
+  --og-c-input-radius: var(--og-radius-control);
+
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  width: 100%;
+  min-width: 0;
+  height: var(--og-c-input-h);
+  padding: 0 var(--og-c-input-pad-x);
+  border: 1px solid var(--og-c-input-line);
+  border-radius: var(--og-c-input-radius);
+  background: var(--og-c-input-fill);
+  color: var(--og-c-input-ink);
+  transition:
+    border-color var(--og-dur-1) var(--og-ease-standard),
+    box-shadow var(--og-dur-2) var(--og-ease-standard),
+    background-color var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-input--sm { --og-c-input-h: var(--og-ctl-h-sm); --og-c-input-pad-x: var(--og-ctl-pad-x-sm); --og-c-input-radius: var(--og-radius-sm); }
+.og-input--lg { --og-c-input-h: var(--og-ctl-h-lg); --og-c-input-pad-x: var(--og-ctl-pad-x-lg); --og-c-input-radius: var(--og-radius-lg); }
+
+.og-input--area {
+  height: auto;
+  min-height: var(--og-ctl-textarea-min-h);
+  padding: var(--og-space-2) var(--og-c-input-pad-x);
+  align-items: flex-start;
+}
+
+/* 等宽文本域（粘贴 Cookie/JSON/日志这类机器文本）：字号走 label 档，字族走 mono 令牌 */
+.og-input--mono .og-input-el {
+  font-family: var(--og-font-mono);
+  font-size: var(--og-text-label);
+  line-height: 1.7;
+}
+
+.og-input.is-focused {
+  --og-c-input-line: var(--og-line-3);
+  box-shadow: var(--og-ring);
+}
+
+.og-input.is-invalid { --og-c-input-line: var(--og-error); }
+.og-input.is-invalid.is-focused { box-shadow: 0 0 0 var(--og-ring-width) var(--og-error-soft); }
+
+.og-input.is-disabled {
+  --og-c-input-fill: var(--og-surface-3);
+  opacity: var(--og-disabled-opacity);
+}
+
+.og-input.is-readonly { --og-c-input-fill: var(--og-surface-3); }
+
+/* 原生控件：自身无边框无底色，全部由壳承担 */
+.og-input-el {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--og-text-body);
+  line-height: var(--og-text-body-lh);
+}
+
+.og-input--sm .og-input-el { font-size: var(--og-text-label); }
+.og-input--lg .og-input-el { font-size: var(--og-text-subtitle); }
+
+.og-input-el::placeholder { color: var(--og-content-3); }
+.og-input-el:disabled { cursor: not-allowed; }
+
+textarea.og-input-el {
+  height: auto;
+  min-height: calc(var(--og-ctl-textarea-min-h) - var(--og-space-4));
+  resize: vertical;
+}
+
+/* 数字输入去掉原生增减箭头（用我们自己的步进器） */
+.og-input-el[type="number"]::-webkit-outer-spin-button,
+.og-input-el[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.og-input-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  color: var(--og-content-3);
+}
+
+/* 清除按钮（搜索框） */
+.og-input-clear {
+  all: unset;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-ctl-check);
+  height: var(--og-ctl-check);
+  border-radius: var(--og-radius-full);
+  color: var(--og-content-3);
+  cursor: pointer;
+  font-size: var(--og-text-label);
+}
+
+.og-input-clear:hover { background: var(--og-hover); color: var(--og-content-1); }
+
+/* ── 数字步进器 ── */
+.og-number {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-1);
+  width: 100%;
+}
+
+.og-number-btn {
+  all: unset;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-ctl-h-md);
+  height: var(--og-ctl-h-md);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-md);
+  color: var(--og-content-2);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-number-btn:hover { background: var(--og-hover); }
+.og-number-btn[aria-disabled="true"] { opacity: var(--og-disabled-opacity); pointer-events: none; }
+.og-number .og-input-el { text-align: center; }
+
+/* ── 下拉：原生 select 外观全接管 ──
+   宽度 = fit-content（不拉伸）：width:100% 会让包裹层在 wrap 的 flex 行里以「整行可用宽」
+   为基准尺寸 → 逢行必独占一行（日程快跳/研讨间预约面板实测，用户点名「一个占一行极其浪费」）；
+   本体 .og-select-el 本就是自然宽，fit-content 只改流动行为，不改变本体大小。 */
+.og-select { position: relative; width: fit-content; max-width: 100%; }
+/* 本体回到「原生控件自身无面无线」不变量（面/线一律由上面的 .og-input 壳承担）。
+   —— 前一轮给本体补的第二张脸已撤销：它让每个 OG 下拉变成「框里再套一个框」
+   （CDP 实测 shell 168×30 + 本体 142×30 两圈 line-2 描边，缩进 12px），且本体 height
+   写死 md 档 —— size="sm" 的壳比它矮，落进 app .field 的实例更被遗留 .field select
+   顶到 38px（壳只有 30px）。**同一个控件两条面、两个高度**才是「布局不合理」的真身。
+   特异性提到 (0,2,0)：换血期两套样式表唯一的交界面就是 app 层那几条遗留 select 规则，
+   这个口径压过 .field select/(0,1,1)，OG 下拉再不会被改成 30% 幽灵填充或 38px。 */
+.og-select .og-select-el {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  padding-right: var(--og-space-5);
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+/* 悬停/聚焦反馈落在壳上（本体无面可改）：与 .og-input.is-focused 同一口径。
+   Select 的 Shell 恒传 focused=false（原生得焦的不是壳），所以焦点用 :focus-within 接。 */
+.og-select .og-input {
+  transition:
+    border-color var(--og-dur-1) var(--og-ease-standard),
+    box-shadow var(--og-dur-2) var(--og-ease-standard);
+}
+@media (hover: hover) {
+  .og-select:hover .og-input { --og-c-input-line: var(--og-line-3); }
+}
+.og-select .og-input:focus-within {
+  --og-c-input-line: var(--og-line-3);
+  box-shadow: var(--og-ring);
+}
+.og-select .og-select-el:disabled { cursor: not-allowed; }
+/* 聚焦/激活态也要钉死「本体无面」：app 层 `.field select:focus, .input:focus`
+   （global.css:1207，(0,2,1)）比上面的 (0,2,0) 高一档，会给本体补第二张脸 ——
+   实测 .field 内的 OG 下拉一聚焦 bg 从 `none` 被改写回 surface-container-lowest
+   并叠一圈 `--md-sys-focus-ring`，与壳的 :focus-within 环同心双环（水平内缩 13px）。
+   (0,3,0) 压过 (0,2,1)：本体的面永远只有壳这一张，任何状态都不例外。 */
+.og-select .og-select-el:focus,
+.og-select .og-select-el:focus-visible,
+.og-select .og-select-el:active {
+  outline: none;
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+}
+.og-select-caret {
+  position: absolute;
+  right: var(--og-ctl-pad-x-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--og-content-3);
+}
+
+/* ── 勾选/单选 ── */
+.og-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  cursor: pointer;
+  user-select: none;
+  color: var(--og-content-1);
+  font-size: var(--og-text-body);
+}
+
+.og-check.is-disabled { opacity: var(--og-disabled-opacity); pointer-events: none; }
+
+.og-check-box {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-ctl-check);
+  height: var(--og-ctl-check);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-xs);
+  background: var(--og-surface-1);
+  color: var(--og-accent-on);
+  transition:
+    background-color var(--og-dur-1) var(--og-ease-standard),
+    border-color var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-check input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+
+.og-check.is-checked .og-check-box,
+.og-check.is-indeterminate .og-check-box {
+  background: var(--og-accent);
+  border-color: var(--og-accent);
+}
+
+.og-check.is-checked .og-check-box::after {
+  content: "";
+  width: var(--og-space-2);
+  height: var(--og-space-1);
+  border-left: var(--og-geo-xs) solid currentColor;
+  border-bottom: var(--og-geo-xs) solid currentColor;
+  transform: translateY(calc(var(--og-geo-xs) * -1)) rotate(-45deg);
+}
+
+.og-check.is-indeterminate .og-check-box::after {
+  content: "";
+  width: var(--og-space-2);
+  height: var(--og-geo-xs);
+  background: currentColor;
+}
+
+.og-check--radio .og-check-box { border-radius: var(--og-radius-full); }
+.og-check.is-checked.og-check--radio .og-check-box::after {
+  width: var(--og-space-2);
+  height: var(--og-space-2);
+  border: 0;
+  border-radius: var(--og-radius-full);
+  background: currentColor;
+  transform: none;
+}
+
+.og-check-box:focus-within { box-shadow: var(--og-ring); }
+
+/* ── 开关 ── */
+.og-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: var(--og-ctl-switch-w);
+  height: var(--og-ctl-switch-h);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-full);
+  background: var(--og-surface-4);
+  cursor: pointer;
+  transition:
+    background-color var(--og-dur-2) var(--og-ease-standard),
+    border-color var(--og-dur-2) var(--og-ease-standard);
+}
+
+.og-switch-thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--og-geo-sm);
+  width: calc(var(--og-ctl-switch-h) - var(--og-space-2));
+  height: calc(var(--og-ctl-switch-h) - var(--og-space-2));
+  border-radius: var(--og-radius-full);
+  background: var(--og-surface-1);
+  box-shadow: var(--og-elev-1);
+  transform: translate(0, -50%);
+  transition: transform var(--og-dur-2) var(--og-ease-spring), background-color var(--og-dur-2) var(--og-ease-standard);
+}
+
+.og-switch.is-checked {
+  background: var(--og-accent);
+  border-color: var(--og-accent);
+}
+
+.og-switch.is-checked .og-switch-thumb {
+  background: var(--og-accent-on);
+  transform: translate(calc(var(--og-ctl-switch-w) - var(--og-ctl-switch-h)), -50%);
+}
+
+.og-switch:focus-visible { box-shadow: var(--og-ring); }
+.og-switch.is-disabled { opacity: var(--og-disabled-opacity); pointer-events: none; }
+
+/* ── 滑条 ── */
+.og-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  width: 100%;
+}
+
+.og-slider-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: var(--og-ctl-slider-track);
+  border-radius: var(--og-radius-full);
+  background: var(--og-surface-4);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.og-slider.is-disabled { opacity: var(--og-disabled-opacity); pointer-events: none; }
+
+.og-slider-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: inherit;
+  background: var(--og-accent);
+}
+
+.og-slider--range .og-slider-fill {
+  left: var(--og-c-slider-pos-a);
+  width: calc(var(--og-c-slider-pos-b) - var(--og-c-slider-pos-a));
+}
+
+.og-slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: var(--og-c-slider-pos);
+  width: var(--og-ctl-slider-thumb);
+  height: var(--og-ctl-slider-thumb);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-full);
+  background: var(--og-surface-1);
+  box-shadow: var(--og-elev-1);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  outline: none;
+  transition: border-color var(--og-dur-1) var(--og-ease-standard), box-shadow var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-slider-thumb:focus-visible { border-color: var(--og-accent); box-shadow: var(--og-ring); }
+.og-slider-thumb.is-dragging { cursor: grabbing; border-color: var(--og-accent); box-shadow: var(--og-ring); }
+
+.og-slider-value {
+  flex: 0 0 auto;
+  min-width: var(--og-space-8);
+  text-align: right;
+  font-size: var(--og-text-label);
+  color: var(--og-content-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 单选/勾选组：纵向默认，横向用 --row ── */
+.og-radiogroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-2);
+}
+
+.og-radiogroup--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--og-space-4);
+}
+
+/* The shell owns the focus ring; the native child must never draw a second face. */
+.og-input-el:focus-visible { outline: none; box-shadow: none; }
+
+html:root .og-input .og-input-el:is(:focus, :focus-visible) { outline: none; box-shadow: none; background: transparent; border: 0; }

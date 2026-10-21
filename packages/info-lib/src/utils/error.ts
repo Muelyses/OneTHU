@@ -10,6 +10,28 @@ export class LoginError extends LibError {
     }
 }
 
+export type LoginPreparationReason =
+    | "missing-public-key"
+    | "invalid-public-key"
+    | "empty-response"
+    | "access-restricted"
+    | "trust-limit"
+    | "unexpected-page"
+    | "unsafe-confirmation"
+    | "confirmation-loop";
+
+/** Safe, machine-readable login diagnostics. Never attach response HTML or session URLs. */
+export class LoginPreparationError extends LoginError {
+    readonly code = "AUTH_PREPARATION_FAILED";
+    constructor(
+        readonly reason: LoginPreparationReason,
+        readonly stage: "credential-entry" | "trusted-confirmation" = "credential-entry",
+    ) {
+        super("Unable to prepare the university login form.");
+        this.name = "LoginPreparationError";
+    }
+}
+
 export class UrlError extends LibError {
 
 }

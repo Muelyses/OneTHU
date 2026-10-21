@@ -1,0 +1,1356 @@
+{
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.collect.42e970981c31",
+      "source": "{length} 项",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "f.items.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 285,
+          "context": "{i18nRich(\"components.collect.42e970981c31\", { length: f.items.length })}"
+        }
+      ],
+      "translation": "{length} items",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.4d7f68e3ecf8",
+      "source": "建并收藏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 332,
+          "context": "{i18n(\"components.collect.4d7f68e3ecf8\")}"
+        }
+      ],
+      "translation": "Create & save",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.50e97624c5e3",
+      "source": "收起子收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 263,
+          "context": "open ? i18n(\"components.collect.50e97624c5e3\") : i18n(\"components.collect.fddd88197f10\")"
+        }
+      ],
+      "translation": "Collapse subfolders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.5c662104bb5a",
+      "source": "添加到收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 346,
+          "context": "title = i18n(\"components.collect.5c662104bb5a\")"
+        }
+      ],
+      "translation": "Add to folder",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.collect.825750d712cc",
+      "source": "取消星标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 175,
+          "context": "lit ? i18n(\"components.collect.825750d712cc\") : i18n(\"components.collect.009a73342eab\")"
+        }
+      ],
+      "translation": "Remove star",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.82ae0981093e",
+      "source": "一星：把当前页面收藏成 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 177,
+          "context": "lit ? i18n(\"components.collect.cb013b74bfc3\") : i18n(\"components.collect.82ae0981093e\")"
+        }
+      ],
+      "translation": "One star: save the current page as a OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.8b9db911f1d9",
+      "source": "新建 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 93,
+          "context": "{i18n(\"components.collect.8b9db911f1d9\")}"
+        }
+      ],
+      "translation": "New OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.8d2693309aed",
+      "source": "收藏夹名称…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 328,
+          "context": "{i18n(\"components.collect.8d2693309aed\")}"
+        }
+      ],
+      "translation": "Folder name…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.a0adbab10e0a",
+      "source": "已收藏 · 点击取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 40,
+          "context": "lit ? i18n(\"components.collect.a0adbab10e0a\") : i18n(\"components.collect.0293d5e40498\")"
+        }
+      ],
+      "translation": "Saved · tap to remove",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.a6cc61b5dea6",
+      "source": "已收藏，点击取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 39,
+          "context": "lit ? i18n(\"components.collect.a6cc61b5dea6\") : i18n(\"components.collect.3b5439064adf\")"
+        }
+      ],
+      "translation": "Saved, tap to remove",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.ab7ad5551d3c",
+      "source": "还没有收藏夹——在左侧栏「新建收藏夹」，或点下方直接建一个。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 322,
+          "context": "{i18n(\"components.collect.ab7ad5551d3c\")}"
+        }
+      ],
+      "translation": "No folders yet — use \"New folder\" in the left sidebar, or tap below to create one.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.cb013b74bfc3",
+      "source": "取消星标：删除该 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 177,
+          "context": "lit ? i18n(\"components.collect.cb013b74bfc3\") : i18n(\"components.collect.82ae0981093e\")"
+        }
+      ],
+      "translation": "Remove star: deletes this OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.d549d18c3da5",
+      "source": "已有 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 88,
+          "context": "{i18n(\"components.collect.d549d18c3da5\")}"
+        }
+      ],
+      "translation": "Existing OnePages",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.d72f03fc2d80",
+      "source": "「{value}」可同时收进多个收藏夹；收藏夹只是跳转入口，原功能始终锚定在默认页面。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "view?.title ?? i18n(\"components.collect.21558137d9ce\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 320,
+          "context": "{i18nRich(\"components.collect.d72f03fc2d80\", { value: view?.title ?? i18n(\"components.collect.21558137d9ce\") })}"
+        }
+      ],
+      "translation": "\"{value}\" can be saved into multiple folders; folders are just jump entries and the original feature always stays anchored on its default page.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.collect.d73a6ca3de8c",
+      "source": "这块板上已经有它了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 70,
+          "context": "r.reason === \"duplicate\" ? i18n(\"components.collect.d73a6ca3de8c\") : i18n(\"components.collect.2435ae5dae6e\")"
+        }
+      ],
+      "translation": "It is already on this board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.db7e4035e164",
+      "source": "{value}支持搜索：全部功能页面与今日组件；本机已见过的实体（课程、作业、文件、通知、新闻、洗衣机楼栋、教学楼、体育场馆、研讨间类型、图书馆）——先打开过对应页面，具体实体才会进入搜索。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "hint ? <>{hint}<br /></> : null"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 389,
+          "context": "{i18nRich(\"components.collect.db7e4035e164\", { value: hint ? <>{hint}<br /></> : null })}"
+        }
+      ],
+      "translation": "{value}Search covers: all feature pages and today's widgets; entities seen on this device (courses, assignments, files, notices, news, laundry buildings, teaching buildings, sports venues, seminar room types, library) — an entity enters search only after you have opened its page once.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.dff310bf02e7",
+      "source": "加到首页白板（最常用）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 81,
+          "context": "{i18n(\"components.collect.dff310bf02e7\")}"
+        }
+      ],
+      "translation": "Add to Home board (most used)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.eda81c807737",
+      "source": "没有匹配的收藏项——试试更短的关键词，或先去对应页面打开一次。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 392,
+          "context": "{i18n(\"components.collect.eda81c807737\")}"
+        }
+      ],
+      "translation": "No matching saved items — try a shorter keyword, or open the relevant page once first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.fd68c869f722",
+      "source": "建一块只含「{name}」的新白板",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 94,
+          "context": "{i18n(\"components.collect.fd68c869f722\", { name: String(name) })}"
+        }
+      ],
+      "translation": "Create a new board containing only \"{name}\"",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.fddd88197f10",
+      "source": "展开子收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 263,
+          "context": "open ? i18n(\"components.collect.50e97624c5e3\") : i18n(\"components.collect.fddd88197f10\")"
+        }
+      ],
+      "translation": "Expand subfolders",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.collect.fdf0b569d820",
+      "source": "新建收藏夹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Collect.tsx",
+          "line": 336,
+          "context": "{i18n(\"components.collect.fdf0b569d820\")}"
+        }
+      ],
+      "translation": "New folder",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.25f5ce57a190",
+      "source": "功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 249,
+          "context": "row.kind === \"entry\" ? i18n(\"components.commandpalette.25f5ce57a190\") : row.kind === \"atom\" ? i18n(\"components.commandpalette.452c7b10d57a\") : row.kind === \"row\" ? (familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")) : i18n(\"components.commandpalette.df3d58c7d84b\")"
+        }
+      ],
+      "translation": "Features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.2aedc9c279c5",
+      "source": "跳到这一行并高亮",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 244,
+          "context": "row.sub ? row.sub : i18n(\"components.commandpalette.2aedc9c279c5\")"
+        }
+      ],
+      "translation": "Jump to this row and highlight it",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.30f7c7c3a13f",
+      "source": "直接问小 (OH) 这个问题：「{value}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(query.trim())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 209,
+          "context": "/^(怎么|如何|是什么)/.test(query.trim())\n                  ? i18n(\"components.commandpalette.30f7c7c3a13f\", { value: String(query.trim()) })\n                  : i18n(\"components.commandpalette.c1acb64eaa4e\", { value: String(query.trim()) })"
+        }
+      ],
+      "translation": "Ask OH this question directly: \"{value}\"",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.38e250de311e",
+      "source": "未登录或应用未就绪时先记下，就绪后第一条消息直接送达",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.commandpalette.38e250de311e\")}"
+        }
+      ],
+      "translation": "If you are not signed in or the app is not ready, it is noted first and delivered as the first message once ready",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.3c1917e1c662",
+      "source": "相关内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 242,
+          "context": "row.sub ?? i18n(\"components.commandpalette.3c1917e1c662\")"
+        }
+      ],
+      "translation": "Related content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.452c7b10d57a",
+      "source": "页面",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 249,
+          "context": "row.kind === \"atom\" ? i18n(\"components.commandpalette.452c7b10d57a\") : row.kind === \"row\" ? (familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")) : i18n(\"components.commandpalette.df3d58c7d84b\")"
+        }
+      ],
+      "translation": "Pages",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.4563c57b5143",
+      "source": "常用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 191,
+          "context": "{i18n(\"components.commandpalette.4563c57b5143\")}"
+        }
+      ],
+      "translation": "Frequently used",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.4c32fa9d2ed5",
+      "source": "直接问小 (OH)",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 211,
+          "context": "query.trim()\n                ? /^(怎么|如何|是什么)/.test(query.trim())\n                  ? i18n(\"components.commandpalette.30f7c7c3a13f\", { value: String(query.trim()) })\n                  : i18n(\"components.commandpalette.c1acb64eaa4e\", { value: String(query.trim()) })\n                : i18n(\"components.commandpalette.4c32fa9d2ed5\")"
+        }
+      ],
+      "translation": "Ask OH directly",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.505ea9c9f199",
+      "source": "搜索功能",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 157,
+          "context": "{i18n(\"components.commandpalette.505ea9c9f199\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 187,
+          "context": "{i18n(\"components.commandpalette.505ea9c9f199\")}"
+        }
+      ],
+      "translation": "Search features",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.5214e0bc5dce",
+      "source": "设置 · ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 232,
+          "context": "i18n(\"components.commandpalette.5214e0bc5dce\") + row.tab"
+        }
+      ],
+      "translation": "Settings · ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.618857afe202",
+      "source": "没找到。换个说法试试，比如「电费」「成绩」「悬浮球」「多模态」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 195,
+          "context": "{i18n(\"components.commandpalette.618857afe202\")}"
+        }
+      ],
+      "translation": "Nothing found. Try other words, like \"electricity\", \"grades\", \"floating ball\", \"multimodal\".",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.c1acb64eaa4e",
+      "source": "搜不到「{value}」？直接问小 (OH)",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(query.trim())"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 210,
+          "context": "/^(怎么|如何|是什么)/.test(query.trim())\n                  ? i18n(\"components.commandpalette.30f7c7c3a13f\", { value: String(query.trim()) })\n                  : i18n(\"components.commandpalette.c1acb64eaa4e\", { value: String(query.trim()) })"
+        }
+      ],
+      "translation": "Can't find \"{value}\"? Ask OH directly",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.df3d58c7d84b",
+      "source": "设置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 249,
+          "context": "familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")"
+        },
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 249,
+          "context": "row.kind === \"row\" ? (familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")) : i18n(\"components.commandpalette.df3d58c7d84b\")"
+        }
+      ],
+      "translation": "Settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.e205315fe020",
+      "source": "跳到设置的这一栏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 245,
+          "context": "row.kind === \"row\"\n                          ? (row.sub ? row.sub : i18n(\"components.commandpalette.2aedc9c279c5\"))\n                          : i18n(\"components.commandpalette.e205315fe020\")"
+        }
+      ],
+      "translation": "Jump to this settings section",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.e806fbbe8ec6",
+      "source": "插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 249,
+          "context": "familyOf(row.row) === \"plugins\" ? i18n(\"components.commandpalette.e806fbbe8ec6\") : i18n(\"components.commandpalette.df3d58c7d84b\")"
+        }
+      ],
+      "translation": "Plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.commandpalette.eccc7050c50c",
+      "source": "搜功能 / 页面 / 设置，如：电费 洗衣机 成绩",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/CommandPalette.tsx",
+          "line": 168,
+          "context": "{i18n(\"components.commandpalette.eccc7050c50c\")}"
+        }
+      ],
+      "translation": "Search features / pages / settings, e.g.: electricity laundry grades",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.070967253061",
+      "source": "粘贴云盘访问口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 234,
+          "context": "{i18n(\"components.connectgate.070967253061\")}"
+        }
+      ],
+      "translation": "Paste the Cloud Drive access token",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.31c1468a6ea3",
+      "source": "保存并验证",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 248,
+          "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.31c1468a6ea3\")"
+        }
+      ],
+      "translation": "Save and verify",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.335de0697b53",
+      "source": "清华邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 28,
+          "context": "return i18n(\"components.connectgate.335de0697b53\");"
+        }
+      ],
+      "translation": "Tsinghua email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.36fe6819580c",
+      "source": "雨课堂已连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 194,
+          "context": "afterExtHw(i18n(\"components.connectgate.36fe6819580c\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 201,
+          "context": "afterExtHw(i18n(\"components.connectgate.36fe6819580c\"))"
+        }
+      ],
+      "translation": "Rain Classroom connected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.378eaca774bb",
+      "source": "扫码登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 180,
+          "context": "[\"qr\", i18n(\"components.connectgate.378eaca774bb\")]"
+        }
+      ],
+      "translation": "Sign in with QR code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.38b9eabcae1b",
+      "source": "雨课堂",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 26,
+          "context": "return i18n(\"components.connectgate.38b9eabcae1b\");"
+        }
+      ],
+      "translation": "Rain Classroom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.39255d1ccfd2",
+      "source": "手动粘贴访问口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 228,
+          "context": "manualOpen ? i18n(\"components.connectgate.771ad7dd5833\") : i18n(\"components.connectgate.39255d1ccfd2\")"
+        }
+      ],
+      "translation": "Paste the access token manually",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.3f06ed8f8c38",
+      "source": "登录中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 212,
+          "context": "busy ? i18n(\"components.connectgate.3f06ed8f8c38\") : i18n(\"components.connectgate.d41597cf10a3\")"
+        }
+      ],
+      "translation": "Signing in…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 259,
+          "context": "{i18n(\"components.connectgate.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.48804f9d471e",
+      "source": "云盘已连接{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(r.account?.name ? `：${r.account.name}` : \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 117,
+          "context": "showToast(i18nMsg(\"components.connectgate.48804f9d471e\", { value: String(r.account?.name ? `：${r.account.name}` : \"\") }))"
+        }
+      ],
+      "translation": "Cloud Drive connected{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.509eb4d3da11",
+      "source": "等待云盘页面…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 227,
+          "context": "busy ? i18n(\"components.connectgate.509eb4d3da11\") : i18n(\"components.connectgate.94a50a395a74\")"
+        }
+      ],
+      "translation": "Waiting for the Cloud Drive page…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.593bb32ef7ef",
+      "source": "完整邮箱地址（如 someone@mails.tsinghua.edu.cn）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 246,
+          "context": "{i18n(\"components.connectgate.593bb32ef7ef\")}"
+        }
+      ],
+      "translation": "Full email address (e.g. someone@mails.tsinghua.edu.cn)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.658333c8c774",
+      "source": "网页登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 180,
+          "context": "[\"web\", i18n(\"components.connectgate.658333c8c774\")]"
+        }
+      ],
+      "translation": "Sign in on the web",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.7001abdd98e2",
+      "source": "点击后会在 OneTHU 内打开清华云盘页。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 219,
+          "context": "{i18n(\"components.connectgate.7001abdd98e2\")}"
+        }
+      ],
+      "translation": "Tapping opens the Tsinghua Cloud Drive page inside OneTHU.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.75f7ac5a5cca",
+      "source": "清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 29,
+          "context": "return i18n(\"components.connectgate.75f7ac5a5cca\");"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.771ad7dd5833",
+      "source": "收起手动填写",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 228,
+          "context": "manualOpen ? i18n(\"components.connectgate.771ad7dd5833\") : i18n(\"components.connectgate.39255d1ccfd2\")"
+        }
+      ],
+      "translation": "Collapse manual entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.90f0cb9c68db",
+      "source": "云盘已连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 126,
+          "context": "showToast(i18nMsg(\"components.connectgate.90f0cb9c68db\"))"
+        },
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 142,
+          "context": "showToast(i18nMsg(\"components.connectgate.90f0cb9c68db\"))"
+        }
+      ],
+      "translation": "Cloud Drive connected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.9273ef80acd9",
+      "source": "用清华账号登录一次即可，不需要额外输入。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 211,
+          "context": "{i18n(\"components.connectgate.9273ef80acd9\")}"
+        }
+      ],
+      "translation": "Just sign in once with your Tsinghua account; nothing else to enter.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.93f11d9b01e9",
+      "source": "登录后读取现有访问口令并保存到本机，不会生成或重置。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 220,
+          "context": "{i18n(\"components.connectgate.93f11d9b01e9\")}"
+        }
+      ],
+      "translation": "After signing in, your existing access token is read and saved on this device; it is not created or reset.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.94a50a395a74",
+      "source": "在应用内连接云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 227,
+          "context": "busy ? i18n(\"components.connectgate.509eb4d3da11\") : i18n(\"components.connectgate.94a50a395a74\")"
+        }
+      ],
+      "translation": "Connect Cloud Drive in the app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.98a2d2ee13c6",
+      "source": "连接{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "LABEL[need]"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 257,
+          "context": "{i18nRich(\"components.connectgate.98a2d2ee13c6\", { value: LABEL[need] })}"
+        }
+      ],
+      "translation": "Connect {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.connectgate.9b0d1eca802a",
+      "source": "TUOJ 已连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 84,
+          "context": "afterExtHw(i18n(\"components.connectgate.9b0d1eca802a\"))"
+        }
+      ],
+      "translation": "TUOJ connected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.a5574109f020",
+      "source": "连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 235,
+          "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.a5574109f020\")"
+        }
+      ],
+      "translation": "Connect",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.aba4647cd558",
+      "source": "读取未完成，请试试窗口方式或手动粘贴。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 122,
+          "context": "r.error ?? i18n(\"components.connectgate.aba4647cd558\")"
+        }
+      ],
+      "translation": "Reading did not finish. Try the window method or paste the token manually.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.b0f1a1898199",
+      "source": "密码不是邮箱登录密码，是「客户端专用密码」：网页版邮箱 → 设置 → 客户端专用密码。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 245,
+          "context": "{i18n(\"components.connectgate.b0f1a1898199\")}"
+        }
+      ],
+      "translation": "The password is not your email sign-in password, but a \"client-specific password\": webmail → Settings → client-specific password.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.c4d49dbe177d",
+      "source": "邮箱已连接（云日历同步共用同一套登录信息）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 99,
+          "context": "st.mail ? i18n(\"components.connectgate.c4d49dbe177d\") : i18n(\"components.connectgate.ee2378041c9a\")"
+        }
+      ],
+      "translation": "Email connected (cloud calendar sync shares the same credentials)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.d41597cf10a3",
+      "source": "用清华账号登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 212,
+          "context": "busy ? i18n(\"components.connectgate.3f06ed8f8c38\") : i18n(\"components.connectgate.d41597cf10a3\")"
+        }
+      ],
+      "translation": "Sign in with your Tsinghua account",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.d6eedaec5a1e",
+      "source": "云盘网页端个人资料页：已有访问口令可点眼睛显示后复制。 没有访问口令时，请手动生成并粘贴到下面（仅存本机）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 232,
+          "context": "{i18n(\"components.connectgate.d6eedaec5a1e\")}"
+        }
+      ],
+      "translation": "Cloud Drive web profile page: if you already have an access token, tap the eye icon to reveal it and copy it. If you do not have one, generate it manually and paste it below (stored on this device only).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.e5103f9b2ae7",
+      "source": "没有拿到登录状态，请到设置里重试一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 85,
+          "context": "setErr(i18n(\"components.connectgate.e5103f9b2ae7\"))"
+        }
+      ],
+      "translation": "Sign-in state was not received. Try again in Settings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.e66f1bb3f795",
+      "source": "正在自动获取云盘访问口令…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 112,
+          "context": "setAutoMsg(i18n(\"components.connectgate.e66f1bb3f795\"))"
+        }
+      ],
+      "translation": "Getting the Cloud Drive access token automatically…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.ee2378041c9a",
+      "source": "邮箱没连上，请再试一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 99,
+          "context": "st.mail ? i18n(\"components.connectgate.c4d49dbe177d\") : i18n(\"components.connectgate.ee2378041c9a\")"
+        }
+      ],
+      "translation": "Email did not connect. Try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.ee9ebe523d42",
+      "source": "连接中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 235,
+          "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.a5574109f020\")"
+        },
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 248,
+          "context": "busy ? i18n(\"components.connectgate.ee9ebe523d42\") : i18n(\"components.connectgate.31c1468a6ea3\")"
+        }
+      ],
+      "translation": "Connecting…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.connectgate.f7da6974f7c9",
+      "source": "客户端专用密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ConnectGate.tsx",
+          "line": 247,
+          "context": "{i18n(\"components.connectgate.f7da6974f7c9\")}"
+        }
+      ],
+      "translation": "Client-specific password",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.contextmenu.3c8c5939d685",
+      "source": "面板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ContextMenu.tsx",
+          "line": 820,
+          "context": "r.title ?? i18n(\"components.contextmenu.3c8c5939d685\")"
+        }
+      ],
+      "translation": "Panel",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.contextmenu.60a53514eb92",
+      "source": "收藏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ContextMenu.tsx",
+          "line": 873,
+          "context": "label: i18n(\"components.contextmenu.60a53514eb92\")"
+        }
+      ],
+      "translation": "Favorites",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.contextmenu.fb44d588be71",
+      "source": "操作菜单",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ContextMenu.tsx",
+          "line": 730,
+          "context": "req.title ?? i18n(\"components.contextmenu.fb44d588be71\")"
+        }
+      ],
+      "translation": "Actions menu",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.details.979a332955c8",
+      "source": "详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Details.tsx",
+          "line": 14,
+          "context": "label = i18n(\"components.details.979a332955c8\")"
+        },
+        {
+          "file": "apps/desktop/src/components/Details.tsx",
+          "line": 36,
+          "context": "label = i18n(\"components.details.979a332955c8\")"
+        }
+      ],
+      "translation": "Details",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.devpanel.0dcbf8e504e3",
+      "source": "OneTHU dev 构建信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/DevPanel.tsx",
+          "line": 135,
+          "context": "[\n      i18n(\"components.devpanel.0dcbf8e504e3\"),\n      i18n(\"components.devpanel.8b60354a8cb0\") + APP_VERSION,\n      \"commit: \" + BUILD_COMMIT,\n      i18n(\"components.devpanel.f1943a24f844\") + buildTimeText(),\n      i18n(\"components.devpanel.1b54c7cbd89e\") + hostName(),\n      i18n(\"components.devpanel.87809c747d7f\") + window.innerWidth + \"x\" + window.innerHeight + \" dpr=\" + window.devicePixelRatio,\n      i18n(\"components.devpanel.ff0557f3ef7f\") + (nav ? nav.language : \"?\"),\n      \"UA: \" + (nav ? nav.userAgent : \"?\"),\n    ]"
+        }
+      ],
+      "translation": "OneTHU dev build info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.devpanel.1b54c7cbd89e",
+      "source": "宿主: ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/DevPanel.tsx",
+          "line": 139,
+          "context": "i18n(\"components.devpanel.1b54c7cbd89e\") + hostName()"
+        }
+      ],
+      "translation": "Host: ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.devpanel.1ef3de06b32e",
+      "source": "清空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/DevPanel.tsx",
+          "line": 176,
+          "context": "{i18n(\"components.devpanel.1ef3de06b32e\")}"
+        }
+      ],
+      "translation": "Clear",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.devpanel.236f6cb7e77e",
+      "source": "已清空前端日志缓冲",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/DevPanel.tsx",
+          "line": 176,
+          "context": "setNote(i18n(\"components.devpanel.236f6cb7e77e\"))"
+        }
+      ],
+      "translation": "Frontend log buffer cleared",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.devpanel.24eacefddcaf",
+      "source": "导出运行日志",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/DevPanel.tsx",
+          "line": 173,
+          "context": "busy ? i18n(\"components.devpanel.dce6e572314e\") : i18n(\"components.devpanel.24eacefddcaf\")"
+        }
+      ],
+      "translation": "Export runtime logs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.devpanel.39cae06ba6b5",
+      "source": "隐藏徽标",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/DevPanel.tsx",
+          "line": 159,
+          "context": "{i18n(\"components.devpanel.39cae06ba6b5\")}"
+        }
+      ],
+      "translation": "Hide badge",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

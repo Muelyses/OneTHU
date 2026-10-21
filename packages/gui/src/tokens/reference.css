@@ -1,0 +1,140 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 参考层 Reference（--og-ref-*）
+ *
+ * 唯一用途：给语义层（tokens/semantic.css）提供色料。
+ * **组件、页面、应用代码引用这一层 = 违规**（换皮肤/换主题会失效）。
+ * 改一个色，必须改这里 + 语义层，别去别处调。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 中性阶（中性石墨 neutral-graphite）：面、字、线全从这一条轴上取 ── */
+  --og-ref-neutral-0: #ffffff;
+  --og-ref-neutral-25: #fcfcfb;
+  --og-ref-neutral-50: #f7f7f5;
+  --og-ref-neutral-100: #f0f0ee;
+  --og-ref-neutral-200: #e5e5e2;
+  --og-ref-neutral-300: #d4d4d0;
+  --og-ref-neutral-400: #b4b4ae;
+  --og-ref-neutral-500: #8a8a84;
+  --og-ref-neutral-600: #6b6b65;
+  --og-ref-neutral-700: #50504b;
+  --og-ref-neutral-800: #383835;
+  --og-ref-neutral-900: #292927;
+  --og-ref-neutral-950: #212120;
+  --og-ref-neutral-1000: #171716;
+
+  /* ── 品牌阶（清华紫）：默认强调色家族。主题/动态取色会在运行时整体替换 ── */
+  --og-ref-brand-20: #2a0d33;
+  --og-ref-brand-40: #90399c;
+  --og-ref-brand-50: #a44bb0;
+  --og-ref-brand-60: #b96ac4;
+  --og-ref-brand-70: #cf93d8;
+  --og-ref-brand-80: #dfb0e7;
+  --og-ref-brand-90: #eed4f2;
+  --og-ref-brand-95: #f6ebf9;
+
+  /* ── 功能色：状态语义必须稳定，任何主题都不许改这几个语义 ── */
+  --og-ref-red-40: #d93a3f;
+  --og-ref-red-60: #e8706f;
+  --og-ref-red-80: #f4b3b1;
+  --og-ref-red-95: #fdeceb;
+
+  --og-ref-paper-yellow: #f6e7a8;
+  --og-ref-paper-pink: #f5d5dd;
+  --og-ref-paper-blue: #d6e8fa;
+  --og-ref-paper-green: #d9edce;
+  --og-ref-amber-40: #c47a11;
+  --og-ref-amber-60: #dfa143;
+  --og-ref-amber-80: #f2cf95;
+  --og-ref-amber-95: #fdf4e4;
+
+  --og-ref-green-40: #1f9d55;
+  --og-ref-green-60: #4fbd7f;
+  --og-ref-green-80: #a7e0c0;
+  --og-ref-green-95: #e8f7ef;
+
+  --og-ref-blue-40: #2f6fd0;
+  --og-ref-blue-60: #6b9ae6;
+  --og-ref-blue-80: #b4ccf3;
+  --og-ref-blue-95: #eaf1fd;
+
+  /* ── 纯黑白：只服务遮罩、阴影、最高对比字 ── */
+  --og-ref-ink-1000: #000000;
+  --og-ref-ink-0: #ffffff;
+}
+
+/* Resolved palette: the only home for literal color and shadow values. */
+:root {
+  --og-ref-light-content-inverse-2: rgba(255, 255, 255, .78);
+  --og-ref-light-line-1: rgba(33, 33, 32, .12);
+  --og-ref-light-line-2: rgba(33, 33, 32, .22);
+  --og-ref-light-line-3: rgba(33, 33, 32, .42);
+  --og-ref-light-scrim: rgba(16, 16, 15, .32);
+  --og-ref-light-hover: rgba(33, 33, 32, .045);
+  --og-ref-light-press: rgba(33, 33, 32, .085);
+  --og-ref-light-skeleton: rgba(33, 33, 32, .065);
+  --og-ref-light-skeleton-shine: rgba(255, 255, 255, .72);
+  --og-ref-light-error: #b42332;
+  --og-ref-light-error-soft: #fceef0;
+  --og-ref-light-error-line: #ecc1c8;
+  --og-ref-light-warning: #8a570c;
+  --og-ref-light-warning-soft: #faf2e5;
+  --og-ref-light-warning-line: #e7d0ab;
+  --og-ref-light-success: #18734b;
+  --og-ref-light-success-soft: #eaf5ef;
+  --og-ref-light-success-line: #b9dac9;
+  --og-ref-light-info: #2865a8;
+  --og-ref-light-info-soft: #edf3fa;
+  --og-ref-light-info-line: #bed1e7;
+  --og-ref-dark-surface-2: #252524;
+  --og-ref-dark-surface-3: #30302e;
+  --og-ref-dark-surface-4: #3b3b38;
+  --og-ref-dark-surface-overlay: #2c2c2a;
+  --og-ref-dark-content-1: #f3f3f0;
+  --og-ref-dark-content-2: #c2c2bc;
+  --og-ref-dark-content-3: #a1a19a;
+  --og-ref-dark-content-disabled: #74746e;
+  --og-ref-dark-content-inverse-2: rgba(33, 33, 32, .78);
+  --og-ref-dark-line-1: rgba(255, 255, 248, .12);
+  --og-ref-dark-line-2: rgba(255, 255, 248, .23);
+  --og-ref-dark-line-3: rgba(255, 255, 248, .42);
+  --og-ref-dark-scrim: rgba(0, 0, 0, .56);
+  --og-ref-dark-action: #f3f3f0;
+  --og-ref-dark-action-hover: #dcdcd6;
+  --og-ref-dark-chrome: #1b1b1a;
+  --og-ref-dark-hover: rgba(255, 255, 248, .065);
+  --og-ref-dark-press: rgba(255, 255, 248, .11);
+  --og-ref-dark-error: #ff9ba7;
+  --og-ref-dark-error-soft: rgba(255, 155, 167, .1);
+  --og-ref-dark-error-line: rgba(255, 155, 167, .26);
+  --og-ref-dark-error-on: #42151c;
+  --og-ref-dark-warning: #efc280;
+  --og-ref-dark-warning-soft: rgba(239, 194, 128, .1);
+  --og-ref-dark-warning-line: rgba(239, 194, 128, .26);
+  --og-ref-dark-warning-on: #35250e;
+  --og-ref-dark-success: #88d6b1;
+  --og-ref-dark-success-soft: rgba(136, 214, 177, .1);
+  --og-ref-dark-success-line: rgba(136, 214, 177, .26);
+  --og-ref-dark-success-on: #112f22;
+  --og-ref-dark-info: #9fc6f3;
+  --og-ref-dark-info-soft: rgba(159, 198, 243, .1);
+  --og-ref-dark-info-line: rgba(159, 198, 243, .26);
+  --og-ref-dark-info-on: #152b43;
+  --og-ref-dark-skeleton: rgba(255, 255, 248, .075);
+  --og-ref-dark-skeleton-shine: rgba(255, 255, 248, .14);
+  --og-ref-dark-elev-1: 0 1px 2px rgba(0, 0, 0, .16);
+  --og-ref-dark-elev-2: 0 4px 16px rgba(0, 0, 0, .2);
+  --og-ref-dark-elev-3: 0 16px 56px rgba(0, 0, 0, .32);
+  --og-ref-dark-elev-menu: 0 8px 32px rgba(0, 0, 0, .28);
+  --og-ref-light-elev-1: 0 1px 2px rgba(0, 0, 0, .045);
+  --og-ref-light-elev-2: 0 4px 16px rgba(0, 0, 0, .065);
+  --og-ref-light-elev-3: 0 16px 56px rgba(0, 0, 0, .12);
+  --og-ref-light-elev-menu: 0 8px 32px rgba(0, 0, 0, .1);
+}
+
+/* Contrast recovery and undecoded video: deterministic rendering roles. */
+:root {
+  --og-ref-contrast-ink-light: rgba(255, 255, 255, .95);
+  --og-ref-contrast-ink-dark: rgba(33, 33, 32, .96);
+  --og-ref-video-fallback: #20201f;
+}

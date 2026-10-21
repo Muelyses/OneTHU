@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 导览的「场景 ↔ 首页卡片」映射（纯数据 + 纯函数）。
  *
@@ -25,26 +26,26 @@ export interface Scenario {
 export const SCENARIOS: Scenario[] = [
   {
     id: "learn",
-    label: "学习",
-    hint: "作业、通知、课程文件、成绩",
+    get label() { return i18n("lib.onboardingcards.2118cbc10988"); },
+    get hint() { return i18n("lib.onboardingcards.43f852c7166f"); },
     keep: ["today-overview", "homework", "notices", "learn-assignments", "learn-notices", "learn-files", "info-report"],
   },
   {
     id: "life",
-    label: "校园生活",
-    hint: "校园卡、电费、洗衣机、预约",
+    get label() { return i18n("lib.onboardingcards.21255f717947"); },
+    get hint() { return i18n("lib.onboardingcards.9246e2578b58"); },
     keep: ["today-overview", "cardEntry", "resv", "life-dorm", "life-washer"],
   },
   {
     id: "schedule",
-    label: "日程与课表",
-    hint: "今日课程、日程提醒、课表",
+    get label() { return i18n("lib.onboardingcards.5152a3e4e9a5"); },
+    get hint() { return i18n("lib.onboardingcards.0e2791c8cc8e"); },
     keep: ["today-overview", "agenda", "classes"],
   },
   {
     id: "extend",
-    label: "插件与更多",
-    hint: "插件市场、订阅新闻、选课",
+    get label() { return i18n("lib.onboardingcards.ffe12936b2e7"); },
+    get hint() { return i18n("lib.onboardingcards.39d6f1dbd274"); },
     keep: ["today-overview", "news", "xk", "info-news"],
   },
 ];

@@ -1,0 +1,12 @@
+.profile-sync-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: var(--og-space-5); }
+.profile-sync-choice { min-width: 0; display: flex; flex-direction: column; gap: var(--og-space-3); }
+.profile-sync-choice > .identity-card { --og-c-identity-name: var(--og-text-subtitle); }
+.profile-sync-differences { flex: 1; display: grid; align-content: start; gap: var(--og-space-2); }
+.profile-sync-difference { display: grid; gap: var(--og-space-1); padding: var(--og-space-3); background: var(--og-surface-2); border-inline-start: 3px solid var(--og-line-3); border-radius: var(--og-radius-md); overflow-wrap: anywhere; }
+.profile-sync-difference strong { max-height: 100px; overflow: auto; white-space: pre-wrap; }
+.profile-sync-diff-image { max-width: 100%; max-height: 88px; border-radius: var(--og-radius-sm); object-fit: cover; }
+.profile-sync-deleted { display: grid; place-content: center; justify-items: center; gap: var(--og-space-3); aspect-ratio: 1.586; border: 1px dashed var(--og-line-2); border-radius: var(--og-radius-xl); color: var(--og-content-3); }
+@media (max-width: 600px) {
+  .profile-sync-choices { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-block-end: var(--og-space-3); }
+  .profile-sync-choice { flex: 0 0 calc(100% - 24px); scroll-snap-align: start; }
+}

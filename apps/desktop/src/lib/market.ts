@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 插件市场与 GitHub 仓库直装数据层。
  *
@@ -25,6 +26,54 @@ export interface MarketEntry {
   repo: string;
   entry?: string;
   tags?: string[];
+  /* ── 市场升级（2026-10-11）：全部可选，缺字段的老条目照常显示 ── */
+  /** 作者 logo（URL 或仓库相对路径） */
+  logo?: string;
+  /** 列表缩略图（缺失回落 logo → monogram） */
+  thumbnail?: string;
+  /** 详情简介图 */
+  screenshots?: string[];
+  /** 详情正文（markdown） */
+  readme?: string;
+  /** 主页/文档 */
+  homepage?: string;
+  /** 许可证 */
+  license?: string;
+  /** 类别（theme=主题插件）：与插件页筛选共用 */
+  category?: "general" | "theme";
+}
+
+/** 把作者写的资源地址解析成可加载 URL（市场升级 2026-10-11）：
+ *  - `https?:` / `data:` / `blob:` → 原样；
+ *  - 仓库相对路径（`assets/a.png`）→ `raw.githubusercontent.com/<owner>/<repo>/<branch|main>/<subPath>/…`。
+ *  解析不出来就返回空串（调用方回落到 monogram，不裂图）。 */
+export function resolveAssetUrl(src: string | undefined, repo: string | undefined): string {
+  const v = (src ?? "").trim();
+  if (!v) return "";
+  if (/^(https?:|data:|blob:)/i.test(v)) return v;
+  if (!repo) return "";
+  try {
+    const ref = parseRepoInput(repo);
+    const branch = ref.branch ?? "main";
+    const sub = ref.subPath ? ref.subPath.replace(/^\/+|\/+$/g, "") + "/" : "";
+    return `https://raw.githubusercontent.com/${ref.owner}/${ref.repo}/${branch}/${sub}${v.replace(/^\.\//, "")}`;
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * 主题插件判定（**单一真源**，2026-10-12 修芭比粉漏判）：
+ *   ① `manifest.category === "theme"`（显式声明，推荐）
+ *   ② `manifest.themes` 是非空数组（带主题定义的插件——外观板的「已启用」逻辑就是按它认的）
+ * 两套判定过去不一致（只认 ①），导致「带 themes 但不写 category」的主题插件在市场里被漏判。
+ * **刻意不用 tags/keywords 兜底**：标签是自由文本，用户要求"有 tags 但无 themes/category 的条目
+ * 不算主题插件"这条负例必须成立（见 tools 里的断言）。
+ */
+export function isThemeEntry(m: { category?: string; themes?: unknown } | undefined | null): boolean {
+  if (!m) return false;
+  if (m.category === "theme") return true;
+  return Array.isArray(m.themes) && m.themes.length > 0;
 }
 
 export interface MarketRegistry {
@@ -45,7 +94,7 @@ export interface RepoRef {
  *  非法输入抛 Error（message 面向用户）。 */
 export function parseRepoInput(input: string): RepoRef {
   let s = (input ?? "").trim();
-  if (!s) throw new Error("请输入仓库地址，如 user/repo");
+  if (!s) throw new Error(i18n("lib.market.bde49d8534fa"));
   s = s.replace(/^git@github\.com:/i, "https://github.com/");
   if (!/^https?:\/\//i.test(s)) {
     // 允许省略协议：github.com/user/repo 或 user/repo
@@ -54,7 +103,7 @@ export function parseRepoInput(input: string): RepoRef {
       const m = /^([\w.-]+)\/([\w.-]+?)(?:@([\w./-]+))?$/.exec(s);
       const owner = m?.[1];
       const repo = m?.[2];
-      if (!m || !owner || !repo) throw new Error("无法识别的仓库地址；示例：user/repo 或 user/repo@dev");
+      if (!m || !owner || !repo) throw new Error(i18n("lib.market.d8323fde8c21"));
       return { owner, repo: repo.replace(/\.git$/, ""), branch: m[3] || undefined };
     }
   }
@@ -62,14 +111,14 @@ export function parseRepoInput(input: string): RepoRef {
   try {
     u = new URL(s);
   } catch {
-    throw new Error("无法识别的仓库地址；示例：user/repo 或完整 GitHub URL");
+    throw new Error(i18n("lib.market.b494102993b9"));
   }
   if (!/(^|\.)github\.com$/i.test(u.hostname)) {
-    throw new Error("目前仅支持 GitHub 仓库（github.com）");
+    throw new Error(i18n("lib.market.90b62e711681"));
   }
   const parts = u.pathname.replace(/^\/+|\/+$/g, "").split("/");
   if (parts.length < 2 || !parts[0] || !parts[1]) {
-    throw new Error("缺少 owner/repo；示例：https://github.com/user/repo");
+    throw new Error(i18n("lib.market.2240fbc106e2"));
   }
   const owner = parts[0];
   let repo = parts[1].replace(/\.git$/, "");
@@ -87,7 +136,7 @@ export function parseRepoInput(input: string): RepoRef {
     }
   }
   if (!/^[\w.-]+$/.test(owner) || !/^[\w.-]+$/.test(repo)) {
-    throw new Error("owner/repo 含非法字符");
+    throw new Error(i18n("lib.market.6c1f697fcc8f"));
   }
   return { owner, repo, branch, subPath };
 }
@@ -179,7 +228,7 @@ export async function fetchEntryFromRepo(ref: RepoRef, entry?: string): Promise<
     }
   }
   throw new Error(
-    `仓库中未找到插件入口（尝试：${tried.join("、")}）。仓库需在根目录提供 plugin.js（或 index.js / main.js，或清单指定 entry）。`,
+    i18n("lib.market.4101aa0579ae", { value: String(tried.join("、")) }),
   );
 }
 
@@ -241,6 +290,63 @@ export async function fetchStarMap(items: MarketEntry[]): Promise<Record<string,
   return out;
 }
 
+/** 拉取仓库并解析其最新 manifest（不执行插件业务，只读元数据）：用于「检查更新」。
+ *  与安装管线同一取数路径（contents API 优先、raw 降级），失败向上抛出面向用户的信息。 */
+export async function fetchRemoteManifestFromRepoRef(
+  ref: RepoRef,
+  entry?: string,
+): Promise<{ id: string; version: string; name?: string }> {
+  const text = await fetchEntryFromRepo(ref, entry);
+  const blobUrl = URL.createObjectURL(new Blob([text], { type: "text/javascript" }));
+  try {
+    // 与安装管线同一信任级别的动态 import（安装时本就执行同来源的模块文本）
+    const mod = (await import(/* @vite-ignore */ blobUrl)) as { manifest?: { id?: unknown; version?: unknown; name?: unknown } };
+    const m = mod?.manifest;
+    if (!m || typeof m.id !== "string" || typeof m.version !== "string") {
+      throw new Error(i18n("lib.market.124d3a9ddf47"));
+    }
+    return { id: m.id, version: String(m.version), name: typeof m.name === "string" ? m.name : undefined };
+  } finally {
+    URL.revokeObjectURL(blobUrl);
+  }
+}
+
+/** 拉取仓库根（或 subPath）下任意文本文件：公告（NOTICE.md）等约定文件用。
+ *  失败返回 null（面向调用方「未脱网但文件不存在」的语义），不抛。 */
+export async function fetchRepoTextFile(ref: RepoRef, path = "NOTICE.md"): Promise<string | null> {
+  const mid = ref.subPath ? `/${ref.subPath.replace(/^\/+|\/+$/g, "")}` : "";
+  const clean = `${mid}/${path.replace(/^\/+/, "")}`.replace(/^\/+/, "");
+  const viaApi = await fetchFileViaApi(ref.owner, ref.repo, ref.branch ?? "main", clean);
+  if (viaApi) return viaApi;
+  for (const b of ref.branch ? [ref.branch] : DEFAULT_BRANCHES) {
+    const url = `https://raw.githubusercontent.com/${ref.owner}/${ref.repo}/${b}/${clean}` + `?t=${Date.now()}`;
+    const res = await externalFetch(url).catch(() => null);
+    if (res && res.ok) {
+      const text = await res.text();
+      if (text.trim()) return text;
+      break;
+    }
+  }
+  return null;
+}
+
+/** 实时版本：市场列表/安装卡片的「本仓最新 manifest.version」。
+ *  命中则返回版本号字符串；网络/清单解析失败返回 null（调用方回落名单快照）。 */
+export async function fetchLiveVersion(ref: RepoRef, entry?: string): Promise<string | null> {
+  try {
+    const remote = await fetchRemoteManifestFromRepoRef(ref, entry);
+    return remote.version;
+  } catch {
+    return null;
+  }
+}
+
+/** 仓库路径缓存键（实时版本速查表用） */
+export function repoKey(input: string, entry?: string): string {
+  const ref = parseRepoInput(input);
+  return `${ref.owner}/${ref.repo}@${ref.branch ?? "default"}${ref.subPath ? "/" + ref.subPath : ""}#${entry ?? "plugin.js"}`;
+}
+
 function marketUrl(): string {
   try {
     return localStorage.getItem(MARKET_URL_KEY) || DEFAULT_MARKET_URL;
@@ -285,9 +391,9 @@ export async function fetchRegistry(force = false): Promise<MarketRegistry> {
   }
   const bust = force ? (marketUrl().includes("?") ? "&" : "?") + `t=${Date.now()}` : "";
   const res = await externalFetch(marketUrl() + bust);
-  if (!res.ok) throw new Error(`市场名单拉取失败：HTTP ${res.status}`);
+  if (!res.ok) throw new Error(i18n("lib.market.5903a3de41a1", { status: String(res.status) }));
   const data = (await res.json()) as MarketRegistry;
-  if (!data || !Array.isArray(data.plugins)) throw new Error("市场名单格式无效（缺 plugins 数组）");
+  if (!data || !Array.isArray(data.plugins)) throw new Error(i18n("lib.market.5749fe713e6e"));
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify({ url: marketUrl(), at: Date.now(), data }));
   } catch {

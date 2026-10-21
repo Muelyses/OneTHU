@@ -286,5 +286,30 @@ const resolveStub = (binding) => {
   rt.stop();
 }
 
+/* ⑭ 勾了「在桌面小组件显示」的日程随取数进快照（取数链 → 快照 → 推送整条通） */
+{
+  const h = harness();
+  const at = new Date();
+  at.setHours(23, 0, 0, 0);                       // 今晚 23:00 的日程：必在 7 天窗内且未到点
+  const evAt = at.getTime() > Date.now() ? at.getTime() : at.getTime() + 86_400_000;
+  const collect = () => ({
+    schedule: [],
+    homework: [],
+    events: [
+      { uid: "u1", summary: "组会", start: evAt, end: evAt + 3600_000, inWidget: true },
+      { uid: "u2", summary: "没勾的", start: evAt, end: evAt + 3600_000, inWidget: false },
+    ],
+  });
+  const rt = createWidgetRuntime({
+    invoke: h.invoke, backendAvailable: true, collect, subscribe: h.subscribe,
+    listInstances: h.listInstances, tickMs: 999999,
+  });
+  await rt.syncNow();
+  const c = h.pushes()[0].instances["13"];
+  eq("日程行进快照", c.rows.filter((r) => r.rel === "event").map((r) => r.text), ["日程 组会"]);
+  eq("脚注按项日程计数", c.footer, "1 项日程");
+  rt.stop();
+}
+
 console.log(`\n结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail === 0 ? 0 : 1);

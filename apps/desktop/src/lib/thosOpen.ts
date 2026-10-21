@@ -1,3 +1,4 @@
+import { msg as i18nMsg } from "../i18n/index.js";
 /**
  * 打开校内在线服务官方页（模块级入口）。
  *
@@ -43,7 +44,7 @@ export async function openThosInApp(url: string): Promise<void> {
     const reason = err instanceof Error ? err.message : String(err);
     void logLine(`[THOS-PORTAL] 应用内打开失败（${reason}）→ 回落系统浏览器`);
     // R21：原因直接进 toast——安卓日志此前只有 logcat，用户读不到，失败原因等于黑箱
-    showToast(`应用内打开失败：${reason.slice(0, 80)}（改用浏览器）`, 9000);
+    showToast(i18nMsg("lib.thosopen.76024592a2c9", { value: String(reason.slice(0, 80)) }), 9000);
     await openExternal(target);
   }
 }

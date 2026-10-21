@@ -1,0 +1,165 @@
+{
+  "passed": true,
+  "checks": [
+    "390竖屏 入口完整可见",
+    "390竖屏 44px以上真实命中区域",
+    "390竖屏 不遮挡导航、OH、OneShot、白板工具与刷新",
+    "手机使用独立保存的左侧位置",
+    "844触屏横屏 入口完整可见",
+    "844触屏横屏 44px以上真实命中区域",
+    "844触屏横屏 不遮挡导航、OH、OneShot、白板工具与刷新",
+    "旋转切换桌面布局后仍沿用手机入口位置",
+    "横屏预览全高夹紧",
+    "预览转管理后关闭仍归还持久入口焦点",
+    "导航栈返回只关预览，当前页保持不变",
+    "导航栈返回只关位置菜单",
+    "复位只修改手机位置，保留桌面设置",
+    "复位默认 入口完整可见",
+    "复位默认 44px以上真实命中区域",
+    "复位默认 不遮挡导航、OH、OneShot、白板工具与刷新",
+    "默认右侧约40%高度",
+    "极端保存高度0 入口完整可见",
+    "极端保存高度0 44px以上真实命中区域",
+    "极端保存高度0 不遮挡导航、OH、OneShot、白板工具与刷新",
+    "极端保存高度1 入口完整可见",
+    "极端保存高度1 44px以上真实命中区域",
+    "极端保存高度1 不遮挡导航、OH、OneShot、白板工具与刷新",
+    "取消拖动不保存中途位置",
+    "取消拖动不误开面板",
+    "取消拖动恢复 入口完整可见",
+    "取消拖动恢复 44px以上真实命中区域",
+    "取消拖动恢复 不遮挡导航、OH、OneShot、白板工具与刷新",
+    "雷达全文预览Escape关闭后焦点回到持久入口",
+    "真实主题引擎激活夜航",
+    "dark 把手与预览前景背景区分",
+    "glass 把手与预览前景背景区分",
+    "玻璃预览沿用真实共享背景模糊"
+  ],
+  "geometry": [
+    {
+      "label": "390竖屏",
+      "x": 6,
+      "y": 497.828125,
+      "width": 64,
+      "height": 48,
+      "side": "vault-floating-anchor vault-anchor is-left is-ready",
+      "hitNode": "<span class=\"og-btn-label\"><svg class=\"og-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"5\" rx=\"1.5\"></rect><path d=\"M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6\"></path></svg><span class=\"vault-box-label\">暂存箱</span><span class=\"va",
+      "hit": true,
+      "obstacles": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "label": "844触屏横屏",
+      "x": 6,
+      "y": 216.359375,
+      "width": 64,
+      "height": 48,
+      "side": "vault-floating-anchor vault-anchor is-left is-ready",
+      "hitNode": "<span class=\"og-btn-label\"><svg class=\"og-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"5\" rx=\"1.5\"></rect><path d=\"M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6\"></path></svg><span class=\"vault-box-label\">暂存箱</span><span class=\"va",
+      "hit": true,
+      "obstacles": [],
+      "viewport": {
+        "width": 844,
+        "height": 390
+      }
+    },
+    {
+      "label": "复位默认",
+      "x": 320,
+      "y": 314.796875,
+      "width": 64,
+      "height": 48,
+      "side": "vault-floating-anchor vault-anchor is-right is-ready",
+      "hitNode": "<span class=\"og-btn-label\"><svg class=\"og-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"5\" rx=\"1.5\"></rect><path d=\"M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6\"></path></svg><span class=\"vault-box-label\">暂存箱</span><span class=\"va",
+      "hit": true,
+      "obstacles": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "label": "极端保存高度0",
+      "x": 320,
+      "y": 60,
+      "width": 64,
+      "height": 48,
+      "side": "vault-floating-anchor vault-anchor is-right is-ready",
+      "hitNode": "<span class=\"og-btn-label\"><svg class=\"og-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"5\" rx=\"1.5\"></rect><path d=\"M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6\"></path></svg><span class=\"vault-box-label\">暂存箱</span><span class=\"va",
+      "hit": true,
+      "obstacles": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "label": "极端保存高度1",
+      "x": 320,
+      "y": 558,
+      "width": 64,
+      "height": 48,
+      "side": "vault-floating-anchor vault-anchor is-right is-ready",
+      "hitNode": "<span class=\"og-btn-label\"><svg class=\"og-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"5\" rx=\"1.5\"></rect><path d=\"M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6\"></path></svg><span class=\"vault-box-label\">暂存箱</span><span class=\"va",
+      "hit": true,
+      "obstacles": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "label": "取消拖动恢复",
+      "x": 320,
+      "y": 558,
+      "width": 64,
+      "height": 48,
+      "side": "vault-floating-anchor vault-anchor is-right is-ready",
+      "hitNode": "<span class=\"og-btn-label\"><svg class=\"og-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"5\" rx=\"1.5\"></rect><path d=\"M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M9 13h6\"></path></svg><span class=\"vault-box-label\">暂存箱</span><span class=\"va",
+      "hit": true,
+      "obstacles": [],
+      "viewport": {
+        "width": 390,
+        "height": 844
+      }
+    },
+    {
+      "theme": "dark",
+      "colors": {
+        "scheme": "dark",
+        "skin": "neutral",
+        "button": {
+          "color": "rgb(33, 33, 32)",
+          "background": "rgb(243, 243, 240)"
+        },
+        "radar": {
+          "color": "rgb(232, 235, 242)",
+          "background": "rgb(21, 26, 36)",
+          "blur": "none"
+        },
+        "title": "rgb(188, 196, 209)"
+      }
+    },
+    {
+      "theme": "glass",
+      "colors": {
+        "scheme": "light",
+        "skin": "glass",
+        "button": {
+          "color": "rgb(255, 255, 255)",
+          "background": "rgb(33, 33, 32)"
+        },
+        "radar": {
+          "color": "rgb(33, 33, 32)",
+          "background": "color(srgb 1 1 1 / 0.74)",
+          "blur": "blur(20px) saturate(1.55)"
+        },
+        "title": "rgb(80, 80, 75)"
+      }
+    }
+  ],
+  "input": "Playwright taps and Chrome CDP trusted touch; native Back registration checked through navStack.back, not a physical Android device"
+}

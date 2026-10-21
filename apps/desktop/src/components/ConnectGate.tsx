@@ -1,3 +1,6 @@
+import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { Input } from "@onethu/gui";
+import { Btn } from "@onethu/gui";
 /**
  * ConnectGate（§4.3）：业务入口放业务场景——要绑定的功能，就在原地绑。
  *
@@ -20,10 +23,10 @@ import { showToast } from "../state/toast.js";
 export type BindNeed = "yuketang" | "tuoj" | "mail" | "cloud";
 
 const LABEL: Record<BindNeed, string> = {
-  yuketang: "雨课堂",
+  get yuketang() { return i18n("components.connectgate.38b9eabcae1b"); },
   tuoj: "TUOJ",
-  mail: "清华邮箱",
-  cloud: "清华云盘",
+  get mail() { return i18n("components.connectgate.335de0697b53"); },
+  get cloud() { return i18n("components.connectgate.75f7ac5a5cca"); },
 };
 
 /** 每种绑定「为什么要绑」的一句话——别只说"未登录" */
@@ -46,14 +49,17 @@ export function ConnectGate({
   /** 绑定成功后就地继续原来那件事（调用方接住） */
   onDone?: () => void;
 }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const expanded = useExpanded();
   const [channel, setChannel] = useState<"qr" | "web">("qr");
   const [token, setToken] = useState("");
+  const [manualOpen, setManualOpen] = useState(false);
+  const [autoMsg, setAutoMsg] = useState<string | null>(null);
   const [mailAddr, setMailAddr] = useState("");
   const [mailCode, setMailCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-
   if (!open) return null;
 
   const done = (msg: string): void => {
@@ -75,8 +81,8 @@ export function ConnectGate({
     setErr(null);
     try {
       const { cookie } = await extHwLogin.tuojCas("tuoj");
-      if (cookie) afterExtHw("TUOJ 已连接");
-      else setErr("没有拿到登录状态，请到设置里重试一次");
+      if (cookie) afterExtHw(i18n("components.connectgate.9b0d1eca802a"));
+      else setErr(i18n("components.connectgate.e5103f9b2ae7"));
     } catch (e) {
       fail(e);
     } finally {
@@ -90,9 +96,39 @@ export function ConnectGate({
     try {
       const st = await connectMail(mailAddr, mailCode);
       void refreshExtHw().catch(() => undefined);
-      done(st.mail ? "邮箱已连接（云日历同步共用同一套登录信息）" : "邮箱没连上，请再试一次");
+      done(st.mail ? i18n("components.connectgate.c4d49dbe177d") : i18n("components.connectgate.ee2378041c9a"));
     } catch (e) {
       fail(e);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** 静默优先：silentConnectSeafile（直连 SSO + checkSingle 自动确认 + by-session
+   *  只读取票，与导览/IM 共用链）；取不到再回退应用内 WebView。两层都零输入。 */
+  const cloudTokenFromWebview = async (): Promise<void> => {
+    setBusy(true);
+    setErr(null);
+    setAutoMsg(i18n("components.connectgate.e66f1bb3f795"));
+    try {
+      const { silentConnectSeafile } = await import("../state/seafileAuto.js");
+      const r = await silentConnectSeafile();
+      if (r.ok) {
+        showToast(i18nMsg("components.connectgate.48804f9d471e", { value: String(r.account?.name ? `：${r.account.name}` : "") }));
+        onDone?.();
+        onClose();
+        return;
+      }
+      setAutoMsg(r.error ?? i18n("components.connectgate.aba4647cd558"));
+      const { readCloudTokenInWebview } = await import("../lib/cloudTokenWebview.js");
+      const token = await readCloudTokenInWebview();
+      await connectCloudDisk(token);
+      showToast(i18nMsg("components.connectgate.90f0cb9c68db"));
+      onDone?.();
+      onClose();
+    } catch (e) {
+      setAutoMsg(e instanceof Error ? e.message : String(e));
+      setManualOpen(true);
     } finally {
       setBusy(false);
     }
@@ -103,7 +139,7 @@ export function ConnectGate({
     setErr(null);
     try {
       await connectCloudDisk(token);
-      showToast("云盘已连接");
+      showToast(i18nMsg("components.connectgate.90f0cb9c68db"));
       onDone?.();
       onClose();
     } catch (e) {
@@ -118,7 +154,7 @@ export function ConnectGate({
     position: "fixed",
     inset: 0,
     zIndex: 1200,
-    background: "rgba(0,0,0,.4)",
+    background: "var(--og-scrim)",
     display: "flex",
     alignItems: expanded ? "center" : "flex-end",
     justifyContent: "center",
@@ -129,8 +165,8 @@ export function ConnectGate({
     minWidth: 0,
     maxHeight: expanded ? "86dvh" : "92dvh",
     overflowY: "auto",
-    background: "var(--md-sys-color-surface)",
-    color: "var(--text-1)",
+    background: "var(--og-surface-overlay)",
+    color: "var(--og-content-1)",
     borderRadius: expanded ? "var(--r-lg)" : "var(--r-lg) var(--r-lg) 0 0",
     padding: "16px 16px calc(16px + env(safe-area-inset-bottom))",
     boxSizing: "border-box",
@@ -141,7 +177,7 @@ export function ConnectGate({
       return (
         <div style={{ display: "grid", gap: 10 }}>
           <div style={{ display: "flex", gap: 8 }}>
-            {([["qr", "扫码登录"], ["web", "网页登录"]] as const).map(([k, lbl]) => (
+            {([["qr", i18n("components.connectgate.378eaca774bb")], ["web", i18n("components.connectgate.658333c8c774")]] as const).map(([k, lbl]) => (
               <button
                 key={k}
                 className={"btn" + (channel === k ? " primary" : "")}
@@ -155,14 +191,14 @@ export function ConnectGate({
             <YktQrPanel
               onCancel={onClose}
               onSuccess={(cookie) => {
-                void saveYuketang(cookie).then(() => afterExtHw("雨课堂已连接"));
+                void saveYuketang(cookie).then(() => afterExtHw(i18n("components.connectgate.36fe6819580c")));
               }}
             />
           ) : (
             <YktWebLoginPanel
               onCancel={onClose}
               onSuccess={(cookie) => {
-                void saveYuketang(cookie).then(() => afterExtHw("雨课堂已连接"));
+                void saveYuketang(cookie).then(() => afterExtHw(i18n("components.connectgate.36fe6819580c")));
               }}
             />
           )}
@@ -172,62 +208,44 @@ export function ConnectGate({
     if (need === "tuoj") {
       return (
         <div style={{ display: "grid", gap: 10 }}>
-          <div className="setting-desc" style={{ margin: 0 }}>
-            用清华账号登录一次即可，不需要额外输入。
-          </div>
-          <button className="btn primary" disabled={busy} onClick={() => void tuojLogin()}>
-            {busy ? "登录中…" : "用清华账号登录"}
-          </button>
+          <div className="og-text og-text--label og-text--t-faint">{i18n("components.connectgate.9273ef80acd9")}</div>
+          <Btn variant="outline" disabled={busy} onClick={() => void tuojLogin()}>{busy ? i18n("components.connectgate.3f06ed8f8c38") : i18n("components.connectgate.d41597cf10a3")}</Btn>
         </div>
       );
     }
     if (need === "cloud") {
       return (
         <div style={{ display: "grid", gap: 10 }}>
-          <div className="setting-desc" style={{ margin: 0 }}>
-            在云盘网页端生成一个访问口令（Web API Auth Token），粘贴到下面。口令只存本机。
-          </div>
+          <div className="og-text og-text--label og-text--t-faint">{i18n("components.connectgate.7001abdd98e2")}</div>
+          <div className="og-text og-text--label og-text--t-faint">{i18n("components.connectgate.93f11d9b01e9")}</div>
+          {autoMsg ? (
+            <div className="og-text og-text--label og-text--t-warning">
+              {autoMsg}
+            </div>
+          ) : null}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input
-              className="input"
-              style={{ flex: 1, minWidth: 180 }}
-              placeholder="粘贴云盘访问口令"
-              value={token}
-              onChange={(e) => setToken(e.target.value.trim())}
-            />
-            <button className="btn primary" disabled={!token || busy} onClick={() => void cloudConnect()}>
-              {busy ? "连接中…" : "连接"}
-            </button>
+            <Btn variant="outline" disabled={busy} onClick={() => void cloudTokenFromWebview()}>{busy ? i18n("components.connectgate.509eb4d3da11") : i18n("components.connectgate.94a50a395a74")}</Btn>
+            <Btn variant="outline" onClick={() => setManualOpen((v) => !v)}>{manualOpen ? i18n("components.connectgate.771ad7dd5833") : i18n("components.connectgate.39255d1ccfd2")}</Btn>
           </div>
+          {manualOpen ? (
+            <>
+              <div className="og-text og-text--label og-text--t-faint">{i18n("components.connectgate.d6eedaec5a1e")}</div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <div style={{ flex: 1, minWidth: 180 }}>{<Input placeholder={i18n("components.connectgate.070967253061")} value={token} onChange={(value) => setToken(value.trim())} />}</div>
+                <Btn variant="outline" disabled={!token || busy} onClick={() => void cloudConnect()}>{busy ? i18n("components.connectgate.ee9ebe523d42") : i18n("components.connectgate.a5574109f020")}</Btn>
+              </div>
+            </>
+          ) : null}
         </div>
       );
     }
     /* mail：真实输入框——与设置页同一个动作（accountSetup → cloudCal），语义不分叉 */
     return (
       <div style={{ display: "grid", gap: 10 }}>
-        <div className="setting-desc" style={{ margin: 0 }}>
-          密码不是邮箱登录密码，是「客户端专用密码」：网页版邮箱 → 设置 → 客户端专用密码。
-        </div>
-        <input
-          className="input"
-          placeholder="完整邮箱地址（如 someone@mails.tsinghua.edu.cn）"
-          value={mailAddr}
-          onChange={(e) => setMailAddr(e.target.value.trim())}
-        />
-        <input
-          className="input"
-          type="password"
-          placeholder="客户端专用密码"
-          value={mailCode}
-          onChange={(e) => setMailCode(e.target.value)}
-        />
-        <button
-          className="btn primary"
-          disabled={!/.+@.+/.test(mailAddr) || !mailCode || busy}
-          onClick={() => void mailConnect()}
-        >
-          {busy ? "连接中…" : "保存并验证"}
-        </button>
+        <div className="og-text og-text--label og-text--t-faint">{i18n("components.connectgate.b0f1a1898199")}</div>
+        <Input placeholder={i18n("components.connectgate.593bb32ef7ef")} value={mailAddr} onChange={(value) => setMailAddr(value.trim())} />
+        <Input type="password" placeholder={i18n("components.connectgate.f7da6974f7c9")} value={mailCode} onChange={(value) => setMailCode(value)} />
+        <Btn variant="outline" disabled={!/.+@.+/.test(mailAddr) || !mailCode || busy} onClick={() => void mailConnect()}>{busy ? i18n("components.connectgate.ee9ebe523d42") : i18n("components.connectgate.31c1468a6ea3")}</Btn>
       </div>
     );
   })();
@@ -236,18 +254,18 @@ export function ConnectGate({
     <div style={maskStyle} onClick={onClose}>
       <div className="connect-gate-panel" style={panelStyle} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
-          <b style={{ fontSize: "var(--text-lg)" }}>连接{LABEL[need]}</b>
+          <b style={{ fontSize: "var(--text-lg)" }}>{i18nRich("components.connectgate.98a2d2ee13c6", { value: LABEL[need] })}</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={onClose} aria-label="关闭">
+          <Btn variant="outline" onClick={onClose} aria-label={i18n("components.connectgate.3fd47edce45b")}>
             ✕
-          </button>
+          </Btn>
         </div>
-        <div className="setting-desc" style={{ margin: "0 0 12px" }}>
+        <div className="og-text og-text--label og-text--t-faint" style={{ marginBottom: 12 }}>
           {WHY[need]}
         </div>
         {body}
         {err ? (
-          <div style={{ marginTop: 10, fontSize: "var(--text-sm)", color: "var(--red, #c04848)" }}>{err}</div>
+          <div style={{ marginTop: 10, fontSize: "var(--text-sm)", color: "var(--og-error)" }}>{err}</div>
         ) : null}
       </div>
     </div>,

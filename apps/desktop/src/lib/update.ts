@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 版本更新检测：GitHub Releases。
  * - 数据源 api.github.com/repos/smartThise/OneTHU/releases/latest（经 Rust
@@ -9,9 +10,11 @@
 import { universalFetch } from "./transport.js";
 
 /** 版本代号（随主版本更新） */
-export const APP_CODENAME = "Complex Variable";
-
+export const APP_CODENAME = "Revolution";
 declare const __APP_VERSION__: string;
+
+/** 关于页与构建元数据共用 package.json 注入的版本。 */
+export const APP_VERSION_LABEL = __APP_VERSION__;
 
 export interface ReleaseInfo {
   tag: string;
@@ -97,5 +100,5 @@ export async function checkUpdateSilently(onToast: (msg: string) => void): Promi
   if (!rel) return;
   if (!isNewer(rel.tag, currentVersion())) return;
   if (isDismissed(rel.tag)) return;
-  onToast(`新版本 ${rel.name} 可用：设置 → 关于 查看详情`);
+  onToast(i18n("lib.update.c459fb3f09e6", { version: rel.name }));
 }

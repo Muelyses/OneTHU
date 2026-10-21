@@ -1,0 +1,96 @@
+{
+  "messages": {
+    "components.onboardinglanguage.title": {
+      "zh-CN": "你想使用哪种语言？",
+      "en-US": "Which language would you like to use?"
+    },
+    "components.onboardinglanguage.lead": {
+      "zh-CN": "接下来的导览与界面将使用你选择的语言。之后也可以在设置中更改。",
+      "en-US": "The guide and interface will use your chosen language. You can change it later in Settings."
+    },
+    "components.onboardinglanguage.label": {
+      "zh-CN": "界面语言",
+      "en-US": "Interface language"
+    },
+    "components.onboardinglanguage.step": {
+      "zh-CN": "第 0 步",
+      "en-US": "Step 0"
+    },
+    "components.onboardinglanguage.continue": {
+      "zh-CN": "继续",
+      "en-US": "Continue"
+    },
+    "components.onboardingtour.modeintro.simple": {
+      "zh-CN": "把今天放在眼前",
+      "en-US": "Keep today in view"
+    },
+    "components.onboardingtour.modeintro.practical": {
+      "zh-CN": "常用顺手，功能齐全",
+      "en-US": "Your essentials at hand, with every feature available"
+    },
+    "components.onboardingtour.chapter.board": {
+      "zh-CN": "白板",
+      "en-US": "Board"
+    },
+    "components.onboardingtour.chapter.vault": {
+      "zh-CN": "暂存箱",
+      "en-US": "Stash"
+    },
+    "components.onboardingtour.chapter.code": {
+      "zh-CN": "口令",
+      "en-US": "Share codes"
+    },
+    "components.onboardingtour.chapter.nfc": {
+      "zh-CN": "碰一碰",
+      "en-US": "Tap to share"
+    },
+    "components.onboardingtour.chapter.organization": {
+      "zh-CN": "组织",
+      "en-US": "Organizations"
+    },
+    "components.onboardingtour.chapter.today": {
+      "zh-CN": "今天",
+      "en-US": "Today"
+    },
+    "components.onboardingtour.chapter.quick": {
+      "zh-CN": "五个入口",
+      "en-US": "Five shortcuts"
+    },
+    "components.onboardingtour.chapter.more": {
+      "zh-CN": "更多功能",
+      "en-US": "More features"
+    },
+    "components.onboardingtour.chapter.swap": {
+      "zh-CN": "常用入口",
+      "en-US": "Your shortcuts"
+    },
+    "components.onboardingtour.chapter.explorer": {
+      "zh-CN": "标签与工作区",
+      "en-US": "Tabs & workspaces"
+    },
+    "components.onboardingtour.chapter.onego": {
+      "zh-CN": "OneGO!",
+      "en-US": "OneGO!"
+    },
+    "components.onboardingtour.chapter.plugin": {
+      "zh-CN": "插件与 OH",
+      "en-US": "Plugins & OH"
+    },
+    "components.onboardingtour.chapter.customize": {
+      "zh-CN": "外观",
+      "en-US": "Appearance"
+    },
+    "components.onboardingtour.chapter.campus": {
+      "zh-CN": "校园服务",
+      "en-US": "Campus services"
+    },
+    "components.onboardingtour.chapter.data": {
+      "zh-CN": "数据与同步",
+      "en-US": "Data & sync"
+    },
+    "components.onboardinglanguage.hint": {
+      "zh-CN": "之后可在设置中更改。",
+      "en-US": "Change later in Settings."
+    }
+  }
+}

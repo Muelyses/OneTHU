@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC",sans-serif}
+.bg{width:100%;height:100%;padding:16px;background:linear-gradient(120deg,#7d8b98 0%,#c2ccd4 42%,#23282e 43%,#0b0e11 100%);display:flex;gap:16px}
+/* 整块毛玻璃背板：上下同浓度、无渐隐；1px 细边 + 上沿高光 */
+.panel{width:333px;border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:11px;
+ background:rgba(255,255,255,.78);border:1px solid rgba(0,0,0,.14);
+ box-shadow:0 14px 26px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.5)}
+.panel.dark{background:rgba(0,0,0,.62);border-color:rgba(255,255,255,.19);
+ box-shadow:0 16px 30px rgba(0,0,0,.46), inset 0 1px 0 rgba(255,255,255,.22);color:#ECECF1}
+.chips{display:flex;gap:8px}
+.chip{height:32px;display:inline-flex;align-items:center;padding:0 12px;border-radius:999px;font-size:12px;white-space:nowrap;
+ background:rgba(255,255,255,.86);color:#1C1F24;border:1px solid rgba(0,0,0,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.panel.dark .chip{background:rgba(0,0,0,.45);color:#ECECF1;border-color:rgba(255,255,255,.2)}
+.bub{max-width:84%;padding:7px 13px;font-size:15px;line-height:1.55;border-radius:20px 20px 20px 6px;color:#1C1F24;
+ background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.48));border:1px solid rgba(255,255,255,.35);
+ box-shadow:0 10px 18px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.5)}
+.bub.user{align-self:flex-end;border-radius:20px 20px 6px 20px}
+.panel.dark .bub{color:#ECECF1;background:linear-gradient(180deg,rgba(0,0,0,.42),rgba(0,0,0,.30));border-color:rgba(255,255,255,.22);
+ box-shadow:0 12px 20px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.22)}
+.icons{display:flex;align-items:center;gap:10px}
+.icons svg{width:40px;height:40px}
+.inputrow{display:flex;align-items:center;gap:8px;font-size:15px}
+.inputrow .ph{flex:1;color:#1C1F24cc}
+.panel.dark .inputrow .ph{color:#ECECF1cc}
+.line{border-top:1px solid rgba(0,0,0,.28)}
+.panel.dark .line{border-top-color:rgba(255,255,255,.28)}
+.cap{font:11px/1.5 "SF Mono",Menlo,monospace;color:#ffe9a8}
+.vbar{border-radius:18px;padding:6px 16px 8px;background:rgba(255,255,255,.78);border:1px solid rgba(0,0,0,.14);
+ box-shadow:0 12px 22px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.5)}
+.vbar.dark{background:rgba(0,0,0,.62);border-color:rgba(255,255,255,.19);color:#ECECF1}
+.subband{border-radius:14px;padding:6px 12px;font-size:15px;margin-bottom:6px;background:rgba(255,255,255,.74);
+ border:1px solid rgba(0,0,0,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.vbar.dark .subband{background:rgba(0,0,0,.58);border-color:rgba(255,255,255,.19);color:#ECECF1}
+.dots{display:inline-flex;gap:4px;align-items:center;width:52px}
+.dots i{display:block;border-radius:50%;background:#1C1F24;width:7px;height:7px}
+.vbar.dark .dots i{background:#ECECF1}
+</style></head><body><div class="bg">
+  <div>
+    <div class="cap">小窗背板：整块毛玻璃（浅 α0.78 / 深 α0.62），无顶部渐隐；四角清晰</div>
+    <div class="panel" style="margin-top:6px">
+      <div class="chips"><span class="chip">回到 OneTHU</span><span class="chip">朗读 关</span><span class="chip">收起</span></div>
+      <div class="bub">明天上午只有一节 数据结构，下午没课。</div>
+      <div class="bub user">好，顺便把作业列一下</div>
+      <div class="icons">
+        <svg viewBox="0 0 48 48"><rect x="9" y="15" width="30" height="22" rx="5" fill="none" stroke="#1C1F24" stroke-width="3"/><path d="M21 15 v-4 h8 v4" fill="none" stroke="#1C1F24" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="26" r="5" fill="none" stroke="#1C1F24" stroke-width="3"/></svg><svg viewBox="0 0 48 48"><rect x="7" y="9" width="34" height="30" rx="5" fill="none" stroke="#1C1F24" stroke-width="3"/><circle cx="16" cy="18" r="2.4" fill="none" stroke="#1C1F24" stroke-width="3"/><path d="M11 34 L20 25 L26 30 L36 21" fill="none" stroke="#1C1F24" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg><svg viewBox="0 0 48 48"><path d="M24 33 V10" fill="none" stroke="#1C1F24" stroke-width="3" stroke-linecap="round"/><path d="M24 10 L16 18 M24 10 L32 18" fill="none" stroke="#1C1F24" stroke-width="3" stroke-linecap="round"/><path d="M9 35 H39" fill="none" stroke="#1C1F24" stroke-width="3" stroke-linecap="round"/></svg>
+      </div>
+      <div class="inputrow"><span class="ph">点击输入，长按说话</span><span>发送</span></div>
+      <div class="line"></div>
+    </div>
+    <div class="cap" style="margin-top:14px">语音条（整块毛玻璃）+ 上方转写带同材质</div>
+    <div class="vbar" style="margin-top:6px;width:300px">
+      <div class="subband">明天上午有没有空课</div>
+      <div style="display:flex;align-items:center;gap:12px;height:56px">
+        <span class="dots"><i></i><i></i><i></i><i></i><i></i></span><span style="font-size:15px">在听，请讲…</span>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="cap">同上 · 深色</div>
+    <div class="panel dark" style="margin-top:6px">
+      <div class="chips"><span class="chip">回到 OneTHU</span><span class="chip">朗读 开</span><span class="chip">收起</span></div>
+      <div class="bub">明天上午只有一节 数据结构，下午没课。</div>
+      <div class="bub user">好，顺便把作业列一下</div>
+      <div class="icons">
+        <svg viewBox="0 0 48 48"><rect x="9" y="15" width="30" height="22" rx="5" fill="none" stroke="#ECECF1" stroke-width="3"/><path d="M21 15 v-4 h8 v4" fill="none" stroke="#ECECF1" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="26" r="5" fill="none" stroke="#ECECF1" stroke-width="3"/></svg><svg viewBox="0 0 48 48"><rect x="7" y="9" width="34" height="30" rx="5" fill="none" stroke="#ECECF1" stroke-width="3"/><circle cx="16" cy="18" r="2.4" fill="none" stroke="#ECECF1" stroke-width="3"/><path d="M11 34 L20 25 L26 30 L36 21" fill="none" stroke="#ECECF1" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg><svg viewBox="0 0 48 48"><path d="M24 33 V10" fill="none" stroke="#ECECF1" stroke-width="3" stroke-linecap="round"/><path d="M24 10 L16 18 M24 10 L32 18" fill="none" stroke="#ECECF1" stroke-width="3" stroke-linecap="round"/><path d="M9 35 H39" fill="none" stroke="#ECECF1" stroke-width="3" stroke-linecap="round"/></svg>
+      </div>
+      <div class="inputrow"><span class="ph">点击输入，长按说话</span><span>发送</span></div>
+      <div class="line" style="border-top-color:rgba(255,255,255,.28)"></div>
+    </div>
+    <div class="cap" style="margin-top:14px">语音条 · 深色</div>
+    <div class="vbar dark" style="margin-top:6px;width:300px">
+      <div class="subband">明天上午有没有空课</div>
+      <div style="display:flex;align-items:center;gap:12px;height:56px">
+        <span class="dots"><i></i><i></i><i></i><i></i><i></i></span><span style="font-size:15px">在听，请讲…</span>
+      </div>
+    </div>
+  </div>
+</div></body></html>

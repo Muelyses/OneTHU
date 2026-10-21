@@ -1,3 +1,4 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 校内新闻页 —— getNews 列表 + getNewsDetail 站内预览（thu-info-lib news.ts 同源）。
  * 点击条目先在应用内看正文（NEWS_DETAIL?xxid=…&_csrf= → object.xxDto），
@@ -18,33 +19,67 @@
  *      POST querySubscribeInfomationPageList{currentPage,dyid}，不传 dyid =
  *      全部条件合并），逐页翻看——不是对已抓取页做本地过滤，也不做逐来源 fan-out。
  *      栏顶部来源 chips（「全部」+ 每个订阅条件一个子菜单，短标签取来源名/标题，
- *      横向可滚动、选中高亮，key=条件 dyid）：「全部」走合并分页，点单个条件按其
+ *      选中高亮，key=条件 dyid）：「全部」走合并分页，点单个条件按其
  *      dyid 精确取数，切 chip 重置分页与列表。
- *    - 弹层（及详情抽屉）createPortal 挂 body + 遮罩 flex 视口居中
- *      （zhjwxk/Courses.tsx maskStyle/panelStyle 同款）。
+ *    - 弹层与详情面板统一走 OG Modal（portal 遮罩/滚动锁/Esc 由 Shell 承担）。
  * ③ 顶部 InfoPage 同款 segmented 二级分栏「全部新闻 / 订阅动态」
  *    （无订阅时隐藏分段控件，只显示全部新闻）。
  * ④ 首页新闻直达：可选 newsId（xxid）prop —— InfoPage 从 LearnNav.infoNewsId 下传；
  *    列表就绪后在列表中定位该条并自动打开详情（不在列表则用最小条目打开，标题由
  *    getNewsDetail 的 title 补充），打开后经 onConsumeNewsId 消费置空；不带参数时
  *    行为与旧版一致。
+ *
+ * 2026-10-14 OneGUI 换血：列表行 = Card flush + List divided + Row（标题命中高亮
+ * 走 Text slot=body，时间戳·来源走 Text slot=micro+tone，置顶 Tag tone=brand、
+ * 订阅行来源 Tag tone=neutral，外链图标与 CollectStar 进 trailing——星标本就
+ * stopPropagation，不会误触行打开）；搜索 = OG Input(type=search) + Grow + Btn；
+ * 来源筛选条 = OG Chip(selected)（OtherInfoPage 同款筛选工具条）；
+ * 分页行 = Inline+Spacer+Text(slot=label)+Btn；详情 = OG Modal(size=lg，
+ * ≈旧 720px 抽屉宽度)；订阅管理 = OG Modal(size=md，≈旧 560px)；骨架 =
+ * Card(pad=none)+LoadingBlock；空态 EmptyState；下载提示 Banner(tone=success)。
+ * 手写遮罩四兄弟（subMaskStyle/subPanelStyle/subPanelHead/subPanelBody/
+ * drawerMaskStyle/drawerPanelStyle）与 .news-row-wrap/.search-box/.page-indicator/
+ * .chips/.chip-blue/.chip-gray/.row-when/.row-main/.row-title/.row-sub 引用全部退场。
+ * 详情正文仍是 RichContent（门户远端富文本 HTML + 图片代理抓取，MailPage 同判例
+ * 豁免：站外 HTML 不可令牌化）。
  */
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
-import { createPortal } from "react-dom";
+import { vaultCatchAttachment } from "../../lib/vaultCatch.js";
+import { useEffect, useMemo, useRef, useState, Fragment, type ReactNode } from "react";
 import type { NewsDetail, NewsItem } from "@onethu/core";
-import { SegmentedOverflow, Card, Empty, ErrorNote, SectionHead, SkeletonRows } from "../../components/Layout.js";
+import {
+  Banner,
+  Btn,
+  Card,
+  Chip,
+  EmptyState,
+  Grow,
+  IconDownload,
+  IconExternal,
+  IconFile,
+  IconSearch,
+  Inline,
+  Input,
+  List,
+  LoadingBlock,
+  Modal,
+  Row,
+  Section,
+  SectionCard,
+  Spacer,
+  Stack,
+  Tag,
+  Text,
+} from "@onethu/gui";
+import { ErrorNote, SegmentedOverflow } from "../../components/Layout.js";
 import { CollectStar } from "../../components/Collect.js";
 import { enc, noteAtomCache } from "../../state/atoms.js";
-import { IconDownload, IconExternal, IconSearch } from "../../components/Icons.js";
-import { useApp } from "../../state/context.js";
 import { useNews } from "../../state/data.js";
 import { info, downloadLearnUrl } from "../../lib/clients.js";
 import { explainNetworkError } from "../../lib/transport.js";
 import { openFilePreview } from "../../components/FilePreview.js";
 import { DownloadOpenButtons } from "../../components/DownloadOpenButtons.js";
 import { RichContent } from "../learn/shared.js";
-import { Highlight, byDateDesc, rankNews, readSubs, tokenize, writeSubs } from "./newsSearch.js";
+import { Highlight, rankNews, readSubs, tokenize, writeSubs } from "./newsSearch.js";
 import { openExternal } from "./openExternal.js";
 
 const PAGE_SIZE = 20;
@@ -75,99 +110,61 @@ interface DetailState {
   err?: string;
 }
 
-/* ══════════ 弹层（createPortal 挂 body：视口定位不再受滚动容器/祖先 transform 影响）══════════ */
-/* 订阅管理弹层：遮罩 flex 视口垂直居中（Courses.tsx maskStyle/panelStyle 同款） */
-const subMaskStyle: CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both",
-  position: "fixed",
-  inset: 0,
-  background: "rgba(15, 23, 42, 0.45)",
-  zIndex: 70,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 24,
-};
-const subPanelStyle: CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both",
-  width: "100%",
-  maxWidth: 560,
-  maxHeight: "78vh",
-  display: "flex",
-  flexDirection: "column",
-  background: "var(--surface)",
-  borderRadius: 14,
-  border: "1px solid var(--border)",
-  boxShadow: "0 18px 50px rgba(0, 0, 0, 0.28)",
-};
-const subPanelHead: CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 12,
-  padding: "14px 20px 12px",
-  borderBottom: "1px solid var(--border)",
-};
-const subPanelBody: CSSProperties = { padding: "12px 20px 20px", overflowY: "auto" };
-
-/* 新闻详情抽屉：同样挂 body，保持右侧滑出形态 */
-const drawerMaskStyle: CSSProperties = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(15, 23, 42, 0.45)",
-  display: "flex",
-  justifyContent: "flex-end",
-  zIndex: 60,
-};
-const drawerPanelStyle: CSSProperties = {
-  width: "min(720px, 94vw)",
-  background: "var(--surface)",
-  overflowY: "auto",
-  padding: "20px 26px 28px",
-  borderRadius: "16px 0 0 16px",
-  border: "1px solid var(--border)",
-  borderRight: "none",
-};
-
-/** 新闻行：标题命中高亮；订阅动态行附加来源 chip 标注 */
+/** 新闻行：标题命中高亮；订阅动态行附加来源徽标。
+ *  OG Row 组装：主列 children 放「标题（可折行，云盘行同形态）+ 时间戳·来源 micro 行」，
+ *  字重 medium 对应旧 .row-title；置顶/来源徽标是 Tag，外链图标与 CollectStar 在
+ *  trailing（星标自带 stopPropagation，不会误触行打开）。 */
 function NewsRow({
   n,
   tokens,
   showSourceChip = false,
-  delay = 0,
   onOpen,
 }: {
   n: NewsItem;
   tokens: string[];
   showSourceChip?: boolean;
-  delay?: number;
   onOpen: (item: NewsItem) => void;
 }) {
+  const uiLocale = useUiLocale();
+
+  const dateStr = n.date ? n.date.slice(5, 10).replace("-", "/") : "--";
   return (
-    <div className="news-row-wrap">
-    <button
-      className="row row-link"
-      style={{ animationDelay: `${delay}ms`, textAlign: "left", width: "100%" }}
+    <Row
+      flush
+      role="button"
+      tabIndex={0}
+      titleAttr={i18n("pages.info.newstab.ebfa3e62fea6")}
       onClick={() => onOpen(n)}
-      title="点击查看详情"
-    >
-      <div className="row-when">
-        <b>{n.date ? n.date.slice(5, 10).replace("-", "/") : "--"}</b>
-        <span>{n.source || "校内"}</span>
-      </div>
-      <div className="row-main">
-        <div className="row-title" style={{ whiteSpace: "normal" }}>
-          {n.topped ? <span className="chip chip-blue" style={{ marginRight: 8 }}>置顶</span> : null}
-          <Highlight text={n.name} tokens={tokens} />
-          {showSourceChip && n.source ? (
-            <span className="chip chip-gray" style={{ marginLeft: 8 }}>{n.source}</span>
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onOpen(n);
+        }
+      }}
+      trailing={
+        <>
+          {showSourceChip && n.source ? <Tag tone="neutral">{n.source}</Tag> : null}
+          {n.url ? <IconExternal size="sm" title={i18n("pages.info.newstab.e3e8e974ffdc")} /> : null}
+          {n.xxid ? (
+            <CollectStar atom={{ kind: "news", key: enc(n.xxid, n.name, n.source) }} title={n.name} />
           ) : null}
-        </div>
-      </div>
-      {n.url ? <IconExternal width={14} height={14} /> : null}
-    </button>
-    {n.xxid ? (
-      <CollectStar atom={{ kind: "news", key: enc(n.xxid, n.name, n.source) }} title={n.name} />
-    ) : null}
-    </div>
+        </>
+      }
+    >
+      <Stack gap={1}>
+        <Text slot="body" weight="medium">
+          {n.topped ? (
+            <>
+              <Tag tone="brand">{i18n("pages.info.newstab.173f88d28ebf")}</Tag>{" "}
+            </>
+          ) : null}
+          <Highlight text={n.name} tokens={tokens} />
+        </Text>
+        <Text slot="micro" tone="faint" nowrap>
+          {dateStr} · {n.source || i18n("pages.info.newstab.b5a18d43cada")}
+        </Text>
+      </Stack>
+    </Row>
   );
 }
 
@@ -188,11 +185,13 @@ export function NewsTab({
   /** 订阅源原子深链：条件就绪后切「订阅动态」并选中同名条件（news-src 原子用） */
   deepSubSource?: string;
 } = {}) {
+  const uiLocale = useUiLocale();
+
   const [page, setPage] = useState(1);
   const { data, state, error, reload } = useNews(page, PAGE_SIZE);
   const [detail, setDetail] = useState<DetailState | null>(null);
 
-  /* --- 附件下载（详情抽屉）：走桌面统一 download_file 链路 --- */
+  /* --- 附件下载（详情面板）：走桌面统一 download_file 链路 --- */
   /** 正在下载的附件 url（互斥按条目生效），及落盘结果/错误提示 */
   const [dlAtt, setDlAtt] = useState<string | null>(null);
   // R23：下载提示携带落盘路径，右侧挂「打开文件 / 打开目录」
@@ -205,9 +204,9 @@ export function NewsTab({
     setDlHint(null);
     try {
       const path = await downloadLearnUrl(url, name || "news-attachment");
-      setDlHint({ text: `已下载到：${path}`, path });
+      setDlHint({ text: i18n("pages.info.newstab.2d2ab24375ce", { path: String(path) }), path });
     } catch (err: unknown) {
-      setDlHint({ text: "下载失败：" + explainNetworkError(err) });
+      setDlHint({ text: i18n("pages.info.newstab.90f9253844e7") + explainNetworkError(err) });
     } finally {
       setDlAtt(null);
     }
@@ -269,7 +268,7 @@ export function NewsTab({
   const fetchedList = useMemo(() => {
     for (const n of data ?? []) if (n.xxid) fetchedRef.current.set(n.xxid, n);
     return [...fetchedRef.current.values()];
-  }, [data]);
+  }, [uiLocale, data]);
 
   /* 原子搜索缓存：已拉到的新闻入库（搜索框不主动请求新闻服务） */
   useEffect(() => {
@@ -312,22 +311,14 @@ export function NewsTab({
       .catch((err: unknown) => setSourcesErr(explainNetworkError(err)));
   }, [subsOpen, sources, sourcesErr]);
 
-  /* Esc 关闭订阅弹层（Courses 弹窗同款） */
-  useEffect(() => {
-    if (!subsOpen) return;
-    const onKey = (ev: KeyboardEvent): void => {
-      if (ev.key === "Escape") setSubsOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [subsOpen]);
+  /* OG Modal 自带 Esc/遮罩/滚动锁关闭（ Courses 弹窗同款出口），此处不再手挂 keydown */
 
-  const tokens = useMemo(() => tokenize(query), [query]);
+  const tokens = useMemo(() => tokenize(query), [uiLocale, query]);
 
   /* 本地兜底检索：标题 10 / 来源 4 / 正文摘要 2（plainBump=新预览正文后重算） */
   const localResults = useMemo(
     () => rankNews(fetchedList, tokens, (n) => plainRef.current.get(n.xxid) ?? ""),
-    [fetchedList, tokens, plainBump],
+    [uiLocale, fetchedList, tokens, plainBump],
   );
 
   const searching = query.length > 0;
@@ -389,7 +380,7 @@ export function NewsTab({
     return (subsServer ?? [])
       .filter((c) => c.id)
       .map((c) => ({ id: c.id, label: c.source || c.title || c.channel || c.keyword || `#${c.id}` }));
-  }, [subsServer]);
+  }, [uiLocale, subsServer]);
   /** 选中条件 id（「all」= 全部条件合并分页，不传 dyid） */
   const subDyid = subSel === "all" ? undefined : subSel;
   /* 选中条件已被删除（不在 chips 中）→ 回退「全部」并重置分页 */
@@ -445,7 +436,7 @@ export function NewsTab({
       searching
         ? rankNews(subItems, tokens, (n) => plainRef.current.get(n.xxid) ?? "").map((r) => r.item)
         : subItems,
-    [subItems, searching, tokens, plainBump],
+    [uiLocale, subItems, searching, tokens, plainBump],
   );
   /* thu-info-app 同判据：返回空页 = 到底；非空页即认为还有下一页 */
   const subCanNext = (subFeed?.length ?? 0) > 0;
@@ -462,7 +453,7 @@ export function NewsTab({
     };
     if (sources) [...sources].reverse().forEach(push);
     return rows;
-  }, [sources]);
+  }, [uiLocale, sources]);
 
   /** 切换订阅动态来源 chip（按条件 id）：重置分页（「全部」= 全部条件合并分页） */
   const selectSubChip = (id: string) => {
@@ -481,7 +472,7 @@ export function NewsTab({
     setOpBusy(c.id);
     try {
       const ok = await info.removeNewsSubscription(c.id);
-      if (!ok) throw new Error("删除未成功，请刷新后重试");
+      if (!ok) throw new Error(i18n("pages.info.newstab.5f172c5140ca"));
       setSubsTick((t) => t + 1);
       setSubFeedTick((t) => t + 1);
     } catch (err: unknown) {
@@ -501,11 +492,11 @@ export function NewsTab({
       if (existing.length > 0) {
         for (const c of existing) {
           const ok = await info.removeNewsSubscription(c.id);
-          if (!ok) throw new Error("删除未成功，请刷新后重试");
+          if (!ok) throw new Error(i18n("pages.info.newstab.5f172c5140ca"));
         }
       } else {
         const ok = await info.addNewsSubscription({ sourceId: unit.sourceId });
-        if (!ok) throw new Error("添加未成功，请刷新后重试");
+        if (!ok) throw new Error(i18n("pages.info.newstab.44c55113208f"));
       }
       setSubsTick((t) => t + 1);
       setSubFeedTick((t) => t + 1);
@@ -554,438 +545,377 @@ export function NewsTab({
     // 不在当前列表（第 2 页/订阅动态条目）：用最小条目打开，正文到达后标题由详情补充
     openDetail(found ?? { name: "", xxid: newsId });
     consumeRef.current?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newsId, state, data, openDetail]);
 
   const canPrev = page > 1;
   const fullPage = (data?.length ?? 0) >= PAGE_SIZE;
 
   return (
-    <>
-      <SectionHead
-        title="校内新闻"
-        aside="信息门户发布 · 点击在系统浏览器打开"
-        /* 分页控制放右侧 */
+    <Stack gap={3}>
+      <Section
+        title={i18n("pages.info.newstab.279658ea601c")}
+        hint={i18n("pages.info.newstab.3dd09b78c050")}
+        /* 分页/搜索切换时重挂以重放进场节奏 */
         key={`head-${page}`}
       />
 
       {/* 搜索栏 + 订阅管理入口（全局：两个分栏共用同一搜索词） */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
-        <div className="search-box" style={{ flex: 1, marginBottom: 0 }}>
-          <IconSearch width={15} height={15} />
-          <input
+      <Inline gap={2}>
+        <Grow>
+          <Input
+            type="search"
+            size="md"
+            icon={<IconSearch size="sm" />}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="搜索标题 / 正文 / 来源（服务端优先，本地兜底）"
-            aria-label="搜索新闻"
+            onChange={setInput}
+            placeholder={i18n("pages.info.newstab.3b275fe0df2c")}
+            aria-label={i18n("pages.info.newstab.260cbb8afb63")}
           />
-        </div>
-        <button className="btn" style={{ alignSelf: "stretch" }} onClick={() => setSubsOpen(true)}>
-          订阅管理{subs.length > 0 ? `（${subs.length}）` : ""}
-        </button>
-      </div>
+        </Grow>
+        <Btn variant="outline" onClick={() => setSubsOpen(true)}>{i18nRich("pages.info.newstab.0b4ff6ccd332", { value: subs.length > 0 ? `（${subs.length}）` : "" })}</Btn>
+      </Inline>
 
       {/* segmented 二级分栏（InfoPage 同款；无订阅时隐藏，只显示全部新闻） */}
       {subs.length > 0 ? (
-        <SegmentedOverflow ariaLabel="新闻分栏" style={{ marginBottom: 10 }}>
-          <button
+        <SegmentedOverflow ariaLabel={i18n("pages.info.newstab.988287587a26")}>
+          <Btn
+            size="sm"
+            variant={activeSeg === "all" ? "tonal" : "ghost"}
             role="tab"
             aria-selected={activeSeg === "all"}
-            className={activeSeg === "all" ? "is-active" : ""}
             onClick={() => setSeg("all")}
-          >
-            全部新闻
-          </button>
-          <button
+          >{i18n("pages.info.newstab.70b6105c0180")}</Btn>
+          <Btn
+            size="sm"
+            variant={activeSeg === "subs" ? "tonal" : "ghost"}
             role="tab"
             aria-selected={activeSeg === "subs"}
-            className={activeSeg === "subs" ? "is-active" : ""}
             onClick={() => setSeg("subs")}
-          >
-            订阅动态（{subs.length}）
-          </button>
+          >{i18nRich("pages.info.newstab.94dfc8f77ac1", { length: subs.length })}</Btn>
         </SegmentedOverflow>
       ) : null}
 
       {/* 分页/刷新（全部新闻栏专属） */}
       {activeSeg === "all" ? (
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 10 }}>
-          <button
-            className="btn"
-            disabled={!canPrev || state === "loading" || searching}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            上一页
-          </button>
-          <span className="page-indicator">第 {page} 页</span>
-          <button
-            className="btn"
-            disabled={!fullPage || state === "loading" || searching}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            下一页
-          </button>
-          <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-            刷新
-          </button>
-        </div>
+        <Inline gap={2}>
+          <Spacer />
+          <Text slot="label" tone="faint" nowrap>{i18nRich("pages.info.newstab.acac3da6c629", { page: page })}</Text>
+          <Btn variant="outline" disabled={!canPrev || state === "loading" || searching} onClick={() => setPage((p) => Math.max(1, p - 1))}>{i18n("pages.info.newstab.c9b9ae7a6144")}</Btn>
+          <Btn variant="outline" disabled={!fullPage || state === "loading" || searching} onClick={() => setPage((p) => p + 1)}>{i18n("pages.info.newstab.8a8542f69648")}</Btn>
+          <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}>{i18n("pages.info.newstab.aee887434131")}</Btn>
+        </Inline>
       ) : null}
 
       {searching && activeSeg === "all" ? (
-        <>
-          <SectionHead
-            title={`搜索：${query}`}
-            aside={
+        <Fragment key={`search-${query}`}>
+          <Section
+            title={i18n("pages.info.newstab.cb6f03cf2a75", { query: String(query) })}
+            hint={
               showServer
-                ? `服务端搜索 · ${searchItems.length} 条`
+                ? i18n("pages.info.newstab.477b586d63a0", { length: String(searchItems.length) })
                 : serverState === "loading"
                   ? localResults.length > 0
-                    ? `本地先行 ${localResults.length} 条 · 服务端搜索中…`
-                    : "服务端搜索中…"
+                    ? i18n("pages.info.newstab.69862d19f52a", { length: String(localResults.length) })
+                    : i18n("pages.info.newstab.3f0a56b66693")
                   : serverState === "fallback"
-                    ? `本地兜底 · 已抓取 ${fetchedList.length} 条内检索（服务端搜索不可用）`
-                    : `本地检索 · ${searchItems.length} 条`
+                    ? i18n("pages.info.newstab.4d022a7599b4", { length: String(fetchedList.length) })
+                    : i18n("pages.info.newstab.2a5dc59262cb", { length: String(searchItems.length) })
             }
-            key={`search-${query}`}
           />
           {searchItems.length === 0 ? (
             <Card>
-              <Empty
-                text={
+              <EmptyState
+                title={
                   serverState === "loading" && localResults.length === 0
-                    ? "正在检索…"
-                    : `没有与“${query}”相关的新闻。`
+                    ? i18n("pages.info.newstab.1dad8492f8c1")
+                    : i18n("pages.info.newstab.5a91a7f48009", { query: String(query) })
                 }
               />
             </Card>
           ) : (
-            <Card className="list">
-              {searchItems.map((n, i) => (
-                <NewsRow
-                  key={n.xxid || `s${i}`}
-                  n={n}
-                  tokens={tokens}
-                  delay={Math.min(i, 12) * 25}
-                  onOpen={openDetail}
-                />
-              ))}
+            <Card flush>
+              <List divided>
+                {searchItems.map((n, i) => (
+                  <NewsRow
+                    key={n.xxid || `s${i}`}
+                    n={n}
+                    tokens={tokens}
+                    onOpen={openDetail}
+                  />
+                ))}
+              </List>
             </Card>
           )}
-        </>
+        </Fragment>
       ) : activeSeg === "subs" ? (
-        <>
-          <SectionHead
-            title="订阅动态"
-            aside={
+        <Fragment key={`sub-feed-${searching ? query : ""}-${subPage}-${subSel}`}>
+          <Section
+            title={i18n("pages.info.newstab.23d18fc44de0")}
+            hint={
               searching
-                ? `“${query}” 命中 ${subShown.length} 条（${subSel === "all" ? "全部订阅" : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`}内检索）`
+                ? i18n("pages.info.newstab.260d6f3af87e", { query: String(query), length: String(subShown.length), value: String(subSel === "all" ? i18n("pages.info.newstab.045f5aadace2") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`) })
                 : subSel === "all"
-                  ? `已订阅 ${subsServer?.length ?? subs.length} 个条件 · 第 ${subPage} 页 · ${subShown.length} 条`
-                  : `来源：${subChips.find((c) => c.id === subSel)?.label ?? subSel} · 第 ${subPage} 页 · ${subShown.length} 条`
+                  ? i18n("pages.info.newstab.762b04cd10e9", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })
+                  : i18n("pages.info.newstab.602e9f6984cb", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })
             }
-            key={`sub-feed-${searching ? query : ""}-${subPage}-${subSel}`}
           />
 
           {/* 来源 chips：每个订阅条件一个小子菜单（「全部」+ 来源名/标题短标签；
-              横向可滚动；当前选中高亮；key = 条件 dyid） */}
+              key = 条件 dyid；OtherInfoPage 筛选条同款 Chip(selected)） */}
           {subChips.length > 0 ? (
-            <div
-              role="tablist"
-              aria-label="订阅来源"
-              style={{
-                display: "flex",
-                gap: 6,
-                overflowX: "auto",
-                paddingBottom: 4,
-                marginBottom: 10,
-                scrollbarWidth: "thin",
-              }}
-            >
-              <button
-                key="all"
-                role="tab"
-                aria-selected={subSel === "all"}
-                className={`chip ${subSel === "all" ? "chip-blue" : "chip-gray"}`}
-                style={{ flexShrink: 0, whiteSpace: "nowrap", cursor: "pointer" }}
+            <Inline gap={1} wrap>
+              <Chip
+                size="sm"
+                selected={subSel === "all"}
                 onClick={() => selectSubChip("all")}
-                title="全部订阅条件合并分页"
-              >
-                全部
-              </button>
-              {subChips.map((c) => {
-                const active = subSel === c.id;
-                return (
-                  <button
-                    key={c.id}
-                    role="tab"
-                    aria-selected={active}
-                    className={`chip ${active ? "chip-blue" : "chip-gray"}`}
-                    style={{ flexShrink: 0, whiteSpace: "nowrap", cursor: "pointer" }}
-                    onClick={() => selectSubChip(c.id)}
-                    title={`只看「${c.label}」的订阅列表（dyid=${c.id}）`}
-                  >
-                    {c.label}
-                  </button>
-                );
-              })}
-            </div>
+              >{i18n("pages.info.newstab.5c55a67935af")}</Chip>
+              {subChips.map((c) => (
+                <Chip
+                  key={c.id}
+                  size="sm"
+                  selected={subSel === c.id}
+                  onClick={() => selectSubChip(c.id)}
+                >
+                  {c.label}
+                </Chip>
+              ))}
+            </Inline>
           ) : null}
 
           {subFeedState === "error" ? (
             <ErrorNote text={subFeedErr ?? ""} onRetry={() => setSubFeedTick((t) => t + 1)} />
           ) : null}
-          <Card className="list">
+          <Card flush>
             {subFeedState === "loading" ? (
-              <SkeletonRows rows={6} />
+              <LoadingBlock rows={6} />
             ) : subShown.length === 0 ? (
-              <Empty
-                text={
+              <EmptyState
+                title={
                   searching
-                    ? `订阅动态中没有与“${query}”相关的新闻。`
+                    ? i18n("pages.info.newstab.89bc802be658", { query: String(query) })
                     : subPage > 1
-                      ? "本页没有更多订阅动态了。"
-                      : "该订阅条件暂无新闻——稍后刷新，或到订阅管理调整条件。"
+                      ? i18n("pages.info.newstab.44125167a03f")
+                      : i18n("pages.info.newstab.9ada62f74acb")
                 }
               />
             ) : (
-              subShown.map((n, i) => (
-                <NewsRow
-                  key={n.xxid || `f${i}`}
-                  n={n}
-                  tokens={searching ? tokens : []}
-                  showSourceChip
-                  delay={Math.min(i, 12) * 25}
-                  onOpen={openDetail}
-                />
-              ))
+              <List divided>
+                {subShown.map((n, i) => (
+                  <NewsRow
+                    key={n.xxid || `f${i}`}
+                    n={n}
+                    tokens={searching ? tokens : []}
+                    showSourceChip
+                    onOpen={openDetail}
+                  />
+                ))}
+              </List>
             )}
           </Card>
           {!searching ? (
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 10 }}>
-              <button
-                className="btn"
-                disabled={subPage <= 1 || subFeedState === "loading"}
-                onClick={() => setSubPage((p) => Math.max(1, p - 1))}
-              >
-                上一页
-              </button>
-              <span className="page-indicator">第 {subPage} 页</span>
-              <button
-                className="btn"
-                disabled={!subCanNext || subFeedState === "loading"}
-                onClick={() => setSubPage((p) => p + 1)}
-              >
-                下一页
-              </button>
-              <button
-                className="btn"
-                disabled={subFeedState === "loading"}
-                onClick={() => setSubFeedTick((t) => t + 1)}
-              >
-                刷新
-              </button>
-            </div>
+            <Inline gap={2}>
+              <Spacer />
+              <Text slot="label" tone="faint" nowrap>{i18nRich("pages.info.newstab.0986893ba243", { subPage: subPage })}</Text>
+              <Btn variant="outline" disabled={subPage <= 1 || subFeedState === "loading"} onClick={() => setSubPage((p) => Math.max(1, p - 1))}>{i18n("pages.info.newstab.c9b9ae7a6144")}</Btn>
+              <Btn variant="outline" disabled={!subCanNext || subFeedState === "loading"} onClick={() => setSubPage((p) => p + 1)}>{i18n("pages.info.newstab.8a8542f69648")}</Btn>
+              <Btn variant="outline" disabled={subFeedState === "loading"} onClick={() => setSubFeedTick((t) => t + 1)}>{i18n("pages.info.newstab.aee887434131")}</Btn>
+            </Inline>
           ) : null}
-        </>
+        </Fragment>
       ) : (
-        <>
+        <Fragment key={`all-${page}`}>
           {state === "error" ? <ErrorNote text={error ?? ""} onRetry={() => void reload()} /> : null}
 
           {state === "loading" && !data ? (
-            <SkeletonRows rows={8} />
+            <Card pad="none">
+              <LoadingBlock rows={8} />
+            </Card>
           ) : (data?.length ?? 0) === 0 ? (
             <Card>
-              <Empty text={page > 1 ? "本页没有更多新闻了。" : "暂无新闻。"} />
+              <EmptyState title={page > 1 ? i18n("pages.info.newstab.c23d1354916d") : i18n("pages.info.newstab.21ac3d54fe13")} />
             </Card>
           ) : (
-            <Card className="list">
-              {data!.map((n, i) => (
-                <NewsRow
-                  key={n.xxid || i}
-                  n={n}
-                  tokens={[]}
-                  delay={Math.min(i, 12) * 25}
-                  onOpen={openDetail}
-                />
-              ))}
+            <Card flush>
+              <List divided>
+                {data!.map((n, i) => (
+                  <NewsRow
+                    key={n.xxid || i}
+                    n={n}
+                    tokens={[]}
+                    onOpen={openDetail}
+                  />
+                ))}
+              </List>
             </Card>
           )}
-        </>
+        </Fragment>
       )}
 
+      {/* 详情：OG Modal（≈旧 720px 右滑抽屉；portal/遮罩/Esc/滚动锁由 Shell 统一） */}
       {detail
-        ? createPortal(
-            <div style={drawerMaskStyle} onClick={() => setDetail(null)}>
-              <div style={drawerPanelStyle} onClick={(e) => e.stopPropagation()}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 12 }}>
-                  <h2 style={{ margin: 0, fontSize: 18, lineHeight: 1.45 }}>
-                    {detail.item.name || detail.data?.title || "新闻详情"}
-                  </h2>
-                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                    {detail.item.url ? (
-                      <button className="btn" onClick={() => void openExternal(detail.item.url!)}>
-                        <IconExternal width={14} height={14} />
-                        在浏览器打开
-                      </button>
-                    ) : null}
-                    <button className="btn btn-ghost" onClick={() => setDetail(null)}>关闭</button>
-                  </div>
-                </div>
-                <div style={{ fontSize: 12, color: "var(--text-3)", marginBottom: 12 }}>
-                  {[detail.item.source, detail.item.date].filter(Boolean).join(" · ")}
-                </div>
-                {detail.state === "loading" ? (
-                  <SkeletonRows rows={6} />
-                ) : detail.state === "error" ? (
-                  <ErrorNote text={detail.err ?? ""} onRetry={() => openDetail(detail.item)} />
-                ) : (
-                  <>
-                    <RichContent html={detail.data?.html} fallback="正文为空。" />
-                    {detail.data && detail.data.attachments.length > 0 ? (
-                      <div
-                        style={{
-                          marginTop: 14,
-                          border: "1px solid var(--border)",
-                          borderRadius: 10,
-                          padding: "10px 12px",
-                          display: "flex",
-                          flexDirection: "column",
-                          gap: 6,
-                        }}
-                      >
-                        <div style={{ fontSize: 12, color: "var(--text-3)" }}>
-                          附件（{detail.data.attachments.length}）
-                        </div>
+        ? (
+          <Modal
+            open
+            onClose={() => setDetail(null)}
+            size="lg"
+            title={detail.item.name || detail.data?.title || i18n("pages.info.newstab.abf7eab39ae9")}
+            foot={
+              <>
+                {detail.item.url ? (
+                  <Btn variant="outline" icon={<IconExternal size="sm" />} onClick={() => void openExternal(detail.item.url!)}><span>{i18n("pages.info.newstab.c744c961f0ab")}</span>
+                  </Btn>
+                ) : null}
+                <Btn variant="ghost" onClick={() => setDetail(null)}>{i18n("pages.info.newstab.3fd47edce45b")}</Btn>
+              </>
+            }
+          >
+            <Stack gap={3}>
+              <Text slot="micro" tone="faint" nowrap>
+                {[detail.item.source, detail.item.date].filter(Boolean).join(" · ")}
+              </Text>
+              {detail.state === "loading" ? (
+                <Card pad="none">
+                  <LoadingBlock rows={6} />
+                </Card>
+              ) : detail.state === "error" ? (
+                <ErrorNote text={detail.err ?? ""} onRetry={() => openDetail(detail.item)} />
+              ) : (
+                <>
+                  {/* 门户远端富文本（站外 HTML），MailPage 判例豁免：不可令牌化 */}
+                  <RichContent html={detail.data?.html} fallback={i18n("pages.info.newstab.7c54c6a29f75")} />
+                  {detail.data && detail.data.attachments.length > 0 ? (
+                    <SectionCard title={i18n("pages.info.newstab.c10e686a2131", { length: String(detail.data.attachments.length) })} flush>
+                      <List>
                         {detail.data.attachments.map((a, i) => (
-                          <div key={`${i}-${a.url}`} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <span style={{ flexShrink: 0 }}>📄</span>
-                            <span
-                              style={{ flex: 1, fontSize: 13, overflowWrap: "anywhere" }}
-                              title={a.name}
-                            >
-                              {a.name}
-                            </span>
-                            <button
-                              className="btn btn-ghost"
-                              onClick={() => openFilePreview({ name: a.name, url: a.url })}
-                            >
-                              预览
-                            </button>
-                            <button
-                              className="btn btn-ghost"
-                              disabled={dlAtt === a.url}
-                              onClick={() => void doDownloadAtt(a.url, a.name)}
-                            >
-                              <IconDownload width={14} height={14} />
-                              {dlAtt === a.url ? "下载中…" : "下载"}
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-                    {dlHint ? (
-                      <div style={{ marginTop: 8, fontSize: 12, color: "var(--accent)", overflowWrap: "anywhere", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                        <span>{dlHint.text}</span>
-                        {dlHint.path ? <DownloadOpenButtons path={dlHint.path} /> : null}
-                      </div>
-                    ) : null}
-                  </>
-                )}
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
-
-      {subsOpen
-        ? createPortal(
-            <div style={subMaskStyle} onClick={() => setSubsOpen(false)}>
-              <div style={subPanelStyle} onClick={(e) => e.stopPropagation()}>
-                <div style={subPanelHead}>
-                  <h3 style={{ margin: 0, fontSize: 16 }}>订阅管理</h3>
-                  <button className="btn btn-ghost" onClick={() => setSubsOpen(false)}>关闭</button>
-                </div>
-                <div style={subPanelBody}>
-                  <div style={{ fontSize: 12, color: "var(--text-3)", marginBottom: 12 }}>
-                    订阅条件以信息门户服务端为权威（与 thu-info 同接口、同账号），添加/删除
-                    即时写入门户订阅并刷新；本机 localStorage 仅作界面偏好缓存。
-                  </div>
-                  {opErr ? <ErrorNote text={opErr} /> : null}
-
-                  {/* 我的订阅（服务端权威条件列表） */}
-                  <div style={{ fontSize: 13, fontWeight: 600, margin: "4px 0 8px" }}>
-                    我的订阅{subsServer ? `（${subsServer.length}）` : ""}
-                  </div>
-                  {subsServer === null ? <SkeletonRows rows={2} /> : null}
-                  {subsServer && subsServer.length === 0 ? (
-                    <Empty text="暂无订阅条件——在下方点选发布单位即可添加。" />
-                  ) : subsServer && subsServer.length > 0 ? (
-                    <div style={{ marginBottom: 12 }}>
-                      {subsServer.map((c) => (
-                        <div key={c.id} className="row" style={{ alignItems: "center", gap: 10 }}>
-                          <div className="row-main">
-                            <div className="row-title" style={{ whiteSpace: "normal" }}>
-                              {c.title || conditionLabel(c)}
-                            </div>
-                            <div className="row-sub">
-                              {[
-                                c.source ? `来源：${c.source}` : "",
-                                c.channel ? `栏目：${c.channel}` : "",
-                                c.keyword ? `关键词：${c.keyword}` : "",
-                              ].filter(Boolean).join(" · ") || `#${c.id}`}
-                            </div>
-                          </div>
-                          <button
-                            className="btn btn-ghost"
-                            style={{ flexShrink: 0 }}
-                            disabled={opBusy !== null}
-                            onClick={() => void removeCondition(c)}
-                            title="删除该服务端订阅条件"
+                          <Row
+                            key={`${i}-${a.url}`}
+                            flush
+                            size="sm"
+                            data-vault-catch={vaultCatchAttachment({ kind: "news", name: a.name, url: a.url, label: i18n("pages.info.newstab.9eb3f2fa22ec") })}
+                            leading={<IconFile size="sm" title={i18n("pages.info.newstab.c7225dbf105e")} />}
+                            titleAttr={a.name}
+                            trailing={
+                              <>
+                                <Btn size="sm" variant="ghost" onClick={() => openFilePreview({ name: a.name, url: a.url })}>{i18n("pages.info.newstab.13d61fea9f17")}</Btn>
+                                <Btn size="sm" variant="ghost" disabled={dlAtt === a.url} icon={<IconDownload size="sm" />} onClick={() => void doDownloadAtt(a.url, a.name)}>
+                                  {dlAtt === a.url ? i18n("pages.info.newstab.bcc2333dc631") : i18n("pages.info.newstab.4673a2306165")}
+                                </Btn>
+                              </>
+                            }
                           >
-                            {opBusy === c.id ? "删除中…" : "删除"}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                            <Text slot="label">{a.name}</Text>
+                          </Row>
+                        ))}
+                      </List>
+                    </SectionCard>
                   ) : null}
-
-                  {/* 添加订阅（点选发布单位 → addSubscribeCondition） */}
-                  <div style={{ fontSize: 13, fontWeight: 600, margin: "4px 0 8px" }}>
-                    添加订阅（点选发布单位）
-                  </div>
-                  {sourcesErr ? (
-                    <ErrorNote text={`可订阅单位列表加载失败：${sourcesErr}`} />
+                  {dlHint ? (
+                    <Banner tone="success" action={dlHint.path ? <DownloadOpenButtons path={dlHint.path} /> : undefined}>
+                      {dlHint.text}
+                    </Banner>
                   ) : null}
-                  {!sources && !sourcesErr ? <SkeletonRows rows={3} /> : null}
-                  {modalSources.length > 0 ? (
-                    <div className="chips">
-                      {modalSources.map((s) => {
-                        const on = unitSubscribed(s.sourceName);
-                        const busy = opBusy === (s.sourceId || s.sourceName);
-                        return (
-                          <span key={s.sourceId} style={{ display: "inline-flex", alignItems: "center", gap: 2 }}>
-                            <button
-                              className={`chip ${on ? "chip-blue" : "chip-gray"}`}
-                              disabled={opBusy !== null}
-                              onClick={() => void toggleUnit(s)}
-                              title={on ? "删除该订阅条件" : "添加订阅条件（服务端）"}
-                            >
-                              {busy ? "…" : on ? "✓ " : ""}
-                              {s.sourceName}
-                            </button>
-                            <CollectStar atom={{ kind: "news-src", key: enc(s.sourceName) }} title={s.sourceName} />
-                          </span>
-                        );
-                      })}
-                    </div>
-                  ) : sources && !sourcesErr ? (
-                    <Empty text="可订阅单位列表为空。" />
-                  ) : null}
-                </div>
-              </div>
-            </div>,
-            document.body,
-          )
+                </>
+              )}
+            </Stack>
+          </Modal>
+        )
         : null}
-    </>
+
+      {/* 订阅管理：OG Modal（≈旧 560px 弹层；说明行走 Text，分组行 Card+List+Row） */}
+      {subsOpen
+        ? (
+          <Modal
+            open
+            onClose={() => setSubsOpen(false)}
+            size="md"
+            title={i18n("pages.info.newstab.3725212d2092")}
+          >
+            <Stack gap={3}>
+              <Text slot="micro" tone="faint">{i18n("pages.info.newstab.1629c4dfeeb4")}</Text>
+              {opErr ? <ErrorNote text={opErr} /> : null}
+
+              {/* 我的订阅（服务端权威条件列表） */}
+              <Stack gap={2}>
+                <Text slot="label" weight="semibold">{i18nRich("pages.info.newstab.920430f19806", { value: subsServer ? `（${subsServer.length}）` : "" })}</Text>
+                {subsServer === null ? (
+                  <Card pad="none">
+                    <LoadingBlock rows={2} />
+                  </Card>
+                ) : subsServer.length === 0 ? (
+                  <EmptyState title={i18n("pages.info.newstab.9dd579ff5cfa")} />
+                ) : (
+                  <Card flush>
+                    <List>
+                      {subsServer.map((c) => (
+                        <Row
+                          key={c.id}
+                          flush
+                          size="sm"
+                          title={c.title || conditionLabel(c)}
+                          sub={[
+                            c.source ? i18n("pages.info.newstab.1bd26803ad79", { source: String(c.source) }) : "",
+                            c.channel ? i18n("pages.info.newstab.7f6d2d65f737", { channel: String(c.channel) }) : "",
+                            c.keyword ? i18n("pages.info.newstab.c98f5ee16d10", { keyword: String(c.keyword) }) : "",
+                          ].filter(Boolean).join(" · ") || `#${c.id}`}
+                          trailing={
+                            <Btn
+                              variant="ghost"
+                              size="sm"
+                              disabled={opBusy !== null}
+                              onClick={() => void removeCondition(c)}
+                              titleAttr={i18n("pages.info.newstab.79515962cf6e")}
+                          >
+                              {opBusy === c.id ? i18n("pages.info.newstab.5e8e7af57abb") : i18n("pages.info.newstab.2f9daa828907")}
+                            </Btn>
+                          }
+                        />
+                      ))}
+                    </List>
+                  </Card>
+                )}
+              </Stack>
+
+              {/* 添加订阅（点选发布单位 → addSubscribeCondition） */}
+              <Stack gap={2}>
+                <Text slot="label" weight="semibold">{i18n("pages.info.newstab.241cfdfe3554")}</Text>
+                {sourcesErr ? (
+                  <ErrorNote text={i18n("pages.info.newstab.71e8dd51594c", { sourcesErr: String(sourcesErr) })} />
+                ) : null}
+                {!sources && !sourcesErr ? (
+                  <Card pad="none">
+                    <LoadingBlock rows={3} />
+                  </Card>
+                ) : null}
+                {modalSources.length > 0 ? (
+                  <Inline gap={1} wrap>
+                    {modalSources.map((s) => {
+                      const on = unitSubscribed(s.sourceName);
+                      const busy = opBusy === (s.sourceId || s.sourceName);
+                      return (
+                        <Fragment key={s.sourceId}>
+                          <Chip
+                            size="sm"
+                            selected={on}
+                            disabled={opBusy !== null}
+                            onClick={() => void toggleUnit(s)}
+                          >
+                            {busy ? "…" : on ? "✓ " : ""}
+                            {s.sourceName}
+                          </Chip>
+                          <CollectStar atom={{ kind: "news-src", key: enc(s.sourceName) }} title={s.sourceName} />
+                        </Fragment>
+                      );
+                    })}
+                  </Inline>
+                ) : sources && !sourcesErr ? (
+                  <EmptyState title={i18n("pages.info.newstab.088536fe1994")} />
+                ) : null}
+              </Stack>
+            </Stack>
+          </Modal>
+        )
+        : null}
+    </Stack>
   );
 }

@@ -1,0 +1,53 @@
+/* Physical devices show unaltered captures of the running application in both renderers. */
+.tour-stage { --tour-fluid-dur:calc(var(--og-tour-scene-action-dur) * 2); container-type:inline-size; position:relative; isolation:isolate; min-width:0; border:1px solid var(--og-line-1); border-radius:var(--og-radius-card); background:var(--og-fill-surface); color:var(--og-content-1); overflow:hidden; }
+.tour-stage-tools { display:flex; justify-content:space-between; align-items:center; gap:var(--og-space-2); min-height:var(--og-ctl-h-md); padding:var(--og-space-2) var(--og-space-3) 0; }
+.tour-stage-tools > span { display:flex; align-items:center; gap:var(--og-space-2); font-size:var(--og-text-micro); color:var(--og-content-3); letter-spacing:.04em; white-space:nowrap; }
+.tour-stage-tools > span i { width:var(--og-space-1); height:var(--og-space-1); background:var(--og-content-2); border-radius:50%; }
+.tour-stage-tools > div { display:flex; align-items:center; gap:var(--og-space-1); }
+.tour-stage-tools .og-btn { min-height:var(--og-ctl-h-sm); }
+.tour-stage-canvas { position:relative; isolation:isolate; height:var(--og-tour-scene-h); margin-top:var(--og-space-2); padding:var(--og-space-5); display:grid; place-items:center; overflow:hidden; contain:layout paint; perspective:calc(var(--og-tour-scene-h) * 4); background:linear-gradient(145deg,var(--og-fill-surface),var(--og-surface-3)); }
+.tour-studio-scene { position:absolute; inset:0; width:100%; height:100%; }
+.tour-studio-scene canvas { display:block; width:100%; height:100%; }
+.tour-studio-scene canvas[hidden] { display:none; }
+.tour-studio-fallback { position:absolute; inset:0; display:grid; place-items:center; padding:var(--og-space-5); transform-style:preserve-3d; }
+.tour-stage-console { position:relative; display:flex; align-items:center; justify-content:space-between; gap:var(--og-space-3); padding:var(--og-space-3) var(--og-space-4); border-top:1px solid var(--og-line-1); background:color-mix(in srgb,var(--og-fill-surface) 88%,transparent); }
+.tour-stage-console p { margin:0; min-height:calc(var(--og-text-label-lh) * 2); font-size:var(--og-text-label); line-height:var(--og-text-label-lh); color:var(--og-content-2); text-wrap:pretty; }
+.tour-stage-sandbox { display:block; padding:0 var(--og-space-4) var(--og-space-3); background:color-mix(in srgb,var(--og-fill-surface) 88%,transparent); color:var(--og-content-3); font-size:var(--og-text-micro); line-height:var(--og-text-micro-lh); }
+/* Keep the whole captured viewport: no cropped controls or reconstructed UI. */
+.tour-studio-loading { display:grid; place-items:center; width:100%; height:100%; color:var(--og-content-3); font-size:var(--og-text-label); text-align:center; }
+.tour-real-scene { display:flex; justify-content:center; align-items:center; gap:var(--og-space-7); width:100%; height:100%; min-height:0; perspective:calc(var(--og-tour-scene-h) * 4); }
+.tour-real-device { position:relative; box-sizing:border-box; flex:none; margin:0; height:100%; aspect-ratio:390 / 844; max-width:90%; padding:calc(var(--og-space-1) / 2); border:1px solid var(--og-studio-edge); border-radius:var(--og-radius-sm); background:var(--og-studio-body); box-shadow:var(--og-elev-3); transform:rotateY(-16deg) rotateX(6deg) rotateZ(-3deg); transform-style:preserve-3d; transition:transform var(--tour-fluid-dur) var(--og-ease-spring); }
+.tour-real-display { position:relative; width:100%; height:100%; overflow:hidden; border-radius:var(--og-radius-xs); }
+.tour-real-display img { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:contain; transition:opacity var(--og-tour-scene-action-dur) var(--og-ease-standard); }
+.tour-real-after { opacity:0; }
+.tour-stage[data-phase="after"] .tour-real-before { opacity:0; }
+.tour-stage[data-phase="after"] .tour-real-after { opacity:1; }
+.tour-stage[data-phase="after"] .tour-real-device { transform:rotateY(4deg) rotateX(0deg) rotateZ(1deg); }
+.tour-real-scene.is-pair .tour-real-device { max-width:42%; transform:rotateY(24deg) rotateZ(-5deg); }
+.tour-real-scene.is-pair .tour-real-device:last-child { transform:rotateY(-24deg) rotateZ(5deg); }
+.tour-stage[data-phase="after"] .tour-real-scene.is-pair .tour-real-device { transform:translateX(var(--og-space-2)) rotateY(4deg) rotateZ(-2deg); }
+.tour-stage[data-phase="after"] .tour-real-scene.is-pair .tour-real-device:last-child { transform:translateX(calc(var(--og-space-2) * -1)) rotateY(-4deg) rotateZ(2deg); }
+.tour-real-device.is-tablet { width:94%; height:auto; max-height:94%; aspect-ratio:1024 / 620; padding:var(--og-space-1); border-radius:var(--og-radius-lg); }
+/* Pausing freezes the automatic chapter sequence; reduced motion shows a settled screen. */
+.tour-stage[data-running="false"] *,.tour-stage[data-running="false"] *::before,.tour-stage[data-running="false"] *::after { animation-play-state:paused !important; transition-duration:0s !important; transition-delay:0s !important; }
+.tour-stage[data-reduced="true"] *,.tour-stage[data-reduced="true"] *::before,.tour-stage[data-reduced="true"] *::after { animation:none !important; transition:none !important; }
+.tour-stage[data-reduced="true"] .tour-real-device { transform:none !important; }
+@container (max-width:22.5rem) {
+  .tour-stage-canvas { padding:var(--og-space-3); height:calc(var(--og-tour-scene-h) - var(--og-space-5)); }
+  .tour-stage-console { align-items:stretch; flex-direction:column; gap:var(--og-space-2); padding:var(--og-space-3); }
+  .tour-stage-console p { min-height:calc(var(--og-text-label-lh) * 2); }
+  .tour-stage-sandbox { padding-inline:var(--og-space-3); }
+  .tour-studio-fallback { padding:var(--og-space-3); }
+  .tour-real-scene { gap:var(--og-space-4); }
+}
+@media (max-height:520px) and (min-width:600px) {
+  .tour-stage-canvas { height:calc(var(--og-space-10) * 2.5); padding:var(--og-space-2) var(--og-space-4); }
+  .tour-stage-tools { padding-top:var(--og-space-1); }
+  .tour-stage-console { padding:var(--og-space-2) var(--og-space-3); }
+  .tour-stage-sandbox { padding-bottom:var(--og-space-2); }
+  .tour-real-device.is-tablet { width:auto; height:94%; max-width:94%; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .tour-stage *,.tour-stage *::before,.tour-stage *::after { animation:none !important; transition:none !important; }
+}
+html:root[data-og-motion="reduced"] .tour-stage *,html:root[data-og-motion="reduced"] .tour-stage *::before,html:root[data-og-motion="reduced"] .tour-stage *::after { animation:none !important; transition:none !important; }

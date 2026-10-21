@@ -1,12 +1,13 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 /** 应用全局状态：登录（含 2FA）→ 会话 → 轻路由 */
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import * as clients from "../lib/clients.js";
 import { explainNetworkError } from "../lib/transport.js";
 import type { TwoFactorMethod } from "@onethu/core";
 
 /** 轻路由：一级页（含选课系统 zhjwxk）+ 网络学堂子页（learnX 移植） */
 export type Page =
-  | "today"
+  | "homepage"
   | "learn"
   | "schedule"
   | "trace" // 寻迹：今日日程地图（POI 标注 + ETA + 前往导航）
@@ -18,7 +19,9 @@ export type Page =
   | "thos" // 在线服务（THOS 服务大厅原生化：事项列表 + 服务目录）
   | "mail" // 邮箱（IMAP 收 / SMTP 发，复用云日历凭据）
   | "cloud" // 清华云盘（Seafile Web API）
-  | "thubook" // THUbook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
+  | "gitlab" // 清华 GitLab（git.tsinghua.edu.cn REST API v4）
+  | "thubook" // THUBook（清华手册 thubook.help 内嵌阅读器 + OH 工具）
+  | "xiaoda" // 清小搭（校园 AI 学伴；实验性第三方复刻页，纯 OneGUI）
   | "folder" // 用户收藏夹页（navParams.folderId 指向具体收藏夹）
   | "tasks" // 待办聚合页（UI/UX 改造 §2.2 M1：作业+预约+考试+余额的"今天该管的事"）
   | "services" // 服务分组目录页（UI/UX 改造 §2.2 M1：底部导航「服务」直达）
@@ -36,14 +39,37 @@ export type Page =
   | "learn-forum-thread" // 讨论区话题阅读/回复（courseId+threadId）
   | "learn-file-detail" // 文件详情（courseId+itemId）
   | `plugin:${string}` // 插件动态 tab（plugins/tabs.ts 注册表；pageKey = plugin:<pluginId>:<tabId>）
-  | "learn-ykt-detail"; // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
+  | "learn-ykt-detail" // R20-B2：雨课堂作业原生详情（只读；navParams.ykt 必带）
+  | "learn-ykt-course" // R25：雨课堂课程内容页（该课全部内容；navParams.extCourseId 缺省取最近打开的课程）
+  /* 白板（霖的原子收藏升级）：boards = 收藏夹列表页，board = 某一块白板 */
+  | "boards"
+  | "board"
+  | "contacts"
+  | "org" // 组织主页（成员邮箱 / 资料库 / GitLab 仓库；navParams.orgId）
+  | "vault"; // 暂存箱（万物皆可收纳；Phase 1：混合对象清单 + 分享口令）
+
+/** 返回目标：页内返回键（BackButton）与顶栏返回键共用同一条数据 */
+export interface BackTarget {
+  to: Page;
+  label?: string;
+  params?: LearnNav;
+}
 
 /** 子页导航参数：详情页按 id 在已缓存数据中查找实体 */
 export interface LearnNav {
+  /** 通讯录内的组织直达入口。 */
+  section?: "cards" | "friends" | "orgs";
+  /** 组织主页：org id（page=org 时必带） */
+  orgId?: string;
+  traceTarget?: {title:string;location:string;date?:string;startTime?:string;endTime?:string};
   courseId?: string;
   itemId?: string;
   /** R20-B2：雨课堂作业原生详情页（learn-ykt-detail）参数（必带） */
   ykt?: YktNav;
+  /** 雨课堂课程筛选（全部作业页）：携带 classroom_id 时只列该课程的作业与试卷；
+   *  extCourseName 仅作文案兜底（课程数据未就绪时也能说明「正在看哪门课」）。 */
+  extCourseId?: string;
+  extCourseName?: string;
   /** 讨论区：话题所属板块 id（viewTlById 原生链接必带 tabbh+bqid，缺失会被甩登录壳页） */
   bqid?: string;
   /** 讨论区板块直达（板块原子深链）：课程详情落 forum tab 且 BbsPanel 初始选中该板块 */
@@ -57,6 +83,15 @@ export interface LearnNav {
   semesterId?: string;
   /** 云盘直达资料库：进入云盘页时自动打开该库（原子深链） */
   cloudRepo?: string;
+  /** Optional folder within an authenticated shared library. */
+  cloudPath?: string;
+  /** GitLab 直达项目（原子深链） */
+  gitlabProject?: number;
+  /** GitLab 项目内页签（缺省 code） */
+  gitlabTab?: "code" | "issues" | "mrs" | "pipelines";
+  /** GitLab 实体深链：kind 指明页签归属，iid 为 Issue 或合并请求的内部编号 */
+  gitlabKind?: "issue" | "mr";
+  gitlabIid?: number;
   /** 网络学堂首页直达 DDL 提醒设置：携带 true 时「DDL 提醒」卡自动弹开设置层（原子深链） */
   learnOpenHwRemind?: boolean;
   /** 邮箱页直达写信：携带 true 时挂载即弹写信层（原子深链） */
@@ -75,7 +110,7 @@ export interface LearnNav {
    *  reserveTab 的 "lib"/"room"/"classroom"/"sports" 分别对应 ReservePage 页内 library/libroom/classroom/sports 栏。 */
   infoTab?: "report" | "fitness" | "exams" | "evaluation" | "calendar" | "news" | "profile" | "courseinfo";
   lifeTab?: "dorm" | "washer" | "hygiene" | "card" | "invoice" | "payroll" | "gradincome" | "network";
-  reserveTab?: "lib" | "room" | "classroom" | "sports" | "kongjian";
+  reserveTab?: "lib" | "room" | "classroom" | "sports" | "kongjian" | "visit";
   /* ═══ 实体原子深链（万物原子化）：跳进 tab 后自动选中/高亮特定实体 ═══
      仅作挂载/数据就绪后的自动落点，页内手动切换不回写；不带参数行为与旧版一致。 */
   /** 洗衣机：自动选中的楼栋 id（washer tab 楼栋下拉） */
@@ -115,7 +150,7 @@ export interface LearnNav {
   folderId?: string;
 }
 
-const TOP_PAGES = ["today", "learn", "schedule", "trace", "mail", "cloud", "thubook", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks"] as const; // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
+const TOP_PAGES = ["homepage", "learn", "schedule", "trace", "mail", "cloud", "gitlab", "thubook", "xiaoda", "info", "life", "reserve", "zhjwxk", "thos", "otherinfo", "plugins", "folder", "settings", "services", "favs", "tasks", "boards", "board", "vault", "contacts", "org"] as const; // boards/board：白板列表与单块白板（2026-10-15 补：漏了它们 → topLevelPage 兜到 learn，白板标签的 hash 写成 #/learn、深链也恢复不回来） // services/favs：M1 新 IA 底栏直达页（漏过会落到 learn 兜底） // trace/otherinfo 各漏过一次：不加的话侧栏/标题/hash 全落到 learn 兜底
 
 /**
  * R20-B2：雨课堂作业原生详情页参数。
@@ -137,6 +172,9 @@ export interface YktNav {
   courseName?: string;
   /** 作业类型（列表行 kind；exam=试卷 —— 红线：试卷页同样不渲染任何提交相关入口） */
   kind?: "homework" | "exam";
+  /** R29：从**网络学堂课程页**进来的雨课堂作业——返回时带回该课程 id，
+   *  否则详情页返回会因缺 courseId 渲染成空页（课程页合并后新增的返回路径）。 */
+  fromCourseId?: string;
 }
 
 /** 子页归属的一级页（侧栏高亮 / hash 用）；插件动态 tab（plugin:<id>:<tabId>）保持原值直通 */
@@ -178,55 +216,41 @@ export interface AppState {
 }
 
 import { Ctx } from "./context.js";
+import { activeTab, explorerNavigate, subscribeExplorer, type ExplorerTab } from "./explorer.js";
 
-function pageFromHash(): Page {
-  const h = location.hash.replace(/^#\/?/, "");
-  return (TOP_PAGES as readonly string[]).includes(h) ? (h as Page) : "today";
-}
-
-/** hash → 收藏夹页参数（#/folder/<id>；无 id 或 id 形态不对返回 null） */
-function folderParamsFromHash(): LearnNav | null {
-  const h = location.hash.replace(/^#\/?/, "");
-  const m = /^folder\/(f_[A-Za-z0-9_]+)$/.exec(h);
-  return m ? { folderId: m[1] } : null;
+/** dev 视觉自检（?explorer-preview=…）：跳过登录直进 Shell，供无头截图审样式 */
+const PREVIEW_MODE = typeof window !== "undefined" && import.meta.env.DEV && new URLSearchParams(window.location.search).has("explorer-preview");
+/* 视觉自检：模块期写导览完成标记——晚于任何组件挂载就输（OnboardingTourV3 挂载即读） */
+if (PREVIEW_MODE) {
+  try {
+    localStorage.setItem("onethu.onboarded.flow3", "1");
+    localStorage.setItem("onethu.onboarding.flow", "v3");
+    localStorage.setItem("onethu.home.coach.v1", "done");
+  } catch { /* 忽略 */ }
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const uiLocale = useUiLocale();
+
   const [status, setStatus] = useState<SessionStatus>("booting");
   const [user, setUser] = useState<SessionUser | null>(null);
-  const [page, setPage] = useState<Page>(pageFromHash);
-  const [navParams, setNavParams] = useState<LearnNav | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [twoFactor, setTwoFactor] = useState<AppState["twoFactor"]>(null);
-  /** navigate 自身写入的 hash：它触发的 hashchange 必须忽略，否则跨一级页进子页
-   *  （如 今日 → 作业详情，hash #/today → #/learn）时异步回调会把刚设置的
-   *  page/navParams 冲回顶层列表页 + 空参——详情页"闪回列表/空白"的根源。 */
-  const selfNavHashRef = useRef<string | null>(null);
+  const loginBusy = useRef(false);
+  /* dev-explorer：page/navParams 不再是本地状态——直接派生自 explorer 活动标签页
+     （订阅同一份 store）；navigate = explorer 语义（首页内开新标签页 / 页标签内导航 /
+     设置类走浮层）。全库 useApp() 调用点零改动。 */
+  const active: ExplorerTab | null = useSyncExternalStore(subscribeExplorer, () => activeTab(), () => activeTab());
+  const page: Page = active.page;
+  const navParams: LearnNav | null = active.params;
 
   useEffect(() => {
-    const onHash = (ev: HashChangeEvent) => {
-      // 用事件自带的 newURL 对账：只忽略"确实是 navigate 写入的那个 hash"的事件；
-      // 连续两次导航时，先到的旧事件 newURL 与最新目标不符，也不会误伤最新状态
-      const target = (() => {
-        try {
-          return new URL(ev.newURL).hash;
-        } catch {
-          return location.hash;
-        }
-      })();
-      if (selfNavHashRef.current !== null && target === selfNavHashRef.current) {
-        selfNavHashRef.current = null; // 自身导航触发的 hashchange：状态已由 navigate 设定
-        return;
-      }
-      const fp = folderParamsFromHash();
-      setPage(fp ? "folder" : pageFromHash());
-      setNavParams(fp);
-    };
-    addEventListener("hashchange", onHash);
-    return () => removeEventListener("hashchange", onHash);
-  }, []);
-
-  useEffect(() => {
+    console.log("[explorer-preview] PREVIEW_MODE=", PREVIEW_MODE, "search=", window.location.search, "DEV=", import.meta.env?.DEV);
+    if (PREVIEW_MODE) {
+      setUser({ username: "preview" });
+      setStatus("ready");
+      return;
+    }
     void import("../lib/clients.js").then(({ logLine }) => logLine("PROBE boot-effect")).catch(() => undefined);
     let cancelled = false;
     void (async () => {
@@ -259,7 +283,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ]);
       const silent = silentResult.ok === true;
       void import("../lib/clients.js").then(({ logLine }) =>
-        logLine(`BOOT-T trySilentRelogin(${silent ? "成功" : "失败"}) +${Date.now() - TS}ms`),
+        logLine(`BOOT-T trySilentRelogin(${silent ? i18n("state.app.053461ce86d2") : i18n("state.app.28384d7afd2e")}) +${Date.now() - TS}ms`),
       ).catch(() => undefined);
       if (cancelled) return;
       if (silent) {
@@ -284,30 +308,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const navigate = useCallback((p: Page, params?: LearnNav) => {
-    // hash 只承载一级页：子页刷新后落回所属入口，避免丢参数的死链；
-    // 记录本次写入，onHash 对自身触发的 hashchange 直接忽略（见 selfNavHashRef）。
-    // hash 本就相同时没有新事件，但此前可能仍有同目标旧事件挂起——保留对账标记等它到达。
-    const h = p === "folder" && params?.folderId ? `#/folder/${params.folderId}` : `#/${topLevelPage(p)}`;
-    if (location.hash === h) {
-      if (selfNavHashRef.current !== h) selfNavHashRef.current = null;
-    } else {
-      selfNavHashRef.current = h;
-      location.hash = h;
-    }
-    setPage(p);
-    setNavParams(params ?? null);
-    // 本机使用统计（今日页「最近使用」的数据源）：动态 import 回避 app↔atoms 的模块环
-    void import("./atoms.js")
-      .then((m) => m.recordPageAtomUse(p, params ?? null))
-      .catch(() => undefined);
-  }, []);
+  /** 导航（dev-explorer 语义，详见 explorer.ts explorerNavigate） */
+  const navigate = explorerNavigate;
 
   const login = useCallback(
     async (username: string, password: string, remember = true) => {
+      if (loginBusy.current) return;
+      loginBusy.current = true;
+      void clients.logLine("AUTH-PHASE submit");
       setStatus("connecting");
       setError(null);
       const finish = (r: Awaited<ReturnType<typeof clients.login>>): void => {
+        void clients.logLine(`AUTH-PHASE result=${r.state}`);
         if (r.state === "need-2fa") {
           setTwoFactor({ username, password, methods: r.methods });
           setStatus("2fa");
@@ -315,32 +327,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
         setUser({ username });
         setStatus("ready");
-        navigate("today");
+        navigate("homepage");
       };
       try {
         const result = await clients.login(username, password, { remember });
         finish(result);
-      } catch (firstErr) {
-        // R21c：登录链半路断（校园网冷漫游，一跳 4-6s 是常态）≠ 凭据错——
-        // 用刚输入的同一凭据静默重试一次，两次都失败才回登录页；重试期间保持
-        // connecting 态（spinner），用户感知是「多转了一会儿」而不是「被踹出来」。
-        void import("../lib/clients.js")
-          .then(({ logLine }) => logLine(`LOGIN-RETRY 首次失败，静默重试一次：${String(firstErr).slice(0, 120)}`))
-          .catch(() => undefined);
-        try {
-          const second = await clients.login(username, password, { remember });
-          finish(second);
-        } catch (secondErr) {
-          setStatus("logged-out");
-          setError(explainNetworkError(secondErr));
-        }
+      } catch (err) {
+        // Do not replay credentials for bad passwords, throttling or unknown pages.
+        setStatus("logged-out");
+        setError(explainNetworkError(err));
+      } finally {
+        loginBusy.current = false;
       }
     },
     [navigate],
   );
 
   const send2FA = useCallback(async (type: string) => {
-    await clients.send2FA(type);
+    setError(null);
+    try { await clients.send2FA(type); }
+    catch (err) { setError(explainNetworkError(err)); throw err; }
   }, []);
 
   const sendLearn2FA = useCallback(async (type: string) => {
@@ -358,7 +364,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           setTwoFactor(null);
           setUser({ username: twoFactor.username });
           setStatus("ready");
-          navigate("today");
+          navigate("homepage");
           return;
         }
         const round2 = await clients.verify2FA(type, code, trust);
@@ -370,7 +376,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setTwoFactor(null);
         setUser({ username: twoFactor.username });
         setStatus("ready");
-        navigate("today");
+        navigate("homepage");
       } catch (err) {
         setError(explainNetworkError(err));
       }
@@ -378,7 +384,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [twoFactor, navigate],
   );
 
-  const backToLogin = useCallback(() => {
+  const backToLogin = useCallback(async () => {
+    if (PREVIEW_MODE) return; // 视觉自检：数据 effect 的「会话过期」误登出在无后端预览里必触发，屏蔽
+    const { libAbandonLogin } = await import("../lib/infoLib.js");
+    await libAbandonLogin();
     setTwoFactor(null);
     setError(null);
     setStatus("logged-out");
@@ -389,7 +398,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setTwoFactor(null);
     setStatus("logged-out");
-    navigate("today");
+    navigate("homepage");
   }, [navigate]);
 
   const value = useMemo<AppState>(
@@ -409,7 +418,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       logout,
       dismissError: () => setError(null),
     }),
-    [status, user, page, navParams, error, twoFactor, navigate, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
+    [uiLocale, status, user, page, navParams, error, twoFactor, login, submit2FA, send2FA, sendLearn2FA, backToLogin, logout],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

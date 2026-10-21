@@ -1,0 +1,36 @@
+{
+  "assertions": 223,
+  "results": [
+    {
+      "name": "desktop",
+      "w": 1280,
+      "h": 720,
+      "passed": true
+    },
+    {
+      "name": "small",
+      "w": 900,
+      "h": 600,
+      "passed": true
+    },
+    {
+      "name": "phone",
+      "w": 390,
+      "h": 844,
+      "passed": true
+    },
+    {
+      "name": "landscape",
+      "w": 844,
+      "h": 390,
+      "passed": true
+    },
+    {
+      "name": "narrow",
+      "w": 320,
+      "h": 568,
+      "passed": true
+    }
+  ],
+  "errors": []
+}

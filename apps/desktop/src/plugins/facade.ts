@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
 /** 插件门面：把应用原子操作按权限包装成 onethu.* 公共接口 */
 import { info, learn, http, loadRemembered, currentFingerprint } from "../lib/clients.js";
 import { InfoClient, caldav } from "@onethu/core";
@@ -21,16 +22,77 @@ import { mcpServersJsonForSettings } from "../lib/mcpStore.js";
 import { getTabRoot, onTabReady } from "./tabs.js";
 import { getPluginAtom, pluginAtomKindOf, pluginAtomKinds, registerStaticAtomItem, staticAtomKinds } from "./pluginAtoms.js";
 import * as pluginWidgets from "./pluginWidgets.js";
-import { atomKeyOf, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
+import { atomKeyOf, atomRefFromKey, createFolder, loadFavs, saveFavs } from "../state/favorites.js";
+import {
+  activateUserTheme,
+  deleteFlow,
+  deleteTheme,
+  deleteTool,
+  runFlow as runFlowSteps,
+  runTool as runToolSteps,
+  sanitizeUserHtml,
+  setPhoneWidget,
+  registerFlowExecutor,
+  setFlowEnabled,
+  startScheduler,
+  updateFlow,
+  upsertFlow,
+  upsertTool,
+  deleteWidget,
+  upsertTheme,
+  upsertWidget,
+  userExtSnapshot,
+  startUserThemeWatch,
+  type ExtStep,
+} from "../state/userext.js";
+import { addItem, freeBoardSnapshot, removeItem } from "../state/freeBoard.js";
+import {
+  addAtomToBoard, addAtomToHome,
+  allOnePages, createOnePage, mutateBoards, notifyBoardsChanged,
+  openOnePage, removeOnePage, renameOnePage,
+} from "../state/onePage.js";
+import { SYSTEM_BOARD_ID, rectFromCell } from "../state/boardCore.js";
+import { renameBoard } from "../state/boardOps.js";
+import {
+  allSphereEntries, dockSphere, sphereEntry, spheresSnapshot, undockSphere,
+} from "../state/homeSpheres.js";
+import {
+  closeLiveWorkspace, closeTab, createLiveWorkspace, deleteWorkspace, dissolveWorkspace,
+  duplicateTab, explorerSnapshot, focusTab, isKnownPage, openTab, openWorkspace, patchLiveWorkspace, saveWorkspace,
+} from "../state/explorer.js";
+import {
+  setGlobalWallpaper, wallpaperSnapshot, BUILTIN_WALLPAPERS,
+} from "../state/wallpaper.js";
+import { readVoicePrefs, setVoicePrefs } from "../state/voicePrefs.js";
+import { explorerPrefsSnapshot, setExplorerPrefs } from "../state/explorerPrefs.js";
+import { loadNotifySettings, saveNotifySettings } from "../state/notifySettings.js";
+import { setHwDefault, setHwReminder } from "../state/hwRemind.js";
+import { requestVisitDraft } from "../state/visitDraft.js";
+import * as geek from "../lib/geekBrowser.js";
+
+/** ext.tabOpen 允许打开的一级页（子页是 tab 内导航，不走新标签）。
+ *  清小搭（xiaoda，2026-10-15）：一级页里 OH 要开就得在这张表里 ⇒ 进坞/进搜索栏之外，
+ *  这是「OH 可调用」的那一环（ext_tab op=open 与其它走 tabOpen 的链路共用）。 */
+const TOP_PAGES = new Set([
+  "homepage", "learn", "schedule", "trace", "otherinfo", "info", "life", "reserve", "zhjwxk", "thos",
+  "mail", "cloud", "gitlab", "thubook", "xiaoda", "tasks", "services", "favs", "boards", "board",
+  "learn-assignments", "learn-notices", "learn-files", "learn-search", "learn-semester",
+]);
 import {
   getCloudCalConfig, getCloudEvents, getLocalEvents, msSinceSync, syncCloudCal,
-  putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent,
+  putCloudEvent, deleteCloudEvent, putLocalEvent, deleteLocalEvent, saveCalendarEvent,
 } from "../state/cloudCal.js";
 import { refreshMail, readMail, mailSearch, sendMail, mailFolderTotal } from "../state/mail.js";
+import {
+  memoryAppend, memoryDelete, memoryEdit, memoryList, memoryRead, memoryReady,
+  memoryRefresh, memorySearch, memoryWrite,
+} from "../memory/operations.js";
 import { getLearnSnapshot } from "../state/data.js";
 import { getExtHwSnapshot, toHomework } from "../state/exthw.js";
 import { parseLearnTime } from "@onethu/core";
 import { ensureSeafileLoaded, getSeafileToken } from "../state/seafile.js";
+import type { GitlabIssueState } from "../state/gitlab.js";
+import { computeSkill, readSkill, runSkill, searchSkills } from "../lib/skills.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -77,6 +139,32 @@ async function normalizeBinding(raw: unknown): Promise<WidgetBinding | null> {
 async function fallbackBinding(): Promise<WidgetBinding> {
   const { loadWidgetInstances } = await import("../state/widgetInstances.js");
   return loadWidgetInstances().fallback;
+}
+
+/** ext_onepage_add 的 kind+payload → WidgetSpec（白板组件三形态）。
+ *  atom 校验走动态 import（facade↔atoms 模块环，与同文件其余入口同法）。 */
+async function buildSpec(kind: string, payload: unknown): Promise<import("../state/boardCore.js").WidgetSpec | null> {
+  const p = (payload ?? {}) as Record<string, unknown>;
+  if (kind === "text") {
+    const text = String(p.text ?? "");
+    if (!text) return null;
+    return { kind: "text", text, variant: p.variant === "title" ? "title" : "label" };
+  }
+  if (kind === "atom-link") {
+    /* ref 格式 = "kind|key"（favorites.atomRefFromKey 的存储格式），解析后必须能在注册表查到 */
+    const ref = String(p.ref ?? "");
+    const a = atomRefFromKey(ref);
+    if (!a) return null;
+    const { resolveAtom } = await import("../state/atoms.js");
+    if (!resolveAtom(a)) return null;
+    return { kind: "atom-link", ref };
+  }
+  if (kind === "custom") {
+    const id = String(p.id ?? "");
+    if (!id) return null;
+    return { kind: "custom", id };
+  }
+  return null;
 }
 
 export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
@@ -168,8 +256,8 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     }): Promise<{ uid: string; where: "cloud" | "local" }> {
       gate(perms, "cal:write", "cal.add");
       return (async () => {
-        if (!title?.trim()) throw new Error("标题不能为空");
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateYmd ?? "")) throw new Error("dateYmd 需要 YYYY-MM-DD");
+        if (!title?.trim()) throw new Error(i18n("plugins.facade.015edb6a8f1a"));
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateYmd ?? "")) throw new Error(i18n("plugins.facade.9ab26357bd06"));
         const d = new Date(Number(dateYmd.slice(0, 4)), Number(dateYmd.slice(5, 7)) - 1, Number(dateYmd.slice(8, 10)));
         const [sh, sm] = (startHm ?? "08:00").split(":").map(Number);
         const [eh, em] = (endHm ?? "09:35").split(":").map(Number);
@@ -195,7 +283,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       return (async () => {
         if (getCloudEvents().some((e) => e.uid === uid)) await deleteCloudEvent(uid);
         else if (getLocalEvents().some((e) => e.uid === uid)) await deleteLocalEvent(uid);
-        else throw new Error(`日程不存在：${uid}`);
+        else throw new Error(i18n("plugins.facade.f6746a5629b0", { uid: String(uid) }));
         return { removed: true as const };
       })();
     },
@@ -207,7 +295,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       return (async () => {
         const cloudEv = getCloudEvents().find((e) => e.uid === uid);
         const src = cloudEv ?? getLocalEvents().find((e) => e.uid === uid);
-        if (!src) throw new Error(`日程不存在：${uid}（先用 cal.agenda 拿最近日程的 uid）`);
+        if (!src) throw new Error(i18n("plugins.facade.4c822bdd81d6", { uid: String(uid) }));
         const originalCloud = !!cloudEv;
         const allDay = ch.allDay ?? src.allDay;
         // 日期：ch.date（YYYY-MM-DD）否则沿用原事件日期
@@ -242,12 +330,8 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           location: ch.location !== undefined ? (ch.location.trim() || undefined) : src.location,
           description: ch.note !== undefined ? (ch.note.trim() || undefined) : src.description,
         };
-        // 云↔本地迁移（同 UI 编辑器语义）：先删原侧再写新侧；toCloud 缺省=保持原侧
         const toCloud = ch.toCloud ?? originalCloud;
-        if (originalCloud && !toCloud) await deleteCloudEvent(uid);
-        if (!originalCloud && toCloud) await deleteLocalEvent(uid);
-        if (toCloud) await putCloudEvent(ev);
-        else await putLocalEvent(ev);
+        await saveCalendarEvent(ev, { cloud: toCloud, originalCloud });
         return { uid, where: toCloud ? "cloud" : "local" };
       })();
     },
@@ -265,7 +349,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
   const cloudToken = async (): Promise<string> => {
     await ensureSeafileLoaded();
     const t = getSeafileToken();
-    if (!t) throw new Error("云盘未配置：请先在应用的「云盘」页连接（Seafile API Token）");
+    if (!t) throw new Error(i18n("plugins.facade.d669b31a853f"));
     return t;
   };
   const cloudRead = wrap({
@@ -279,6 +363,27 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     share: async (repoId: string, path: string, expireDays: number) => invoke("seafile_share", { token: await cloudToken(), repoId, path, expireDays, password: "" }) as Promise<{ link: string; token: string }>,
   }, perms, "cloud:write");
 
+  // 记忆（OH-Memory 镜像引擎；写操作的两段式确认由 harness 工具层负责，facade 只做权限闸）
+  const memoryReadNs = wrap({
+    search: async (q: Record<string, unknown>) => memorySearch(q as never),
+    read: async (permalink: string) => memoryRead(permalink),
+    list: async (opts: Record<string, unknown>) => memoryList((opts ?? {}) as never),
+    refresh: async () => memoryRefresh(),
+    ready: async () => memoryReady(),
+  }, perms, "memory:read");
+  const memoryWriteNs = wrap({
+    write: async (input: Record<string, unknown>) => memoryWrite(input as never),
+    append: async (permalink: string, category: string, text: string, context?: string) => {
+      await memoryAppend(permalink, category, text, context);
+      return { ok: true as const };
+    },
+    edit: async (permalink: string, find: string, replace: string) => {
+      await memoryEdit(permalink, find, replace);
+      return { ok: true as const };
+    },
+    delete: async (permalink: string, reason?: string) => memoryDelete(permalink, reason),
+  }, perms, "memory:write");
+
   const mailWrite = wrap({
     send: async (to: string, cc: string, subject: string, body: string) => {
       await sendMail(to, cc, subject, body);
@@ -286,10 +391,91 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     },
   }, perms, "mail:write");
 
+  /** GitLab：读方法用页号（每页 50 条），写方法在应用内页面之外也能调，
+   *  安装时需向用户说明——写操作直接改远端仓库状态。 */
+  const gitlabRead = wrap({
+    projects: async (page = 1) => (await import("../state/gitlab.js")).gitlabProjectsPage(page),
+    starred: async (page = 1) => (await import("../state/gitlab.js")).gitlabStarredPage(page),
+    search: async (search: string, page = 1) => (await import("../state/gitlab.js")).gitlabSearchPage(String(search ?? ""), page),
+    project: async (id: number) => (await import("../state/gitlab.js")).gitlabProject(Number(id)),
+    branches: async (id: number) => (await import("../state/gitlab.js")).gitlabBranches(Number(id)),
+    tree: async (id: number, path: string, ref: string, page = 1) =>
+      (await import("../state/gitlab.js")).gitlabTreePage(Number(id), String(path ?? ""), String(ref ?? ""), page),
+    file: async (id: number, sha: string) => (await import("../state/gitlab.js")).gitlabFile(Number(id), String(sha ?? "")),
+    issues: async (id: number, opts?: { state?: GitlabIssueState; search?: string; page?: number }) =>
+      (await import("../state/gitlab.js")).gitlabIssuesPage(Number(id), opts?.state ?? "opened", String(opts?.search ?? ""), opts?.page ?? 1),
+    issue: async (id: number, iid: number) => (await import("../state/gitlab.js")).gitlabIssue(Number(id), Number(iid)),
+    issueNotes: async (id: number, iid: number) => (await import("../state/gitlab.js")).gitlabIssueNotes(Number(id), Number(iid)),
+    mergeRequests: async (id: number, opts?: { state?: GitlabIssueState; search?: string; page?: number }) =>
+      (await import("../state/gitlab.js")).gitlabMergeRequestsPage(Number(id), opts?.state ?? "opened", String(opts?.search ?? ""), opts?.page ?? 1),
+    mergeRequest: async (id: number, iid: number) => (await import("../state/gitlab.js")).gitlabMergeRequest(Number(id), Number(iid)),
+    mergeRequestNotes: async (id: number, iid: number) => (await import("../state/gitlab.js")).gitlabMergeRequestNotes(Number(id), Number(iid)),
+    pipelines: async (id: number, opts?: { ref?: string; page?: number }) =>
+      (await import("../state/gitlab.js")).gitlabPipelinesPage(Number(id), String(opts?.ref ?? ""), opts?.page ?? 1),
+    jobs: async (id: number, pipelineId: number) => (await import("../state/gitlab.js")).gitlabPipelineJobs(Number(id), Number(pipelineId)),
+    jobTrace: async (id: number, jobId: number) => (await import("../state/gitlab.js")).gitlabJobTrace(Number(id), Number(jobId)),
+    discussions: async (kind: "issue" | "mr", id: number, iid: number, page = 1) =>
+      (await import("../state/gitlab.js")).gitlabDiscussions(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Math.max(1, page)),
+    awards: async (kind: "issue" | "mr", id: number, iid: number, noteId?: number) =>
+      (await import("../state/gitlab.js")).gitlabAwards(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), noteId === undefined ? undefined : Number(noteId)),
+    mergeRequestChanges: async (id: number, iid: number) =>
+      (await import("../state/gitlab.js")).gitlabMergeRequestChanges(Number(id), Number(iid)),
+    requestCounts: async (kind: "issue" | "mr", id: number) =>
+      (await import("../state/gitlab.js")).gitlabRequestCounts(kind === "mr" ? "mr" : "issue", Number(id)),
+  }, perms, "gitlab:read");
+  const gitlabWrite = wrap({
+    createIssue: async (id: number, title: string, description: string) =>
+      (await import("../state/gitlab.js")).gitlabCreateIssue(Number(id), String(title ?? ""), String(description ?? "")),
+    comment: async (kind: "issue" | "mr", id: number, iid: number, body: string) =>
+      (await import("../state/gitlab.js")).gitlabAddNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(body ?? "")),
+    updateComment: async (kind: "issue" | "mr", id: number, iid: number, noteId: number, body: string) =>
+      (await import("../state/gitlab.js")).gitlabUpdateNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Number(noteId), String(body ?? "")),
+    reply: async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, body: string) =>
+      (await import("../state/gitlab.js")).gitlabReply(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), String(body ?? "")),
+    deleteComment: async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, noteId: number) => {
+      await (await import("../state/gitlab.js")).gitlabDeleteNote(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), Number(noteId));
+    },
+    resolveDiscussion: async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, resolved: boolean) => {
+      await (await import("../state/gitlab.js")).gitlabResolveDiscussion(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(discussionId ?? ""), resolved !== false);
+    },
+    assignees: async (kind: "issue" | "mr", id: number, iid: number, userIds: number[]) => {
+      const ids = (Array.isArray(userIds) ? userIds : []).map((n) => Number(n)).filter((n) => Number.isFinite(n));
+      await (await import("../state/gitlab.js")).gitlabAssign(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), ids);
+    },
+    react: async (kind: "issue" | "mr", id: number, iid: number, name: string, noteId?: number) =>
+      (await import("../state/gitlab.js")).gitlabAddAward(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), String(name ?? ""), noteId === undefined ? undefined : Number(noteId)),
+    unreact: async (kind: "issue" | "mr", id: number, iid: number, awardId: number, noteId?: number) => {
+      await (await import("../state/gitlab.js")).gitlabRemoveAward(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), Number(awardId), noteId === undefined ? undefined : Number(noteId));
+    },
+    createMergeRequest: async (id: number, sourceBranch: string, targetBranch: string, title: string, description: string) =>
+      (await import("../state/gitlab.js")).gitlabCreateMergeRequest(Number(id), String(sourceBranch ?? ""), String(targetBranch ?? ""), String(title ?? ""), String(description ?? "")),
+    mergeMergeRequest: async (id: number, iid: number) =>
+      (await import("../state/gitlab.js")).gitlabMerge(Number(id), Number(iid)),
+    setState: async (kind: "issue" | "mr", id: number, iid: number, state: "close" | "reopen") => {
+      await (await import("../state/gitlab.js")).gitlabSetState(kind === "mr" ? "mr" : "issue", Number(id), Number(iid), state === "reopen" ? "reopen" : "close");
+    },
+  }, perms, "gitlab:write");
+
   const api: OnethuApi = {
     cal: calNs as unknown as OnethuApi["cal"],
     mail: { ...mailRead, ...mailWrite } as OnethuApi["mail"],
     cloud: { ...cloudRead, ...cloudWrite } as OnethuApi["cloud"],
+    memory: { ...memoryReadNs, ...memoryWriteNs } as OnethuApi["memory"],
+    /** 临时来访人员报备（visit.tsinghua.edu.cn 的「亲友来访报备」）。
+   *  OH 只做**填草稿 + 打开**：提交是真实政务动作，永远由用户在页面上勾选确认后自己点。
+   *  WHY 不在这里直接提交：报备内容的真实性由申请人负责（学校须知原文），代提交会让人误以为
+   *  「系统替他背书」。与 venue.jump「预约在官方页面完成」同一条边界。 */
+  visit: {
+    /** 默认只填草稿 + 打开页面；submit: true = 用户已授权自动报备（页面填完直接提交）。 */
+    fill: (patch_: unknown, opts?: { open?: boolean; submit?: boolean }): { ok: boolean; opened: boolean; submit: boolean; filled: string[] } => {
+      gate(perms, "nav", "visit.fill");
+      const p = (patch_ ?? {}) as Record<string, unknown>;
+      requestVisitDraft(p as never, { submit: opts?.submit === true });
+      const opened = opts?.open === false ? false : navGo("reserve", { reserveTab: "visit" });
+      return { ok: true, opened, submit: opts?.submit === true, filled: Object.keys(p) };
+    },
+  },
+  gitlab: { ...gitlabRead, ...gitlabWrite } as unknown as OnethuApi["gitlab"],
     session: {
       status: () => {
         gate(perms, "user:read", "session.status");
@@ -346,10 +532,16 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         if (semesterId) {
           const courses = await learn.getCourseList(semesterId);
           if (!courses.some((c) => c.id === courseId)) {
-            throw new Error(`课程 ${courseId} 不在学期 ${semesterId} 的课程列表中（跨学期请确认 semesterId）`);
+            throw new Error(i18n("plugins.facade.532d892a16b6", { courseId: String(courseId), semesterId: String(semesterId) }));
           }
         }
         return learn.getFileList(courseId);
+      },
+      /** 下载课件/附件到下载目录（Files Hub 源①：字节不过 JS，带会话 Cookie 直连） */
+      download: async (fileId: string, filename?: string) => {
+        const { downloadLearnFile } = await import("../lib/clients.js");
+        const name = filename?.trim() || `learn-${fileId}`;
+        return downloadLearnFile(fileId, name);
       },
       reply: (wlkcid: string, threadId: string, content: string) => {
         gate(perms, "learn:write", "learn.reply");
@@ -425,7 +617,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const { getCourseXDetailPublic } = await import("@onethu/core");
         try {
           const d = await withExternalTimeout(getCourseXDetailPublic(universalFetch, id));
-          if (!d) return { id, error: "详情页无可解析卡片（页面结构变更?）" };
+          if (!d) return { id, error: i18n("plugins.facade.c50a68203b6c") };
           return d;
         } catch (e) {
           return { id, error: explainNetworkError(e) };
@@ -493,7 +685,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
             return await info.bookLibrarySeat(seat, sectionId, dateChoice, appSession.username);
           } catch (e2) {
             const m2 = e2 instanceof Error ? e2.message : String(e2);
-            throw new Error(`${m2}（重试前会话重建: ${ensured}；座位系统 uid=${InfoClient.libUserid || "?"}）`);
+            throw new Error(i18n("plugins.facade.b415f4b7d98e", { m2: String(m2), ensured: String(ensured), value: String(InfoClient.libUserid || "?") }));
           }
         }
       },
@@ -526,7 +718,24 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
     nav: {
       go: (page: string, params?: Record<string, unknown>) => {
         gate(perms, "nav", "nav.go");
-        if (!navGo(page, params)) throw new Error("导航桥未就绪（应用启动中）");
+        /* 旧文档/提示词里的 "today" 是 homepage 的别名（app.tsx 早就没有 today 页了）。
+           不映射会在非首页标签里 navigateInTab("today") → 渲染兜底成 LearnPage。 */
+        const pageId = String(page ?? "") === "today" ? "homepage" : page;
+        const want = params ?? {};
+        /* 白板带参（2026-10-15 OH 接线）：`board` + {boardId} → **先把那块板设成当前板**再开白板页。
+           白板页渲染的是「当前板」（BoardDoc.activeBoardId），所以只传 params 不切板 —— 以前 OH
+           说「打开 XX 白板」实际打开的还是上一块。这里与 `#/board/<板 id>` 深链（explorer 的
+           openBoardFromHash）和 ext.onePageOpen 走同一条链：setActiveBoard + openTab。 */
+        const bid = String(pageId ?? "") === "board" ? String(want.boardId ?? want.id ?? "") : "";
+        if (bid) {
+          const hit = allOnePages().find((b) => b.id === bid);
+          if (!hit) throw new Error(i18n("plugins.facade.265965114fef", { bid: String(bid) }));
+          openOnePage(bid);
+          openTab("board", null, { title: hit.name });
+          return true;
+        }
+        if (!navGo(pageId, want)) throw new Error(i18n("plugins.facade.536acdd7d116"));
+        return true;
       },
       /** 原子检索：静态注册表（功能页/今日组件/操作）+ 本机缓存（课程/作业/通知/在线服务…）。
        *  动态 import 与 normalizeBinding 同法，回避 facade↔atoms 的模块环。 */
@@ -558,6 +767,42 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const { clearUsage } = await import("../lib/usage.js");
         clearUsage();
       },
+      /** 检索行级直达（OH 的 ui_navigate 用）：与检索条点行**同一条链路**（goSearchRow）。
+       *  查无/多义 → ok:false + reason + candidates，让 OH 自己改口，不硬猜。需 nav 权限 */
+      searchRow: async (ref: { routeId?: string; query?: string }) => {
+        gate(perms, "nav", "nav.searchRow");
+        const { allSearchRows, matchSearchRows, goSearchRow, ohRouteTable } = await import("../state/searchRows.js");
+        const rows = allSearchRows();
+        const arg = ref ?? {};
+        /* routeId 精确直配；query 走与检索条同源的打分（首位=自己才算命中） */
+        if (arg.routeId) {
+          const row = rows.find((r) => r.id === arg.routeId);
+          if (!row) {
+            const near = ohRouteTable().filter((e) => e.id.includes(String(arg.routeId).toLowerCase())).slice(0, 5)
+              .map((e) => ({ id: e.id, title: e.title }));
+            return { ok: false, reason: `没有 id 为「${arg.routeId}」的检索行`, candidates: near };
+          }
+          const res = goSearchRow(row);
+          return { ok: true, id: row.id, title: row.title, breadcrumb: res.breadcrumb, landedOn: res.landedOn, note: res.note ?? "" };
+        }
+        const q = String(arg.query ?? "").trim();
+        if (!q) return { ok: false, reason: "缺 routeId 或 query：说明要跳的行（如「多模态」「管理主题」）" };
+        const hits = matchSearchRows(q, 2);
+        if (hits.length === 0) {
+          return { ok: false, reason: `没有命中任何检索行：「${q}」。可换行名关键词，或先用 ui_navigate 列候选` };
+        }
+        const first = hits[0]!;
+        const row = first.row;
+        const candidates = hits.slice(1).map((h) => ({ id: h.row.id, title: h.row.title }));
+        const res = goSearchRow(row);
+        return { ok: true, id: row.id, title: row.title, breadcrumb: res.breadcrumb, landedOn: res.landedOn, note: res.note ?? "", candidates };
+      },
+      /** 路由表投影（有缓存兜底时 Rust 侧离线可用） */
+      routeTable: async () => {
+        gate(perms, "nav", "nav.routeTable");
+        const { ohRouteTable } = await import("../state/searchRows.js");
+        return ohRouteTable();
+      },
       /** 打开原子：复用收藏夹那套 view.open(nav)，故插件点开的页面与用户自己点收藏完全一致 */
       openAtom: async (ref: { kind: string; key: string }) => {
         gate(perms, "nav", "nav.openAtom");
@@ -567,8 +812,10 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const { resolveAtom } = await import("../state/atoms.js");
         const view = resolveAtom({ kind, key });
         if (!view) return false;
-        view.open((page, params) => navGo(page, params as Record<string, unknown> | undefined));
-        return true;
+        /* 以前无条件 true：页面导航桥没就绪/页面 id 不认时 OH 照旧回"已打开"。改成如实返回。 */
+        let ok = false;
+        view.open((page, params) => { ok = navGo(page, params as Record<string, unknown> | undefined); });
+        return ok;
       },
     },
     services: {
@@ -617,7 +864,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
        *  调用方应 catch 后降级 onethu.nav 外链或系统浏览器）。需 webview 权限。 */
       webModal: async (url: string): Promise<void> => {
         gate(perms, "webview", "ui.webModal");
-        if (!/^https:\/\//.test(url)) throw new Error("webModal 仅支持 https:// 链接");
+        if (!/^https:\/\//.test(url)) throw new Error(i18n("plugins.facade.6082f18ce536"));
         await invoke("open_web_modal", { url, dark: currentThemeIsDark() });
       },
       /** 应用内确认弹窗（Promise 化）：resolve 用户是否确认。opts.danger 为危险操作样式；
@@ -639,7 +886,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       form: async (title: string, fields: FormField[]): Promise<Record<string, string> | null> => {
         gate(perms, "ui", "ui.form");
         const { openFormModal } = await import("../lib/formModal.js");
-        return openFormModal(String(title ?? "请填写"), Array.isArray(fields) ? fields : []);
+        return openFormModal(title == null ? i18nMsg("plugins.facade.formFallback") : String(title), Array.isArray(fields) ? fields : []);
       },
       /** 剪贴板：写无需确认；read 需 clipboard:read 权限（敏感，可读密码管理器内容）。 */
       clipboard: {
@@ -656,16 +903,544 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       getTabRoot: (pageKey: string): HTMLElement | null => {
         gate(perms, "ui", "ui.getTabRoot");
         const key = String(pageKey ?? "");
-        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("getTabRoot 仅限本插件注册的 tab");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error(i18n("plugins.facade.d12b86e33757"));
         return getTabRoot(key);
       },
       /** 订阅 tab 容器就绪（已就绪立即回调；返回退订函数） */
       onTabReady: (pageKey: string, cb: (root: HTMLElement) => void): (() => void) => {
         gate(perms, "ui", "ui.onTabReady");
         const key = String(pageKey ?? "");
-        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error("onTabReady 仅限本插件注册的 tab");
+        if (!key.startsWith(`plugin:${pluginId}:`)) throw new Error(i18n("plugins.facade.777811e6adc7"));
         if (typeof cb !== "function") return () => undefined;
         return onTabReady(key, cb);
+      },
+    },
+    /** 用户扩展层（OH 自我进化元工具，2026-10-13）：用户工具/OneFlow/用户生成组件。
+     *  权限口径：本命名空间要求 ui 权限；步骤内部调用的其他 ns 不再逐 gate——
+     *  OH 是受信执行体，用户在对话里对它下达的指令视同用户操作。 */
+    ext: {
+      skillSearch: (query?: string): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillSearch");
+        return searchSkills(query);
+      },
+      skillCompute: (code: string, input: unknown): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillCompute");
+        return computeSkill(String(code), input);
+      },
+      skillRun: (id: string, path: string, input: unknown): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillRun");
+        return runSkill(String(id), String(path), input);
+      },
+      skillLoad: (id: string): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillLoad");
+        return readSkill(String(id));
+      },
+      skillReadFile: (id: string, path: string): Promise<unknown> => {
+        gate(perms, "ui", "ext.skillReadFile");
+        return readSkill(String(id), String(path));
+      },
+      toolCreate: (name: string, description: string, steps: unknown): void => {
+        gate(perms, "ui", "ext.toolCreate");
+        upsertTool({
+          id: "ut." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+          name: String(name),
+          description: String(description),
+          steps: Array.isArray(steps) ? (steps as ExtStep[]) : [],
+        });
+      },
+      toolList: (): Array<{ id: string; name: string; description: string }> =>
+        userExtSnapshot().tools.map((t) => ({ id: t.id, name: t.name, description: t.description })),
+      toolRun: (id: string): Promise<{ ok: boolean; error?: string }> => runToolSteps(id, execTool),
+      toolDelete: (id: string): void => deleteTool(id),
+      flowCreate: (name: string, trigger: unknown, steps: unknown): { id: string } => {
+        gate(perms, "ui", "ext.flowCreate");
+        const trg = trigger as import("../state/userext.js").FlowTrigger;
+        if (!trg || (trg.kind !== "manual" && trg.kind !== "cron" && trg.kind !== "event")) {
+          throw new Error(i18n("plugins.facade.d9e18ccca62c"));
+        }
+        const list = Array.isArray(steps) ? (steps as ExtStep[]) : [];
+        if (!list.length) throw new Error(i18n("plugins.facade.995c7a402a02"));
+        const id = "fl." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        upsertFlow({ id, name: String(name), trigger: trg, steps: list });
+        return { id };
+      },
+      flowList: (): Array<{ id: string; name: string; trigger: unknown; enabled: boolean; lastRun?: number; lastOk?: boolean; lastError?: string }> =>
+        userExtSnapshot().flows.map((f) => ({ id: f.id, name: f.name, trigger: f.trigger, enabled: f.enabled !== false, lastRun: f.lastRun, lastOk: f.lastOk, lastError: f.lastError })),
+      flowRun: (id: string): Promise<{ ok: boolean; error?: string }> => {
+        gate(perms, "ui", "ext.flowRun");
+        return runFlowSteps(id, execTool);
+      },
+      flowUpdate: (id: string, patch: { name?: string; trigger?: unknown; steps?: unknown; enabled?: boolean }): { ok: boolean } => {
+        gate(perms, "ui", "ext.flowUpdate");
+        const p: { name?: string; trigger?: import("../state/userext.js").FlowTrigger; steps?: ExtStep[]; enabled?: boolean } = {};
+        if (typeof patch?.name === "string") p.name = patch.name;
+        if (patch?.trigger) p.trigger = patch.trigger as import("../state/userext.js").FlowTrigger;
+        if (Array.isArray(patch?.steps)) p.steps = patch.steps as ExtStep[];
+        if (typeof patch?.enabled === "boolean") p.enabled = patch.enabled;
+        const ok = updateFlow(String(id), p);
+        if (!ok) throw new Error(i18n("plugins.facade.30c5627d3abc"));
+        return { ok };
+      },
+      flowSetEnabled: (id: string, on: boolean): { ok: boolean } => {
+        gate(perms, "ui", "ext.flowSetEnabled");
+        const ok = setFlowEnabled(String(id), Boolean(on));
+        if (!ok) throw new Error(i18n("plugins.facade.30c5627d3abc"));
+        return { ok };
+      },
+      flowDelete: (id: string): void => {
+        gate(perms, "ui", "ext.flowDelete");
+        if (!userExtSnapshot().flows.some((f) => f.id === String(id))) throw new Error(i18n("plugins.facade.7437bebe3a97"));
+        deleteFlow(String(id));
+      },
+      widgetCreate: (name: string, html: string, x?: number, y?: number): { id: string } => {
+        gate(perms, "ui", "ext.widgetCreate");
+        const uid = "uw." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        upsertWidget({ id: uid, name: String(name), html: sanitizeUserHtml(String(html)) });
+        addItem({ kind: "custom", id: "usergen:" + uid }, x ?? 60, y ?? 360, 240, 160);
+        return { id: uid };
+      },
+      widgetList: (): Array<{ id: string; name: string; createdAt: number }> =>
+        userExtSnapshot().widgets.map((w) => ({ id: w.id, name: w.name, createdAt: w.createdAt })),
+      widgetDelete: (id: string): void => {
+        gate(perms, "ui", "ext.widgetDelete");
+        deleteWidget(String(id));
+        const ref = "usergen:" + String(id);
+        /* 自由白板上的实例一并清掉 */
+        for (const it of freeBoardSnapshot().items) {
+          if (it.spec.kind === "custom" && it.spec.id === ref) removeItem(it.id);
+        }
+        /* 各 OnePage 白板上的实例一并清掉 */
+        mutateBoards((doc) => {
+          let touched = false;
+          const boards = doc.boards.map((b) => {
+            const prev = b.cells.portrait ?? [];
+            const portrait = prev.filter((it) => !(it.spec.kind === "custom" && it.spec.id === ref));
+            if (portrait.length !== prev.length) {
+              touched = true;
+              return { ...b, cells: { ...b.cells, portrait } };
+            }
+            return b;
+          });
+          return touched ? { ...doc, boards } : null;
+        });
+        notifyBoardsChanged();
+      },
+      onePageCreate: (name: string, icon?: string): { id: string } => {
+        gate(perms, "ui", "ext.onePageCreate");
+        const id = createOnePage(String(name), icon ? String(icon) : "star");
+        return { id };
+      },
+      onePageList: (): Array<{ id: string; name: string; kind: string; icon: string }> =>
+        allOnePages().map((b) => ({ id: b.id, name: b.name, kind: b.kind, icon: b.icon })),
+      onePageAddItem: async (boardId: string, kind: string, payload: unknown, x: number, y: number, w?: number, h?: number): Promise<{ id: string }> => {
+        gate(perms, "ui", "ext.onePageAdd");
+        const spec = await buildSpec(kind, payload);
+        if (!spec) throw new Error(i18n("plugins.facade.a80c49c4e2cd"));
+        const iid = "it." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        let placed = false;
+        mutateBoards((doc) => {
+          const boards = doc.boards.map((b) => {
+            if (b.id !== String(boardId)) return b;
+            placed = true;
+            const items = b.cells.portrait ?? [];
+            return {
+              ...b,
+              cells: {
+                ...b.cells,
+                portrait: [...items, { id: iid, spec, cell: { x: Math.max(0, x | 0), y: Math.max(0, y | 0), w: w ?? 2, h: h ?? 1 } }],
+              },
+            };
+          });
+          return placed ? { ...doc, boards } : null;
+        });
+        if (!placed) throw new Error(i18n("plugins.facade.ef62cd3182c8"));
+        return { id: iid };
+      },
+      themeApply: (name: string, vars: unknown): { id: string } => {
+        gate(perms, "ui", "ext.themeApply");
+        const clean: Record<string, string> = {};
+        for (const [k, v] of Object.entries((vars ?? {}) as Record<string, unknown>)) {
+          if (k.startsWith("--") && typeof v === "string" && v.length < 128) clean[k] = v;
+        }
+        const id = "uth." + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+        upsertTheme({ id, name: String(name), vars: clean });
+        activateUserTheme(id);
+        return { id };
+      },
+      themeList: (): Array<{ id: string; name: string; active: boolean }> =>
+        userExtSnapshot().themes.map((t) => ({ id: t.id, name: t.name, active: userExtSnapshot().activeThemeId === t.id })),
+      themeActivate: (id: string | null): void => activateUserTheme(id),
+      themeDelete: (id: string): void => deleteTheme(id),
+      /** 手机桌面小组件自定义内容：rows 为空数组即清除；持久化在 userext，App 前台算好随快照推送 */
+      phoneWidgetSet: (title: string, rows: unknown): { ok: boolean; rows: number } => {
+        gate(perms, "ui", "ext.phoneWidgetSet");
+        const list = Array.isArray(rows) ? (rows as Array<{ text?: unknown; sub?: unknown }>) : [];
+        setPhoneWidget(String(title ?? ""), list);
+        return { ok: true, rows: userExtSnapshot().phone?.rows.length ?? 0 };
+      },
+      /* ── OnePage 白板管理（v2 覆盖面） ── */
+      onePageDelete: (id: string): { ok: boolean; reason?: string } => {
+        gate(perms, "ui", "ext.onePageDelete");
+        const reason = removeOnePage(String(id));
+        return reason ? { ok: false, reason } : { ok: true };
+      },
+      onePageRename: (id: string, name: string): void => {
+        gate(perms, "ui", "ext.onePageRename");
+        if (!String(name ?? "").trim()) throw new Error(i18n("plugins.facade.e17b179b14d7"));
+        renameOnePage(String(id), String(name));
+      },
+      /** 换 OnePage 图标（TabStrip/OneGO/列表页都读 Board.icon；图标键来自 FOLDER_ICONS） */
+      onePageSetIcon: (id: string, icon: string): { ok: boolean } => {
+        gate(perms, "ui", "ext.onePageSetIcon");
+        const b = allOnePages().find((x) => x.id === String(id));
+        if (!b) throw new Error(i18n("plugins.facade.fba969e122d2"));
+        if (!String(icon ?? "").trim()) throw new Error(i18n("plugins.facade.9649f0743b7b"));
+        mutateBoards((doc) => renameBoard(doc, b.id, b.name, String(icon)));
+        return { ok: true };
+      },
+      onePageOpen: (id: string): void => {
+        gate(perms, "ui", "ext.onePageOpen");
+        openOnePage(String(id));
+        openTab("board", null, { title: allOnePages().find((b) => b.id === String(id))?.name ?? "白板" });
+      },
+      onePageMoveItem: (boardId: string, itemId: string, x: number, y: number): void => {
+        gate(perms, "ui", "ext.onePageMoveItem");
+        const nx = Math.max(0, Math.trunc(Number(x) || 0));
+        const ny = Math.max(0, Math.trunc(Number(y) || 0));
+        let found = false;
+        const moved = mutateBoards((doc) => {
+          const board = doc.boards.find((b) => b.id === String(boardId));
+          if (!board) return null;
+          /* 白板渲染以 px rect 为准（rectOf 优先 item.rect，saveBoard 会给无 rect 的条目补 rect）；
+             只改 cell 用户看不到任何变化。移动必须 withRect 同一套：cell 派生 + rect 落地。
+             两个朝向都有这个条目时一起挪（同一个 x/y 语义）。 */
+          const cells: typeof board.cells = { ...board.cells };
+          for (const o of ["portrait", "landscape"] as const) {
+            const items = cells[o];
+            if (!items) continue;
+            let hit = false;
+            const next = items.map((it) => {
+              if (it.id !== String(itemId)) return it;
+              hit = true;
+              const cell = { ...it.cell, x: nx, y: ny };
+              const rect = rectFromCell(cell);
+              return { ...it, cell, rect, manual: true, fitted: undefined };
+            });
+            if (hit) {
+              cells[o] = next;
+              found = true;
+            }
+          }
+          return found ? { ...doc, boards: doc.boards.map((b) => (b.id === board.id ? { ...b, cells } : b)) } : null;
+        });
+        if (!moved || !found) throw new Error(i18n("plugins.facade.fba49ea39197"));
+      },
+      onePageRemoveItem: (boardId: string, itemId: string): void => {
+        gate(perms, "ui", "ext.onePageRemoveItem");
+        const gone = mutateBoards((doc) => {
+          const boards = doc.boards.map((b) => {
+            if (b.id !== String(boardId)) return b;
+            const prev = b.cells.portrait ?? [];
+            const portrait = prev.filter((it) => it.id !== String(itemId));
+            if (portrait.length === prev.length) return b;
+            return { ...b, cells: { ...b.cells, portrait } };
+          });
+          return boards === doc.boards ? null : { ...doc, boards };
+        });
+        if (!gone) throw new Error(i18n("plugins.facade.f4466b045d5f"));
+      },
+      /** 某块 OnePage 的组件清单（OH 调位/删除前按图索骥） */
+      onePageItems: (boardId: string): Array<{ id: string; kind: string; text?: string; x: number; y: number; w: number; h: number }> => {
+        gate(perms, "ui", "ext.onePageItems");
+        const b = allOnePages().find((x) => x.id === String(boardId));
+        if (!b) throw new Error(i18n("plugins.facade.fba969e122d2"));
+        return (b.cells.portrait ?? []).map((it) => ({
+          id: it.id,
+          kind: it.spec.kind,
+          text: it.spec.kind === "text" ? it.spec.text : undefined,
+          x: it.cell.x,
+          y: it.cell.y,
+          w: it.cell.w,
+          h: it.cell.h,
+        }));
+      },
+      /* ── 收藏落点（2026-10-15 接线）：收藏「元素」先选落点 = 首页 / 已有 OnePage ──
+         与 components/Collect.tsx 那张落点面板**同一份实现**：只调 state/onePage.ts 的
+         高阶函数（addAtomToHome / addAtomToBoard，自带查重 + findFreeCell 落位，被压到的
+         向下推）。门面**不碰 cells/坐标** —— 白板坐标语义由 board 那一层说了算（4 列网格契约）。 */
+      onePageAddAtom: (
+        target: { to?: string; boardId?: string } | null,
+        atomKey: string,
+      ): { ok: boolean; boardId: string; added?: string; reason?: string } => {
+        gate(perms, "ui", "ext.onePageAddAtom");
+        /* 存储格式唯一：kind|key。旧工具文案写 kind:key，OH 会照抄成永久失效的 ref——
+           这里把首个 ':' 归一成 '|'，并拒绝解析不了的引用。 */
+        let key = String(atomKey ?? "").trim();
+        if (!key) throw new Error(i18n("plugins.facade.aaf4a5ba16eb"));
+        if (!key.includes("|")) {
+          const i = key.indexOf(":");
+          if (i > 0) key = key.slice(0, i) + "|" + key.slice(i + 1);
+        }
+        const ref = atomRefFromKey(key);
+        if (!ref || !ref.kind || !ref.key) throw new Error(i18n("plugins.facade.976be8e8ac76"));
+        const want = String(target?.boardId ?? "").trim();
+        /* 不带 boardId = 落首页（首页画的就是系统板）；带 boardId = 落那块 OnePage */
+        const r = want ? addAtomToBoard(want, key) : addAtomToHome(key);
+        const boardId = want || SYSTEM_BOARD_ID;
+        if (!r.added) {
+          const reason = r.reason === "duplicate" ? "duplicate" : r.reason === "no-board" ? "no-board" : (r.reason ?? "unknown");
+          return { ok: false, boardId, reason };
+        }
+        return { ok: true, boardId, added: r.added.id };
+      },
+      /* ── 首页程序坞（2026-10-15 接线）：NAV 一级页 ∪ 插件功能页同权，可停靠/取消停靠 ──
+         实现只有一处：state/homeSpheres.ts 的 dockSphere/undockSphere（首页「更多功能」
+         小窗的 ＋/× 走的就是它）。不传 pageId = 只读快照（坞上有哪些球 + 还能停哪些，
+         带名字，OH 才能把「打卡页」对到 page id 上）。
+         **可调用形态**：门面的 rpc 分发是平铺两段式（plugins/rust.ts 的 api[ns][method]），
+         嵌套命名空间到不了 —— 所以 homeDock 本身可调用（与 .set 同一实现），
+         插件作者写 `ext.homeDock.set(…)`、OH 侧走 `onethu.call("ext","homeDock",[…])` 两种都通。 */
+      homeDock: (() => {
+        type DockEntry = { page: string; label: string; plugin: boolean };
+        type DockOut = { ok: boolean; pageId: string; label: string; docked: string[]; dockable: string[]; entries: DockEntry[] };
+        const impl = (pageId?: string, on?: boolean): DockOut => {
+          gate(perms, "ui", "ext.homeDock");
+          const all = allSphereEntries();
+          const entries: DockEntry[] = all.map((e) => ({
+            page: String(e.page),
+            label: String(e.label ?? ""),
+            plugin: String(e.page).startsWith("plugin:"),
+          }));
+          const dockable = entries.map((e) => e.page);
+          const id = String(pageId ?? "").trim();
+          if (!id) {
+            return { ok: true, pageId: "", label: "", docked: [...spheresSnapshot().docked], dockable, entries };
+          }
+          const entry = sphereEntry(id);
+          if (!entry) {
+            throw new Error(i18n("plugins.facade.98c18b06340b", { id: String(id), value: String(dockable.slice(0, 40).join(" / ")) }));
+          }
+          if (on === true) dockSphere(id);
+          else undockSphere(id);
+          return { ok: true, pageId: id, label: String(entry.label ?? ""), docked: [...spheresSnapshot().docked], dockable, entries };
+        };
+        return Object.assign((pageId?: string, on?: boolean): DockOut => impl(pageId, on), {
+          set: (pageId?: string, on?: boolean): DockOut => impl(pageId, on),
+        });
+      })(),
+      /* ── 工作区 ── */
+      workspaceList: (): Array<{ id: string; name: string; live: boolean; tabs: number }> =>
+        explorerSnapshot().workspaces.map((w) => ({ id: w.id, name: w.name, live: w.live === true, tabs: w.tabs.length })),
+      workspaceCreate: (name: string, tabIds: unknown): { id: string } => {
+        gate(perms, "ui", "ext.workspaceCreate");
+        const ids = Array.isArray(tabIds) ? (tabIds as unknown[]).map(String).filter(Boolean) : null;
+        /* 给了成员标签 → 现场建活工作区并归属；没给 → 把当前页签存成工作区；两者都空 → 建一块空活底板 */
+        let id = ids && ids.length > 0
+          ? createLiveWorkspace({ name: String(name ?? ""), color: "#5b8def", icon: "fist" }, ids)
+          : saveWorkspace(String(name ?? ""));
+        if (!id) id = createLiveWorkspace({ name: String(name ?? ""), color: "#5b8def", icon: "fist" }, []);
+        return { id };
+      },
+      workspaceOpen: (id: string): boolean => {
+        gate(perms, "ui", "ext.workspaceOpen");
+        if (!explorerSnapshot().workspaces.some((x) => x.id === String(id))) return false;
+        openWorkspace(String(id));
+        return true;
+      },
+      /** 收起活板：只折叠（不关成员标签、不删定义）——OH「把工作区收起来」的语义。 */
+      workspaceCollapse: (id: string): boolean => {
+        gate(perms, "ui", "ext.workspaceCollapse");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
+        patchLiveWorkspace(String(id), { collapsed: true });
+        return true;
+      },
+      /** 真正的关闭活板：关成员标签并移除定义（破坏性，UI 大关闭按钮同义）。 */
+      workspaceClose: (id: string): boolean => {
+        gate(perms, "ui", "ext.workspaceClose");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
+        closeLiveWorkspace(String(id));
+        return true;
+      },
+      workspaceDissolve: (id: string): boolean => {
+        gate(perms, "ui", "ext.workspaceDissolve");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
+        dissolveWorkspace(String(id));
+        return true;
+      },
+      workspaceDelete: (id: string): boolean => {
+        gate(perms, "ui", "ext.workspaceDelete");
+        const w = explorerSnapshot().workspaces.find((x) => x.id === String(id));
+        if (!w) return false;
+        deleteWorkspace(String(id));
+        return true;
+      },
+      /* ── 标签页 ── */
+      tabList: (): Array<{ id: string; title: string; page: string }> => [
+        { id: "home", title: i18n("plugins.facade.203c08e0d44a"), page: "homepage" },
+        ...explorerSnapshot().tabs.map((t) => ({ id: t.id, title: t.title, page: String(t.page) })),
+      ],
+      tabOpen: (page: string): { id: string } => {
+        gate(perms, "ui", "ext.tabOpen");
+        const top = String(page ?? "").trim() === "today" ? "homepage" : String(page ?? "").trim();
+        /* 白名单只留一处真源（explorer.KNOWN_PAGES）；子页/详情页也是合法打开目标。 */
+        if (!isKnownPage(top)) throw new Error("不认识的页面，可用：" + [...TOP_PAGES].join(" / "));
+        return { id: openTab(top as import("../state/app.js").Page) };
+      },
+      tabClose: (id: string): boolean => {
+        gate(perms, "ui", "ext.tabClose");
+        return closeTab(String(id));
+      },
+      tabDuplicate: (id: string): { id: string } => {
+        gate(perms, "ui", "ext.tabDuplicate");
+        const id2 = duplicateTab(String(id));
+        if (!id2) throw new Error(i18n("plugins.facade.5a9154403950"));
+        return { id: id2 };
+      },
+      tabFocus: (id: string): boolean => {
+        gate(perms, "ui", "ext.tabFocus");
+        return focusTab(String(id));
+      },
+      /* ── 低风险设置 ── */
+      /* 壁纸只剩全屏一档（2026-10-14 定案）：scope 只认 "global"，其它值报错说清 */
+      wallpaperSet: (scope: string, ref: string | null): void => {
+        gate(perms, "ui", "ext.wallpaperSet");
+        if (scope !== "global") throw new Error(i18n("plugins.facade.81accc7a976c"));
+        const val = String(ref ?? "");
+        if (val) {
+          if (!val.startsWith("builtin:")) throw new Error(i18n("plugins.facade.7241d265bd8c"));
+          if (!BUILTIN_WALLPAPERS.some((b) => "builtin:" + b.id === val)) throw new Error("没有这块内置壁纸，可选：" + BUILTIN_WALLPAPERS.map((b) => "builtin:" + b.id).join("、"));
+        }
+        setGlobalWallpaper(val || null);
+      },
+      wallpaperGet: (): { global: string | null } => {
+        gate(perms, "ui", "ext.wallpaperGet");
+        return { global: wallpaperSnapshot().global ?? null };
+      },
+      voiceSet: (patch: unknown): { autoSpeak: boolean; voiceName: string; pitch: number; rate: number; backend: string } => {
+        gate(perms, "ui", "ext.voiceSet");
+        const p = setVoicePrefs((patch ?? {}) as Record<string, never>);
+        return { autoSpeak: p.autoSpeak, voiceName: p.voiceName, pitch: p.pitch, rate: p.rate, backend: p.backend };
+      },
+      voiceGet: (): ReturnType<OnethuApi["ext"]["voiceSet"]> => {
+        gate(perms, "ui", "ext.voiceGet");
+        const p = readVoicePrefs();
+        return { autoSpeak: p.autoSpeak, voiceName: p.voiceName, pitch: p.pitch, rate: p.rate, backend: p.backend };
+      },
+      prefSet: (patch: unknown): void => {
+        gate(perms, "ui", "ext.prefSet");
+        setExplorerPrefs((patch ?? {}) as Record<string, never>);
+      },
+      prefGet: (): { capsuleTap: string; voiceTarget: string } => {
+        gate(perms, "ui", "ext.prefGet");
+        return { capsuleTap: explorerPrefsSnapshot().capsuleTap, voiceTarget: explorerPrefsSnapshot().voiceTarget };
+      },
+      themeScheduleSet: (opts: unknown): { followSystem: boolean; dayThemeId: string | null; nightThemeId: string | null } => {
+        gate(perms, "ui", "ext.themeScheduleSet");
+        const o = (opts ?? {}) as { followSystem?: unknown; dayThemeId?: unknown; nightThemeId?: unknown };
+        if (typeof o.followSystem === "boolean") setFollowSystem(o.followSystem);
+        if (o.dayThemeId !== undefined || o.nightThemeId !== undefined) setDayNightTheme(o.dayThemeId ? String(o.dayThemeId) : null, o.nightThemeId ? String(o.nightThemeId) : null);
+        return themeSchedule();
+      },
+      notifySet: (patch: unknown): unknown => {
+        gate(perms, "ui", "ext.notifySet");
+        const p = (patch ?? {}) as Record<string, unknown>;
+        const clean: Record<string, unknown> = {};
+        if (typeof p.enabled === "boolean") clean.enabled = p.enabled;
+        if (typeof p.ddl === "boolean") clean.ddl = p.ddl;
+        if (typeof p.classLead === "number") clean.classLead = p.classLead;
+        if (typeof p.briefingAt === "string") clean.briefingAt = p.briefingAt;
+        if (typeof p.quietFrom === "string") clean.quietFrom = p.quietFrom;
+        if (typeof p.quietTo === "string") clean.quietTo = p.quietTo;
+        if (typeof p.horizonDays === "number") clean.horizonDays = p.horizonDays;
+        if (typeof p.maxItems === "number") clean.maxItems = p.maxItems;
+        return saveNotifySettings(clean);
+      },
+      notifyGet: (): unknown => {
+        gate(perms, "ui", "ext.notifyGet");
+        return loadNotifySettings();
+      },
+      hwTimelineSet: (minutes: number): { minutes: number } => {
+        gate(perms, "ui", "ext.hwTimelineSet");
+        const m = Math.max(0, Math.min(20160, Math.trunc(Number(minutes) || 0)));
+        setHwDefault(m);
+        return { minutes: m };
+      },
+      hwReminderSet: (id: string, minutes: number | null): void => {
+        gate(perms, "ui", "ext.hwReminderSet");
+        setHwReminder(String(id ?? ""), minutes === null ? null : Math.max(0, Math.min(20160, Math.trunc(Number(minutes) || 0))));
+      },
+      eventAdd: async (ev: unknown): Promise<{ uid: string }> => {
+        gate(perms, "ui", "ext.eventAdd");
+        const e = (ev ?? {}) as { summary?: unknown; start?: unknown; end?: unknown; location?: unknown; allDay?: unknown; alarmMinutes?: unknown; onethuWidget?: unknown };
+        const summary = String(e.summary ?? "").trim();
+        if (!summary) throw new Error(i18n("plugins.facade.33db9bfbf0a0"));
+        const toMs = (v: unknown): number => {
+          if (typeof v === "number" && Number.isFinite(v)) return v;
+          const s = String(v ?? "").trim().replace(" ", "T");
+          const t = new Date(s).getTime();
+          if (!Number.isFinite(t)) throw new Error(i18n("plugins.facade.f6d1ef56c2ca"));
+          return t;
+        };
+        const start = toMs(e.start);
+        const end = toMs(e.end ?? e.start);
+        if (end < start) throw new Error(i18n("plugins.facade.cb7be7f22ff6"));
+        const uid = "evt." + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        await putLocalEvent({
+          uid,
+          summary,
+          start,
+          end,
+          location: e.location ? String(e.location) : undefined,
+          allDay: e.allDay === true || undefined,
+          alarmMinutes: typeof e.alarmMinutes === "number" ? e.alarmMinutes : undefined,
+          onethuWidget: e.onethuWidget === true || undefined,
+          onethuSource: "manual",
+        } as never);
+        return { uid };
+      },
+      eventDelete: async (uid: string): Promise<void> => {
+        gate(perms, "ui", "ext.eventDelete");
+        await deleteLocalEvent(String(uid ?? ""));
+      },
+      /** 本地日程（未来 7 天内）：OH 增删日程前按图索骥 uid */
+      eventList: (): Array<{ uid: string; summary: string; start: number; end: number; allDay?: boolean }> => {
+        gate(perms, "ui", "ext.eventList");
+        const now = Date.now();
+        const horizon = now + 7 * 86_400_000;
+        return getLocalEvents()
+          .filter((e) => e.start <= horizon && e.end >= now - 86_400_000)
+          .sort((a, b) => a.start - b.start)
+          .map((e) => ({ uid: e.uid, summary: e.summary, start: e.start, end: e.end, allDay: e.allDay === true || undefined }));
+      },
+      /* ── 插件生命周期（安装/启停/删除；代码本体走市场管线） ── */
+      pluginInstalledList: async (): Promise<Array<{ id: string; name: string; enabled: boolean }>> => {
+        gate(perms, "plugins:call", "ext.pluginInstalledList");
+        const { installedPlugins } = await import("./loader.js");
+        return installedPlugins().map((p) => ({ id: p.manifest.id, name: p.manifest.name, enabled: p.enabled }));
+      },
+      pluginInstallFromRepo: async (repo: string, entry?: string): Promise<{ id: string; name: string }> => {
+        gate(perms, "plugins:call", "ext.pluginInstallFromRepo");
+        const m = await import("../lib/market.js");
+        const ref = m.parseRepoInput(String(repo ?? ""));
+        if (!ref.owner) throw new Error(i18n("plugins.facade.d0deef545297"));
+        const code = await m.fetchEntryFromRepo(ref, entry ? String(entry) : undefined);
+        const { installPlugin } = await import("./loader.js");
+        const man = await installPlugin(code, { repo: m.normalizeRepoUrl(String(repo ?? "")) });
+        return { id: man.id, name: man.name };
+      },
+      pluginEnableToggle: async (id: string, on: boolean): Promise<void> => {
+        gate(perms, "plugins:call", "ext.pluginEnableToggle");
+        const { enablePlugin, disablePlugin } = await import("./loader.js");
+        if (on) await enablePlugin(String(id));
+        else await disablePlugin(String(id));
+      },
+      pluginUninstall: async (id: string): Promise<void> => {
+        gate(perms, "plugins:call", "ext.pluginUninstall");
+        const { uninstallPlugin } = await import("./loader.js");
+        await uninstallPlugin(String(id));
       },
     },
     favorites: {
@@ -673,19 +1448,19 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       add: (key: string, folderId?: string): void => {
         gate(perms, "ui", "favorites.add");
         const k = String(key ?? "");
-        if (!k) throw new Error("favorites.add 需要 key");
+        if (!k) throw new Error(i18n("plugins.facade.776c5600bcab"));
         let d = loadFavs();
         let fid: string | undefined = folderId ? String(folderId) : d.order[0];
         if (!fid || !d.folders[fid]) {
           const next = createFolder(d, "我的收藏", null);
           fid = next.order.find((x) => !d.order.includes(x));
-          if (!fid) throw new Error("创建收藏夹失败");
+          if (!fid) throw new Error(i18n("plugins.facade.74881d8fa852"));
           saveFavs(next);
           window.dispatchEvent(new Event("onethu.favs.changed"));
           d = loadFavs();
         }
         const f = d.folders[fid];
-        if (!f) throw new Error("收藏夹不存在");
+        if (!f) throw new Error(i18n("plugins.facade.aa0117c0a684"));
         const atomKey = atomKeyOf({ kind: pluginAtomKindOf(pluginId), key: k });
         if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
           f.items.push({ t: "a" as const, atom: { kind: pluginAtomKindOf(pluginId), key: k } });
@@ -700,7 +1475,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const kind = String(ref?.kind ?? "");
         const key = String(ref?.key ?? "");
         if (!kind.startsWith("plugin:") || !kind.slice("plugin:".length) || !key) {
-          throw new Error("addAtom 需要 { kind: \"plugin:<插件id>\", key }");
+          throw new Error(i18n("plugins.facade.667f8382b324"));
         }
         if (meta && typeof meta.title === "string" && meta.title && !getPluginAtom(kind)) {
           registerStaticAtomItem(kind, key, meta);
@@ -708,7 +1483,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         const d = loadFavs();
         const fid = folderId ? String(folderId) : d.order[0];
         const f = fid ? d.folders[fid] : undefined;
-        if (!f) throw new Error("收藏夹不存在（先在收藏夹页创建）");
+        if (!f) throw new Error(i18n("plugins.facade.168f93bc690d"));
         const atomKey = atomKeyOf({ kind, key });
         if (!f.items.some((it) => it.t === "a" && atomKeyOf(it.atom) === atomKey)) {
           f.items.push({ t: "a" as const, atom: { kind, key } });
@@ -823,6 +1598,39 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         return runCommand(String(pluginId ?? ""), String(cmdId ?? ""), String(input ?? ""));
       },
     },
+    /* 极客模式：浏览器探索（桌面 Only；能力最小面：launch/navigate/eval/snapshot/close；全走 ui 门） */
+    browser: {
+      probe: async (): Promise<unknown> => {
+        gate(perms, "ui", "browser.probe");
+        const m = geek as never;
+        return (m as { probeGeek: () => unknown }).probeGeek();
+      },
+      launch: async (mode: string): Promise<unknown> => {
+        gate(perms, "ui", "browser.launch");
+        if (typeof navigator !== "undefined" && /android/i.test(navigator.userAgent)) {
+          throw new Error(i18n("plugins.facade.3f6e4c3f9ebd"));
+        }
+        return geek.launchGeek(String(mode ?? "system"));
+      },
+      navigate: async (url: string): Promise<void> => {
+        gate(perms, "ui", "browser.navigate");
+        const u = String(url ?? "");
+        if (!/^https?:\/\//.test(u)) throw new Error(i18n("plugins.facade.0a9a214b2734"));
+        await geek.geekNavigate(u);
+      },
+      eval: async (js: string): Promise<unknown> => {
+        gate(perms, "ui", "browser.eval");
+        return geek.geekEval(String(js ?? ""));
+      },
+      snapshot: async (): Promise<unknown> => {
+        gate(perms, "ui", "browser.snapshot");
+        return geek.geekSnapshot();
+      },
+      close: async (): Promise<unknown> => {
+        gate(perms, "ui", "browser.close");
+        return geek.closeGeek();
+      },
+    },
     ts: {
       /** 会话探活：learn 可达即视为主会话可用（wengine SSO 透明建立）。 */
       status: async (): Promise<"ready" | "expired" | "logged-out"> => {
@@ -836,7 +1644,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
         gate(perms, "tsinghua:sdk", "ts.ensure");
         const ok = await campusLearn.resume().catch(() => false);
         if (!ok) {
-          throw new AuthRequiredError("清华登录状态未能建立：请在 OneTHU 中重新登录后再试。");
+          throw new AuthRequiredError(i18n("plugins.facade.a31a8e09b143"));
         }
       },
       username: async (): Promise<string | null> => {
@@ -895,7 +1703,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       send: async (opts: { title: string; body?: string; afterSeconds?: number; key?: string; page?: string }): Promise<{ ok: boolean; id: string; reason?: string }> => {
         gate(perms, "notify", "notify.send");
         const title = String(opts?.title ?? "").trim();
-        if (!title) throw new Error("notify.send 需要 title");
+        if (!title) throw new Error(i18n("plugins.facade.b7177e760cc6"));
         const key = String(opts?.key ?? "").trim() || `n${Date.now().toString(36)}`;
         const { sendPluginNotification } = await import("../state/pluginNotify.js");
         return sendPluginNotification({
@@ -998,6 +1806,13 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           } catch {
             /* 存储不可用时留空 */
           }
+          // OH MCP **服务器**开关（用户 2026-10-15）：把 OneTHU 自己暴露成本机 MCP server。
+          // sidecar 每次 activate/run 读一次这个值，决定 127.0.0.1 上起不起 listener。
+          out["mcpServer"] = userExtSnapshot().mcpServer ? "true" : "false";
+          // 创造模式（2026-10-13）：userext 的开关随 settings 泵进 OH 引擎——
+          // Rust Config::from_settings 每轮 run 实时读 creativeMode，切按钮 = 下轮对话生效。
+          // 存字符串贴合 settings map 的 Record<string,string> 口径（Rust 侧 as_str 读取）。
+          out["creativeMode"] = userExtSnapshot().creative ? "true" : "false";
         }
         return out;
       },
@@ -1010,6 +1825,43 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
           headers: init?.headers,
           body: init?.body,
         });
+      },
+    },
+    ws: {
+      /** 宿主 WS 桥不可用（旧宿主构建）时，回落页面级 WebSocket（实现同一 open/send/recv/close 语义） */
+      open: async (url: string, opts?: { headers?: Record<string, string>; connectTimeoutMs?: number }) => {
+        gate(perms, "ws:external", `ws.open ${url.slice(0, 80)}`);
+        try {
+          const out = await callWsBridge<{ session: string }>("ws_open", { owner: pluginId, url, headers: opts?.headers ?? null, connectTimeoutMs: opts?.connectTimeoutMs ?? null });
+          return String(out.session);
+        } catch (e) {
+          return await jsWsOpen(pluginId, url);
+        }
+      },
+      send: async (session: string, data: string, encoding?: "text" | "b64") => {
+        gate(perms, "ws:external", "ws.send");
+        const enc: "text" | "b64" = encoding ?? "text";
+        try {
+          await callWsBridge("ws_send", { session, [enc]: data });
+        } catch (e) {
+          await jsWsSend(session, data, enc);
+        }
+      },
+      recv: async (session: string, timeoutMs?: number) => {
+        gate(perms, "ws:external", "ws.recv");
+        try {
+          return await callWsBridge("ws_recv", { session, timeoutMs: timeoutMs ?? null });
+        } catch {
+          return await jsWsRecv(session, timeoutMs ?? 10_000);
+        }
+      },
+      close: async (session: string) => {
+        gate(perms, "ws:external", "ws.close");
+        try { await callWsBridge("ws_close", { session }); } catch { await jsWsClose(session); }
+      },
+      closeAll: async () => {
+        gate(perms, "ws:external", "ws.closeAll");
+        try { await callWsBridge("ws_close_owner", { owner: pluginId }); } catch { await jsWsCloseOwner(pluginId); }
       },
     },
   };
@@ -1027,7 +1879,119 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
       }
     }
   }
+  /* 用户主题监听挂一次（模块级幂等在函数内用 started 守卫） */
+  startUserThemeWatch();
+  /** 用户扩展执行器：步骤里 "ns.method" 调用插件门面自身（单对象参数） */
+  const execTool = (tool: string, args: Record<string, unknown> | unknown[]): Promise<unknown> => {
+    const dot = tool.indexOf(".");
+    if (dot <= 0) return Promise.reject(new Error(i18n("plugins.facade.807f0c9d0b04")));
+    const nsObj = (api as unknown as Record<string, Record<string, ((...a: unknown[]) => unknown) | undefined>>)[tool.slice(0, dot)];
+    const fn = nsObj?.[tool.slice(dot + 1)];
+    if (typeof fn !== "function") return Promise.reject(new Error("没有这个方法：" + tool));
+    /* 数组=位置参数（推荐，能调多参方法）；对象=单参数（老步骤兼容） */
+    const payload = Array.isArray(args) ? args : [args];
+    return Promise.resolve(fn(...payload));
+  };
+  /* OneFlow 执行器只由 harness 注册：谁先 build 谁注册会让步骤用错插件的权限/门面。
+     调度器同理只由 harness 起一次（startScheduler 内部 started 幂等）。 */
+  if (pluginId === "onethu.harness") {
+    registerFlowExecutor(execTool);
+    startScheduler(execTool);
+  }
   return api;
+}
+
+/* ═══ WS 桥：宿主命令 + 页面级 WebSocket 回退 ═══ */
+// 宿主命令缺失（旧构建/未重编）时回落页面级 WebSocket：同一行列语义。
+// （页内 WS 在 macOS 26.5 的 custom scheme 页面会被上游 WebKit/wry 拒掉，
+// 故 SDS 优先走宿主；只回落不阻塞。）
+type WsFrameLike = { kind: "text" | "binary" | "closed"; text?: string; b64?: string };
+type JsWsSession = { ws: WebSocket; queue: WsFrameLike[]; closed: boolean; waiters: Array<(f: WsFrameLike | null) => void> };
+
+const _jsWsSessions = new Map<string, JsWsSession>();
+
+function callWsBridge<T = unknown>(cmd: string, args: Record<string, unknown>): Promise<T> {
+  const ti = (window as unknown as { __TAURI_INTERNALS__?: { invoke: <T>(cmd: string, args?: Record<string, unknown>) => Promise<T> } }).__TAURI_INTERNALS__;
+  if (!ti || typeof ti.invoke !== "function") throw new Error("NO_WS_HOST_BRIDGE");
+  return ti.invoke<T>(cmd, { args });
+}
+
+function jsWsFrameFromEvent(data: unknown): WsFrameLike {
+  if (typeof data === "string") return { kind: "text", text: data };
+  if (data instanceof ArrayBuffer) {
+    const u8 = new Uint8Array(data);
+    let bin = "";
+    for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]!);
+    return { kind: "binary", b64: btoa(bin) };
+  }
+  return { kind: "closed" };
+}
+
+async function jsWsOpen(owner: string, url: string): Promise<string> {
+  const session = `${owner}::js-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+  const ws = new WebSocket(url);
+  ws.binaryType = "arraybuffer";
+  const sessionRec: JsWsSession = { ws, queue: [], closed: false, waiters: [] };
+  _jsWsSessions.set(session, sessionRec);
+  await new Promise<void>((resolve, reject) => {
+    const to = setTimeout(() => { ws.close(); reject(new Error(i18n("plugins.facade.8794c40bbdb4"))); }, 10_000);
+    ws.onopen = () => { clearTimeout(to); resolve(); };
+    ws.onerror = () => { clearTimeout(to); reject(new Error(i18n("plugins.facade.7cc0a2460bf7"))); };
+    ws.onclose = () => {
+      sessionRec.closed = true;
+      sessionRec.queue.push({ kind: "closed" });
+      for (const w of sessionRec.waiters.splice(0)) w(sessionRec.queue.shift() ?? { kind: "closed" });
+    };
+    ws.onmessage = (ev) => {
+      const frame = jsWsFrameFromEvent(ev.data);
+      const waiter = sessionRec.waiters.shift();
+      if (waiter) waiter(frame);
+      else sessionRec.queue.push(frame);
+    };
+  });
+  return session;
+}
+
+function jsWsSend(session: string, data: string, encoding: "text" | "b64"): Promise<void> {
+  const s = _jsWsSessions.get(session);
+  if (!s) return Promise.reject(new Error(i18n("plugins.facade.2d98325ea8eb")));
+  if (encoding === "b64") {
+    const bin = atob(data);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    s.ws.send(u8);
+  } else {
+    s.ws.send(data);
+  }
+  return Promise.resolve();
+}
+
+async function jsWsRecv(session: string, timeoutMs: number): Promise<WsFrameLike | null> {
+  const s = _jsWsSessions.get(session);
+  if (!s) throw new Error(i18n("plugins.facade.2d98325ea8eb"));
+  if (s.queue.length) return s.queue.shift() ?? null;
+  return await new Promise<WsFrameLike | null>((resolve) => {
+    let timer = 0;
+    const waiter = (f: WsFrameLike | null) => { clearTimeout(timer); resolve(f); };
+    s.waiters.push(waiter);
+    timer = window.setTimeout(() => {
+      const i = s.waiters.indexOf(waiter);
+      if (i >= 0) { s.waiters.splice(i, 1); resolve(null); }
+    }, Math.max(50, timeoutMs));
+  });
+}
+
+function jsWsClose(session: string): Promise<void> {
+  const s = _jsWsSessions.get(session);
+  if (s) { s.closed = true; try { s.ws.close(); } catch { /* noop */ } _jsWsSessions.delete(session); }
+  return Promise.resolve();
+}
+
+function jsWsCloseOwner(owner: string): Promise<void> {
+  for (const [k] of Array.from(_jsWsSessions.entries())) {
+    if (k.startsWith(`${owner}::`)) void jsWsClose(k);
+  }
+  return Promise.resolve();
 }
 
 /* ═══ 小OH 扩展（learn/venue/xk/kongjian）辅助 ═══ */
@@ -1039,7 +2003,7 @@ export function buildApi(pluginId: string, perms: Set<string>): OnethuApi {
 let _xkSession: import("@onethu/core").ZhjwxkSession | null = null;
 async function xkSession(): Promise<import("@onethu/core").ZhjwxkSession> {
   const cred = await loadRemembered();
-  if (!cred) throw new Error("本机无记住的密码：请开启「记住密码」并重新登录一次后使用选课功能");
+  if (!cred) throw new Error(i18n("plugins.facade.38273097f67a"));
   if (_xkSession && _xkSession.username === cred.username && _xkSession.password === cred.password) {
     return _xkSession;
   }
@@ -1051,7 +2015,7 @@ async function xkSession(): Promise<import("@onethu/core").ZhjwxkSession> {
 async function withExternalTimeout<T>(p: Promise<T>, ms = 8000, label = "CourseX"): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, rej) => {
-    timer = setTimeout(() => rej(new Error(`${label} 响应超时（${ms / 1000} 秒），站点可能限流，稍后再试`)), ms);
+    timer = setTimeout(() => rej(new Error(i18n("plugins.facade.449acaed3d6f", { label: String(label), value: String(ms / 1000) }))), ms);
   });
   try {
     return await Promise.race([p, timeout]);
@@ -1075,11 +2039,11 @@ async function nethGuard<T>(op: () => Promise<T>): Promise<T> {
     if (now - nethCaptchaNavTs > 10_000) {
       nethCaptchaNavTs = now;
       if (navGo("life", { lifeTab: "network" })) {
-        showToast("校园网需要验证码登录，请输入图中验证码");
+        showToast(i18n("plugins.facade.ebf705292119"));
       }
     }
     throw new Error(
-      "校园网需要验证码登录：已自动打开校园网页面并展示验证码，请让用户在验证码面板输入图中字符完成登录，登录成功后重试本查询",
+      i18n("plugins.facade.d9ce17418be4"),
     );
   }
 }

@@ -59,7 +59,7 @@ const sources = read("apps/desktop/src/state/notifySources.ts");
 assert.ok(/collect: collectNotifyInputs/.test(sources) && sources.split("collect: collectNotifyInputs").length - 1 >= 2,
   "通知与小组件必须共用 collectNotifyInputs（过滤才能同时覆盖两者）");
 
-const today = read("apps/desktop/src/pages/Today.tsx");
+const today = read("apps/desktop/src/components/boardCards.tsx");
 assert.ok(/!h\.submitted && !ignored\.has\(h\.id\)/.test(today), "首页作业区必须剔除已忽略");
 
 const assigns = read("apps/desktop/src/pages/learn/AssignmentsPage.tsx");
@@ -73,7 +73,7 @@ assert.ok(/ignored: hw\.filter\(\(h\) => ignored\.has\(h\.id\)\)/.test(assigns),
  * DDL 全都还在算已忽略的作业。聚合点必须逐个点名，不能靠记得。 */
 const HW_AGGREGATORS = [
   "apps/desktop/src/pages/Learn.tsx",                  // 网络学堂首页：未交总数 + 每课未交数
-  "apps/desktop/src/pages/Today.tsx",                  // 今日页作业区
+  "apps/desktop/src/components/boardCards.tsx",        // 新首页（自由画布）里的作业卡片
   "apps/desktop/src/pages/learn/AssignmentsPage.tsx",  // 全部作业分组
   "apps/desktop/src/pages/learn/CourseDetailPage.tsx", // 各学科作业栏 + 计数
   "apps/desktop/src/components/HomeWidgets.tsx",       // 首页小组件：未交卡片与 DDL 行
@@ -122,8 +122,8 @@ const confirmLib = read("apps/desktop/src/lib/confirm.tsx");
 // 措辞属于场景、不属于组件：组件只提供通用兜底，且标题/按钮都必须取自请求
 assert.ok(/export function confirmDanger\(\s*msg: string,\s*opts: \{ title\?: string; confirmText\?: string \} = \{\},\s*\)/.test(confirmLib),
   "confirmDanger 必须接受 { title, confirmText }");
-assert.ok(/cur\.title \?\? "此操作不可撤销，请确认"/.test(confirmLib), "标题取自请求，兜底为通用措辞");
-assert.ok(/cur\.confirmText \?\? "确认执行"/.test(confirmLib), "确认按钮文案同样取自请求（此前写死「确认退选」）");
+assert.ok(/shown\?\.title \?\? \(shown\?\.danger \? "此操作不可撤销，请确认"/.test(confirmLib), "标题取自请求的进退场快照，危险确认兜底为通用措辞");
+assert.ok(/shown\?\.confirmText \?\? \(shown\?\.danger \? "确认执行"/.test(confirmLib), "确认按钮文案同样取自请求快照（此前写死「确认退选」）");
 assert.ok(!/确认退选<\/button>/.test(confirmLib), "组件内不得再写死「确认退选」");
 assert.ok(/export const CONFIRM_DROP_COURSE = \{ title: "即将退选，请确认！", confirmText: "确认退选" \} as const;/.test(confirmLib),
   "退选措辞必须集中成场景预设");
@@ -155,10 +155,11 @@ assert.ok(devdoc.includes("confirmText") && apidoc.includes("confirmText"), "插
 /* ---------- [3b] 课程页：忽略优先级最高 + 自带忽略栏 ---------- */
 const course = read("apps/desktop/src/pages/learn/CourseDetailPage.tsx");
 assert.ok(/\{ key: "ignored", label: "已忽略" \}/.test(course), "每门课必须有自己的「已忽略」栏");
-assert.ok(/const live = homework\.filter\(\(h\) => !ignored\.has\(h\.id\) && !h\.audited\)/.test(course),
+// R29 起课程页的作业集合是「网络学堂 + 同名雨课堂」的合并集，变量名由 homework 变为 hwAll
+assert.ok(/const live = (?:homework|hwAll)\.filter\(\(h\) => !ignored\.has\(h\.id\) && !h\.audited\)/.test(course),
   "课程页常规栏必须剔除已忽略（R23 起同时剔除旁听）");
-assert.ok(/ignored: homework\.filter\(\(h\) => ignored\.has\(h\.id\)\)/.test(course), "课程页忽略栏要能列出来");
-assert.ok(/assignments: homework\.filter\(\(h\) => !ignored\.has\(h\.id\) && !h\.audited\)\.length/.test(course),
+assert.ok(/ignored: (?:homework|hwAll)\.filter\(\(h\) => ignored\.has\(h\.id\)\)/.test(course), "课程页忽略栏要能列出来");
+assert.ok(/assignments: (?:homework|hwAll)\.filter\(\(h\) => !ignored\.has\(h\.id\) && !h\.audited\)\.length/.test(course),
   "课程页作业计数也不得含已忽略/旁听");
 
 /* ---------- [4] 调试现场只进日志 ---------- */

@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * AI 选课助手（nextthuxk ai.js 移植）：BYO OpenAI 兼容 API（OpenAI/DeepSeek 等）。
  * 配置存 localStorage；课程推荐与智能排课均要求模型输出 JSON。
@@ -16,7 +17,7 @@ export function saveAiConfig(cfg: AiConfig): void {
 }
 
 export async function callAi(cfg: AiConfig, system: string, user: string): Promise<string> {
-  if (!cfg.base || !cfg.model) throw new Error("请先在 AI 配置里填写 API Base URL 和模型名称");
+  if (!cfg.base || !cfg.model) throw new Error(i18n("lib.xkai.cf3dc6fdc4c8"));
   const base = cfg.base.replace(/\/+$/, "");
   const res = await fetch(`${base}/chat/completions`, {
     method: "POST",
@@ -32,17 +33,17 @@ export async function callAi(cfg: AiConfig, system: string, user: string): Promi
   });
   if (!res.ok) {
     const t = await res.text().catch(() => "");
-    throw new Error(`AI 接口 ${res.status}: ${t.slice(0, 160)}`);
+    throw new Error(i18n("lib.xkai.ae5755213df2", { status: String(res.status), value: String(t.slice(0, 160)) }));
   }
   const data = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const out = data.choices?.[0]?.message?.content ?? "";
-  if (!out) throw new Error("AI 返回为空");
+  if (!out) throw new Error(i18n("lib.xkai.424cb0668f46"));
   return out;
 }
 
 /** 从模型输出里抠 JSON 数组（容忍 ```json 围栏与前后闲话） */
 export function extractJsonArray<T>(raw: string): T[] {
   const m = /\[[\s\S]*\]/.exec(raw);
-  if (!m) throw new Error("AI 输出里没有 JSON 数组");
+  if (!m) throw new Error(i18n("lib.xkai.f2b841973f26"));
   return JSON.parse(m[0]) as T[];
 }

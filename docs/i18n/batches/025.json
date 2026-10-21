@@ -1,0 +1,1419 @@
+{
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "components.vault.issuedsharescard.6d970e8dbefd",
+      "source": "仅 {allowEmail}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "allowEmail",
+          "expression": "String(entry.allowEmail)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 110,
+          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
+        }
+      ],
+      "translation": "{allowEmail} only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.7627cfd1a5fe",
+      "source": "分享升级未完成，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 81,
+          "context": "result.reason ?? i18n(\"components.vault.issuedsharescard.7627cfd1a5fe\")"
+        }
+      ],
+      "translation": "The share upgrade didn’t finish; please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.7aefa357c175",
+      "source": "名称（留空使用箱子名）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 63,
+          "context": "label: i18nMsg(\"components.vault.issuedsharescard.7aefa357c175\")"
+        }
+      ],
+      "translation": "Name (leave blank to use the box name)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.7dc5266a2019",
+      "source": "复制口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 116,
+          "context": "entry.allowEmail && !entry.cloud?.keyRepoId ? i18n(\"components.vault.issuedsharescard.164caa9ac6c3\") : i18n(\"components.vault.issuedsharescard.7dc5266a2019\")"
+        }
+      ],
+      "translation": "Copy share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.83c37e8a4a5f",
+      "source": "改名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 126,
+          "context": "label: i18n(\"components.vault.issuedsharescard.83c37e8a4a5f\")"
+        }
+      ],
+      "translation": "Rename",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.84168ec6814c",
+      "source": "查看口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 125,
+          "context": "revealed === selected.id ? i18n(\"components.vault.issuedsharescard.32ab30d4f1a4\") : i18n(\"components.vault.issuedsharescard.84168ec6814c\")"
+        }
+      ],
+      "translation": "View share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.8de1bb55709d",
+      "source": "不过期",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 111,
+          "context": "entry.expiresAt ? i18n(\"components.vault.issuedsharescard.ed74c111755f\", { value: String(timeText(entry.expiresAt)) }) : i18n(\"components.vault.issuedsharescard.8de1bb55709d\")"
+        }
+      ],
+      "translation": "Never expires",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.9d7deae4f40d",
+      "source": "接收范围已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 75,
+          "context": "result.code ? i18nMsg(\"components.vault.issuedsharescard.4371a9b86f89\") : i18nMsg(\"components.vault.issuedsharescard.9d7deae4f40d\")"
+        }
+      ],
+      "translation": "Receiver scope updated",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.9dc46ae316d4",
+      "source": "改名未完成，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 66,
+          "context": "result.reason ?? i18n(\"components.vault.issuedsharescard.9dc46ae316d4\")"
+        }
+      ],
+      "translation": "The rename didn’t finish; please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.a3308fe758a1",
+      "source": "正在更新接收范围…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 17,
+          "context": "return i18n(\"components.vault.issuedsharescard.a3308fe758a1\");"
+        }
+      ],
+      "translation": "Updating the receiver scope…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.a60259e90289",
+      "source": "已发出口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 96,
+          "context": "{i18n(\"components.vault.issuedsharescard.a60259e90289\")}"
+        }
+      ],
+      "translation": "Share codes issued",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.b4c7fd58d80f",
+      "source": "这条旧口令没有云盘分享，只能删除记录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 57,
+          "context": "new Error(i18n(\"components.vault.issuedsharescard.b4c7fd58d80f\"))"
+        }
+      ],
+      "translation": "This legacy share code has no cloud drive share; you can only delete the record.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.b52e35824750",
+      "source": "撤销分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 129,
+          "context": "label: i18n(\"components.vault.issuedsharescard.b52e35824750\")"
+        }
+      ],
+      "translation": "Revoke share",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.b73971671bd8",
+      "source": "{value}月{value2}日 {value3}:{value4}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(d.getMonth() + 1)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(d.getDate())"
+        },
+        {
+          "name": "value3",
+          "expression": "String(String(d.getHours()).padStart(2, \"0\"))"
+        },
+        {
+          "name": "value4",
+          "expression": "String(String(d.getMinutes()).padStart(2, \"0\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 21,
+          "context": "return i18n(\"components.vault.issuedsharescard.b73971671bd8\", { value: String(d.getMonth() + 1), value2: String(d.getDate()), value3: String(String(d.getHours()).padStart(2, \"0\")), value4: String(String(d.getMinutes()).padStart(2, \"0\")) });"
+        }
+      ],
+      "translation": "{value}/{value2} at {value3}:{value4}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.bdb38862008b",
+      "source": "其他箱子发出的分享，可以在「全部口令」中查看。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 121,
+          "context": "!allEntries && log.entries.length ? i18n(\"components.vault.issuedsharescard.bdb38862008b\") : i18n(\"components.vault.issuedsharescard.4aa0b6ffacf1\")"
+        }
+      ],
+      "translation": "Shares issued from other boxes can be viewed in “All share codes”.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.cc7232862b97",
+      "source": "所有箱子",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 99,
+          "context": "allEntries ? i18n(\"components.vault.issuedsharescard.cc7232862b97\") : i18n(\"components.vault.issuedsharescard.6d2ce5e21b2a\")"
+        }
+      ],
+      "translation": "All boxes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.cd10024a604e",
+      "source": "口令：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(issuedShareTitle(entry))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 104,
+          "context": "{i18n(\"components.vault.issuedsharescard.cd10024a604e\", { value: String(issuedShareTitle(entry)) })}"
+        }
+      ],
+      "translation": "Share code: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.d32f69ae73d3",
+      "source": "正在撤销…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 17,
+          "context": "return i18n(\"components.vault.issuedsharescard.d32f69ae73d3\");"
+        }
+      ],
+      "translation": "Revoking…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.d96fa2056906",
+      "source": "撤销「{value}」？对方将无法再次读取，已经接收的副本会保留。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(issuedShareTitle(entry))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 58,
+          "context": "confirmOk(i18nMsg(\"components.vault.issuedsharescard.d96fa2056906\", { value: String(issuedShareTitle(entry)) }))"
+        }
+      ],
+      "translation": "Revoke “{value}”? The recipient will no longer be able to read it, but copies already received will be kept.",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.d9cb809600c7",
+      "source": " · 箱子已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 109,
+          "context": "vaults.boxes.some(box=>box.id===entry.boxId) ? \"\" : i18n(\"components.vault.issuedsharescard.d9cb809600c7\")"
+        }
+      ],
+      "translation": " · Box deleted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.dd6c08640a66",
+      "source": "口令名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 63,
+          "context": "openFormModal(i18nMsg(\"components.vault.issuedsharescard.dd6c08640a66\"), [{ key: \"label\", label: i18nMsg(\"components.vault.issuedsharescard.7aefa357c175\"), default: entry.label ?? \"\" }])"
+        }
+      ],
+      "translation": "Share code name",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.ddc1d8107144",
+      "source": "口令已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 86,
+          "context": "code === entry.code ? i18nMsg(\"components.vault.issuedsharescard.ddc1d8107144\") : i18nMsg(\"components.vault.issuedsharescard.f7b132a0b0ed\")"
+        }
+      ],
+      "translation": "Share code copied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.ed74c111755f",
+      "source": "{value} 到期",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(timeText(entry.expiresAt))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 111,
+          "context": "entry.expiresAt ? i18n(\"components.vault.issuedsharescard.ed74c111755f\", { value: String(timeText(entry.expiresAt)) }) : i18n(\"components.vault.issuedsharescard.8de1bb55709d\")"
+        }
+      ],
+      "translation": "Expires {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.f2cf9101bb2d",
+      "source": "删除记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 130,
+          "context": "label: i18n(\"components.vault.issuedsharescard.f2cf9101bb2d\")"
+        }
+      ],
+      "translation": "Delete record",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.f76d8f310254",
+      "source": "来自「{boxName}」{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "boxName",
+          "expression": "entry.boxName"
+        },
+        {
+          "name": "value",
+          "expression": "vaults.boxes.some(box=>box.id===entry.boxId) ? \"\" : i18n(\"components.vault.issuedsharescard.d9cb809600c7\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 109,
+          "context": "{i18nRich(\"components.vault.issuedsharescard.f76d8f310254\", { boxName: entry.boxName, value: vaults.boxes.some(box=>box.id===entry.boxId) ? \"\" : i18n(\"components.vault.issuedsharescard.d9cb809600c7\") })}"
+        }
+      ],
+      "translation": "From “{boxName}”, {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.f7b132a0b0ed",
+      "source": "私密分享已升级，新口令已复制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 86,
+          "context": "code === entry.code ? i18nMsg(\"components.vault.issuedsharescard.ddc1d8107144\") : i18nMsg(\"components.vault.issuedsharescard.f7b132a0b0ed\")"
+        }
+      ],
+      "translation": "Private share upgraded; the new share code has been copied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.f7e8f0f64a0d",
+      "source": "{value} 发出 · {value2}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "timeText(entry.issuedAt)"
+        },
+        {
+          "name": "value2",
+          "expression": "entry.expiresAt ? i18n(\"components.vault.issuedsharescard.ed74c111755f\", { value: String(timeText(entry.expiresAt)) }) : i18n(\"components.vault.issuedsharescard.8de1bb55709d\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 111,
+          "context": "{i18nRich(\"components.vault.issuedsharescard.f7e8f0f64a0d\", { value: timeText(entry.issuedAt), value2: entry.expiresAt ? i18n(\"components.vault.issuedsharescard.ed74c111755f\", { value: String(timeText(entry.expiresAt)) }) : i18n(\"components.vault.issuedsharescard.8de1bb55709d\") })}"
+        }
+      ],
+      "translation": "Issued {value} · {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.faf91eef462c",
+      "source": "口令名称已更新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 67,
+          "context": "showToast(i18nMsg(\"components.vault.issuedsharescard.faf91eef462c\"))"
+        }
+      ],
+      "translation": "Share code name updated",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.issuedsharescard.fd76c2e8321a",
+      "source": "管理口令：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(issuedShareTitle(entry))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 117,
+          "context": "{i18n(\"components.vault.issuedsharescard.fd76c2e8321a\", { value: String(issuedShareTitle(entry)) })}"
+        }
+      ],
+      "translation": "Manage share code: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.issuedsharescard.fef96e34f77b",
+      "source": "已撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 16,
+          "context": "return i18n(\"components.vault.issuedsharescard.fef96e34f77b\");"
+        }
+      ],
+      "translation": "Revoked",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.textPreviewFallback",
+      "source": "文字内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultTextPreview.tsx",
+          "line": 25,
+          "context": "shown?.title ?? i18n(\"components.vault.textPreviewFallback\")"
+        }
+      ],
+      "translation": "Text content",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultdrag.04ff630c002d",
+      "source": "暂存箱暂时不可用：稍后再试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 135,
+          "context": "showToast(i18nMsg(\"components.vault.vaultdrag.04ff630c002d\"))"
+        }
+      ],
+      "translation": "Stash is temporarily unavailable: try again later",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdrag.0867b328e8e5",
+      "source": "没放进暂存箱：拖到「暂存箱」目标上再松手",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 115,
+          "context": "showToast(i18nMsg(\"components.vault.vaultdrag.0867b328e8e5\"))"
+        }
+      ],
+      "translation": "Not added to Stash: drag onto the Stash target and release",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdrag.1df6c09b14cb",
+      "source": "已收进暂存箱：{title}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(cat.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 131,
+          "context": "showToast(i18nMsg(\"components.vault.vaultdrag.1df6c09b14cb\", { title: String(cat.title) }))"
+        }
+      ],
+      "translation": "Added to Stash: {title}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultdrag.242051a1c702",
+      "source": "已收进暂存箱：{title}（正在缓存到云盘…）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(cat.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 128,
+          "context": "showToast(i18nMsg(\"components.vault.vaultdrag.242051a1c702\", { title: String(cat.title) }))"
+        }
+      ],
+      "translation": "Added to Stash: {title} (caching to the cloud drive…)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultdrag.44bc7ccc3677",
+      "source": "设置项",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 284,
+          "context": "sub: i18n(\"components.vault.vaultdrag.44bc7ccc3677\")"
+        }
+      ],
+      "translation": "Setting",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdrag.6789a190a816",
+      "source": "内容交接失败，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 137,
+          "context": "error instanceof Error ? error.message : i18n(\"components.vault.vaultdrag.6789a190a816\")"
+        }
+      ],
+      "translation": "Failed to hand over content, please try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdrag.978144ccbfda",
+      "source": "暂存箱里已经有「{title}」了",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "title",
+          "expression": "String(cat.title)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultDrag.ts",
+          "line": 134,
+          "context": "showToast(i18nMsg(\"components.vault.vaultdrag.978144ccbfda\", { title: String(cat.title) }))"
+        }
+      ],
+      "translation": "“{title}” is already in Stash",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.035626d80c03",
+      "source": "暂存箱 · 点击打开，拖动换位",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 221,
+          "context": "{i18n(\"components.vault.vaultdroptarget.035626d80c03\")}"
+        }
+      ],
+      "translation": "Stash · Click to open, drag to move",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.04dcb3f7b1ba",
+      "source": "文件读取失败：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(err instanceof Error ? err.message : String(err))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 66,
+          "context": "showToast(i18nMsg(\"components.vault.vaultdroptarget.04dcb3f7b1ba\", { value: String(err instanceof Error ? err.message : String(err)) }))"
+        }
+      ],
+      "translation": "Failed to read file: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.263096ab84a5",
+      "source": "暂存箱入口位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 235,
+          "context": "{i18n(\"components.vault.vaultdroptarget.263096ab84a5\")}"
+        }
+      ],
+      "translation": "Stash entry position",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.3cc6c4d02828",
+      "source": "松手存入暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 219,
+          "context": "drag.target === \"vault\" ? i18n(\"components.vault.vaultdroptarget.3cc6c4d02828\") : i18n(\"components.vault.vaultdroptarget.3e6dd0e4876f\")"
+        }
+      ],
+      "translation": "Release to add to Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.3e5110a967b4",
+      "source": "{length} 字",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(text.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 38,
+          "context": "text.length > 40 ? i18n(\"components.vault.vaultdroptarget.3e5110a967b4\", { length: String(text.length) }) : undefined"
+        }
+      ],
+      "translation": "{length} characters",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.3e6dd0e4876f",
+      "source": "可接收拖动内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 219,
+          "context": "drag.target === \"vault\" ? i18n(\"components.vault.vaultdroptarget.3cc6c4d02828\") : i18n(\"components.vault.vaultdroptarget.3e6dd0e4876f\")"
+        }
+      ],
+      "translation": "Accepts dragged content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.3fd47edce45b",
+      "source": "关闭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 235,
+          "context": "{i18n(\"components.vault.vaultdroptarget.3fd47edce45b\")}"
+        }
+      ],
+      "translation": "Close",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.47461fa18eb4",
+      "source": "选中文字已收进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 39,
+          "context": "r.ok ? i18nMsg(\"components.vault.vaultdroptarget.47461fa18eb4\") : i18nMsg(\"components.vault.vaultdroptarget.6fe38b267261\")"
+        }
+      ],
+      "translation": "Selected text added to Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.4a283514ba2f",
+      "source": "拖动入口换位 · 点击打开暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 235,
+          "context": "{i18n(\"components.vault.vaultdroptarget.4a283514ba2f\")}"
+        }
+      ],
+      "translation": "Drag to move the entry · Click to open Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.6fe38b267261",
+      "source": "暂存箱里已经有这段文字了",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 39,
+          "context": "r.ok ? i18nMsg(\"components.vault.vaultdroptarget.47461fa18eb4\") : i18nMsg(\"components.vault.vaultdroptarget.6fe38b267261\")"
+        }
+      ],
+      "translation": "This text is already in Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.804002a9c49a",
+      "source": "暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 232,
+          "context": "{i18n(\"components.vault.vaultdroptarget.804002a9c49a\")}"
+        }
+      ],
+      "translation": "Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.8948961952b5",
+      "source": "已收进「{targetName}」：{ok} 个文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "targetName",
+          "expression": "String(targetName)"
+        },
+        {
+          "name": "ok",
+          "expression": "String(ok)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 65,
+          "context": "ok ? i18nMsg(\"components.vault.vaultdroptarget.8948961952b5\", { targetName: String(targetName), ok: String(ok) }) : i18nMsg(\"components.vault.vaultdroptarget.9d6d1d45c849\")"
+        }
+      ],
+      "translation": "Added to “{targetName}”: {ok} files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.9d6d1d45c849",
+      "source": "这些文件已在暂存箱里（按内容指纹去重）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 65,
+          "context": "ok ? i18nMsg(\"components.vault.vaultdroptarget.8948961952b5\", { targetName: String(targetName), ok: String(ok) }) : i18nMsg(\"components.vault.vaultdroptarget.9d6d1d45c849\")"
+        }
+      ],
+      "translation": "These files are already in Stash (deduplicated by content fingerprint)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.9ee0ee785997",
+      "source": "文件会先算内容指纹，同内容自动去重",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 92,
+          "context": "{i18n(\"components.vault.vaultdroptarget.9ee0ee785997\")}"
+        }
+      ],
+      "translation": "Files are fingerprinted by content first; identical content is deduplicated automatically",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.9ff8b6ce8ac9",
+      "source": "暂存箱，{length} 项",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 220,
+          "context": "{i18n(\"components.vault.vaultdroptarget.9ff8b6ce8ac9\", { length: String(items.length) })}"
+        }
+      ],
+      "translation": "Stash, {length} items",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.b7050e727b45",
+      "source": "发给小OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 123,
+          "context": "target === \"oh\" ? i18n(\"components.vault.vaultdroptarget.c36c6d23634f\") : i18n(\"components.vault.vaultdroptarget.b7050e727b45\")"
+        }
+      ],
+      "translation": "Send to OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.c36c6d23634f",
+      "source": "松手发给小OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 123,
+          "context": "target === \"oh\" ? i18n(\"components.vault.vaultdroptarget.c36c6d23634f\") : i18n(\"components.vault.vaultdroptarget.b7050e727b45\")"
+        }
+      ],
+      "translation": "Release to send to OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.ce2bc6991899",
+      "source": "暂存箱「{targetName}」已删除，请重新拖入文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "targetName",
+          "expression": "String(targetName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 62,
+          "context": "new Error(i18n(\"components.vault.vaultdroptarget.ce2bc6991899\", { targetName: String(targetName) }))"
+        }
+      ],
+      "translation": "Stash “{targetName}” has been deleted, please drag the files in again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.db96771fdccc",
+      "source": "恢复默认位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 235,
+          "context": "{i18n(\"components.vault.vaultdroptarget.db96771fdccc\")}"
+        }
+      ],
+      "translation": "Restore default position",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultdroptarget.fddf331e7b4a",
+      "source": "松手收进「{name}」",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "box.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultDropTarget.tsx",
+          "line": 91,
+          "context": "{i18nRich(\"components.vault.vaultdroptarget.fddf331e7b4a\", { name: box.name })}"
+        }
+      ],
+      "translation": "Release to add to “{name}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.0722f2f96a03",
+      "source": "收到的口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 154,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.0722f2f96a03\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 155,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.0722f2f96a03\")}"
+        }
+      ],
+      "translation": "Received share codes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.07be734451da",
+      "source": "暂存箱「{vaultName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "vaultName",
+          "expression": "String(shared.payload.vaultName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.vaultName && i18n(\"components.vault.vaultexchangeactions.07be734451da\", { vaultName: String(shared.payload.vaultName) })"
+        }
+      ],
+      "translation": "Stash “{vaultName}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.0b7a8ccf5201",
+      "source": "分享已撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 103,
+          "context": "showToast(i18nMsg(\"components.vault.vaultexchangeactions.0b7a8ccf5201\"))"
+        }
+      ],
+      "translation": "Share revoked",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.1054b7ea97a6",
+      "source": "请复制保存这条组合口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 129,
+          "context": "[withVault && i18n(\"components.vault.vaultexchangeactions.2a4057bbb923\"), withOrgId && i18n(\"components.vault.vaultexchangeactions.e6de5478dcda\"), i18n(\"components.vault.vaultexchangeactions.1054b7ea97a6\")]"
+        }
+      ],
+      "translation": "Please copy and save this combined share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.11598ea1df1a",
+      "source": "NFC 接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 164,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.11598ea1df1a\")}"
+        }
+      ],
+      "translation": "Receive via NFC",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.12beebf24ea5",
+      "source": "NFC 传送",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 126,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.12beebf24ea5\")}"
+        }
+      ],
+      "translation": "Send via NFC",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.1426563f7393",
+      "source": "口令已就绪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 118,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.1426563f7393\")}"
+        }
+      ],
+      "translation": "Share code ready",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.2a4057bbb923",
+      "source": "箱内内容口令可在「已发出口令」管理",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 129,
+          "context": "withVault && i18n(\"components.vault.vaultexchangeactions.2a4057bbb923\")"
+        }
+      ],
+      "translation": "Share codes for box contents can be managed in “Issued share codes”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.31e8013b76c6",
+      "source": "无法读取剪贴板，请直接在输入框粘贴口令。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 93,
+          "context": "e instanceof Error && e.message.includes(\"剪贴板里\") ? e.message : i18n(\"components.vault.vaultexchangeactions.31e8013b76c6\")"
+        }
+      ],
+      "translation": "Cannot read the clipboard; paste the share code directly into the input field.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.32c1c83421fc",
+      "source": "不带组织名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 142,
+          "context": "label: i18n(\"components.vault.vaultexchangeactions.32c1c83421fc\")"
+        }
+      ],
+      "translation": "Without organization card",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.32db96a41dc9",
+      "source": "「{name}」的 {length} 项内容",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(target.name)"
+        },
+        {
+          "name": "length",
+          "expression": "String(target.items.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 76,
+          "context": "setSentSummary(i18n(\"components.vault.vaultexchangeactions.32db96a41dc9\", { name: String(target.name), length: String(target.items.length) }))"
+        }
+      ],
+      "translation": "{length} items from “{name}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3580f829b532",
+      "source": "接收内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 111,
+          "context": "view === \"send\" ? i18n(\"components.vault.vaultexchangeactions.a840e8381cf3\") : i18n(\"components.vault.vaultexchangeactions.3580f829b532\")"
+        }
+      ],
+      "translation": "Receive content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.37c201950f27",
+      "source": "正在接收…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 159,
+          "context": "work === \"receive\" ? i18n(\"components.vault.vaultexchangeactions.37c201950f27\") : i18n(\"components.vault.vaultexchangeactions.3e3b496af014\")"
+        }
+      ],
+      "translation": "Receiving…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3c4f03e4df9e",
+      "source": "分享口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 108,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.3c4f03e4df9e\")}"
+        }
+      ],
+      "translation": "Share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3c8e966d966b",
+      "source": "撤销未完成，请检查云盘连接后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 101,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.3c8e966d966b\"))"
+        }
+      ],
+      "translation": "Revoke was not completed; check your cloud drive connection and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.3e3b496af014",
+      "source": "接收口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 159,
+          "context": "work === \"receive\" ? i18n(\"components.vault.vaultexchangeactions.37c201950f27\") : i18n(\"components.vault.vaultexchangeactions.3e3b496af014\")"
+        }
+      ],
+      "translation": "Receive share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.401caf5fdfe9",
+      "source": "检查云盘连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 147,
+          "context": "{i18n(\"components.vault.vaultexchangeactions.401caf5fdfe9\")}"
+        }
+      ],
+      "translation": "Check cloud drive connection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.487e926379fe",
+      "source": "我的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.personal && i18n(\"components.vault.vaultexchangeactions.487e926379fe\")"
+        }
+      ],
+      "translation": "My card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.542ad2d546d0",
+      "source": "组织「{orgName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "orgName",
+          "expression": "String(shared.payload.orgName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.orgName && i18n(\"components.vault.vaultexchangeactions.542ad2d546d0\", { orgName: String(shared.payload.orgName) })"
+        }
+      ],
+      "translation": "Organization “{orgName}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.577a1f849d63",
+      "source": "暂存箱已经切换或更新，请关闭后重新确认要分享的内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 67,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.577a1f849d63\"))"
+        }
+      ],
+      "translation": "The Stash has been switched or updated; please close this and reconfirm the content you want to share.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.626483b777ae",
+      "source": "重试生成口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 146,
+          "context": "error ? i18n(\"components.vault.vaultexchangeactions.626483b777ae\") : i18n(\"components.vault.vaultexchangeactions.645b0bbba87e\")"
+        }
+      ],
+      "translation": "Retry creating the share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.645b0bbba87e",
+      "source": "生成分享口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 146,
+          "context": "error ? i18n(\"components.vault.vaultexchangeactions.626483b777ae\") : i18n(\"components.vault.vaultexchangeactions.645b0bbba87e\")"
+        }
+      ],
+      "translation": "Create share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

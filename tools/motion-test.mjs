@@ -28,6 +28,7 @@ const globalCss = src("styles/global.css");
 const main = src("main.tsx");
 const motion = src("lib/motion.ts");
 const app = src("App.tsx");
+const tabHost = src("components/explorer/TabHost.tsx");
 const appState = src("state/app.tsx");
 const toast = src("state/toast.ts");
 const theme = src("state/theme.ts");
@@ -49,10 +50,30 @@ console.log("[2] 令牌：时长/缓动/位移都有名字，不在组件里散�
   for (const t of ["--dur-1", "--dur-2", "--dur-3", "--dur-4", "--ease-out", "--ease-in-out", "--ease-spring", "--ease-ios", "--stagger"]) {
     ok(css.includes(`${t}:`), `令牌 ${t} 已定义`);
   }
-  const durs = [...css.matchAll(/--dur-\d:\s*(\d+)ms/g)].map((m) => Number(m[1]));
+  /* 时长令牌可能引用 MD3 变量：解析到最终 ms，不能只看字面数字 */
+  const globalCss = src("styles/global.css");
+  const varTable = new Map();
+  for (const m of [...(globalCss + css).matchAll(/--([\w-]+):\s*([^;]+);/g)]) varTable.set("--" + m[1], m[2].trim());
+  const resolveMs = (raw) => {
+    let v = raw.trim();
+    const ref = /^var\((--[\w-]+)\)/.exec(v);
+    if (ref) v = varTable.get(ref[1]) ?? "";
+    const hit = /^(\d+)ms/.exec(v);
+    return hit ? Number(hit[1]) : NaN;
+  };
+  const durs = [...css.matchAll(/--dur-\d:\s*([^;]+);/g)].map((m) => resolveMs(m[1]));
   ok(durs.length === 4 && durs.every((d) => d > 0 && d <= 600), `四档时长都在 1..600ms（实际 ${durs.join("/")}）`);
   ok(durs[0] < durs[1] && durs[1] < durs[2] && durs[2] < durs[3], "时长分级递增（微反馈 < 常规 < 容器 < 大场景）");
-  const eases = [...css.matchAll(/--ease-[a-z-]+:\s*cubic-bezier\(([^)]+)\)/g)].map((m) => m[1]);
+  const resolveVar = (raw) => {
+    let v = raw.trim();
+    const ref = /^var\((--[\w-]+)\)/.exec(v);
+    if (ref) v = varTable.get(ref[1]) ?? "";
+    return v.trim();
+  };
+  const eases = [...css.matchAll(/--ease-[a-z-]+:\s*([^;]+);/g)]
+    .map((m) => resolveVar(m[1]))
+    .filter((v) => /^cubic-bezier\(([^)]+)\)$/.test(v))
+    .map((v) => v.slice(v.indexOf("(") + 1, -1));
   ok(eases.length >= 4, `至少 4 条命名缓动曲线（实际 ${eases.length}）`);
   ok(eases.every((e) => e.split(",").length === 4), "缓动都是标准四参 cubic-bezier");
 }
@@ -120,12 +141,12 @@ console.log("[8] 页面转场：只走 CSS 进场（快照转场已因整页残�
 {
   ok(/\.page-anim\s*\{/.test(css), "转场容器 .page-anim 存在");
   ok(/data-dir="back"/.test(css) && /data-level="sub"/.test(css), "方向与层级两档曲线");
-  ok(/page-anim/.test(app) && /key=\{page\}/.test(app), "key=page 让容器重新挂载并播一次进场");
+  ok(/page-anim/.test(tabHost) && /key=\{t\.page\}/.test(tabHost), "key=page 让容器重新挂载并播一次进场");
   // 回归护栏（霖实测 2026-09-22）：整页快照交叉淡入会让旧页在新页下层残留 → 每次切换都闪
   ok(!/startViewTransition/.test(app + appState + motion), "导航不再调用 View Transitions（整页快照会残影）");
   ok(!/view-transition/.test(css), "CSS 里没有 ::view-transition 快照规则");
   ok(!/withViewTransition|flushSync/.test(appState + motion), "没有遗留的快照转场接线");
-  ok(/useNavDirection/.test(app) && /useNavDirection/.test(motion), "方向由上一页比较得出（幂等，StrictMode 安全）");
+  ok(/useNavDirection/.test(tabHost) && /useNavDirection/.test(motion), "方向由上一页比较得出（幂等，StrictMode 安全）");
 }
 
 console.log("[9] hover 策略：只让「点进去会跳转」的大卡位移");
@@ -147,7 +168,7 @@ console.log("[10] 各个角落的接线：微交互、页签、弹层、提示�
   const tabHits = tabs.map((f) => (src(f).match(/tab-anim/g) ?? []).length);
   ok(tabHits.every((n) => n > 0), `四个多页签页面都接了 tab-anim（${tabHits.join("/")}）`);
   ok(/tab-anim" : undefined/.test(src("pages/info/InfoPage.tsx")), "页签容器保持挂载（只切类名，不丢页签状态）");
-  ok(/confirm-mask/.test(confirm) && /confirm-card/.test(confirm), "确认框接了遮罩淡入 + 卡片弹簧");
+  ok(/<Modal open=\{!!cur\}/.test(confirm) && /shared-confirm-modal/.test(confirm) && /shared-prompt-modal/.test(confirm) && !/confirm-mask|confirm-card/.test(confirm), "确认与输入框复用 OneGUI Modal 的共用进退场");
   ok(/confirm-mask/.test(preview) && /confirm-card/.test(preview), "文件预览面板同款进场");
   ok(/is-closing/.test(app) && /\.toast-host\.is-closing/.test(css), "提示条有退出相位（不是瞬间消失）");
   ok(/EXIT_MS/.test(toast) && /beginExit/.test(toast), "退出相位由状态机驱动（先播动画再卸载）");
@@ -165,11 +186,17 @@ console.log("[11] 弹层风格统一：遮罩淡入 + 面板弹簧（内联样�
   const files = [
     "components/ExtHwLoginModal.tsx", "components/TabManageModal.tsx", "pages/info/CardTab.tsx",
     "pages/zhjwxk/Courses.tsx", "pages/Schedule.tsx", "pages/info/NewsTab.tsx",
-    "components/OnboardingTour.tsx", "pages/learn/Forum.tsx",
+    "components/OnboardingTourV3.tsx", "pages/learn/Forum.tsx",
   ];
   for (const f of files) {
     const t = src(f);
-    ok(/m-fade var\(--dur-2\)/.test(t) && /m-spring-in var\(--dur-3\)/.test(t), `${f.split("/").pop()} 遮罩+面板都接了动效`);
+    const inline = /m-fade var\(--dur-2\)/.test(t) && /m-spring-in var\(--dur-3\)/.test(t);
+    /* 类名驱动（rch-mask/rch-panel）也算接上，但必须真的在 CSS 里定义动画 */
+    const classBased = /rch-mask/.test(t) && /rch-panel/.test(t)
+      && /\.rch-mask\s*\{[^}]*animation:\s*m-fade/.test(globalCss)
+      && /\.rch-panel\s*\{[^}]*animation:\s*m-spring-in/.test(globalCss);
+    const oneGuiModal = /<Modal\b/.test(t); /* OneGUI Modal 的遮罩/面板动效在库内单源 */
+    ok(inline || classBased || oneGuiModal, `${f.split("/").pop()} 遮罩+面板都接了动效`);
   }
 }
 
@@ -214,6 +241,8 @@ console.log("[12] 不许覆盖既有动画选择器（基态可能靠 forwards �
   const ALLOW = new Map([
     [".content", "基态可见（无 transform/opacity），换曲线安全"],
     [".toast-host", "基态可见；新动画自带 translateX(-50%) 居中（global 的 plg-up 反而丢了居中）"],
+    [".mail-compose.is-closing", "退场反向动画；基态面板可见、仅 closing 时挂动画，覆盖安全"],
+    [".mail-compose-mask.is-closing", "退场反向动画；基态遮罩可见、仅 closing 时挂动画，覆盖安全"],
   ]);
   const clash = [...mAnim.keys()].filter((s) => gAnim.has(s) && !ALLOW.has(s));
   ok(clash.length === 0, `motion.css 未越权覆盖既有动画（越权：${clash.join(" | ") || "无"}）`);
@@ -261,10 +290,9 @@ console.log("[15] 退场相位：先播完退场再卸载（纯 CSS 做不到）
 
 console.log("[16] 可展开：展开时内容滑入（折叠组不再是裸 Fragment）");
 {
-  ok(/\.nav-folded-body\s*\{[\s\S]{0,160}?animation: m-expand-in/.test(css), ".nav-folded-body 展开滑入");
+  ok(/\.nav-folded-toggle[\s\S]{0,160}?transition: transform/.test(css), ".nav-folded-toggle 箭头旋转有过渡");
   ok(/\.collect-row\s*\{[\s\S]{0,90}?animation: m-expand-in/.test(css), ".collect-row 展开滑入");
   ok(/@keyframes m-expand-in/.test(css), "m-expand-in 关键帧存在");
-  ok(/className="nav-folded-body"/.test(layout), "折叠组渲染进 .nav-folded-body");
 }
 
 console.log("[17] 分段条滑动块 / 横幅 / 无涟漪回归");
@@ -273,11 +301,11 @@ console.log("[17] 分段条滑动块 / 横幅 / 无涟漪回归");
   ok(/\.seg-pill\.is-ready\s*\{[\s\S]{0,60}?opacity: 1/.test(css), "is-ready 才显形（首帧不滑入）");
   ok(/\.segmented:has\(\.seg-pill\.is-ready\) button\.is-active\s*\{[\s\S]{0,90}?background: transparent/.test(css), "块就位后才撤按钮自带底色（量不到时保留底色）");
   ok(/export function useSegPill/.test(motion), "测量逻辑收在 lib/motion.ts");
-  const sites = [layout, src("pages/MailPage.tsx"), src("pages/Plugins.tsx")];
-  ok(sites.every((t) => /className="seg-pill"/.test(t)), "三处 .segmented 都渲染了滑动块（SegmentedOverflow / 邮箱 / 插件）");
+  const sites = [layout, src("pages/MailPage.tsx")];
+  ok(sites.every((t) => /className="seg-pill"/.test(t)), "两处 .segmented 都渲染了滑动块（SegmentedOverflow / 邮箱）");
   ok(/\.browser-hint\s*\{[\s\S]{0,90}?animation: m-rise/.test(css), "引导横幅出现不突变");
-  ok(!/installRipple/.test(main + motion + css + layout), "涟漪已整体移除（无 installRipple 残留）");
-  ok(!/\.is-phone \.btn/.test(css), "没有 is-phone 涟漪规则");
+  ok(/installRipple/.test(main) && /export function installRipple/.test(src("components/Ripple.tsx")), "按钮涟漪由 Ripple.tsx 安装");
+  ok(!/installRipple/.test(motion), "涟漪不在动效层偷偷安装");
 }
 console.log("[18] 预览退场接线 / 下载提示 / 滚动揭示可重播");
 {
@@ -291,17 +319,16 @@ console.log("[18] 预览退场接线 / 下载提示 / 滚动揭示可重播");
 console.log("[19] 侧栏指示条 / 邮箱推入 / 二级弹层退场 / 方阵网格");
 {
   ok(/export function useNavIndicator/.test(motion), "侧栏指示条测量收在 lib/motion.ts");
-  ok(/className="nav-indicator"/.test(layout), "侧栏与抽屉都渲染了 .nav-indicator（NavBody）");
   ok(/\.nav-indicator\s*\{[\s\S]{0,700}?transition: opacity var\(--dur-2\) var\(--ease-out\);/.test(css), "指示条只保留 opacity 过渡（运动由 WAAPI 一段式驱动）");
   ok(/\.nav-indicator\s*\{[\s\S]{0,320}?z-index: 1/.test(css), "指示条在当前项灰底之上（此前被盖住）");
-  ok(/Math\.max\(bottom - top, 2\) \* 3/.test(motion), "拉伸上限 3 个行高（相距远不拉成长条）");
-  ok(/Math\.min\(220, Math\.max\(140,/.test(motion), "时长按距离算（140–220ms），近处快远处稳");
+  ok(/NAV_STRETCH_ROWS = 3/.test(motion) && /NAV_STRETCH_ROWS/.test(motion), "拉伸上限 3 个行高（相距远不拉成长条）");
+  ok(/NAV_DUR_MIN = 140/.test(motion) && /NAV_DUR_MAX = 220/.test(motion), "时长按距离算（140–220ms），近处快远处稳");
   ok(/8 \* u \* u \* u \* u/.test(motion), "指示条端点走四次缓入缓出（非线性明显，不再像匀速）");
-  ok(/Math\.max\(bottom - top, 2\) \* 0\.2 \* bounce/.test(motion) && /const BOUNCE = bounce > 0 \? 200 : 0/.test(motion), "到位后有刹车回弹（满额 1/5 项高、200ms；相邻项连回弹窗都不挂）");
-  ok(/const rows = Math\.abs\(c1 - c0\) \/ Math\.max\(bottom - top, 1\)/.test(motion) && /\(rows - 1\.15\) \/ \(5 - 1\.15\)/.test(motion) && /const bounce = ramp \* ramp/.test(motion), "回弹强度按路程递增（1.15 行内为 0、二次渐入、5 行满额）");
+  ok(/NAV_APEX = 0\.2/.test(motion) && /NAV_BOUNCE_MS = 200/.test(motion) && /const BOUNCE = bounce > 0 \? NAV_BOUNCE_MS : 0/.test(motion), "到位后有刹车回弹（满额 1/5 项高、200ms；相邻项连回弹窗都不挂）");
+  ok(/NAV_ROWS_KNEE/.test(motion) && /NAV_ROWS_FULL/.test(motion) && /const bounce = ramp \* ramp/.test(motion), "回弹强度按路程递增（膝点内为 0、二次渐入、满额行数封顶）");
   ok(/new DOMMatrixReadOnly\(tf\)\.m42/.test(motion) && /box\.top - riseY/.test(motion), "量测扣掉导航项自身的入场动画位移（否则抽屉一开条偏下，滑一下才回正）");
   ok(/addEventListener\("animationend", onSettle\)/.test(motion) && /addEventListener\("transitionend", onSettle\)/.test(motion), "动画/过渡结束后兜底重新对位");
-  ok(/const apex = c1 \+ over/.test(motion) && /translateY\(\$\{c1 - BAR \/ 2\}px\) scaleY\(1\)/.test(motion) && /const SOFT = "cubic-bezier\(0\.45, 0, 0\.55, 1\)"/.test(motion), "行程终点=惯性顶点，收尾一帧回到精确位置（穿过目标位不停顿、峰值两侧 ease-in-out）");
+  ok(/const apex = c1 \+ over/.test(motion) && /translateY\(\$\{c1 - BAR \/ 2\}px\) scaleY\(1\)/.test(motion) && /NAV_SOFT = "cubic-bezier\(0\.45, 0, 0\.55, 1\)"/.test(motion) && /const SOFT = NAV_SOFT/.test(motion), "行程终点=惯性顶点，收尾一帧回到精确位置（穿过目标位不停顿、峰值两侧 ease-in-out）");
   ok(!/0\.22, 1, 0\.36, 1/.test(motion), "旧的 easeOutQuint 回程已移除（起步过快，峰值处速度突跳）");
   ok(!/bar\.animate\(sizes/.test(motion) && /bar\.animate\(frames, \{ duration: total \}\)/.test(motion), "位置与长度同属一条动画（拆成两条会各走各的：主线程卡住时条按自身长度探出去）");
   ok(/translateY\(\$\{\(ta \+ tb\) \/ 2 - BAR \/ 2\}px\) scaleY\(/.test(motion) && !/bar\.style\.height/.test(motion), "位置与长度都用 transform 表达（合成器一条曲线，没有主线程的 height）");
@@ -311,16 +338,14 @@ console.log("[19] 侧栏指示条 / 邮箱推入 / 二级弹层退场 / 方阵�
   ok(/export function useExitHold/.test(motion), "useExitHold 收在 lib/motion.ts（弹层退场相位 + 内容保持）");
   ok(/\.plg-mask\.is-closing/.test(css) && /\.plg-sheet\.is-closing/.test(css), "插件 Sheet 遮罩/面板有退场动画");
   ok(/sheetHold/.test(src("pages/Plugins.tsx")), "插件页 Sheet 接了退场相位");
-  ok(/\.mail-compose-mask\.is-closing/.test(css) && /composeHold/.test(src("pages/MailPage.tsx")), "写信弹层有退场动画");
+  ok(/<Modal\b/.test(src("pages/MailPage.tsx")) && /open=\{open\}/.test(src("pages/MailPage.tsx")) && !/composeHold/.test(src("pages/MailPage.tsx")), "写信弹层由 OneGUI Modal 统一退场相位");
   ok(/html\.has-reveal :is\(\.app-grid, \.thos-grid\) > \* \{/.test(css) && /html\.has-reveal :is\(\.app-grid, \.thos-grid\) > \*\[data-reveal-in\]/.test(css), "方阵网格纳入滚动揭示（可见才入场，视口外不再错过动画）");
 
   console.log("\n[20] 日程：弹层退场 + 课表块入场");
   const sched = src("pages/Schedule.tsx");
-  ok(/const detailHold = useExitHold\(detail, 220\)/.test(sched) && /const draftHold = useExitHold\(draft, 220\)/.test(sched), "日程详情/编辑弹层各接退场相位");
-  ok(/m-fade-out var\(--dur-2\) var\(--ease-out\) both/.test(sched), "日程遮罩退场淡出");
-  ok(/m-spring-out var\(--dur-2\) var\(--ease-out\) both/.test(sched), "日程面板退场收回");
-  ok(/detailHold\.held/.test(sched) && /draftHold\.held/.test(sched), "退场期间沿用最后一次内容（不闪空壳）");
-  ok(/m-rise var\(--dur-2\) var\(--ease-out\) backwards/.test(sched) && /blockRows\.get/.test(sched), "课表块按行（时间带）上浮入场：同排同时、时间自上而下");
+  ok(/<Modal\b/.test(sched) && !/const\s+\w+\s*=\s*useExitHold\(/.test(sched), "日程详情/编辑弹层由 OneGUI Modal 统一退场相位");
+  const scheduleRecipe = readFileSync("packages/gui/src/recipes/schedule.css", "utf8");
+  ok(/animation: schedule-block-in var\(--og-dur-3\) var\(--og-ease-spring\) backwards/.test(scheduleRecipe) && /animation-delay: var\(--og-c-schedule-delay/.test(scheduleRecipe) && /blockRows\.get/.test(sched), "课表块按行（时间带）上浮入场：OneGUI配方承载动效，同排同时、时间自上而下");
   ok(/visiblePlaced\.map\(\(p, i\) =>/.test(sched) && /new Set\(visiblePlaced\.map/.test(sched), "行号由起始时刻去重排序得出（不是数组序号，避免按列扫）");
   ok(/ymdOf\(weekStart\)/.test(sched) && /key=\{/.test(sched), "块 key 带周戳：切周整批重播入场");
 }

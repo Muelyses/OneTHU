@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 体测成绩 —— info.getPhysicalExamResult（thu-info-app physicalExam.tsx 移植，
  * zhjw tyjx 键值对展示）。三态与铁律见 tabStates.tsx：空数据=友好文案；
@@ -14,6 +15,8 @@ type LoadState = "loading" | "error" | "ready";
 type FitnessRow = Awaited<ReturnType<typeof info.getPhysicalExamResult>>[number];
 
 export function FitnessTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
   const [rows, setRows] = useState<FitnessRow[] | null>(null);
   const [state, setState] = useState<LoadState>("loading");
@@ -49,14 +52,14 @@ export function FitnessTab() {
       {state === "loading" && !rows ? (
         <SkeletonRows rows={5} />
       ) : state !== "ready" ? null : (rows?.length ?? 0) === 0 ? (
-        <TabEmpty text="暂无成绩（本学期体测成绩可能尚未发布）。" />
+        <TabEmpty text={i18n("pages.info.fitnesstab.e460bd4bfafb")} />
       ) : (
         <Card style={{ padding: 0, overflow: "hidden" }}>
           <table className="data-table">
             <thead>
               <tr>
-                <th>项目</th>
-                <th className="num">成绩</th>
+                <th>{i18n("pages.info.fitnesstab.79f326be4409")}</th>
+                <th className="num">{i18n("pages.info.fitnesstab.fdcd1bd074c9")}</th>
               </tr>
             </thead>
             <tbody>

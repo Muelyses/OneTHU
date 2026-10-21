@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * ZIP 层级树 + 按需解压 + pptx 大纲提取（零第三方依赖，纯浏览器能力）：
  * - 目录/解压：手写 EOCD → central directory 解析（带 method/compSize/local header 偏移），
@@ -43,10 +44,10 @@ export function readZipEntries(bytes: Uint8Array): ZipEntry[] {
       break;
     }
   }
-  if (eocd < 0) throw new Error("未找到 ZIP 目录结尾（EOCD），文件可能损坏");
+  if (eocd < 0) throw new Error(i18n("lib.ziptree.802ee7801233"));
   const count = readU16(bytes, eocd + 10);
   let off = readU32(bytes, eocd + 16);
-  if (count === 0xffff || off === 0xffffffff) throw new Error("暂不支持 ZIP64 格式，请下载查看");
+  if (count === 0xffff || off === 0xffffffff) throw new Error(i18n("lib.ziptree.8bcdc7156f9f"));
   const utf8 = new TextDecoder("utf-8");
   const latin1 = new TextDecoder("latin1");
   const entries: ZipEntry[] = [];
@@ -72,7 +73,7 @@ export function readZipEntries(bytes: Uint8Array): ZipEntry[] {
     entries.push({ name, size, compSize, method, isDir: name.endsWith("/"), localOff });
     off += 46 + nameLen + extraLen + commentLen;
   }
-  if (!entries.length) throw new Error("ZIP 目录为空或解析失败");
+  if (!entries.length) throw new Error(i18n("lib.ziptree.d9346a6de600"));
   return entries;
 }
 
@@ -83,32 +84,32 @@ export function readZipEntries(bytes: Uint8Array): ZipEntry[] {
  * docx/xlsx/pptx 由 mammoth/SheetJS 自行解包，这里只服务 zip 内文本条目与 pptx XML。
  */
 export async function extractEntryBytes(fileBytes: Uint8Array, entry: ZipEntry, maxOut: number): Promise<Uint8Array> {
-  if (entry.isDir) throw new Error("该条目是目录，无法解压");
-  if (entry.size > maxOut) throw new Error("解压后内容超过预览大小限制");
+  if (entry.isDir) throw new Error(i18n("lib.ziptree.c63d5a292e55"));
+  if (entry.size > maxOut) throw new Error(i18n("lib.ziptree.8ec67ebd5d24"));
   const off = entry.localOff;
   if (off + 30 > fileBytes.length || readU32(fileBytes, off) !== 0x04034b50) {
-    throw new Error("ZIP 局部文件头损坏，无法解压该条目");
+    throw new Error(i18n("lib.ziptree.2c7d571eccc7"));
   }
   const nameLen = readU16(fileBytes, off + 26);
   const extraLen = readU16(fileBytes, off + 28);
   const start = off + 30 + nameLen + extraLen;
   const end = start + entry.compSize;
-  if (end > fileBytes.length) throw new Error("ZIP 数据越界，文件可能损坏");
+  if (end > fileBytes.length) throw new Error(i18n("lib.ziptree.732ef6430c80"));
   const comp = fileBytes.subarray(start, end);
 
   if (entry.method === 0) {
     // store：原样存储
-    if (comp.length > maxOut) throw new Error("解压后内容超过预览大小限制");
+    if (comp.length > maxOut) throw new Error(i18n("lib.ziptree.8ec67ebd5d24"));
     return comp.slice();
   }
-  if (entry.method !== 8) throw new Error(`不支持的压缩算法（method=${entry.method}），请下载查看`);
+  if (entry.method !== 8) throw new Error(i18n("lib.ziptree.310739c83167", { method: String(entry.method) }));
   if (typeof DecompressionStream === "undefined") {
-    throw new Error("当前环境不支持解压（缺 DecompressionStream），请下载查看");
+    throw new Error(i18n("lib.ziptree.97befa4e485c"));
   }
   // comp.slice()：subarray 视图的 buffer 是 ArrayBufferLike，BlobPart 要 Uint8Array<ArrayBuffer>
   const stream = new Blob([comp.slice()]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
   const ab = await new Response(stream).arrayBuffer();
-  if (ab.byteLength > maxOut) throw new Error("解压后内容超过预览大小限制");
+  if (ab.byteLength > maxOut) throw new Error(i18n("lib.ziptree.8ec67ebd5d24"));
   return new Uint8Array(ab);
 }
 
@@ -226,7 +227,7 @@ export async function extractPptxSlides(fileBytes: Uint8Array, entries: ZipEntry
   const slideEntries = entries
     .filter((e) => !e.isDir && SLIDE_RE.test(e.name))
     .sort((a, b) => slideNo(a.name) - slideNo(b.name));
-  if (!slideEntries.length) throw new Error("压缩包内未找到 ppt/slides/slideN.xml（可能不是 .pptx）");
+  if (!slideEntries.length) throw new Error(i18n("lib.ziptree.465bf7f89508"));
 
   const notesMap = new Map<number, ZipEntry>();
   for (const e of entries) {

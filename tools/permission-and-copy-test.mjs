@@ -23,9 +23,9 @@ assert.ok(/notifyPermissionAsked\(\)\) return false/.test(ask), "已问过必须
 assert.ok(/catch \{[\s\S]*return true;/.test(ask), "存储不可用时应视为已问，避免反复弹");
 
 /* ---------- [2] 导览接线 ---------- */
-const tour = read("apps/desktop/src/components/OnboardingTour.tsx");
+const tour = read("apps/desktop/src/components/OnboardingTourV3.tsx");
 assert.ok(tour.includes("askNotifyPermissionOnce"), "导览组件必须接线一次性申请");
-assert.ok(/if \(open\) return;/.test(tour), "导览开着时先不弹（不得与导览叠窗）");
+assert.ok(/if \(open\) \{[\s\S]{0,80}return;/.test(tour), "导览开着时先不弹（不得与导览叠窗）");
 assert.ok(/useEffect/.test(tour.split("\n")[8] ?? "") || /import \{ useEffect/.test(tour), "必须引入 useEffect");
 
 /* ---------- [3] 按钮不重复（按注释剔除后的代码判定：注释里提旧按钮名不算违规） ---------- */

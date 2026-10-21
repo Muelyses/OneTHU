@@ -1,6 +1,11 @@
 # 插件开发指南
 
-> 最后更新：2026-09-25 19:35
+中文 · [English](en/plugin-development.md)
+
+> 0.11 现行入口：管理页为「我的 → 插件」，完整模式开放插件管理；接口全集以 [生成 API 清单](api-surface.md) 为准（36 个命名空间、255 个方法入口）。下文保留协议、清单与历史版本示例；旧页面名称不代表当前导航，示例需要按现行类型与权限检查。JS 插件与 Rust sidecar 为受信代码，API 门禁不等于代码沙箱；QuickJS 技能运行时是另一条受限执行路径，见 [OH / 清小搭](oh-and-xiaoda.md)。
+
+
+> 最后更新：2026-10-15 01:33
 
 本文档说明 OneTHU 插件的开发流程：插件模型、清单规范、权限声明、通信协议与调试
 方法。`ctx.onethu.*` 接口的逐方法说明见 [api-reference.md](./api-reference.md)。
@@ -87,6 +92,7 @@ export default async function activate(ctx) {
 | `description` | string | 否 | 描述 |
 | `permissions` | string[] | 是 | 权限清单，安装时由用户逐项确认 |
 | `repo` | string | 否 | 源码仓库地址；插件管理页据此展示「仓库」跳转按钮。经市场或 GitHub 直装安装时，安装来源会自动记录并覆盖此字段 |
+| `announce` | boolean | 否 | 公告热通道开关：声明 `announce: true` 后，宿主每次插件启动/打开均会检查**你仓库根目录的 `NOTICE.md`**，内容变化时在插件卡片弹出「📢 公告」框（使用 markdown 文本渲染，用户点「知道了」收起）——运营面/规则/重要更新均可往 `NOTICE.md` 里写，仓库推送即生效 |
 | `settings` | SettingField[] | 否 | 设置表单，由应用渲染 |
 | `commands` | Command[] | 否 | 命令按钮；Rust 插件也可在激活应答中返回 |
 
@@ -252,7 +258,7 @@ css: `
 
 插件在清单中声明 `permissions`，安装时由用户确认。调用未声明权限的方法抛出
 `PluginPermissionError`。三种形态使用同一套门禁，无绕过路径。权限与 API 的对应关系
-见 [api-reference.md §0.1](./api-reference.md#01-权限总表)。
+见 [现行 API 与权限门禁](./api-surface.md)。
 
 以下两类能力受平台规则限制，宿主不提供对应接口：
 
@@ -338,12 +344,20 @@ ctx.registerCommand({ id: "book", title: "预订研讨间" }, async () => {
 
 ### 6.3 自建功能页（tab）与自由渲染
 
-插件可以在应用侧栏注册**自己的功能页**，并在页面容器内**全权渲染 DOM**——任意
-HTML 结构、交互逻辑，配合 `registerCss` 天马行空的样式：
+插件可以注册**自己的功能页**，并在页面容器内**全权渲染 DOM**——任意 HTML 结构、交互逻辑，
+配合 `registerCss` 天马行空的样式。页面 id（pageKey）约定为 `plugin:<插件id>:<tabId>`，
+它就是一个**正常的应用页**：标签栏可开、可分享深链、能进首页程序坞。
+
+注册后插件页在宿主侧有三个入口（**侧栏不列插件页**——侧栏只列应用自己的一级页）：
+
+1. **服务页**「插件功能页」分组（抽屉退役后的移动端入口，与首页程序坞同一份数据源）；
+2. **首页程序坞**：用户在首页「更多功能」里把插件页停靠成一颗球（见 §6.3.1）；
+3. **插件自己打开**：`ctx.onethu.nav.go("plugin:onethu.habit:main")`，或 `ctx.onethu.ext.tabOpen`
+   （白名单含 `board` / `boards` 等一级页）。
 
 ```js
 export default function activate(ctx) {
-  // ① 侧栏注册 tab（pageKey = plugin:<插件id>:<tabId>）
+  // ① 注册 tab（pageKey = plugin:<插件id>:<tabId>）
   ctx.registerTab({
     id: "main",
     title: "打卡",
@@ -368,6 +382,27 @@ export default function activate(ctx) {
 - tab 图标为 16×16 视口的 inline SVG；
 - 容器就绪回调可能多次触发（页面重建），渲染函数应写成幂等（先清空再挂）。
 
+### 6.3.1 首页程序坞（把功能页停靠到首页）
+
+首页时间下面那排球＝**程序坞**，它的成员 = 应用一级页 ∪ 插件功能页（两者同权）。插件可以
+自己请求停靠/取消停靠，也可以只读现状（需 `ui` 权限）：
+
+```js
+// 只读：坞上有哪些球 + 还能停哪些（都带名字，便于做「要不要停靠」的判断）
+const snap = ctx.onethu.ext.homeDock.set();
+// { docked: ["tasks", "learn", …], dockable: [...], entries: [{ page, label, plugin }] }
+
+// 停靠 / 取消停靠（pageId 是应用一级页，或本插件自己的 plugin:<id>:<tabId>）
+ctx.onethu.ext.homeDock.set("plugin:onethu.habit:main", true);
+ctx.onethu.ext.homeDock.set("plugin:onethu.habit:main", false);
+```
+
+- `pageId` 必须是「应用一级页」或「**已注册**的插件功能页」（即 NAV ∪ 插件 tab 那两份
+  注册表）；认不出会抛错并列出可停靠项，**不会**静默加一颗看不见的球；
+- `homeDock` 本身可调用（`ctx.onethu.ext.homeDock(pageId, on)`），与 `.set` 同一实现；
+- 停靠状态是**用户偏好**：随首页布局持久化，与「插件是否启用」独立——插件被停用/卸载后，
+  那颗球会在下次读取布局时自动被过滤掉，不需要插件自己做清理。
+
 ### 6.4 原子化收藏（对齐宿主收藏夹体系）
 
 宿主收藏夹基于统一的原子引用体系：课程、作业、通知、场馆等均注册为原子，收藏夹只保存
@@ -388,6 +423,21 @@ ctx.onethu.favorites.add("main~streak:3");
 const saved = ctx.onethu.favorites.list();
 // [{ folderId: "f_x", folderTitle: "我的收藏", key: "main~streak:3" }]
 ```
+
+**落点（2026-10-15 起）**：收藏一颗「元素」不再只有一种去处——收藏面板会先让用户选落点
+（首页 / 已有 OnePage / 最后才是新建）。插件侧同一份能力经 `ext.onePageAddAtom` 拿得到，
+它只调数据层的高阶函数（自带查重与落位），插件**不要**自己写格子坐标：
+
+```js
+// 落首页（首页画的就是那块系统板；不给 boardId 即首页）
+ctx.onethu.ext.onePageAddAtom({ to: "home" }, "course:12345");
+// 落某块已有 OnePage（boardId 来自 ext.onePageList / OH 的 ext_onepage_list）
+ctx.onethu.ext.onePageAddAtom({ boardId: "board.user.m3k9" }, "course:12345");
+// → { ok: true, boardId, added: "it.xxx" }
+// → { ok: false, reason: "duplicate" }  板上已经有它，没有重复放
+// → { ok: false, reason: "no-board" }   目标板不存在
+```
+
 
 ### 6.5 声明式桌面小组件（Android）
 
@@ -432,7 +482,7 @@ WebView、没有登录会话，也没有插件的 JS 运行时，插件代码无
 
 | 内容 | 形态 | 说明 |
 |---|---|---|
-| 日程与 DDL | 列表 | 今天的课、考试、作业截止；未选择内容时的缺省 |
+| 日程与 DDL | 列表 | 今天的课、考试、作业截止，以及勾了「在桌面小组件显示」的自定义日程；未选择内容时的缺省 |
 | 一个原子占满 | 列表 | 课程 / 作业 / 洗衣机 / 教室等显示其详情，**高度越大行数越多**（按真实高度铺满，最多 20 行）；教室显示「本节空闲 / 占用 + 今日空闲节次」，洗衣机显示「使用中 · 剩 N 分钟 + 本楼空闲台数」（捷利 / 海乐生活 / 小兰智慧三家数据源）。实时值由应用在计算内容前获取，获取失败时该行不写入 |
 | 收藏夹图标组 | 图标网格 | 把收藏夹嵌到桌面：原子图标并列（最多 2 行 × 4 列），每个格子各自可点 |
 | 快捷方式 | 图标 + 名称 | 一个功能页或原子的桌面快捷方式（1×1 起，形态与系统快捷方式一致） |
@@ -579,25 +629,39 @@ const st = await ctx.onethu.notify.status(true);   // 传 true 才会发起授�
 权限声明与功能匹配、无超范围权限；无混淆代码、无远程动态拼装代码、无凭据收集
 行为。合并即收录，用户端刷新或等缓存过期（5 分钟）后可见。
 
+> **收录 = 上目录，不 = 更新闸门**：市场名单只是目录快照（名称/描述/仓库地址/收录时的版本）。
+> 插件发布新版本**不需要**再向 OneTHU-Market 提 PR——用户端以插件本体仓库的最新 manifest 为准
+> （见 §8.4），市场条目的 version 仅在「用户未按仓库检查」时作为兜底提示。
+
 ### 8.4 更新检查与拉取新鲜度
 
-应用端按版本号比较判定更新：市场名单条目的 `version` 高于本地已装版本时，插件卡片
-显示「可更新 ↑」徽标（点击跳转市场视图），市场条目按钮显示「更新」，并提示
-`本地 vX → 市场 vY`。版本比较按数字段逐段进行（`1.10.0` 大于 `1.9.0`），`v` 前缀
-容错。
+**插件本体仓库优先**：设置 → 插件 → 已安装卡片（带仓库来源的 JS 插件）自带「检查更新」。
+点击后直接从插件本仓库拉取入口模块并解析最新 manifest（**contents API 优先、raw 降级**，
+与安装同一管线；raw 的 Fastly 边缘节点会短时吐推送前旧内容，且忽略 query 的 cache-buster）。
+仓库版本更新时卡片出现「更新至仓库版 vX」按钮——走与安装完全相同的校验管线，覆盖安装并重新激活。
 
-**名单版本号由人工维护**：`registry.json` 的 `version` 不随插件仓库自动更新。插件
-仓库发布新版本后，作者须同步向 OneTHU-Market 提交版本号改动，否则用户端不会出现更新
-提示；这是「插件已升级但市场看不到新版」的常见成因。
+- 发布新版本 = **只更新自己的仓库**即可，无需向 OneTHU-Market 提交任何改动。
+- 市场条目的 `version` 是收录时的快照，**不再作为更新判据**；仅当用户没有对仓库做检查、
+  且本地缓存的名单中该 ID 版本更高时，才会显示「可更新 ↑」（跳市场视图）。
+- 检查/更新动作是用户主动行为，取数时都会带 cache-buster 并优先 contents API，避免读到旧内容。
 
-| 场景 | 通道 | 说明 |
-|---|---|---|
-| 插件安装 / 更新 | GitHub contents API 优先，raw 降级 | contents API 取 `api.github.com/repos/<owner>/<repo>/contents/<path>?ref=<branch>`，base64 解码；与 raw 域名分属不同缓存体系 |
-| 市场名单刷新 | 同上；强制刷新跳过本地缓存 | 名单另有 5 分钟 localStorage 缓存，应用重启不失效 |
+补：卡片的「检查更新」仅对 `kind == "js"` 且仓库来源可解析的插件出现；内置（OH）与
+rust 插件仍按各自生命周期处理（内置随 App 升级，rust 分发不走 GitHub 单文件机制）。
+
+### 8.4.1 公告热通道（`NOTICE.md` 约定）
+
+插件可在清单声明 `announce: true`，宿主在插件每次启动/打开时后台拉取插件仓库根的
+`NOTICE.md`（每插件 10 分钟限频；失败静默不影响插件使用），内容 digest 变化时在插件
+卡片弹「📢 公告」框——继承 OneTHU 的显示语义（max-height 有限滚动 + 「知道了」收起），
+用户无需手动刷新。插件代码不经手该文本（宿主渲染），便于安全展示。
+
+- `NOTICE.md` 建议保持短文本（≤1600 字符，加 markdown）；重要运营、规则变更、紧急修复
+  说明等写这里即可；
+- 公告内容直接来自插件作者**自己的仓库**，不经过 OneTHU 市场仓库、不易受编辑干扰。
 
 raw 域名的 Fastly 边缘节点会短时返回推送前的旧内容，且该缓存**忽略 query 参数**
-（附加时间戳的 cache-buster 无效），故不作为首选通道。contents API 未认证时限速
-60 次/小时，超限后静默降级至 raw，此时可能短暂读到旧内容。
+（附加时间戳的 cache-buster 无效），不作为首选通道；contents API 拉取入口模块在
+未认证时可降级至 raw，此时可能短暂读到旧内容。
 
 ## 9. Rust sidecar 协议与 OH 扩展
 
@@ -645,8 +709,14 @@ OH 对话内可直接把信息收进用户收藏夹，与插件收藏共用同�
 自动补全，落点为「对话收藏」分组；同一 key 重复收藏不重复添加。该分组的卡片当前
 点击提示来源（OH 尚无自建功能页），OH 提供功能页后可改为深链。
 
+**另一条落点通道**（2026-10-15 起）：应用里「收藏一颗元素」已经有了**先选落点**的语义
+（首页 / 已有 OnePage / 最后才是新建），OH 侧对应工具是 `onePage_collect`（不给 `boardId`
+即落首页，给了就落那块 OnePage；同板同原子返回 duplicate）。两者不是一件事：
+`add_favorite` 进的是「收藏夹」分组（`fav:` 引用），`onePage_collect` 放的是白板上的
+atom-link 组件（条目坐标由数据层的查重+落位负责，OH 不自己写坐标）。
+
 **一句话直达**：OH 的 `open_page` 工具经宿主 `nav.searchAtoms` 与 `nav.openAtom` 工作
-（见 api-reference §17），因此「打开亲友来访」这类说法无需预先约定路由，检索到的对象即可
+（见 api-reference §18），因此「打开亲友来访」这类说法无需预先约定路由，检索到的对象即可
 打开。检索范围为静态注册表（功能页面 / 今日组件 / 操作原子）与本机缓存（课程、作业、通知、
 文件、在线服务、场馆、教学楼、洗衣机楼、图书馆、新闻等）。
 
@@ -659,12 +729,12 @@ OH 对话内可直接把信息收进用户收藏夹，与插件收藏共用同�
 分值决定动作：40 分以上的简称（「亲友预约」对应「亲友来访预约」）直接打开；20~39 分的近似
 名称（如「亲友入校报备」）**仅返回候选、不跳转**，由用户确认后再打开。查询失败与「目录中
 确无该服务」应分别说明，不得将检索失败表述为学校未提供该服务。命中的目录条目同时写回本机
-原子缓存，此后本机检索可离线命中。同一条兜底通道对插件同样可用（api-reference §17）。
+原子缓存，此后本机检索可离线命中。同一条兜底通道对插件同样可用（api-reference §18）。
 
 外部插件亦可使用同一能力：清单声明 `nav` 权限后调用 `nav.searchAtoms` 与 `nav.openAtom`，
 即可实现由插件发起、跳转到应用内任意页面。
 
-**OH 读取本机使用统计**（`nav.usage`，api-reference §20.1）：`query_usage` 工具用于回答
+**OH 读取本机使用统计**（`nav.usage`，api-reference §21.1）：`query_usage` 工具用于回答
 近期使用情况，返回的 `kind` / `key` 可直接传给 `open_page` 打开。今日页的
 「最近使用 / 猜你喜欢」两张卡（默认位于侧栏；无数据时整卡不渲染）与其读取同一份数据，
 均由 `lib/usage.ts` 与 `lib/suggest.ts` 驱动；统计只记录入口使用次数，**不会改写用户
@@ -700,6 +770,24 @@ OH 可作为 MCP（Model Context Protocol）客户端调用外部工具。服务
 （initialize → tools/list 或 tools/call → kill），无长驻进程，服务崩溃不影响宿主。
 MCP 工具与校园工具、联动插件工具同轮混用。当前为最小实现：不支持
 resources/prompts 与 OAuth 授权，需要这些能力的 server 暂不适用。
+
+### 9.6 OH 反过来当 MCP 服务器（把 OneTHU 暴露出去）
+
+上面那节是**出方向**（OH 去连别人）；反方向也通了：OH 自己可以在本机当 MCP 服务器，
+让本机其它 MCP 客户端（另一个 agent、脚本、编辑器插件）直接调用 OneTHU 的工具。
+
+| 项 | 说明 |
+|---|---|
+| 开关 | 设置 → 插件 → OneTHU Harness → 高级配置 →「OH MCP 服务器」（**默认关**，本机暴露必须由用户显式打开） |
+| 端点 | `http://127.0.0.1:8787/mcp`（Streamable-HTTP，POST JSON-RPC：`initialize` / `tools/list` / `tools/call`）；端口可用环境变量 `OH_MCP_PORT` 改，`0` = 连监听都不起 |
+| 暴露范围 | 只暴露**无需交互确认**的工具（`confirm: true` 的写操作不上墙）；仅本机回环，不跨机 |
+| 关着时 | 任何连接一律 **403** 并明确回「未开启 + 去哪开」（不是超时、也不是空工具表） |
+| 生效时机 | 拨完开关后发一条消息或重开 OH（每轮对话同步一次闸门） |
+
+OH 侧有只读工具 **`mcp_status`** 报这一整套状态（开关、监听是否就位、端点、暴露/扣下的
+工具数、开关位置、反向的 `mcpServers` 是另一件事），所以用户问「怎么让别的客户端连上你」
+时 OH 答得出实事。注意闸门与监听是两件事：listener 常驻绑定，真正决定接不接受请求的是
+设置里那个开关。
 
 ## 10. 对话面板协议
 
@@ -759,6 +847,10 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 
 | 版本 | 变更 |
 |---|---|
+| v1.21 | 新增 `gitlab` 命名空间与 `gitlab:read` / `gitlab:write` 权限：项目、仓库文件、Issue、合并请求（讨论线程、回复、解决、表情回应、指派、文件变更、新建与合入）、流水线与作业日志，以及条目计数与 ZIP 归档（api-reference §17）；桌面新增 GitLab 页与 `gitlab.ts` 状态层 |
+| v1.20 | 插件公告热通道（§3.1 `announce` 字段 + §8.4.1 `NOTICE.md` 约定）：激活/打开时后台拉取仓库公告，digest 判新，卡片弹「📢 公告」；**市场列表版本号实时化**：已装卡片/网页市场卡片的版本号直接从各插件仓库最新 manifest 取，名单快照仅作兜底显示 |
+| v1.19 | 插件更新机制：已安装插件卡片自带「检查更新/更新」（本体仓库优先：直接拉仓库最新 manifest 比版本，与安装同管线覆盖更新）；市场名单 version 降级为收录快照，不再要求作者同步维护 |
+| v1.18 | 新增 `ws` 命名空间与 `ws:external` 权限（§6.＋api-reference §21）：宿主 WebSocket 桥（长连接生命周期全在宿主 Rust 层，文本/b64 双通道、按插件配额与 TTL 清扫、无跨源限制、可注入握手头；宿主命令缺失时自动回落页面级 WebSocket） |
 | v1.17 | 小组件行数改为按桌面占位的**真实高度**铺满（不再按矮/中/高估算并封顶 5 行，布局备 20 条槽位、快照给足候选行）；脚注改为「显示出来的行数 + 还没显示的项数」，两者之和恒等于仍有效条目总数 |
 | v1.16 | `ui.confirm` 的 `opts` 新增 `title` 与 `confirmText`：危险样式应显式提供标题与确认按钮文案；宿主兜底为通用措辞，多场景共用同一句时提示缺乏针对性 |
 | v1.15 | 服务名匹配改为分档打分（100 / 80+ / 70 / 40+ / 20~35，`SERVICE_CONFIDENT=40`）：40 分及以上直接打开，近似名称仅返回候选由用户确认；`services.search` 返回 `score`；OH 兜底查询失败时如实上报，不再统一回复「没有相近名称」 |
@@ -777,3 +869,27 @@ Android WebView 环境不允许执行任意路径的二进制文件，sidecar �
 | v1.2 | 新增 `cal` 命名空间与日程云同步（CalDAV） |
 | v1.1 | 新增 `learn`、`venue`、`xk`、`kongjian`、`coursex` 命名空间 |
 | v1.0 | 首个公开版本 |
+
+## 视觉与身份字段（2026-10-12 市场升级）
+
+以下字段**全部可选、向后兼容**：老插件不写照常显示（列表回落 monogram，详情回落 description）。
+
+| 字段 | 类型 | 说明 | 示例 |
+|---|---|---|---|
+| `logo` | string | 作者 logo：http(s) URL **或仓库相对路径**（svg/png 都行） | `"assets/logo.svg"` |
+| `thumbnail` | string | 列表缩略图（比 logo 更"图片化"那张）；缺失回落 `logo`，再缺失回落 monogram | `"assets/thumb.png"` |
+| `screenshots` | string[] | 详情页简介图，按数组顺序展示；点击可放大 | `["assets/s1.png","https://…/s2.png"]` |
+| `readme` | string | 详情正文（**markdown 文本**；支持 GFM 表格/列表/代码块/图片）；缺失回落 `description` | `"# 特性\n- …"` |
+| `description` | string | 一句话简介（列表与详情都会用） | `"把课程表接进今日页"` |
+| `author` | string | 作者名（列表 meta 行显示） | `"@someone"` |
+| `homepage` | string | 主页 / 文档地址（详情页给「主页」按钮） | `"https://example.com"` |
+| `license` | string | 许可证标识（详情页 meta 行显示） | `"MIT"` |
+
+**路径规则**：写成仓库相对路径（如 `assets/logo.svg`）时，客户端会解析成
+`https://raw.githubusercontent.com/<owner>/<repo>/<branch|main>/<subPath>/资源路径`（见 `lib/market.ts` 的 `resolveAssetUrl`）；
+写绝对 URL 则原样使用。解析失败不裂图（回落到 monogram / 不渲染那张图）。
+
+**主题类插件**：`category: "theme"` 的主题插件在市场详情里可直接「启用主题 / 停用主题」（沿用插件卡片的开关语义）。
+**主题插件的规范声明（2026-10-12 统一判定）**：`manifest.category === "theme"` **或** 直接带非空 `themes: ThemeDef[]` 数组（**推荐后者**——这样外观与布局的「主题」板会自动收录，插件的分类、计数、市场筛选也都会认它）。
+判定实现唯一一份：`apps/desktop/src/lib/market.ts` 的 `isThemeEntry()`（市场筛选、我的插件分类、计数、插件加载器注册主题、外观板可见性全部走它）。
+**不用** tags / keywords 兜底：标签是自由文本，"只有 tags 没有 themes/category"的条目**不算**主题插件。

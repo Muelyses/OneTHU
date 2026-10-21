@@ -1,0 +1,67 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 布局原语样式（Stack / Inline / Spacer / Grow）
+ *
+ * 间距 0–10 档全部映射到结构层令牌；页面里不该再出现任何 flex/padding 拼装。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.og-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.og-inline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+}
+
+.og-stack--gap-1 { gap: var(--og-space-1); }
+.og-stack--gap-2 { gap: var(--og-space-2); }
+.og-stack--gap-3 { gap: var(--og-space-3); }
+.og-stack--gap-4 { gap: var(--og-space-4); }
+.og-stack--gap-5 { gap: var(--og-space-5); }
+.og-stack--gap-6 { gap: var(--og-space-6); }
+.og-stack--gap-7 { gap: var(--og-space-7); }
+.og-stack--gap-8 { gap: var(--og-space-8); }
+.og-stack--gap-9 { gap: var(--og-space-9); }
+.og-stack--gap-10 { gap: var(--og-space-10); }
+
+.og-inline--gap-1 { gap: var(--og-space-1); }
+.og-inline--gap-2 { gap: var(--og-space-2); }
+.og-inline--gap-3 { gap: var(--og-space-3); }
+.og-inline--gap-4 { gap: var(--og-space-4); }
+.og-inline--gap-5 { gap: var(--og-space-5); }
+.og-inline--gap-6 { gap: var(--og-space-6); }
+.og-inline--gap-7 { gap: var(--og-space-7); }
+.og-inline--gap-8 { gap: var(--og-space-8); }
+
+.og-stack--p-2, .og-inline--p-2 { padding: var(--og-space-2); }
+.og-stack--p-3, .og-inline--p-3 { padding: var(--og-space-3); }
+.og-stack--p-4, .og-inline--p-4 { padding: var(--og-space-4); }
+.og-stack--p-5, .og-inline--p-5 { padding: var(--og-space-5); }
+.og-stack--p-6, .og-inline--p-6 { padding: var(--og-space-6); }
+
+.og-stack--a-start, .og-inline--a-start { align-items: flex-start; }
+.og-stack--a-center, .og-inline--a-center { align-items: center; }
+.og-stack--a-end, .og-inline--a-end { align-items: flex-end; }
+.og-stack--a-baseline, .og-inline--a-baseline { align-items: baseline; }
+.og-stack--a-stretch, .og-inline--a-stretch { align-items: stretch; }
+
+.og-stack--j-start, .og-inline--j-start { justify-content: flex-start; }
+.og-stack--j-center, .og-inline--j-center { justify-content: center; }
+.og-stack--j-end, .og-inline--j-end { justify-content: flex-end; }
+.og-stack--j-between, .og-inline--j-between { justify-content: space-between; }
+.og-stack--j-around, .og-inline--j-around { justify-content: space-around; }
+
+.og-inline--spread > * { flex: 1 1 0; }
+.og-stack--wrap, .og-inline--wrap { flex-wrap: wrap; }
+.og-inline--fill { height: 100%; }
+.og-stack--fill { height: 100%; flex: 1 1 auto; }
+.og-inline--self-start { align-self: flex-start; }
+.og-inline--self-end { align-self: flex-end; }
+
+.og-spacer { flex: 1 1 auto; }
+.og-spacer--fixed { flex: 0 0 auto; }
+.og-grow { flex: 1 1 auto; min-width: 0; min-height: 0; }

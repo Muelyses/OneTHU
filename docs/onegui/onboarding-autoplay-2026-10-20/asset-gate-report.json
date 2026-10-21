@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "Pending decode shows an explicit loading status",
+    "No empty WebGL model is created before screenshots decode",
+    "Actual image-backed screen materials use the bundled real UI captures",
+    "Decoded screen assembly performs real Three.js draws",
+    "A failed asset keeps the functional fallback instead of a blank renderer",
+    "Asset failure preserves the automatic fallback sequence",
+    "Asset failure preserves chapter navigation and real feature action",
+    "No uncaught application errors in loading, success, or failure paths"
+  ],
+  "errors": [],
+  "passed": true,
+  "naturalCleanup": true
+}

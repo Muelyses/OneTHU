@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * OneTHU 主题插件系统 v1（2026-09-13 立项：「神秘的主题插件系统」）
  *
@@ -42,6 +43,7 @@ export interface ThemeDef {
 export interface ThemeSnapshot {
   themes: ThemeDef[];
   activeId: string | null;
+  effectiveId: string | null;
   /** 当前主题的 logo SVG（无则 null → 用默认 BrandLogo） */
   logoSvg: string | null;
   /** 被删除的内置 id（恢复按钮可见性依据） */
@@ -59,19 +61,19 @@ export interface ThemeSnapshot {
 const BUILTIN_THEMES: ThemeDef[] = [
   {
     id: "onethu.theme.ivory",
-    name: "象牙 · 默认",
-    version: "1.0.0",
+    get name() { return i18n("state.theme.78c3900fe08f"); },
+    version: "2.0.0",
     author: "OneTHU",
-    description: "中性蓝灰阶 + 业务蓝强调：tokens.css 原样，无覆盖。",
+    get description() { return i18n("state.theme.07befe8d2563"); },
     vars: {},
     source: "builtin",
   },
   {
     id: "onethu.theme.violet",
-    name: "紫水晶",
+    get name() { return i18n("state.theme.cfb4093a1ef4"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "紫罗兰主按钮 + 雾紫晕染的纸面。",
+    get description() { return i18n("state.theme.e2d5803563ce"); },
     vars: {
       "--primary": "#6d28d9",
       "--primary-hover": "#5b21b6",
@@ -95,10 +97,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
     // 清华紫：校色主题。全部取值由 tonal palette 派生（种子 #660874，见 packages/ui/src/palette.css
     // 与 docs/tokens-map.md 的亮色 scheme），不是手调色——种子一改、重跑 tools/gen-tokens.mjs，这里照抄即可。
     id: "onethu.theme.tsinghua",
-    name: "清华紫",
+    get name() { return i18n("state.theme.4e7abf4896fc"); },
     version: "1.0.0",
     author: "OneTHU",
-    description: "校色紫：紫底白字主按钮 + 藕紫纸面，链接与激活同色（MD3 tonal palette 派生）。",
+    get description() { return i18n("state.theme.2d0d99e06fa2"); },
     vars: {
       // 品牌族：primary tone 40 / 悬停 tone 30（加深一档，紫底白字变浅会掉对比度）
       "--primary": "#90399c",
@@ -131,10 +133,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.celadon",
-    name: "青瓷",
+    get name() { return i18n("state.theme.c4ef3664d417"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "青绿主按钮 + 瓷面水色的冷调。",
+    get description() { return i18n("state.theme.76069b8f9d9f"); },
     vars: {
       "--primary": "#0f766e",
       "--primary-hover": "#115e59",
@@ -156,10 +158,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.warmsand",
-    name: "暖沙",
-    version: "1.0.0",
+    get name() { return i18n("state.theme.4d63c47d6588"); },
+    version: "1.1.0",
     author: "OneTHU",
-    description: "沙金强调、暖纸底色，黄昏质感的纸面。",
+    get description() { return i18n("state.theme.e4adc0b697bb"); },
     vars: {
       "--accent": "#c2740a",
       "--accent-soft": "#fbf1e0",
@@ -175,10 +177,10 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.midnight",
-    name: "墨蓝夜航",
+    get name() { return i18n("state.theme.cb163d15eaea"); },
     version: "1.1.0",
     author: "OneTHU",
-    description: "海军蓝主按钮 + 冷雾蓝灰阶：夜航仪表盘。",
+    get description() { return i18n("state.theme.49b95f5dd079"); },
     vars: {
       "--primary": "#1e3a8a",
       "--primary-hover": "#1e40af",
@@ -200,11 +202,11 @@ const BUILTIN_THEMES: ThemeDef[] = [
   },
   {
     id: "onethu.theme.night",
-    name: "凝夜",
+    get name() { return i18n("state.theme.f4d017b4c6b8"); },
     version: "1.0.1",
     author: "OneTHU",
     dark: true,
-    description: "深夜工作台：墨蓝黑纸面 + 亮钢蓝强调，昼夜调度的黑夜档。",
+    get description() { return i18n("state.theme.7a440ac6411e"); },
     vars: {
       "--bg": "#0e1117",
       "--bg-soft": "#12161f",
@@ -217,8 +219,8 @@ const BUILTIN_THEMES: ThemeDef[] = [
       "--border-soft": "rgba(255, 255, 255, 0.05)",
       "--border-strong": "rgba(255, 255, 255, 0.18)",
       "--text-1": "#e8ebf2",
-      "--text-2": "#a3abb8",
-      "--text-3": "#7d8494",
+      "--text-2": "#bcc4d1",
+      "--text-3": "#959dac",
       "--text-dim": "#3a4152",
       "--primary": "#e8ebf2",
       "--primary-hover": "#c6ccd8",
@@ -261,6 +263,7 @@ const STYLE_ID = "onethu-theme-style";
  * 这张表是 tokens.css Compat 层的逆映射，必须逐条一致：由
  * tools/theme-system-test.mjs 从 tokens.css 反解并核对（任何漂移直接红）。
  */
+/** Legacy aliases are mirrored for components still using System roles. */
 export const COMPAT_TO_SYSTEM: Record<string, string> = {
   "--bg": "--md-sys-color-surface",
   "--bg-soft": "--md-sys-color-surface-container-low",
@@ -298,6 +301,7 @@ export const COMPAT_TO_SYSTEM: Record<string, string> = {
   "--shadow-3": "--md-sys-elevation-3",
   "--ring": "--md-sys-focus-ring",
   // 形状也一并镜像：主题想改圆角时，System 层的组件同样跟随（当前 7 个主题都没用到）
+  "--dsw-alias-bg-layer-2": "--md-sys-color-surface-container",
   "--r-sm": "--md-sys-shape-corner-small",
   "--r-md": "--md-sys-shape-corner-medium",
   "--r-lg": "--md-sys-shape-corner-large",
@@ -378,7 +382,7 @@ function bootstrap(): void {
   state.installed = state.installed.map((t) => {
     const fresh = shipped.get(t.id);
     if (!fresh || t.source === "plugin") return t;
-    if (t.version !== fresh.version || varsDiffer(t.vars, fresh.vars)) {
+    if (t.version !== fresh.version || t.name !== fresh.name || t.description !== fresh.description || varsDiffer(t.vars, fresh.vars)) {
       upgraded = true;
       return fresh;
     }
@@ -479,8 +483,20 @@ function applyTheme(def: ThemeDef | null): void {
   syncSystemBars(!!def.dark);
 }
 
+/** 取色开关偏好是否开着（theme.ts 不 import dynamicColor，避免循环依赖，只读同一个键） */
+function dynamicPrefOn(): boolean {
+  try {
+    return localStorage.getItem("onethu.dynamicColor") === "1";
+  } catch {
+    return false;
+  }
+}
+
 /** 应用当前应生效的主题：跟随系统时按系统暗/亮取日夜两档，否则手动单选 */
 function applyActive(): void {
+  /* 取色期间主题让位（含降级档）：否则系统亮暗一变，昼夜调度就把降级主题偷偷压回来，
+     用户看到「开关开着、主题却按昼夜乱跳」。关掉取色时 pref 先归 0，再走 reapply。 */
+  if (dynamicPrefOn()) return;
   const id = state.followSystem
     ? (systemDark ? state.nightThemeId : state.dayThemeId) ?? state.activeId
     : state.activeId;
@@ -512,6 +528,7 @@ function snapshot(): ThemeSnapshot {
   snapCache ??= {
     themes: [...state.installed],
     activeId: state.activeId,
+    effectiveId: effectiveTheme()?.id ?? null,
     logoSvg,
     deletedBuiltins: [...state.deletedBuiltins],
     followSystem: state.followSystem,
@@ -531,6 +548,30 @@ export function useThemes(): ThemeSnapshot {
   return useSyncExternalStore(subscribeThemes, snapshot);
 }
 
+/**
+ * 当前生效主题的强调色（**直取主题定义**，不经 DOM 级联）。
+ *
+ * 为什么不能读 CSS 变量：onegui-bridge.css 用 `html:root:not([data-og-skin])`（0,2,1）
+ * 把 --accent / --md-sys-color-secondary 全部重指成 `var(--og-accent…)`，压过主题注入的
+ * `:root[data-theme]`（0,2,0）——读任何一个都会读到「OG 的当前值」，也就是自己的输出：
+ * 自我吞噬，结果就是「换什么主题都是默认蓝」（2026-10-15 日志铁证：读到的 accent 恒为
+ * 库默认的业务蓝，与主题定义里的暖沙/紫罗兰等值无关）。
+ * 主题定义是唯一不经管线的真值来源。
+ */
+export function activeThemeAccent(): string {
+  const def = state.installed.find((t) => t.id === state.activeId);
+  if (!def) return "";
+  const v = def.vars as Record<string, string> | undefined;
+  return v?.["--accent"] ?? v?.["--primary"] ?? "";
+}
+
+/** 主题链路留痕：真机看不到控制台，/tmp/onethu-debug.log 是唯一现场 */
+function logTheme(msg: string): void {
+  void import("@tauri-apps/api/core")
+    .then((m) => m.invoke("log_debug", { line: new Date().toISOString() + " | [THEME] " + msg }))
+    .catch(() => undefined);
+}
+
 export function activateTheme(id: string): boolean {
   const def = state.installed.find((t) => t.id === id);
   if (!def) return false;
@@ -546,9 +587,18 @@ export function activateTheme(id: string): boolean {
     /* 隐私模式下 localStorage 不可用：取色注入仍被摘掉，本次会话行为正确 */
   }
   state.activeId = id;
-  applyTheme(def);
+  state.followSystem = false;
+  /* 注入失败也要落库 + 广播：否则「点了应用、状态仍是旧值、界面纹丝不动」，
+     而且现场不留任何痕迹（用户实测 2026-10-15；activeId 在存储里一直是 null）。
+     失败信息进调试日志（/tmp/onethu-debug.log），便于事后定位。 */
+  try {
+    applyTheme(def);
+  } catch (e) {
+    logTheme("applyTheme 失败：" + (e instanceof Error ? e.message : String(e)));
+  }
   persist();
   emit();
+  logTheme(`已应用 ${id}（注入 ${Object.keys(def.vars).length} 条，data-theme=${document.documentElement.dataset.theme ?? "未落"}`);
   return true;
 }
 
@@ -575,8 +625,38 @@ export function reapplyActiveTheme(): void {
   applyActive();
 }
 
-export function deactivateTheme(): void {
+/** 取色开关的降级档（清华紫）：视觉与 activeId 都切到它（设置页要显示"当前挂着清华紫"），
+ *  但**不动 followSystem**——原来的 activateTheme 会顺手关掉跟随昼夜，于是「关掉取色后
+ *  主题不自己回来」（dynamic-flow-test 3b；oneGUI 重排把 activateTheme 改成会关调度后回归）。 */
+export function setFallbackTheme(id: string): boolean {
+  const def = state.installed.find((t) => t.id === id);
+  if (!def) return false;
+  state.activeId = id;
+  applyTheme(def);
+  persist();
+  emit();
+  return true;
+}
+
+/** 只摘掉"当前应用的主题"（data-theme）并清掉手动选择，**不动昼夜调度**。
+ *  取色开关进出时用：取色期间主题必须让位（否则半套配色），但 followSystem 与日夜两档
+ *  不能被清掉——`deactivateTheme` 会顺手关掉跟随昼夜，于是"关掉取色后主题不自己回来"
+ *  （dynamic-flow-test 3b 断言的正是这条，oneGUI 重排后回归）。 */
+export function detachAppliedTheme(): void {
   state.activeId = null;
+  applyTheme(null);
+  persist();
+  emit();
+}
+
+export function deactivateTheme(): void {
+  if (document.documentElement.dataset.dynamic === "on") {
+    try { localStorage.setItem("onethu.dynamicColor", "0"); } catch { /* Private storage: clear the current injection anyway. */ }
+    document.getElementById("onethu-dynamic-color")?.remove();
+    delete document.documentElement.dataset.dynamic;
+  }
+  state.activeId = null;
+  state.followSystem = false;
   applyTheme(null);
   persist();
   emit();
@@ -598,7 +678,7 @@ export function installTheme(def: ThemeDef, source: "builtin" | "plugin" = "plug
     source,
     owner: source === "plugin" ? (owner ?? def.owner) : undefined,
   };
-  if (!clean.id) throw new Error("主题 id 不能为空");
+  if (!clean.id) throw new Error(i18n("state.theme.9a8ab964d522"));
   const i = state.installed.findIndex((t) => t.id === clean.id);
   if (i >= 0) state.installed[i] = clean;
   else state.installed.push(clean);
@@ -691,4 +771,10 @@ export function currentThemeIsDark(): boolean {
   } catch {
     return false;
   }
+}
+
+/** Effective definition includes scheduled day/night selection, never CSS bridge output. */
+export function effectiveTheme(): ThemeDef | null {
+  const id = state.followSystem ? (systemDark ? state.nightThemeId : state.dayThemeId) ?? state.activeId : state.activeId;
+  return state.installed.find(t => t.id === id) ?? null;
 }

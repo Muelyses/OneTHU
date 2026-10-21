@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "checks": [
+    "All 28 business calls plus plugin facade audited: display descriptors, values untouched",
+    "apps/desktop/src/pages/Organization.tsx: persisted default member name stays original",
+    "apps/desktop/src/components/OrganizationSection.tsx: persisted default member name stays original",
+    "chromium contacts: actual form title and field labels update while open",
+    "chromium contacts: same dialog/input DOM and name draft survive",
+    "chromium contacts: textarea and URL drafts survive",
+    "chromium contacts: language change does not resolve or submit organization form",
+    "chromium contacts: switching back does not reset fields",
+    "chromium contacts: actual cancel leaves organization storage unchanged",
+    "chromium org: actual form title and field labels update while open",
+    "chromium org: same dialog/input DOM and name draft survive",
+    "chromium org: textarea and URL drafts survive",
+    "chromium org: language change does not resolve or submit organization form",
+    "chromium org: switching back does not reset fields",
+    "chromium org: actual cancel leaves organization storage unchanged",
+    "webkit contacts: actual form title and field labels update while open",
+    "webkit contacts: same dialog/input DOM and name draft survive",
+    "webkit contacts: textarea and URL drafts survive",
+    "webkit contacts: language change does not resolve or submit organization form",
+    "webkit contacts: switching back does not reset fields",
+    "webkit contacts: actual cancel leaves organization storage unchanged",
+    "webkit org: actual form title and field labels update while open",
+    "webkit org: same dialog/input DOM and name draft survive",
+    "webkit org: textarea and URL drafts survive",
+    "webkit org: language change does not resolve or submit organization form",
+    "webkit org: switching back does not reset fields",
+    "webkit org: actual cancel leaves organization storage unchanged",
+    "No browser runtime errors: "
+  ],
+  "errors": [],
+  "screenshots": [
+    "chromium-contacts-en.png",
+    "chromium-org-en.png",
+    "webkit-contacts-en.png",
+    "webkit-org-en.png"
+  ],
+  "boundary": "Real App and actual organization form entry handlers; English dictionary-only fixture where catalogue is not yet translated. Chromium desktop and WebKit touch emulation, not native devices. All form operations cancel; no organization created or joined."
+}

@@ -7,30 +7,37 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
+/* 空态底座已收编 OneGUI EmptyState（.og-empty* 在 packages/gui/src/styles/row.css，
+   组件在 packages/gui/src/components/list.tsx）；宿主 Layout 只做转发。 */
 const CSS = readFileSync("apps/desktop/src/styles/global.css", "utf8");
-const LAYOUT = readFileSync("apps/desktop/src/components/Layout.tsx", "utf8");
+const GUI_CSS = readFileSync("packages/gui/src/styles/row.css", "utf8");
+const GUI_LIST = readFileSync("packages/gui/src/components/list.tsx", "utf8");
 const fails = [];
 const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 
-function block(sel) {
-  const i = CSS.indexOf(sel);
-  if (i < 0) return "";
-  return CSS.slice(i, CSS.indexOf("}", i));
+function blockOf(src) {
+  return (sel) => {
+    const i = src.indexOf(sel);
+    if (i < 0) return "";
+    return src.slice(i, src.indexOf("}", i));
+  };
 }
+const block = blockOf(CSS);
+const guiBlock = blockOf(GUI_CSS);
 
-/* 1 容器与标题配方 */
-const e = block(".empty {");
-ok(/display: flex/.test(e) && /flex-direction: column/.test(e), ".empty 应为纵向 flex");
-ok(/gap: 8px/.test(e), ".empty 的 gap 应为 8px");
-ok(/padding: 32px 16px/.test(e), ".empty 的 padding 应为 32px 16px");
-const t = block(".empty-title {");
-ok(/font-weight: 600/.test(t), ".empty-title 应为 600 字重（标题不能跟正文一样轻）");
-ok(/font-size: var\(--text-md\)/.test(t), ".empty-title 字号应走 --text-md 令牌");
-ok(block(".empty-hint {").length > 0 && block(".empty-action {").length > 0, "缺 .empty-hint / .empty-action 样式");
+/* 1 容器与标题配方（OneGUI 令牌口径） */
+const e = guiBlock(".og-empty {");
+ok(/display: flex/.test(e) && /flex-direction: column/.test(e), ".og-empty 应为纵向 flex");
+ok(/gap: var\(--og-space-2\)/.test(e), ".og-empty 的 gap 应走 8px 档（--og-space-2）");
+ok(/padding: var\(--og-space-7\) var\(--og-space-4\)/.test(e), ".og-empty 的 padding 应为竖向 28 / 横向 16 档令牌");
+const t = guiBlock(".og-empty-title {");
+ok(/font-weight: var\(--og-weight-semibold\)/.test(t), ".og-empty-title 应为 semibold 字重（标题不能跟正文一样轻）");
+ok(/font-size: var\(--og-text-subtitle\)/.test(t), ".og-empty-title 字号应走副标题令牌");
+ok(guiBlock(".og-empty-hint {").length > 0 && guiBlock(".og-empty-action {").length > 0, "缺 .og-empty-hint / .og-empty-action 样式");
 
-/* 2 Empty 组件要把四个槽位都渲出来 */
-for (const cls of ["empty-icon", "empty-title", "empty-hint", "empty-action"]) {
-  ok(LAYOUT.includes(cls), "Empty 组件没有渲染 ." + cls);
+/* 2 EmptyState 组件要把四个槽位都渲出来 */
+for (const cls of ["og-empty-icon", "og-empty-title", "og-empty-hint", "og-empty-action"]) {
+  ok(GUI_LIST.includes(cls), "EmptyState 组件没有渲染 ." + cls);
 }
 
 /* 3 行动按钮数量下限：现有 8 处，掉到 7 以下说明有人把按钮删了 */

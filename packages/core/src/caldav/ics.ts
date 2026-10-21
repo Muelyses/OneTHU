@@ -48,6 +48,10 @@ export interface IcsEvent {
   alarmMinutes?: number;
   /** OneTHU 私有来源标记（X-ONETHU-SRC：course/manual/…） */
   onethuSource?: string;
+  /** 用户在编辑器里勾了「在桌面小组件显示」（X-ONETHU-WIDGET:1）：该日程进桌面小组件的
+   *  「今天」卡片，行与 DDL 同款（见 apps/desktop/src/state/widgetSnapshot.ts）。
+   *  缺省 = 不进（保持既有行为：自定义日程原本不上小组件）。 */
+  onethuWidget?: boolean;
   lastModified?: number;
   /* ---- 服务端伴随字段（parseIcsWithMeta 注入，非 ICS 内容） ---- */
   href?: string;
@@ -66,6 +70,7 @@ export interface IcsOccurrence {
   allDay?: boolean;
   categories?: string[];
   onethuSource?: string;
+  alarmMinutes?: number;
 }
 
 /* ---------------- 时区换算（Intl，任意 IANA 时区） ---------------- */
@@ -126,11 +131,7 @@ export function escapeText(v: string): string {
     .replace(/\r\n|\r|\n/g, "\\n");
 }
 export function unescapeText(v: string): string {
-  return v
-    .replace(/\\[nN]/g, "\n")
-    .replace(/\\,/g, ",")
-    .replace(/\\;/g, ";")
-    .replace(/\\\\/g, "\\");
+  return v.replace(/\\([nN,;\\])/g, (_match, escaped: string) => /[nN]/.test(escaped) ? "\n" : escaped);
 }
 
 /* ---------------- 折行（≤75 字节，不切多字节） ---------------- */
@@ -247,8 +248,8 @@ export function parseIcs(text: string): IcsEvent[] {
       continue;
     }
     if (name === "END" && value.trim().toUpperCase() === "VEVENT") {
-      if (cur && cur.uid && cur.start) {
-        if (!cur.end || cur.end < cur.start) cur.end = cur.start;
+      if (cur && cur.uid && cur.start !== undefined) {
+        if (cur.end === undefined || cur.end < cur.start) cur.end = cur.start + (cur.allDay ? 86_400_000 : 0);
         events.push(cur as IcsEvent);
       }
       cur = null;
@@ -282,6 +283,7 @@ export function parseIcs(text: string): IcsEvent[] {
       }
       case "CATEGORIES": cur.categories = value.split(",").map((s) => unescapeText(s.trim())).filter(Boolean); break;
       case "X-ONETHU-SRC": cur.onethuSource = value.trim(); break;
+      case "X-ONETHU-WIDGET": cur.onethuWidget = /^(1|true)$/i.test(value.trim()); break;
       case "LAST-MODIFIED": { const p = parseDateValue(value, params); if (p) cur.lastModified = p.ms; break; }
       default: break;
     }
@@ -293,7 +295,7 @@ export function parseIcs(text: string): IcsEvent[] {
 
 function prop(name: string, params: string, value: string): string[] {
   const head = params ? `${name};${params}` : name;
-  return foldLine(`${head}:${value}`);
+  return foldLine(`${head}:${value}`).map((line, index) => index ? ` ${line}` : line);
 }
 
 /** 单个 VEVENT 块（不含 VCALENDAR 外壳） */
@@ -321,8 +323,13 @@ export function serializeEvent(ev: IcsEvent, nowMs = Date.now()): string[] {
     if (r.count) segs.push(`COUNT=${r.count}`);
     lines.push(...prop("RRULE", "", segs.join(";")));
   }
+  const recurrenceValue = (ms: number): string => ev.allDay ? fmtDateLocal(epochToWall(CAMPUS_TZ, ms)) : fmtDateTimeLocal(epochToWall(CAMPUS_TZ, ms));
+  const recurrenceParams = ev.allDay ? "VALUE=DATE" : `TZID=${CAMPUS_TZ}`;
+  if (ev.recurrenceId !== undefined) lines.push(...prop("RECURRENCE-ID", recurrenceParams, recurrenceValue(ev.recurrenceId)));
+  if (ev.exdates?.length) lines.push(...prop("EXDATE", recurrenceParams, ev.exdates.map(recurrenceValue).join(",")));
   if (ev.categories?.length) lines.push(...prop("CATEGORIES", "", ev.categories.map(escapeText).join(",")));
   if (ev.onethuSource) lines.push(...prop("X-ONETHU-SRC", "", ev.onethuSource));
+  if (ev.onethuWidget) lines.push(...prop("X-ONETHU-WIDGET", "", "1"));
   if (ev.lastModified) lines.push(...prop("LAST-MODIFIED", "", fmtDateTimeUtc(ev.lastModified)));
   if (ev.alarmMinutes && ev.alarmMinutes > 0) {
     lines.push(...prop("BEGIN", "", "VALARM"));
@@ -378,7 +385,7 @@ export function expandEvent(ev: IcsEvent, fromMs: number, toMs: number, override
   const mk = (start: number, override = false): IcsOccurrence => ({
     uid: ev.uid, start, end: start + duration, override,
     summary: ev.summary, location: ev.location, description: ev.description,
-    allDay: ev.allDay, categories: ev.categories, onethuSource: ev.onethuSource,
+    allDay: ev.allDay, categories: ev.categories, onethuSource: ev.onethuSource, alarmMinutes: ev.alarmMinutes,
   });
   if (!ev.rrule) {
     if (ev.start <= toMs && ev.end >= fromMs) return [mk(ev.start)];
@@ -440,7 +447,7 @@ export function expandEventSet(events: IcsEvent[], fromMs: number, toMs: number)
   for (const ev of events) {
     if (ev.recurrenceId !== undefined) {
       // 覆盖实例：作为独立出现（时间在窗口内才展示）
-      if (ev.start <= toMs && ev.end >= fromMs) out.push({ uid: ev.uid, start: ev.start, end: ev.end, override: true, summary: ev.summary, location: ev.location, description: ev.description, allDay: ev.allDay, categories: ev.categories, onethuSource: ev.onethuSource });
+      if (ev.start <= toMs && ev.end >= fromMs) out.push({ uid: ev.uid, start: ev.start, end: ev.end, override: true, summary: ev.summary, location: ev.location, description: ev.description, allDay: ev.allDay, categories: ev.categories, onethuSource: ev.onethuSource, alarmMinutes: ev.alarmMinutes });
       continue;
     }
     out.push(...expandEvent(ev, fromMs, toMs, overrideMap.get(ev.uid)));

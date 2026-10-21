@@ -1,0 +1,17 @@
+"$schema" = "schemas/schema.json"
+
+[default]
+description = """
+允许使用语音合成（TTS）：
+查询支持与引擎状态、初始化引擎、朗读/停止、读取中文音色列表、切换后端。
+（不需要额外运行时权限；Android 11+ 的 TTS 引擎可见性由 AndroidManifest 的 queries 声明）
+"""
+permissions = [
+  "allow-tts-supported",
+  "allow-tts-prepare",
+  "allow-tts-speak",
+  "allow-tts-stop",
+  "allow-tts-status",
+  "allow-tts-voices",
+  "allow-tts-set-backend",
+]

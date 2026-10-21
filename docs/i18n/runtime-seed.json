@@ -1,0 +1,233 @@
+{
+  "description": "Runtime-owned keys to merge into the generated catalog; these are real shared dialog messages, not test samples.",
+  "messages": {
+    "common.cancel": {
+      "zh-CN": "取消",
+      "en-US": "Cancel"
+    },
+    "common.confirm": {
+      "zh-CN": "确定",
+      "en-US": "Confirm"
+    },
+    "common.submit": {
+      "zh-CN": "提交",
+      "en-US": "Submit"
+    },
+    "confirm.title": {
+      "zh-CN": "请确认",
+      "en-US": "Please confirm"
+    },
+    "confirm.dangerTitle": {
+      "zh-CN": "此操作不可撤销，请确认",
+      "en-US": "This action cannot be undone. Please confirm."
+    },
+    "confirm.execute": {
+      "zh-CN": "确认执行",
+      "en-US": "Confirm action"
+    },
+    "confirm.dropCourseTitle": {
+      "zh-CN": "即将退选，请确认！",
+      "en-US": "You are about to drop this course."
+    },
+    "confirm.dropCourseAction": {
+      "zh-CN": "确认退选",
+      "en-US": "Drop course"
+    },
+    "confirm.ignoreHomeworkTitle": {
+      "zh-CN": "忽略这条作业，请确认！",
+      "en-US": "Ignore this assignment?"
+    },
+    "confirm.ignoreHomeworkAction": {
+      "zh-CN": "确认忽略",
+      "en-US": "Ignore assignment"
+    },
+    "confirm.imageReloginTitle": {
+      "zh-CN": "正文图片加载失败",
+      "en-US": "Unable to load images"
+    },
+    "confirm.relogin": {
+      "zh-CN": "重新登录",
+      "en-US": "Sign in again"
+    },
+    "confirm.ignore": {
+      "zh-CN": "忽略",
+      "en-US": "Ignore"
+    },
+    "prompt.input": {
+      "zh-CN": "输入内容",
+      "en-US": "Enter text"
+    },
+    "settings.label.account": {
+      "zh-CN": "账号",
+      "en-US": "Account"
+    },
+    "settings.label.notifications": {
+      "zh-CN": "通知与提醒",
+      "en-US": "Notifications"
+    },
+    "settings.label.widgets": {
+      "zh-CN": "桌面小组件",
+      "en-US": "Desktop widgets"
+    },
+    "settings.label.appearance": {
+      "zh-CN": "外观与布局",
+      "en-US": "Appearance & layout"
+    },
+    "settings.label.sync": {
+      "zh-CN": "数据与同步",
+      "en-US": "Data & sync"
+    },
+    "settings.label.downloads": {
+      "zh-CN": "下载与存储",
+      "en-US": "Downloads & storage"
+    },
+    "settings.label.help": {
+      "zh-CN": "帮助",
+      "en-US": "Help"
+    },
+    "settings.label.about": {
+      "zh-CN": "关于",
+      "en-US": "About"
+    },
+    "settings.label.settings": {
+      "zh-CN": "设置",
+      "en-US": "Settings"
+    },
+    "settings.label.plugins": {
+      "zh-CN": "插件",
+      "en-US": "Plugins"
+    },
+    "settings.label.theme": {
+      "zh-CN": "主题",
+      "en-US": "Theme"
+    },
+    "settings.label.visual": {
+      "zh-CN": "外观",
+      "en-US": "Appearance"
+    },
+    "settings.label.workspace": {
+      "zh-CN": "工作空间",
+      "en-US": "Workspace"
+    },
+    "settings.label.geek": {
+      "zh-CN": "极客模式",
+      "en-US": "Browser automation"
+    },
+    "settings.label.home": {
+      "zh-CN": "首页布局",
+      "en-US": "Home layout"
+    },
+    "settings.label.favorites": {
+      "zh-CN": "收藏夹",
+      "en-US": "Favorites"
+    },
+    "settings.label.cloud": {
+      "zh-CN": "云同步",
+      "en-US": "Cloud sync"
+    },
+    "settings.label.homework": {
+      "zh-CN": "外部作业源",
+      "en-US": "Assignment sources"
+    },
+    "settings.label.download": {
+      "zh-CN": "下载",
+      "en-US": "Downloads"
+    },
+    "settings.label.notification": {
+      "zh-CN": "通知",
+      "en-US": "Notifications"
+    },
+    "settings.label.bindings": {
+      "zh-CN": "账号与绑定",
+      "en-US": "Accounts & connections"
+    },
+    "settings.label.security": {
+      "zh-CN": "安全",
+      "en-US": "Security"
+    },
+    "settings.label.user": {
+      "zh-CN": "账户",
+      "en-US": "Account"
+    },
+    "settings.label.oneshot": {
+      "zh-CN": "OneShot 快捷入口",
+      "en-US": "OneShot shortcuts"
+    },
+    "settings.label.harness": {
+      "zh-CN": "OneTHU Harness",
+      "en-US": "OneTHU Harness"
+    },
+    "settings.label.advanced": {
+      "zh-CN": "高级配置",
+      "en-US": "Advanced configuration"
+    },
+    "settings.label.basic": {
+      "zh-CN": "基础设置",
+      "en-US": "Basic settings"
+    },
+    "settings.label.myPlugins": {
+      "zh-CN": "我的插件",
+      "en-US": "My plugins"
+    },
+    "settings.label.market": {
+      "zh-CN": "插件市场",
+      "en-US": "Plugin marketplace"
+    },
+    "settings.language.title": {
+      "zh-CN": "语言",
+      "en-US": "Language"
+    },
+    "settings.language.description": {
+      "zh-CN": "更改界面语言，保留当前页面和未完成的输入。",
+      "en-US": "Change the interface language while keeping your current page and drafts."
+    },
+    "settings.label.route.6d47abc2d3c7": {
+      "zh-CN": "IM 基础（扫码绑定 / 解绑）",
+      "en-US": ""
+    },
+    "settings.label.route.359213279505": {
+      "zh-CN": "IM 通道（进阶）",
+      "en-US": ""
+    },
+    "settings.label.route.3c02623c9a2b": {
+      "zh-CN": "保活",
+      "en-US": ""
+    },
+    "settings.label.route.4f0d5e092ff1": {
+      "zh-CN": "免费额度",
+      "en-US": ""
+    },
+    "settings.label.route.1a7930272017": {
+      "zh-CN": "入口",
+      "en-US": ""
+    },
+    "settings.label.route.72704d8e1e47": {
+      "zh-CN": "悬浮球",
+      "en-US": ""
+    },
+    "settings.label.route.487e926379fe": {
+      "zh-CN": "我的名片",
+      "en-US": ""
+    },
+    "settings.label.route.51cc2efa3e8d": {
+      "zh-CN": "我的组织",
+      "en-US": ""
+    },
+    "settings.label.route.3f0404bdc67a": {
+      "zh-CN": "模型 / MCP / 日志",
+      "en-US": ""
+    },
+    "settings.label.route.444fd1f85256": {
+      "zh-CN": "模型与多模态",
+      "en-US": ""
+    },
+    "settings.label.route.89fcbbfdca16": {
+      "zh-CN": "语音",
+      "en-US": ""
+    },
+    "state.seafile.accountChanged": {
+      "zh-CN": "云盘账号已变化，请重试。",
+      "en-US": "The cloud account has changed. Please try again."
+    }
+  }
+}

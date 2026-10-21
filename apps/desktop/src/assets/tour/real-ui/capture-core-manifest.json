@@ -1,0 +1,370 @@
+{
+  "passed": true,
+  "naturalCleanup": true,
+  "assets": [
+    {
+      "key": "simple-home",
+      "file": "simple-home.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "simple",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Set the real experience mode",
+        "Use the actual 首页 button"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 0
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "2d9db54dbaf0ebec38c0bae1a9880b395115260d4c0701b63ca67487dd5d1acf"
+    },
+    {
+      "key": "simple-home-done",
+      "file": "simple-home-done.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "simple",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Fixture reports one submitted assignment",
+        "Re-enter actual 首页"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 1,
+        "semantic": "Backend data fixture marks an assignment submitted; no nonexistent homepage checkbox is implied"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "eea4471ecf319d81ad4e90eff686517c38a339395f2a05f25680f3ae53ef5359"
+    },
+    {
+      "key": "practical-home",
+      "file": "practical-home.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Set the real experience mode",
+        "Use the actual 首页 button"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 0
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "f4d5e4af0c94d512fc13c5deb2a4714ddee2ec5f9392d74011078b3885104144"
+    },
+    {
+      "key": "practical-home-done",
+      "file": "practical-home-done.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Fixture reports one submitted assignment",
+        "Re-enter actual 首页"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "submittedHomework": 1,
+        "semantic": "Backend data fixture marks an assignment submitted; no nonexistent homepage checkbox is implied"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "210b156f9c00996cc770faacfedf975fbaf3655ac002e89ae76dde6bcd751aa2"
+    },
+    {
+      "key": "practical-more",
+      "file": "practical-more.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage + 更多功能",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Tap actual OneShot 更多功能"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "f5d3a57630fb7864316380b354c63296b56c5b24ffa1005df5930b507b55a38f"
+    },
+    {
+      "key": "practical-home-customized",
+      "file": "practical-home-customized.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "homepage",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "更多功能 → 把云盘放进快捷入口 → 入口1"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "customizedSlot": "1 = 云盘"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "3cdcf6414ca1d6ed5c9614db531292a0eef158231b9429c305c716c61685e5c9"
+    },
+    {
+      "key": "schedule",
+      "file": "schedule.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "practical",
+      "route": "schedule",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding",
+      "entrySteps": [
+        "Tap actual OneShot 课表"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "559c8417f21d00acaa039bf1862a230a67674488fc4fdd1eae3305c6aafb8427"
+    },
+    {
+      "key": "vault",
+      "file": "vault.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Open actual VaultPage"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "vaultItems": [
+          "课程笔记",
+          "小组讨论安排",
+          "阅读清单"
+        ],
+        "storage": "isolated localStorage"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "0b1f3188964dc83075ac334a058f2043908d1df5a4a5429222dca1687f6db93b"
+    },
+    {
+      "key": "vault-send-preview",
+      "file": "vault-send-preview.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 分享内容",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 分享口令"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "cloud": "installFakeCloud; no real account requests"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "8c50786266505eba101631f0a1c545b89486093a666686d7aa285e85be089923"
+    },
+    {
+      "key": "vault-send-code",
+      "file": "vault-send-code.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 分享内容 generated",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 生成分享口令",
+        "Wait for actual result component"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "cloud": "isolated fake-cloud transport",
+        "code": "generated demo code, invalid outside this local fixture"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "58c7366cdeeac16b276d24293e43c5a7d93037a1268eba47716d52737a07cb63"
+    },
+    {
+      "key": "vault-receive",
+      "file": "vault-receive.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 接收内容",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 接收",
+        "Fill the generated demo code"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "transport": "short code; NFC remains unsupported in browser"
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "b05e3066c021574077c66494d5ed38489fb47d5787996ba379daa760dff014c4"
+    },
+    {
+      "key": "vault-received",
+      "file": "vault-received.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "deviceScaleFactor": 1,
+      "safeAreaInsets": {
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      },
+      "mode": "full",
+      "route": "vault + 接收内容 success",
+      "url": "http://127.0.0.1:5180/?explorer-preview=onboarding#/vault",
+      "entrySteps": [
+        "Click actual 接收口令",
+        "Wait for real import result and new vault"
+      ],
+      "fixture": {
+        "campus": "isolated sample data via real data hooks",
+        "calendar": "sample autumn semester and info.getSchedule date-window response",
+        "clock": "2026-10-20 10:00 Asia/Shanghai",
+        "transport": "actual application code flow against fake-cloud",
+        "hardwareNfcSuccess": false
+      },
+      "source": "Uncomposited Playwright page screenshot of actual application DOM; no synthetic status bar or replacement UI",
+      "sha256": "38eb904213fba1759d81de8c769fe48f2f2dcc666f07afa1edb444cf12887d3b"
+    }
+  ],
+  "errors": [],
+  "scope": "Actual app DOM screenshots; fixtures replace data/transport only, never the UI"
+}

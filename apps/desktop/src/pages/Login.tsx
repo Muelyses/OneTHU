@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { Btn } from "@onethu/gui";
 import { BrandLogo, HardRefreshButton, Slogan } from "../components/Layout.js";
 import { useEffect, useState, type FormEvent } from "react";
 import type { TwoFactorMethod } from "@onethu/core";
@@ -6,7 +8,26 @@ import { loadRemembered } from "../lib/clients.js";
 import { useApp } from "../state/context.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 
+function LoginErrorPanel({ error }: { error: string }) {
+  const [copied, setCopied] = useState(false);
+  const [manual, setManual] = useState("");
+  useEffect(() => { setCopied(false); setManual(""); }, [error]);
+  const copyDiagnostics = async () => {
+    const { buildDiagnostics } = await import("../lib/diagnostics.js");
+    const text = await buildDiagnostics();
+    try { await navigator.clipboard.writeText(text); setCopied(true); }
+    catch { setManual(text); }
+  };
+  return <div className="login-error" role="alert">
+    <div>{error}</div>
+    <Btn variant="ghost" onClick={() => void copyDiagnostics()}>{copied ? i18n("components.devpanel.cce28dd1fcdf") : i18n("components.devpanel.bbce140b7682")}</Btn>
+    {manual ? <textarea aria-label={i18n("components.devpanel.bbce140b7682")} readOnly value={manual} onFocus={e => e.currentTarget.select()} style={{ width: "100%", minHeight: 120 }} /> : null}
+  </div>;
+}
+
 export function LoginPage() {
+  const uiLocale = useUiLocale();
+
   const { login, status, error } = useApp();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +45,7 @@ export function LoginPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !password) return;
+    if (busy || !username.trim() || !password) return;
     void login(username.trim(), password, remember);
   };
 
@@ -38,19 +59,13 @@ export function LoginPage() {
         </div>
 
         {!isTauri ? (
-          <div className="browser-hint">
-            浏览器预览无法直连校园网（CORS）。完整功能请运行桌面端：pnpm tauri:dev
-          </div>
+          <div className="browser-hint">{i18n("pages.login.294044d5d232")}</div>
         ) : null}
-        {error ? (
-          <div className="login-error" role="alert">
-            {error}
-          </div>
-        ) : null}
+        {error ? <LoginErrorPanel error={error} /> : null}
 
         <form onSubmit={onSubmit}>
           <div className="field">
-            <label htmlFor="username">学号</label>
+            <label htmlFor="username">{i18n("pages.login.c4d678ef6e37")}</label>
             <input
               id="username"
               autoComplete="username"
@@ -60,7 +75,7 @@ export function LoginPage() {
             />
           </div>
           <div className="field">
-            <label htmlFor="password">统一认证密码</label>
+            <label htmlFor="password">{i18n("pages.login.e7b51261e9c9")}</label>
             <input
               id="password"
               type="password"
@@ -70,35 +85,26 @@ export function LoginPage() {
             />
           </div>
           <label className="trust-row">
-            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-            记住密码（本机保存，重启后自动登录）
-          </label>
-          <button
-            className="btn btn-primary"
-            style={{ width: "100%", height: 40, marginTop: 4 }}
-            disabled={busy || !username || !password}
-          >
-            {busy ? "正在登录统一认证…" : "登录"}
-          </button>
+            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />{i18n("pages.login.1cdc0d5b06ff")}</label>
+          <Btn type="submit" variant="solid" tone="brand" block disabled={busy || !username || !password}>{busy ? i18n("pages.login.bd7a362053a5") : i18n("pages.login.1e2df9c3075a")}</Btn>
         </form>
 
         <div className="login-foot">
-          <span>使用清华大学统一身份认证</span>
+          <span>{i18n("pages.login.7046d9853c1b")}</span>
         </div>
         {DESENSITIZE_BUILD ? (
-          <p className="login-note">
-            脱敏演示版：登录与正式版完全相同，姓名 / 学号替换为化名与编造学号、成绩为编造成绩；
-            课表、教室、洗衣机等非敏感数据仍是真实数据。
-          </p>
+          <p className="login-note">{i18n("pages.login.f5d462594d7c")}</p>
         ) : null}
       </div>
     </div>
   );
 }
 
-const METHOD_NAMES: Record<string, string> = { wechat: "企业微信", mobile: "手机短信", totp: "TOTP 验证器" };
+const METHOD_NAMES: Record<string, string> = { get wechat() { return i18n("pages.login.f3943a7b3681"); }, get mobile() { return i18n("pages.login.f87602bd9134"); }, get totp() { return i18n("pages.login.22a686a1c34c"); } };
 
 export function TwoFactorPage() {
+  const uiLocale = useUiLocale();
+
   const { twoFactor, submit2FA, send2FA, sendLearn2FA, error, status, backToLogin } = useApp();
   const round = twoFactor?.round ?? 1;
   const doSend = round === 2 ? sendLearn2FA : send2FA;
@@ -127,6 +133,8 @@ export function TwoFactorPage() {
     try {
       await doSend(selected);
       setSent(true);
+    } catch {
+      // The app state exposes the localized error; do not mark an unsent code as sent.
     } finally {
       setSending(false);
     }
@@ -147,12 +155,12 @@ export function TwoFactorPage() {
           <div className="login-mark">
             <BrandLogo size={26} />
             <div>
-              <div className="login-title">二次认证</div>
-              <div className="login-sub">选择一种方式验证身份 · {twoFactor.username}</div>
+              <div className="login-title">{i18n("pages.login.98fc3e737ae3")}</div>
+              <div className="login-sub">{i18nRich("pages.login.718e9b90bf7d", { username: twoFactor.username })}</div>
             </div>
           </div>
 
-          {error ? <div className="login-error" role="alert">{error}</div> : null}
+          {error ? <LoginErrorPanel error={error} /> : null}
 
           <div className="field">
             <div className="method-list">
@@ -172,23 +180,13 @@ export function TwoFactorPage() {
                   </span>
                 </label>
               ))}
-              {methods.length === 0 ? <span className="empty" style={{ padding: "8px 0" }}>加载验证方式…</span> : null}
+              {methods.length === 0 ? <span className="empty" style={{ padding: "8px 0" }}>{i18n("pages.login.64f2052d09f0")}</span> : null}
             </div>
           </div>
 
           <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            <button type="button" className="btn-ghost btn" onClick={backToLogin}>
-              返回登录
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              disabled={!selected}
-              onClick={() => setStage("code")}
-            >
-              下一步
-            </button>
+            <Btn variant="ghost" onClick={backToLogin}>{i18n("pages.login.747b0f9082e6")}</Btn>
+            <Btn type="submit" variant="solid" tone="brand" block disabled={!selected} onClick={() => setStage("code")}>{i18n("pages.login.acfc4e74a650")}</Btn>
           </div>
         </div>
       </div>
@@ -204,16 +202,16 @@ export function TwoFactorPage() {
           <div>
             <div className="login-title">{nameOf(selected)}</div>
             <div className="login-sub">
-              {isTotp ? "输入验证器中的 6 位动态码" : sent ? "验证码已发送，请查收" : "点击下方按钮发送验证码"}
+              {isTotp ? i18n("pages.login.213f02f73129") : sent ? i18n("pages.login.702cf0e136eb") : i18n("pages.login.91f1e4b13d58")}
             </div>
           </div>
         </div>
 
-        {error ? <div className="login-error" role="alert">{error}</div> : null}
+        {error ? <LoginErrorPanel error={error} /> : null}
 
         <form onSubmit={onSubmit}>
           <div className="field">
-            <label htmlFor="code">验证码</label>
+            <label htmlFor="code">{i18n("pages.login.bb015c60bafc")}</label>
             <input
               id="code"
               inputMode="numeric"
@@ -223,39 +221,18 @@ export function TwoFactorPage() {
             />
           </div>
           <label className="trust-row">
-            <input type="checkbox" checked={trust} onChange={(e) => setTrust(e.target.checked)} />
-            信任此设备，30 天内免二次认证
-          </label>
+            <input type="checkbox" checked={trust} onChange={(e) => setTrust(e.target.checked)} />{i18n("pages.login.572898d767b6")}</label>
           <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
             {!isTotp ? (
-              <button
-                type="button"
-                className="btn"
-                style={{ flex: "0 0 auto" }}
-                onClick={() => void onSend()}
-                disabled={sending || !selected}
-              >
-                {sending ? "发送中…" : sent ? "重新发送" : "发送验证码"}
-              </button>
+              <Btn variant="outline" onClick={() => void onSend()} disabled={sending || !selected}>{sending ? i18n("pages.login.364970d8168c") : sent ? i18n("pages.login.9287ac799e54") : i18n("pages.login.4656fed515ae")}</Btn>
             ) : null}
-            <button
-              type="submit"
-              className="btn btn-primary"
-              style={{ flex: 1 }}
-              disabled={busy || submitting || (!isTotp && !sent) || !code.trim()}
-            >
-              {busy || submitting ? "校验中…" : "验证并登录"}
-            </button>
+            <Btn type="submit" variant="solid" tone="brand" block disabled={busy || submitting || (!isTotp && !sent) || !code.trim()}>{busy || submitting ? i18n("pages.login.fee0b2ceff3f") : i18n("pages.login.4e34537e5d0c")}</Btn>
           </div>
         </form>
 
         <div className="login-foot">
-          <button className="btn-ghost btn" onClick={() => { setStage("select"); setCode(""); setSent(false); }}>
-            ← 更改验证方式
-          </button>
-          <button className="btn-ghost btn" onClick={backToLogin}>
-            返回登录
-          </button>
+          <Btn variant="ghost" disabled={submitting || sending} onClick={() => { setStage("select"); setCode(""); setSent(false); }}>{i18n("pages.login.8875d1e9f0a3")}</Btn>
+          <Btn variant="ghost" disabled={submitting || sending} onClick={backToLogin}>{i18n("pages.login.747b0f9082e6")}</Btn>
         </div>
       </div>
     </div>

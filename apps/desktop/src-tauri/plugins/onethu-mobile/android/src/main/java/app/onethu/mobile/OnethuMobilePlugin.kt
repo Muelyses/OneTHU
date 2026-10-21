@@ -26,8 +26,15 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.nfc.tech.Ndef
+import android.nfc.NdefRecord
+import android.nfc.NfcAdapter
+import android.nfc.Tag
+import java.nio.charset.StandardCharsets
 import android.media.MediaScannerConnection
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.os.Environment
 import android.provider.MediaStore
@@ -38,10 +45,12 @@ import android.widget.LinearLayout
 import androidx.activity.result.ActivityResult
 import app.tauri.annotation.ActivityCallback
 import android.webkit.CookieManager
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.Permission
@@ -75,6 +84,12 @@ class OpenIntentArgs {
     var url: String = ""
 }
 
+/** 待安装的更新包路径（Rust 侧已校验绝对路径，这里再校验存在与后缀） */
+@InvokeArg
+class InstallApkArgs {
+    var path: String = ""
+}
+
 @InvokeArg
 class SetBarThemeArgs {
     var dark: Boolean = false
@@ -95,6 +110,18 @@ class SeedCookiesArgs {
     var cookie: String = ""
 }
 
+/** 云盘访问口令读取窗（openCloudTokenWebview）：共享登录态的全屏 WebView。
+ *  种子来自 Rust 统一 native jar（经 CookieManager 写入）；token 只经
+ *  document.title 回传（WebChromeClient 接住），不设 JavascriptInterface。 */
+@InvokeArg
+class CloudTokenWebviewArgs {
+    var url: String = ""
+    /** 页面脚本（与桌面同一份，只读取已有口令；绝不点「生成/重置」） */
+    var script: String = ""
+    /** `[{"url":…,"cookies":["name=value; Domain=…; Path=/; Secure"]}]`（仅内存传递，绝不打印） */
+    var cookieSeedsJson: String = "[]"
+}
+
 @InvokeArg
 class OpenWebModalArgs {
     var url: String = ""
@@ -102,7 +129,7 @@ class OpenWebModalArgs {
      *  绝不打印 / 落盘；空串 = 不注入（R20-A 只读浏览行为不变）。 */
     var cookie: String = ""
     /** 应用当前是否深色主题（2026-09-20）：true 时对 WebView 开启「算法暗化」——
-     *  官方页（THUbook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
+     *  官方页（THUBook / 在线服务）自带黑字在深色主题下会看不见（用户实录）。 */
     var dark: Boolean = false
     /** Cookie 归属域（如 https://webvpn.tsinghua.edu.cn/）。空 = 用 url 的 origin。
      *  2026-09-20：此前硬编码成 pro.yuketang.cn，非雨课堂的官方页（在线服务/THOS）种不进去。 */
@@ -776,6 +803,195 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         }
     }
 
+    /* ── 云盘访问口令：应用内「共享登录态」读取窗（与桌面 open_cloud_token_window 同一份脚本）──
+     * 进页面：把 Rust 统一 native jar 的认证票经 CookieManager 种进 WebView（THOS 同款）；
+     * 出页面：把 WebView 里新建/续期的票收回去给 Rust 回灌——「进种出灌」双向桥。
+     * token 经 document.title 回传，WebChromeClient.onReceivedTitle 接住；
+     * 不设 JavascriptInterface（零新增攻击面），绝不打印 Cookie/token 值。 */
+    private val cloudCookieOrigins = listOf(
+        "https://cloud.tsinghua.edu.cn/",
+        "https://id.tsinghua.edu.cn/",
+        "https://oauth.tsinghua.edu.cn/",
+        "https://webvpn.tsinghua.edu.cn/",
+    )
+
+    /** 读回 WebView CookieManager 里四域的认证票（dismiss 前调用；dismiss 即 destroy） */
+    private fun collectCloudCookieSeeds(): JSONArray {
+        val cm = CookieManager.getInstance()
+        cm.flush()
+        val arr = JSONArray()
+        for (base in cloudCookieOrigins) {
+            val header = cm.getCookie(base) ?: continue
+            val pairs = JSONArray()
+            for (pair in header.split("; ")) {
+                val p = pair.trim()
+                if (p.isEmpty() || !p.contains("=")) continue
+                pairs.put(p)
+            }
+            if (pairs.length() == 0) continue
+            val seed = JSONObject()
+            seed.put("url", base)
+            seed.put("cookies", pairs)
+            arr.put(seed)
+        }
+        return arr
+    }
+
+    @Command
+    fun openCloudTokenWebview(invoke: Invoke) {
+        val args = invoke.parseArgs(CloudTokenWebviewArgs::class.java)
+        if (!args.url.startsWith("https://")) {
+            invoke.reject("拒绝在应用内打开非 https 链接")
+            return
+        }
+        activity.runOnUiThread {
+            try {
+                val cm = CookieManager.getInstance()
+                cm.setAcceptCookie(true)
+                // 进页面种票：种子来自 Rust 统一 jar（绝不打印内容）
+                try {
+                    val seeds = JSONArray(args.cookieSeedsJson.ifBlank { "[]" })
+                    var seeded = 0
+                    for (i in 0 until seeds.length()) {
+                        val seed = seeds.getJSONObject(i)
+                        val base = seed.optString("url")
+                        val cookies = seed.optJSONArray("cookies") ?: continue
+                        for (j in 0 until cookies.length()) {
+                            cm.setCookie(base, cookies.optString(j))
+                            seeded++
+                        }
+                    }
+                    cm.flush()
+                    Log.i("onethu", "[CLOUD-TOKEN] 已种 $seeded 条会话票 → ${args.url}")
+                } catch (e: Throwable) {
+                    Log.i("onethu", "[CLOUD-TOKEN] 种票解析失败：${e.message}")
+                }
+
+                val web = WebView(activity)
+                cm.setAcceptThirdPartyCookies(web, true)
+                web.settings.javaScriptEnabled = true
+                web.settings.domStorageEnabled = true
+                // 同主窗口 UA 指纹（wengine/webvpn 票按 UA 绑定，换了 UA 票不算数）
+                web.settings.userAgentString = desktopUserAgent
+                web.settings.useWideViewPort = true
+                web.settings.loadWithOverviewMode = true
+                web.settings.setSupportZoom(true)
+                web.settings.builtInZoomControls = true
+                web.settings.displayZoomControls = false
+
+                // 页面脚本注入（脚本自带 window 守卫，重复注入幂等）
+                web.webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        if (args.script.isNotBlank()) view?.evaluateJavascript(args.script, null)
+                    }
+                }
+
+                val dialog = Dialog(activity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                var settled = false
+                var timeoutHit = false
+                val timeoutRunnable = Runnable {
+                    timeoutHit = true
+                    dialog.dismiss()
+                }
+                val timeoutHandler = Handler(Looper.getMainLooper())
+                fun settleResult(ret: JSObject) {
+                    if (settled) return
+                    settled = true
+                    timeoutHandler.removeCallbacks(timeoutRunnable)
+                    // 统一在此收票：token 成功与用户中途关闭都把 WebView 侧会话带回去
+                    ret.put("cookieSeeds", collectCloudCookieSeeds())
+                    invoke.resolve(ret)
+                }
+
+                // title 回传通道（桌面同款标记）：拿到 40 位口令 → 收票 → 关窗
+                web.webChromeClient = object : WebChromeClient() {
+                    override fun onReceivedTitle(view: WebView?, title: String?) {
+                        super.onReceivedTitle(view, title)
+                        val t = title ?: return
+                        val token = t.removePrefix("ONETHU_CTOKEN::")
+                        if (token.length != t.length && Regex("^[0-9a-fA-F]{40}$").matches(token)) {
+                            val ret = JSObject()
+                            ret.put("token", token)
+                            settleResult(ret)
+                            dialog.dismiss()
+                        }
+                    }
+                }
+
+                // 布局：WebView weight=1 铺满 + 底部按钮条（R18b 同款）
+                val root = LinearLayout(activity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setBackgroundColor(Color.WHITE)
+                }
+                root.addView(
+                    web,
+                    LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f),
+                )
+                val bottom = LinearLayout(activity).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER
+                    setPadding(24, 16, 24, 16)
+                    setBackgroundColor(Color.WHITE)
+                }
+                val readBtn = Button(activity).apply {
+                    text = "重新读取现有口令"
+                    setTextColor(Color.WHITE)
+                    setBackgroundColor(Color.parseColor("#1A6FD4"))
+                }
+                val closeBtn = Button(activity).apply {
+                    text = "关闭"
+                    setTextColor(Color.parseColor("#1F2329"))
+                    setBackgroundColor(Color.parseColor("#E5E5E5"))
+                }
+                val readLp = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                readLp.marginEnd = 16
+                bottom.addView(readBtn, readLp)
+                bottom.addView(
+                    closeBtn,
+                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f),
+                )
+                root.addView(
+                    bottom,
+                    LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                    ),
+                )
+
+                dialog.setContentView(root)
+                readBtn.setOnClickListener {
+                    // 异步加载后手动触发一次读取（脚本暴露的重入口；只读不生成）
+                    web.evaluateJavascript(
+                        "window.__ONETHU_CLOUD_READ && window.__ONETHU_CLOUD_READ();",
+                        null,
+                    )
+                }
+                closeBtn.setOnClickListener { dialog.dismiss() }
+                dialog.setOnDismissListener {
+                    // 结果只回传一次（token 成功 / 关闭按钮 / 返回键 / 超时都走这里兜底）
+                    if (!settled) {
+                        val ret = JSObject()
+                        ret.put("cancelled", true)
+                        if (timeoutHit) ret.put("reason", "timeout")
+                        settleResult(ret)
+                    }
+                    web.destroy()
+                }
+
+                web.loadUrl(args.url)
+                dialog.show()
+                dialog.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                )
+                timeoutHandler.postDelayed(timeoutRunnable, 10 * 60 * 1000)
+            } catch (e: Exception) {
+                invoke.reject(e.message ?: "打开云盘访问口令窗口失败")
+            }
+        }
+    }
+
     /** 全屏 Dialog WebView 打开任意 http(s) 页面（桌面模式 + 可缩放）。
      *  回传 {}：用户点「关闭」或按返回键即销毁，无任何数据回读。 */
     @Command
@@ -1065,9 +1281,15 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                     WidgetStore.saveInstance(ctx, id, instances.getJSONObject(key).toString())
                 }
             }
-            root.optJSONObject("slots")?.let { WidgetStore.saveSlots(ctx, it.toString()) }
+            root.optJSONObject("slots")?.let {
+                // Keep only the small widget dictionary globally for unbound placeholders.
+                val slotSnapshot = JSONObject().put("slots", it)
+                root.optString("locale").takeIf { value -> value.isNotEmpty() }?.let { value -> slotSnapshot.put("locale", value) }
+                root.optJSONObject("widgetText")?.let { value -> slotSnapshot.put("widgetText", value) }
+                WidgetStore.saveSlots(ctx, slotSnapshot.toString())
+            }
             // 已被移除的小组件：顺手清掉它的内容（否则 appWidgetId 复用时会串内容）
-            WidgetStore.pruneInstances(ctx, live)
+            if (instances != null && root.optBoolean("prune", false)) WidgetStore.pruneInstances(ctx, live)
             activity.runOnUiThread { OnethuBaseWidget.refreshAll(ctx) }
             invoke.resolve(JSObject().put("ok", true))
         } catch (e: Exception) {
@@ -1633,4 +1855,155 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             invoke.reject(e.message ?: "读取系统取色失败")
         }
     }
+
+    /** 根级返回键退出：finish 当前 Activity（Tauri core app exit 在本项目 ACL 下被拒）。 */
+    @Command
+    fun mobileExit(invoke: Invoke) {
+        invoke.resolve()
+        activity.runOnUiThread { activity.finishAffinity() }
+    }
+
+    /* ── 碰一碰（NFC ReaderMode）──
+     * 只读标签/对方 HCE 模拟的 NDEF 文本；读取完自动关 ReaderMode。
+     * 发送端 HCE 服务后续批次接入；当前先把「接收」跑通。 */
+    @Command
+    fun nfcAvailable(invoke: Invoke) {
+        val adapter = NfcAdapter.getDefaultAdapter(activity)
+        val ret = JSObject()
+        ret.put("available", adapter != null)
+        ret.put("enabled", adapter?.isEnabled == true)
+        invoke.resolve(ret)
+    }
+
+    @Command
+    fun nfcShareText(invoke: Invoke) {
+        val args = invoke.parseArgs(NfcShareArgs::class.java)
+        val text = args.text.trim()
+        if (text.isEmpty()) {
+            invoke.reject("没有可分享的碰一碰内容")
+            return
+        }
+        NfcHceService.payload = text
+        invoke.resolve(JSObject().put("ok", true))
+    }
+
+    @Command
+    fun nfcReadTag(invoke: Invoke) {
+        val adapter = NfcAdapter.getDefaultAdapter(activity)
+        if (adapter == null) {
+            invoke.reject("这台设备没有 NFC")
+            return
+        }
+        if (!adapter.isEnabled) {
+            invoke.reject("NFC 未开启：到系统设置里打开 NFC 再碰")
+            return
+        }
+        val handler = Handler(Looper.getMainLooper())
+        var done = false
+        val flags = NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B or
+            NfcAdapter.FLAG_READER_NFC_F or NfcAdapter.FLAG_READER_NFC_V or
+            NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+        val timeout = Runnable {
+            if (done) return@Runnable
+            done = true
+            try { adapter.disableReaderMode(activity) } catch (_: Exception) {}
+            invoke.reject("超时：10 秒内没有读到 NFC 内容")
+        }
+        val callback = NfcAdapter.ReaderCallback { tag: Tag ->
+            if (done) return@ReaderCallback
+            done = true
+            handler.post {
+                try { adapter.disableReaderMode(activity) } catch (_: Exception) {}
+                try {
+                    val text = ndefTextOf(tag)
+                    if (text.isNullOrBlank()) invoke.reject("这个 NFC 标签没有可读文本（需要 NDEF 文本/URI）")
+                    else invoke.resolve(JSObject().put("text", text))
+                } catch (e: Exception) {
+                    invoke.reject(e.message ?: "读取 NFC 标签失败")
+                }
+            }
+        }
+        adapter.enableReaderMode(activity, callback, flags, null)
+        handler.postDelayed(timeout, 10_000)
+    }
+
+    private fun ndefTextOf(tag: Tag): String? {
+        val ndef = Ndef.get(tag) ?: return null
+        val msg = ndef.cachedNdefMessage ?: ndef.ndefMessage ?: return null
+        for (rec in msg.records) {
+            if (rec.tnf == NdefRecord.TNF_WELL_KNOWN && rec.type.contentEquals(NdefRecord.RTD_TEXT)) {
+                val payload = rec.payload
+                if (payload.isEmpty()) continue
+                val status = payload[0].toInt() and 0xFF
+                val langLen = status and 0x3F
+                val start = 1 + langLen
+                if (start > payload.size) continue
+                return String(payload, start, payload.size - start, StandardCharsets.UTF_8)
+            }
+            if (rec.tnf == NdefRecord.TNF_ABSOLUTE_URI || rec.tnf == NdefRecord.TNF_WELL_KNOWN && rec.type.contentEquals(NdefRecord.RTD_URI)) {
+                return String(rec.payload, StandardCharsets.UTF_8)
+            }
+        }
+        return null
+    }
+
+    /* ── 检查更新：把下载好的安装包交给系统安装页 ──
+     * 由主 crate 的 updater_open_installer 经 run_mobile_plugin("installApk") 调用。
+     * **只拉起安装页，绝不静默安装**：不碰 PackageInstaller 的静默接口，
+     * 确认与授权都由 ROM 自己的安装页接手。 */
+
+    /** 已下载的更新包 → content:// → ACTION_VIEW。
+     *
+     * 为什么要 FileProvider：Android 7 起把 file:// 交给别的应用会抛 FileUriExposedException，
+     * 必须换成 content:// 并显式授予读权限（本插件的 provider 用的是宿主那份
+     * `${applicationId}.fileprovider`，file_paths.xml 已含 `<cache-path path="."/>`，
+     * 覆盖下载落点 cacheDir/updates —— 同 onethu-overlay 的取件通道）。
+     *
+     * Android 8 起还有一道系统闸：来源应用要持有 REQUEST_INSTALL_PACKAGES（本插件清单已声明），
+     * 且用户要允许「安装未知应用」。没允许时系统会把 Intent 静默吞掉（点了没反应），
+     * 所以这里先查一次，直接给出可操作的原因，而不是让用户猜。 */
+    @Command
+    fun installApk(invoke: Invoke) {
+        val args = invoke.parseArgs(InstallApkArgs::class.java)
+        try {
+            val file = File(args.path)
+            if (args.path.isBlank() || !file.isAbsolute) {
+                invoke.reject("安装包路径非法（需要绝对路径）")
+                return
+            }
+            if (!file.exists() || !file.isFile) {
+                invoke.reject("安装包不存在，请重新下载")
+                return
+            }
+            if (!file.name.lowercase(Locale.US).endsWith(".apk")) {
+                invoke.reject("这个文件不是安装包（.apk），请重新下载")
+                return
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                !activity.packageManager.canRequestPackageInstalls()
+            ) {
+                invoke.reject("尚未允许「安装未知应用」，请在系统设置里允许后重试")
+                return
+            }
+            val uri =
+                FileProvider.getUriForFile(activity, "${activity.packageName}.fileprovider", file)
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            activity.startActivity(intent)
+            invoke.resolve()
+        } catch (e: ActivityNotFoundException) {
+            invoke.reject("系统里没有可用的安装器，请在文件管理器里手动打开")
+        } catch (e: IllegalArgumentException) {
+            invoke.reject("安装包不在可分享目录内，请重新下载")
+        } catch (e: Exception) {
+            invoke.reject(e.message ?: "拉起系统安装页失败，请重试")
+        }
+    }
+}
+
+@InvokeArg
+class NfcShareArgs {
+    var text: String = ""
 }

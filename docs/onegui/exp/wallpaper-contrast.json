@@ -1,0 +1,1989 @@
+{
+ "url": "http://127.0.0.1:5180/?explorer-preview=home",
+ "dark": false,
+ "scheme": "light",
+ "glass": "deep",
+ "rows": [
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-time>span.chrome-clock-colon",
+   "t": ":",
+   "c": "rgb(107, 107, 101)",
+   "fs": 64,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     624,
+     227,
+     637,
+     303
+    ]
+   ],
+   "tRgb": [
+    107,
+    107,
+    101
+   ],
+   "cr": 5.3624026224622385,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 0.8863636363636364,
+   "rect": [
+    624,
+    227,
+    637,
+    303
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-actions>span.og-chip.og-chip--sm.og-chip--interactive>span.og-chip-label",
+   "t": "更多功能",
+   "c": "rgb(80, 80, 75)",
+   "fs": 11,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     585,
+     478,
+     629,
+     491
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.9925373134328358,
+   "rect": [
+    585,
+    478,
+    629,
+    491
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-actions>span.og-chip.og-chip--sm.og-chip--interactive>span.og-chip-label",
+   "t": "详细功能",
+   "c": "rgb(80, 80, 75)",
+   "fs": 11,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     655,
+     478,
+     699,
+     491
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.9888059701492538,
+   "rect": [
+    655,
+    478,
+    699,
+    491
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.shell.explorer-shell.has-shell-wallpaper>nav.ex-bbar>button.ex-bbar-btn>span.ex-bbar-label",
+   "t": "标签页",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     45,
+     16,
+     84,
+     32
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    45,
+    16,
+    84,
+    32
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.shell.explorer-shell.has-shell-wallpaper>nav.ex-bbar>button.ex-bbar-btn>span.ex-bbar-label",
+   "t": "OneGO!",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     1200,
+     16,
+     1249,
+     32
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.558474909746433,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    1200,
+    16,
+    1249,
+    32
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "待办",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     359,
+     426,
+     385,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    359,
+    426,
+    385,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "课程",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     423,
+     426,
+     449,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    423,
+    426,
+    449,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "日程",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     487,
+     426,
+     513,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    487,
+    426,
+    513,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "寻迹",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     551,
+     426,
+     577,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    551,
+    426,
+    577,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "邮箱",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     615,
+     426,
+     641,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    615,
+    426,
+    641,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "云盘",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     679,
+     426,
+     705,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    679,
+    426,
+    705,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "GitLab",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     735,
+     425,
+     776,
+     441
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    735,
+    425,
+    776,
+    441
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "THUBook",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     798,
+     425,
+     856,
+     441
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    798,
+    425,
+    856,
+    441
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.chrome-block.chrome-dock>div.hs-dock-row>button.sphere.hs-dock-sphere>span.sphere-name",
+   "t": "清小搭",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     879,
+     426,
+     918,
+     442
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 7.767657253889992,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    879,
+    426,
+    918,
+    442
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-chrome-layer>div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-date",
+   "t": "10月17日 星期六",
+   "c": "rgb(80, 80, 75)",
+   "fs": 13,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     587,
+     306,
+     683,
+     322
+    ]
+   ],
+   "tRgb": [
+    80,
+    80,
+    75
+   ],
+   "cr": 8.107610495089702,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    587,
+    306,
+    683,
+    322
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.p",
+   "t": "(",
+   "c": "rgb(33, 33, 32)",
+   "fs": 15,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     577,
+     15,
+     586,
+     34
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.881578947368421,
+   "rect": [
+    577,
+    15,
+    586,
+    34
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.o",
+   "t": "O",
+   "c": "rgb(33, 33, 32)",
+   "fs": 17.1,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     587,
+     14,
+     600,
+     34
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.8604651162790697,
+   "rect": [
+    587,
+    14,
+    600,
+    34
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.h",
+   "t": "H",
+   "c": "rgb(33, 33, 32)",
+   "fs": 15.9,
+   "fw": "700",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     600,
+     13,
+     612,
+     35
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.8806818181818182,
+   "rect": [
+    600,
+    13,
+    612,
+    35
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-bbar-center>button.ohx-capsule>span.harness-mark>span.p",
+   "t": ")",
+   "c": "rgb(33, 33, 32)",
+   "fs": 15,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     613,
+     15,
+     622,
+     34
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 0.8421052631578947,
+   "rect": [
+    613,
+    15,
+    622,
+    34
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "nav.ex-bbar>div.ex-bbar-center>button.ohx-capsule>span.ohx-capsule-ph",
+   "t": "搜索或问小OH",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     630,
+     17,
+     715,
+     33
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.024296529813205,
+   "bg": [
+    247,
+    247,
+    245
+   ],
+   "bL": 0.9288825770602029,
+   "share": 1,
+   "rect": [
+    630,
+    17,
+    715,
+    33
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.og-surface.og-card.og-card--flush>div.og-empty>div.og-empty-title",
+   "t": "今天没有课。",
+   "c": "rgb(33, 33, 32)",
+   "fs": 16,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     103,
+     152,
+     199,
+     170
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.440097019295774,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    103,
+    152,
+    199,
+    170
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.og-surface.og-card.og-card--flush>div.og-empty>div.og-empty-title",
+   "t": "暂时没有新通知。",
+   "c": "rgb(33, 33, 32)",
+   "fs": 16,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     87,
+     344,
+     215,
+     362
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.440097019295774,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    87,
+    344,
+    215,
+    362
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "span.ex-tab-glyph>span.brand-logo>span.word>i",
+   "t": "n",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13.7,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     81,
+     56,
+     88,
+     72
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.564170903626277,
+   "bg": [
+    251,
+    251,
+    250
+   ],
+   "bL": 0.9640571769010831,
+   "share": 0.5833333333333334,
+   "rect": [
+    81,
+    56,
+    88,
+    72
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.u",
+   "t": "U",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "800",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     86,
+     69,
+     95,
+     84
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.573826146619014,
+   "bg": [
+    251,
+    251,
+    251
+   ],
+   "bL": 0.964686247894465,
+   "share": 0.6397058823529411,
+   "rect": [
+    86,
+    69,
+    95,
+    84
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.p",
+   "t": "(",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     63,
+     56,
+     70,
+     71
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.698557188452753,
+   "bg": [
+    252,
+    252,
+    251
+   ],
+   "bL": 0.9728128875296275,
+   "share": 0.8046875,
+   "rect": [
+    63,
+    56,
+    70,
+    71
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "span.ex-tab-glyph>span.brand-logo>span.word>i",
+   "t": "O",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13.7,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     70,
+     56,
+     80,
+     72
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.698557188452753,
+   "bg": [
+    252,
+    252,
+    251
+   ],
+   "bL": 0.9728128875296275,
+   "share": 0.7361111111111112,
+   "rect": [
+    70,
+    56,
+    80,
+    72
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "span.ex-tab-glyph>span.brand-logo>span.word>i",
+   "t": "e",
+   "c": "rgb(33, 33, 32)",
+   "fs": 13.7,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     89,
+     56,
+     95,
+     72
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.698557188452753,
+   "bg": [
+    252,
+    252,
+    251
+   ],
+   "bL": 0.9728128875296275,
+   "share": 0.703125,
+   "rect": [
+    89,
+    56,
+    95,
+    72
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.u",
+   "t": "H",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "800",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     78,
+     69,
+     86,
+     84
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.698557188452753,
+   "bg": [
+    252,
+    252,
+    251
+   ],
+   "bL": 0.9728128875296275,
+   "share": 0.6666666666666666,
+   "rect": [
+    78,
+    69,
+    86,
+    84
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.p",
+   "t": ")",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     95,
+     70,
+     103,
+     85
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.698557188452753,
+   "bg": [
+    252,
+    252,
+    251
+   ],
+   "bL": 0.9728128875296275,
+   "share": 0.7878787878787878,
+   "rect": [
+    95,
+    70,
+    103,
+    85
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "button.ex-tab-main>span.ex-tab-glyph>span.brand-logo>span.u",
+   "t": "T",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12,
+   "fw": "800",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     70,
+     69,
+     78,
+     84
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 15.708263570453614,
+   "bg": [
+    252,
+    252,
+    252
+   ],
+   "bL": 0.9734452903984125,
+   "share": 0.7878787878787878,
+   "rect": [
+    70,
+    69,
+    78,
+    84
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.wg-card-shell>span.wg-card-title",
+   "t": "猜你喜欢",
+   "c": "rgb(28, 31, 40)",
+   "fs": 14,
+   "fw": "600",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     33,
+     419,
+     89,
+     436
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.767482446863092,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    33,
+    419,
+    89,
+    436
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.wg-card-shell>span.wg-card-hint",
+   "t": "内容由原页面提供",
+   "c": "rgba(28, 31, 40, 0.55)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     33,
+     446,
+     129,
+     461
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.767482446863092,
+   "bg": [
+    250,
+    250,
+    250
+   ],
+   "bL": 0.9559733532492862,
+   "share": 1,
+   "rect": [
+    33,
+    446,
+    129,
+    461
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.balance-strip>button.balance-cell>span.balance-label",
+   "t": "校园卡",
+   "c": "rgba(28, 31, 40, 0.55)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     37,
+     514,
+     73,
+     529
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 1,
+   "rect": [
+    37,
+    514,
+    73,
+    529
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.balance-strip>button.balance-cell>span.balance-value",
+   "t": "—",
+   "c": "rgb(28, 31, 40)",
+   "fs": 20,
+   "fw": "700",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     37,
+     534,
+     54,
+     557
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 1,
+   "rect": [
+    37,
+    534,
+    54,
+    557
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.balance-strip>button.balance-cell>span.balance-label",
+   "t": "宿舍电费",
+   "c": "rgba(28, 31, 40, 0.55)",
+   "fs": 12,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     164,
+     514,
+     212,
+     529
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 1,
+   "rect": [
+    164,
+    514,
+    212,
+    529
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.wg-card>div.balance-strip>button.balance-cell>span.balance-value.balance-value-dim",
+   "t": "去查询",
+   "c": "rgba(28, 31, 40, 0.78)",
+   "fs": 16,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     164,
+     536,
+     212,
+     554
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 1,
+   "rect": [
+    164,
+    536,
+    212,
+    554
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-clock>div",
+   "t": "10",
+   "c": "rgb(28, 31, 40)",
+   "fs": 24,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     16,
+     614,
+     49,
+     642
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.9694092827004219,
+   "rect": [
+    16,
+    614,
+    49,
+    642
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-clock>div",
+   "t": ":",
+   "c": "rgb(28, 31, 40)",
+   "fs": 24,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     49,
+     614,
+     57,
+     642
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.8152173913043478,
+   "rect": [
+    49,
+    614,
+    57,
+    642
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-clock>div",
+   "t": "26",
+   "c": "rgb(28, 31, 40)",
+   "fs": 24,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     57,
+     614,
+     90,
+     642
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.9208860759493671,
+   "rect": [
+    57,
+    614,
+    90,
+    642
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-date>div",
+   "t": "10",
+   "c": "rgb(28, 31, 40)",
+   "fs": 22,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     21,
+     692,
+     49,
+     718
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.9120370370370371,
+   "rect": [
+    21,
+    692,
+    49,
+    718
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-date>div",
+   "t": "月",
+   "c": "rgb(28, 31, 40)",
+   "fs": 22,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     21,
+     717,
+     43,
+     743
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.9046875,
+   "rect": [
+    21,
+    717,
+    43,
+    743
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-date>div",
+   "t": "17",
+   "c": "rgb(28, 31, 40)",
+   "fs": 22,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     21,
+     743,
+     49,
+     769
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.7196531791907514,
+   "rect": [
+    21,
+    743,
+    49,
+    769
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.free-item>div.wg-card>div.env-date>div",
+   "t": "日",
+   "c": "rgb(28, 31, 40)",
+   "fs": 22,
+   "fw": "650",
+   "tx": null,
+   "inl": "var(--text-1)",
+   "r": [
+    [
+     21,
+     768,
+     43,
+     794
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 0.6723404255319149,
+   "rect": [
+    21,
+    768,
+    43,
+    794
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false,
+    false
+   ],
+   "s": "div.wg-card>div.env-date>div>span",
+   "t": "周六",
+   "c": "rgba(28, 31, 40, 0.55)",
+   "fs": 13,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     72,
+     700,
+     85,
+     716
+    ],
+    [
+     72,
+     722,
+     85,
+     738
+    ]
+   ],
+   "tRgb": [
+    28,
+    31,
+    40
+   ],
+   "cr": 15.777342415632583,
+   "bg": [
+    250,
+    250,
+    251
+   ],
+   "bL": 0.9566024242426681,
+   "share": 1,
+   "rect": [
+    72,
+    700,
+    85,
+    716
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.ex-tabstrip>div.ex-tab.is-active.is-home>button.ex-tab-main>span.ex-tab-title",
+   "t": "首页",
+   "c": "rgb(33, 33, 32)",
+   "fs": 12.5,
+   "fw": "400",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     113,
+     63,
+     138,
+     78
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 1,
+   "rect": [
+    113,
+    63,
+    138,
+    78
+   ],
+   "need": 4.5,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-chrome-layer>div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-time",
+   "t": "10",
+   "c": "rgb(33, 33, 32)",
+   "fs": 64,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     558,
+     227,
+     624,
+     303
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 0.7059082892416225,
+   "rect": [
+    558,
+    227,
+    624,
+    303
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  },
+  {
+   "o": [
+    false
+   ],
+   "s": "div.home-chrome-layer>div.chrome-block.chrome-time>div.chrome-clock>div.chrome-clock-time",
+   "t": "26",
+   "c": "rgb(33, 33, 32)",
+   "fs": 64,
+   "fw": "500",
+   "tx": null,
+   "inl": null,
+   "r": [
+    [
+     637,
+     227,
+     712,
+     303
+    ]
+   ],
+   "tRgb": [
+    33,
+    33,
+    32
+   ],
+   "cr": 16.115836287209394,
+   "bg": [
+    255,
+    255,
+    255
+   ],
+   "bL": 1,
+   "share": 0.6436925647451963,
+   "rect": [
+    637,
+    227,
+    712,
+    303
+   ],
+   "need": 3,
+   "bad": false,
+   "weak": false
+  }
+ ]
+}

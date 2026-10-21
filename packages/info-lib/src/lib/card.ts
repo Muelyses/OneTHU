@@ -27,17 +27,53 @@ const accountBaseInfo = {
     cardId: "",
 };
 
+/** 单字段级容错（2026-10-12 校园卡「易崩」专项）：接口字段缺失/类型漂移时给安全默认，
+ *  绝不让 undefined/null 漏进 UI（UI 侧 `.toFixed`/`getMonth` 一类调用会整树崩）。 */
+const numOr = (v: unknown, divisor = 1, fallback = 0): number => {
+    const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
+    return Number.isFinite(n) ? n / divisor : fallback;
+};
+/** 日期字段容错：非法/缺失给「纪元」而不是 Invalid Date（后者在 UI 上会显示 Invalid Date）。 */
+const asDate = (v: unknown): Date => {
+    if (v instanceof Date) return Number.isFinite(v.getTime()) ? v : new Date(0);
+    const d = new Date(typeof v === "string" || typeof v === "number" ? v : NaN);
+    return Number.isFinite(d.getTime()) ? d : new Date(0);
+};
+
 const fetchWithParse = async (url: string, jsonStruct: any = {}) => {
     const response = await uFetch(url, JSON.stringify(jsonStruct) as any, undefined, undefined, true, CONTENT_TYPE_JSON);
-    const {data, success, resultData} = JSON.parse(response);
+    // ① 解析容错：卡服务在会话失效/被 webvpn 引导壳拦截时回的是 HTML，此前 JSON.parse 直接
+    //    抛「Unexpected token '<'」——用户只看到整栏崩掉，无从判断是登录态问题。
+    let parsed: any;
+    try {
+        parsed = JSON.parse(response);
+    } catch {
+        const head = String(response ?? "").trim().slice(0, 60).replace(/\s+/g, " ");
+        const looksHtml = /^</.test(head);
+        throw new LibError(
+            looksHtml
+                ? "校园卡服务返回的是网页而不是数据（登录态可能已失效，或网络被引导页拦截）——请到「设置 → 账号」重新登录后重试。"
+                : `校园卡服务返回无法解析的内容（前 60 字：${head || "空"}）`,
+        );
+    }
+    const {data, success, resultData} = parsed ?? {};
     if (success) {
         return resultData;
     }
-    const decrypt = AES.decrypt(data.substring(16), enc.Utf8.parse(data.substring(0, 16)), {mode: mode.ECB, padding: pad.Pkcs7});
-    const decString = enc.Utf8.stringify(decrypt).toString();
-    const result = JSON.parse(decString);
-    if (result.success !== true) {
-        throw new Error(result.message);
+    if (typeof data !== "string" || data.length <= 16) {
+        throw new LibError(`校园卡服务返回异常（缺少可解密数据；success=${String(success)}）`);
+    }
+    // ② 解密分支同样容错：坏数据/密钥不符时给可读错误，而不是抛 crypto-js 的内部异常
+    let result: any;
+    try {
+        const decrypt = AES.decrypt(data.substring(16), enc.Utf8.parse(data.substring(0, 16)), {mode: mode.ECB, padding: pad.Pkcs7});
+        const decString = enc.Utf8.stringify(decrypt).toString();
+        result = JSON.parse(decString);
+    } catch {
+        throw new LibError("校园卡服务返回的数据解密失败（可能接口版本已变，请反馈日志）");
+    }
+    if (result?.success !== true) {
+        throw new LibError(String(result?.message ?? "校园卡服务返回失败"));
     }
     return result.resultData;
 };
@@ -74,24 +110,31 @@ export const cardGetInfo = async (helper: InfoHelper): Promise<CardInfo> => {
 
     const rawInfoStruct = await fetchWithParse(CARD_INFO_BY_USER_URL, {idserial: accountBaseInfo.user});
 
+    // ③ 结构容错（2026-10-12）：`baseAccount` / `cardInfos[0]` 缺失时此前是
+    //    「Cannot read properties of undefined (reading '0')」——整栏崩掉且用户看不懂。
+    //    现在缺字段给安全默认，并保留原始数据供上层判断「这是不是一张有效卡」。
+    const raw = (rawInfoStruct ?? {}) as Record<string, any>;
+    const base = (raw.baseAccount ?? {}) as Record<string, any>;
+    const cards = Array.isArray(raw.cardInfos) ? raw.cardInfos : [];
+    const card = (cards[0] ?? {}) as Record<string, any>;
     const info: CardInfo = {
-        userId: rawInfoStruct.idserial,
-        userName: rawInfoStruct.username,
-        userNameEn: rawInfoStruct.engname,
-        departmentName: rawInfoStruct.departname,
-        departmentNameEn: rawInfoStruct.engdepartname,
-        departmentId: rawInfoStruct.departid,
-        photoFileName: rawInfoStruct.photofile,
-        phoneNumber: rawInfoStruct.tel,
-        userGender: rawInfoStruct.sex,
-        effectiveTimestamp: new Date(rawInfoStruct.identifyeffectdate),
-        validTimestamp: new Date(rawInfoStruct.validatevalue),
-        balance: rawInfoStruct.baseAccount.balance / 100,
-        cardId: rawInfoStruct.cardInfos[0].cardid,
-        cardStatus: rawInfoStruct.cardInfos[0].accstatus,
-        lastTransactionTimestamp: new Date(rawInfoStruct.cardInfos[0].lasttxdate),
-        maxDailyTransactionAmount: rawInfoStruct.cardInfos[0].maxconstolamt / 100,
-        maxOneTimeTransactionAmount: rawInfoStruct.cardInfos[0].maxconsamt / 100,
+        userId: String(raw.idserial ?? ""),
+        userName: String(raw.username ?? ""),
+        userNameEn: String(raw.engname ?? ""),
+        departmentName: String(raw.departname ?? ""),
+        departmentNameEn: String(raw.engdepartname ?? ""),
+        departmentId: numOr(raw.departid),
+        photoFileName: String(raw.photofile ?? ""),
+        phoneNumber: String(raw.tel ?? ""),
+        userGender: String(raw.sex ?? ""),
+        effectiveTimestamp: asDate(raw.identifyeffectdate),
+        validTimestamp: asDate(raw.validatevalue),
+        balance: numOr(base.balance, 100),
+        cardId: String(card.cardid ?? ""),
+        cardStatus: String(card.accstatus ?? ""),
+        lastTransactionTimestamp: asDate(card.lasttxdate),
+        maxDailyTransactionAmount: numOr(card.maxconstolamt, 100),
+        maxOneTimeTransactionAmount: numOr(card.maxconsamt, 100),
     };
 
     accountBaseInfo.cardId = info.cardId;
@@ -121,15 +164,17 @@ export const cardGetTransactions = async (
             pageNumber: 0,
         });
 
-    return rawTransactionsData.rows.map((rawTransaction: any) => ({
-        id: rawTransaction.id,
-        summary: rawTransaction.summary,
-        timestamp: new Date(rawTransaction.txdate),
-        balance: rawTransaction.balance / 100,
-        amount: rawTransaction.txamt / 100,
-        address: rawTransaction.meraddr,
-        name: rawTransaction.mername,
-        txName: rawTransaction.txname,
+    // ④ 行级容错：`rows` 缺失/非数组、单行金额为 null 都不再抛错（此前 rows.map 直接崩）
+    const rows = Array.isArray((rawTransactionsData as any)?.rows) ? (rawTransactionsData as any).rows : [];
+    return rows.map((rawTransaction: any) => ({
+        id: String(rawTransaction?.id ?? ""),
+        summary: String(rawTransaction?.summary ?? ""),
+        timestamp: asDate(rawTransaction?.txdate),
+        balance: numOr(rawTransaction?.balance, 100),
+        amount: numOr(rawTransaction?.txamt, 100),
+        address: String(rawTransaction?.meraddr ?? ""),
+        name: String(rawTransaction?.mername ?? ""),
+        txName: String(rawTransaction?.txname ?? ""),
     } as CardTransaction));
 };
 

@@ -1,0 +1,327 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 结构层 Structure（--og-space / radius / text / ctl / icon / elev / dur / z）
+ *
+ * 与颜色无关的一切刻度：间距、圆角、字阶、控件尺寸、阴影、动效、层级。
+ * 这些是**枚举**，不是自由变量：组件只能引用，不能发明新的刻度。
+ * 密度轴（data-og-density）在这里改值 —— 组件自身不写任何断点。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 间距：严格 4pt 网格，十档 ── */
+  --og-space-0: 0px;
+  --og-space-1: 4px;
+  --og-space-2: 8px;
+  --og-space-3: 12px;
+  --og-space-4: 16px;
+  --og-space-5: 20px;
+  --og-space-6: 24px;
+  --og-space-7: 32px;
+  --og-space-8: 40px;
+  --og-space-9: 48px;
+  --og-space-10: 64px;
+
+  /* ── 圆角：七档 ── */
+  --og-radius-xs: 4px;
+  --og-radius-sm: 8px;
+  --og-radius-md: 10px;
+  --og-radius-lg: 14px;
+  --og-radius-xl: 18px;
+  --og-radius-2xl: 24px;
+  --og-radius-full: 999px;
+
+  /* ── 字体：系统栈（中文优先）+ 等宽 + 品牌字 ── */
+  --og-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
+  --og-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --og-font-brand: var(--og-font-ui);
+  --og-weight-regular: 400;
+  --og-weight-medium: 500;
+  --og-weight-semibold: 600;
+  --og-weight-bold: 700;
+
+  /* ── 字阶：六档，一档一语义（显示/标题/小标题/正文/标签/微标） ── */
+  --og-text-display: 36px;
+  --og-text-display-lh: 44px;
+  --og-text-title: 24px;
+  --og-text-title-lh: 32px;
+  --og-text-subtitle: 16px;
+  --og-text-subtitle-lh: 22px;
+  --og-text-body: 14px;
+  --og-text-body-lh: 22px;
+  --og-text-label: 13px;
+  --og-text-label-lh: 18px;
+  --og-text-micro: 11px;
+  --og-text-micro-lh: 14px;
+
+  /* ── 控件：三档高度 + 内边距（按钮/输入/下拉/分段器共用同一把尺） ── */
+  --og-ctl-h-sm: 30px;
+  --og-ctl-h-md: 40px;
+  --og-ctl-h-lg: 44px;
+  --og-ctl-pad-x-sm: 10px;
+  --og-ctl-pad-x-md: 14px;
+  --og-ctl-pad-x-lg: 18px;
+
+  /* ── 行与容器 ── */
+  --og-row-h: 44px;
+  --og-row-pad-x: var(--og-space-3);
+  --og-card-pad: var(--og-space-5);
+  --og-section-gap: var(--og-space-5);
+  --og-page-max: 1160px;
+  --og-page-pad-x: var(--og-space-7);
+
+  /* ── 精细几何：组件内部的光学微调（不是布局网格 —— 布局一律用 --og-space-*） ── */
+  --og-geo-hairline: 1px;
+  --og-geo-xs: 2px;
+  --og-geo-sm: 3px;
+
+  /* ── 表单/开关/滑条的固有尺寸（组件只引用，不自己写） ── */
+  --og-ctl-check: 18px;
+  --og-ctl-switch-w: 40px;
+  --og-ctl-switch-h: 24px;
+  --og-ctl-slider-track: 5px;
+  --og-ctl-slider-thumb: 18px;
+  --og-ctl-textarea-min-h: 84px;
+  --og-ctl-textarea-rows: 4;
+
+  /* ── 浮层固有尺寸（弹窗/抽屉/菜单/底部抽屉；组件只引用） ── */
+  --og-ctl-modal-sm: 400px;
+  --og-ctl-modal-md: 560px;
+  --og-ctl-modal-lg: 760px;
+  --og-ctl-drawer-w: 320px;
+  --og-ctl-menu-min-w: 176px;
+  --og-ctl-menu-max-h: 60vh;
+  --og-ctl-sheet-max: 92dvh;
+  --og-ctl-tooltip-max-w: 260px;
+
+  /* ── 胶囊/标签固有高度 ── */
+  --og-ctl-chip-h-sm: 24px;
+  --og-ctl-chip-h-md: 28px;
+  --og-ctl-chip-h-lg: 32px;
+  --og-ctl-tag-h: 20px;
+  --og-ctl-badge: 16px;
+
+  /* 进度条高度三档 */
+  --og-ctl-progress-sm: 4px;
+  --og-ctl-progress-md: 6px;
+  --og-ctl-progress-lg: 10px;
+
+  /* 页面阅读栏宽度（页面模式的四档） */
+  --og-page-max-narrow: 720px;
+  --og-page-max-wide: 1440px;
+
+  /* 应用壳几何（竖栏宽 / 标签项最大宽） */
+  --og-ctl-rail-w: 224px;
+  --og-ctl-tab-max-w: 220px;
+
+  /* 预览框高度（画廊里放整块壳/页面） */
+  --og-ctl-preview-h: 380px;
+
+  /* 表单/窄栏排版宽度（页面排版用） */
+  --og-ctl-form-narrow: 320px;
+  --og-ctl-form-wide: 560px;
+
+  /* ── 栅格最小列宽（自适应列数） ── */
+  --og-grid-min-sm: 148px;
+  --og-grid-min-md: 200px;
+  --og-grid-min-lg: 264px;
+  --og-grid-min-xl: 320px;
+
+  /* ── 图标：四档尺寸 + 两档描边 ── */
+  --og-icon-sm: 16px;
+  --og-icon-md: 18px;
+  --og-icon-lg: 20px;
+  --og-icon-xl: 24px;
+  --og-icon-stroke: 1.6;
+  --og-icon-stroke-sm: 1.4;
+
+  /* ── 海拔：三级 + 菜单级；暗色下靠面阶而不是阴影拉开层次 ── */
+  --og-elev-0: none;
+
+  /* ── 焦点环：键盘可达性标识，跨皮肤恒定 ── */
+  --og-ring-width: 2px;
+
+  /* ── 动效：三档时长 + 四条曲线（进场 decelerate / 离场 accelerate / 常规 / 弹性） ── */
+  --og-dur-1: 100ms;
+  --og-dur-2: 160ms;
+  --og-dur-3: 220ms;
+  --og-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --og-ease-decelerate: cubic-bezier(0, 0, 0, 1);
+  --og-ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --og-ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* ── 层级：一处定义，不许 locally 拍数字 ──
+     浮层段从 60 提到 **11000+（2026-10-14 z 横切**）：换血期旧壳 chrome 仍占
+     9991（dock 岛）/9992-9993（dock 面板与雾）/10000-10001（左抽屉）——
+     OG 浮层（Sheet/Modal/Menu/Toast）要盖过它们才能有"遮罩全盖"的正确层次。
+     注意 z-index 不跨堆叠上下文：dock 面板内的菜单仍只在其面板内比较，不会窜天。 */
+  --og-z-base: 0;
+  --og-z-sticky: 10;
+  --og-z-header: 20;
+  --og-z-rail: 30;
+  --og-z-drawer: 40;
+  --og-z-board-tools: 50;
+  --og-board-tool-clearance: 100px;
+  --og-board-mobile-tool-bottom: 76px;
+  --og-z-overlay: 11000;
+  --og-z-modal: 11010;
+  --og-z-confirm: 12500;
+  --og-z-menu: 11020;
+  --og-z-toast: 11030;
+  --og-z-tooltip: 11040;
+
+  /* Product geometry: shared by shell, composer and legacy adapters. */
+  --og-radius-control: var(--og-radius-lg);
+  --og-radius-card: var(--og-radius-2xl);
+  --og-radius-menu: var(--og-radius-lg);
+  --og-radius-composer: var(--og-radius-2xl);
+  --og-clock-size: 72px;
+  --og-device-w: 393px;
+  --og-device-h: 852px;
+  --og-device-scale: 1;
+  --og-device-radius: 44px;
+  --og-device-bezel: 10px;
+  --og-tracking-title: -.035em;
+  /* Workbench geometry: page hierarchy and chrome share one scale. */
+  --og-workbench-max: 1120px;
+  --og-workbench-gutter: 40px;
+  --og-workbench-hero: 44px;
+  --og-workbench-hero-lh: 1.2;
+  --og-workbench-header-h: 60px;
+  --og-workbench-tabs-h: 44px;
+  --og-workbench-settings-w: 1040px;
+  --og-workbench-settings-nav: 180px;
+  --og-workbench-sheet-min: 360px;
+  --og-workbench-service-h: 80px;
+  --og-workbench-clock: 72px;
+  --og-workbench-grid: 24px;
+  --og-workbench-canvas-min: 400px;
+
+  /* ── 安全区：手机端由平台轴接管（桌面恒 0） ── */
+  --og-safe-top: 0px;
+  --og-safe-bottom: 0px;
+  --og-safe-left: 0px;
+  --og-safe-right: 0px;
+}
+
+/* ── 密度轴：同一套刻度，三档取值。组件不写断点，只读这几个令牌 ── */
+[data-og-density="comfortable"] {
+  --og-ctl-h-sm: 30px;
+  --og-ctl-h-md: 40px;
+  --og-ctl-h-lg: 44px;
+  --og-row-h: 44px;
+  --og-card-pad: var(--og-space-4);
+}
+
+[data-og-density="compact"] {
+  --og-ctl-h-sm: 30px;
+  --og-ctl-h-md: 36px;
+  --og-ctl-h-lg: 36px;
+  --og-ctl-pad-x-md: 12px;
+  --og-row-h: 38px;
+  --og-row-pad-x: var(--og-space-2);
+  --og-card-pad: var(--og-space-3);
+  --og-section-gap: var(--og-space-4);
+}
+
+[data-og-density="touch"] {
+  --og-ctl-chip-h-sm: 40px;
+  --og-ctl-chip-h-md: 40px;
+  --og-ctl-chip-h-lg: 44px;
+  --og-ctl-switch-w: 46px;
+  --og-ctl-switch-h: 28px;
+  --og-ctl-slider-thumb: 22px;
+  --og-ctl-check: 20px;
+  --og-ctl-h-sm: 40px;
+  --og-ctl-h-md: 44px;
+  --og-ctl-h-lg: 52px;
+  --og-ctl-pad-x-md: 16px;
+  --og-row-h: 54px;
+  --og-row-pad-x: var(--og-space-4);
+  --og-card-pad: var(--og-space-4);
+  --og-text-body: 15px;
+  --og-text-body-lh: 22px;
+  --og-page-pad-x: var(--og-space-4);
+}
+
+/* ── 动效轴：减弱动态效果 = 时长归零（不是删掉过渡，否则状态会跳变） ── */
+[data-og-motion="reduced"] {
+  --og-dur-1: 1ms;
+  --og-dur-2: 1ms;
+  --og-dur-3: 1ms;
+  --og-ease-spring: linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --og-dur-1: 1ms;
+    --og-dur-2: 1ms;
+    --og-dur-3: 1ms;
+    --og-ease-spring: linear;
+  }
+}
+
+/* ── 平台轴：手机吃安全区 + 触屏密度 ── */
+[data-og-platform="mobile"] {
+  --og-clock-size: 44px;
+  --og-safe-top: env(safe-area-inset-top, 0px);
+  --og-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --og-safe-left: env(safe-area-inset-left, 0px);
+  --og-safe-right: env(safe-area-inset-right, 0px);
+  --og-page-max: 100%;
+}
+
+[data-og-platform="mobile"] {
+  --og-workbench-gutter: 16px;
+  --og-workbench-hero: 28px;
+  --og-workbench-clock: 36px;
+  --og-workbench-header-h: 64px;
+  --og-workbench-tabs-h: 52px;
+  --og-workbench-service-h: 64px;
+}
+
+/* Navigation, card exchange and timeline composition dimensions. */
+:root {
+  --og-vault-chip-w: 64px;
+  --og-mobile-tools-gap: 76px;
+  --og-refresh-bottom: 80px;
+  --og-navigation-clearance: 36px;
+  --og-rail-full-width: 232px;
+  --og-rail-narrow-width: 56px;
+  --og-vault-orbit-r: 132px;
+  --og-shortcut-clearance: 100px;
+  --og-board-tools-bottom: 120px;
+  --og-mobile-top-gap: 126px;
+  --og-exchange-check-size: 130px;
+  --og-top-button-bottom: 132px;
+  --og-exchange-card-width: 160px;
+  --og-mobile-content-clearance: 180px;
+  --og-bookmark-max: 184px;
+  --og-schedule-sync-width: 230px;
+  --og-exchange-stage-height: 240px;
+  --og-tour-scene-h: 240px;
+  --og-tour-studio-h: 360px;
+  --og-tour-phone-h: 400px;
+  --og-tour-scene-action-dur: 520ms;
+  --og-vault-anchor-w: 64px;
+  --og-vault-anchor-h: 48px;
+  --og-vault-anchor-gap: 6px;
+  --og-vault-halo-size: 120px;
+  --og-vault-radar-period: 2600ms;
+  --og-vault-drag-card-w: 260px;
+  --og-vault-menu-w: 352px;
+  --og-bookmark-menu-width: 260px;
+  --og-schedule-page-offset: 290px;
+  --og-schedule-min-mobile: 300px;
+  --og-contact-card-min: 320px;
+  --og-vault-sheet-w: 560px;
+  --og-vault-sheet-h: 460px;
+  --og-vault-manager-w: 880px;
+  --og-vault-manager-h: 720px;
+  --og-vault-list-min: 120px;
+  --og-schedule-min-height: 360px;
+  --og-schedule-timeline-offset: 370px;
+  --og-schedule-mobile-offset: 390px;
+  --og-identity-card-max: 540px;
+  --og-oneshot-max: 680px;
+  --og-contacts-page-max: 1200px;
+}

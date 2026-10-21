@@ -1,23 +1,31 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { Banner, Btn, Chip, Inline, KeyValue, List, Row, Stack, Spacer, Text } from "@onethu/gui";
 /**
  * 统一文件预览（全局唯一弹窗，module-level opener 通道，同 zhjwxk/Courses.tsx 的 _detailOpen 做法）：
  * openFilePreview({ name, url }) 任意处调用 → FilePreviewHost（App 级挂载一次）createPortal 渲染。
- * 抓取走 Rust fetch_binary（webview 直挂 learn 地址只会得到登录页），按扩展名分流渲染：
+ * 抓取走「webvpn 包装域 + 原生通道」（webview 直挂 learn 地址只会得到登录页；直连 learn 域
+ * 本身也没有会话——2026-10-12 真机根因，详见 lib/clients.ts 的 sessionUrl 注释），按扩展名分流渲染：
  * 图片 / PDF / 文本 / zip·jar 层级目录树（可逐层进入+文本条目内联预览）/
  * Office 真预览（docx→mammoth HTML、xlsx→SheetJS 表格、pptx→解包 slideN.xml 抽大纲）/
  * 其他（下载兜底）。
  * Office 全部本地解析（mammoth/SheetJS 动态 import + zipTree 解包），不外传文件内容；
  * 任一环节失败（依赖加载失败/格式异常/算法不支持）都回退"内部文件树 + 下载"兜底，绝不白屏。
+ *
+ * 样式来源（OneGUI 收编）：本文件的可见对象一律来自 OneGUI（组件 + --og-* 语义令牌）；
+ * 两类**内容视口**按 MailPage 判例豁免——①DOCX_CSS（mammoth 产出的伪 docx DOM 排版，
+ * 相当于文档渲染器的内容文档样式）②PDF/PPTX 的"纸面"（恒白文档纸，换肤不换纸）与
+ * PptxShapeView 渲染内容的默认色（渲染数据，非 UI）。判定细节见迁移汇报。
  */
 import { Component, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useExitPhase } from "../lib/motion.js";
+import { sanitizeDisplayHtml } from "../lib/safeHtml.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
-import { http, downloadLearnUrl, saveLearnUrlAs, withLearnCsrf } from "../lib/clients.js";
+import { downloadLearnUrl, saveLearnUrlAs, sessionUrl, isLoginWallBody, bytesToBase64 } from "../lib/clients.js";
 import { isAndroidHost } from "../lib/yktWebview.js";
 import { isAndroidNavigator, isWindowsNavigator } from "../lib/androidHost.js";
-import { normalizeWebvpnUrl } from "@onethu/core";
-import { explainNetworkError, rawErrorText } from "../lib/transport.js";
+import { explainNetworkError, nativeFetch, rawErrorText } from "../lib/transport.js";
 import { Empty } from "./Layout.js";
 import { DownloadOpenButtons } from "./DownloadOpenButtons.js";
 import { openLocalPath } from "../lib/localFile.js";
@@ -105,8 +113,46 @@ async function loadPdfDoc(dataUrl: string): Promise<PdfDocLike> {
       console.error(`[FILE-PREVIEW] pdf.js(${v.tag}) 解析失败`, e);
     }
   }
-  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr ?? "出现未知问题，请重新打开"));
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr ?? i18n("components.filepreview.dcc94ae0dfce")));
 }
+
+/* ---------- 共享样式源（OneGUI 语义令牌；内容视口豁免见文件头） ---------- */
+
+/** 文档纸面底座（预览画布的凹槽托底）：比纸暗一档的面 + 四边留白，值全部来自语义令牌 */
+const CANVAS_PANE_STYLE: CSSProperties = {
+  paddingBlock: "var(--og-space-2) var(--og-space-0)",
+  paddingInline: "var(--og-space-3)",
+  background: "var(--og-surface-3)",
+};
+
+/** 页码/缩放条框：只承一条分隔线与统一网格的内边距（原 6/10 随手值 → space 网格） */
+const PREVIEW_BAR_STYLE: CSSProperties = {
+  flexShrink: 0,
+  borderTop: "1px solid var(--og-line-1)",
+  paddingBlock: "var(--og-space-1)",
+  paddingInline: "var(--og-space-2)",
+};
+
+/** 文本内容视口的 <pre>：等宽栈/字阶取 OG 结构令牌（阅读行距 1.6 是内容排版，保留） */
+const TEXT_PRE_STYLE: CSSProperties = {
+  marginInline: 0,
+  marginBlock: 0,
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-all",
+  fontFamily: "var(--og-font-mono)",
+  fontSize: "var(--og-text-label)",
+  lineHeight: 1.6,
+};
+
+/** 不收缩的小件包裹（Trailing 元信息等） */
+const SHRINK_STYLE: CSSProperties = { flexShrink: 0 };
+
+/** docx 内容视口的容器内边距（原 14/18 随手值 → space 网格） */
+const DOCX_PANE_STYLE: CSSProperties = {
+  paddingBlock: "var(--og-space-3)",
+  paddingInline: "var(--og-space-3) var(--og-space-4)",
+};
+
 
 /**
  * 预览内容错误边界（2026-09-21 用户实录：「Windows 点任何预览直接白屏」）。
@@ -116,7 +162,7 @@ async function loadPdfDoc(dataUrl: string): Promise<PdfDocLike> {
  * 预览面板内部：显示原因 + 重试，应用其余部分不受影响。
  */
 /** Windows 预览失败时的兜底提示（R24：不再默认拒绝渲染，改为出错时说明 + 下载出口） */
-const WIN_PREVIEW_NOTE = "预览仍出错时，请用上方「下载」查看。";
+const winPreviewNote = () => i18n("components.filepreview.26b5c8a23d53");
 class PreviewErrorBoundary extends Component<
   { children: ReactNode; onRetry?: () => void; note?: string },
   { err: string | null }
@@ -139,22 +185,22 @@ class PreviewErrorBoundary extends Component<
   render(): ReactNode {
     if (this.state.err === null) return this.props.children;
     return (
-      <div style={{ padding: 16, fontSize: 13, lineHeight: 1.7 }}>
-        <div style={{ color: "var(--red)", marginBottom: 8 }}>这一条预览失败，其他内容不受影响；可换一条，或用上方「打开」查看原文件。</div>
-        {this.props.note ? (
-          <div style={{ color: "var(--text-3)", marginBottom: 8 }}>{this.props.note}</div>
-        ) : null}
-        <div style={{ color: "var(--text-3)", marginBottom: 12, wordBreak: "break-all" }}>{this.state.err.slice(0, 300)}</div>
-        <button
-          className="btn"
-          onClick={() => {
+      /* 错误卡（Banner）：红色主提示 tone error、说明/原文弱化（content 弱档）；重试在右件。 */
+      <Banner
+        tone="error"
+        action={<Btn variant="outline" tone="error" size="sm" onClick={() => {
             this.setState({ err: null });
             this.props.onRetry?.();
-          }}
-        >
-          重试
-        </button>
-      </div>
+          }}>{i18n("components.filepreview.b8784c8dd563")}</Btn>}
+      >
+        <Text as="div" slot="label" tone="error">{i18n("components.filepreview.2f1f5b421ba5")}</Text>
+        {this.props.note ? (
+          <Text as="div" slot="label" tone="faint">{this.props.note}</Text>
+        ) : null}
+        <div style={{ wordBreak: "break-all" }}>
+          <Text as="div" slot="micro" tone="faint">{this.state.err.slice(0, 300)}</Text>
+        </div>
+      </Banner>
     );
   }
 }
@@ -174,6 +220,8 @@ function PdfPage({
   active: boolean;
   register: (no: number, el: HTMLDivElement | null) => void;
 }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** 当前页在飞的 render task：换缩放/离开窗口时先取消并等它结束，避免同 canvas 并发渲染 */
   const taskRef = useRef<{ cancel: () => void; promise: Promise<void> } | null>(null);
@@ -245,7 +293,7 @@ function PdfPage({
         // 取消（滚动离开/缩放重排）不是错误，不该弹给用户
         const name = e instanceof Error ? e.name : "";
         if (!cancelled && name !== "RenderingCancelledException") {
-          setErr(`第 ${no} 页渲染失败：${e instanceof Error ? e.message : String(e)}`.slice(0, 120));
+          setErr(i18n("components.filepreview.acaec8a6eb85", { no: String(no), value: String(e instanceof Error ? e.message : String(e)) }).slice(0, 120));
         }
       }
     })();
@@ -262,29 +310,32 @@ function PdfPage({
     };
   }, [doc, no, width, active]);
 
+  /** PDF 纸面壳：几何（页宽/页高/居中）+ 纸材质。**纸恒白**（rgba 常量是内容视口的物理属性，
+   *  换肤/换主题不换纸——同 MailPage 判例；材质走 OG 结构令牌 --og-radius-sm/--og-elev-1）。 */
+  const paper = (w: number, h: number): CSSProperties => ({
+    width: w,
+    height: h,
+    marginInline: "auto",
+    marginBlock: "0 var(--og-space-3)",
+    background: "#fff",
+    borderRadius: "var(--og-radius-sm)",
+    boxShadow: "var(--og-elev-1)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+  });
+
   return (
-    <div
-      ref={(el) => register(no, el)}
-      data-pdf-page={no}
-      style={{
-        width,
-        height: Math.round(width * (ratio ?? 1.414)),
-        margin: "0 auto 12px",
-        background: "#fff",
-        borderRadius: 6,
-        boxShadow: "var(--shadow-1)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-      }}
-    >
+    <div ref={(el) => register(no, el)} data-pdf-page={no} style={paper(width, Math.round(width * (ratio ?? 1.414)))}>
       {err ? (
-        <div style={{ fontSize: 11.5, color: "var(--red, #e5484d)", padding: 12, textAlign: "center" }}>{err}</div>
+        <div style={{ paddingBlock: "var(--og-space-3)", paddingInline: "var(--og-space-3)", textAlign: "center" }}>
+          <Text slot="micro" tone="error">{err}</Text>
+        </div>
       ) : active ? (
         <canvas ref={canvasRef} style={{ display: "block" }} />
       ) : (
-        <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>第 {no} 页</div>
+        <Text slot="micro" tone="faint">{i18nRich("components.filepreview.5649a99b4dd4", { no: no })}</Text>
       )}
     </div>
   );
@@ -293,6 +344,8 @@ function PdfPage({
 /** PDF 预览：**连续滚动**（R26 霖需求：翻页不是必须的）+ 适应宽度/缩放 + 页码跳转。
  *  渲染策略：只渲染当前页 ±2，其余留等比占位——长讲义也不会把内存吃满。 */
 function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string; onOpenExternally: () => Promise<void>; pdfBusy: boolean }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const pagesRef = useRef(new Map<number, HTMLDivElement>());
   const [doc, setDoc] = useState<PdfDocLike | null>(null);
@@ -316,8 +369,8 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string
         const oldKernel = typeof (Promise as { withResolvers?: unknown }).withResolvers !== "function";
         setErr(
           oldKernel
-            ? "本机网页内核较低，无法内嵌解析，请用「系统应用打开」。"
-            : `PDF 解析失败：${e instanceof Error ? e.message : String(e)}`.slice(0, 160),
+            ? i18n("components.filepreview.76cd75892476")
+            : i18n("components.filepreview.713a1e772cb0", { value: String(e instanceof Error ? e.message : String(e)) }).slice(0, 160),
         );
       }
     })();
@@ -374,42 +427,43 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string
 
   if (err) {
     return (
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, padding: 24 }}>
-        <div style={{ fontSize: 12.5, color: "var(--red, #e5484d)", textAlign: "center" }}>{err}</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-          <button className="btn" disabled={pdfBusy} onClick={() => void onOpenExternally()}>系统应用打开</button>
+      <Stack fill justify="center" gap={2} pad={6}>
+        <div style={{ maxWidth: "100%", textAlign: "center" }}>
+          <Text slot="label" tone="error">{err}</Text>
         </div>
-      </div>
+        <Inline wrap justify="center" gap={1}>
+          <Btn variant="outline" disabled={pdfBusy} onClick={() => void onOpenExternally()}>{i18n("components.filepreview.1d61e68bd6c0")}</Btn>
+        </Inline>
+      </Stack>
     );
   }
   if (!doc) {
-    return <div style={{ padding: 28, textAlign: "center", color: "var(--text-3)", fontSize: 12.5 }}>PDF 解析中…</div>;
+    return (
+      <Stack fill justify="center" align="center" pad={7}>
+        <Text slot="label" tone="faint">{i18n("components.filepreview.114d4df21568")}</Text>
+      </Stack>
+    );
   }
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* 连续滚动区：position:relative 让页码定位用 offsetTop（相对滚动容器） */}
-      <div
-        ref={wrapRef}
-        onScroll={onScroll}
-        style={{ flex: 1, minHeight: 0, position: "relative", overflow: "auto", padding: "10px 12px 0", background: "rgba(127,127,127,.06)" }}
-      >
+      <div ref={wrapRef} onScroll={onScroll} style={{ flex: 1, minHeight: 0, position: "relative", overflow: "auto", ...CANVAS_PANE_STYLE }}>
         {Array.from({ length: doc.numPages }, (_, i) => i + 1).map((no) => (
           <PdfPage key={no} doc={doc} no={no} width={width} active={Math.abs(no - cur) <= 2} register={register} />
         ))}
         <div style={{ height: 8 }} />
       </div>
-      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
-        <button className="btn" disabled={cur <= 1} title="上一页" onClick={() => jump(cur - 1)}>‹</button>
-        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 64, textAlign: "center" }}>{cur} / {doc.numPages}</span>
-        <button className="btn" disabled={cur >= doc.numPages} title="下一页" onClick={() => jump(cur + 1)}>›</button>
-        <span style={{ width: 8 }} />
-        <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
-        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
-        <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
-        <button className="btn btn-ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</button>
-        <button className="btn btn-ghost" disabled={pdfBusy} title="下载临时文件后调起系统 PDF 应用" onClick={() => void onOpenExternally()}>
-          {pdfBusy ? "调起中…" : "系统应用打开"}
-        </button>
+      <div style={PREVIEW_BAR_STYLE}>
+        <Inline wrap justify="center" gap={2}>
+          <Btn variant="outline" disabled={cur <= 1} titleAttr={i18n("components.filepreview.c9b9ae7a6144")} onClick={() => jump(cur - 1)}>‹</Btn>
+          <Chip size="sm" tone="quiet"><Text as="span" mono slot="label" tone="faint">{cur} / {doc.numPages}</Text></Chip>
+          <Btn variant="outline" disabled={cur >= doc.numPages} titleAttr={i18n("components.filepreview.8a8542f69648")} onClick={() => jump(cur + 1)}>›</Btn>
+          <Btn variant="ghost" titleAttr={i18n("components.filepreview.290f68030501")} disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</Btn>
+          <Chip size="sm" tone="quiet"><Text as="span" mono slot="label" tone="faint">{Math.round(zoom * 100)}%</Text></Chip>
+          <Btn variant="ghost" titleAttr={i18n("components.filepreview.80f8fbcfa011")} disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</Btn>
+          <Btn variant="ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>{i18n("components.filepreview.ac11eac9162f")}</Btn>
+          <Btn variant="ghost" disabled={pdfBusy} titleAttr={i18n("components.filepreview.d0293d2c6989")} onClick={() => void onOpenExternally()}>{pdfBusy ? i18n("components.filepreview.684b36206243") : i18n("components.filepreview.1d61e68bd6c0")}</Btn>
+        </Inline>
       </div>
     </div>
   );
@@ -420,6 +474,11 @@ function PdfCanvasView({ dataUrl, onOpenExternally, pdfBusy }: { dataUrl: string
 export interface FilePreviewTarget {
   name: string;
   url: string;
+  /** 云盘等无 URL 直达的来源：按需拉 base64（优先于 url 抓取）。
+   *  b64 是纯 base64 段（无 dataURL 前缀），mime 由调用方给出。 */
+  fetchB64?: () => Promise<{ mime: string; b64: string }>;
+  /** 云盘等自定义下载通道（优先于 downloadLearnUrl）。返回落盘路径。 */
+  download?: () => Promise<string>;
 }
 
 let _open: ((t: FilePreviewTarget) => void) | null = null;
@@ -442,12 +501,12 @@ const OFFICE_EXTS = new Set(["docx", "xlsx", "pptx"]);
 /** 旧版二进制 Office / WPS 格式：结构是 OLE 复合文档，应用内无法渲染——给出明确提示而不是
  *  笼统的"暂不支持在线预览"（霖 2026-09-22：「pptx 没法预览」的典型来源之一就是老师发的 .ppt） */
 const LEGACY_OFFICE_HINT: Record<string, string> = {
-  ppt: "旧版 .ppt 不支持应用内预览，请下载查看（另存为 .pptx 可预览）",
-  doc: "旧版 .doc 不支持应用内预览，请下载查看（另存为 .docx 可预览）",
-  xls: "旧版 .xls 不支持应用内预览，请下载查看（另存为 .xlsx 可预览）",
-  dps: "旧版 .dps 不支持应用内预览，请下载查看（另存为 .pptx 可预览）",
-  wps: "旧版 .wps 不支持应用内预览，请下载查看（另存为 .docx 可预览）",
-  et: "旧版 .et 不支持应用内预览，请下载查看（另存为 .xlsx 可预览）",
+  get ppt() { return i18n("components.filepreview.853c8b754a02"); },
+  get doc() { return i18n("components.filepreview.944af91cbe70"); },
+  get xls() { return i18n("components.filepreview.12e0c069ecb9"); },
+  get dps() { return i18n("components.filepreview.5e3a35b041b7"); },
+  get wps() { return i18n("components.filepreview.57e49c40c7b7"); },
+  get et() { return i18n("components.filepreview.a8bc71f002a9"); },
 };
 /** 文本/zip 解码上限：超过则引导下载（防止 atob 大文件卡 UI） */
 const DECODE_LIMIT = 20 * 1024 * 1024;
@@ -507,14 +566,14 @@ function errMsg(err: unknown): string {
   // Rust 侧大小闸门：too-large:<实际>:<上限> → 说清楚多大、该怎么办
   const big = /too-large:(\d+):(\d+)/.exec(raw);
   if (big) {
-    return `文件较大（${fmtBytes(Number(big[1]))}），应用内预览上限 ${fmtBytes(Number(big[2]))}——点「下载」或「另存为」即可完整保存。`;
+    return i18n("components.filepreview.31045e233445", { value: String(fmtBytes(Number(big[1]))), value2: String(fmtBytes(Number(big[2]))) });
   }
   const s = explainNetworkError(err);
   if (s) return s;
   return raw;
 }
 
-/* ---------- 抓取（复用 fetchImageAsDataUrl 的 fetch_binary 思路，mime 单独带回） ---------- */
+/* ---------- 抓取（与正文图片同一取数形态：包装域 + 原生通道，mime 单独带回） ---------- */
 
 interface FetchedBinary {
   mime: string;
@@ -525,23 +584,20 @@ interface FetchedBinary {
 }
 
 async function fetchBinary(url: string): Promise<FetchedBinary> {
-  // 归一：页面里取到的链接可能已被网关包装（双重包装会 404，见 crypto/webvpn.normalizeWebvpnUrl）
-  const target = withLearnCsrf(normalizeWebvpnUrl(url));
-  const jarCookies = http.jar
-    .getCookies(new URL(target))
-    .map((c) => `${c.name}=${c.value}`)
-    .join("; ");
-  const { invoke } = await import("@tauri-apps/api/core");
-  // 预览上限与超时按文件预览调（默认 8MB/12s 是给正文图片的）：桌面放宽到 48MB，
-  // 安卓因 base64 IPC 限制收紧到 10MB（见 PREVIEW_MAX_BYTES_ANDROID 注释）。
-  const out = await invoke<{ mime: string; data: string }>("fetch_binary", {
-    url: target,
-    cookies: jarCookies,
-    maxBytes: previewCap(),
-    timeoutSecs: 60,
-  });
-  const mime = (out.mime || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";
-  return { mime, dataUrl: `data:${mime};base64,${out.data}`, b64: out.data };
+  // 取数形态与正文图片**完全一致**（2026-10-12 真机根因）：URL 先归一并按 host 分流换成
+  // webvpn 包装形态（直连 learn 域没有会话——实测回 69 字节 `location.href="/"` 跳转页），
+  // 再走原生通道取字节（原生 cookie 仓 + 主 webview UA）；旧路 fetch_binary 自带 Mac UA +
+  // 只吃 JS 侧 cookie，wengine 按 UA 指纹校验票会把包装域请求判成「票无效」。
+  // 上限与超时仍按文件预览调：桌面 48MB，安卓因 base64 IPC 限制收紧到 10MB（见上注释）。
+  const resp = await nativeFetch(sessionUrl(url), { method: "GET", timeoutMs: 60_000 });
+  const mime = (resp.headers.get("content-type") || "application/octet-stream").split(";")[0]?.trim() || "application/octet-stream";
+  const buf = new Uint8Array(await resp.arrayBuffer());
+  if (isLoginWallBody(mime, buf)) throw new Error(i18n("components.filepreview.215c4f5bad1d"));
+  // 大小闸门与 Rust 侧同语（errMsg 认 too-large:<实际>:<上限> 给出「下载/另存为」出路）
+  const cap = previewCap();
+  if (buf.length > cap) throw new Error(`too-large:${buf.length}:${cap}`);
+  const b64 = bytesToBase64(buf);
+  return { mime, dataUrl: `data:${mime};base64,${b64}`, b64 };
 }
 
 /* ---------- Office 本地解析（docx/xlsx/pptx） ---------- */
@@ -565,24 +621,19 @@ function bytesToArrayBuffer(bytes: Uint8Array): ArrayBuffer {
 
 /** mammoth 输出做一遍轻量消毒：去脚本类标签与内联事件，防意外注入 */
 function sanitizeDocxHtml(html: string): string {
-  try {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    doc.querySelectorAll("script,style,iframe,object,embed,link,meta,base").forEach((el) => el.remove());
-    doc.querySelectorAll("*").forEach((el) => {
-      for (const attr of Array.from(el.attributes)) {
-        const n = attr.name.toLowerCase();
-        if (n.startsWith("on") || (n === "href" && attr.value.trim().toLowerCase().startsWith("javascript:"))) {
-          el.removeAttribute(attr.name);
-        }
-      }
-    });
-    return doc.body.innerHTML;
-  } catch {
-    return html.replace(/<script[\s\S]*?<\/script>/gi, "");
-  }
+  return sanitizeDisplayHtml(html);
 }
 
-/** docx 基础排版（标题/段落/表格边框/图片自适应），挂在 .docx-preview 作用域内 */
+/**
+ * docx 排版模板 —— **保留（内容视口豁免，同 MailPage 判例）**。
+ *
+ * 判定：这 10 条规则的**每一条**选择器都落在 `.docx-preview` 作用域内的伪 docx DOM 上
+ * （h1/h2/h3/…/p/table/td/th/img/ul/ol/a），它们是「Word 文档自身的版式」（标题层级、
+ * 段落节奏、表格框线、图片自适应），不是预览器的 UI 铬件——预览器的工具条/页码/壳已经
+ * 全部收编。等同于「渲染 docx 内容把内容写进容器」的文档渲染器：这些样式属于内容视口，
+ * 拆掉就得换一种"再造 <style>/模板 CSS"的注入渠道（违反红线 4 后半句），渲染结果也会变。
+ * 其中的表格框线/链接色还引用旧令牌（旧令牌桥仍可用），不属于 UI 字面色——整块原始保留，未做任何改写。
+ */
 const DOCX_CSS = `
 .docx-preview{font-size:13px;line-height:1.7}
 .docx-preview h1,.docx-preview h2,.docx-preview h3,.docx-preview h4,.docx-preview h5,.docx-preview h6{margin:.8em 0 .4em;line-height:1.35}
@@ -614,7 +665,7 @@ async function parseOffice(name: string, zip: ZipPayload, size: number): Promise
   if (ext === "docx") {
     const mod = (await import("mammoth")) as unknown as { default?: MammothLike } & Partial<MammothLike>;
     const mammoth = mod.default?.convertToHtml ? mod.default : mod;
-    if (!mammoth.convertToHtml) throw new Error("docx 预览组件没有加载成功，请重新打开");
+    if (!mammoth.convertToHtml) throw new Error(i18n("components.filepreview.819eb7812d48"));
     const res = await mammoth.convertToHtml({ arrayBuffer: bytesToArrayBuffer(zip.bytes) });
     return { kind: "docx", html: sanitizeDocxHtml(res.value), zip, size };
   }
@@ -643,7 +694,7 @@ async function parseOffice(name: string, zip: ZipPayload, size: number): Promise
         truncatedCols: totalCols > XLSX_COL_LIMIT,
       });
     }
-    if (!sheets.length) throw new Error("未能读取任何工作表");
+    if (!sheets.length) throw new Error(i18n("components.filepreview.09bc875c0ad2"));
     return { kind: "xlsx", sheets, zip, size };
   }
 
@@ -654,25 +705,25 @@ async function parseOffice(name: string, zip: ZipPayload, size: number): Promise
     } catch (e) {
       // 畸形/结构不常见的 pptx：退到文字大纲（页面仍能看到每页要点），并说明已回退
       const slides = await extractPptxSlides(zip.bytes, zip.entries);
-      return { kind: "pptx-outline", slides, zip, size, notice: `幻灯片渲染失败（${errMsg(e)}），已回退为文字大纲` };
+      return { kind: "pptx-outline", slides, zip, size, notice: i18n("components.filepreview.c02a57f4a039", { value: String(errMsg(e)) }) };
     }
   }
 
-  throw new Error("未知 Office 格式");
+  throw new Error(i18n("components.filepreview.8f232ca70199"));
 }
 
 /* ---------- 渲染态 ---------- */
 
 /** §2.8.2 文件预览分端：侧边信息栏里的类型名（OfficeView 的细分 kind 走兜底直接用原值） */
 const KIND_LABEL: Record<string, string> = {
-  image: "图片",
+  get image() { return i18n("components.filepreview.d24c10d37db0"); },
   pdf: "PDF",
-  text: "文本",
-  zip: "压缩包",
-  other: "其他",
-  docx: "Word 文档",
-  xlsx: "Excel 表格",
-  pptx: "PowerPoint 演示",
+  get text() { return i18n("components.filepreview.dd81861811e5"); },
+  get zip() { return i18n("components.filepreview.8f10dc147500"); },
+  get other() { return i18n("components.filepreview.d2909f1647e7"); },
+  get docx() { return i18n("components.filepreview.a43e55b6cb05"); },
+  get xlsx() { return i18n("components.filepreview.d237b031345d"); },
+  get pptx() { return i18n("components.filepreview.ff385b113600"); },
 };
 
 type ReadyView =
@@ -730,36 +781,13 @@ interface EntryPreviewState {
   err?: string;
 }
 
-const zipRowStyle: CSSProperties = {
-  display: "flex", gap: 8, alignItems: "baseline", padding: "4px 2px",
-  borderBottom: "1px solid var(--border, #f0f0f0)", fontSize: 12.5,
-};
-const zipNameStyle: CSSProperties = { flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" };
-const zipMetaStyle: CSSProperties = { color: "var(--text-3, #9aa1ac)", flexShrink: 0, fontSize: 11.5 };
-
-function crumbStyle(active: boolean): CSSProperties {
-  return {
-    cursor: "pointer", background: "none", border: "none", padding: 0, fontSize: 12.5,
-    color: active ? "var(--text-1, #1f2329)" : "var(--accent, #1677ff)",
-    fontWeight: active ? 600 : 400,
-  };
-}
-
-function chipStyle(active: boolean): CSSProperties {
-  return {
-    padding: "3px 12px", borderRadius: 999, fontSize: 12, cursor: "pointer",
-    border: `1px solid ${active ? "var(--accent, #1677ff)" : "var(--border, #e0e0e0)"}`,
-    background: active ? "var(--accent-soft, rgba(22,119,255,.08))" : "transparent",
-    color: active ? "var(--accent, #1677ff)" : "var(--text-2, #57606a)",
-    flexShrink: 0,
-  };
-}
-
 function ZipTreeView({ zip, notice }: { zip: ZipPayload; notice?: string }) {
+  const uiLocale = useUiLocale();
+
   const [dirPath, setDirPath] = useState<string[]>([]);
   const [preview, setPreview] = useState<EntryPreviewState | null>(null);
   const previewSeq = useRef(0);
-  const root = useMemo(() => buildZipTree(zip.entries), [zip.entries]);
+  const root = useMemo(() => buildZipTree(zip.entries), [uiLocale, zip.entries]);
   const node = resolveZipNode(root, dirPath) ?? root;
   const children = node.children ?? [];
   const shown = children.slice(0, ZIP_ROW_CAP);
@@ -779,8 +807,8 @@ function ZipTreeView({ zip, notice }: { zip: ZipPayload; notice?: string }) {
     setPreview({ path: n.path, name: n.name, size: n.size, phase: "loading" });
     void (async () => {
       try {
-        if (!raw) throw new Error("在压缩包目录中找不到该条目");
-        if (raw.size > ZIP_TEXT_LIMIT) throw new Error(`超过内联预览上限 ${fmtBytes(ZIP_TEXT_LIMIT)}，请下载查看`);
+        if (!raw) throw new Error(i18n("components.filepreview.1f7044c30ad1"));
+        if (raw.size > ZIP_TEXT_LIMIT) throw new Error(i18n("components.filepreview.8a25c22f1e87", { value: String(fmtBytes(ZIP_TEXT_LIMIT)) }));
         const data = await extractEntryBytes(zip.bytes, raw, ZIP_TEXT_LIMIT + 1);
         const text = new TextDecoder("utf-8").decode(data);
         if (previewSeq.current !== id) return; // 已点了别的条目，丢弃过期结果
@@ -793,108 +821,96 @@ function ZipTreeView({ zip, notice }: { zip: ZipPayload; notice?: string }) {
   };
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", padding: "10px 14px 14px" }}>
+    <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: "var(--og-space-2)", paddingBlock: "var(--og-space-2) var(--og-space-3)", paddingInline: "var(--og-space-3)" }}>
       {notice ? (
-        <div style={{ fontSize: 12.5, color: "var(--amber, #ff9f1a)", background: "var(--accent-soft, rgba(255,159,26,.08))", borderRadius: 8, padding: "8px 12px", marginBottom: 10 }}>
-          {notice}
-        </div>
+        <Banner tone="warning">{notice}</Banner>
       ) : null}
 
-      {/* 面包屑：根 / 一级目录 / 子目录，可点击回跳 */}
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 4, marginBottom: 4 }}>
-        <button style={crumbStyle(dirPath.length === 0)} onClick={() => jump([])}>根</button>
+      {/* 面包屑：根 / 一级目录 / 子目录，可点击回跳（Chip selected 承"当前层"） */}
+      <Inline wrap gap={1}>
+        <Chip size="sm" selected={dirPath.length === 0} onClick={() => jump([])}>{i18n("components.filepreview.092e4d5a181e")}</Chip>
         {dirPath.map((seg, i) => (
-          <span key={`${i}-${seg}`} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-            <span style={{ color: "var(--text-3, #9aa1ac)" }}>/</span>
-            <button style={crumbStyle(i === dirPath.length - 1)} onClick={() => jump(dirPath.slice(0, i + 1))}>{seg}</button>
-          </span>
+          <Chip key={`${i}-${seg}`} size="sm" selected={i === dirPath.length - 1} onClick={() => jump(dirPath.slice(0, i + 1))}>{seg}</Chip>
         ))}
-        <span style={{ flex: 1 }} />
-        <span style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", flexShrink: 0 }}>
-          当前层 {children.length} 项 · 全部 {root.fileCount} 个文件
+        <Spacer />
+        <span style={SHRINK_STYLE}>
+          <Text nowrap slot="micro" tone="faint">{i18nRich("components.filepreview.255200d76038", { length: children.length, fileCount: root.fileCount })}</Text>
         </span>
-      </div>
+      </Inline>
 
       {preview ? (
         /* 单条文本条目的内联预览面板（替代列表展示） */
-        <div style={{ border: "1px solid var(--border, #e5e5e5)", borderRadius: 10, padding: 10, display: "flex", flexDirection: "column", gap: 8, flex: 1, minHeight: 0 }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
-            <button className="btn" onClick={() => setPreview(null)}>← 返回列表</button>
-            <span style={{ ...zipNameStyle, fontSize: 12 }} title={preview.path}>📄 {preview.path}</span>
-            <span style={zipMetaStyle}>{fmtBytes(preview.size)}</span>
-          </div>
-          {preview.phase === "loading" ? <Empty text="正在解压该条目…" /> : null}
+        <Stack fill gap={2}>
+          <Inline gap={2}>
+            <Btn variant="outline" onClick={() => setPreview(null)}>{i18n("components.filepreview.3534cbca34dc")}</Btn>
+            <span style={{ flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "var(--og-text-label)" }} title={preview.path}>📄 {preview.path}</span>
+            <span style={SHRINK_STYLE}>
+              <Text nowrap slot="micro" tone="faint">{fmtBytes(preview.size)}</Text>
+            </span>
+          </Inline>
+          {preview.phase === "loading" ? <Empty text={i18n("components.filepreview.984543357da4")} /> : null}
           {preview.phase === "error" ? (
-            <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
-              <Empty text={`无法内联预览：${preview.err ?? "出现未知问题，请重新打开"}`} />
-            </div>
+            <Stack align="center" pad={3}>
+              <Empty text={i18n("components.filepreview.bca6b65eac1a", { value: String(preview.err ?? i18n("components.filepreview.dcc94ae0dfce")) })} />
+            </Stack>
           ) : null}
           {preview.phase === "done" ? (
-            <div style={{ overflowY: "auto", minHeight: 0 }}>
+            <div style={{ overflowY: "auto", minHeight: 0, display: "flex", flexDirection: "column", gap: "var(--og-space-2)" }}>
               {preview.mojibake ? (
-                <div style={{ fontSize: 12, color: "var(--amber, #ff9f1a)", marginBottom: 8 }}>
-                  条目可能不是 UTF-8 编码（如 GBK），部分字符可能显示为乱码。
-                </div>
+                <Text as="div" slot="label" tone="warning">{i18n("components.filepreview.1232282bf046")}</Text>
               ) : null}
-              <pre
-                style={{
-                  margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all", fontSize: 12.5,
-                  lineHeight: 1.6, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                }}
-              >
-                {preview.text}
-              </pre>
+              <pre style={TEXT_PRE_STYLE}>{preview.text}</pre>
             </div>
           ) : null}
-        </div>
+        </Stack>
       ) : (
         <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-          {shown.map((c, i) => {
-            if (c.isDir) {
+          <List divided>
+            {shown.map((c, i) => {
+              if (c.isDir) {
+                return (
+                  <Row
+                    key={`d${i}-${c.path}`}
+                    size="sm"
+                    flush
+                    leading={<span aria-hidden="true">📁</span>}
+                    title={c.name}
+                    trailing={<Text nowrap slot="micro" tone="faint">{i18nRich("components.filepreview.935b2f7ab1b8", { fileCount: c.fileCount, value: fmtBytes(c.size) || "0 B" })}</Text>}
+                    titleAttr={i18n("components.filepreview.732998a4c012", { name: String(c.name) })}
+                    onClick={() => enter(c.name)}
+                  />
+                );
+              }
+              const previewable = TEXT_EXTS.has(extOf(c.name)) && c.size <= ZIP_TEXT_LIMIT;
               return (
-                <div
-                  key={`d${i}-${c.path}`}
-                  style={{ ...zipRowStyle, cursor: "pointer" }}
-                  onClick={() => enter(c.name)}
-                  title={`进入 ${c.name}`}
-                >
-                  <span style={{ flexShrink: 0 }}>📁</span>
-                  <span style={zipNameStyle}>{c.name}</span>
-                  <span style={zipMetaStyle}>{c.fileCount} 项 · {fmtBytes(c.size) || "0 B"}</span>
-                </div>
+                <Row
+                  key={`f${i}-${c.path}`}
+                  size="sm"
+                  flush
+                  leading={<span aria-hidden="true">📄</span>}
+                  title={c.name}
+                  trailing={
+                    previewable ? (
+                      <Inline gap={2}>
+                        <Text nowrap slot="micro" tone="brand">{i18n("components.filepreview.13d61fea9f17")}</Text>
+                        <Text nowrap slot="micro" tone="faint">{fmtBytes(c.size) || "0 B"}</Text>
+                      </Inline>
+                    ) : (
+                      <Text nowrap slot="micro" tone="faint">{fmtBytes(c.size) || "0 B"}</Text>
+                    )
+                  }
+                  titleAttr={previewable ? i18n("components.filepreview.fbd923451d63") : undefined}
+                  onClick={previewable ? () => openEntry(c) : undefined}
+                />
               );
-            }
-            const previewable = TEXT_EXTS.has(extOf(c.name)) && c.size <= ZIP_TEXT_LIMIT;
-            return (
-              <div
-                key={`f${i}-${c.path}`}
-                style={{ ...zipRowStyle, cursor: previewable ? "pointer" : "default" }}
-                onClick={previewable ? () => openEntry(c) : undefined}
-                title={previewable ? "点击内联预览" : undefined}
-              >
-                <span style={{ flexShrink: 0 }}>📄</span>
-                <span
-                  style={{
-                    ...zipNameStyle,
-                    textDecoration: previewable ? "underline dotted" : "none",
-                    textDecorationColor: "rgba(127,127,127,.45)",
-                  }}
-                >
-                  {c.name}
-                </span>
-                {previewable ? (
-                  <span style={{ fontSize: 11, color: "var(--accent, #1677ff)", flexShrink: 0 }}>预览</span>
-                ) : null}
-                <span style={zipMetaStyle}>{fmtBytes(c.size) || "0 B"}</span>
-              </div>
-            );
-          })}
+            })}
+          </List>
           {children.length > ZIP_ROW_CAP ? (
-            <div style={{ paddingTop: 8, fontSize: 12, color: "var(--text-3, #9aa1ac)" }}>
-              当前层还有 {children.length - ZIP_ROW_CAP} 项未显示，可下载查看完整内容
+            <div style={{ paddingBlock: "var(--og-space-2) var(--og-space-0)" }}>
+              <Text as="div" slot="label" tone="faint">{i18nRich("components.filepreview.0b805860ff7a", { value: children.length - ZIP_ROW_CAP })}</Text>
             </div>
           ) : null}
-          {!children.length ? <Empty text="该目录为空" /> : null}
+          {!children.length ? <Empty text={i18n("components.filepreview.02e21e1a0276")} /> : null}
         </div>
       )}
     </div>
@@ -903,14 +919,25 @@ function ZipTreeView({ zip, notice }: { zip: ZipPayload; notice?: string }) {
 
 /* ---------- Office 视图（内容预览 / 内部文件树 切换） ---------- */
 
+/** Office 切换条框：只承内边距（值全部 space 网格） */
+const OFFICE_TABBAR_STYLE: CSSProperties = {
+  flexShrink: 0,
+  paddingBlock: "var(--og-space-2)",
+  paddingInline: "var(--og-space-3)",
+};
+
 function OfficeShell({ zip, children }: { zip: ZipPayload; children: ReactNode }) {
+  const uiLocale = useUiLocale();
+
   const [tab, setTab] = useState<"doc" | "tree">("doc");
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6, padding: "10px 14px 8px", flexShrink: 0 }}>
-        <button style={chipStyle(tab === "doc")} onClick={() => setTab("doc")}>内容预览</button>
-        <button style={chipStyle(tab === "tree")} onClick={() => setTab("tree")}>内部文件</button>
-        <span style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)" }}>本地解析渲染，可切换查看文档内部文件</span>
+      <div style={OFFICE_TABBAR_STYLE}>
+        <Inline wrap gap={1}>
+          <Chip size="sm" selected={tab === "doc"} onClick={() => setTab("doc")}>{i18n("components.filepreview.fb12af752240")}</Chip>
+          <Chip size="sm" selected={tab === "tree"} onClick={() => setTab("tree")}>{i18n("components.filepreview.73ffb40a8e7c")}</Chip>
+          <Text slot="micro" tone="faint">{i18n("components.filepreview.7fe80b4ed660")}</Text>
+        </Inline>
       </div>
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: "auto" }}>
         {tab === "doc" ? children : <ZipTreeView zip={zip} />}
@@ -920,31 +947,38 @@ function OfficeShell({ zip, children }: { zip: ZipPayload; children: ReactNode }
 }
 
 function XlsxView({ sheets }: { sheets: XlsxSheetView[] }) {
+  const uiLocale = useUiLocale();
+
   const [idx, setIdx] = useState(0);
-  if (!sheets.length) return <Empty text="工作簿中没有可显示的工作表" />;
+  if (!sheets.length) return <Empty text={i18n("components.filepreview.f732edbb3c6e")} />;
   const sheet = sheets[Math.min(idx, sheets.length - 1)] ?? sheets[0]!;
+  /* xlsx 表格是内容视口的"数据表"：边框/表头底/对齐走语义令牌，版式（顶对齐、320 列宽、
+     自然宽表格）保持原判定，不用 OG Table 换排法——数据一行不差。 */
   const thStyle: CSSProperties = {
-    border: "1px solid var(--border, #e0e0e0)", padding: "4px 8px", textAlign: "left",
-    fontWeight: 600, whiteSpace: "nowrap", background: "var(--surface-3, rgba(127,127,127,.06))",
+    border: "1px solid var(--og-line-1)",
+    padding: "var(--og-space-1) var(--og-space-2)",
+    textAlign: "left",
+    fontWeight: "var(--og-weight-semibold)",
+    whiteSpace: "nowrap",
+    background: "var(--og-surface-3)",
   };
   const tdStyle: CSSProperties = {
-    border: "1px solid var(--border, #e0e0e0)", padding: "4px 8px",
-    verticalAlign: "top", maxWidth: 320, overflowWrap: "break-word",
+    border: "1px solid var(--og-line-1)",
+    padding: "var(--og-space-1) var(--og-space-2)",
+    verticalAlign: "top",
+    maxWidth: 320,
+    overflowWrap: "break-word",
   };
   return (
-    <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+    <div style={XLSX_VIEW_STYLE}>
+      <Inline wrap gap={1}>
         {sheets.map((s, i) => (
-          <button key={`${i}-${s.name}`} style={chipStyle(i === idx)} onClick={() => setIdx(i)}>{s.name}</button>
+          <Chip key={`${i}-${s.name}`} size="sm" selected={i === idx} onClick={() => setIdx(i)}>{s.name}</Chip>
         ))}
-      </div>
-      <div style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>
-        工作表「{sheet.name}」共 {sheet.totalRows} 行
-        {sheet.truncatedRows ? `，仅显示前 ${XLSX_ROW_LIMIT} 行` : ""}
-        {sheet.truncatedCols ? `；列过多，仅显示前 ${XLSX_COL_LIMIT} 列` : ""}
-      </div>
+      </Inline>
+      <Text as="div" slot="micro" tone="faint">{i18nRich("components.filepreview.8b4c970c26b3", { name: sheet.name, totalRows: sheet.totalRows, value: sheet.truncatedRows ? i18n("components.filepreview.352317bc7611", { XLSX_ROW_LIMIT: String(XLSX_ROW_LIMIT) }) : "", value2: sheet.truncatedCols ? i18n("components.filepreview.41083b4dc679", { XLSX_COL_LIMIT: String(XLSX_COL_LIMIT) }) : "" })}</Text>
       {sheet.rows.length ? (
-        <table style={{ borderCollapse: "collapse", fontSize: 12, alignSelf: "flex-start" }}>
+        <table style={{ borderCollapse: "collapse", fontSize: "var(--og-text-label)", alignSelf: "flex-start" }}>
           <tbody>
             {sheet.rows.map((row, ri) => (
               <tr key={ri}>
@@ -960,40 +994,49 @@ function XlsxView({ sheets }: { sheets: XlsxSheetView[] }) {
           </tbody>
         </table>
       ) : (
-        <Empty text="该工作表为空" />
+        <Empty text={i18n("components.filepreview.e4c43fc837a2")} />
       )}
     </div>
   );
 }
 
 function PptxView({ slides }: { slides: PptxSlide[] }) {
-  if (!slides.length) return <Empty text="未解析到幻灯片内容" />;
+  const uiLocale = useUiLocale();
+
+  if (!slides.length) return <Empty text={i18n("components.filepreview.adc54a4f33bc")} />;
+  /** 文字大纲的内容列表（ul/li 是文档大纲语义）：字号/行距是内容排版，缩进取结构令牌 */
+  const outlineListStyle: CSSProperties = {
+    marginBlock: 0,
+    paddingLeft: "var(--og-space-4)",
+    fontSize: "var(--og-text-label)",
+    lineHeight: 1.7,
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--og-geo-xs)",
+  };
   return (
-    <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+    <Stack fill={false} gap={2} pad={3}>
       {slides.map((s) => (
-        <div
-          key={s.no}
-          style={{ border: "1px solid var(--border, #e5e5e5)", borderRadius: 10, padding: "10px 14px" }}
-        >
-          <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)" }}>幻灯片 {s.no}</div>
-          <div style={{ fontWeight: 700, fontSize: 14, margin: "2px 0 6px", wordBreak: "break-word" }}>
-            {s.title || "（无标题）"}
+        <div key={s.no} style={PPTX_CARD_STYLE}>
+          <Text as="div" slot="micro" tone="faint">{i18nRich("components.filepreview.bfe9a896b786", { no: s.no })}</Text>
+          <div style={{ marginBlock: "var(--og-geo-xs) var(--og-space-1)", wordBreak: "break-word", fontWeight: "var(--og-weight-bold)", fontSize: "var(--og-text-body)" }}>
+            {s.title || i18n("components.filepreview.7633ed6b0e09")}
           </div>
           {s.bullets.length ? (
-            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12.5, lineHeight: 1.7, display: "flex", flexDirection: "column", gap: 2 }}>
+            <ul style={outlineListStyle}>
               {s.bullets.map((b, i) => (
                 <li key={i} style={{ wordBreak: "break-word" }}>{b}</li>
               ))}
             </ul>
           ) : null}
           {s.notes ? (
-            <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px dashed var(--border, #eee)", fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>
-              备注：{s.notes}
+            <div style={{ marginBlockStart: "var(--og-space-2)", paddingBlockStart: "var(--og-space-1)", borderTop: "1px dashed var(--og-line-1)" }}>
+              <Text as="div" slot="micro" tone="faint">{i18nRich("components.filepreview.80cbbb48e783", { notes: s.notes })}</Text>
             </div>
           ) : null}
         </div>
       ))}
-    </div>
+    </Stack>
   );
 }
 
@@ -1002,8 +1045,13 @@ function PptxView({ slides }: { slides: PptxSlide[] }) {
 /** 逻辑页宽：16:9 时 1pt 恰好 ≈ 1px（12192000EMU = 13.333in → 960/13.333/72 = 1） */
 const PPTX_LOGICAL_W = 960;
 
+/*** ⚠️ PptxShapeView 整体是 pptx 自定义渲染器（红线 6 保护）：形状几何/颜色/字号/表格
+ * 单元格的取值都来自解析出的 slide 数据，字面默认色（线/字/表格框）是**渲染数据**而不是
+ * UI 铬件——改它们就是改渲染结果。本组件保留原实现。 ***/
 /** 单个形状：几何从 EMU 换算成逻辑页 px，颜色/字号/对齐取自解析出的 run 属性 */
 function PptxShapeView({ shape, model, pxPerPt }: { shape: PptxShape; model: PptxModel; pxPerPt: number }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const toPx = (emu: number): number => (emu / model.cx) * PPTX_LOGICAL_W;
   const box: CSSProperties = {
     position: "absolute",
@@ -1123,6 +1171,8 @@ function PptxShapeView({ shape, model, pxPerPt }: { shape: PptxShape; model: Ppt
 
 /** pptx 页面视图：**连续滚动**的多页渲染（与 PDF 同一交互），等比缩放适应面板宽度。 */
 function PptxSlidesView({ model }: { model: PptxModel }): React.ReactNode {
+  const uiLocale = useUiLocale();
+
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [fit, setFit] = useState(1);
   const [zoom, setZoom] = useState(1);
@@ -1141,35 +1191,39 @@ function PptxSlidesView({ model }: { model: PptxModel }): React.ReactNode {
     };
   }, []);
 
-  if (!model.slides.length) return <Empty text="未解析到幻灯片内容" />;
+  if (!model.slides.length) return <Empty text={i18n("components.filepreview.adc54a4f33bc")} />;
   const pageH = Math.round((PPTX_LOGICAL_W * model.cy) / model.cx);
   const k = fit * zoom;
   const pxPerPt = PPTX_LOGICAL_W / (model.cx / 914400) / 72;
 
+  /** pptx 纸面盒：**内容视口**——纸恒白（字面白保留：换肤不换纸），缩放/定位是渲染几何；
+   *  材质档取 OG 结构令牌（--og-radius-sm/--og-elev-1）。 */
+  const paper = (): CSSProperties => ({
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: PPTX_LOGICAL_W,
+    height: pageH,
+    background: "#fff",
+    boxShadow: "var(--og-elev-1)",
+    borderRadius: "var(--og-radius-sm)",
+    overflow: "hidden",
+    transform: `scale(${k})`,
+    transformOrigin: "top left",
+  });
+
   return (
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-      <div ref={wrapRef} style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "10px 12px 0", background: "rgba(127,127,127,.06)" }}>
+      <div ref={wrapRef} style={{ flex: 1, minHeight: 0, overflow: "auto", ...CANVAS_PANE_STYLE }}>
         {model.slides.map((sl) => (
-          <div key={sl.no} style={{ margin: "0 auto 14px", width: Math.round(PPTX_LOGICAL_W * k) }}>
-            <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", padding: "2px 0" }}>
-              第 {sl.no} 页 / 共 {model.slides.length} 页
+          <div key={sl.no} style={{ marginInline: "auto", marginBlock: "0 var(--og-space-3)", width: Math.round(PPTX_LOGICAL_W * k) }}>
+            <div style={{ paddingBlock: "var(--og-geo-xs) var(--og-space-0)" }}>
+              <Text as="div" slot="micro" tone="faint">{i18nRich("components.filepreview.5324c9d18226", { no: sl.no, length: model.slides.length })}</Text>
             </div>
             <div style={{ position: "relative", width: Math.round(PPTX_LOGICAL_W * k), height: Math.round(pageH * k) }}>
               <div
                 data-pptx-page={sl.no}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: PPTX_LOGICAL_W,
-                  height: pageH,
-                  background: "#fff",
-                  boxShadow: "var(--shadow-1)",
-                  borderRadius: 6,
-                  overflow: "hidden",
-                  transform: `scale(${k})`,
-                  transformOrigin: "top left",
-                }}
+                style={paper()}
               >
                 {sl.shapes.map((sh, i) => (
                   <PptxShapeView key={i} shape={sh} model={model} pxPerPt={pxPerPt} />
@@ -1177,42 +1231,60 @@ function PptxSlidesView({ model }: { model: PptxModel }): React.ReactNode {
               </div>
             </div>
             {sl.notes ? (
-              <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", padding: "4px 2px 0", wordBreak: "break-word" }}>
-                备注：{sl.notes}
+              <div style={{ paddingBlock: "var(--og-space-1) var(--og-space-0)", paddingInline: "var(--og-geo-xs) var(--og-space-0)", wordBreak: "break-word" }}>
+                <Text as="div" slot="micro" tone="faint">{i18nRich("components.filepreview.80cbbb48e783", { notes: sl.notes })}</Text>
               </div>
             ) : null}
           </div>
         ))}
         <div style={{ height: 8 }} />
       </div>
-      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderTop: "1px solid var(--border, #eee)", flexWrap: "wrap", justifyContent: "center" }}>
-        <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>连续滚动查看全部页面</span>
-        <button className="btn btn-ghost" title="缩小" disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</button>
-        <span style={{ fontSize: 12, color: "var(--text-2)", minWidth: 40, textAlign: "center" }}>{Math.round(zoom * 100)}%</span>
-        <button className="btn btn-ghost" title="放大" disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</button>
-        <button className="btn btn-ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>适应宽度</button>
-        {model.unsupported > 0 ? (
-          <span style={{ fontSize: 11.5, color: "var(--text-3, #9aa1ac)" }}>{model.unsupported} 个图表/对象未渲染</span>
-        ) : null}
+      <div style={PREVIEW_BAR_STYLE}>
+        <Inline wrap justify="center" gap={2}>
+          <Text slot="micro" tone="faint">{i18n("components.filepreview.22174a69038b")}</Text>
+          <Btn variant="ghost" titleAttr={i18n("components.filepreview.290f68030501")} disabled={zoom <= 0.5} onClick={() => setZoom((z) => Math.max(0.5, Math.round((z - 0.15) * 100) / 100))}>−</Btn>
+          <Chip size="sm" tone="quiet"><Text as="span" mono slot="label" tone="faint">{Math.round(zoom * 100)}%</Text></Chip>
+          <Btn variant="ghost" titleAttr={i18n("components.filepreview.80f8fbcfa011")} disabled={zoom >= 3} onClick={() => setZoom((z) => Math.min(3, Math.round((z + 0.15) * 100) / 100))}>＋</Btn>
+          <Btn variant="ghost" disabled={zoom === 1} onClick={() => setZoom(1)}>{i18n("components.filepreview.ac11eac9162f")}</Btn>
+          {model.unsupported > 0 ? (
+            <Text slot="micro" tone="faint">{i18nRich("components.filepreview.56f438e23825", { unsupported: model.unsupported })}</Text>
+          ) : null}
+        </Inline>
       </div>
     </div>
   );
 }
 
-/* ---------- 宿主 + 弹窗（表面样式同 zhjwxk/Courses.tsx 的 maskStyle/panelStyle） ---------- */
+/* ---------- 宿主 + 弹窗（AO 面样式来源：原 zhjwxk/Courses.tsx 同款的 maskStyle/panelStyle 已令牌化） ---------- */
 
 const maskStyle: CSSProperties = {
-  position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000,
-  display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+  position: "fixed",
+  inset: 0,
+  background: "var(--og-scrim)",
+  zIndex: "var(--og-z-modal)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "var(--og-space-6)",
 };
 const panelStyle: CSSProperties = {
-  width: "100%", maxWidth: 920, maxHeight: "88vh", display: "flex", flexDirection: "column",
-  background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)",
-  borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)", overflow: "hidden",
+  width: "100%",
+  maxWidth: 920,
+  maxHeight: "88vh",
+  display: "flex",
+  flexDirection: "column",
+  background: "var(--og-surface-overlay)",
+  backgroundImage: "var(--og-overlay-tint)",
+  backdropFilter: "var(--og-overlay-blur)",
+  WebkitBackdropFilter: "var(--og-overlay-blur)",
+  color: "var(--og-content-1)",
+  borderRadius: "var(--og-radius-xl)",
+  boxShadow: "var(--og-elev-3)",
+  overflow: "hidden",
 };
 /* PC（expanded）文件预览：居中大窗（§2.8.2）。同 TabManageModal——内联样式优先于类选择器，
    所以只能在组件里换样式对象，写 CSS 是白写。 */
-const maskStyleWide: CSSProperties = { ...maskStyle, padding: 32 };
+const maskStyleWide: CSSProperties = { ...maskStyle, padding: "var(--og-space-7)" };
 const panelStyleWide: CSSProperties = {
   ...panelStyle,
   width: "min(1120px, 92vw)",
@@ -1227,22 +1299,88 @@ const panelStyleWide: CSSProperties = {
 };
 const headStyle: CSSProperties = {
   gridColumn: "1 / -1",
-  display: "flex", alignItems: "center", gap: 8, padding: "10px 14px",
-  borderBottom: "1px solid var(--border, #eee)", flexShrink: 0,
+  display: "flex",
+  alignItems: "center",
+  gap: "var(--og-space-2)",
+  paddingBlock: "var(--og-space-2)",
+  paddingInline: "var(--og-space-3)",
+  borderBottom: "1px solid var(--og-line-1)",
+  flexShrink: 0,
   // 窄屏（手机）把按钮换到第二行，而不是把 ✕ 挤出屏幕：三个按钮 + 文件名 + 元信息
   // 在 360dp 上挤不下，flex 不换行时最后一个按钮会被顶到面板外面
-  flexWrap: "wrap", rowGap: 8,
+  flexWrap: "wrap",
+  rowGap: "var(--og-space-2)",
 };
 const bodyStyle: CSSProperties = { flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column" };
+
+/** 大窗右侧信息栏：旧 .fp-info 的面/字/线已是 md-sys 老令牌——这里直接原地覆盖成 OG 语义令牌 */
+const FP_INFO_STYLE: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "var(--og-space-3)",
+  padding: "var(--og-space-4)",
+  overflowY: "auto",
+  borderLeft: "1px solid var(--og-line-1)",
+  background: "var(--og-surface-2)",
+};
+
+/** 图片查看托底（原 6% 黑半透明底 → surface-3 凹槽面） */
+const IMG_PANE_STYLE: CSSProperties = {
+  padding: "var(--og-space-3)",
+  background: "var(--og-surface-3)",
+};
+
+/** 图片内容自身的适配（contain + 圆角令牌） */
+const IMG_FIT_STYLE: CSSProperties = {
+  maxWidth: "100%",
+  maxHeight: "66vh",
+  objectFit: "contain",
+  borderRadius: "var(--og-radius-md)",
+};
+
+/** xlsx 内容表格视图的容器底盘 */
+const XLSX_VIEW_STYLE: CSSProperties = {
+  padding: "var(--og-space-3)",
+  display: "flex",
+  flexDirection: "column",
+  gap: "var(--og-space-2)",
+};
+
+/** pptx 文字大纲（回退视图）单卡底盘 */
+const PPTX_CARD_STYLE: CSSProperties = {
+  border: "1px solid var(--og-line-1)",
+  borderRadius: "var(--og-radius-md)",
+  padding: "var(--og-space-3) var(--og-space-4)",
+};
+
+/** 底部下载/另存为提示条框：只承几何与分隔线，文案色彩由 Text tone 承担 */
+const DL_HINT_STYLE: CSSProperties = {
+  gridColumn: "1 / -1",
+  flexShrink: 0,
+  paddingBlock: "var(--og-space-1)",
+  paddingInline: "var(--og-space-3)",
+  borderTop: "1px solid var(--og-line-1)",
+  wordBreak: "break-all",
+  display: "flex",
+  alignItems: "center",
+  gap: "var(--og-space-2)",
+  flexWrap: "wrap",
+};
 
 interface OpenState {
   name: string;
   url: string;
+  /** 云盘等自定义字节源（优先于 url 抓取） */
+  fetchB64?: () => Promise<{ mime: string; b64: string }>;
+  /** 云盘等自定义下载通道（优先于 downloadLearnUrl） */
+  download?: () => Promise<string>;
   /** 每次 open/重试自增，保证同一文件重复打开也会重新抓取 */
   seq: number;
 }
 
 export function FilePreviewHost() {
+  const uiLocale = useUiLocale();
+
   const [cur, setCur] = useState<OpenState | null>(null);
   const [phase, setPhase] = useState<Phase>({ s: "loading" });
   const [dlBusy, setDlBusy] = useState(false);
@@ -1271,7 +1409,7 @@ export function FilePreviewHost() {
     _open = (t) => {
       seqRef.current += 1;
       setDlMsg("");
-      const next = { name: t.name, url: t.url, seq: seqRef.current };
+      const next: OpenState = { name: t.name, url: t.url, fetchB64: t.fetchB64, download: t.download, seq: seqRef.current };
       lastRef.current = next;
       setCur(next);
     };
@@ -1299,7 +1437,10 @@ export function FilePreviewHost() {
     setPhase({ s: "loading" });
     void (async () => {
       try {
-        const bin = await fetchBinary(cur.url);
+        // 云盘等自定义字节源优先；无则按 URL 抓取（带会话 cookie）
+        const bin = cur.fetchB64
+          ? await cur.fetchB64().then(({ mime, b64 }) => ({ mime, dataUrl: `data:${mime};base64,${b64}`, b64 }))
+          : await fetchBinary(cur.url);
         if (!alive) return;
         let view = routeByExt(cur.name, bin);
         if (view.kind === "zip" && view.office) {
@@ -1312,7 +1453,7 @@ export function FilePreviewHost() {
             // 依赖挂了/解析异常：回退"内部文件树 + 下载"兜底
             view = {
               kind: "zip", zip, office: true, size,
-              notice: `Office 预览失败（${errMsg(err)}），已回退为内部文件列表，可下载查看`,
+              notice: i18n("components.filepreview.bacf178278cb", { value: String(errMsg(err)) }),
             };
           }
         }
@@ -1334,11 +1475,13 @@ export function FilePreviewHost() {
     setDlBusy(true);
     setDlMsg("");
     try {
-      const path = await downloadLearnUrl(cur.url, cur.name || "download");
-      setDlMsg(`已下载到：${path}`);
+      const path = cur.download
+        ? await cur.download()
+        : await downloadLearnUrl(cur.url, cur.name || "download");
+      setDlMsg(i18n("components.filepreview.2d2ab24375ce", { path: String(path) }));
       setDlPath(path);
     } catch (err) {
-      setDlMsg("下载失败：" + errMsg(err));
+      setDlMsg(i18n("components.filepreview.90f9253844e7") + errMsg(err));
       setDlPath("");
     } finally {
       setDlBusy(false);
@@ -1352,10 +1495,10 @@ export function FilePreviewHost() {
     setDlMsg("");
     try {
       const path = await saveLearnUrlAs(cur.url, cur.name || "download");
-      setDlMsg(path ? `已保存到：${path}` : "已取消另存为。");
+      setDlMsg(path ? i18n("components.filepreview.c74977c63087", { path: String(path) }) : i18n("components.filepreview.76aaf3b7cf23"));
       setDlPath(path ?? "");
     } catch (err) {
-      setDlMsg("另存为失败：" + errMsg(err));
+      setDlMsg(i18n("components.filepreview.6b71020ecce9") + errMsg(err));
     } finally {
       setDlBusy(false);
     }
@@ -1379,7 +1522,7 @@ export function FilePreviewHost() {
       const path = await downloadLearnUrl(cur.url, cur.name || "preview.pdf");
       await openLocalPath(path);
     } catch (err) {
-      setDlMsg("打开失败：" + (err instanceof Error ? err.message : String(err)));
+      setDlMsg(i18n("components.filepreview.5a7781220807") + (err instanceof Error ? err.message : String(err)));
     } finally {
       setPdfBusy(false);
     }
@@ -1421,58 +1564,54 @@ export function FilePreviewHost() {
 
   return createPortal(
     <div className={"confirm-mask" + (closing ? " is-closing" : "")} style={expanded ? maskStyleWide : maskStyle} onClick={close}>
+      {/* 内容视口豁免（同 MailPage 判例）：DOCX_CSS 的选择器全是伪 docx DOM 的文档版式，
+          见 DOCX_CSS 常量上方的判定注释——不是 UI 铬件，不迁不拆。 */}
       <style>{DOCX_CSS}</style>
       <div className={"confirm-card" + (closing ? " is-closing" : "")} style={expanded ? panelStyleWide : panelStyle} onClick={(e) => e.stopPropagation()}>
         <div style={headStyle} className="fp-head">
-          <b style={{ flex: "1 1 120px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 13 }} title={cur?.name ?? shown.name}>
-            {cur?.name || shown.name || "文件预览"}
+          <b style={{ flex: "1 1 120px", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "var(--og-text-label)" }} title={cur?.name ?? shown.name}>
+            {cur?.name || shown.name || i18n("components.filepreview.f3c5fe4dd2da")}
           </b>
           {metaBits.length ? (
-            <span style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", flexShrink: 0 }}>{metaBits.join(" · ")}</span>
+            <span style={SHRINK_STYLE}>
+              <Text nowrap slot="micro" tone="faint">{metaBits.join(" · ")}</Text>
+            </span>
           ) : null}
           {/* 按钮组整体靠右且不收缩：空间不够时整组换行，✕ 永远在面板内 */}
-          <span className="fp-actions" style={{ display: "flex", gap: 8, flexShrink: 0, marginLeft: "auto" }}>
-            <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-              {dlBusy ? "下载中…" : "下载"}
-            </button>
-            <button className="btn btn-ghost" disabled={dlBusy} title="这次保存到哪里由你选" onClick={() => void doSaveAs()}>
-              另存为
-            </button>
-            <button className="btn" onClick={close} aria-label="关闭预览">✕</button>
+          <span className="fp-actions" style={{ display: "flex", gap: "var(--og-space-2)", flexShrink: 0, marginLeft: "auto" }}>
+            <Btn variant="outline" disabled={dlBusy} onClick={() => void doDownload()}>{dlBusy ? i18n("components.filepreview.bcc2333dc631") : i18n("components.filepreview.4673a2306165")}</Btn>
+            <Btn variant="ghost" disabled={dlBusy} titleAttr={i18n("components.filepreview.6dcab5e0cf5b")} onClick={() => void doSaveAs()}>{i18n("components.filepreview.1232eb44296b")}</Btn>
+            <Btn variant="outline" onClick={close} aria-label={i18n("components.filepreview.1eb05d311508")}>✕</Btn>
           </span>
         </div>
 
         <div style={bodyStyle}>
-          {phase.s === "loading" ? <Empty text="正在加载文件…" /> : null}
+          {phase.s === "loading" ? <Empty text={i18n("components.filepreview.ee80f2c228b4")} /> : null}
 
           {phase.s === "error" ? (
-            <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
-              <Empty text={`预览加载失败：${phase.msg}`} />
+            <Stack align="center" gap={2} pad={4}>
+              <Empty text={i18n("components.filepreview.92dd605fd2e1", { msg: String(phase.msg) })} />
               {phase.raw ? (
-                <div style={{ fontSize: 11, color: "var(--text-3, #9aa1ac)", maxWidth: 640, textAlign: "center", overflowWrap: "anywhere" }}>
-                  原生返回：{phase.raw}
+                <div style={{ maxWidth: 640, textAlign: "center", overflowWrap: "anywhere" }}>
+                  <Text as="div" slot="micro" tone="faint">{i18nRich("components.filepreview.da406b05e4c8", { raw: phase.raw })}</Text>
                 </div>
               ) : null}
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={retry}>重试</button>
-                <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-                  {dlBusy ? "下载中…" : "下载查看"}
-                </button>
-                <button className="btn btn-ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>
-                  另存为…
-                </button>
-              </div>
-            </div>
+              <Inline gap={2} justify="center">
+                <Btn variant="outline" onClick={retry}>{i18n("components.filepreview.b8784c8dd563")}</Btn>
+                <Btn variant="outline" disabled={dlBusy} onClick={() => void doDownload()}>{dlBusy ? i18n("components.filepreview.bcc2333dc631") : i18n("components.filepreview.39d3c1f968f9")}</Btn>
+                <Btn variant="ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>{i18n("components.filepreview.9016c463977d")}</Btn>
+              </Inline>
+            </Stack>
           ) : null}
 
-          <PreviewErrorBoundary onRetry={retry} note={IS_WINDOWS_HOST ? WIN_PREVIEW_NOTE : undefined}>
+          <PreviewErrorBoundary onRetry={retry} note={IS_WINDOWS_HOST ? winPreviewNote() : undefined}>
 
           {view?.kind === "image" ? (
-            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 12, background: "rgba(127,127,127,.05)", minHeight: 220 }}>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", ...IMG_PANE_STYLE, minHeight: 220 }}>
               <img
                 src={view.dataUrl}
                 alt={cur?.name ?? shown.name}
-                style={{ maxWidth: "100%", maxHeight: "66vh", objectFit: "contain", borderRadius: 8 }}
+                style={IMG_FIT_STYLE}
               />
             </div>
           ) : null}
@@ -1488,21 +1627,12 @@ export function FilePreviewHost() {
           ) : null}
 
           {view?.kind === "text" ? (
-            <div style={{ padding: 12 }}>
+            <Stack pad={3} gap={2}>
               {view.mojibake ? (
-                <div style={{ fontSize: 12, color: "var(--amber, #ff9f1a)", marginBottom: 8 }}>
-                  文件可能不是 UTF-8 编码（如 GBK），部分字符可能显示为乱码。
-                </div>
+                <Text as="div" slot="label" tone="warning">{i18n("components.filepreview.a460d9626d86")}</Text>
               ) : null}
-              <pre
-                style={{
-                  margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all", fontSize: 12.5,
-                  lineHeight: 1.6, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                }}
-              >
-                {view.text}
-              </pre>
-            </div>
+              <pre style={TEXT_PRE_STYLE}>{view.text}</pre>
+            </Stack>
           ) : null}
 
           {view?.kind === "zip" ? (
@@ -1511,7 +1641,7 @@ export function FilePreviewHost() {
 
           {view?.kind === "docx" ? (
             <OfficeShell key={`d${cur?.seq ?? 0}`} zip={view.zip}>
-              <div className="docx-preview" style={{ padding: "14px 18px" }} dangerouslySetInnerHTML={{ __html: view.html }} />
+              <div className="docx-preview" style={DOCX_PANE_STYLE} dangerouslySetInnerHTML={{ __html: view.html }} />
             </OfficeShell>
           ) : null}
 
@@ -1525,52 +1655,45 @@ export function FilePreviewHost() {
             <OfficeShell key={`p${cur?.seq ?? 0}`} zip={view.zip}>
               {view.kind === "pptx" ? <PptxSlidesView model={view.model} /> : <PptxView slides={view.slides} />}
               {"notice" in view && view.notice ? (
-                <div style={{ padding: "6px 12px 8px", fontSize: 11.5, color: "var(--text-3, #9aa1ac)", wordBreak: "break-all" }}>
-                  {view.notice}
+                <div style={{ paddingBlock: "var(--og-space-1) var(--og-space-2)", paddingInline: "var(--og-space-3)", wordBreak: "break-all" }}>
+                  <Text as="div" slot="micro" tone="faint">{view.notice}</Text>
                 </div>
               ) : null}
             </OfficeShell>
           ) : null}
 
           {view?.kind === "other" ? (
-            <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 12, alignItems: "center", justifyContent: "center", flex: 1 }}>
-              <Empty text={view.hint ?? "该格式暂不支持在线预览"} />
-              <div style={{ fontSize: 12, color: "var(--text-3, #9aa1ac)", textAlign: "center" }}>
-                {view.mime}
-                {view.size ? ` · ${fmtBytes(view.size)}` : ""}
+            <Stack fill align="center" justify="center" gap={3} pad={6}>
+              <Empty text={view.hint ?? i18n("components.filepreview.8084cf451548")} />
+              <div style={{ textAlign: "center" }}>
+                <Text as="div" slot="label" tone="faint">
+                  {view.mime}
+                  {view.size ? ` · ${fmtBytes(view.size)}` : ""}
+                </Text>
               </div>
-              <button className="btn" disabled={dlBusy} onClick={() => void doDownload()}>
-                {dlBusy ? "下载中…" : "下载查看"}
-              </button>
-              <button className="btn btn-ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>
-                另存为…
-              </button>
-            </div>
+              <Btn variant="outline" disabled={dlBusy} onClick={() => void doDownload()}>{dlBusy ? i18n("components.filepreview.bcc2333dc631") : i18n("components.filepreview.39d3c1f968f9")}</Btn>
+              <Btn variant="ghost" disabled={dlBusy} onClick={() => void doSaveAs()}>{i18n("components.filepreview.9016c463977d")}</Btn>
+            </Stack>
           ) : null}
           </PreviewErrorBoundary>
         </div>
 
         {expanded ? (
-          <aside className="fp-info" aria-label="附件信息">
-            <h3 className="fp-info-h">附件信息</h3>
-            <div className="fp-info-name" title={cur?.name || shown.name || "文件预览"}>
-              {cur?.name || shown.name || "文件预览"}
+          <aside className="fp-info" aria-label={i18n("components.filepreview.c65d919b5dac")} style={FP_INFO_STYLE}>
+            <Text as="h3" slot="body" weight="semibold">{i18n("components.filepreview.c65d919b5dac")}</Text>
+            <div title={cur?.name || shown.name || i18n("components.filepreview.f3c5fe4dd2da")} style={{ minWidth: 0 }}>
+              <Text as="div" truncate slot="body">
+                {cur?.name || shown.name || i18n("components.filepreview.f3c5fe4dd2da")}
+              </Text>
             </div>
-            <dl className="fp-info-list">
-              <div>
-                <dt>类型</dt>
-                <dd>{kindLabel || "—"}</dd>
-              </div>
-              <div>
-                <dt>大小</dt>
-                <dd>{view?.size ? fmtBytes(view.size) : "—"}</dd>
-              </div>
-              <div>
-                <dt>格式</dt>
-                <dd>{mimeLabel || "—"}</dd>
-              </div>
-            </dl>
-            {IS_WINDOWS_HOST && WIN_PREVIEW_NOTE ? <p className="fp-info-note">{WIN_PREVIEW_NOTE}</p> : null}
+            <KeyValue
+              rows={[
+                { k: i18n("components.filepreview.ba40014ff496"), v: kindLabel || "—" },
+                { k: i18n("components.filepreview.50db7447b966"), v: view?.size ? fmtBytes(view.size) : "—" },
+                { k: i18n("components.filepreview.0e8b1c78c5f3"), v: mimeLabel || "—" },
+              ]}
+            />
+            {IS_WINDOWS_HOST ? <Text as="p" slot="micro" tone="faint">{winPreviewNote()}</Text> : null}
           </aside>
         ) : null}
 
@@ -1581,9 +1704,9 @@ export function FilePreviewHost() {
              动效：入场从下浮起（.fp-dl-hint），清空后走 200ms 退场相位淡出（.is-closing）。 */
           <div
             className={"fp-dl-hint" + (dlHintClosing ? " is-closing" : "")}
-            style={{ gridColumn: "1 / -1", flexShrink: 0, padding: "6px 14px", fontSize: 12, borderTop: "1px solid var(--border, #eee)", color: "var(--accent)", wordBreak: "break-all", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}
+            style={DL_HINT_STYLE}
           >
-            <span>{dlMsg || dlHintRef.current}</span>
+            <Text as="span" slot="label" tone="brand">{dlMsg || dlHintRef.current}</Text>
             {dlPath ? <DownloadOpenButtons path={dlPath} /> : null}
           </div>
         ) : null}

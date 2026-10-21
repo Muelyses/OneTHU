@@ -64,6 +64,10 @@ const decls = (css) => {
   return out;
 };
 let checkedPairs = 0;
+/* 2026-10-18：f8cd1025「统一主题调色板」之后，主题**重新拥有**表面填充族
+   （--bg/--bg-soft/--surface… 与 System 角色成对注入；theme.ts 里已无 SURFACE_FAMILY 跳过逻辑）。
+   此前那条"表面族由玻璃档独占"的断言是上一轮定案，测试没跟着改 → 一直红。
+   现在全部键一律要求成对注入，反而更严。 */
 for (const t of themes) {
   T.activateTheme(t.id);
   const css = themeStyle();
@@ -85,6 +89,16 @@ for (const t of themes) {
 }
 T.deactivateTheme();
 assert.equal(themeStyle(), "", "回到基础令牌时必须清空注入样式");
+
+/* 桥的取色来源必须「直取主题定义」而不是读 DOM 变量：onegui-bridge.css 用
+   html:root:not([data-og-skin])（0,2,1）把 --accent / --md-sys-color-secondary 都重指成
+   var(--og-accent…)，压过主题注入层 :root[data-theme]（0,2,0）——读变量＝读自己的输出，
+   表现就是「换什么主题都是默认蓝」（2026-10-15 用户实测 + 无头 Chrome 级联复现）。 */
+const BRIDGE = readFileSync("apps/desktop/src/lib/oneguiBridge.ts", "utf8");
+/* 2026-10-18：f8cd1025 把桥改成 themeFromVars(def.id, def.vars, …) —— 直取主题定义不变，
+   只是不再经 activeThemeAccent()。断言跟着实现走，口径仍是"不许从 DOM 变量取色"。 */
+assert.ok(/themeFromVars\(\s*def\.id\s*,\s*def\.vars/.test(BRIDGE), "桥没有从主题定义直取强调色（会自我吞噬成默认蓝）");
+assert.ok(!/getComputedStyle\([^)]*\)\.getPropertyValue\("--accent"\)/.test(BRIDGE), "主题分支又在读 DOM 变量了");
 
 console.log(
   "主题×System 护栏：镜像表 " +

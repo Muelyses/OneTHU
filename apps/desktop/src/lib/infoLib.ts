@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
 /**
  * thu-info-lib 平台接线层（dev2 管线移植 2026-09-16）。
  *
@@ -13,13 +14,15 @@
  * - 2FA futures：lib 的同步 hooks 桥接 OneTHU 的两段式 UI（选方式→发码→输码）
  * - 登录/验证/登出/会话守卫（libEnsureSession：lib verifyAndReLogin 语义）
  */
-import { nativeFetch, nativeCookieClear } from "./transport.js";
-import { markLoginAttempt, loginCooldownLeftMs, consumeLoginFailedPublicKey } from "./loginGate.js";
+import { nativeFetch, nativeCookieClear, nativeSeedCookies } from "./transport.js";
+import { markLoginAttempt, loginCooldownLeftMs } from "./loginGate.js";
+import { networkLogUrl } from "./networkLog.js";
 import { http } from "./clients.js";
-import { setPlatformFetch, setPlatformClearCookies } from "@onethu/info-lib/network";
+import { setPlatformFetch, setPlatformClearCookies, uFetch } from "@onethu/info-lib/network";
 const SAVE_FINGER_URL = "https://id.tsinghua.edu.cn/b/doubleAuth/personal/saveFinger";
-import { InfoHelper, roam, verifyAndReLogin } from "@onethu/info-lib";
+import { InfoHelper, roam, verifyAndReLogin, getOutstandingLoginIdentity } from "@onethu/info-lib";
 import { loadRemembered } from "./clients.js";
+import { fileRead, fileWrite, obfuscateSecret, deobfuscateSecret } from "./clients.js";
 import { withPrivacy } from "./privacy.js";
 import { sm2crypto, makeFingerprint, webvpnDecodeUrl, parseCellAnchor, type TwoFactorMethod } from "@onethu/core";
 
@@ -72,14 +75,14 @@ export function initInfoLib(): InfoHelper {
         headers: init.headers as Record<string, string> | undefined,
         timeoutMs: init.timeoutMs,
       });
-      // JAR 透视（真机联调期）：每次平台请求入账后，dump 三个关键桶的 cookie 名单
-      // （含 wengine 票据前 8 位，用于识别主票/应用票/陈旧票互踩）
+      rememberGitlabSession(url, res);
+      // Diagnostic cookie names only; never include even prefixes of session values.
       try {
         const names = (bucket: string): string => {
           try {
             return http.jar
               .getCookies(new URL(bucket))
-              .map((c) => `${c.name}=${c.value.slice(0, 26)}`)
+              .map((c) => c.name)
               .join(",");
           } catch {
             return "?";
@@ -116,12 +119,13 @@ export function initInfoLib(): InfoHelper {
       } else {
         text = await res.text();
       }
-      void log(`ILIB ${init.method ?? "GET"} ${res.status} ${url.slice(0, 90)} → ${text.slice(0, 120).replace(/\s+/g, " ")}`);
+      const finalUrl = res.headers.get("x-onethu-final-url") ?? res.url ?? url;
+      void log(`ILIB ${init.method ?? "GET"} status=${res.status} url=${networkLogUrl(url)} final=${networkLogUrl(finalUrl)} chars=${text.length}`);
       return {
         status: res.status,
         headers: Array.from(res.headers.entries()),
         text,
-        finalUrl: res.headers.get("x-onethu-final-url") ?? res.url ?? url,
+        finalUrl,
       };
     });
     setPlatformClearCookies(() => {
@@ -143,17 +147,99 @@ export function initInfoLib(): InfoHelper {
 /** InfoHelper 单例（userId/password/fingerGenPrint 驻留内存，供静默重登免 2FA） */
 export const helper = withPrivacy(new InfoHelper(), "helper");
 
+// Runs inside the library's single flight: manual login AND internal recovery share
+// the same gate. Joining a pending chain or submitting a 2FA code never clears cookies.
+helper.beforeLoginAttemptHook = async () => {
+  markLoginAttempt();
+  // Internal library recovery can bypass clients.login; it must use the same device identity.
+  const { currentFingerprint } = await import("./clients.js");
+  helper.fingerprint = await currentFingerprint();
+  pendingMethods = null;
+  pendingMethodsAttempt = null;
+  activeMethod = null;
+  resolveMethod = resolveCode = null;
+  rejectMethod = rejectCode = null;
+  void log("AUTH-PHASE cookie-clear-start");
+  await nativeCookieClear();
+  void log("AUTH-PHASE cookie-clear-done");
+};
+
+/* ═══════════ GitLab 会话票：跨进程保活 ═══════════
+ * `_gitlab_session` 是 GitLab 的会话票（无 Expires），而本机 cookie 仓是进程内内存
+ * （Rust 侧 CookieStore）——应用一重启就没了。于是每次启动/每次改代码重启，GitLab 页
+ * 都要重走一遍统一认证换票；而那条链在统一认证侧的老授权卡住时会一直把回调打回登录页，
+ * 于是表现成「每次更新都 401」。这里把会话票按本站既有的混淆方式落盘，下次开机种回
+ * 原生仓，能直接续用就不再触发换票。
+ */
+const GITLAB_ORIGIN = "https://git.tsinghua.edu.cn/";
+const GITLAB_SESSION_FILE = "gitlab.session";
+const GITLAB_SESSION_KEY = "gitlab";
+let gitlabSessionValue = "";
+let gitlabSessionRestored = false;
+
+function gitlabSessionFromRes(url: string, res: Response): string {
+  try {
+    const fin = new URL(res.headers.get("x-onethu-final-url") ?? res.url ?? url);
+    if (fin.hostname !== "git.tsinghua.edu.cn") return "";
+    // 登录页对匿名访客也发一枚 `_gitlab_session`（承载 CSRF）：漫游舞半途而废时
+    // 它会顶掉真票并被写盘，下轮开机 seed 回来照样是未登录 → 又见 401。只记我们
+    // 确知来自已登录侧的兑付响应（2026-10-14 丢登录态治理）。
+    if (fin.pathname.startsWith("/users/sign_in")) return "";
+  } catch {
+    return "";
+  }
+  for (const line of res.headers.getSetCookie()) {
+    const pair = line.split(";")[0] ?? "";
+    const eq = pair.indexOf("=");
+    if (eq <= 0 || pair.slice(0, eq).trim() !== "_gitlab_session") continue;
+    return pair.slice(eq + 1).trim();
+  }
+  return "";
+}
+
+/** 每次响应顺手记一下会话票（值变了才写盘） */
+function rememberGitlabSession(url: string, res: Response): void {
+  const value = gitlabSessionFromRes(url, res);
+  if (!value || value === gitlabSessionValue) return;
+  gitlabSessionValue = value;
+  void fileWrite(GITLAB_SESSION_FILE, JSON.stringify({ secret: obfuscateSecret(value, GITLAB_SESSION_KEY) })).catch(
+    () => undefined,
+  );
+}
+
+/** 开机第一次用到 GitLab 前种回上次的会话票（种失败/没有就照常走换票） */
+export async function restoreGitlabSession(): Promise<void> {
+  if (gitlabSessionRestored) return;
+  gitlabSessionRestored = true;
+  const raw = await fileRead(GITLAB_SESSION_FILE).catch(() => null);
+  if (!raw) return;
+  try {
+    const value = deobfuscateSecret((JSON.parse(raw) as { secret?: string }).secret ?? "", GITLAB_SESSION_KEY);
+    if (!value) return;
+    gitlabSessionValue = value;
+    await nativeSeedCookies(GITLAB_ORIGIN, [`_gitlab_session=${value}; Path=/`]);
+  } catch {
+    /* 坏文件视作没存过 */
+  }
+}
+
 /* ═══════════════ 2FA futures：lib 同步 hooks ⇄ OneTHU 两段式 UI ═══════════════ */
 
 const METHOD_NAMES: { [k in "wechat" | "mobile" | "totp"]: string } = {
-  wechat: "企业微信",
-  mobile: "手机短信",
-  totp: "TOTP 验证器",
+  get wechat() { return i18n("lib.infolib.f3943a7b3681"); },
+  get mobile() { return i18n("lib.infolib.f87602bd9134"); },
+  get totp() { return i18n("lib.infolib.22a686a1c34c"); },
 };
 
 let methodsNotify: ((methods: TwoFactorMethod[]) => void) | null = null;
 let resolveMethod: ((t: "wechat" | "mobile" | "totp") => void) | null = null;
 let resolveCode: ((code: string) => void) | null = null;
+let rejectMethod: ((reason: Error) => void) | null = null;
+let rejectCode: ((reason: Error) => void) | null = null;
+let codeReadyNotify: (() => void) | null = null;
+let pendingMethods: TwoFactorMethod[] | null = null;
+let pendingMethodsAttempt: number | null = null;
+let activeMethod: string | null = null;
 let pendingTrust = false;
 /** hook 自签拿到的 finger3（lib 内置路径会丢 object——这里接住） */
 let selfFinger3 = "";
@@ -166,22 +252,31 @@ helper.twoFactorMethodHook = (hasWeChatBool, phone, hasTotp) => {
   if (hasWeChatBool) methods.push({ type: "wechat", name: METHOD_NAMES.wechat });
   if (phone) methods.push({ type: "mobile", name: METHOD_NAMES.mobile, detail: phone });
   if (hasTotp) methods.push({ type: "totp", name: METHOD_NAMES.totp });
+  pendingMethods = methods;
+  pendingMethodsAttempt = getOutstandingLoginIdentity()?.attemptId ?? null;
   void log("2FA need-methods: " + methods.map((m) => m.type).join(","));
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    rejectMethod = reject;
     methodsNotify?.(methods);
     resolveMethod = (t) => {
       resolveMethod = null;
+      rejectMethod = null;
+      activeMethod = t;
       resolve(t);
     };
   });
 };
 
 helper.twoFactorAuthHook = () =>
-  new Promise<string>((resolve) => {
+  new Promise<string>((resolve, reject) => {
+    rejectCode = reject;
     resolveCode = (code) => {
       resolveCode = null;
+      rejectCode = null;
       resolve(code);
     };
+    codeReadyNotify?.();
+    codeReadyNotify = null;
   });
 
 helper.trustFingerprintHook = async () => pendingTrust;
@@ -191,24 +286,40 @@ helper.twoFactorAuthLimitHook = async () => {
   // 却不知原因（群反馈 + MCCF 实例：清掉 6~7 条旧信任记录后立刻能进）。
   void log("2FA 受信设备数达上限（登录继续，本次未信任）");
   const { showToast } = await import("../state/toast.js");
-  showToast("受信设备数已达上限：本次登录不会记住本设备。可到 id.tsinghua.edu.cn 删除旧的「信任浏览器」后重试。");
+  showToast(i18nMsg("lib.infolib.fd1c426ab1aa"), 8000, { center: true });
 };
 
 /* ═══════════════ 登录链 ═══════════════ */
 
 interface InflightLogin {
   p: Promise<void>;
+  codeReady: Promise<void>;
   settled: boolean;
   username: string;
   password: string;
 }
 let inflight: InflightLogin | null = null;
 
+/** Check before changing credentials, callbacks or remembered account state. */
+export function assertLoginAccount(username: string, password: string): void {
+  const owner = getOutstandingLoginIdentity();
+  if (owner && (owner.userId !== username || helper.password !== password)) {
+    throw Object.assign(new Error("Another login is in progress."), { code: "AUTH_IN_PROGRESS" });
+  }
+}
+
 /** 启动 lib 登录链（不等待完成）。methodsPromise 在进入 2FA 时 resolve。 */
 function startLoginRaw(username: string, password: string): {
   p: Promise<void>;
   methodsPromise: Promise<TwoFactorMethod[]>;
 } {
+  assertLoginAccount(username, password);
+  const joining = getOutstandingLoginIdentity();
+  if (!joining) {
+    pendingMethods = null;
+    resolveMethod = resolveCode = null;
+    rejectMethod = rejectCode = null;
+  }
   // 新版 lib 已移除 fingerGenPrint 字段；受信凭据由 session.finger3 自管
   let methodsResolve!: (m: TwoFactorMethod[]) => void;
   const methodsPromise = new Promise<TwoFactorMethod[]>((res) => (methodsResolve = res));
@@ -216,12 +327,16 @@ function startLoginRaw(username: string, password: string): {
     methodsNotify = null;
     methodsResolve(m);
   };
-  const p = helper.login({ userId: username, password });
-  const entry: InflightLogin = { p, settled: false, username, password };
-  inflight = entry;
-  void p.finally(() => {
-    entry.settled = true;
+  const adoptingMethods = joining && pendingMethodsAttempt === joining.attemptId;
+  if (adoptingMethods && pendingMethods) methodsNotify(pendingMethods);
+  const codeReady = new Promise<void>((resolve) => {
+    if (adoptingMethods && resolveCode) resolve();
+    else codeReadyNotify = resolve;
   });
+  const p = helper.login({ userId: username, password });
+  const entry: InflightLogin = { p, codeReady, settled: false, username, password };
+  inflight = entry;
+  void p.then(() => { entry.settled = true; }, () => { entry.settled = true; });
   return { p, methodsPromise };
 }
 
@@ -236,6 +351,25 @@ export function setLibFinger3(finger3: string): void {
 export type LibLoginResult =
   | { state: "ready" }
   | { state: "need-2fa"; methods: TwoFactorMethod[] };
+
+let loginBridge: { username: string; password: string; p: Promise<LibLoginResult> } | null = null;
+
+/** Explicitly leaving 2FA abandons its hooks; an unrelated later attempt cannot resume them. */
+export async function libAbandonLogin(): Promise<void> {
+  const { clearOutstandingLogin } = await import("@onethu/info-lib");
+  clearOutstandingLogin();
+  const reason = new Error("Login cancelled.");
+  rejectMethod?.(reason);
+  rejectCode?.(reason);
+  rejectMethod = rejectCode = null;
+  resolveMethod = resolveCode = null;
+  methodsNotify = null;
+  codeReadyNotify = null;
+  pendingMethods = null;
+  pendingMethodsAttempt = null;
+  activeMethod = null;
+  loginBridge = null;
+}
 
 /** 登录：ready 或 need-2fa（lib 链挂起等待 futures；verify2FA 续完） */
 /** 直登（无 2FA）路径的受信凭据补签：lib 只在 2FA 链里做 SAVE_FINGER，
@@ -263,12 +397,19 @@ export async function libLogin(
   password: string,
   fingerprint: string,
 ): Promise<LibLoginResult> {
-  markLoginAttempt();
-  // 永远从干净仓开始（2026-09-17 定案）：仓里残留的匿名票（wrdvpn1-）+
-  // IP 续会 = login?oauth 被拦成门户页，永远铸不出真票；清仓后服务端总是
-  // 走完整 OAuth 舞（表单带 sig → check → 302 webvpn/login?code= → 铸票），
-  // live16 逐跳实录验证。代价：每次 libLogin 全套重登（~2s），可接受。
-  await nativeCookieClear().catch(() => undefined);
+  assertLoginAccount(username, password);
+  if (loginBridge && !inflight?.settled) {
+    if (loginBridge.username === username && loginBridge.password === password) return loginBridge.p;
+    throw Object.assign(new Error("Another login is in progress."), { code: "AUTH_IN_PROGRESS" });
+  }
+  const p = performLibLogin(username, password, fingerprint);
+  loginBridge = { username, password, p };
+  // Failed attempts can retry after the shared cooldown. Keep the 2FA bridge available.
+  void p.catch(() => { if (loginBridge?.p === p) loginBridge = null; });
+  return p;
+}
+
+async function performLibLogin(username: string, password: string, fingerprint: string): Promise<LibLoginResult> {
   helper.fingerprint = fingerprint || makeFingerprint();
   // 2FA 信任设备钩子：lib 在 2FA 链内调它决定是否 SAVE_FINGER（内置路径
   // 响应 object=finger3 被 lib 丢弃——后续从持久化快照或再度 2FA 恢复）
@@ -276,14 +417,7 @@ export async function libLogin(
     async () => pendingTrust;
   (helper as unknown as { trustFingerprintNameHook?: () => Promise<string> }).trustFingerprintNameHook =
     async () => "OneTHU";
-  // 被封锁检测：上一轮登录以「public key」失败 = 落地封锁页（2026-09-17 实录：
-  // id 按会话 cookie 封设备，同 IP 无 cookie 客户端正常）→ 清原生仓换新身份
-  if (consumeLoginFailedPublicKey()) {
-    await nativeCookieClear().catch(() => undefined);
-  }
-  // 弃掉 2FA 挂起的僵尸链（lib 的 outstandingLoginPromise 单例——见 core.ts 注释）
-  const { clearOutstandingLogin } = await import("@onethu/info-lib");
-  clearOutstandingLogin();
+  void log("AUTH-PHASE handshake-start");
   const { p, methodsPromise } = startLoginRaw(username, password);
   const settled = await Promise.race([
     p.then(
@@ -300,50 +434,52 @@ export async function libLogin(
   return { state: "need-2fa", methods };
 }
 
-/** 用户选定验证方式（lib 收到后自行 SEND_CODE）
- *  重发场景：lib 的两段 hooks 均为一次性——重复点击时静默忽略（UI 的验证码
- *  仍有效；过期则 verify 报错后自动重启链重走 2FA）。 */
+/** Resolve the method, then wait until SEND_CODE succeeds or fails. */
 export async function libSend2FA(type: string): Promise<void> {
-  const r = resolveMethod;
-  if (r) {
-    r(type as "wechat" | "mobile" | "totp");
+  if (resolveMethod) {
+    resolveMethod(type as "wechat" | "mobile" | "totp");
+    if (inflight) await Promise.race([inflight.p, inflight.codeReady]);
     return;
   }
-  // resolver 为空 = 用户手里的 UI 挂在已死的旧链上（keepalive 的 libEnsure
-  // Session 在僵尸 settle 后抢起新链）——照 libVerify2FA 的自愈：重启链并
-  // 自动应答方式选择，用户这次点击直接生效（码正常发出）
-  void log("2FA 方式选定但链已死 → 自动重启链并应答: " + type);
+  if (inflight && !inflight.settled) {
+    if (activeMethod !== type) {
+      throw Object.assign(new Error("Changing verification method requires a new sign-in."), { code: "AUTH_2FA_METHOD" });
+    }
+    // Resend in the same verification session; do not replay the account/password chain.
+    await Promise.race([inflight.p, inflight.codeReady]);
+    const response = JSON.parse(await uFetch("https://id.tsinghua.edu.cn/b/doubleAuth/login", { action: "SEND_CODE", type }));
+    if (response.result !== "success") throw new Error(String(response.msg || "Unable to send verification code."));
+    return;
+  }
   const username = inflight?.username ?? "";
   const password = inflight?.password ?? "";
   if (!username || !password) {
-    void log("2FA 重启失败：无内存凭据");
-    return;
+    throw Object.assign(new Error("Verification must be restarted."), { code: "AUTH_2FA_RESTART" });
   }
+  // Explicitly asking for a new code can restart the chain, through the shared gate.
   const { p, methodsPromise } = startLoginRaw(username, password);
-  void methodsPromise.then(() => {
+  await Promise.race([p, methodsPromise.then(() => {
     resolveMethod?.(type as "wechat" | "mobile" | "totp");
-  });
-  void p.catch(() => undefined);
+  })]);
+  if (inflight) await Promise.race([p, inflight.codeReady]);
 }
 
-''/** 提交验证码（+是否信任设备）。lib 链在此续完：VERITY → SAVE_FINGER → 落地 → roam-id。
- *  验证码错误时 lib 单发链已死：自动用内存凭据重启链并自动应答方式选择，
- *  用户下一次提交直接可用（UI 无需返回重选）。 */
+/** Never silently restart a dead chain and discard the code the user just entered. */
 export async function libVerify2FA(type: string, code: string, trust: boolean): Promise<void> {
   if (!inflight || inflight.settled) {
-    const username = inflight?.username ?? "";
-    const password = inflight?.password ?? "";
-    const { p, methodsPromise } = startLoginRaw(username, password);
-    void methodsPromise.then(() => {
-      resolveMethod?.(type as "wechat" | "mobile" | "totp");
-    });
+    throw Object.assign(new Error("Verification must be restarted."), { code: "AUTH_2FA_RESTART" });
   }
-  if (!inflight) throw new Error("登录会话不存在");
-  resolveMethod?.(type as "wechat" | "mobile" | "totp");
+  const entry = inflight;
+  if (activeMethod && activeMethod !== type) {
+    throw Object.assign(new Error("Changing verification method requires a new sign-in."), { code: "AUTH_2FA_METHOD" });
+  }
   pendingTrust = trust;
+  resolveMethod?.(type as "wechat" | "mobile" | "totp");
+  // TOTP also needs the method/SEND_CODE round trip before its code hook is installed.
+  const needsCode = await Promise.race([entry.p.then(() => false), entry.codeReady.then(() => true)]);
+  if (!needsCode) return;
   resolveCode?.(code);
-  await inflight.p;
-  // 成功：SAVE_FINGER 的受信凭据已写入 helper.fingerGenPrint（本次 trust=true 时）
+  await entry.p;
 }
 
 /** 登出（lib 链 + 共享 jar） */
@@ -380,8 +516,10 @@ export async function libRoamLearn(): Promise<boolean> {
  *
  * 指纹同理：`helper.fingerGenPrint` 为空时 id 会要求 2FA，静默重登必失败
  * （2026-09-18 已实锤过一次；libForceRelogin 里修了，libEnsureSession 没同步修）。
+ *
+ * 供漫游类数据层（GitLab）单独调用：它们的换票链要的就是这两样。
  */
-async function hydrateLibCredentials(): Promise<boolean> {
+export async function libHydrateCredentials(): Promise<boolean> {
   const h = helper as unknown as { userId: string; password: string; fingerGenPrint?: string };
   if (!h.userId || !h.password) {
     const remembered = await loadRemembered().catch(() => null);
@@ -398,7 +536,7 @@ async function hydrateLibCredentials(): Promise<boolean> {
 
 export async function libEnsureSession(): Promise<boolean> {
   // ① 对齐 info app：凭据 + 受信指纹先就位（否则重启后无从重登）
-  const hasCreds = await hydrateLibCredentials();
+  const hasCreds = await libHydrateCredentials();
   // ② 权威探活 + 按需重登（info app 的 verifyAndReLogin 同源实现）：
   //    取用户信息比对 ryh——活着且是本人 → 无需重登；否则用 helper 上的凭据重登。
   //    比原来「webvpn 端点里有 XSRF-TOKEN 就算活」强：后者只证明网关发了票，
@@ -512,14 +650,14 @@ export async function libForceRelogin(): Promise<boolean> {
   // 受信凭据喂给 lib：helper.fingerGenPrint 是内存变量，boot 恢复/进程重启后
   // 为空 → libLogin 传空指纹 → id 要 2FA → 强制重登必撞墙（02:23 实录
   // "lib 重登失败 → 回退自清仓"）。sessionFinger3（持久层）优先喂入。
-  await hydrateLibCredentials(); // 凭据 + 受信指纹统一从持久层回灌
+  await libHydrateCredentials(); // 凭据 + 受信指纹统一从持久层回灌
   const r = await libLogin(username, password, helper.fingerprint).catch(() => null);
   return r?.state === "ready";
 }
 
 /** 登录链是否挂起（用户正在 2FA 界面）——静默重登互斥判据 */
 export function libLoginPending(): boolean {
-  return !!inflight && !inflight.settled;
+  return getOutstandingLoginIdentity() !== null || (!!inflight && !inflight.settled);
 }
 
 /** 内存凭据访问（静默重登用） */

@@ -6,6 +6,7 @@ OneTHU Android 系统桥：
 #### This default permission set includes the following:
 
 - `allow-mobile-supported`
+- `allow-mobile-exit`
 
 ## Permission Table
 
@@ -15,6 +16,32 @@ OneTHU Android 系统桥：
 <th>Description</th>
 </tr>
 
+
+<tr>
+<td>
+
+`onethu-mobile:allow-mobile-exit`
+
+</td>
+<td>
+
+Enables the mobile_exit command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-mobile:deny-mobile-exit`
+
+</td>
+<td>
+
+Denies the mobile_exit command without any pre-configured scope.
+
+</td>
+</tr>
 
 <tr>
 <td>

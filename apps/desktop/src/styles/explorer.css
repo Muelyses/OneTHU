@@ -1,0 +1,456 @@
+/* ══════════ Explorer 外壳样式（dev-explorer 革命）══════════
+   本文件只写外壳（顶栏/内容区/设置浮层）；组件样式分治：
+   explorer-ui.css（标签条/抽屉/底栏）· explorer-home.css（首页）· explorer-oh.css（OH 链路）。
+   全部复用 global.css 既有 token，不造新色值。
+   分辨率口径：≥841px = 桌面/横屏（两行顶置全 fixed）；<841px = 手机（顶栏 top0+底栏 bottom0）。 */
+
+:root {
+  /* 底栏高度口径：ui 侧与 oh 侧（胶囊/窗/FAB/island 抬高）都对齐这个变量 */
+  --explorer-bar-h: 48px;
+  /* 顶栏高度口径（2026-10-16 收成单源）：顶栏本体、内容区顶让位、首页画布都读它。
+     此前 46 硬写在三处，而 global.css 的 `html.is-phone .content { padding: 16px }`
+     又把内容区顶让位盖成 16px —— 手机档每个页面首屏都被顶栏压掉 30px（用户口径「截断」）。 */
+  --explorer-top-h: 46px;
+  /* 手机档「底栏以上还要让出多少」：2026-10-16 底部标签条退役后由 52px 降到一条呼吸缝。
+     所有"底栏以上"的固定件（首页画布内边距 / OnePage 抽屉 / OH 生长窗 / 浮钮列）都引用它，
+     别再各写 52 / 56 —— 那正是上一轮"内容被底栏吃掉"的来源。 */
+  --ex-phone-bar-gap: 8px;
+}
+
+/* ── 壳：旧 .shell 是给侧栏用的 grid 两列——革命后改纵向 flex ── */
+.explorer-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.explorer-content {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ── 顶栏：首页 Logo（恒在）+ 复制 + 标签条 + 设置齿轮（恒在）；全平台 fixed 不随页滚走 ── */
+.explorer-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--explorer-top-h, 46px);
+  padding: 0 10px;
+  /* 材质 = global.css「壳层玻璃收口」那一处；此处只兜底一份，避免像本轮这样被删空 */
+  transition: box-shadow var(--dur-2, 0.2s) var(--ease-out, ease);
+}
+.tb-home {
+  white-space: nowrap;
+  min-width: max-content;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+.tb-spring { flex: 1 1 0; }
+
+/* ── 内容区：手机 = 顶栏 46px + 底栏 48px 占位；桌面媒体查询里另给 94px ── */
+.explorer-content {
+  padding-top: var(--explorer-top-h, 46px);
+  padding-bottom: calc(var(--explorer-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
+}
+
+/* 硬刷新 FAB 给底栏让位。
+   手机档还要再让开白板工具栏：工具栏已改成带文字的竖排（组件/画笔各占一行，宽约 80px），
+   和同处右下的 FAB 横向重叠（用户反馈「右侧工具栏图标意义不明」修好后暴露出来的遮挡）。
+   让位量 = 工具栏一列的高度（--og-space-9）+ 一拍间隙。 */
+.hard-refresh-fab {
+  right: var(--refresh-fab-right, 18px) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 16px)) !important;
+}
+html:root.is-phone .hard-refresh-fab:not(.top-fab) {
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + var(--og-mobile-tools-gap, 76px) + var(--og-space-9) + var(--og-space-2) + env(safe-area-inset-bottom, 0px))) !important;
+}
+.hard-refresh-fab.top-fab {
+  right: var(--refresh-fab-right, 18px) !important;
+  bottom: var(--refresh-fab-bottom, calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + 74px)) !important;
+}
+
+/* ══════════ 桌面/横屏（≥841px）：两行顶置（底栏上移第一行 / TopBar 其下第二行），
+        两行全 fixed，滚动不消失。本文件里此口径只此一块，严禁残留第四块。 ══════════ */
+@media (min-width: 841px) {
+  /* 2026-10-16：这一块是**桌面**形态（两行顶置），必须排除手机——横屏手机宽度到 844 会命中
+     这条 media query，于是底栏跳到屏幕顶上、顶栏反而在它下面（用户口径：手机横竖都保持
+     底栏在下 + 顶栏在上）。手机形态由 html.is-phone 定义（短边窄，横竖都算）。 */
+  html:not(.is-phone) .explorer-shell > .ex-bbar {
+    position: fixed !important;
+    top: var(--og-workbench-tabs-h);
+    bottom: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 48px !important;
+    z-index: 61;
+    padding-bottom: 0;
+  }
+  html:not(.is-phone) .explorer-topbar { top: 48px; }
+  html:not(.is-phone) .explorer-content { padding-top: 104px !important; padding-bottom: 28px; } /* 94+10：内容与标签栏留一拍呼吸空隙（用户实测「有点挤」） */
+  html:not(.is-phone) .hard-refresh-fab { bottom: var(--refresh-fab-bottom, 18px) !important; }
+  html:not(.is-phone) .hard-refresh-fab.top-fab { bottom: var(--refresh-fab-bottom, 74px) !important; }
+}
+
+/* ── 设置浮层：高于任何标签页（手机全屏 / 桌面右侧推入） ── */
+.settings-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  animation: m-fade var(--dur-2, 0.2s) var(--ease-out, ease) both;
+}
+.settings-mask.is-closing { animation: m-fade-out var(--dur-2, 0.2s) ease both; }
+.settings-panel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: m-slide-right var(--dur-3, 0.3s) var(--ease-ios, ease) both;
+}
+.settings-panel.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
+@media (min-width: 841px) {
+  /* 用户截屏「挤挤挤」：560/46vw 装全宽版心设计的页面必叠字——加宽到 680/54vw */
+  .settings-panel { width: min(680px, 54vw); }
+}
+.settings-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  flex: none;
+}
+.settings-seg { position: absolute; left: 50%; transform: translateX(-50%); }
+.settings-close { margin-left: auto; position: relative; } /* 绝对居中后压轴仍贴右 */
+.settings-title { font-size: 15px; }
+.settings-seg {
+  max-width: 100%;
+  overflow-x: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto;
+}
+.settings-seg-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 11px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color var(--dur-2) ease, color var(--dur-2) ease, background var(--dur-2) ease;
+}
+.settings-close { margin-left: auto; }
+.explorer-settings-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.explorer-settings-body { padding: 14px 16px 24px; }
+/* 用户截屏「挤挤挤」防御：浮层里的插件卡动作行/状态行不许逐字竖排 */
+.explorer-settings-body .plg-state { white-space: nowrap; }
+.explorer-settings-body .plg-state-sub { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.explorer-settings-body .plg-ops { white-space: nowrap; }
+.explorer-settings-body .plg-name, .explorer-settings-body .plg-ver, .explorer-settings-body .plg-kind { white-space: nowrap; }
+
+/* 悬停小灰条（用户定稿：小的那个、快；自绘接管原生 title 防双出） */
+.ex-tip {
+  position: fixed;
+  background: var(--surface-3, var(--md-sys-color-surface-container-high, #eee));
+  color: var(--text-1);
+  border: 0;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: var(--text-xs, 12px);
+  white-space: nowrap;
+  max-width: min(60vw, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1400;
+  pointer-events: none;
+}
+
+/* ── 设置浮层滚动铁则：横滚禁绝（内容超宽行一律折/省略）、竖滚做 overlay 细条──
+   scrollbar-width/scrollbar-color 两项撤掉（2026-10-12 合流修正）：Chromium ≥121 只要
+   看到它们就会整体忽略 ::-webkit-scrollbar，元素级细条与全局令牌滚动条全部失效——
+   下两行本地的 ::-webkit-scrollbar 就是想要的效果，留着声明反而把它自己杀死。 */
+.explorer-settings-body { overflow-x: hidden; }
+.explorer-settings-body::-webkit-scrollbar { width: 6px; }
+.explorer-settings-body::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--text-1) 18%, transparent); border-radius: 3px; }
+.explorer-settings-body::-webkit-scrollbar-track { background: transparent; }
+
+/* ══════════ 标签页壁纸（2026-10-14 单档化定案）══════════
+   壁画只画在壳层（.shell-wallpaper，fixed 铺满 z 0），面板与内容层永远透明透出它——
+   白板/标签栏/内容栏观感统一，不再有 per-tab 的「本页」档。「本页壁纸」功能已删：
+   面板 has-wallpaper、面板级亮度档、面板内视频层（.explorer-panel > .wall-video-layer）
+   的分支全部移除，文字适应只看壳层 data-wallpaper-lum 一处。 */
+.explorer-panel, .explorer-content, .explorer-panel > .page-anim {
+  background: transparent;
+}
+.explorer-shell.has-shell-wallpaper {
+  /* 全屏档在场时 body 的灰环境底归零（壁纸层盖满，灰底不能从边缘渗出） */
+  background: transparent;
+}
+
+/* 环境光已上移到 body（base.css，全局 everywhere）：壳层不再重复铺 */
+
+/* 顶栏/侧栏 = 面板级玻璃。配方本体已由 global.css 的「玻璃收口」规则统一提供
+   （tint 渐变 + fill + blur + rim，一条规则管全站），这里只保留各自差异项。 */
+
+/* 标签 = 安静态（用户定稿：标签栏不用玻璃 chip）——激活=淡主题色填充 */
+/* 悬停走随明暗主题的 --glass-tint（旧写法 fallback 写死白 0.4，深色模式下成刺眼白块） */
+
+/* 右键菜单 = menu tier */
+.explorer-ctxmenu,
+.ctx-menu {
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+}
+.ex-tip {
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-rim-top);
+}
+
+/* ══════════ 全屏档壁纸层 + 亮度自适应（壁纸二期，v4.3 修订）══════════ */
+
+/* 壳层壁纸：不再用 fixed（会被任何带 transform/filter 的祖先建立成局部 containing block，
+   实测被困成一小块）——.explorer-shell 自身 relative，absolute inset 0 铺满整壳 = 整窗口。 */
+/* position: fixed = 钉死视口（2026-10-14 用户拍板：壁纸不随滚动走）。此前 absolute
+   会随文档滚走、文档滚动后底部露出 body 白底。当年 fixed 被困的 transform 祖先链
+   （.shell 直挂，外层 body/html/#root 均无 transform/filter）现已不存在。 */
+.shell-wallpaper { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.shell-wallpaper-img { position: absolute; inset: 0; background-size: cover; background-position: center; background-repeat: no-repeat;  background-attachment: fixed; }
+.wall-video-layer { position: absolute; inset: 0; overflow: hidden; }
+.wall-video-layer video { width: 100%; height: 100%; object-fit: cover; }
+.wall-video-veil { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2); }
+
+/* 内容浮在壁纸之上。注意：这里**只抬流内内容（.explorer-content）**——
+   此前写的 `> *:not(.shell-wallpaper) { position: relative }` 以更高特异度把
+   顶栏/竖栏/底栏的 position: fixed 压回了文档流，标签栏就跟着页面滚动跑了
+   （2026-10-13 用户点名「标签页栏跟着鼠标滑动跑」的根因）。fixed 栏自己的
+   z-index（55/60/80）本来就压在壁纸(z 0)之上，不需要也不再劫持。 */
+.explorer-shell { position: relative; }
+.explorer-shell > .explorer-content { position: relative; z-index: 1; }
+
+/* ── 壁纸亮度档：栏体玻璃与**全部文字令牌**跟壁纸明暗走（用户点名补齐的文字适应）──
+   要点：不只改容器 color——栏内的按钮/标签/工作区名都引用 var(--text-*)/
+   var(--md-sys-color-on-surface*)，在这里把这两组令牌连同描边/悬停一起重映射，
+   子树整体翻色，两类主题 × 两类壁纸四种组合都可读。 */
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-topbar,
+.explorer-shell[data-wallpaper-lum="dark"] .ex-bbar,
+.explorer-shell[data-wallpaper-lum="dark"] .ex-rail {
+  /* 栏体配方已收口 global.css（不在此重复 background） */
+  /* 栏体 fill 是**浅色玻璃**（档位单源），与壁纸明暗无关 →
+     文字必须用深色档，否则浅字压浅底（实测对比率 1.0，用户点名"字消失"）。
+     原先这里写 #f2f4f8 是 ink 深底时代的残留。 */
+}
+.explorer-shell[data-wallpaper-lum="light"] .explorer-topbar,
+.explorer-shell[data-wallpaper-lum="light"] .ex-bbar,
+.explorer-shell[data-wallpaper-lum="light"] .ex-rail {
+  /* 栏体配方已收口 global.css（不在此重复 background） */
+}
+
+/* 首页固定钟/功能坞在 shell 层，不继承栏体本身的背景；只映射文字与其玻璃件令牌。 */
+
+/* ── 面板基础形态（per-tab 壁纸的亮度档/视频层/has-wallpaper 分支已随功能删除）── */
+.explorer-panel { position: relative; overflow: hidden; }
+.explorer-content > .page-anim { position: relative; z-index: 2; }
+
+/* 全屏档（壳层）壁纸透进内容区后的字读兜底：页级内容下的反差纱——唯一纱源。
+   亮主题下暗壁纸提白、暗主题下亮壁纸压黑，覆盖四组合；
+   文档正文卡自带 surface，字读不动它。 */
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before,
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before {
+  background: rgba(255, 255, 255, 0.34);
+}
+.explorer-shell[data-wallpaper-lum="light"] .explorer-content::before {
+  background: rgba(0, 0, 0, 0.36);
+}
+
+/* 字色始终由当前主题/System token 提供。上面的反差纱专门在「浅主题+暗壁纸」与
+   「深主题+亮壁纸」之间补足对比；不要再按壁纸亮度单独硬翻文字色，否则正好会把
+   纱与文字反向配对（浅底白字、深底黑字），也会抹掉用户主题定义的字体颜色。 */
+
+/* ══════════ 壁纸库网格（设置面板 / 右键 picker 共用，壁纸二期）══════════ */
+.wall-lib { display: flex; flex-direction: column; gap: 12px; }
+/* 设置卡的壁纸区缩进统一收口在 .wall-section（title/desc 行与库块一起缩进——
+   上一版只给 .wall-lib 加 padding，title 行仍在卡外缘，用户实测「字还是贴着左边」）。
+   picker 浮卡已有自己的 12px 壳内边距，:not 排除避免双重。底部多留 56px 给右下角
+   硬刷新 FAB（z 9999，用户实测它压住了「动态壁纸声音」开关行）。 */
+.wall-lib:not(.wall-lib-picker) { padding: 0 0 56px; }
+.wall-section { padding: 8px 16px 0; }
+.wall-lib-picker { width: min(300px, 88vw); }
+.wall-picker-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.wall-picker-head b { font-size: var(--text-sm); }
+.wall-lib-ops { display: flex; flex-wrap: wrap; gap: 8px; }
+.wall-lib-ops .btn { height: 30px; padding: 0 12px; min-height: 0; }
+.wall-lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+/* 定位锚点：删除 ✕ / 全屏点 / 页码角标都是 absolute，必须由格子自己当锚——
+   少了这行，所有角标会一起逃到最近的有定位祖先（设置面板）的右上角堆着
+   （2026-10-15 用户实锤：「删除按钮在他妈那个右上角」）。 */
+.wall-cell { position: relative; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.wall-thumb-box { position: relative; border-radius: var(--r-md, 10px); overflow: hidden; }
+.wall-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 1px solid var(--glass-border, var(--border));
+  border-radius: var(--r-md, 10px);
+  background: var(--glass-card-fill, var(--surface-3, var(--bg-soft)));
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow var(--dur-1, 0.12s) ease, border-color var(--dur-1, 0.12s) ease;
+}
+.wall-thumb:hover { box-shadow: var(--lg-lift-hover); border-color: var(--accent-border, var(--accent)); }
+.wall-thumb img,
+.wall-thumb video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.wall-thumb-fill { display: block; width: 100%; height: 100%; }
+/* 当前页在用：2px 高亮描边，颜色跟主题 primary（描边套外圈不啃圆角） */
+.wall-thumb.is-page-active {
+  border-color: var(--md-sys-color-primary, var(--accent));
+  box-shadow:
+    0 0 0 2px var(--md-sys-color-primary, var(--accent)),
+    var(--glass-shadow);
+}
+/* 小玻璃 chip：底走玻璃 chip 材质（暗底保证角标上的白字可读，两种 scheme 都成立）；
+   blur 用统一 chip 档（随玻璃程度四档走）；删除角标 hover 泛红（md-sys-error）。 */
+.wall-chip {
+  position: absolute;
+  height: 20px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--r-pill, 999px);
+  font-size: var(--text-xs);
+  line-height: 20px;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(15, 17, 21, 0.62);
+  -webkit-backdrop-filter: var(--glass-chip-blur, blur(8px));
+  backdrop-filter: var(--glass-chip-blur, blur(8px));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.wall-chip-full { right: 4px; bottom: 4px; }
+.wall-chip.is-on { background: var(--accent); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+.wall-chip-del { right: 4px; top: 4px; width: 20px; padding: 0; }
+.wall-chip-del:hover { background: var(--md-sys-color-error, var(--red)); }
+.wall-dot {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65);
+}
+.wall-name {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.wall-lib-hint { font-size: var(--text-xs); color: var(--text-3); }
+.wall-lib-upload { width: 100%; }
+.wall-sound-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-soft, var(--border));
+}
+
+/* ═══ 壁纸库选择卡（TabHost 右键「换壁纸 · 从库选」的浮动壳，2026-10-13 接线） ═══
+   menu tier 玻璃（与 .explorer-ctxmenu 同层：z 1311 压住其 1200 的遮罩）；
+   宽约 360（窄屏用 vw 收窄），高限 78vh——库网格在卡内滚动，超出不撑破视口。 */
+.wall-lib-picker-card {
+  position: fixed;
+  z-index: 1311;
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 16px));
+  max-height: min(78vh, 560px);
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--glass-menu-fill);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
+  border: 1px solid var(--glass-border, var(--border));
+}
+.wall-lib-picker-card .wall-lib { min-height: 0; }
+.wall-lib-picker-card .wall-lib-picker { width: 100%; }
+.wall-lib-picker-card .wall-lib-grid {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  scrollbar-width: none;
+}
+.wall-lib-picker-card .wall-lib-grid::-webkit-scrollbar { display: none; }
+
+/* ═══ 手机档（html.is-phone）：底栏让位（2026-10-16 底部标签条退役 → 不再额外让 52px）═══ */
+html.is-phone .explorer-content {
+  padding-bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 12px);
+}
+html.is-phone .hard-refresh-fab {
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 72px) !important;
+}
+html.is-phone .hard-refresh-fab.top-fab {
+  bottom: calc(var(--explorer-bar-h, 48px) + env(safe-area-inset-bottom, 0px) + var(--ex-phone-bar-gap) + 136px) !important;
+}
+
+/* ══════════ 内容区裸文本随壁纸明暗自适应（2026-10-14 扩全域：标题/表头全部在内）══════════
+   挂在 .explorer-content（首页 + 所有内容页）：亮壁纸→深字、暗壁纸→白字，与 chrome 层同一套符文；
+   玻璃卡（.free-item/.home-card）内部**回归主题字色**——卡体有自己的玻璃填充，
+   字色跟着卡底走而不跟壁纸走（浅主题的卡上永远是深字、深主题是浅字），
+   避免「canvas 档翻白字进了卡、卡底又是浅玻璃」的倒挂。 */
+/* 卡内回归主题：按 color-scheme 两套写死基础档值（与 chrome 层分支同一组色） */
+:root:not([data-scheme="dark"]) .explorer-content .free-item,
+:root:not([data-scheme="dark"]) .explorer-content .home-card,
+:root:not([data-scheme="dark"]) .explorer-content .card {
+  color: #1c1f28;
+  --text-1: #1c1f28;
+  --text-2: rgba(28, 31, 40, 0.78);
+  --text-3: rgba(28, 31, 40, 0.55);
+  --md-sys-color-on-surface: #1c1f28;
+  --md-sys-color-on-surface-variant: rgba(28, 31, 40, 0.78);
+}
+:root[data-scheme="dark"] .explorer-content .free-item,
+:root[data-scheme="dark"] .explorer-content .home-card,
+:root[data-scheme="dark"] .explorer-content .card {
+  color: #f2f4f8;
+  --text-1: #f2f4f8;
+  --text-2: rgba(242, 244, 248, 0.8);
+  --text-3: rgba(242, 244, 248, 0.62);
+  --md-sys-color-on-surface: #f2f4f8;
+  --md-sys-color-on-surface-variant: rgba(242, 244, 248, 0.8);
+}

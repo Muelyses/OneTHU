@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 首页一次性引导（§4.6）：改版后首次进新首页，最多 3 处、可跳过、看过不再打扰。
  *
@@ -12,11 +14,15 @@ import { createPortal } from "react-dom";
 
 const KEY = "onethu.home.coach.v1";
 
-/** 锚点必须真的存在于「今日」页（护栏逐条核对 data-card / data-coach 的名字） */
+/**
+ * 锚点必须真的存在于**当前首页**（护栏逐条核对 data-coach / data-card 的名字）。
+ * 2026-10-15：首页换成自由画布后，旧的三个锚点（编辑模式 / 卡片折叠 / 为你推荐卡）随旧「今日页」
+ * 一起消失了 —— 导览会指空气。这里按新画布的实际交互重写，并在 FreeBoard / HomeSpheres 上补锚点。
+ */
 const TIPS: Array<{ target: string; text: string }> = [
-  { target: '[data-coach="home-edit"]', text: "点「编辑」可以给卡片换位置、把不用的收起来。" },
-  { target: '[data-coach="home-collapse"]', text: "标题行右侧的箭头能把卡片折叠，首页就短了。" },
-  { target: '[data-card="for-you"]', text: "这里会按你的习惯推荐功能；找不到的都在「服务」页，也能直接搜。" },
+  { target: '[data-coach="home-canvas"]', get text() { return i18n("components.homecoachmarks.a698c6f322d5"); } },
+  { target: '[data-coach="home-add"]', get text() { return i18n("components.homecoachmarks.fe031a3ba2eb"); } },
+  { target: '[data-coach="home-dock"]', get text() { return i18n("components.homecoachmarks.3f1467fc681a"); } },
 ];
 
 const GAP = 10;
@@ -44,6 +50,8 @@ function place(target: Rect, card: { w: number; h: number }): { top: number; lef
 }
 
 export function HomeCoachMarks(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const [done, setDone] = useState<boolean>(() => {
     try {
       return localStorage.getItem(KEY) === "done";
@@ -167,16 +175,10 @@ export function HomeCoachMarks(): ReactNode {
     >
       <div style={{ fontSize: "var(--text-sm)", lineHeight: 1.5 }}>{tip.text}</div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span className="dim" style={{ fontSize: "var(--text-xs)" }}>
-          第 {idx + 1} 条，共 {avail.length} 条
-        </span>
+        <span className="dim" style={{ fontSize: "var(--text-xs)" }}>{i18nRich("components.homecoachmarks.626caf19ebdb", { value: idx + 1, length: avail.length })}</span>
         <span style={{ flex: 1 }} />
-        <button className="btn btn-ghost" onClick={finish}>
-          不再提示
-        </button>
-        <button className="btn btn-primary" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>
-          {last ? "知道了" : "下一条"}
-        </button>
+        <Btn variant="ghost" onClick={finish}>{i18n("components.homecoachmarks.a54a0add5447")}</Btn>
+        <Btn variant="solid" tone="brand" onClick={() => (last ? finish() : setIdx((i) => i + 1))}>{last ? i18n("components.homecoachmarks.de32e20193ad") : i18n("components.homecoachmarks.df119e585ece")}</Btn>
       </div>
     </div>,
     document.body,

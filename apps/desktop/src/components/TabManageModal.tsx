@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 聚合页栏目管理弹窗：勾选显隐 + ↑↓ 调序 + 恢复默认。
  * zhjwxk 弹窗同款骨架（portal + mask/panel 自带表面色）。
@@ -9,15 +11,15 @@ import { useExitPhase } from "../lib/useExitPhase.js";
 import type { TabLayout } from "../lib/tabLayout.js";
 import { useExpanded } from "../state/usePlatformLayout.js";
 
-const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
-const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 420, maxHeight: "70vh", display: "flex", flexDirection: "column", background: "var(--surface, #ffffff)", color: "var(--text-1, #1f2329)", borderRadius: 14, boxShadow: "0 18px 50px rgba(0,0,0,.28)" };
+const maskStyle: React.CSSProperties = { animation: "m-fade var(--dur-2) var(--ease-out) both", position: "fixed", inset: 0, background: "var(--og-scrim)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 };
+const panelStyle: React.CSSProperties = { animation: "m-spring-in var(--dur-3) var(--ease-out) both", width: "100%", maxWidth: 420, maxHeight: "70vh", display: "flex", flexDirection: "column", background: "var(--og-surface-overlay)", color: "var(--og-content-1)", borderRadius: "var(--og-radius-xl)", boxShadow: "var(--og-elev-menu)" };
 
 /* PC（expanded）：右侧推入面板（§2.8.2 设置二级）。
    必须在这里覆盖——上面两个样式是内联的，类选择器压不过内联（CSS 版面里写没用）。 */
 /** 退场：内联 animation 覆盖 maskStyle/panelStyle 的入场动画（本项目不给内联几何弹层写 CSS 规则） */
 const maskOut: React.CSSProperties = { animation: "m-fade-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
 const panelOut: React.CSSProperties = { animation: "m-pop-out var(--dur-2) var(--md-sys-motion-easing-emphasized-accelerate) both" };
-const maskStylePc: React.CSSProperties = { ...maskStyle, background: "rgba(0,0,0,.18)", justifyContent: "flex-end", padding: 0 };
+const maskStylePc: React.CSSProperties = { ...maskStyle, background: "color-mix(in srgb, var(--og-scrim) 40%, transparent)", justifyContent: "flex-end", padding: 0 };
 const panelStylePc: React.CSSProperties = {
   ...panelStyle,
   animation: "m-slide-right var(--dur-3) var(--ease-ios) both",
@@ -26,8 +28,8 @@ const panelStylePc: React.CSSProperties = {
   maxHeight: "none",
   height: "100%",
   borderRadius: 0,
-  borderLeft: "1px solid var(--border, #e5e7eb)",
-  boxShadow: "-18px 0 48px rgba(0,0,0,.24)",
+  borderLeft: "1px solid var(--og-line-1)",
+  boxShadow: "var(--og-elev-3)",
 };
 
 export function TabManageModal({
@@ -47,6 +49,8 @@ export function TabManageModal({
   onApply: (layout: TabLayout) => void;
   onReset: () => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const expanded = useExpanded(); // 钩子必须在下方 if (!open) 早返回之前
   /* Esc 关闭（即时生效型弹窗：直接关闭即保存，无需确认步骤） */
   const [closing, requestClose] = useExitPhase(onClose, open);
@@ -81,15 +85,13 @@ export function TabManageModal({
   return createPortal(
     <div className="tab-manage-mask" style={closing ? { ...(expanded ? maskStylePc : maskStyle), ...maskOut } : expanded ? maskStylePc : maskStyle} onClick={requestClose}>
       <div className="tab-manage-panel" style={closing ? { ...(expanded ? panelStylePc : panelStyle), ...panelOut } : expanded ? panelStylePc : panelStyle} onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: "1px solid var(--border, #eee)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", borderBottom: "1px solid var(--og-line-1)" }}>
           <b>{title}</b>
           <span style={{ flex: 1 }} />
-          <button className="btn" onClick={requestClose}>✕</button>
+          <Btn variant="outline" onClick={requestClose}>✕</Btn>
         </div>
         <div style={{ padding: "8px 16px 14px", overflowY: "auto", fontSize: 13, lineHeight: 1.7 }}>
-          <div style={{ fontSize: 12, color: "var(--text-3, #9aa1ac)", margin: "6px 0" }}>
-            勾选控制显示；↑↓ 调整顺序（即时生效并保存）。
-          </div>
+          <div style={{ fontSize: 12, color: "var(--og-content-3)", margin: "6px 0" }}>{i18n("components.tabmanagemodal.b36ae796d429")}</div>
           {rows.map((t, i) => {
             const visible = !layout.hidden.includes(t.id);
             return (
@@ -98,14 +100,14 @@ export function TabManageModal({
                   <input type="checkbox" checked={visible} onChange={() => toggle(t.id)} />
                   {t.label}
                 </label>
-                <button className="btn" style={{ padding: "1px 8px" }} disabled={i === 0} onClick={() => move(t.id, -1)} title="上移">↑</button>
-                <button className="btn" style={{ padding: "1px 8px" }} disabled={i === rows.length - 1} onClick={() => move(t.id, 1)} title="下移">↓</button>
+                <Btn variant="outline" disabled={i === 0} onClick={() => move(t.id, -1)} titleAttr={i18n("components.tabmanagemodal.f853a70b1204")}>↑</Btn>
+                <Btn variant="outline" disabled={i === rows.length - 1} onClick={() => move(t.id, 1)} titleAttr={i18n("components.tabmanagemodal.e75e8b4e5c97")}>↓</Btn>
               </div>
             );
           })}
           <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
-            <button className="btn" onClick={onReset}>恢复默认</button>
-            <button className="btn btn-primary" onClick={requestClose}>完成</button>
+            <Btn variant="outline" onClick={onReset}>{i18n("components.tabmanagemodal.ba2e93e73037")}</Btn>
+            <Btn variant="solid" tone="brand" onClick={requestClose}>{i18n("components.tabmanagemodal.c0b3fbff51cc")}</Btn>
           </div>
         </div>
       </div>

@@ -1,0 +1,311 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * 日程 · 全宽周时间表（课表铺满中间全部内容区）
+ *
+ * 用户验收（2026-10-18）：
+ *   「日程的页面是最特殊的，日程的时间轴这些东西完全以周为单位，铺满中间的全部内容，
+ *     大标题都可以不要，就留几个按钮用来调整筛选，铺满！」
+ *   「顶部按钮也不要，全部直接悬浮在平铺的课表上，缩减到最小一个按钮，点击它再展开
+ *     这些设置。」
+ * 于是本页的结构是：**一块铺满的事件区 + 一个悬浮圆钮 + 它的设置浮层**。
+ * 周视图是唯一时间轴语义（桌面/手机都是 7 列），列表视图仍作为切换项保留；
+ * 同步、筛选（显示时段 / 学期周跳）、跳转、增删改、导出、系统日历、收藏全在浮层里，
+ * 作业「前往」开新作业标签，课程给「前往（网络学堂该课）/ 寻迹」——都 forceNew。
+ *
+ * 高度链靠 html.is-schedule-page 驱动（由 Shell 在"本页是当前页面"时挂到
+ * documentElement）：规范禁止嵌套 :has()，而写死像素偏移一换顶栏高度就错位。
+ * 类名：schedule-* 是宿主页唯一外观出处（应用侧零 CSS 文件，契约 G1）。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* 根滚动条的预留槽也属于日程视口，避免右侧留下一条空边。 */
+html:root.is-schedule-page { scrollbar-gutter: auto; }
+
+/* ── 1. 高度链：只有日程页把面板钉成"视口减应用壳"的定高容器 ── */
+html:root.is-schedule-page .explorer-shell {
+  --og-c-schedule-chrome-bottom: 0px;
+  --og-c-schedule-dock-bottom: var(--og-space-10);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+html:root.is-schedule-page .explorer-shell > .explorer-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  /* 这一页是特例（用户 2026-10-18「可以为他设置专门的，甚至不需要被与屏幕边缘空隙
+     这种规则束缚」）：课表自己贴着窗口四周画，不再吃壳层那套"内容留白 + 导航净空"
+     的通用内边距；顶部只留真实 chrome（桌面 = 底栏上移的第一行 + 标签条；手机 = 标签条），
+     底部常驻 OH 栏与浮件共用壳上的净空变量；简洁桌面也有底栏。 */
+  max-width: none;
+  padding-inline: 0 !important;
+  padding-bottom: var(--og-c-schedule-chrome-bottom) !important;
+}
+html:root.is-phone.is-schedule-page .explorer-shell > .explorer-content { padding-top: var(--explorer-top-h) !important; }
+/* 手机档底栏常驻在屏幕底部：课表铺满时也要停在底栏上面——
+   否则最后一节课/最后几行小时被底栏盖住看不见（用户 2026-10-19 口径）。 */
+html:root.is-phone.is-schedule-page .explorer-shell {
+  --og-c-schedule-chrome-bottom: calc(var(--explorer-bar-h, 48px) + var(--og-space-2) + env(safe-area-inset-bottom, 0px));
+  --og-c-schedule-dock-bottom: calc(var(--og-workbench-header-h) + var(--og-space-10) + var(--og-space-3));
+}
+/* 极简/实用在电脑上也把 OH 放底部；不能继承完整桌面的零净空。
+   顶部同样按简洁壳的 header 高度计算，不继承手机完整模式的标签条高度。 */
+html:root.is-schedule-page .explorer-shell.is-simple {
+  --og-c-schedule-chrome-bottom: calc(var(--og-workbench-header-h) + env(safe-area-inset-bottom, 0px));
+}
+html:root.is-schedule-page .explorer-shell.is-simple > .explorer-content {
+  padding-top: var(--og-workbench-header-h) !important;
+}
+html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  overflow: hidden;
+  padding: 0;
+}
+html:root.is-schedule-page .explorer-panel:has(.schedule-workspace) > .page-anim {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+html:root.is-schedule-page .schedule-workspace {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  /* 用户口径：「铺满」＝到边到角，不接受底下再留一条空带。
+     所以事件轴一路画到窗口底边，OneShot 快捷胶囊/底栏只是浮在它上面；
+     浮钮自己往上躲到胶囊之上（见 .schedule-dock）。 */
+  --og-c-schedule-bottom-reserve: 0;
+}
+/* 页头只留页级 chrome 同步（0 高度）；全部高度给事件区 */
+html:root.is-schedule-page .schedule-workspace > * { flex: none; }
+html:root.is-schedule-page .schedule-workspace > .schedule-stage {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  background: var(--og-surface-1);
+}
+
+/* ── 2. 事件区：周时间表铺满（自己滚动，表头吸顶） ── */
+.schedule-timeline {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  /* 全幅：没有卡片描边/圆角，课表就是这一页本身 */
+  border: 0;
+  border-radius: 0;
+  background: var(--og-surface-1);
+  /* 到边到角：画布高度 = clientHeight − 表头（见 Schedule.tsx 的 availH），
+     整周正好铺满、不滚动；浮件浮在上面，不再从课表里"挖"一条空带。 */
+  padding-bottom: var(--og-c-schedule-bottom-reserve, 0);
+}
+/* 列表视图（保留项）：同样吃满事件区，自己滚动 */
+.schedule-scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  /* 最后一项可继续滚到悬浮操作钮上方，不在滚动终点被控件盖住。 */
+  padding: var(--og-space-3) var(--og-space-3) calc(var(--og-c-schedule-dock-bottom) + var(--og-ctl-h-sm) + var(--og-space-3));
+  scroll-padding-block: var(--og-space-3);
+}
+
+.schedule-day-head {
+  position: sticky;
+  top: 0;
+  z-index: var(--og-z-header);
+  padding-block: var(--og-space-3) var(--og-space-2);
+  background: var(--og-surface-1);
+  border-bottom: 1px solid var(--og-line-2);
+}
+.schedule-day-head,
+.schedule-body { display: flex; }
+.schedule-head-gutter,
+.schedule-gutter { flex: none; width: var(--og-space-8); }
+.schedule-day-strip { display: flex; flex: 1 1 auto; min-width: 0; }
+.schedule-day-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  border-left: 1px solid var(--og-line-1);
+  text-align: center;
+  font-size: var(--og-text-label);
+  font-weight: 600;
+  color: var(--og-content-2);
+  font-variant-numeric: tabular-nums;
+}
+.schedule-day-cell small {
+  display: block;
+  font-size: var(--og-text-micro);
+  font-weight: 400;
+  color: var(--og-content-3);
+  line-height: var(--og-text-micro-lh);
+}
+.schedule-day-cell:first-child { border-left: 0; }
+.schedule-day-cell.is-today,
+.schedule-day-cell.is-today small { color: var(--og-accent-strong); }
+
+.schedule-gutter { position: relative; }
+.schedule-gutter-label {
+  position: absolute;
+  left: 0;
+  right: var(--og-space-1);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--og-content-3);
+  font-size: var(--og-text-micro);
+  line-height: var(--og-text-micro-lh);
+}
+.schedule-canvas { position: relative; flex: 1 1 auto; min-width: 0; }
+
+/* 列底色 / 网格线 / 当前时刻线 */
+.schedule-col { position: absolute; top: 0; height: 100%; border-left: 1px solid var(--og-line-1); }
+.schedule-col:first-child { border-left: 0; }
+.schedule-col.is-today { background: color-mix(in srgb, var(--og-accent) 6%, transparent); }
+.schedule-grid-line { position: absolute; left: 0; right: 0; border-top: 1px solid var(--og-line-1); }
+.schedule-grid-line.is-hour { border-top-color: var(--og-line-2); }
+.schedule-now {
+  position: absolute;
+  z-index: var(--og-z-rail);
+  border-top: calc(var(--og-space-1) / 2) solid var(--og-error);
+}
+.schedule-now-dot { position: absolute; left: calc(var(--og-space-1) * -1); top: calc(var(--og-space-1) * -1); }
+
+/* 课块：位置/尺寸由页面按分钟算成百分比（几何），外观全部在这里。
+   底色是数据色（一课一色，lib/courseColor 判例豁免），由页面经
+   --og-c-schedule-block 传入；块上文字固定纯白，data-tx="keep" 明确不参加壁纸文字自动取色。 */
+.schedule-block {
+  position: absolute;
+  z-index: var(--og-z-sticky);
+  overflow: hidden;
+  border-radius: var(--og-radius-xs);
+  padding: var(--og-space-1) calc(var(--og-space-1) * 1.25);
+  background: var(--og-c-schedule-block, var(--og-accent-soft));
+  color: var(--og-schedule-block-ink);
+  box-shadow: var(--og-elev-1);
+  cursor: pointer;
+  /* 入场：错峰延迟由页面按"时间行"给（--og-c-schedule-delay），只动 transform/opacity */
+  animation: schedule-block-in var(--og-dur-3) var(--og-ease-spring) backwards;
+  animation-delay: var(--og-c-schedule-delay, 0ms);
+  transition: transform var(--og-dur-1) var(--og-ease-standard), box-shadow var(--og-dur-1) var(--og-ease-standard);
+}
+.schedule-block:hover {
+  transform: translate3d(0, calc(var(--og-space-1) / -4), 0);
+  box-shadow: var(--og-elev-2);
+}
+.schedule-block.is-compact { padding: 0 var(--og-space-1); }
+.schedule-block.is-done { background: color-mix(in srgb, var(--og-c-schedule-block) 60%, var(--og-surface-1)); }
+.schedule-block :is(.schedule-block-title, .schedule-block-sub, .og-text) { color: inherit; }
+.schedule-block-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--og-text-label);
+  font-weight: 700;
+  line-height: 1.3;
+}
+/* 副行依靠字号与间距分层，保持与标题一样的纯白。 */
+.schedule-block-sub { line-height: 1.35; margin-top: calc(var(--og-space-1) / 2); }
+.schedule-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: var(--og-z-rail);
+}
+
+/* ── 3. 悬浮通知：错误/结果不占高度，不挤事件区 ── */
+.schedule-floats {
+  /* 通知不占高度，也不能压住吸顶的星期表头：停在左下角、限宽一行内 */
+  position: absolute;
+  left: var(--og-space-3);
+  bottom: calc(var(--og-space-10) + var(--og-space-6));
+  max-width: min(46ch, 62vw);
+  z-index: var(--og-z-drawer);
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-1);
+  pointer-events: none;
+}
+html:root.is-phone .schedule-floats { left: var(--og-space-2); bottom: calc(var(--og-workbench-header-h) + var(--og-space-8)); max-width: 74vw; }
+.schedule-floats > * { pointer-events: auto; }
+
+/* ── 4. 唯一常驻控件：悬浮小圆钮（点开设置浮层） ── */
+.schedule-dock {
+  position: absolute;
+  right: var(--og-space-3);
+  /* 浮钮躲到 OneShot 胶囊之上：课表铺满到窗口底边，但控件不会被胶囊压住 */
+  bottom: var(--og-c-schedule-dock-bottom);
+  z-index: var(--og-z-board-tools);
+}
+
+/* ── 5. 设置浮层：周切换 / 视图 / 筛选 / 学期周 / 同步导出 / 新建 / 收藏 ── */
+.schedule-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-3);
+  width: min(calc(var(--og-schedule-sync-width) + var(--og-space-10)), calc(100vw - var(--og-space-8)));
+  max-height: 70dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.schedule-panel-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-1);
+  min-width: 0;
+}
+.schedule-panel-row { display: flex; align-items: center; gap: var(--og-space-1); flex-wrap: wrap; }
+.schedule-panel-row > .schedule-panel-grow { flex: 1 1 0; min-width: 0; }
+.schedule-panel-label { justify-content: center; font-variant-numeric: tabular-nums; }
+
+/* 日历快跳：七列月历（浮层内展开，不再占事件区高度） */
+.schedule-cal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-1);
+}
+.schedule-cal-head { display: flex; align-items: center; gap: var(--og-space-1); }
+.schedule-cal-title { flex: 1 1 auto; text-align: center; font-variant-numeric: tabular-nums; }
+.schedule-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: calc(var(--og-space-1) / 2);
+  text-align: center;
+}
+.schedule-cal-grid .og-btn { min-width: 0; padding-inline: 0; }
+.schedule-native-field { width: 100%; }
+
+/* ── 6. 动效：只动 transform / opacity；减弱动态效果整段不播（含错峰延迟） ── */
+@keyframes schedule-block-in {
+  from { opacity: 0; transform: translate3d(0, var(--og-space-2), 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .schedule-block { animation: none; }
+  .schedule-block:hover { transform: none; }
+}
+
+/* ── 7. 手机：页内边距收窄；7 列照旧（周语义不变），列内紧凑 ── */
+html:root.is-phone .schedule-timeline { scroll-padding-top: var(--og-space-3); }
+html:root.is-phone .schedule-day-head { padding-block: var(--og-space-2) var(--og-space-1); }
+html:root.is-phone .schedule-gutter,
+html:root.is-phone .schedule-head-gutter { width: var(--og-space-7); }
+html:root.is-phone .schedule-block { padding: 1px calc(var(--og-space-1) / 2); }
+/* 手机 7 列很窄：块里只留课程名（最多两行），地点/教师点开详情看 */
+html:root.is-phone .schedule-block-title { font-size: var(--og-text-micro); line-height: 1.25; }
+html:root.is-phone .schedule-block { padding-top: var(--og-space-1); }
+html:root.is-phone .schedule-block-sub { display: none; }

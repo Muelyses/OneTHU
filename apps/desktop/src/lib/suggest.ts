@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 「猜你喜欢」推荐：**纯本机、可解释、不写收藏**。
  *
@@ -80,7 +81,7 @@ export function suggestAtoms(limit = 5): Suggestion[] {
   if (affinity.size > 0) {
     for (const s of pool) {
       if (!affinity.has(s.group)) continue;
-      pushIfFree({ ...s, why: "和你在用的地方同类" });
+      pushIfFree({ ...s, why: i18n("lib.suggest.132e3b256a4c") });
       if (out.length >= limit) return out;
     }
   }
@@ -89,13 +90,13 @@ export function suggestAtoms(limit = 5): Suggestion[] {
   for (const key of STARTER_KEYS) {
     if (out.length >= limit) break;
     const s = pool.find((x) => x.ref.kind === "page" && x.ref.key === key);
-    if (s) pushIfFree({ ...s, why: "多数人天天用" });
+    if (s) pushIfFree({ ...s, why: i18n("lib.suggest.548b0e407001") });
   }
 
   // ③ 还不够就按注册表顺序补（仍排除已用/已收藏），说明留白
   for (const s of pool) {
     if (out.length >= limit) break;
-    pushIfFree({ ...s, why: "顺手看看" });
+    pushIfFree({ ...s, why: i18n("lib.suggest.c02a34b5141f") });
   }
   return out;
 }

@@ -2,7 +2,8 @@
 //
 // 会话式长按模型（与 macOS speech.m 同契约）：
 // speechStart（麦克风运行时权限 → SpeechRecognizer 启动）→ speechPoll
-// （部分转写实时读取）→ speechStop（收最终文本）。
+// （部分转写实时读取）→ speechStop（收最终文本）；speechLevel 供 UI 画音量波纹
+// （onRmsChanged 归一化到 0..1）。
 //
 // 细节：
 // - zh-CN + EXTRA_PARTIAL_RESULTS，onPartialResults 持续覆盖当前文本；
@@ -50,6 +51,10 @@ class OnethuSpeechPlugin(private val activity: android.app.Activity) : Plugin(ac
   @Volatile
   private var holding: Boolean = false
 
+  /** 输入电平 0..1（onRmsChanged 归一化写入）：JS 每 ~90ms 取一次驱动灵动岛波纹点 */
+  @Volatile
+  private var level: Float = 0f
+
   private fun hasMic(): Boolean =
     ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO) ==
       PackageManager.PERMISSION_GRANTED
@@ -87,9 +92,16 @@ class OnethuSpeechPlugin(private val activity: android.app.Activity) : Plugin(ac
     invoke.resolve(JSObject().put("text", text))
   }
 
+  /** 当前输入电平 0..1；未在识别/尚无回声一律 0（前端据此退化为时间正弦） */
+  @Command
+  fun speechLevel(invoke: Invoke) {
+    invoke.resolve(JSObject().put("level", level.toDouble()))
+  }
+
   @Command
   fun speechStop(invoke: Invoke) {
     holding = false
+    level = 0f // 松手即回落：波纹点收束
     try {
       sr?.stopListening() // 触发 onResults（最终文本）
     } catch (e: Exception) {
@@ -103,9 +115,20 @@ class OnethuSpeechPlugin(private val activity: android.app.Activity) : Plugin(ac
 
   // ---------- 识别会话 ----------
 
+  /**
+   * onRmsChanged 的 rmsdB 量纲各家不一（AOSP/Google 常见 -2..10，个别厂商给 0..1）：
+   * 统一按 -2..10 线性映射到 0..1 并夹紧；NaN/Inf/负值一律归零（静默）。
+   * 这里只保证「有限且单调的 0..1」——平滑与无电平时的正弦兜底在前端做。
+   */
+  private fun normalizeRms(rmsdB: Float): Float {
+    if (rmsdB.isNaN() || rmsdB.isInfinite()) return 0f
+    return ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
+  }
+
   private fun startListening() {
     holding = true
     text = ""
+    level = 0f
     try {
       sr?.destroy()
     } catch (_: Exception) {
@@ -134,9 +157,13 @@ class OnethuSpeechPlugin(private val activity: android.app.Activity) : Plugin(ac
 
         override fun onReadyForSpeech(params: Bundle?) {}
         override fun onBeginningOfSpeech() {}
-        override fun onRmsChanged(rmsdB: Float) {}
+        override fun onRmsChanged(rmsdB: Float) {
+          level = normalizeRms(rmsdB)
+        }
         override fun onBufferReceived(buffer: ByteArray?) {}
-        override fun onEndOfSpeech() {}
+        override fun onEndOfSpeech() {
+          level = 0f
+        }
         override fun onEvent(eventType: Int, params: Bundle?) {}
       })
       recognizer.startListening(

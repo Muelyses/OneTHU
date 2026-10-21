@@ -1,0 +1,304 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 应用壳与导航件（AppShell / NavRail / TabStrip / MobileTabBar）
+ *
+ * 两种端形态共用一套 DOM 语言：面阶、描边、激活胶囊、状态层、尺寸都走令牌。
+ * 旧实现的竖栏/标签条/底部条各写一套材质与几何，这里只有一份。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.og-shell {
+  display: flex;
+  min-height: 100dvh;
+  background: var(--og-surface-0);
+  color: var(--og-content-1);
+}
+
+.og-shell-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.og-shell-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── 顶栏：恒定高度 + 滚过分层 ── */
+.og-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--og-z-header);
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  height: calc(var(--og-ctl-h-md) + var(--og-space-4));
+  padding: 0 var(--og-space-3);
+  padding-top: var(--og-safe-top);
+  background-color: var(--og-surface-1);
+  background-image: var(--og-surface-tint);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--og-dur-2) var(--og-ease-standard), box-shadow var(--og-dur-2) var(--og-ease-standard);
+}
+
+.og-topbar.is-scrolled {
+  border-bottom-color: var(--og-line-1);
+  box-shadow: var(--og-elev-1);
+}
+
+.og-topbar-spring { flex: 1 1 auto; }
+
+.og-topbar-brand {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  cursor: pointer;
+  color: var(--og-content-1);
+}
+
+.og-topbar-title {
+  font-size: var(--og-text-subtitle);
+  font-weight: var(--og-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* ── 左竖栏 ── */
+.og-rail {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-2);
+  width: var(--og-ctl-rail-w);
+  padding: var(--og-space-3) var(--og-space-2) var(--og-space-2);
+  padding-top: calc(var(--og-space-3) + var(--og-safe-top));
+  background-color: var(--og-surface-1);
+  background-image: var(--og-surface-tint);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+  border-right: 1px solid var(--og-line-1);
+  transition: width var(--og-dur-3) var(--og-ease-standard);
+}
+
+.og-rail--narrow { width: var(--og-space-10); }
+
+.og-rail-brand {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--og-space-2) var(--og-space-1);
+  color: var(--og-content-1);
+  font-weight: var(--og-weight-semibold);
+  overflow: hidden;
+}
+
+.og-rail-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-1);
+  overflow-y: auto;
+}
+
+.og-rail-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-2);
+  width: 100%;
+  min-height: var(--og-ctl-h-md);
+  padding: 0 var(--og-space-3);
+  border: 0;
+  border-radius: var(--og-radius-full);
+  background: transparent;
+  color: var(--og-content-2);
+  font-family: inherit;
+  font-size: var(--og-text-body);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: background-color var(--og-dur-1) var(--og-ease-standard), color var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-rail-item:hover { background: var(--og-hover); color: var(--og-content-1); }
+.og-rail-item.is-active { background: var(--og-accent-soft); color: var(--og-accent-quiet); }
+
+.og-rail-icon { flex: 0 0 auto; display: inline-flex; }
+.og-rail-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.og-rail-badge { flex: 0 0 auto; font-size: var(--og-text-micro); color: var(--og-content-3); }
+.og-rail-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-ctl-check);
+  height: var(--og-ctl-check);
+  border-radius: var(--og-radius-full);
+  color: var(--og-content-3);
+  font-size: var(--og-text-label);
+  opacity: 0;
+  transition: opacity var(--og-dur-1) var(--og-ease-standard);
+}
+.og-rail-item:hover .og-rail-close,
+.og-rail-item.is-active .og-rail-close { opacity: 1; }
+.og-rail-close:hover { background: var(--og-press); color: var(--og-content-1); }
+
+.og-rail--narrow .og-rail-label,
+.og-rail--narrow .og-rail-badge,
+.og-rail--narrow .og-rail-close { display: none; }
+
+.og-rail-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-1);
+  padding-top: var(--og-space-2);
+  border-top: 1px solid var(--og-line-1);
+}
+
+/* ── 横版标签条 ── */
+.og-tabstrip {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-1);
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.og-tabstrip-row {
+  display: flex;
+  align-items: center;
+  gap: var(--og-space-1);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  cursor: grab;
+}
+.og-tabstrip-row::-webkit-scrollbar { display: none; }
+.og-tabstrip.is-dragging .og-tabstrip-row { cursor: grabbing; }
+
+.og-tabitem {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-1);
+  max-width: var(--og-ctl-tab-max-w);
+  height: var(--og-ctl-h-sm);
+  padding: 0 var(--og-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--og-radius-md);
+  background: transparent;
+  color: var(--og-content-2);
+  font-family: inherit;
+  font-size: var(--og-text-label);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--og-dur-1) var(--og-ease-standard), color var(--og-dur-1) var(--og-ease-standard);
+}
+
+.og-tabitem:hover { background: var(--og-hover); color: var(--og-content-1); }
+.og-tabitem.is-active {
+  background: var(--og-surface-1);
+  border-color: var(--og-line-2);
+  color: var(--og-content-1);
+  font-weight: var(--og-weight-medium);
+  box-shadow: var(--og-elev-1);
+}
+
+.og-tabitem-icon { flex: 0 0 auto; display: inline-flex; color: var(--og-content-3); }
+.og-tabitem.is-active .og-tabitem-icon { color: var(--og-accent-quiet); }
+.og-tabitem-label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.og-tabitem-close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--og-ctl-check);
+  height: var(--og-ctl-check);
+  border-radius: var(--og-radius-full);
+  color: var(--og-content-3);
+  opacity: 0;
+}
+.og-tabitem:hover .og-tabitem-close,
+.og-tabitem.is-active .og-tabitem-close { opacity: 1; }
+.og-tabitem-close:hover { background: var(--og-press); color: var(--og-content-1); }
+
+/* ── 手机底部标签条 ── */
+.og-tabbar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--og-z-header);
+  padding-bottom: var(--og-safe-bottom);
+  background-color: var(--og-surface-1);
+  background-image: var(--og-surface-tint);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+  border-top: 1px solid var(--og-line-1);
+}
+
+.og-tabbar-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: var(--og-space-1);
+  padding: var(--og-space-1) var(--og-space-2);
+}
+
+.og-tabbar-pill {
+  position: absolute;
+  top: 50%;
+  left: var(--og-space-2);
+  width: calc((100% - var(--og-space-4)) / 4);
+  height: var(--og-space-7);
+  border-radius: var(--og-radius-full);
+  background: var(--og-accent-soft);
+  transform: translateX(0);
+  transition: transform var(--og-dur-2) var(--og-ease-spring);
+  pointer-events: none;
+}
+
+.og-tabbar-item {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-0);
+  min-height: var(--og-space-9);
+  border: 0;
+  background: transparent;
+  color: var(--og-content-3);
+  font-family: inherit;
+  font-size: var(--og-text-micro);
+  cursor: pointer;
+}
+.og-tabbar-item.is-active { color: var(--og-accent-quiet); }
+.og-tabbar-icon { display: inline-flex; }
+.og-tabbar-badge {
+  position: absolute;
+  top: var(--og-space-1);
+  right: 26%;
+  min-width: var(--og-ctl-badge);
+  height: var(--og-ctl-badge);
+  padding: 0 var(--og-space-1);
+  border-radius: var(--og-radius-full);
+  background: var(--og-error);
+  color: var(--og-error-on);
+  font-size: var(--og-text-micro);
+  line-height: var(--og-ctl-badge);
+}
+
+/* 手机壳：内容底部给标签条留位 */
+.og-shell--mobile .og-shell-content {
+  padding-bottom: var(--og-space-2);
+}

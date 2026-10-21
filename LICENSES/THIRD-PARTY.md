@@ -78,6 +78,10 @@
 
 ## 5. 其他依赖
 
+`rquickjs` 0.14.0（https://github.com/DelSkayn/rquickjs）及其 QuickJS-NG 引擎
+（https://github.com/quickjs-ng/quickjs），均为 MIT，用于技能的无宿主 API 纯 JavaScript
+计算环境。完整版权与许可随本仓库 `LICENSES/QUICKJS-MIT.txt` 保留。
+
 `cheerio`、`iconv-lite`、`sm-crypto`、`mammoth`、`xlsx`、`katex`（随包内置于
 `apps/desktop/src/vendor/katex`）等 npm 依赖：各自适用其自带许可（多为 MIT / Apache-2.0），
 随包分发时保留其许可证与版权声明。

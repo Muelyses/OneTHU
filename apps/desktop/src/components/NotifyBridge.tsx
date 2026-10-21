@@ -1,3 +1,4 @@
+import { useLocale as useUiLocale } from "../i18n/index.js";
 /**
  * 通知与小组件的应用侧接线（无 UI，挂一个空组件即可）。
  *
@@ -23,6 +24,8 @@ import { requestWidgetBind } from "../state/widgetBindUi.js";
 import { WidgetBindModal } from "./WidgetBindModal.js";
 
 export function NotifyBridge(): ReactNode {
+  const uiLocale = useUiLocale();
+
   const { status, navigate } = useApp();
 
   /* ① 调度链（Android：通知 + 小组件；macOS：通知；其余桌面平台后端未接 → 跳过） */

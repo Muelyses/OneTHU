@@ -202,12 +202,17 @@ export { VenueClient, VenueAuthRequiredError, VenueApiError, VENUE_BASE, fmtVenu
 export { md5hex, buildVenueSign, venueSignQuery, VENUE_APP_ID, VENUE_SIGN_KEY } from "./venue/sign.js";
 export type { VenueBuilding, VenueDevKind, VenueSameLevel, VenueScene, VenueSession, VenueSite, VenueRecord, VenueUser } from "./venue/types.js";
 
+/* 清小搭（xiaoda.tsinghua.edu.cn 校园 AI 学伴）—— ITS 直连完整登录 + token 头鉴权（实验性） */
+export { XiaodaClient, XiaodaApiError, XiaodaAuthRequiredError, XiaodaLoginError, XIAODA_BASE, xiaodaTokenExpiresAt } from "./xiaoda/client.js";
+export type { XiaodaUser, XiaodaAgentGroup, XiaodaAgentMember, XiaodaSkillCategory, XiaodaSkillItem, XiaodaSkillOverview, XiaodaConversation, XiaodaChatMessage, XiaodaModel, XiaodaDadouBalance, XiaodaFetch } from "./xiaoda/client.js";
+
 /* 外部作业源（雨课堂 / TUOJ 系 / Tyche / DSA OJ）—— 只读拉取，凭据由宿主注入 */
 export * as exthw from "./exthw/index.js";
-export { createExternalSources, refreshExternalHomework, SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES, yuketangSendSmsCode, yuketangVerifyLogin, tuojLogin, tuojRoam, TuojCasError, isTuojNoCoursesError, TuojSessionError, isTuojSessionError, TUOJ_CLASSIC_BASE, dsaLogin, DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, DSA_BASE, tycheLogin, captureCookies, yuketangBuildCookie, yuketangQrStart, yuketangQrPoll, runYuketangQrLogin, yuketangCookieFromHeader, createYuketangSource, TycheSessionError, isTycheSessionError, YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } from "./exthw/index.js";
-export type { ExternalHomework, ExtHwCreds, ExtHwSourceId, ExtHwCategory, ExtHwLoginResult, TuojSourceId, TuojCreds, TuojSourceConfig, HomeworkSource, RegisteredHomeworkSource, CreateExternalSourcesDeps, RefreshExternalHomeworkDeps, RefreshExternalHomeworkResult, TuojRoamResult, YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } from "./exthw/index.js";
+export { createExternalSources, refreshExternalHomework, SOURCE_NAMES, SOURCE_CATEGORIES, SOURCE_CATEGORY_NAMES, yuketangSendSmsCode, yuketangVerifyLogin, tuojLogin, tuojRoam, TuojCasError, isTuojNoCoursesError, TuojSessionError, isTuojSessionError, TUOJ_CLASSIC_BASE, dsaLogin, DsaSessionError, isDsaSessionError, dsaCheckLogin, parseDsaDate, DSA_BASE, tycheLogin, captureCookies, yuketangBuildCookie, yuketangQrStart, yuketangQrPoll, runYuketangQrLogin, yuketangCookieFromHeader, createYuketangSource, yktStudentLeafUrl, TycheSessionError, isTycheSessionError, YktSessionError, isYktSessionError, mergeYktCookiePairs, buildYktCookieExportJson, parseYktCookieExportJson, YKT_COOKIE_EXPORT_KIND } from "./exthw/index.js";
+export type { ExtContentKind, ExternalContent, ExternalCourse, ExternalHomework, ExtHwCreds, ExtHwSourceId, ExtHwCategory, ExtHwLoginResult, TuojSourceId, TuojCreds, TuojSourceConfig, HomeworkSource, RegisteredHomeworkSource, CreateExternalSourcesDeps, RefreshExternalHomeworkDeps, RefreshExternalHomeworkResult, TuojRoamResult, YktQrStart, YktQrPollResult, YktQrPhase, RunYuketangQrLoginDeps } from "./exthw/index.js";
 /* R20-B1/B2：雨课堂作业详情（归一化只读类型；实例经 createYuketangSource(...).getExerciseDetail 取） */
 export type { YkExerciseDetail, YkProblem, YkComment, YkAttachment, YkMyStatus, YuketangSource } from "./exthw/index.js";
+export type { YkLeafDetail, YkNoticeDetail } from "./exthw/index.js";
 /* R21-B：雨课堂会话失效归一 / 健康检查 / Cookie 导出导入（多设备迁移缓解） */
 export type { YktSessionHealth, YuketangSourceHooks, YktCookieExport } from "./exthw/index.js";
 /* R20-C2 P2：主观题提交 + 正文插图上传类型（⛔ docs §32 学术红线：提交 API 禁止进插件工具清单） */
@@ -232,6 +237,18 @@ export {
   knownNameMappings, resetPseudoMappings,
   PSEUDO_NAMES, GRADE_SCALE,
 } from "./privacy/desensitize.js";
+
+/* 临时来访人员报备（行在清华小程序 → visit.tsinghua.edu.cn/visitor/mobile）—— 统一身份直连登录 +
+ * 表单模型/字典读取 + 用户确认后提交（2026-10-15） */
+export {
+  VisitClient, VisitApiError, VisitAuthRequiredError, VisitLoginError, VISIT_BASE, VISIT_API,
+  VISIT_MOBILE_ENTRY, VISIT_ITS_SERVICE_ID, VISIT_REPORT_FLOW, VISIT_MY_LIST_FORM, VISIT_VISITOR_LIST_KEY,
+  visitTokenExpiresAt, normalizeFormModel, selectSourcePayload, flattenPrefilled,
+} from "./visit/client.js";
+export type {
+  VisitFetch, VisitUser, VisitSessionState, VisitOption, VisitFormField, VisitFormModel, VisitMenuItem,
+  VisitReportRow, VisitVisitorInput, VisitReportDraft, VisitClientOptions,
+} from "./visit/client.js";
 
 // 二级课表格子 id 解析（a{session}_{day}，口径与 info app parseScript 一致）
 export { parseCellAnchor } from "./zhjwxk/anchor.js";

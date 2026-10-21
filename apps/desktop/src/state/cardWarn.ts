@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 校园卡余额预警（判定 + 持久化 + 投递编排）。
  *
@@ -143,7 +144,7 @@ export function saveCardWarnState(state: CardWarnState): void {
  *  标题里的品牌名与内容之间留一个空格（通知栏里更易读） */
 export function cardWarnText(balance: number, threshold: number): { title: string; body: string } {
   return {
-    title: "OneTHU 余额预警",
+    title: i18n("state.cardwarn.ad508635dc98"),
     body: `余额还剩 ¥${balance.toFixed(2)}，已低于设置的 ¥${threshold.toFixed(2)}`,
   };
 }
@@ -311,15 +312,15 @@ export function applyCardWarnChange(
 
 /** 未送达原因 → 用户能看懂的一句话（原生回报的是原因码，不直接上屏） */
 const REASON_TEXT: Record<string, string> = {
-  "notifications-denied": "系统通知未授权，请在系统设置里允许本应用通知",
-  "not-implemented-desktop": "本平台暂不支持系统通知",
-  "not-bundled": "应用未打包运行，系统通知不可用",
-  "in-past": "投递时刻已过",
+  get "notifications-denied"() { return i18n("state.cardwarn.441543d6afc0"); },
+  get "not-implemented-desktop"() { return i18n("state.cardwarn.cc0ee8d6a882"); },
+  get "not-bundled"() { return i18n("state.cardwarn.0ca2f1aa431e"); },
+  get "in-past"() { return i18n("state.cardwarn.3d2f25974036"); },
 };
 
 export function cardWarnReasonText(reason: string): string {
   const key = String(reason ?? "").trim();
-  return REASON_TEXT[key] ?? (key || "系统通知不可用");
+  return REASON_TEXT[key] ?? (key || i18n("state.cardwarn.6c61f7700756"));
 }
 
 /** 卡片状态行用的一句话（入参是快照，纯函数） */
@@ -330,16 +331,16 @@ export function cardWarnStatusText(input: {
   now: number;
 }): string {
   const { settings, state, balance, now } = input;
-  if (!settings.enabled) return "未开启：余额低于预警线时不会提醒";
+  if (!settings.enabled) return i18n("state.cardwarn.f5fc812e10d4");
   if (balance !== null && balance > settings.threshold) {
-    return `当前余额 ¥${balance.toFixed(2)}，高于预警线 ¥${settings.threshold.toFixed(2)}`;
+    return i18n("state.cardwarn.304901f669bd", { value: String(balance.toFixed(2)), value2: String(settings.threshold.toFixed(2)) });
   }
   if (state.active) {
-    if (!state.delivered) return `提醒未送达：${cardWarnReasonText(state.reason)}`;
+    if (!state.delivered) return i18n("state.cardwarn.a2d31fa4bf47", { value: String(cardWarnReasonText(state.reason)) });
     const min = state.warnedAt === null ? null : Math.max(0, Math.floor((now - state.warnedAt) / 60_000));
-    const ago = min === null ? "" : min < 1 ? "刚刚" : min < 60 ? `${min} 分钟前` : `${Math.floor(min / 60)} 小时前`;
-    return `已提醒${ago ? `（${ago}）` : ""}`;
+    const ago = min === null ? "" : min < 1 ? i18n("state.cardwarn.de6785d99e02") : min < 60 ? i18n("state.cardwarn.3770554318c1", { min: String(min) }) : i18n("state.cardwarn.690c01945f17", { value: String(Math.floor(min / 60)) });
+    return i18n("state.cardwarn.f817a3ab0c4e", { value: String(ago ? `（${ago}）` : "") });
   }
-  if (balance !== null) return `当前余额 ¥${balance.toFixed(2)}，已低于预警线`;
-  return `余额低于 ¥${settings.threshold.toFixed(2)} 时提醒`;
+  if (balance !== null) return i18n("state.cardwarn.bf2868f8d201", { value: String(balance.toFixed(2)) });
+  return i18n("state.cardwarn.fef9dc03d14d", { value: String(settings.threshold.toFixed(2)) });
 }

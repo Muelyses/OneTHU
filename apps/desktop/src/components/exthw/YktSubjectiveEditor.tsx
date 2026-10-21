@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * R20-C2 P3：雨课堂主观题原生作答编辑器（docs §31.2 / §31.5 / §32）。
  *
@@ -133,10 +135,12 @@ const TOOLBAR = {
 const FORMATS = ["bold", "italic", "underline", "color", "background", "list", "bullet", "code-block", "image", "kfformula"];
 
 export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
+  const uiLocale = useUiLocale();
+
   const { value, onChange, classroomId, onUploadingChange, onError, disabled } = props;
   // 桌面 = 从文件上传；Android 宿主 = 拍照上传（isAndroidNavigator 多信号判定，
   // tauri.conf 伪装 UA 也不误判，见 androidHost.ts 头注）
-  const isAndroid = useMemo(() => isAndroidNavigator(navigator as AndroidHostSignalsLike), []);
+  const isAndroid = useMemo(() => isAndroidNavigator(navigator as AndroidHostSignalsLike), [uiLocale]);
   const quillRef = useRef<ReactQuill | null>(null);
   const pickRef = useRef<HTMLInputElement | null>(null);
   const cameraRef = useRef<HTMLInputElement | null>(null);
@@ -179,7 +183,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
           quill.setSelection(idx + 2, 0, "user");
         } catch (e: unknown) {
           const msg = e instanceof Error ? e.message : String(e);
-          onError?.(`插图上传失败：${msg}`);
+          onError?.(i18n("components.exthw.yktsubjectiveeditor.a2a00684a717", { msg: String(msg) }));
         } finally {
           setUploading((n) => n - 1);
         }
@@ -238,7 +242,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
               const blob = await (await fetch(src)).blob();
               await handleFiles([new File([blob], "paste.png", { type: blob.type || "image/png" })]);
             } catch {
-              onError?.("粘贴的图片读取失败，请用「插图」按钮重试");
+              onError?.(i18n("components.exthw.yktsubjectiveeditor.3878a2a84b5d"));
             }
           })();
           return new DeltaCtor();
@@ -253,7 +257,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "ql-kfformula";
-        btn.title = "插入公式（LaTeX）";
+        btn.title = i18n("components.exthw.yktsubjectiveeditor.8e2f0b394d65");
         btn.textContent = "ƒ(x)";
         btn.addEventListener("click", () => {
           const sel = quill.getSelection();
@@ -300,7 +304,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
     setFormulaTex("");
   }, [formulaDisplay, formulaTex, getQuill]);
 
-  const modules = useMemo(() => ({ toolbar: TOOLBAR }), []);
+  const modules = useMemo(() => ({ toolbar: TOOLBAR }), [uiLocale]);
   const previewHtml = useMemo(() => {
     if (!formulaTex.trim() || !latexBundle) return null;
     try {
@@ -308,7 +312,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
     } catch {
       return null;
     }
-  }, [formulaTex, formulaDisplay, latexBundle]);
+  }, [uiLocale, formulaTex, formulaDisplay, latexBundle]);
 
   return (
     <div className={`ykt-editor${disabled ? " ykt-editor-disabled" : ""}`}>
@@ -319,7 +323,7 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
         onChange={onChange}
         modules={modules}
         formats={FORMATS}
-        placeholder={props.placeholder ?? "在此作答…"}
+        placeholder={props.placeholder ?? i18n("components.exthw.yktsubjectiveeditor.ba8c366b11da")}
         readOnly={disabled}
       />
       {/* 隐藏文件入口：选图（桌面）+ 拍照（移动端 capture 直调相机，docs §32.1） */}
@@ -347,16 +351,9 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
       />
       <div className="ykt-editor-foot">
         {uploading > 0 ? (
-          <span className="ykt-editor-uploading">图片上传中…</span>
+          <span className="ykt-editor-uploading">{i18n("components.exthw.yktsubjectiveeditor.700c885fd7e5")}</span>
         ) : (
-          <button
-            type="button"
-            className="btn btn-sm ykt-img-btn"
-            disabled={disabled}
-            onClick={() => (isAndroid ? cameraRef.current?.click() : pickRef.current?.click())}
-          >
-            {isAndroid ? "📷 拍照上传" : "📎 从文件上传"}
-          </button>
+          <Btn variant="outline" disabled={disabled} onClick={() => (isAndroid ? cameraRef.current?.click() : pickRef.current?.click())}>{isAndroid ? i18n("components.exthw.yktsubjectiveeditor.1edb50ac35be") : i18n("components.exthw.yktsubjectiveeditor.6126742dc24f")}</Btn>
         )}
       </div>
 
@@ -364,38 +361,30 @@ export function YktSubjectiveEditor(props: YktSubjectiveEditorProps) {
         <div className="ykt-formula-mask" onClick={() => setFormulaOpen(false)}>
           <div className="ykt-formula-dialog" onClick={(e) => e.stopPropagation()}>
             <div className="ykt-formula-head">
-              <b>插入公式（LaTeX）</b>
-              <button type="button" className="btn btn-sm" onClick={() => setFormulaOpen(false)}>
-                关闭
-              </button>
+              <b>{i18n("components.exthw.yktsubjectiveeditor.8e2f0b394d65")}</b>
+              <Btn variant="outline" onClick={() => setFormulaOpen(false)}>{i18n("components.exthw.yktsubjectiveeditor.3fd47edce45b")}</Btn>
             </div>
             <textarea
               className="ykt-formula-tex"
               rows={3}
               value={formulaTex}
               autoFocus
-              placeholder="例如：\vec{u}=(1,2,3)  或  \frac{a}{b}"
+              placeholder={i18n("components.exthw.yktsubjectiveeditor.f339cc2aea2c", { example: String.raw`\vec{u}=(1,2,3)  /  \frac{a}{b}` })}
               onChange={(e) => setFormulaTex(e.target.value)}
             />
             <label className="ykt-formula-display">
-              <input type="checkbox" checked={formulaDisplay} onChange={(e) => setFormulaDisplay(e.target.checked)} />
-              独立成行（display 模式）
-            </label>
+              <input type="checkbox" checked={formulaDisplay} onChange={(e) => setFormulaDisplay(e.target.checked)} />{i18n("components.exthw.yktsubjectiveeditor.075910113c11")}</label>
             <div className="ykt-formula-preview">
               {previewHtml != null ? (
                 <div className="ykt-formula-preview-body" dangerouslySetInnerHTML={{ __html: previewHtml }} />
               ) : (
-                <span className="ykt-formula-preview-empty">{latexBundle ? "预览：输入 LaTeX 后实时显示" : "渲染器加载中…"}</span>
+                <span className="ykt-formula-preview-empty">{latexBundle ? i18n("components.exthw.yktsubjectiveeditor.edeea1592b3d") : i18n("components.exthw.yktsubjectiveeditor.6687b327b24f")}</span>
               )}
             </div>
             {latexBundle ? <style>{latexBundle.inlineCss}</style> : null}
             <div className="ykt-formula-actions">
-              <button type="button" className="btn btn-sm" onClick={() => setFormulaOpen(false)}>
-                取消
-              </button>
-              <button type="button" className="btn btn-sm btn-primary" disabled={!formulaTex.trim()} onClick={insertFormula}>
-                插入公式
-              </button>
+              <Btn variant="outline" onClick={() => setFormulaOpen(false)}>{i18n("components.exthw.yktsubjectiveeditor.2cd0f3be8738")}</Btn>
+              <Btn variant="solid" tone="brand" disabled={!formulaTex.trim()} onClick={insertFormula}>{i18n("components.exthw.yktsubjectiveeditor.85fbe03102bd")}</Btn>
             </div>
           </div>
         </div>

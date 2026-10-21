@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * R20-C1：雨课堂官方作答页「应用内 WebView」通道执行层（写操作入口的拉起动作）。
  *
@@ -21,8 +22,8 @@ import { isTauri } from "./transport.js";
 
 /** 打开应用内雨课堂官方作答页；用户关闭/返回后才 resolve。失败抛错（调用方展示）。 */
 export async function openYktSubmitWebview(rawUrl: string, cookie: string): Promise<void> {
-  if (!isTauri) throw new Error("应用内作答需在 OneTHU App 内使用（浏览器预览不可用）。");
-  if (!/^https?:\/\//i.test(rawUrl)) throw new Error("官方作答页地址非法（仅允许 http(s)）。");
+  if (!isTauri) throw new Error(i18n("lib.yktsubmitwebview.00598e3b8d46"));
+  if (!/^https?:\/\//i.test(rawUrl)) throw new Error(i18n("lib.yktsubmitwebview.feded33a22ee"));
 
   // 先挂关闭事件（窗口可能在 invoke 返回后很快关闭）：关闭即 resolve。
   let unlisten: (() => void) | undefined;

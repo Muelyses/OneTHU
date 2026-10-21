@@ -1,0 +1,9 @@
+[
+  "theme -> custom -> default restores palette; primary action stays stable",
+  "light/dark and glass clear/deep change semantic roles",
+  "modal open + Escape dismiss",
+  "drawer open + Escape dismiss",
+  "anchored menu open + Escape dismiss",
+  "device frame physical viewport 393x852 -> 852x393 preserved",
+  "onboarding sheet scope has opaque material and inherited text"
+]

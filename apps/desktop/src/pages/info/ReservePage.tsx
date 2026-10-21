@@ -1,3 +1,4 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 /**
  * 预约页 —— 页内分栏（segmented）：「图书馆座位」（LibraryTab 原样复用，
  * 自带分区标题与三态重试）/「研讨间」（LibRoomTab，cab.lib ic-web）/
@@ -12,7 +13,7 @@
  * navParams 身份触发的 effect）；页内切换不回写参数。
  */
 import { useEffect, useState } from "react";
-import { PageAtomStar } from "../..//components/Collect.js";
+import { RootPageStar } from "../../components/Collect.js";
 import { SegmentedOverflow, Card, Empty, PageHead } from "../../components/Layout.js";
 import type { LearnNav } from "../../state/app.js";
 import { useApp } from "../../state/context.js";
@@ -21,17 +22,19 @@ import { LibRoomTab } from "./LibRoomTab.js";
 import { ClassroomTab } from "./ClassroomTab.js";
 import { VenueSportsTab } from "./VenueSportsTab.js";
 import { KongjianTab } from "./KongjianTab.js";
+import { VisitTab } from "./VisitTab.js";
 import { useTabDirection } from "../../lib/motion.js";
 
-export type ReserveTab = "library" | "libroom" | "classroom" | "sports" | "kongjian" | "more";
+export type ReserveTab = "library" | "libroom" | "classroom" | "sports" | "kongjian" | "visit" | "more";
 
 const TABS: Array<{ id: ReserveTab; label: string }> = [
-  { id: "library", label: "图书馆座位" },
-  { id: "libroom", label: "研讨间" },
-  { id: "classroom", label: "空教室" },
-  { id: "sports", label: "体育" },
-  { id: "kongjian", label: "公共空间" },
-  { id: "more", label: "更多场馆" },
+  { id: "library", get label() { return i18n("pages.info.reservepage.31c17158ebdb"); } },
+  { id: "libroom", get label() { return i18n("pages.info.reservepage.e4d40b4d6759"); } },
+  { id: "classroom", get label() { return i18n("pages.info.reservepage.ecc11c8afea8"); } },
+  { id: "sports", get label() { return i18n("pages.info.reservepage.ef7be5be3c13"); } },
+  { id: "kongjian", get label() { return i18n("pages.info.reservepage.e81059e1a712"); } },
+  { id: "visit", get label() { return i18n("pages.info.reservepage.3fbaca96ff24"); } },
+  { id: "more", get label() { return i18n("pages.info.reservepage.5c82e963dbfd"); } },
 ];
 
 const TAB_IDS = TABS.map((t) => t.id);
@@ -40,13 +43,16 @@ const TAB_IDS = TABS.map((t) => t.id);
 const PARAM_TO_TAB: Record<NonNullable<LearnNav["reserveTab"]>, ReserveTab> = {
   lib: "library",
   kongjian: "kongjian",
+  visit: "visit",
   room: "libroom",
   classroom: "classroom",
   sports: "sports",
 };
 
 export function ReservePage() {
-  const { navParams } = useApp();
+  const uiLocale = useUiLocale();
+
+  const { navParams, navigate } = useApp();
   const direct = navParams?.reserveTab ? PARAM_TO_TAB[navParams.reserveTab] : undefined;
   const [tab, setTab] = useState<ReserveTab>(() => direct ?? "library");
   // 页签切换方向（决定内容从哪一侧滑入）
@@ -67,13 +73,20 @@ export function ReservePage() {
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
   };
 
+  /* 子栏目回写到标签 params（反向映射页内 tab → 契约参数值；"more" 仅页内可达，不回写） */
+  useEffect(() => {
+    const param = (Object.keys(PARAM_TO_TAB) as Array<keyof typeof PARAM_TO_TAB>).find((k) => PARAM_TO_TAB[k] === tab);
+    if (!param || navParams?.reserveTab === param) return;
+    navigate("reserve", { reserveTab: param });
+  }, [tab, navParams?.reserveTab, navigate]);
+
   return (
     <>
      <PageHead
-       title="预约"
-       actions={<PageAtomStar atomKey={({ library: "reserve-lib", libroom: "reserve-room", classroom: "reserve-classroom", sports: "reserve-sports", kongjian: "reserve-kongjian" } as Record<string, string>)[tab] ?? ""} title="预约页 · 当前栏目" />}
+       title={i18n("pages.info.reservepage.352cdc807892")}
+       actions={<RootPageStar page="reserve" title={i18n("pages.info.reservepage.352cdc807892")} />}
      />
-      <SegmentedOverflow ariaLabel="预约功能" style={{ marginBottom: 14 }}>
+      <SegmentedOverflow ariaLabel={i18n("pages.info.reservepage.2cde685b0f38")} style={{ marginBottom: 14 }}>
         {TABS.map(({ id, label }) => (
           <button
             key={id}
@@ -93,10 +106,11 @@ export function ReservePage() {
       <div hidden={tab !== "classroom"} className={tab === "classroom" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("classroom") ? <ClassroomTab deepBuilding={navParams?.classroomBuilding} deepBuildingName={navParams?.classroomBuildingName} deepRoom={navParams?.classroomRoom} /> : null}</div>
       <div hidden={tab !== "sports"} className={tab === "sports" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("sports") ? <VenueSportsTab deepScene={navParams?.sportsScene} /> : null}</div>
       <div hidden={tab !== "kongjian"} className={tab === "kongjian" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("kongjian") ? <KongjianTab kongjianSpace={navParams?.kongjianSpace} kongjianRoom={navParams?.kongjianRoom} /> : null}</div>
+      <div hidden={tab !== "visit"} className={tab === "visit" ? "tab-anim" : undefined} data-dir={tabDir}>{visited.has("visit") ? <VisitTab /> : null}</div>
       <div hidden={tab !== "more"} className={tab === "more" ? "tab-anim" : undefined} data-dir={tabDir}>
         {visited.has("more") ? (
           <Card>
-            <Empty text="游泳馆、健身房等陆续接入" />
+            <Empty text={i18n("pages.info.reservepage.ab070d2bfaf1")} />
           </Card>
         ) : null}
       </div>

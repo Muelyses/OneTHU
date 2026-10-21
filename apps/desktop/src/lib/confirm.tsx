@@ -1,23 +1,29 @@
+import { createPortal } from "react-dom";
+import { Banner, Btn, Input, Modal, Text } from "@onethu/gui";
 /**
  * 应用内确认弹窗（Promise 化）——Tauri WKWebView 的原生 window.confirm
  * 静默返回 false（无对话框 UI），所有 confirm 门控的破坏性操作因此
  * 从未执行（暂存 ✕/清空/退选/草稿提交/场馆退订 2026-09-03 实录）。
  * 用 DOM 覆盖层替代，<ConfirmHost/> 挂在应用根部一次即可。
  */
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useOverlayBack } from "../state/navStack.js";
+import { msg as uiMessage, resolveMessage, t, useLocale, type UiText } from "../i18n/index.js";
 
 type Pending = {
-  msg: string;
+  msg: UiText;
   resolve: (v: boolean) => void;
   danger?: boolean;
-  /** 危险弹窗标题与确认按钮文案：由调用方按场景给（默认通用措辞） */
-  title?: string;
-  confirmText?: string;
+  /** 弹窗标题与按钮文案：由调用方按场景给（非危险档用 confirmChoice，可选标题） */
+  title?: UiText;
+  confirmText?: UiText;
+  /** 次按钮（否定项）文案：默认「取消」；二选一场景把它说成用户实际得到的结果（如「忽略」） */
+  cancelText?: UiText;
 };
 let pending: Pending | null = null;
 const listeners = new Set<() => void>();
 
-export function confirmOk(msg: string): Promise<boolean> {
+export function confirmOk(msg: UiText): Promise<boolean> {
   return new Promise((resolve) => {
     // 新请求顶掉旧请求（旧者按取消结算，防悬挂）
     pending?.resolve(false);
@@ -34,8 +40,8 @@ export function confirmOk(msg: string): Promise<boolean> {
  *  R21c 教训——组件里曾把「即将退选 / 确认退选」写死，忽略作业复用时整屏照抄退选文案，
  *  用户当场发现。默认值只作通用兜底，具体场景（退选/忽略/删除…）一律显式传。 */
 export function confirmDanger(
-  msg: string,
-  opts: { title?: string; confirmText?: string } = {},
+  msg: UiText,
+  opts: { title?: UiText; confirmText?: UiText } = {},
 ): Promise<boolean> {
   return new Promise((resolve) => {
     pending?.resolve(false);
@@ -43,8 +49,31 @@ export function confirmDanger(
       msg,
       resolve,
       danger: true,
-      title: opts.title ?? "此操作不可撤销，请确认",
-      confirmText: opts.confirmText ?? "确认执行",
+      title: opts.title ?? uiMessage("confirm.dangerTitle"),
+      confirmText: opts.confirmText ?? uiMessage("confirm.execute"),
+    };
+    listeners.forEach((l) => l());
+  });
+}
+
+/**
+ * 非危险档的二选一（同款玻璃卡，无 ⚠️、主按钮用主题色）：两个选项都是**正常动作**、
+ * 只是用户要挑一个时用（如「正文图片加载失败」→ 重新登录 / 忽略）。
+ * 与 `confirmOk` 的区别：两边都要说清点下去会发生什么，所以两个文案都必填——
+ * 「取消 / 确定」在二选一里等于没说。
+ */
+export function confirmChoice(
+  msg: UiText,
+  opts: { title?: UiText; confirmText: UiText; cancelText: UiText },
+): Promise<boolean> {
+  return new Promise((resolve) => {
+    pending?.resolve(false);
+    pending = {
+      msg,
+      resolve,
+      title: opts.title,
+      confirmText: opts.confirmText,
+      cancelText: opts.cancelText,
     };
     listeners.forEach((l) => l());
   });
@@ -52,13 +81,91 @@ export function confirmDanger(
 
 /** 场景措辞预设：**措辞属于场景、不属于组件**——组件只提供通用兜底。
  *  R21c 实录：忽略作业复用了退选弹窗，整屏照抄「即将退选 / 确认退选」，用户当场发现。 */
-export const CONFIRM_DROP_COURSE = { title: "即将退选，请确认！", confirmText: "确认退选" } as const;
-export const CONFIRM_IGNORE_HW = { title: "忽略这条作业，请确认！", confirmText: "确认忽略" } as const;
+export const CONFIRM_DROP_COURSE = { title: uiMessage("confirm.dropCourseTitle"), confirmText: uiMessage("confirm.dropCourseAction") } as const;
+export const CONFIRM_IGNORE_HW = { title: uiMessage("confirm.ignoreHomeworkTitle"), confirmText: uiMessage("confirm.ignoreHomeworkAction") } as const;
+/** 正文图片因登录状态失效没加载出来：**非危险档**二选一——主按钮去重新登录，次按钮就地
+ *  关掉（2026-10-12 用户令：改用带按钮的弹窗，别再弹会自己消失的中央提示；且不该用
+ *  「不可撤销」那套红色警告档——两个选项都是正常动作）。 */
+export const CONFIRM_IMG_RELOGIN = { title: uiMessage("confirm.imageReloginTitle"), confirmText: uiMessage("confirm.relogin"), cancelText: uiMessage("confirm.ignore") } as const;
 
 export function answerConfirm(v: boolean): void {
   pending?.resolve(v);
   pending = null;
   listeners.forEach((l) => l());
+}
+
+/* ---------- 文本输入弹层（云盘新建资料库/文件夹等命名场景） ----------
+ * 与 confirmOk 同款 DOM 覆盖层（WKWebView 的 window.prompt 同样不可用）。 */
+
+type PromptPending = {
+  title: UiText;
+  placeholder: UiText;
+  initial: string;
+  resolve: (v: string | null) => void;
+};
+let promptPending: PromptPending | null = null;
+const promptListeners = new Set<() => void>();
+
+/** 应用内输入弹窗：确认返回文本（trim 后非空），取消返回 null。 */
+export function promptText(
+  title: UiText,
+  opts: { placeholder?: UiText; initial?: string } = {},
+): Promise<string | null> {
+  return new Promise((resolve) => {
+    promptPending?.resolve(null); // 新请求顶掉旧请求（旧者按取消结算）
+    promptPending = {
+      title,
+      placeholder: opts.placeholder ?? "",
+      initial: opts.initial ?? "",
+      resolve,
+    };
+    promptListeners.forEach((l) => l());
+  });
+}
+
+export function answerPrompt(v: string | null): void {
+  promptPending?.resolve(v);
+  promptPending = null;
+  promptListeners.forEach((l) => l());
+}
+
+function PromptField({ request, value, onChange, onSubmit }: { request: PromptPending | null; value: string; onChange: (value: string) => void; onSubmit: () => void }): React.ReactNode {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Let Modal remember the invoking control before moving focus to the input.
+    const frame = requestAnimationFrame(() => ref.current?.querySelector("input")?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [request]);
+  return <div ref={ref}><Input aria-label={request ? resolveMessage(request.title) : t("prompt.input")} placeholder={resolveMessage(request?.placeholder)} value={value} onChange={onChange} onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); onSubmit(); } }} /></div>;
+}
+
+function PromptHost(): React.ReactNode {
+  useLocale();
+  const cur = useSyncExternalStore(
+    (l) => {
+      promptListeners.add(l);
+      return () => promptListeners.delete(l);
+    },
+    () => promptPending,
+  );
+  const last = useRef<PromptPending | null>(null);
+  if (cur) last.current = cur;
+  const shown = cur ?? last.current;
+  const [val, setVal] = useState("");
+  useEffect(() => {
+    if (cur) setVal(cur.initial);
+  }, [cur]);
+  useOverlayBack("shared-prompt", Boolean(cur), () => answerPrompt(null));
+  const submit = (): void => {
+    const t = val.trim();
+    if (cur && t) answerPrompt(t);
+  };
+  return <Modal open={!!cur} onClose={() => answerPrompt(null)} title={shown ? resolveMessage(shown.title) : t("prompt.input")} className="shared-prompt-modal" size="sm" foot={<div className="shared-confirm-actions">
+    <Btn variant="outline" onClick={() => answerPrompt(null)}>{t("common.cancel")}</Btn>
+    <Btn variant="solid" tone="brand" disabled={!cur || !val.trim()} onClick={submit}>{t("common.confirm")}</Btn>
+  </div>}>
+    <PromptField request={shown} value={val} onChange={setVal} onSubmit={submit} />
+  </Modal>;
 }
 
 function subscribe(l: () => void): () => void {
@@ -67,38 +174,23 @@ function subscribe(l: () => void): () => void {
 }
 
 export function ConfirmHost(): React.ReactNode {
+  return createPortal(<>
+      <ConfirmBody />
+      <PromptHost />
+    </>, document.body);
+}
+
+function ConfirmBody(): React.ReactNode {
+  useLocale();
   const cur = useSyncExternalStore(subscribe, () => pending);
-  if (!cur) return null;
-  const glass: React.CSSProperties = {
-    background: "rgba(255,255,255,.62)",
-    backdropFilter: "blur(28px) saturate(180%)",
-    WebkitBackdropFilter: "blur(28px) saturate(180%)",
-    boxShadow: "inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 0 1px rgba(28,39,64,.08), 0 24px 80px rgba(28,39,64,.28)",
-  };
-  if (cur.danger) {
-    return (
-      <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-        <div className="confirm-card" style={{ ...glass, borderRadius: 20, padding: "26px 26px 20px", maxWidth: 440, width: "100%", textAlign: "center" }}>
-          <div style={{ fontSize: 46, lineHeight: 1, marginBottom: 14 }}>⚠️</div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: "#d33330", marginBottom: 8 }}>{cur.title ?? "此操作不可撤销，请确认"}</div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word", color: "rgba(28,39,64,.75)" }}>{cur.msg}</div>
-          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 18 }}>
-            <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14 }} onClick={() => answerConfirm(false)}>取消</button>
-            <button className="btn" style={{ minWidth: 118, height: 38, fontSize: 14, background: "#e5484d", borderColor: "#e5484d", color: "#fff", boxShadow: "0 6px 20px rgba(229,72,77,.35)" }} onClick={() => answerConfirm(true)}>{cur.confirmText ?? "确认执行"}</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  return (
-    <div className="confirm-mask" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,.35)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div className="confirm-card" style={{ ...glass, borderRadius: 14, padding: "18px 18px 14px", maxWidth: 420, width: "100%" }}>
-        <div style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>{cur.msg}</div>
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 14 }}>
-          <button className="btn" onClick={() => answerConfirm(false)}>取消</button>
-          <button className="btn" style={{ borderColor: "var(--accent, #6d7ff0)", color: "var(--accent, #6d7ff0)" }} onClick={() => answerConfirm(true)}>确定</button>
-        </div>
-      </div>
-    </div>
-  );
+  const last = useRef<Pending | null>(null);
+  if (cur) last.current = cur;
+  const shown = cur ?? last.current;
+  useOverlayBack("shared-confirm", Boolean(cur), () => answerConfirm(false));
+  return <Modal open={!!cur} onClose={() => answerConfirm(false)} title={shown?.title !== undefined ? resolveMessage(shown.title) : t(shown?.danger ? "confirm.dangerTitle" : "confirm.title")} className={`shared-confirm-modal${shown?.danger ? " is-danger" : ""}`} size="sm" foot={<div className="shared-confirm-actions">
+    <Btn variant="outline" onClick={() => answerConfirm(false)}>{shown?.cancelText !== undefined ? resolveMessage(shown.cancelText) : t("common.cancel")}</Btn>
+    <Btn variant="solid" tone={shown?.danger ? "error" : "brand"} disabled={!cur} onClick={() => answerConfirm(true)}>{shown?.confirmText !== undefined ? resolveMessage(shown.confirmText) : t(shown?.danger ? "confirm.execute" : "common.confirm")}</Btn>
+  </div>}>
+    {shown?.danger ? <Banner tone="error" icon={<span className="shared-confirm-warning" aria-hidden="true">⚠</span>}><Text as="div" className="shared-confirm-message">{resolveMessage(shown.msg)}</Text></Banner> : <Text as="div" className="shared-confirm-message">{resolveMessage(shown?.msg)}</Text>}
+  </Modal>;
 }

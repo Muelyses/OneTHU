@@ -1,3 +1,4 @@
+import { t as i18n } from "../i18n/index.js";
 /**
  * 桌面小组件的「每一块显示什么」——绑定**按实例**存，不再是一份全局配置。
  *
@@ -146,10 +147,10 @@ export function pruneWidgetInstances(liveIds: Array<string | number>): WidgetIns
 
 /** 绑定的人类可读摘要（设置页列表用） */
 export function describeBinding(b: WidgetBinding, names: { folder?: string; atom?: string } = {}): string {
-  if (b.kind === "today") return "日程与 DDL";
-  if (b.kind === "folder") return `收藏夹「${names.folder ?? b.folderId}」图标组`;
-  if (b.kind === "detail") return `收藏项详情：${names.atom ?? b.atom.key}`;
-  return `快捷方式：${names.atom ?? b.atom.key}`;
+  if (b.kind === "today") return i18n("state.widgetinstances.17a0e39c6089");
+  if (b.kind === "folder") return i18n("state.widgetinstances.6e06ed2abb7d", { name: names.folder ?? b.folderId });
+  if (b.kind === "detail") return i18n("state.widgetinstances.662000cbb20d", { name: names.atom ?? b.atom.key });
+  return i18n("state.widgetinstances.993c7b4581f3", { name: names.atom ?? b.atom.key });
 }
 
 /* 变更订阅：绑定一变就要重推快照，桌面才跟得上 */

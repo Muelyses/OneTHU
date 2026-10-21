@@ -78,6 +78,15 @@ export function installKeepalive(): void {
           await persist().catch(() => undefined);
         }
       } catch { /* 静默：保活失败不影响前台 */ }
+      // GitLab 域巡检（2026-10-14「经常丢登录态」治理）：`_gitlab_session` 是
+      // git.tsinghua.edu.cn 的独立短命票，上一段只覆盖 webvpn/id 侧——长闲置后
+      // 下一次点进 GitLab 必撞 401 并触发整条漫游换票舞。随同一节拍顺手把 git 域
+      // 探一遍：死票在用户点击前静默换好（state/gitlab.ts 的单飞哨兵保证并行取数
+      // 与这里共享同一条恢复链，探针不确定/换票失败都静默落回原路）。
+      try {
+        const { gitlabEnsureSession } = await import("../state/gitlab.js");
+        await gitlabEnsureSession();
+      } catch { /* 静默：巡检失败不影响前台 */ }
     })();
   }, 10 * 60_000);
 }

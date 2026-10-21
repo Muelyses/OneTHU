@@ -19,3 +19,36 @@ export function platformOf(width: number): PlatformLayout {
   if (width < BP.expanded) return "medium";
   return "expanded";
 }
+
+/* ══════════ 手机形态判定（唯一来源：main.tsx 与 state/phoneSheets.ts 都读它） ══════════
+   口径（2026-10-16 用户拍板：电脑端压得足够窄就直接用手机端样式；2026-10-19 修正）：
+     ① 宽度 < 600（窄窗 / 竖屏手机）→ 手机形态；
+     ② 高度 < 600 且宽度 ≤ 960（横屏手机：844×390 / 932×430 这类宽而不高的）→ 手机形态；
+     ③ 其余（含被压矮的桌面窗，如 1256×596）→ 桌面形态。
+   为什么不能只看「短边 < 600」：桌面窗被压矮时短边也会掉到 600 以下（1256×596 这种
+   几乎满屏的窗），按短边判会把电脑判成手机。区分点：横屏手机宽而不太宽（≤960），
+   桌面窗再矮也普遍更宽——所以高度规则要加宽度上限。
+   dev 开关（仅 DEV）：`?phone=1` 无条件按手机、`?phone=0` 无条件按桌面（验收对照用）。 */
+
+export function hasCoarsePointer(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return (navigator.maxTouchPoints ?? 0) > 0 || window.matchMedia?.("(pointer: coarse)").matches === true;
+}
+
+const PHONE_FORCE: boolean | null = (() => {
+  if (typeof window === "undefined") return null;
+  if (!import.meta.env?.DEV) return null;
+  const q = new URLSearchParams(window.location.search).get("phone");
+  return q === null ? null : q !== "0";
+})();
+
+export function isPhoneViewport(): boolean {
+  if (typeof window === "undefined") return false;
+  if (PHONE_FORCE !== null) return PHONE_FORCE;
+  const w = window.innerWidth;
+  if (w < BP.medium) return true;
+  /* 2026-10-19 用户拍板：「手机横屏模式直接切换成和电脑一模一样视图」——
+     横屏（宽大于高、且宽已过手机断点）不再算手机形态，整应用按桌面布局渲染。
+     旧的「宽而不高 = 横屏手机」（若 w≤960）已退役；桌面窗压矮本来也按桌面走。 */
+  return false;
+}

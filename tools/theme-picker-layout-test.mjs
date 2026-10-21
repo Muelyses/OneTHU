@@ -13,6 +13,8 @@ import { readFileSync } from "node:fs";
 
 const PICKER = readFileSync("apps/desktop/src/components/ThemePickerModal.tsx", "utf8");
 const CSS = readFileSync("apps/desktop/src/styles/global.css", "utf8");
+/* 已安装分区的 .theme-choice-grid 在 OneGUI recipes（workbench.css），护栏两处都要看 */
+const GUI_CSS = readFileSync("packages/gui/src/recipes/workbench.css", "utf8");
 const fails = [];
 const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 
@@ -22,7 +24,9 @@ ok(/flex: 1, minHeight: 0/.test(PICKER), "正文容器缺 flex:1 + min-height:0�
 
 /* 横向：网格列钳制 + 网格项可收缩 + 不渲染不可断行的长串 */
 const gridHits = (PICKER.match(/gridTemplateColumns: "minmax\(0, 1fr\)"/g) || []).length;
-ok(gridHits >= 2, "两个分区网格都要用 minmax(0,1fr) 钳制列宽（当前 " + gridHits + " 处）");
+/* 已安装分区改用 .theme-choice-grid（auto-fit + min(100%,280px) 同样钳住不撑宽），市场分区仍用 inline minmax(0,1fr) */
+const choiceGrid = /className="theme-choice-grid"/.test(PICKER) && /\.theme-choice-grid \{[^}]*grid-template-columns: repeat\(auto-fit, minmax\(min\(100%, 280px\), 1fr\)\)/.test(GUI_CSS);
+ok(gridHits >= 1 && choiceGrid, "两个分区网格都要钳制列宽（市场 minmax(0,1fr)=" + gridHits + " 处；已安装 theme-choice-grid " + (choiceGrid ? "✓" : "✗") + "）");
 ok(/overflowX: "hidden"/.test(PICKER), "正文容器没有 overflow-x:hidden（会出现横向滚动条）");
 ok(/className="market-card" style=\{\{ margin: 0, minWidth: 0/.test(PICKER), "市场卡缺 min-width:0（网格项默认 auto 会被内容撑开）");
 ok(/overflowWrap: "anywhere"/.test(PICKER), "市场卡描述缺 overflowWrap:anywhere（长 URL 无法断行）");

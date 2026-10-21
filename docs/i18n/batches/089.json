@@ -1,0 +1,1484 @@
+{
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "state.orgsync.5784fd684c09",
+      "source": "这个组织尚未启用多人协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 62,
+          "context": "new Error(i18n(\"state.orgsync.5784fd684c09\"))"
+        }
+      ],
+      "translation": "This organization has not enabled collaboration yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.66f49a483a9b",
+      "source": "请先给每位组织成员填写云盘邮箱，再关联资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 254,
+          "context": "new Error(i18n(\"state.orgsync.66f49a483a9b\"))"
+        }
+      ],
+      "translation": "Fill in a Cloud Drive email for each organization member before linking libraries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.68b2e1779e6b",
+      "source": "多人协作需要你拥有的独立私有 GitLab 群组，不能使用公开群组或继承权限的子群组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 123,
+          "context": "new Error(i18n(\"state.orgsync.68b2e1779e6b\"))"
+        }
+      ],
+      "translation": "Collaboration requires your own standalone private GitLab group; public groups or subgroups with inherited permissions cannot be used",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.6ad659d36005",
+      "source": "组织中存在 GitLab Maintainer 特殊权限，无法保证只有负责人能改管理资料；请先在 GitLab 调整为负责人或普通成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 38,
+          "context": "new Error(i18n(\"state.orgsync.6ad659d36005\"))"
+        }
+      ],
+      "translation": "A GitLab Maintainer special permission exists in this organization, so it cannot be guaranteed that only Owners can change management content. Change it to Owner or regular member in GitLab first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.7bdb46eb7930",
+      "source": "当前 GitLab 账号尚未获得这个组织的访问权限，请让负责人先添加你的 GitLab 账号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 37,
+          "context": "new Error(i18n(\"state.orgsync.7bdb46eb7930\"))"
+        }
+      ],
+      "translation": "The current GitLab account does not have access to this organization yet. Ask an Owner to add your GitLab account first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.839d06db8102",
+      "source": "元数据项目必须是该组织内未向其他群组共享的私有项目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 137,
+          "context": "new Error(i18n(\"state.orgsync.839d06db8102\"))"
+        }
+      ],
+      "translation": "The metadata project must be a private project in this organization that is not shared with other groups",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.8d6293d606a5",
+      "source": "请由另一位负责人执行你的移除或降级",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 209,
+          "context": "new Error(i18n(\"state.orgsync.8d6293d606a5\"))"
+        }
+      ],
+      "translation": "Have another Owner perform your removal or downgrade",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.8defedbcd2a0",
+      "source": "组织协作地址不合法",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 19,
+          "context": "new Error(i18n(\"state.orgsync.8defedbcd2a0\"))"
+        }
+      ],
+      "translation": "The organization collaboration address is invalid",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.8f58376b6cc9",
+      "source": "组织元数据项目存在额外直接成员授权，请先在 GitLab 移除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 42,
+          "context": "new Error(i18n(\"state.orgsync.8f58376b6cc9\"))"
+        }
+      ],
+      "translation": "The organization metadata project has extra direct member grants. Remove them in GitLab first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.9278a31bb0c8",
+      "source": "请先把群组中的 Maintainer 调整为负责人或普通成员，再初始化协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 124,
+          "context": "new Error(i18n(\"state.orgsync.9278a31bb0c8\"))"
+        }
+      ],
+      "translation": "Change Maintainers in the group to Owners or regular members before initializing collaboration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.a6cbed9d57aa",
+      "source": "未完成的权限变更期间，只能补充现有成员的云盘邮箱；角色与成员调整请先完成重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 198,
+          "context": "new Error(i18n(\"state.orgsync.a6cbed9d57aa\"))"
+        }
+      ],
+      "translation": "While a permission change is incomplete, you can only add Cloud Drive emails for existing members. Complete the retry before adjusting roles or members.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.ab3125f51556",
+      "source": "组织元数据项目被共享给其他群组，请先在 GitLab 移除额外群组授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 39,
+          "context": "new Error(i18n(\"state.orgsync.ab3125f51556\"))"
+        }
+      ],
+      "translation": "The organization metadata project is shared with other groups. Remove the extra group grants in GitLab first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.b4a14ad2c5e3",
+      "source": "组织分支 {name} 的服务器保护不满足要求，请负责人检查 GitLab 分支保护",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 24,
+          "context": "new Error(i18n(\"state.orgsync.b4a14ad2c5e3\", { name: String(name) }))"
+        }
+      ],
+      "translation": "Server-side protection for the organization branch {name} does not meet requirements. Ask an Owner to check the GitLab branch protection.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.b9043bc090ae",
+      "source": "更换 GitLab 账号请先移除旧成员，再添加新成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 206,
+          "context": "new Error(i18n(\"state.orgsync.b9043bc090ae\"))"
+        }
+      ],
+      "translation": "To change a GitLab account, remove the old member first, then add the new one.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.cannotEdit",
+      "source": "当前账号没有编辑组织内容的权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 83,
+          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
+        }
+      ],
+      "translation": "The current account has no permission to edit organization content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.cd3d301c9ac0",
+      "source": "权限变更尚未完成：{value}。修正原因后点击重试，已完成的步骤不会重复授予。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(errors.join(\"；\"))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 238,
+          "context": "new Error(i18n(\"state.orgsync.cd3d301c9ac0\", { value: String(errors.join(\"；\")) }))"
+        }
+      ],
+      "translation": "The permission change is not finished: {value}. Fix the cause and click retry; completed steps will not be granted again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.d42bb89b365b",
+      "source": "分支保护规则过多，无法完整验证组织配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 22,
+          "context": "new Error(i18n(\"state.orgsync.d42bb89b365b\"))"
+        }
+      ],
+      "translation": "There are too many branch protection rules to fully verify the organization configuration",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.e6793d4dc90e",
+      "source": "此协作项目已经属于另一个组织，不能用本机资料覆盖",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 155,
+          "context": "new Error(i18n(\"state.orgsync.e6793d4dc90e\"))"
+        }
+      ],
+      "translation": "This collaboration project already belongs to another organization and cannot be overwritten with local content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.f1478672fcff",
+      "source": "请填写准确的 GitLab 用户名和清华云盘邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 187,
+          "context": "new Error(i18n(\"state.orgsync.f1478672fcff\"))"
+        }
+      ],
+      "translation": "Enter the exact GitLab username and Tsinghua Cloud Drive email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.f9a3b8011053",
+      "source": "找不到组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 17,
+          "context": "new Error(i18n(\"state.orgsync.f9a3b8011053\"))"
+        }
+      ],
+      "translation": "Organization not found",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.fa0fdd1e567b",
+      "source": "找不到可用的 GitLab 用户名，请让对方在 GitLab 个人资料中确认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 190,
+          "context": "new Error(i18n(\"state.orgsync.fa0fdd1e567b\"))"
+        }
+      ],
+      "translation": "No usable GitLab username was found. Ask the other person to confirm it in their GitLab profile.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.fb99a121e507",
+      "source": "同步关联资源权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 248,
+          "context": "label:i18n(\"state.orgsync.fb99a121e507\")"
+        }
+      ],
+      "translation": "Sync linked resource permissions",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.fc4f3897fb63",
+      "source": "组织资料必须位于对应 GitLab 私有群组的私有项目内",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 36,
+          "context": "new Error(i18n(\"state.orgsync.fc4f3897fb63\"))"
+        }
+      ],
+      "translation": "Organization content must be in a private project inside the corresponding private GitLab group",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.ownerOnly",
+      "source": "只有服务器上的组织负责人可以执行此操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 83,
+          "context": "access >= 50 ? i18n(\"state.orgsync.ownerOnly\") : i18n(\"state.orgsync.cannotEdit\")"
+        }
+      ],
+      "translation": "Only organization Owners on the server can perform this action",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.permissionsUnverified",
+      "source": "关联资源权限尚未核对，请负责人完成权限核对",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 55,
+          "context": "config.permissionsVerified !== 1 ? i18n(\"state.orgsync.permissionsUnverified\") : undefined"
+        }
+      ],
+      "translation": "Linked resource permissions have not been verified yet. Ask an Owner to complete permission verification.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.removeMemberLabel",
+      "source": "移除成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 218,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "Remove member",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsync.updateMemberLabel",
+      "source": "更新 {username}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 218,
+          "context": "target ? i18n(\"state.orgsync.updateMemberLabel\", {username:target.username}) : i18n(\"state.orgsync.removeMemberLabel\")"
+        }
+      ],
+      "translation": "Update {username}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "state.orgsynccore.13447b8f6ab6",
+      "source": "降权回读不符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 168,
+          "context": "new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"))"
+        }
+      ],
+      "translation": "Permission downgrade readback mismatch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.15f11e1c75da",
+      "source": "至少保留一位服务器上的组织负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 114,
+          "context": "new Error(i18n(\"state.orgsynccore.15f11e1c75da\"))"
+        }
+      ],
+      "translation": "Keep at least one organization Owner on the server",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.181c794c590b",
+      "source": "组织协作内容损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 41,
+          "context": "new Error(i18n(\"state.orgsynccore.181c794c590b\"))"
+        }
+      ],
+      "translation": "The organization collaboration content is corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.22d16e7c98ba",
+      "source": "解除关联后仍有共享权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 129,
+          "context": "new Error(i18n(\"state.orgsynccore.22d16e7c98ba\"))"
+        }
+      ],
+      "translation": "Shared permissions remain after detaching",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.26e81e5f3e41",
+      "source": "GitLab 仓库 #{id} 必须是本组织群组内的私有仓库，请先迁入该群组并设为私有",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "id",
+          "expression": "String(id)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 97,
+          "context": "new Error(i18n(\"state.orgsynccore.26e81e5f3e41\", { id: String(id) }))"
+        }
+      ],
+      "translation": "GitLab repository #{id} must be a private repository inside this organization's group. Move it into the group and set it to private first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.34320f02cd8e",
+      "source": "资料库「{name}」的所有者有固有权限，请先转移云盘所有权，再重试成员变更",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(lib.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 118,
+          "context": "new Error(i18n(\"state.orgsynccore.34320f02cd8e\", { name: String(lib.name) }))"
+        }
+      ],
+      "translation": "The owner of library \"{name}\" has inherent permissions. Transfer the cloud drive ownership first, then retry the member change.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.35d481d1c9b2",
+      "source": "GitLab 仓库 #{id} 存在组织名单外的直接授权，请先在 GitLab 处理",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "id",
+          "expression": "String(id)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 99,
+          "context": "new Error(i18n(\"state.orgsynccore.35d481d1c9b2\", { id: String(id) }))"
+        }
+      ],
+      "translation": "GitLab repository #{id} has direct grants outside the organization roster. Handle it in GitLab first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.3ecab27b438e",
+      "source": "组织元数据项目不能作为普通仓库关联",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 95,
+          "context": "new Error(i18n(\"state.orgsynccore.3ecab27b438e\"))"
+        }
+      ],
+      "translation": "The organization metadata project cannot be linked as a regular repository",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.4368a8b9ff92",
+      "source": "这不是受支持的 OneTHU 组织协作资料",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 39,
+          "context": "new Error(i18n(\"state.orgsynccore.4368a8b9ff92\"))"
+        }
+      ],
+      "translation": "This is not supported OneTHU organization collaboration content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.5c00ac7e88bb",
+      "source": "资料库所有者拥有固有写权限，需要先转移所有权才能降为只读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 181,
+          "context": "new Error(i18n(\"state.orgsynccore.5c00ac7e88bb\"))"
+        }
+      ],
+      "translation": "The library owner has inherent write permission; ownership must be transferred before downgrading to read-only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.716bc0e42213",
+      "source": "组织配置损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 40,
+          "context": "new Error(i18n(\"state.orgsynccore.716bc0e42213\"))"
+        }
+      ],
+      "translation": "The organization configuration is corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.75a0431ba7fe",
+      "source": "GitLab 仓库 #{id} 存在其他群组授权，请先在 GitLab 移除",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "id",
+          "expression": "String(id)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 98,
+          "context": "new Error(i18n(\"state.orgsynccore.75a0431ba7fe\", { id: String(id) }))"
+        }
+      ],
+      "translation": "GitLab repository #{id} has grants from other groups. Remove them in GitLab first.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.79361f44af76",
+      "source": "{value} #{id} 的权限回读不符；可能仍有上级组织或其他独立授权，需要负责人处理",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(kind === \"groups\" ? \"GitLab 组织\" : \"GitLab 仓库\")"
+        },
+        {
+          "name": "id",
+          "expression": "String(id)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 85,
+          "context": "new Error(i18n(\"state.orgsynccore.79361f44af76\", { value: String(kind === \"groups\" ? i18n(\"state.orgsynccore.gitlabGroup\") : i18n(\"state.orgsynccore.gitlabProject\")), id: String(id) }))"
+        }
+      ],
+      "translation": "Permission readback mismatch for {value} #{id}; a parent organization or other independent grant may remain. An Owner needs to handle it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.8e43c3815f47",
+      "source": "请让另一位负责人执行你的移除或降级，以便在权限变更后完成回读与记录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 115,
+          "context": "new Error(i18n(\"state.orgsynccore.8e43c3815f47\"))"
+        }
+      ],
+      "translation": "Have another Owner perform your removal or downgrade so that readback and recording can complete after the permission change",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.9715a0f9152f",
+      "source": "组织资料格式或大小不受支持",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 36,
+          "context": "new Error(i18n(\"state.orgsynccore.9715a0f9152f\"))"
+        }
+      ],
+      "translation": "The organization content format or size is not supported",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.9eb8904e9896",
+      "source": "撤权后仍能查到共享权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 149,
+          "context": "new Error(i18n(\"state.orgsynccore.9eb8904e9896\"))"
+        }
+      ],
+      "translation": "Shared permissions are still found after revocation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.a6f0f050b88e",
+      "source": "授权回读不符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 185,
+          "context": "new Error(i18n(\"state.orgsynccore.a6f0f050b88e\"))"
+        }
+      ],
+      "translation": "Grant readback mismatch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.b150bcce1fc7",
+      "source": "缺少项目标识",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 48,
+          "context": "new Error(i18n(\"state.orgsynccore.b150bcce1fc7\"))"
+        }
+      ],
+      "translation": "Missing project identifier",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.conflict",
+      "source": "其他成员刚刚更新了这份资料。你的输入已保留，请刷新后比较并重新保存。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 32,
+          "context": "super(i18n(\"state.orgsynccore.conflict\"))"
+        }
+      ],
+      "translation": "Another member just updated this content. Your input has been kept — refresh, compare, and save again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.d2a3a9ac759a",
+      "source": "此邮箱是资料库所有者，必须先在云盘转移资料库所有权才能撤销访问",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 147,
+          "context": "new Error(i18n(\"state.orgsynccore.d2a3a9ac759a\"))"
+        }
+      ],
+      "translation": "This email is the library owner. The library ownership must be transferred on the cloud drive before access can be revoked.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.detachLibrary",
+      "source": "解除资料库 {name} / {email}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "email"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 126,
+          "context": "attempt(i18n(\"state.orgsynccore.detachLibrary\", {name:lib.name,email:binding.email}), async () => {\n      if ((await api.cloudOwner(lib.repoId)).toLowerCase() === binding.email) return; // intrinsic ownership is not an org grant\n      if ((await api.listCloud(lib.repoId)).some(s=>s.email===binding.email)) await api.removeCloud(lib.repoId,binding.email);\n      if ((await api.listCloud(lib.repoId)).some(s=>s.email===binding.email)) throw new Error(i18n(\"state.orgsynccore.22d16e7c98ba\"));\n    })"
+        }
+      ],
+      "translation": "Detach library {name} / {email}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.detachProject",
+      "source": "解除仓库 {name} / {username}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        },
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 133,
+          "context": "attempt(i18n(\"state.orgsynccore.detachProject\", {name:repo.name,username:binding.username}), async () => {\n      const direct = (await api.members(\"projects\",repo.id,false)).find(m=>m.id===binding.userId);\n      if (direct) await api.removeMember(\"projects\",repo.id,binding.userId);\n      if ((await api.members(\"projects\",repo.id,false)).some(m=>m.id===binding.userId)) throw new Error(i18n(\"state.orgsynccore.f4efde7b447c\"));\n      // Group-inherited access belongs to the group itself, not this resource link.\n    })"
+        }
+      ],
+      "translation": "Detach repository {name} / {username}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.dffb811b78bd",
+      "source": "当前 GitLab 账号不是组织负责人，不能修改成员和共享权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 109,
+          "context": "new Error(i18n(\"state.orgsynccore.dffb811b78bd\"))"
+        }
+      ],
+      "translation": "The current GitLab account is not an organization Owner and cannot modify members or sharing permissions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.f4efde7b447c",
+      "source": "直接授权仍未撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 136,
+          "context": "new Error(i18n(\"state.orgsynccore.f4efde7b447c\"))"
+        }
+      ],
+      "translation": "The direct grant has not been revoked yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.gitlabGroup",
+      "source": "GitLab 组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 85,
+          "context": "kind === \"groups\" ? i18n(\"state.orgsynccore.gitlabGroup\") : i18n(\"state.orgsynccore.gitlabProject\")"
+        }
+      ],
+      "translation": "GitLab organization",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.gitlabProject",
+      "source": "GitLab 仓库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 85,
+          "context": "kind === \"groups\" ? i18n(\"state.orgsynccore.gitlabGroup\") : i18n(\"state.orgsynccore.gitlabProject\")"
+        }
+      ],
+      "translation": "GitLab repository",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.grantCloud",
+      "source": "云盘 {name} 授权 {email}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "email"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 179,
+          "context": "attempt(i18n(\"state.orgsynccore.grantCloud\", {name:lib.name,email:binding.email}), async () => {\n        if ((await api.cloudOwner(lib.repoId)).toLowerCase() === binding.email) {\n          if (permission !== \"rw\") throw new Error(i18n(\"state.orgsynccore.5c00ac7e88bb\"));\n          return;\n        }\n        if ((await api.listCloud(lib.repoId)).find(s => s.email === binding.email)?.permission !== permission) await api.setCloud(lib.repoId, binding.email, permission);\n        if ((await api.listCloud(lib.repoId)).find(s => s.email === binding.email)?.permission !== permission) throw new Error(i18n(\"state.orgsynccore.a6f0f050b88e\"));\n      })"
+        }
+      ],
+      "translation": "Grant cloud drive {name} to {email}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.libraryMissingEmail",
+      "source": "云盘 {name}：{username} 尚未绑定云盘邮箱",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        },
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 177,
+          "context": "errors.push(i18n(\"state.orgsynccore.libraryMissingEmail\", {name:lib.name,username:binding.username}))"
+        }
+      ],
+      "translation": "Cloud drive {name}: {username} has no Cloud Drive email bound yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.missingEmail",
+      "source": "{username} 尚未绑定云盘邮箱",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "username"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 172,
+          "context": "errors.push(i18n(\"state.orgsynccore.missingEmail\", {username:member.username}))"
+        }
+      ],
+      "translation": "{username} has no Cloud Drive email bound yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.reduceCloud",
+      "source": "云盘 {name} 降权 {email}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "email"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 164,
+          "context": "attempt(i18n(\"state.orgsynccore.reduceCloud\", {name:lib.name,email:binding.email}), async () => {\n      const existing = (await api.listCloud(lib.repoId)).find(s=>s.email===binding.email);\n      if (existing && existing.permission !== \"r\") {\n        await api.setCloud(lib.repoId,binding.email,\"r\");\n        if ((await api.listCloud(lib.repoId)).find(s=>s.email===binding.email)?.permission !== \"r\") throw new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"));\n      }\n    })"
+        }
+      ],
+      "translation": "Downgrade cloud drive {name} for {email}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.removeMember",
+      "source": "移除组织成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 120,
+          "context": "attempt(i18n(\"state.orgsynccore.removeMember\"), () => setGitPermission(api, \"groups\", ref.groupId, intent.removeUserId!, null))"
+        }
+      ],
+      "translation": "Remove organization member",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.revokeCloud",
+      "source": "云盘 {name} 撤销 {email}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "email"
+        },
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 146,
+          "context": "attempt(i18n(\"state.orgsynccore.revokeCloud\", {name:lib.name,email:binding.email}), async () => {\n        if ((await api.cloudOwner(lib.repoId)).toLowerCase() === binding.email) throw new Error(i18n(\"state.orgsynccore.d2a3a9ac759a\"));\n        if ((await api.listCloud(lib.repoId)).some(s => s.email === binding.email)) await api.removeCloud(lib.repoId, binding.email);\n        if ((await api.listCloud(lib.repoId)).some(s => s.email === binding.email)) throw new Error(i18n(\"state.orgsynccore.9eb8904e9896\"));\n      })"
+        }
+      ],
+      "translation": "Revoke cloud drive {name} for {email}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.revokeProject",
+      "source": "GitLab {name} 撤权 / 用户 {userId}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        },
+        {
+          "name": "userId"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 157,
+          "context": "attempt(i18n(\"state.orgsynccore.revokeProject\", {name:repo.name,userId}), async () => {\n      const actual = (await api.members(\"projects\",repo.id,true)).find(m=>m.id===userId);\n      if (actual && (!member || actual.access_level > Math.min(member.access_level,40))) await setGitPermission(api,\"projects\",repo.id,userId,member ? member.access_level : null);\n    })"
+        }
+      ],
+      "translation": "Revoke GitLab {name} / user {userId}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.updateMember",
+      "source": "更新组织成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 121,
+          "context": "attempt(i18n(\"state.orgsynccore.updateMember\"), () => setGitPermission(api, \"groups\", ref.groupId, intent.target!.userId, roleLevel(intent.target!.role)))"
+        }
+      ],
+      "translation": "Update organization member",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.verifyProject",
+      "source": "GitLab {name} / 用户 {userId}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        },
+        {
+          "name": "userId"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 191,
+          "context": "attempt(i18n(\"state.orgsynccore.verifyProject\", {name:repo.name,userId}), () => setGitPermission(api, \"projects\", repo.id, userId, member ? member.access_level : null))"
+        }
+      ],
+      "translation": "GitLab {name} / user {userId}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.quickaccess.15d208d1b4c9",
+      "source": "生活",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 39,
+          "context": "life:i18n(\"state.quickaccess.15d208d1b4c9\")"
+        }
+      ],
+      "translation": "Life",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.quickaccess.2118cbc10988",
+      "source": "学习",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 39,
+          "context": "learn:i18n(\"state.quickaccess.2118cbc10988\")"
+        }
+      ],
+      "translation": "Study",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.quickaccess.2e3250329028",
+      "source": "课表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 39,
+          "context": "schedule:i18n(\"state.quickaccess.2e3250329028\")"
+        }
+      ],
+      "translation": "Timetable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.quickaccess.352cdc807892",
+      "source": "预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 39,
+          "context": "reserve:i18n(\"state.quickaccess.352cdc807892\")"
+        },
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 40,
+          "context": "[\"reserve\",i18n(\"state.quickaccess.352cdc807892\")]"
+        }
+      ],
+      "translation": "Reservations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.quickaccess.e7028601e7da",
+      "source": "信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 39,
+          "context": "info:i18n(\"state.quickaccess.e7028601e7da\")"
+        },
+        {
+          "file": "apps/desktop/src/state/quickAccess.ts",
+          "line": 40,
+          "context": "[\"info\",i18n(\"state.quickaccess.e7028601e7da\")]"
+        }
+      ],
+      "translation": "Info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.schedulewindow.0b97c851e4a7",
+      "source": "全天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/scheduleWindow.ts",
+          "line": 25,
+          "context": "return i18n(\"state.schedulewindow.0b97c851e4a7\");"
+        }
+      ],
+      "translation": "All day",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.0507dadfda6a",
+      "source": "清华云盘未连接：先到云盘页粘贴 token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 311,
+          "context": "new Error(i18n(\"state.seafile.0507dadfda6a\"))"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive is not connected: paste a token on the Cloud Drive page first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.15e1ef41e215",
+      "source": "清华云盘未连接：先到云盘页登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 236,
+          "context": "new Error(i18n(\"state.seafile.15e1ef41e215\"))"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive is not connected: sign in on the Cloud Drive page first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.2a15ea48f5c7",
+      "source": "请切换到创建这条分享的云盘账号后再修改或撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 410,
+          "context": "new Error(i18n(\"state.seafile.2a15ea48f5c7\"))"
+        }
+      ],
+      "translation": "Switch to the cloud drive account that created this share before modifying or revoking it",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.96e4aa1ffce5",
+      "source": "云盘未配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 175,
+          "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 268,
+          "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 275,
+          "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 282,
+          "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 289,
+          "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 335,
+          "context": "new Error(i18n(\"state.seafile.96e4aa1ffce5\"))"
+        }
+      ],
+      "translation": "Cloud drive not configured",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.a6e7bedde538",
+      "source": "清华云盘未连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 301,
+          "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 322,
+          "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 329,
+          "context": "new Error(i18n(\"state.seafile.a6e7bedde538\"))"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive is not connected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.accountChanged",
+      "source": "云盘账号已变化，请重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/cloudFolder.ts",
+          "line": 17,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/memory/sync.ts",
+          "line": 42,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 88,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 146,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 231,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/friendInbox.ts",
+          "line": 238,
+          "context": "new Error(t(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 40,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 40,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 47,
+          "context": "new Error(i18n(\"state.seafile.accountChanged\"))"
+        }
+      ],
+      "translation": "The cloud drive account has changed. Please try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.deleteOwnerOnly",
+      "source": "只有资料库所有者可以删除整个资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 180,
+          "context": "new Error(i18n(\"state.seafile.deleteOwnerOnly\"))"
+        }
+      ],
+      "translation": "Only the library owner can delete the entire library.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.duplicatePersonalLibraries",
+      "source": "发现多个同名且有内容的个人资料库，无法安全选择。请先在云盘确认要使用的资料库。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 44,
+          "context": "new Error(i18n(\"state.seafile.duplicatePersonalLibraries\"))"
+        }
+      ],
+      "translation": "Several personal libraries have the same name and contain data. Review them in cloud storage before choosing which one to use.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.f206fb3a20d8",
+      "source": "已下载到：{local}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "local",
+          "expression": "String(local)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 270,
+          "context": "showToast(i18nMsg(\"state.seafile.f206fb3a20d8\", { local: String(local) }))"
+        }
+      ],
+      "translation": "Downloaded to: {local}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.f423b2f16ab1",
+      "source": "已上传到云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 278,
+          "context": "showToast(i18nMsg(\"state.seafile.f423b2f16ab1\"))"
+        }
+      ],
+      "translation": "Uploaded to the cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.f6d2148271ab",
+      "source": "请先连接清华云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/seafile.ts",
+          "line": 386,
+          "context": "new Error(i18n(\"state.seafile.f6d2148271ab\"))"
+        }
+      ],
+      "translation": "Connect Tsinghua Cloud Drive first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.seafile.libraryCreationUnconfirmed",
+      "source": "上次建库结果尚未确认，已暂停自动创建，避免重复。请刷新云盘确认，或手动创建所需资料库后重试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 70,
+          "context": "new Error(i18n(\"state.seafile.libraryCreationUnconfirmed\"))"
+        },
+        {
+          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
+          "line": 81,
+          "context": "new Error(i18n(\"state.seafile.libraryCreationUnconfirmed\"))"
+        }
+      ],
+      "translation": "The previous library creation is still unconfirmed. Automatic creation is paused to prevent duplicates. Refresh cloud storage to check, or create the required library manually, then retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    }
+  ]
+}

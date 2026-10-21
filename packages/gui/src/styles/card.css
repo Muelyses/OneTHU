@@ -1,0 +1,171 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 面（Surface / Card / Panel）
+ *
+ * 全站所有"块"只有这一个模型：颜色由 level 决定面阶，浮起由 elevation 决定，材质由皮肤决定。
+ * 云盘的文件格、网络学堂的作业卡、设置分组——都是 Card 的不同 level/pad，不是不同 CSS。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.og-surface {
+  --og-c-surface-fill: var(--og-card-fill);
+  --og-c-surface-line: var(--og-line-1);
+  --og-c-surface-elev: var(--og-elev-1);
+  --og-c-surface-radius: var(--og-radius-card);
+  --og-c-surface-pad: var(--og-space-0);
+  --og-c-surface-tint: var(--og-surface-tint);
+  --og-c-surface-blur: var(--og-surface-blur);
+
+  position: relative;
+  padding: var(--og-c-surface-pad);
+  background-color: var(--og-c-surface-fill);
+  background-image: var(--og-c-surface-tint);
+  border: 1px solid var(--og-c-surface-line);
+  border-radius: var(--og-c-surface-radius);
+  box-shadow: var(--og-c-surface-elev);
+  backdrop-filter: var(--og-c-surface-blur);
+  -webkit-backdrop-filter: var(--og-c-surface-blur);
+}
+
+/* 面阶：0 = 画布上的正面，1/2 = 卡内嵌套，3 = 井/次级块 */
+.og-surface--l0 { --og-c-surface-fill: var(--og-card-fill); }
+.og-surface--l1 { --og-c-surface-fill: var(--og-surface-2); --og-c-surface-line: transparent; }
+.og-surface--l2 { --og-c-surface-fill: var(--og-surface-3); --og-c-surface-line: transparent; }
+.og-surface--l3 { --og-c-surface-fill: var(--og-surface-4); --og-c-surface-line: transparent; }
+
+/* 井：向下凹的块（代码块、输入区、空态底座） */
+.og-surface--sunken {
+  --og-c-surface-fill: var(--og-surface-3);
+  --og-c-surface-line: transparent;
+}
+
+/* 浮层：菜单/弹窗专用面（更实、更高） */
+.og-surface--overlay {
+  --og-c-surface-fill: var(--og-fill-overlay);
+  --og-c-surface-line: var(--og-line-1);
+  --og-c-surface-tint: var(--og-overlay-tint);
+  --og-c-surface-blur: var(--og-overlay-blur);
+  --og-c-surface-elev: var(--og-elev-menu);
+}
+
+.og-surface--plain {
+  --og-c-surface-fill: transparent;
+  --og-c-surface-line: transparent;
+  --og-c-surface-blur: none;
+  --og-c-surface-tint: none;
+}
+
+.og-surface--e1 { --og-c-surface-elev: var(--og-elev-1); }
+.og-surface--e2 { --og-c-surface-elev: var(--og-elev-2); }
+.og-surface--e3 { --og-c-surface-elev: var(--og-elev-3); }
+
+.og-surface--r-none { --og-c-surface-radius: 0px; }
+.og-surface--r-sm { --og-c-surface-radius: var(--og-radius-sm); }
+.og-surface--r-md { --og-c-surface-radius: var(--og-radius-md); }
+.og-surface--r-lg { --og-c-surface-radius: var(--og-radius-card); }
+.og-surface--r-xl { --og-c-surface-radius: var(--og-radius-xl); }
+.og-surface--r-2xl { --og-c-surface-radius: var(--og-radius-2xl); }
+
+.og-surface--p-none { --og-c-surface-pad: var(--og-space-0); }
+.og-surface--p-sm { --og-c-surface-pad: var(--og-space-3); }
+.og-surface--p-md { --og-c-surface-pad: var(--og-card-pad); }
+.og-surface--p-lg { --og-c-surface-pad: var(--og-space-5); }
+.og-surface--p-xl { --og-c-surface-pad: var(--og-space-6); }
+
+/* 吸顶工具条：位置 sticky，层高走令牌（页面不许自己写 position/z-index） */
+.og-surface.is-sticky {
+  position: sticky;
+  top: var(--og-space-3);
+  z-index: var(--og-z-sticky);
+}
+
+/* ── 可点面：整块可点（云盘文件格、入口卡） ── */
+.og-surface--interactive {
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--og-dur-1) var(--og-ease-standard),
+    border-color var(--og-dur-1) var(--og-ease-standard),
+    box-shadow var(--og-dur-2) var(--og-ease-standard),
+    transform var(--og-dur-1) var(--og-ease-standard);
+}
+
+@media (hover: hover) {
+  .og-surface--interactive:hover {
+    --og-c-surface-line: var(--og-line-2);
+    box-shadow: var(--og-elev-1);
+    --og-c-surface-elev: var(--og-elev-1);
+  }
+}
+
+.og-surface--interactive:active {
+  background-color: var(--og-press);
+}
+
+.og-surface.is-selected {
+  --og-c-surface-fill: var(--og-selected);
+  --og-c-surface-line: var(--og-accent-soft-line);
+}
+
+.og-surface.is-disabled {
+  opacity: var(--og-disabled-opacity);
+  pointer-events: none;
+}
+
+/* ── 卡片：带内边距与头部/底部槽的面 ── */
+.og-card { padding: 0; }
+
+.og-card--flush {
+  --og-c-surface-pad: var(--og-space-0);
+  overflow: hidden;
+}
+
+.og-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--og-space-3);
+  padding: var(--og-card-pad);
+  padding-bottom: 0;
+}
+
+.og-card-body {
+  padding: var(--og-card-pad);
+}
+
+.og-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--og-space-2);
+  padding: var(--og-card-pad);
+  padding-top: 0;
+}
+
+.og-card-title {
+  font-size: var(--og-text-subtitle);
+  line-height: var(--og-text-subtitle-lh);
+  font-weight: var(--og-weight-semibold);
+  color: var(--og-content-1);
+  min-width: 0;
+}
+
+.og-card-sub {
+  font-size: var(--og-text-label);
+  color: var(--og-content-3);
+}
+
+/* 网格化的卡片族（文件浏览器、插件市场、服务目录共用） */
+.og-grid {
+  --og-grid-min: var(--og-grid-min-md);
+  display: grid;
+  gap: var(--og-space-3);
+  grid-template-columns: repeat(auto-fill, minmax(var(--og-grid-min), 1fr));
+}
+
+.og-grid--sm { --og-grid-min: var(--og-grid-min-sm); }
+.og-grid--lg { --og-grid-min: var(--og-grid-min-lg); }
+
+/* 手机上永远单列：密度/平台由管线给，组件不写断点 */
+[data-og-platform="mobile"] .og-grid {
+  grid-template-columns: minmax(0, 1fr);
+}

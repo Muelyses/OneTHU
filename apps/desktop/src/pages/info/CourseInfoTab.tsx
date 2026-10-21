@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn, Text, Tag } from "@onethu/gui";
 /**
  * 课程信息 —— courseX 课程信息共享计划（tsinghua.app / 星期四）查询页。
  * 众包共享库：learnX 用户把自己网络学堂课程的时间地点共享出来，这里按
@@ -36,6 +38,8 @@ interface DetailState {
 }
 
 export function CourseInfoTab() {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   const [input, setInput] = useState("");
@@ -96,7 +100,7 @@ export function CourseInfoTab() {
     <>
       <SectionHead
         title="courseX"
-        aside="课程共享计划 · 众包数据，覆盖不全时请多包涵"
+        aside={i18n("pages.info.courseinfotab.9e9f5c3022d6")}
       />
 
       <div className="coursex-bar" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "nowrap" }}>
@@ -108,7 +112,7 @@ export function CourseInfoTab() {
               // 已有搜索词时切学期立即重查（与 courseX 网页同款交互）
               if (input.trim()) void runSearch(input, v);
             }}
-            placeholder="选择学期…"
+            placeholder={i18n("pages.info.courseinfotab.33c758d831de")}
             options={semesters.map((s) => ({ value: s.id, label: s.label }))}
           />
         ) : null}
@@ -120,18 +124,11 @@ export function CourseInfoTab() {
             onKeyDown={(e) => {
               if (e.key === "Enter") void runSearch(input);
             }}
-            placeholder="搜索课程名 / 教师姓名（如：微积分 / 冯铃）"
-            aria-label="搜索课程"
+            placeholder={i18n("pages.info.courseinfotab.3e3c1858822c")}
+            aria-label={i18n("pages.info.courseinfotab.927e4b9750fb")}
           />
         </div>
-        <button
-          className="btn"
-          style={{ alignSelf: "stretch" }}
-          disabled={state === "loading"}
-          onClick={() => void runSearch(input)}
-        >
-          搜索
-        </button>
+        <Btn variant="outline" disabled={state === "loading"} onClick={() => void runSearch(input)}>{i18n("pages.info.courseinfotab.44ce7ae909bb")}</Btn>
       </div>
 
       {state === "error" ? (
@@ -142,17 +139,17 @@ export function CourseInfoTab() {
         <SkeletonRows rows={6} />
       ) : state === "ready" ? (
         (courses?.length ?? 0) === 0 ? (
-          <TabEmpty text="没找到匹配课程：换个关键词，或该课还没被共享。" />
+          <TabEmpty text={i18n("pages.info.courseinfotab.bb21f7ddad12")} />
         ) : (
           <>
-            <SectionHead title="搜索结果" aside={`共 ${courses!.length} 条 · 点行查看时间地点`} />
+            <SectionHead title={i18n("pages.info.courseinfotab.88d72ece7cf7")} aside={i18n("pages.info.courseinfotab.2cb850be9a59", { length: String(courses!.length) })} />
             <Card style={{ padding: 0, overflow: "auto" }}>
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>课程</th>
-                    <th>教师</th>
-                    <th>学期</th>
+                    <th>{i18n("pages.info.courseinfotab.60db1afb4022")}</th>
+                    <th>{i18n("pages.info.courseinfotab.a6654120cbec")}</th>
+                    <th>{i18n("pages.info.courseinfotab.79a4ef019e9c")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -175,7 +172,7 @@ export function CourseInfoTab() {
                         <tr>
                           <td colSpan={3} style={{ background: "rgba(0,0,0,0.02)" }}>
                             {detail.loading ? (
-                              <span style={{ opacity: 0.6 }}>正在加载时间地点…</span>
+                              <span style={{ opacity: 0.6 }}>{i18n("pages.info.courseinfotab.2ac0f59489ba")}</span>
                             ) : detail.error ? (
                               <span style={{ color: "var(--red)" }}>{detail.error}</span>
                             ) : detail.data ? (
@@ -200,18 +197,16 @@ export function CourseInfoTab() {
                                 {detail.data.timeLocation.length > 0 ? (
                                   detail.data.timeLocation.map((t, ti) => (
                                     <div key={ti} style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
-                                      <span className="chip chip-green">时间地点</span>
+                                      <span className="chip chip-green">{i18n("pages.info.courseinfotab.643500a3864b")}</span>
                                       <span>{t}</span>
                                     </div>
                                   ))
                                 ) : (
-                                  <span style={{ opacity: 0.6 }}>
-                                    共享库暂无该课的时间地点——数据覆盖取决于 learnX 等客户端用户的共享参与。
-                                  </span>
+                                  <span style={{ opacity: 0.6 }}>{i18n("pages.info.courseinfotab.3304ea97ead6")}</span>
                                 )}
                               </div>
                             ) : (
-                              <span style={{ opacity: 0.6 }}>共享库中无此课程详情。</span>
+                              <span style={{ opacity: 0.6 }}>{i18n("pages.info.courseinfotab.ce121d2ad0d2")}</span>
                             )}
                           </td>
                         </tr>

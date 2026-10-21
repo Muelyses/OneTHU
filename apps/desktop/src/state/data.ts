@@ -1,3 +1,4 @@
+import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 /** 校园数据钩子：全部取自 @onethu/core（登录后按学期聚合课程 / 作业 / 通知 / 文件 / 课表 / 用户）。 */
 import { CONFIRM_DROP_COURSE, confirmOk, confirmDanger } from "../lib/confirm.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -42,7 +43,7 @@ import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, 
 import type { XkPlanItem } from "@onethu/core";
 import { useApp } from "./context.js";
 import { cacheGet, cacheSet, cacheFetch, cacheKeys,
-  purgeXkCaches } from "./cache.js";
+  purgeXkCaches, cacheSeedPreview, isPreviewMode } from "./cache.js";
 import { observeCardBalance } from "./cardWarn.js";
 
 /** info/zhjwxk 页内错误落盘（/tmp/onethu-debug.log），解析不匹配时可一轮定位 */
@@ -146,7 +147,7 @@ export function useCampusData() {
       const fresh = await cacheFetch(CAMPUS_KEY, loadReal);
       setData(fresh);
       setState("ready");
-      notifyCampusData();
+      notifyCampusData(fresh);
     } catch (err) {
       // 会话真死了（AuthRequiredError）：先免密重漫游一次，仍失败才送回登录页
       if (err instanceof Error && err.name === "AuthRequiredError") {
@@ -197,6 +198,10 @@ export interface LearnBundle {
 
 /** 用户选择的学期（null = 跟随当前学期）；模块级共享，切换后清缓存 */
 let selectedSemester: string | null = null;
+let learnGeneration = 0;
+function invalidateLearnSelection(): void {
+  learnGeneration++;
+}
 
 export function getSelectedSemester(): string | null {
   return selectedSemester;
@@ -222,6 +227,7 @@ export function setSelectedSemester(id: string | null): void {
   if (selectedSemester === id) return;
   selectedSemester = id;
   cache = null;
+  invalidateLearnSelection();
 }
 
 /** 模块级缓存：learn 子页间跳转不重复拉全量数据（切学期/刷新时失效）。
@@ -233,7 +239,10 @@ const CACHE_TTL = 5 * 60 * 1000;
  *  （TTL 内 reload 会直接命中缓存，状态永远不会刷新——mobile 提交后
  *  dispatch(getAssignmentsForCourse) 的对应物）。 */
 export function invalidateLearnCache(): void {
-  cache = null;
+  // Keep the last complete snapshot while revalidating; failed requests must
+  // not erase known deadlines or make system-calendar consumers infer deletion.
+  if (cache) cache.ts = 0;
+  invalidateLearnSelection();
 }
 
 /** 会话失效后的免密重建去重：lib 单管线里 learn 经 wengine 透明 SSO，无独立
@@ -283,6 +292,27 @@ async function loadLearnBundle(semesterId: string): Promise<LearnBundle> {
  */
 /* ---------- 模块级快照（灵动岛 / 日历同步等非 React 场景；只读缓存，不触发网络） ---------- */
 
+/* ---------- 变更广播：只在**内容真变了**时才通知 ---------- */
+
+/** 内容签名（djb2 变体；只用来判「变了没有」，非安全用途） */
+function sig32(s: string): string {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
+/**
+ * 上次广播过的内容签名（learn / campus / calendar 各一份）。
+ *
+ * 为什么必须去重：跟随方（系统日历自动同步、云日程自动上云、通知重算）把这里的广播
+ * 当作"数据变了"的事件用，而装载其实分两种——真拉到新内容，和每 3 / 30 分钟一次的
+ * 静默重校验（内容一模一样）。不去重的话，每次重校验都要重建一遍系统日历载荷
+ * （真拉整学期课表 4~5 个请求），最后只能靠载荷指纹把写入挡住；现在广播本身就等于
+ * "内容变了"，跟随方可以只认事件。 */
+let lastLearnSig: string | null = null;
+let lastCampusSig: string | null = null;
+let lastCalSig: string | null = null;
+
 const learnListeners = new Set<() => void>();
 export function subscribeLearnData(fn: () => void): () => void {
   learnListeners.add(fn);
@@ -291,6 +321,11 @@ export function subscribeLearnData(fn: () => void): () => void {
   };
 }
 function notifyLearnData(): void {
+  const d = getLearnSnapshot();
+  if (!d) return; // 没有快照 = 没有内容可广播
+  const sig = sig32(JSON.stringify(d));
+  if (sig === lastLearnSig) return;
+  lastLearnSig = sig;
   learnListeners.forEach((fn) => fn());
 }
 
@@ -307,7 +342,10 @@ export function subscribeCampusData(fn: () => void): () => void {
     campusListeners.delete(fn);
   };
 }
-function notifyCampusData(): void {
+function notifyCampusData(d: CampusData): void {
+  const sig = sig32(JSON.stringify(d));
+  if (sig === lastCampusSig) return;
+  lastCampusSig = sig;
   campusListeners.forEach((fn) => fn());
 }
 const calendarListeners = new Set<() => void>();
@@ -318,6 +356,11 @@ export function subscribeCalendarData(fn: () => void): () => void {
   };
 }
 function notifyCalendarData(): void {
+  const d = getCachedCalendar();
+  if (!d) return;
+  const sig = sig32(JSON.stringify(d));
+  if (sig === lastCalSig) return;
+  lastCalSig = sig;
   calendarListeners.forEach((fn) => fn());
 }
 
@@ -339,10 +382,27 @@ export function getCampusSnapshot(): CampusData | null {
  * 失败完全静默（会话过期先免密重漫游一次），用户打开页面照常走 loading 流程。 */
 
 let refreshInflight: Promise<LearnBundle | null> | null = null;
+let refreshGeneration = -1;
 
-async function fetchLearnBundleFresh(): Promise<LearnBundle> {
-  const semester = selectedSemester ? { id: selectedSemester } : await learn.getCurrentSemester();
+async function fetchLearnBundleFresh(key: string): Promise<LearnBundle> {
+  const semester = key !== "current" ? { id: key } : await learn.getCurrentSemester();
   return loadLearnBundle(semester.id);
+}
+
+/* OneFlow 事件源：只在**数据真的变化**时广播，不能每次静默刷新都发
+   （否则「作业截止 / 通知」流程每 30 分钟无条件跑一遍）。
+   首次加载只建基线：启动本身由 app-start 事件负责。 */
+let lastLearnFlowSig: { hw: string; notice: string } | null = null;
+function emitLearnFlowEvents(d: LearnBundle): void {
+  const hw = d.homework
+    .map((h) => `${h.id}:${h.deadline}:${h.submitted ? 1 : 0}:${h.graded ? 1 : 0}:${String(h.grade ?? "")}`)
+    .join("|");
+  const notice = d.notifications.map((n) => `${n.id}:${n.hasRead ? 1 : 0}`).join("|");
+  const prev = lastLearnFlowSig;
+  lastLearnFlowSig = { hw, notice };
+  if (!prev) return;
+  if (prev.hw !== hw) window.dispatchEvent(new Event("onethu.hw.deadline"));
+  if (prev.notice !== notice) window.dispatchEvent(new Event("onethu.notice.update"));
 }
 
 function adoptLearnBundle(key: string, d: LearnBundle): void {
@@ -354,33 +414,42 @@ function adoptLearnBundle(key: string, d: LearnBundle): void {
     data: d,
   };
   notifyLearnData();
+  emitLearnFlowEvents(d);
 }
 
 /** 后台静默刷新当前学期 learn 数据（失败返回 null，绝不打扰用户） */
 export function refreshLearnDataSilently(): Promise<LearnBundle | null> {
-  if (refreshInflight) return refreshInflight;
-  refreshInflight = (async () => {
-    const key = selectedSemester ?? "current";
+  const generation = learnGeneration;
+  if (refreshInflight && refreshGeneration === generation) return refreshInflight;
+  const key = selectedSemester ?? "current";
+  const active = (): boolean => generation === learnGeneration && key === (selectedSemester ?? "current");
+  const pending: Promise<LearnBundle | null> = Promise.resolve().then(async () => {
     try {
-      adoptLearnBundle(key, await fetchLearnBundleFresh());
-      return cache?.data ?? null;
+      const next = await fetchLearnBundleFresh(key);
+      if (!active()) return null;
+      adoptLearnBundle(key, next);
+      return next;
     } catch (err) {
+      if (!active()) return null;
       if (err instanceof Error && err.name === "AuthRequiredError") {
         try {
           if (await relearnRoamOnce()) {
-            adoptLearnBundle(key, await fetchLearnBundleFresh());
-            return cache?.data ?? null;
+            if (!active()) return null;
+            const next = await fetchLearnBundleFresh(key);
+            if (!active()) return null;
+            adoptLearnBundle(key, next);
+            return next;
           }
-        } catch {
-          /* 静默 */
-        }
+        } catch { /* Keep the last complete snapshot. */ }
       }
       return null;
     } finally {
-      refreshInflight = null;
+      if (refreshInflight === pending) refreshInflight = null;
     }
-  })();
-  return refreshInflight;
+  });
+  refreshGeneration = generation;
+  refreshInflight = pending;
+  return pending;
 }
 
 let autoRefreshTimer: ReturnType<typeof setInterval> | null = null;
@@ -407,17 +476,22 @@ export function useLearnData() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    const at = learnGeneration;
+    const key = selectedSemester ?? "current";
+    const active = (): boolean => at === learnGeneration && key === (selectedSemester ?? "current");
     setState("loading");
     setError(null);
+    if (cache?.key !== key) setData(null);
     try {
-      const key = selectedSemester ?? "current";
       if (!cache || cache.key !== key || Date.now() - cache.ts > CACHE_TTL) {
+        const previous = cache?.key === key ? cache : null;
         const entry: NonNullable<typeof cache> = {
           key,
           ts: Date.now(),
+          data: previous?.data,
           promise: (async () => {
-            const semester = selectedSemester
-              ? { id: selectedSemester }
+            const semester = key !== "current"
+              ? { id: key }
               : await learn.getCurrentSemester();
             return loadLearnBundle(semester.id);
           })(),
@@ -425,6 +499,7 @@ export function useLearnData() {
         cache = entry;
         entry.promise.then(
           (d) => {
+            if (!active() || cache !== entry) return;
             entry.data = d;
             // 空学期包不配长缓存：会话半死时 loadCourseBySemesterId 可能吐一次
             // 空 resultList（HTTP 200 + 可解析 JSON，不抛错），把"0 门课程"毒进
@@ -432,20 +507,27 @@ export function useLearnData() {
             // 下次挂载 learn 必重校验（真实空学期也只是多一次轻量重拉）。
             if (d.courses.length === 0) entry.ts = 0;
           },
-          () => { if (cache === entry) cache = null; }, // 失败不驻留缓存，重试才有可能
+          () => {
+            if (cache !== entry || !active()) return;
+            cache = previous?.data ? { ...previous, ts: 0, promise: Promise.resolve(previous.data) } : null;
+          }, // Failed requests are retryable; an existing complete snapshot remains readable.
         );
       }
       const entry = cache; // 局部引用：等待期间 cache 被置空也不受影响
-      setData(await entry.promise);
+      const next = await entry.promise;
+      if (!active() || cache !== entry) return;
+      setData(next);
       setState("ready");
       notifyLearnData();
     } catch (err) {
+      if (!active()) return;
       // 会话失效（AuthRequiredError）：先用持久化 id 主会话重漫游一次（learn 漫游会话
       // 约 8 分钟过期是常态，免密可重建）；仍失败才送回登录页
       if (err instanceof Error && err.name === "AuthRequiredError") {
         logPageError("LEARN-AUTH", err);
-        cache = null;
+        if (cache) cache.ts = 0;
         const reRoamed = await relearnRoamOnce();
+        if (!active()) return;
         if (reRoamed) {
           await load(); // 递归一次：缓存已清，重走数据链；再失败走下一轮分支
           return;
@@ -460,7 +542,8 @@ export function useLearnData() {
   }, [status, backToLogin]);
 
   useEffect(() => {
-    if (status === "ready") void load();
+    /* 预览模式（抽屉里的组件预览）跳过：这条 hook 是「挂载即拉」，不跳过就会现爬数据 */
+    if (status === "ready" && !isPreviewMode()) void load();
   }, [status, load]);
 
   // 后台静默刷新（learnX 式）换缓存时，挂载中的页面实时跟进
@@ -468,7 +551,11 @@ export function useLearnData() {
     () =>
       subscribeLearnData(() => {
         const d = getLearnSnapshot();
-        if (d) setData((prev) => (prev === d ? prev : d));
+        if (d) {
+          setData((prev) => (prev === d ? prev : d));
+          setState("ready");
+          setError(null);
+        }
       }),
     [],
   );
@@ -816,6 +903,7 @@ export interface XkSearchMeta {
  * 写操作串行（token 一次性，v1.3.12 结论），完成后自动刷新已选/候补/余量。
  */
 export function useXkWorkbench(): XkWorkbench {
+  const uiLocale = useUiLocale();
   const { status } = useApp();
   const [semester, setSemester] = useState<string | null>(null);
   const [semesterOverride, setSemesterOverrideState] = useState<string | null>(null);
@@ -1482,7 +1570,7 @@ export function useXkWorkbench(): XkWorkbench {
         setSearchIncomplete(deficit > 0 || tp > okPages || (tp === 0 && okPages === probeTo && lastFull)); // 总数核对优先，页数兜底
         setSearchError(head.pageKind === "unknown" ? `教务返回异常页（首段: ${head.htmlHead}）` : null);
         setSearchState("ready");
-        if (deficit > 0) setToast(`爬取不完整：教务共 ${locked} 门，实得 ${merged.length} 门，缺 ${deficit} 门。建议刷新或待会再来看看`);
+        if (deficit > 0) setToast(i18n("state.data.5a755838cd1f", { locked: String(locked), length: String(merged.length), deficit: String(deficit) }));
       } catch (err) {
         failSearch(err, seq);
       }
@@ -1549,9 +1637,9 @@ export function useXkWorkbench(): XkWorkbench {
       setSearchIncomplete(deficit > 0 || (hadFailure && !empty)); // 仍缺：横幅留着可再点
       setSearchState("ready");
       if (deficit > 0) {
-        setToast(`爬取不完整：教务共 ${expected} 门，实得 ${seen.size} 门，缺 ${deficit} 门。建议刷新或待会再来看看`);
+        setToast(i18n("state.data.4375e66c768d", { expected: String(expected), size: String(seen.size), deficit: String(deficit) }));
       } else {
-        setToast(`已加载全部 ${seen.size} 门`);
+        setToast(i18n("state.data.c6f1a8749849", { size: String(seen.size) }));
       }
     } catch (err) {
       if (seq !== searchSeqRef.current) return;
@@ -1559,7 +1647,7 @@ export function useXkWorkbench(): XkWorkbench {
       if (added.length) {
         setSearchRaw((prev) => [...prev, ...added]);
         setSearchState("ready");
-        setToast(`已加载 ${added.length} 门（中途中断，可再点继续）`);
+        setToast(i18n("state.data.4c24a526b2a0", { length: String(added.length) }));
       } else {
         failSearch(err, seq);
       }
@@ -1658,10 +1746,10 @@ export function useXkWorkbench(): XkWorkbench {
   const addToStage = useCallback((row: XkRow, flag: XkFlag, zy: number) => {
     setStageCart((prev) => {
       if (prev.some((s) => s.code === row.c.code && String(s.seq || "0") === String(row.c.seq || "0"))) {
-        setToast("该课程已在暂存区");
+        setToast(i18n("state.data.867cbd70a5b2"));
         return prev;
       }
-      setToast(`已暂存「${row.name}」`);
+      setToast(i18n("state.data.acb8456494a1", { name: String(row.name) }));
       const next = [...prev, { code: row.c.code, seq: row.c.seq, name: row.name, teacher: row.teacher, time: row.time, note: row.c.note ?? "", credits: row.credits, flag, zy, baseFlag: row.flag }];
       lsSet(LS.stage, next);
       return next;
@@ -1695,12 +1783,12 @@ export function useXkWorkbench(): XkWorkbench {
     lsSet(LS.drafts, next);
   }, []);
   const saveDraft = useCallback((name: string) => {
-    if (!stageCart.length) { setToast("暂存区没有课程"); return; }
+    if (!stageCart.length) { setToast(i18n("state.data.654c0455ea1b")); return; }
     persistDrafts((() => {
       const base = savedDrafts.length >= 5 ? savedDrafts.slice(0, 4) : savedDrafts;
       return [...base, { name, courses: stageCart }];
     })());
-    setToast(`草稿「${name}」已保存`);
+    setToast(i18n("state.data.4a297091d7e8", { name: String(name) }));
   }, [stageCart, savedDrafts, persistDrafts]);
   const deleteDraft = useCallback((idx: number) => {
     persistDrafts(savedDrafts.filter((_, i) => i !== idx));
@@ -1711,7 +1799,7 @@ export function useXkWorkbench(): XkWorkbench {
     persistDrafts(savedDrafts.map((x, i) => (i === idx ? { ...x, courses: x.courses.filter((c) => !(c.code === code && String(c.seq || "0") === String(seq || "0"))) } : x)));
   }, [savedDrafts, persistDrafts]);
   const saveCurrentAsDraft = useCallback((name: string) => {
-    if (!selected.length) { setToast("没有已选课程"); return; }
+    if (!selected.length) { setToast(i18n("state.data.1744c58d26ad")); return; }
     persistDrafts([...savedDrafts, {
       name,
       courses: selected.map((s) => ({
@@ -1720,34 +1808,34 @@ export function useXkWorkbench(): XkWorkbench {
         zy: s.zy || 3, baseFlag: (s.typeCode === "006" ? "bx" : s.typeCode === "008" ? "xx" : s.typeCode === "007" ? "rx" : "ty") as XkFlag,
       })),
     }]);
-    setToast(`已选课程已保存为「${name}」`);
+    setToast(i18n("state.data.993d797826cc", { name: String(name) }));
   }, [selected, savedDrafts, persistDrafts]);
   const exportDraft = useCallback(async (idx: number) => {
     const d = savedDrafts[idx];
     if (!d) return;
     try {
       await navigator.clipboard.writeText(JSON.stringify({ v: 1, name: d.name, courses: d.courses }));
-      setToast(`草稿「${d.name}」已导出到剪贴板`);
+      setToast(i18n("state.data.329fbface8f2", { name: String(d.name) }));
     } catch {
-      setToast("导出失败：剪贴板不可用");
+      setToast(i18n("state.data.58302b53a63d"));
     }
   }, [savedDrafts]);
   const importDraft = useCallback(() => {
-    const raw = globalThis.prompt?.("粘贴导出的草稿 JSON");
-    if (!raw) { setToast("已取消"); return; }
+    const raw = globalThis.prompt?.(i18n("state.data.0f1ade7c641d"));
+    if (!raw) { setToast(i18n("state.data.a37778f17c5f")); return; }
     try {
       const obj = JSON.parse(raw) as { name?: string; courses?: XkStageItem[] };
       const incoming = obj.courses;
-      if (!Array.isArray(incoming)) throw new Error("缺少 courses");
+      if (!Array.isArray(incoming)) throw new Error(i18n("state.data.1ad3aeaef070"));
       setStageCart((prev) => {
         const merged = [...prev];
         for (const c of incoming) if (!merged.some((s) => s.code === c.code && String(s.seq || "0") === String(c.seq || "0"))) merged.push(c);
         lsSet(LS.stage, merged);
-        setToast(`已导入 ${incoming.length} 门课程到暂存区`);
+        setToast(i18n("state.data.315af7fb0ae9", { length: String(incoming.length) }));
         return merged;
       });
     } catch (e) {
-      setToast(`导入失败: ${e instanceof Error ? e.message : String(e)}`);
+      setToast(i18n("state.data.579d5468a97a", { value: String(e instanceof Error ? e.message : String(e)) }));
     }
   }, []);
   /** 提交草稿（§7.4 promoteDraft）：确认后先退全部已选（间隔 1s），再逐门选入（间隔 2s） */
@@ -1763,16 +1851,16 @@ export function useXkWorkbench(): XkWorkbench {
     const toDrop = selected.filter((c) => !wantKeys.has(key(c.code, c.seq))); // 已选、草稿不要
     const kept = d.courses.length - toAdd.length;
     if (toAdd.length === 0 && toDrop.length === 0) {
-      setToast(`「${d.name}」与当前已选完全一致，无需提交`);
+      setToast(i18n("state.data.4f59a9588280", { name: String(d.name) }));
       return;
     }
     const lines = [
-      `保留 ${kept} 门（两边的交集，不动）`,
-      toAdd.length ? `新选 ${toAdd.length} 门：${toAdd.map((c) => c.name).join("、")}` : null,
-      toDrop.length ? `退掉 ${toDrop.length} 门：${toDrop.map((c) => c.name).join("、")}` : null,
+      i18n("state.data.3361c2cc7a9e", { count: kept }),
+      toAdd.length ? i18n("state.data.9d6825c38899", { count: toAdd.length, courses: toAdd.map((c) => c.name).join("、") }) : null,
+      toDrop.length ? i18n("state.data.661a5ba1d0ca", { count: toDrop.length, courses: toDrop.map((c) => c.name).join("、") }) : null,
     ].filter(Boolean).join("\n");
-    if (!(await confirmOk(`确定提交「${d.name}」？（差分提交，不会全退重选）\n${lines}`))) {
-      setToast("已取消");
+    if (!(await confirmOk(i18nMsg("state.data.c49ed890d985", { name: String(d.name), lines: String(lines) })))) {
+      setToast(i18n("state.data.a37778f17c5f"));
       return;
     }
     setBusy("promote");
@@ -1782,23 +1870,23 @@ export function useXkWorkbench(): XkWorkbench {
     try {
       for (let i = 0; i < toAdd.length; i++) {
         const c = toAdd[i]!;
-        setProgress(`新选 ${i + 1}/${toAdd.length}：${c.name}`);
+        setProgress(i18n("state.data.d84b6a7e9fbd", { value: String(i + 1), length: String(toAdd.length), name: String(c.name) }));
         await submitXkCourse(xkSession(), { code: c.code, seq: c.seq, zy: c.zy || 3, flag: c.flag });
         if (i + 1 < toAdd.length) await new Promise((r) => setTimeout(r, 2000)); // 防验证码限速
       }
       for (let i = 0; i < toDrop.length; i++) {
         // 每退一门都过玻璃警告弹窗（用户令：让人意识到这是真实退课）
-        if (!(await confirmDanger(`「${toDrop[i]!.name}」（${toDrop[i]!.code}_${toDrop[i]!.seq || "0"}）\n退选是真实退课操作，立即生效；补退选阶段退掉的名额可能立刻被抢走。`, CONFIRM_DROP_COURSE))) {
-          setProgress(`已取消：${toDrop[i]!.name} 不退选，提交中止（已执行部分不受影响）`);
+        if (!(await confirmDanger(i18nMsg("state.data.5b1ff08354a0", { name: String(toDrop[i]!.name), code: String(toDrop[i]!.code), value: String(toDrop[i]!.seq || "0") }), CONFIRM_DROP_COURSE))) {
+          setProgress(i18n("state.data.5e8ccd9c182a", { name: String(toDrop[i]!.name) }));
           break;
         }
-        setProgress(`退掉 ${i + 1}/${toDrop.length}：${toDrop[i]!.name}`);
+        setProgress(i18n("state.data.d8141ccb27fe", { value: String(i + 1), length: String(toDrop.length), name: String(toDrop[i]!.name) }));
         await dropXkCourse(xkSession(), { code: toDrop[i]!.code, seq: toDrop[i]!.seq, isQueue: false });
         if (i + 1 < toDrop.length) await new Promise((r) => setTimeout(r, 1000));
       }
-      setToast(`「${d.name}」差分提交完成：新选 ${toAdd.length}、退掉 ${toDrop.length}、保留 ${kept}`);
+      setToast(i18n("state.data.e90750f742dd", { name: String(d.name), length: String(toAdd.length), length2: String(toDrop.length), kept: String(kept) }));
     } catch (err) {
-      setToast(`提交出错（已执行部分不回滚）：${err instanceof Error ? err.message : String(err)}`);
+      setToast(i18n("state.data.d92ad0ceef64", { value: String(err instanceof Error ? err.message : String(err)) }));
     } finally {
       setProgress(null);
       setBusy(null);
@@ -1807,25 +1895,25 @@ export function useXkWorkbench(): XkWorkbench {
   }, [savedDrafts, selected, refreshCore]);
 
   const addManualEvent = useCallback((name: string, day: number, slot: number) => {
-    if (!name.trim()) { setToast("请输入活动名称"); return; }
+    if (!name.trim()) { setToast(i18n("state.data.88fb2fce716c")); return; }
     const ev: XkManualEvent = { id: `m${Date.now()}`, name: name.trim(), code: `manual-${Date.now()}`, seq: "0", time: `${day}-${slot}(自定义)`, manual: true, credits: 0 };
     setManualEvents((prev) => {
       const next = [...prev, ev];
       lsSet(LS.manual, next);
       return next;
     });
-    setToast(`已添加「${name.trim()}」`);
+    setToast(i18n("state.data.d7b50ed7e7b5", { value: String(name.trim()) }));
   }, []);
   /** 时钟段占用（时间轴预览）：任意 HH:MM–HH:MM，不占大节槽位 */
   const addManualEventRange = useCallback((name: string, day: number, begin: string, end: string) => {
-    if (!name.trim()) { setToast("请输入活动名称"); return; }
+    if (!name.trim()) { setToast(i18n("state.data.88fb2fce716c")); return; }
     const ev: XkManualEvent = { id: `m${Date.now()}`, name: name.trim(), code: `manual-${Date.now()}`, seq: "0", time: "", manual: true, credits: 0, begin, end, day };
     setManualEvents((prev) => {
       const next = [...prev, ev];
       lsSet(LS.manual, next);
       return next;
     });
-    setToast(`已添加「${name.trim()}」`);
+    setToast(i18n("state.data.d7b50ed7e7b5", { value: String(name.trim()) }));
   }, []);
 
   const clearManualEvents = useCallback(() => {
@@ -1836,7 +1924,7 @@ export function useXkWorkbench(): XkWorkbench {
       const ev = prev.find((e) => e.id === id);
       const next = prev.filter((e) => e.id !== id);
       lsSet(LS.manual, next);
-      if (ev) setToast(`已删除「${ev.name}」`);
+      if (ev) setToast(i18n("state.data.e6d7b9ff838f", { name: String(ev.name) }));
       return next;
     });
   }, []);
@@ -1866,7 +1954,7 @@ export function useXkWorkbench(): XkWorkbench {
       setQueueMap(qd.map);
       setPhase(qd.phase);
       setQueueState("ready");
-      setToast(`队列数据已刷新 · ${Object.keys(qd.map).length}门课余量 · ${candidates.length}门我的队列`);
+      setToast(i18n("state.data.017029db358e", { length: String(Object.keys(qd.map).length), length2: String(candidates.length) }));
     } catch (err) {
       logPageError("XK-QUEUE", err);
       // 失登（稳定性专项）：softRecover 透明重建 → 原地重取一次；仍败才 toast
@@ -1877,11 +1965,11 @@ export function useXkWorkbench(): XkWorkbench {
           setQueueMap(qd.map);
           setPhase(qd.phase);
           setQueueState("ready");
-          setToast(`队列数据已刷新 · ${Object.keys(qd.map).length}门课余量 · ${candidates.length}门我的队列`);
+          setToast(i18n("state.data.017029db358e", { length: String(Object.keys(qd.map).length), length2: String(candidates.length) }));
           return;
         }
       }
-      setToast("课余量排队人数获取失败，可稍后重试（登录状态已自动重建）");
+      setToast(i18n("state.data.fc8f70858d9c"));
       setQueueState("ready");
     }
   }, [status, candidates, selected, stageCart]);
@@ -1889,24 +1977,26 @@ export function useXkWorkbench(): XkWorkbench {
   const semesterOptions = useMemo(() => {
     const cur = semester ?? semesterFromDate();
     const m = /^(\d{4})-(\d{4})-(\d)$/.exec(cur);
-    const opts: Array<{ value: string; label: string }> = [{ value: cur, label: `${cur}（当前）` }];
+    const opts: Array<{ value: string; label: string }> = [{ value: cur, label: i18n("state.data.2c990a5b9a06", { cur: String(cur) }) }];
     if (m) {
       const y0 = Number(m[1]);
       const s0 = Number(m[3]);
-      const name = (s: number): string => (s === 1 ? "秋" : s === 2 ? "春" : "夏");
       // 全局学期序号 y*3+(s-1)：一学年 1秋/2春/3夏 顺序递推，跨学年自动进/退位
       const at = (delta: number): { value: string; label: string } => {
         const n = y0 * 3 + (s0 - 1) + delta;
         const y = Math.floor(n / 3);
         const s = (n % 3) + 1;
-        return { value: `${y}-${y + 1}-${s}`, label: `${y}-${y + 1} ${name(s)}` };
+        const params = { startYear: y, endYear: y + 1 };
+        const label = s === 1 ? i18n("state.data.6f0c2bbab1f6", params)
+          : s === 2 ? i18n("state.data.606fee690bb1", params) : i18n("state.data.99541445f961", params);
+        return { value: `${y}-${y + 1}-${s}`, label };
       };
       // 当前 + 往后 2 个学期（含下学年秋/春，选课系统常提前开放）+ 往回 6 个
       for (let i = 1; i <= 2; i++) opts.push(at(i));
       for (let i = 1; i <= 6; i++) opts.push(at(-i));
     }
     return opts;
-  }, [semester]);
+  }, [semester, uiLocale]);
 
   const setSemesterOverride = useCallback(async (sem: string | null) => {
     setSemesterOverrideState(sem);
@@ -2014,6 +2104,164 @@ export interface CardBundle {
 const REPORT_KEY = "report";
 const REPORT_TTL = 10 * 60 * 1000;
 
+/**
+ * 预览模式的示例数据（霖 2026-10-12）。
+ *
+ * 抽屉里的组件预览渲染的是**真组件**，它们各自 useCard / useReport / useCampusData… 取数——
+ * 挑一个组件会连带把整套数据爬一遍，还会把真实数字当成示例展示。
+ *
+ * 做法：把示例**写进数据层的缓存**（cacheSeedPreview：时间戳取远未来 → 各 hook 的 SWR 判定
+ * 永不触发刷新，因此一次真实请求都不会发），返回还原函数；组件与各 hook 一行不用改。
+ * 少数「挂载即拉」或「键带参数」的 hook（useLearnData / useNews / useTodayNewsFeed）
+ * 另用 isPreviewMode() 在预览期跳过加载并直接返回示例。
+ *
+ * 示例数据要**足够完整**：预览里渲染的是真组件，字段缺了会当场抛错。
+ * 因此按「该键的所有消费方在预览里会读到的字段」逐个补齐。
+ */
+export function seedPreviewData(): () => void {
+  const undo: Array<() => void> = [];
+
+  /* 成绩单：成绩统计四张 + 成绩明细都读它 */
+  const report: ReportRow[] = [
+    { name: i18n("state.data.d4fa4ba858a6"), credit: 5, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
+    { name: i18n("state.data.b5a0c9e5f04e"), credit: 4, grade: "A-", point: 3.7, semester: "2025-2026秋", raw: [] },
+    { name: i18n("state.data.3759fa0fb1c0"), credit: 3, grade: "A", point: 4.0, semester: "2025-2026秋", raw: [] },
+    { name: i18n("state.data.f830684c231e"), credit: 3, grade: "B+", point: 3.3, semester: "2024-2025春", raw: [] },
+    { name: i18n("state.data.29a6e56cb5af"), credit: 2, grade: "A", point: 4.0, semester: "2024-2025春", raw: [] },
+  ];
+  undo.push(cacheSeedPreview(REPORT_KEY, report));
+
+  /* 校园卡：数字卡只读 info.balance；生活页校园卡栏目还要读流水 */
+  const cardBundle: CardBundle = {
+    info: {
+      userId: "2023000000",
+      userName: "示例同学",
+      departmentName: "示例院系",
+      /* 示例值刻意取得一眼能认出来（不是真实余额），预览时便于区分「这是示例」 */
+      balance: 123.45,
+      cardId: "0000000001",
+      cardStatus: "正常",
+      lastTransactionTimestamp: new Date(),
+      maxDailyTransactionAmount: 100,
+      maxOneTimeTransactionAmount: 50,
+    },
+    transactions: [
+      { id: "t1", summary: i18n("state.data.444c4d808b3a"), timestamp: new Date(), amount: -12.5, balance: 123.45 },
+      { id: "t2", summary: i18n("state.data.b5481d51eb1a"), timestamp: new Date(Date.now() - 86400000), amount: 100, balance: 135.95 },
+    ],
+  };
+  undo.push(cacheSeedPreview("card:1", cardBundle));
+  undo.push(cacheSeedPreview("card:30", cardBundle));
+
+  /* 校内数据（campus）：今日概览、下一节课、今日课程、作业/通知/文件入口都读它。
+     课表按「今天」生成（dayOfWeek 用真实星期几），否则下一节课/今日课程会空。 */
+  const d0 = new Date();
+  const wd = d0.getDay() === 0 ? 7 : d0.getDay();
+  const ymdOf = (offsetDays: number): string => {
+    const d = new Date(d0.getTime() + offsetDays * 86400000);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  };
+  const hm = (h: number, m: number): string => String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+  const course = (id: string, name: string, teacher: string, room: string): CourseInfo => ({
+    id, name, englishName: name, courseNumber: id, courseIndex: 1, teacherName: teacher, timeAndLocation: [room], url: "",
+  });
+  const campus: CampusData = {
+    courses: [course("c1", "高等数学A(1)", "示例老师", "六教 6A101"), course("c2", "大学物理B(1)", "示例老师", "三教 3200")],
+    homework: [
+      { id: "h1", courseId: "c1", title: i18n("state.data.49e6ad399f86"), content: "", publishTime: ymdOf(-3), deadline: ymdOf(2) + " 23:59", submitted: false, graded: false, url: "" },
+      { id: "h2", courseId: "c2", title: i18n("state.data.c9bb87027880"), content: "", publishTime: ymdOf(-5), deadline: ymdOf(4) + " 23:59", submitted: false, graded: false, url: "" },
+      { id: "h3", courseId: "c1", title: i18n("state.data.6fb901c0f8f4"), content: "", publishTime: ymdOf(-8), deadline: ymdOf(-1) + " 23:59", submitted: true, graded: false, url: "" },
+    ],
+    notifications: [
+      { id: "n1", courseId: "c1", title: i18n("state.data.2ac5386c015e"), publisher: "示例老师", publishTime: ymdOf(-1), url: "" },
+      { id: "n2", courseId: "c2", title: i18n("state.data.c01840b9fd81"), publisher: "示例老师", publishTime: ymdOf(-3), url: "" },
+    ],
+    files: [
+      { id: "f1", courseId: "c1", title: i18n("state.data.6e0521c2d6bc"), uploadTime: ymdOf(-2) + " 10:00", downloadUrl: "", size: "2.3MB" },
+      { id: "f2", courseId: "c2", title: i18n("state.data.1788c736d7b1"), uploadTime: ymdOf(-4) + " 09:00", downloadUrl: "", size: "1.1MB" },
+      { id: "f3", courseId: "c1", title: i18n("state.data.76d617dd1e96"), uploadTime: ymdOf(-6) + " 15:00", downloadUrl: "", size: "860KB" },
+    ],
+    schedule: [
+      { courseName: "高等数学A(1)", dayOfWeek: wd, startSection: 1, endSection: 2, location: "六教 6A101", startTime: hm(8, 0), endTime: hm(9, 35), raw: {} },
+      { courseName: "大学物理B(1)", dayOfWeek: wd, startSection: 3, endSection: 4, location: "三教 3200", startTime: hm(9, 55), endTime: hm(11, 30), raw: {} },
+      { courseName: "程序设计基础", dayOfWeek: wd, startSection: 6, endSection: 6, location: "四教 4101", startTime: hm(13, 30), endTime: hm(14, 15), raw: {} },
+    ],
+    user: { name: i18n("state.data.f9b45f6b66e0"), studentId: "2023000000", department: "示例院系", email: "demo@mails.tsinghua.edu.cn" },
+  };
+  undo.push(cacheSeedPreview(CAMPUS_KEY, campus));
+
+  /* 倒计时提醒（deadlines）：日程与提醒卡读它；起止时间要落进「开始前 14 天 ~ 结束前」的窗口里 */
+  const deadlines: DeadlineItem[] = [
+    { title: i18n("state.data.3efc9adfbfb8"), begin: ymdOf(-2) + " 08:00", end: ymdOf(7) + " 16:00", url: "" },
+    { title: i18n("state.data.ce63956984a9"), begin: ymdOf(-1) + " 08:00", end: ymdOf(9) + " 16:00", url: "" },
+  ];
+  undo.push(cacheSeedPreview(DEADLINES_KEY, deadlines));
+
+  /* 网络学堂（learn）：它的缓存不是一个通用键，而是模块级变量 cache（且 hook 挂载即拉），
+     所以这里既要写这个变量，也要靠 isPreviewMode() 让 useLearnData 的效果跳过加载。 */
+  const learnSample: LearnBundle = {
+    semester: { id: "2025-2026-1" },
+    courses: [course("c1", "高等数学A(1)", "示例老师", "六教 6A101"), course("c2", "大学物理B(1)", "示例老师", "三教 3200")],
+    homework: campus.homework,
+    notifications: campus.notifications,
+    files: campus.files,
+  };
+  const prevLearn = cache;
+  cache = { key: "current", ts: Number.MAX_SAFE_INTEGER, promise: Promise.resolve(learnSample), data: learnSample };
+  undo.push(() => { cache = prevLearn; });
+
+  /* 今日预约：座位 + 研讨间各一条（ResvRows 会读 kind/venue/place/start/end） */
+  const resv: TodayReservation[] = [
+    { key: "seat-demo-1", kind: "seat", venue: "图书馆 北馆", place: "A-12", start: new Date(d0.getTime() + 3600000), end: null, note: i18n("state.data.21c05833ab53") },
+    { key: "room-demo-1", kind: "room", venue: "研讨间 4-201", place: "", start: new Date(d0.getTime() + 7200000), end: new Date(d0.getTime() + 10800000), note: "" },
+  ];
+  undo.push(cacheSeedPreview(TODAYRESV_KEY, resv));
+
+  /* 日程与提醒（今日校历节点）：AgendaWidget 读 name/date/daysUntil */
+  const calNodes: TodayCalendarNode[] = [
+    { key: "cal-demo-1", name: i18n("state.data.38509e346ecf"), date: new Date(d0.getTime() + 7 * 86400000), daysUntil: 7 },
+    { key: "cal-demo-2", name: i18n("state.data.9e6183684b78"), date: new Date(d0.getTime() + 9 * 86400000), daysUntil: 9 },
+  ];
+  undo.push(cacheSeedPreview(TODAYCAL_KEY, calNodes));
+
+  /* 个人信息（profile）：信息页「个人信息栏目」与学生卡都读它，字段就是 BasicUserInfo */
+  const profileSample: BasicUserInfo = {
+    name: i18n("state.data.f9b45f6b66e0"),
+    studentId: "2023000000",
+    gender: "男",
+    department: "示例院系",
+    major: "示例专业",
+    email: "demo@mails.tsinghua.edu.cn",
+  };
+  undo.push(cacheSeedPreview(PROFILE_KEY, profileSample));
+
+  /* 考试安排（exams）：ExamsTab 按日期分组渲染，给两场不同日期的考试 */
+  const exams: ExamEntry[] = [
+    { courseName: "高等数学A(1)", date: ymdOf(12), startTime: "14:00", endTime: "16:00", location: "六教 6A101", category: "考试", raw: {} },
+    { courseName: "大学物理B(1)", date: ymdOf(15), startTime: "09:00", endTime: "11:00", location: "三教 3200", category: "考试", raw: {} },
+  ];
+  undo.push(cacheSeedPreview(EXAMS_KEY, exams));
+
+  /* 信息页校历（calendar）：CalendarData；firstDay 取「八周前的周一」，于是当前落在第 9 教学周 */
+  const mondayOffset = -(wd - 1);
+  const calendar: CalendarData = {
+    firstDay: ymdOf(mondayOffset - 56),
+    semesterId: "2025-2026-1",
+    semesterName: "2025-2026 秋季学期",
+    weekCount: 16,
+    nextSemesterList: [
+      { firstDay: ymdOf(mondayOffset + 70), semesterId: "2025-2026-2", semesterName: "2025-2026 春季学期", weekCount: 16 },
+    ],
+  };
+  undo.push(cacheSeedPreview(CAL_KEY, calendar));
+
+  return () => { for (const f of undo.reverse()) f(); };
+}
+
+/* 成绩变化事件：useReport 每次真的拿到一份新成绩单时比对签名（首次加载只建基线）。
+   OH 的 grades-update 流程因此只在成绩变化时跑，不再跟着 learn 刷新空转。 */
+let lastReportSig: string | null = null;
+
 export function useReport() {
   const { status } = useApp();
   const [data, setData] = useState<ReportRow[] | null>(() => cacheGet<ReportRow[]>(REPORT_KEY)?.data ?? null);
@@ -2026,7 +2274,12 @@ export function useReport() {
       setError(null);
     }
     try {
-      setData(await cacheFetch(REPORT_KEY, () => info.getReport()));
+      const rows = await cacheFetch(REPORT_KEY, () => info.getReport());
+      const sig = JSON.stringify(rows);
+      const prev = lastReportSig;
+      lastReportSig = sig;
+      setData(rows);
+      if (prev !== null && prev !== sig) window.dispatchEvent(new Event("onethu.grades.update"));
       setState("ready");
     } catch (err) {
       logPageError("REPORT", err);
@@ -2119,7 +2372,7 @@ export function useCard(days = 30) {
       // 余额预警：任何一次余额刷新（卡页手刷 / 切回本栏重试 / 首页与小组件的静默重验证 /
       // 充值后刷新）都在这里过一遍判定，判定放在取数之后，新增刷新途径无需再接线。
       void observeCardBalance(cardInfo.balance);
-      setRefreshError(transactions === null ? "流水明细获取失败，已显示上次拉到的明细" : null);
+      setRefreshError(transactions === null ? i18n("state.data.35552730badd") : null);
       recover.current = 0;
       setState("ready");
     } catch (err) {
@@ -2289,10 +2542,10 @@ function calendarNodes(cal: CalendarData): TodayCalendarNode[] {
     const start = parseYmdDate(sem.firstDay);
     if (!start) return;
     const nm = sem.semesterName || sem.semesterId;
-    nodes.push({ key: `${sem.semesterId}-start`, name: `${nm} 开学`, date: start, daysUntil: 0 });
+    nodes.push({ key: `${sem.semesterId}-start`, name: i18n("state.data.14fa0b5c5261", { nm: String(nm) }), date: start, daysUntil: 0 });
     if (withEnd) {
       const end = new Date(start.getTime() + Math.max(1, sem.weekCount || 1) * 7 * 86400000 - 86400000);
-      nodes.push({ key: `${sem.semesterId}-end`, name: `${nm} 结束`, date: end, daysUntil: 0 });
+      nodes.push({ key: `${sem.semesterId}-end`, name: i18n("state.data.e980f2b04637", { nm: String(nm) }), date: end, daysUntil: 0 });
     }
   };
   push(cal, true);
@@ -2585,6 +2838,8 @@ const NEWS_TTL = 5 * 60 * 1000;
 
 export function useNews(page: number, length = 20) {
   const { status } = useApp();
+  /* 预览模式：直接给示例，且跳过加载（这条 hook 的键带分页参数，种子盖不全） */
+  const preview = isPreviewMode();
   const newsKey = `news:${page}:${length}`;
   const [data, setData] = useState<NewsItem[] | null>(() => cacheGet<NewsItem[]>(newsKey)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<NewsItem[]>(newsKey) ? "ready" : "loading"));
@@ -2609,13 +2864,23 @@ export function useNews(page: number, length = 20) {
   }, [status, page, length, data, newsKey]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<NewsItem[]>(newsKey);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > NEWS_TTL) void load(true);
-  }, [status, load, newsKey]);
+  }, [status, load, newsKey, preview]);
 
+  if (preview) return { data: previewNewsItems(), state: "ready" as const, error: null, reload: load };
   return { data, state, error, reload: load };
+}
+
+/** 预览用的新闻示例（today 与 info 两处共用，字段按消费方需要补齐：name/xxid/date/source/topped/channel）。 */
+function previewNewsItems(): NewsItem[] {
+  return [
+    { xxid: "demo-1", name: i18n("state.data.2785db8cbe3a"), date: "2026-10-10", source: "教务处", topped: true, channel: "LM_JWGG", url: "" },
+    { xxid: "demo-2", name: i18n("state.data.f820fbf5072a"), date: "2026-10-08", source: "图书馆", channel: "LM_JWGG", url: "" },
+    { xxid: "demo-3", name: i18n("state.data.a53fee1c4dbb"), date: "2026-10-06", source: "教学质量评估中心", channel: "LM_JWGG", url: "" },
+  ];
 }
 
 /* ============ 首页「倒计时提醒」（学校重要事项：选课/退课/推研等，失败静默隐藏） ============ */
@@ -2698,6 +2963,8 @@ const TODAYNEWS_TTL = 5 * 60 * 1000;
 
 export function useTodayNewsFeed(subs: string[]) {
   const { status } = useApp();
+  /* 预览模式：直接给示例并跳过加载（键里带订阅集合，种子盖不全） */
+  const preview = isPreviewMode();
   const [data, setData] = useState<TodayNewsFeed | null>(null);
   const [state, setState] = useState<DataState>("loading");
 
@@ -2751,7 +3018,7 @@ export function useTodayNewsFeed(subs: string[]) {
   }, [status, subsKey, feedKey, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<TodayNewsFeed>(feedKey);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > TODAYNEWS_TTL) {
@@ -2762,8 +3029,15 @@ export function useTodayNewsFeed(subs: string[]) {
       setData(cached.data);
       setState("ready");
     }
-  }, [status, load, feedKey]);
+  }, [status, load, feedKey, preview]);
 
+  if (preview) {
+    return {
+      data: { list: previewNewsItems(), from: "subs", subCount: 3 } as unknown as TodayNewsFeed,
+      state: "ready" as const,
+      reload: load,
+    };
+  }
   return { data, state, reload: load };
 }
 

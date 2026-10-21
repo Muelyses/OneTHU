@@ -68,6 +68,12 @@ jobs:
       # 规则：任一 packages/* 的 package.json main 指向 dist 时，都要加进这一行。
       - name: Build workspace libraries
         run: pnpm --filter @onethu/info-lib build
+      - name: Check Windows WebView threading
+        run: node tools/windows-webview-threading-test.mjs
+      - name: Check cloud account boundaries
+        run: node tools/seafile-account-lifecycle-test.mjs
+      - name: Check profile merge boundaries
+        run: node --import ./tools/ts-resolve-register.mjs tools/profile-sync-test.mjs
       # sidecar 必须在目标平台现场构建（仓库不带任何架构的二进制；
       # 旧版 Windows 安装包曾打进 mac 的 Mach-O → 插件宿主拉起必死）
       - name: Build harness sidecar (host-native)

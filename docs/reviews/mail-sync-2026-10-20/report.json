@@ -1,0 +1,8 @@
+{
+  "passed": 30,
+  "viewports": [
+    1280,
+    390
+  ],
+  "fixture": "actual MailPage + mail state, isolated config and IPC; remote URLs blocked"
+}

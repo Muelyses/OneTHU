@@ -29,8 +29,27 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- 待办作业流切卡 tick：navigator.vibrate 需要的普通振动权限。 -->
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- 碰一碰（NFC ReaderMode）：normal 权限，安装即得；无 NFC 设备不阻止安装。 -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <!-- 检查更新：把下载好的 .apk 交给系统安装页（ACTION_VIEW + content:// + 读权限）。
+         Android 8+ 要求**来源应用**持有该权限（宿主 app 清单里没有声明，故由本插件声明、
+         经 manifest merger 合并进去），且用户需在系统里允许「安装未知应用」；
+         这里只声明能力，是否允许由用户决定——installApk 绝不静默安装。 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application>
+        <service
+            android:name="app.onethu.mobile.NfcHceService"
+            android:exported="true"
+            android:permission="android.permission.BIND_NFC_SERVICE">
+            <intent-filter>
+                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.nfc.cardemulation.host_apdu_service"
+                android:resource="@xml/nfc_apdu_service" />
+        </service>
         <service
             android:name="app.onethu.mobile.QrKeepAliveService"
             android:exported="false"

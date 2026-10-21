@@ -1,3 +1,7 @@
+import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { IconBtn } from "@onethu/gui";
+import { Input } from "@onethu/gui";
+import { Btn } from "@onethu/gui";
 /**
  * 用户收藏夹页（万物收藏项化 · 跳转入口层）。
  * - 子收藏夹 = 功能原始页同款 segmented 导航栏：直属收藏项落最左「默认」栏，
@@ -32,6 +36,8 @@ import { useTabDirection } from "../lib/motion.js";
 const ROOT_TAB = "__root";
 
 export function FolderPage() {
+  const uiLocale = useUiLocale();
+
   const { navParams, navigate } = useApp();
   const favs = useFavs();
   const rootId = navParams?.folderId ?? null;
@@ -44,9 +50,9 @@ export function FolderPage() {
   if (!rootId || !folder) {
     return (
       <>
-        <PageHead title="收藏夹" />
+        <PageHead title={i18n("pages.folderpage.796d20e91588")} />
         <Card>
-          <Empty text="该收藏夹不存在或已被删除。" />
+          <Empty text={i18n("pages.folderpage.081f065eda63")} />
         </Card>
       </>
     );
@@ -55,11 +61,11 @@ export function FolderPage() {
   const orderIdx = favs.data.order.indexOf(rootId);
 
   const removeRoot = async () => {
-    const ok = await confirmOk("删除收藏夹「" + folder.title + "」？\n其子收藏夹与收录的收藏项入口将一并删除（原功能不受影响）。");
+    const ok = await confirmOk(i18n("pages.folderpage.26e0a9e64fed") + folder.title + i18n("pages.folderpage.d8aa0728e675"));
     if (!ok) return;
     favs.remove(rootId);
     setEditing(false);
-    navigate("today");
+    navigate("homepage");
   };
 
   const atomCount = folder.items.filter((it) => it.t === "a").length;
@@ -91,21 +97,18 @@ export function FolderPage() {
             folder.title
           )
         }
-        meta={"收藏夹 · " + atomCount + " 收藏项" + (subCount > 0 ? " · " + subCount + " 子收藏夹" : "")}
+        meta={i18n("pages.folderpage.8aee3fda5a89") + atomCount + i18n("pages.folderpage.8165f5e454e8") + (subCount > 0 ? " · " + subCount + i18n("pages.folderpage.58b3437bdc94") : "")}
         actions={
           editing ? (
             <>
-              <button className="btn" onClick={() => { setRenameVal(folder.title); setRenaming(true); }}>重命名</button>
-              <button className="btn" disabled={orderIdx <= 0} title="左侧栏顺序上移" onClick={() => favs.moveRoot(rootId, -1)}>上移</button>
-              <button className="btn" disabled={orderIdx >= favs.data.order.length - 1} title="左侧栏顺序下移" onClick={() => favs.moveRoot(rootId, 1)}>下移</button>
-              <button className="btn btn-danger" onClick={() => void removeRoot()}>删除收藏夹</button>
-              <button className="btn btn-primary" onClick={() => setEditing(false)}>完成</button>
+              <Btn variant="outline" onClick={() => { setRenameVal(folder.title); setRenaming(true); }}>{i18n("pages.folderpage.0d0cbac2eee5")}</Btn>
+              <Btn variant="outline" disabled={orderIdx <= 0} titleAttr={i18n("pages.folderpage.e6f0a1fa5326")} onClick={() => favs.moveRoot(rootId, -1)}>{i18n("pages.folderpage.f853a70b1204")}</Btn>
+              <Btn variant="outline" disabled={orderIdx >= favs.data.order.length - 1} titleAttr={i18n("pages.folderpage.588e87dec444")} onClick={() => favs.moveRoot(rootId, 1)}>{i18n("pages.folderpage.e75e8b4e5c97")}</Btn>
+              <Btn variant="solid" tone="error" onClick={() => void removeRoot()}>{i18n("pages.folderpage.920fe6ef0593")}</Btn>
+              <Btn variant="solid" tone="brand" onClick={() => setEditing(false)}>{i18n("pages.folderpage.c0b3fbff51cc")}</Btn>
             </>
           ) : (
-            <button className="btn" onClick={() => setEditing(true)}>
-              <IconPen width={14} height={14} />
-              编辑
-            </button>
+            <Btn variant="outline" onClick={() => setEditing(true)}><IconPen width={14} height={14} />{i18n("pages.folderpage.051836569928")}</Btn>
           )
         }
       />
@@ -134,26 +137,24 @@ function isWidgetAtom(atom: AtomRef): boolean {
 
 /** 夹级入口：编辑态工具栏上的「上桌面 / 已在桌面」 */
 function FolderWidgetButton({ folderId }: { folderId: string }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const backend = useNotifyBackend();
   const [, bump] = useState(0);
   if (backend !== "android") return null;      // 桌面端不做小组件：不显示假入口
   const on = isWidgetFolder(folderId);
   return (
-    <button
-      className="btn"
-      title={on ? "这块收藏夹已经在桌面某块小组件上" : "把本收藏夹放上桌面小组件（图标组）"}
-      onClick={() => {
+    <Btn variant="outline" titleAttr={on ? i18n("pages.folderpage.a04eea31ee47") : i18n("pages.folderpage.1911d1c0d6a4")} onClick={() => {
         requestWidgetBind({ to: "pick", binding: { kind: "folder", folderId } });
         bump((n) => n + 1);
-      }}
-    >
-      {on ? "已在桌面" : "上桌面"}
-    </button>
+      }}>{on ? i18n("pages.folderpage.4f9c7d13e1bc") : i18n("pages.folderpage.de0b42d48b30")}</Btn>
   );
 }
 
 /** 收藏项级入口：长卡工具条上的「桌」 */
 function AtomWidgetButton({ atom }: { atom: AtomRef }): ReactNode {
+  const uiLocale = useUiLocale();
+
   const backend = useNotifyBackend();
   const [, bump] = useState(0);
   if (backend !== "android") return null;
@@ -162,19 +163,19 @@ function AtomWidgetButton({ atom }: { atom: AtomRef }): ReactNode {
     <button
       type="button"
       className="icon-btn"
-      title={on ? "这个收藏项已经在桌面某块小组件上" : "把这个收藏项显示到桌面小组件（详情）"}
-      aria-label="显示到桌面小组件"
+      title={on ? i18n("pages.folderpage.d61319988ab5") : i18n("pages.folderpage.a02c3f04e2cc")}
+      aria-label={i18n("pages.folderpage.b99f5737b98f")}
       onClick={() => {
         requestWidgetBind({ to: "pick", binding: { kind: "detail", atom: { kind: atom.kind, key: atom.key } } });
         bump((n) => n + 1);
       }}
-    >
-      桌
-    </button>
+    >{i18n("pages.folderpage.40ba45e6d266")}</button>
   );
 }
 
 export function FolderView({ folderId, editing, isRoot = false }: { folderId: string; editing: boolean; isRoot?: boolean }) {
+  const uiLocale = useUiLocale();
+
   const favs = useFavs();
   const f = favs.data.folders[folderId];
 
@@ -205,7 +206,7 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
   const tabDir = useTabDirection(effTab ?? null, visibleIds);
 
   if (!f) return null;
-  const labelOf = (id: string) => (id === ROOT_TAB ? "默认" : favs.data.folders[id]?.title ?? "收藏夹");
+  const labelOf = (id: string) => (id === ROOT_TAB ? i18n("pages.folderpage.844b8cc8dff7") : favs.data.folders[id]?.title ?? i18n("pages.folderpage.796d20e91588"));
   const activate = (id: string) => {
     setTab(id);
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
@@ -217,12 +218,12 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
   const directAtoms = f.items.filter((it) => it.t === "a").length;
 
   const createSub = () => {
-    favs.create(newSubName || "子收藏夹", folderId);
+    favs.create(newSubName || i18n("pages.folderpage.cef56c9e15e6"), folderId);
     setNewSub(false);
     setNewSubName("");
   };
   const removeSelf = async () => {
-    const ok = await confirmOk("删除子收藏夹「" + f.title + "」？\n其子层与收录的收藏项入口将一并删除（原功能不受影响）。");
+    const ok = await confirmOk(i18n("pages.folderpage.0089819a6f6e") + f.title + i18n("pages.folderpage.27dd348dd737"));
     if (ok) favs.remove(folderId);
   };
 
@@ -230,14 +231,14 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
     <>
       {visibleIds.length === 0 ? (
         <Card>
-          <Empty text="所有栏目已隐藏，点「管理栏目」恢复。" />
+          <Empty text={i18n("pages.folderpage.7ca45b9c8d65")} />
         </Card>
       ) : (
         <>
           {subIds.length > 0 ? (
             /* 功能页同款导航栏：默认在最左 + 各子收藏夹；右侧管理栏目 */
             <div className="fav-nav" style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 14 }}>
-              <SegmentedOverflow ariaLabel="收藏夹栏目" style={{ flex: "1 1 auto", minWidth: 0 }}>
+              <SegmentedOverflow ariaLabel={i18n("pages.folderpage.085a2e26f1a4")} style={{ flex: "1 1 auto", minWidth: 0 }}>
                 {visibleIds.map((id) => (
                   <button
                     key={id}
@@ -250,33 +251,24 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
                   </button>
                 ))}
               </SegmentedOverflow>
-              <button className="btn btn-ghost" style={{ flex: "0 0 auto" }} onClick={() => setManageOpen(true)}>
-                管理栏目
-              </button>
+              <Btn variant="ghost" onClick={() => setManageOpen(true)}>{i18n("pages.folderpage.12526376d387")}</Btn>
             </div>
           ) : null}
 
           {editing ? (
             <div className="fav-toolbar">
-              <button className="btn" onClick={() => setPickerOpen(true)}>添加收藏项</button>
-              <button className="btn" title="从图标库选择收藏夹图标" onClick={() => setIconOpen(true)}>图标</button>
-              <button
-                className="btn"
-                disabled={!canNestUnder(favs.data, folderId)}
-                title={canNestUnder(favs.data, folderId) ? undefined : "最多 " + FAVS_MAX_DEPTH + " 层收藏夹"}
-                onClick={() => {
+              <Btn variant="outline" onClick={() => setPickerOpen(true)}>{i18n("pages.folderpage.c12f6816eb2b")}</Btn>
+              <Btn variant="outline" titleAttr={i18n("pages.folderpage.953582170d8c")} onClick={() => setIconOpen(true)}>{i18n("pages.folderpage.0d720eeea264")}</Btn>
+              <Btn variant="outline" disabled={!canNestUnder(favs.data, folderId)} titleAttr={canNestUnder(favs.data, folderId) ? undefined : i18n("pages.folderpage.c6807d67c7d9") + FAVS_MAX_DEPTH + i18n("pages.folderpage.d8f4406b527d")} onClick={() => {
                   setNewSub(true);
                   setNewSubName("");
-                }}
-              >
-                新建子收藏夹
-              </button>
+                }}>{i18n("pages.folderpage.8c07aaf9e12a")}</Btn>
               <FolderWidgetButton folderId={folderId} />
               {!isRoot && !renaming ? (
-                <button className="btn" onClick={() => { setRenameVal(f.title); setRenaming(true); }}>重命名</button>
+                <Btn variant="outline" onClick={() => { setRenameVal(f.title); setRenaming(true); }}>{i18n("pages.folderpage.0d0cbac2eee5")}</Btn>
               ) : null}
               {!isRoot ? (
-                <button className="btn btn-danger" onClick={() => void removeSelf()}>删除子收藏夹</button>
+                <Btn variant="solid" tone="error" onClick={() => void removeSelf()}>{i18n("pages.folderpage.b0822cec9840")}</Btn>
               ) : null}
               {renaming ? (
                 <input
@@ -298,26 +290,19 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
                 />
               ) : null}
               <span className="fav-toolbar-hint">
-                {isRoot ? "根收藏夹的重命名/删除在页头；收藏项排序点各项 ↑↓。" : "栏目显隐与排序点右上「管理栏目」。"}
+                {isRoot ? i18n("pages.folderpage.86620776ee32") : i18n("pages.folderpage.e3c22b9870e1")}
               </span>
             </div>
           ) : null}
 
           {newSub ? (
             <div className="fav-newsub">
-              <input
-                className="input"
-                autoFocus
-                placeholder="子收藏夹名称…"
-                value={newSubName}
-                onChange={(e) => setNewSubName(e.target.value)}
-                onKeyDown={(e) => {
+              <Input autoFocus placeholder={i18n("pages.folderpage.e9075f60449d")} value={newSubName} onChange={(value) => setNewSubName(value)} onKeyDown={(e) => {
                   if (e.key === "Enter") createSub();
                   if (e.key === "Escape") setNewSub(false);
-                }}
-              />
-              <button className="btn btn-primary" disabled={!canNestUnder(favs.data, folderId)} onClick={createSub}>创建</button>
-              <button className="btn btn-ghost" onClick={() => setNewSub(false)}>取消</button>
+                }} />
+              <Btn variant="solid" tone="brand" disabled={!canNestUnder(favs.data, folderId)} onClick={createSub}>{i18n("pages.folderpage.cde2cd071d25")}</Btn>
+              <Btn variant="ghost" onClick={() => setNewSub(false)}>{i18n("pages.folderpage.2cd0f3be8738")}</Btn>
             </div>
           ) : null}
 
@@ -329,7 +314,7 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
                     <ItemsBlock folderId={folderId} editing={editing} />
                     {directAtoms === 0 ? (
                       <Card>
-                        <Empty text="此栏暂无收藏项——「编辑」→「添加收藏项」搜索添加，或在任意页面点星标收藏。" />
+                        <Empty text={i18n("pages.folderpage.73daf2085ecd")} />
                       </Card>
                     ) : null}
                   </>
@@ -346,7 +331,7 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
         <TabManageModal
           open
           onClose={() => setManageOpen(false)}
-          title={"管理「" + f.title + "」栏目"}
+          title={i18n("pages.folderpage.d1049242f41b") + f.title + i18n("pages.folderpage.6cf018741f53")}
           tabs={tabIds.map((id) => ({ id, label: labelOf(id) }))}
           layout={{ order, hidden }}
           onApply={applyLayout}
@@ -373,6 +358,8 @@ export function FolderView({ folderId, editing, isRoot = false }: { folderId: st
 /* ══════════ 瀑布流（直属收藏项；子收藏夹项不进流，只做导航栏） ══════════ */
 
 function ItemsBlock({ folderId, editing }: { folderId: string; editing: boolean }) {
+  const uiLocale = useUiLocale();
+
   const favs = useFavs();
   const f = favs.data.folders[folderId];
   if (!f) return null;
@@ -435,6 +422,8 @@ function OneItem({
   editing: boolean;
   moveAtom: (index: number, dir: -1 | 1) => void;
 }) {
+  const uiLocale = useUiLocale();
+
   const favs = useFavs();
   const { navigate } = useApp();
   const f = favs.data.folders[folderId];
@@ -445,20 +434,14 @@ function OneItem({
 
   const tools = (
     <div className="home-card-tools">
-      <button type="button" className="icon-btn" title="上移" aria-label="上移" onClick={() => moveAtom(index, -1)}>
-        <IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />
-      </button>
-      <button type="button" className="icon-btn" title="下移" aria-label="下移" onClick={() => moveAtom(index, 1)}>
-        <IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />
-      </button>
+      <IconBtn label={i18n("pages.folderpage.f853a70b1204")} icon={<IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />} onClick={() => moveAtom(index, -1)} />
+      <IconBtn label={i18n("pages.folderpage.e75e8b4e5c97")} icon={<IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />} onClick={() => moveAtom(index, 1)} />
       {/* 长卡上的「方」：今日 widget 件没有方卡形态，双形态收藏项（教室）才有 */}
       {!view.widget || view.tileLive ? (
-        <button type="button" className="icon-btn" title="改为方卡" aria-label="改为方卡" onClick={() => favs.setVariant(folderId, index, true)}>
-          方
-        </button>
+        <button type="button" className="icon-btn" title={i18n("pages.folderpage.a20afdb6296d")} aria-label={i18n("pages.folderpage.a20afdb6296d")} onClick={() => favs.setVariant(folderId, index, true)}>{i18n("pages.folderpage.4a5ff677e1db")}</button>
       ) : null}
       <AtomWidgetButton atom={it.atom} />
-      <button type="button" className="icon-btn" title="从此收藏夹移除" aria-label="移除" onClick={() => favs.removeAt(folderId, index)}>
+      <button type="button" className="icon-btn" title={i18n("pages.folderpage.87a05c76c0bf")} aria-label={i18n("pages.folderpage.6135d4159e89")} onClick={() => favs.removeAt(folderId, index)}>
         ✕
       </button>
     </div>
@@ -469,14 +452,14 @@ function OneItem({
     return (
       <section className="home-card fav-widget">
         <div className="home-card-head">
-          <button type="button" className="home-card-title" onClick={() => view.open(navigate)} title="打开来源页">
+          <button type="button" className="home-card-title" onClick={() => view.open(navigate)} title={i18n("pages.folderpage.53b5e083df0f")}>
             <h2>{view.title}</h2>
             {view.sub ? <span className="home-card-aside">{view.sub}</span> : null}
           </button>
           {editing ? tools : null}
           <CollectStar atom={it.atom} title={view.title} />
         </div>
-        <div className="home-card-body">{body ?? <Empty text="暂无数据（数据为空时今日同款组件会整卡隐藏）。" />}</div>
+        <div className="home-card-body">{body ?? <Empty text={i18n("pages.folderpage.ca2717e27293")} />}</div>
       </section>
     );
   }
@@ -490,7 +473,7 @@ function OneItem({
           className="home-entry-btn"
           onClick={() => view.open(navigate)}
           aria-label={view.title}
-          title={"打开「" + view.title + "」"}
+          title={i18n("pages.folderpage.7d8622e414eb") + view.title + "」"}
         >
           <span className="home-entry-icon"><Icon width={20} height={20} /></span>
           <span className="home-entry-text">
@@ -502,18 +485,12 @@ function OneItem({
         {editing ? (
           <>
             <div className="home-card-tools">
-              <button type="button" className="icon-btn" title="上移" aria-label="上移" onClick={() => moveAtom(index, -1)}>
-                <IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />
-              </button>
-              <button type="button" className="icon-btn" title="下移" aria-label="下移" onClick={() => moveAtom(index, 1)}>
-                <IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />
-              </button>
+              <IconBtn label={i18n("pages.folderpage.f853a70b1204")} icon={<IconChevron width={13} height={13} style={{ transform: "rotate(-90deg)" }} />} onClick={() => moveAtom(index, -1)} />
+              <IconBtn label={i18n("pages.folderpage.e75e8b4e5c97")} icon={<IconChevron width={13} height={13} style={{ transform: "rotate(90deg)" }} />} onClick={() => moveAtom(index, 1)} />
               {!view.widget || view.tileLive ? (
-                <button type="button" className="icon-btn" title="改为方卡" aria-label="改为方卡" onClick={() => favs.setVariant(folderId, index, true)}>
-                  方
-                </button>
+                <button type="button" className="icon-btn" title={i18n("pages.folderpage.a20afdb6296d")} aria-label={i18n("pages.folderpage.a20afdb6296d")} onClick={() => favs.setVariant(folderId, index, true)}>{i18n("pages.folderpage.4a5ff677e1db")}</button>
               ) : null}
-              <button type="button" className="icon-btn" title="从此收藏夹移除" aria-label="移除" onClick={() => favs.removeAt(folderId, index)}>
+              <button type="button" className="icon-btn" title={i18n("pages.folderpage.87a05c76c0bf")} aria-label={i18n("pages.folderpage.6135d4159e89")} onClick={() => favs.removeAt(folderId, index)}>
                 ✕
               </button>
             </div>
@@ -527,6 +504,8 @@ function OneItem({
 
 /** 方卡瓦片（细粒度实体缺省；编辑态可改回长卡/移除） */
 function TileItem({ folderId, index, editing }: { folderId: string; index: number; editing: boolean }) {
+  const uiLocale = useUiLocale();
+
   const favs = useFavs();
   const { navigate } = useApp();
   const f = favs.data.folders[folderId];
@@ -541,7 +520,7 @@ function TileItem({ folderId, index, editing }: { folderId: string; index: numbe
         className="fav-tile-btn"
         onClick={() => view.open(navigate)}
         aria-label={view.title}
-        title={"打开「" + view.title + "」"}
+        title={i18n("pages.folderpage.7d8622e414eb") + view.title + "」"}
       >
         <span className="fav-tile-icon"><Icon width={17} height={17} /></span>
         <span className="fav-tile-name">{view.title}</span>
@@ -551,11 +530,9 @@ function TileItem({ folderId, index, editing }: { folderId: string; index: numbe
       {editing ? (
         <div className="fav-tile-tools">
           {view.widget ? (
-            <button type="button" className="icon-btn" title="改为长卡" aria-label="改为长卡" onClick={() => favs.setVariant(folderId, index, false)}>
-              长
-            </button>
+            <button type="button" className="icon-btn" title={i18n("pages.folderpage.5e54189643b0")} aria-label={i18n("pages.folderpage.5e54189643b0")} onClick={() => favs.setVariant(folderId, index, false)}>{i18n("pages.folderpage.597ae23d84d4")}</button>
           ) : null}
-          <button type="button" className="icon-btn" title="从此收藏夹移除" aria-label="移除" onClick={() => favs.removeAt(folderId, index)}>
+          <button type="button" className="icon-btn" title={i18n("pages.folderpage.87a05c76c0bf")} aria-label={i18n("pages.folderpage.6135d4159e89")} onClick={() => favs.removeAt(folderId, index)}>
             ✕
           </button>
         </div>
@@ -569,6 +546,8 @@ function TileItem({ folderId, index, editing }: { folderId: string; index: numbe
 
 /** 收藏夹图标选择弹层（图标库 = Icons.FOLDER_ICONS；「默认」恢复 IconFolder） */
 function IconPickerModal({ current, onPick, onClose }: { current?: string; onPick: (name?: string) => void; onClose: () => void }) {
+  const uiLocale = useUiLocale();
+
   useEffect(() => {
     const onKey = (ev: KeyboardEvent): void => {
       if (ev.key === "Escape") onClose();
@@ -578,15 +557,15 @@ function IconPickerModal({ current, onPick, onClose }: { current?: string; onPic
   }, [onClose]);
   return createPortal(
     <div className="home-modal-mask" onClick={onClose}>
-      <div className="home-modal" role="dialog" aria-modal="true" aria-label="选择收藏夹图标" onClick={(e) => e.stopPropagation()}>
+      <div className="home-modal" role="dialog" aria-modal="true" aria-label={i18n("pages.folderpage.5622577925ed")} onClick={(e) => e.stopPropagation()}>
         <div className="home-modal-head">
-          <h3>收藏夹图标</h3>
-          <button className="btn btn-ghost" onClick={onClose}>关闭</button>
+          <h3>{i18n("pages.folderpage.8ed04e5fa4f6")}</h3>
+          <Btn variant="ghost" onClick={onClose}>{i18n("pages.folderpage.3fd47edce45b")}</Btn>
         </div>
         <div className="home-modal-body">
-          <div className="home-modal-hint">图标应用于左侧栏与收藏夹页头；根收藏夹与子收藏夹都可各选各的。</div>
+          <div className="home-modal-hint">{i18n("pages.folderpage.3164dc27697e")}</div>
           <div className="icon-grid">
-            <button type="button" className={"icon-cell" + (!current ? " is-active" : "")} title="默认" onClick={() => onPick(undefined)}>
+            <button type="button" className={"icon-cell" + (!current ? " is-active" : "")} title={i18n("pages.folderpage.844b8cc8dff7")} onClick={() => onPick(undefined)}>
               <FolderIcon name={undefined} width={18} height={18} />
             </button>
             {Object.entries(FOLDER_ICONS)

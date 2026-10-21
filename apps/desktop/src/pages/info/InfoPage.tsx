@@ -1,3 +1,5 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /**
  * 信息中心 —— info 门户核心功能聚合页（thu-info-app 功能移植到桌面端）。
  * 子页：成绩（getReport）/ 体测成绩（成绩后）/ 考试安排（课表分类「考试」）/
@@ -18,7 +20,7 @@
  * 当前 tab 被隐藏时回落到第一个可见栏目。
  */
 import { useEffect, useState } from "react";
-import { PageAtomStar } from "../..//components/Collect.js";
+import { RootPageStar } from "../../components/Collect.js";
 import { Empty, PageHead, SegmentedOverflow } from "../../components/Layout.js";
 import { TabManageModal } from "../../components/TabManageModal.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../../lib/tabLayout.js";
@@ -36,20 +38,22 @@ import { useTabDirection } from "../../lib/motion.js";
 export type InfoTab = "report" | "fitness" | "exams" | "evaluation" | "calendar" | "news" | "profile" | "courseinfo";
 
 export const TABS: Array<{ id: InfoTab; label: string }> = [
-  { id: "report", label: "成绩" },
-  { id: "fitness", label: "体测成绩" },
-  { id: "exams", label: "考试" },
-  { id: "evaluation", label: "教学评估" },
-  { id: "calendar", label: "校历" },
-  { id: "news", label: "新闻" },
-  { id: "profile", label: "个人信息" },
-  { id: "courseinfo", label: "课程信息" },
+  { id: "report", get label() { return i18n("pages.info.infopage.fdcd1bd074c9"); } },
+  { id: "fitness", get label() { return i18n("pages.info.infopage.316da6d69b7d"); } },
+  { id: "exams", get label() { return i18n("pages.info.infopage.d26ef0190d6c"); } },
+  { id: "evaluation", get label() { return i18n("pages.info.infopage.14384c9d60cc"); } },
+  { id: "calendar", get label() { return i18n("pages.info.infopage.4792ab1440aa"); } },
+  { id: "news", get label() { return i18n("pages.info.infopage.d39567b2b9f1"); } },
+  { id: "profile", get label() { return i18n("pages.info.infopage.640803d89773"); } },
+  { id: "courseinfo", get label() { return i18n("pages.info.infopage.4da04dfef534"); } },
 ];
 const TAB_IDS = TABS.map((t) => t.id);
 const DEFAULT_LAYOUT: TabLayout = { order: TAB_IDS, hidden: [] };
 
 export function InfoPage() {
-  const { navParams } = useApp();
+  const uiLocale = useUiLocale();
+
+  const { navParams, navigate } = useApp();
   /** 首页新闻直达的 xxid（下传 NewsTab 后由其消费置回 null）。
    *  用 navParams 对象身份作 effect 依赖：navigate 每次都新建参数对象，
    *  同一条新闻重复点击也能再次触发打开。 */
@@ -103,20 +107,24 @@ export function InfoPage() {
     setVisited((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
   };
 
+  /* 子栏目是本地 state：切换后回写到本标签的 params，标签名 / 悬停小字 / 一星原子才会跟着变 */
+  useEffect(() => {
+    if (!effTab || navParams?.infoTab === effTab) return;
+    navigate("info", { infoTab: effTab });
+  }, [effTab, navParams?.infoTab, navigate]);
+
   return (
     <>
       <PageHead
-        title="信息"
+        title={i18n("pages.info.infopage.e7028601e7da")}
         actions={
           <>
-            <PageAtomStar atomKey={"info-" + (effTab ?? "")} title="信息页 · 当前栏目" />
-            <button className="btn" onClick={() => setManageOpen(true)} title="栏目显隐与排序">
-              管理栏目
-            </button>
+            <RootPageStar page="info" title={i18n("pages.info.infopage.e7028601e7da")} />
+            <Btn variant="outline" onClick={() => setManageOpen(true)} titleAttr={i18n("pages.info.infopage.fa0124c14866")}>{i18n("pages.info.infopage.12526376d387")}</Btn>
           </>
         }
       />
-      <SegmentedOverflow ariaLabel="信息功能" style={{ marginBottom: 14 }}>
+      <SegmentedOverflow ariaLabel={i18n("pages.info.infopage.4eb6db225088")} style={{ marginBottom: 14 }}>
         {visibleIds.map((id) => (
           <button
             key={id}
@@ -132,9 +140,9 @@ export function InfoPage() {
 
       {effTab === null ? (
         <Empty
-          text="所有栏目都被藏起来了。"
-          hint="点下面的按钮可以把它们叫回来。"
-          action={<button className="btn btn-primary" onClick={() => setManageOpen(true)}>管理栏目</button>}
+          text={i18n("pages.info.infopage.3ae2b35fabd4")}
+          hint={i18n("pages.info.infopage.39e8f1d8cad6")}
+          action={<Btn variant="solid" tone="brand" onClick={() => setManageOpen(true)}>{i18n("pages.info.infopage.12526376d387")}</Btn>}
         />
       ) : (
         <>
@@ -152,7 +160,7 @@ export function InfoPage() {
       <TabManageModal
         open={manageOpen}
         onClose={() => setManageOpen(false)}
-        title="管理信息栏目"
+        title={i18n("pages.info.infopage.0bdbabde48b3")}
         tabs={TABS}
         layout={layout}
         onApply={applyLayout}

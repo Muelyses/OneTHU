@@ -7,7 +7,7 @@
  * 真机侧一旦失败，链路靠降级保证不破相（空调色板 → 清华紫），所以这里重点钉"失败时安全"。
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readUiSource as readFileSync } from "./i18n/source-view.mjs";
 import { rolesFromPalette, detectInverted, mix, alpha } from "../apps/desktop/src/lib/dynamicRoles.ts";
 import { dynamicPlan, paletteUsable } from "../apps/desktop/src/lib/dynamicPlan.ts";
 
@@ -158,18 +158,18 @@ assert.ok(/const usable = paletteUsable\(palette\)/.test(src), "空调色板判�
 assert.ok(/const plan = dynamicPlan\(/.test(src), "开关决策必须走 dynamicPlan（纯函数、可单测）");
 /* [8] 主题让位（真机抓到的第二个问题：主题注入的 :root[data-theme] 块自己声明了 --accent/--bg，
        与取色并存会得到"面跟随壁纸、强调色还是主题的"半套配色） */
-assert.ok(src.includes("deactivateTheme()"), "开启取色必须让主题退场");
+/* 2026-10-18：退场函数从 deactivateTheme 换成 detachAppliedTheme。deactivateTheme 会
+   同时清空 activeId 与 followSystem，取色一开「跟随昼夜」就被永久关掉，关掉取色后主题
+   不会自己回来（dynamic-flow-test 3b 的实际回归）。快照为 null 时的恢复同理。 */
+assert.ok(src.includes("detachAppliedTheme()"), "开启取色必须让主题退场（走 detachAppliedTheme）");
+assert.ok(!/else deactivateTheme\(\)/.test(src), "恢复基础令牌不许走 deactivateTheme（它会关掉昼夜调度）");
+assert.ok(src.includes("setFallbackTheme(DYNAMIC_FALLBACK_THEME)"), "降级档必须只切视觉，不许改写用户选择");
 assert.ok(src.includes("RESTORE_KEY") && src.includes("activeThemeId()"), "必须记住被顶掉的主题以便恢复");
 assert.ok(src.includes("reapplyActiveTheme()"), "关掉取色必须把昼夜调度/基础令牌接回来");
 assert.ok(
   /if \(plan\.restore\.action === "set"\) writeRestore\(\{ activeId: plan\.restore\.activeId \}\)/.test(src),
   "快照写入必须只由 dynamicPlan 决定（开机自举不许覆盖，见状态机 4 态）",
 );
-assert.ok(
-  /else deactivateTheme\(\)/.test(src),
-  "快照里 activeId 为 null（基础令牌）时必须真的恢复成基础令牌，不能停在降级主题上",
-);
-assert.ok(/reapplyActiveTheme\(\)/.test(src), "恢复后要把昼夜调度接回来");
 assert.ok(src.includes("syncScheme()") && /dataset\.scheme = "dark"/.test(src), "取色期间必须自己驱动 data-scheme（主题已让位）");
 const themeSrc = readFileSync("apps/desktop/src/state/theme.ts", "utf8");
 assert.ok(

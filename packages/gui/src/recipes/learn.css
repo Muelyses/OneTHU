@@ -1,0 +1,180 @@
+/* Learning course overview: one grid and one card composition for both sources.
+   Card, action, tag and focus visuals remain owned by OneGUI primitives. */
+html:root .explorer-content[data-active-page="learn"] {
+  width: 100%;
+  max-width: none;
+}
+
+.learn-page {
+  width: 100%;
+  min-width: 0;
+}
+
+.learn-page-note {
+  margin: 0 0 var(--og-space-4);
+  color: var(--og-content-2);
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+}
+
+.learn-empty-actions {
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--og-space-4);
+}
+
+.learn-course-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--og-grid-min-xl)), 1fr));
+  grid-auto-rows: 1fr;
+  gap: var(--og-space-4);
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.learn-course-list > .learn-course-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+
+.learn-course-main {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.learn-course-open.og-btn {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  padding: var(--og-space-5);
+  border-radius: var(--og-radius-lg) var(--og-radius-lg) 0 0;
+  white-space: normal;
+  text-align: start;
+}
+
+.learn-course-open > .og-btn-label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--og-space-2);
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow: visible;
+}
+
+.learn-course-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--og-space-3);
+  min-width: 0;
+}
+
+.learn-course-title {
+  min-width: 0;
+  min-height: 2lh;
+  color: var(--og-content-1);
+  font-size: var(--og-text-body);
+  font-weight: var(--og-weight-semibold);
+  line-height: var(--og-text-body-lh);
+  overflow-wrap: anywhere;
+}
+
+.learn-course-caret {
+  flex: none;
+  margin-top: var(--og-space-1);
+  color: var(--og-content-3);
+}
+
+.learn-course-main:has(.learn-course-save) .learn-course-heading {
+  padding-inline-end: var(--og-ctl-h-md);
+}
+
+.learn-course-save {
+  position: absolute;
+  inset-block-start: var(--og-space-3);
+  inset-inline-end: var(--og-space-3);
+}
+
+.learn-course-details,
+.learn-course-schedule {
+  display: block;
+  min-width: 0;
+  min-height: 2lh;
+  color: var(--og-content-2);
+  font-size: var(--og-text-label);
+  font-weight: var(--og-weight-regular);
+  line-height: var(--og-text-label-lh);
+  overflow-wrap: anywhere;
+}
+
+.learn-course-schedule {
+  color: var(--og-content-3);
+}
+
+.learn-course-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-3);
+  padding: 0 var(--og-space-5) var(--og-space-5);
+}
+
+.learn-course-sources,
+.learn-course-counts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--og-space-2);
+  min-width: 0;
+}
+
+.learn-course-sources {
+  min-height: var(--og-ctl-h-sm);
+}
+
+.learn-course-sources .og-btn-icon {
+  flex: none;
+}
+
+@media (max-width: 599px) {
+  /* The legacy phone shell forces every .stats row to three columns. Scope
+     this override to the four Learn shortcuts instead of changing other pages. */
+  html:root .explorer-content .learn-page > .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .learn-course-list {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    gap: var(--og-space-3);
+  }
+
+  .learn-course-open.og-btn {
+    padding: var(--og-space-4);
+  }
+
+  .learn-course-title,
+  .learn-course-details,
+  .learn-course-schedule {
+    min-height: 0;
+  }
+
+  .learn-course-details:empty,
+  .learn-course-schedule:empty {
+    display: none;
+  }
+
+  .learn-course-footer {
+    padding: 0 var(--og-space-4) var(--og-space-4);
+  }
+}

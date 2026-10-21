@@ -1,0 +1,81 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif; }
+/* 假壁纸：一半亮一半暗的“照片感”，用来看玻璃底的透明度 */
+.wall { position: relative; width: 100%; height: 100%; padding: 18px 14px;
+        background: linear-gradient(135deg, #6d7f8f 0%, #b8c6d1 38%, #2a2f36 39%, #12161b 100%); }
+.wall.dark { background: linear-gradient(135deg, #3b2f45 0%, #7a5f6f 40%, #0d0f12 41%, #05070a 100%); }
+.wrap { position: relative; display: flex; gap: 18px; }
+.pane { position: relative; }
+.cap { font-size: 11px; color: #ffffffcc; margin-bottom: 8px; letter-spacing: .04em; }
+
+/* ── 品牌标 (OH)：与 components/HarnessMark.tsx 同款三字体混排 ── */
+.hm { display: inline-flex; align-items: baseline; line-height: 1; }
+.hm .p { font-family: "SF Mono", Menlo, Consolas, "Courier New", monospace; font-weight: 400; font-size: 1.10em; }
+.hm .o { font-family: Georgia, "Playfair Display", "Times New Roman", serif; font-weight: 500; font-size: 1.14em; }
+.hm .h { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif; font-weight: 700; font-size: 1.06em; }
+.hm span { margin-right: .05em; }
+
+/* ── 球：54dp 实底 + 1px 细边 + 轻投影（深色同构） ── */
+.ball { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 15px; background: #ffffff; border: 1px solid rgba(0,0,0,.10);
+        box-shadow: 0 6px 14px rgba(0,0,0,.20); color: #1C1F24; }
+.ball.dark { background: #151517; border-color: rgba(255,255,255,.14); color: #ECECF1; box-shadow: 0 6px 16px rgba(0,0,0,.5); }
+/* 画一个 54dp 的参考框，证明括号没被裁 */
+.ballbox { width: 54px; height: 54px; border: 1px dashed rgba(255,255,255,.45); border-radius: 50%;
+           display: flex; align-items: center; justify-content: center; }
+
+/* ── 顶栏胶囊（高 32 / 水平内边距 12 / 间距 8 / 外边距 14） ── */
+.chips { display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+.chip { height: 32px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px;
+        font-size: 12px; white-space: nowrap; background: rgba(255,255,255,.86); color: #1C1F24;
+        border: 1px solid rgba(0,0,0,.12); box-shadow: 0 2px 8px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.5); }
+.chips.dark .chip { background: rgba(0,0,0,.45); color: #ECECF1; border-color: rgba(255,255,255,.20); }
+
+/* ── liquid glass 气泡 ── */
+.bubbles { display: flex; flex-direction: column; gap: 11px; padding: 0 14px; width: 333px; }
+.bub { max-width: 84%; padding: 7px 13px; font-size: 15px; line-height: 1.55; color: #1C1F24;
+       background: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.48));
+       border: 1px solid rgba(255,255,255,.35);
+       box-shadow: 0 10px 18px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.5); }
+.bub.oh { align-self: flex-start; border-radius: 20px 20px 20px 6px; }
+.bub.user { align-self: flex-end; border-radius: 20px 20px 6px 20px; }
+.bubbles.dark .bub { color: #ECECF1; background: linear-gradient(180deg, rgba(0,0,0,.42), rgba(0,0,0,.30));
+       border-color: rgba(255,255,255,.22);
+       box-shadow: 0 12px 20px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.22); }
+.bub b { font-weight: 700; }
+.bub code { font-family: "SF Mono", Menlo, monospace; font-size: 13.5px; background: rgba(0,0,0,.08); padding: 0 3px; border-radius: 4px; }
+.bub pre { font-family: "SF Mono", Menlo, monospace; font-size: 13.5px; background: rgba(0,0,0,.08); padding: 6px 8px; border-radius: 6px; margin: 3px 0; }
+.bub ul { margin: 2px 0 2px 16px; }
+.bub hr { border: 0; border-top: 1px solid rgba(0,0,0,.14); margin: 3px 0; }
+.thumb { width: 180px; height: 110px; border-radius: 14px; margin-bottom: 6px;
+         background: linear-gradient(135deg,#9fb4c7,#5d7386 55%,#2f3d49); }
+.say { font-size: 12px; opacity: .9; margin-top: 2px; }
+</style></head>
+<body><div class="wall">
+<div class="wrap" style="flex-direction:column; gap:20px; width:333px">
+  <div class="pane"><div class="cap">气泡 · 浅色（玻璃底 α0.62→0.48；圆角 20 / 尾角 6；内边距 8×13；15sp / 1.55）</div>
+    
+    <div class="bubbles">
+      <div class="bub oh">在的，需要我做什么？</div>
+      <div class="bub user">帮我看看明天有没有空课，顺便<b>把作业</b>列一下</div>
+      <div class="bub oh">明天上午只有一节 <code>数据结构</code>，下午没课。<hr>
+        待办里有两份作业：<ul><li>网络学堂 · 实验三（周四 23:59）</li><li>雨课堂 · 第三章习题</li></ul>
+        <div class="say">朗读</div>
+      </div>
+      <div class="bub user"><div class="thumb"></div>附件：IMG_20261011_1642.jpg<div class="say" style="opacity:.75">正在发送…</div></div>
+      <div class="bub oh">已收到图片，正在识别手写内容<pre>filter: scan + sharpen</pre></div>
+    </div></div>
+  <div class="pane"><div class="cap">气泡 · 深色（α0.42→0.30；高光 0.22；阴影更重）</div>
+    
+    <div class="bubbles dark">
+      <div class="bub oh">在的，需要我做什么？</div>
+      <div class="bub user">帮我看看明天有没有空课，顺便<b>把作业</b>列一下</div>
+      <div class="bub oh">明天上午只有一节 <code>数据结构</code>，下午没课。<hr>
+        待办里有两份作业：<ul><li>网络学堂 · 实验三（周四 23:59）</li><li>雨课堂 · 第三章习题</li></ul>
+        <div class="say">朗读</div>
+      </div>
+      <div class="bub user"><div class="thumb"></div>附件：IMG_20261011_1642.jpg<div class="say" style="opacity:.75">正在发送…</div></div>
+      <div class="bub oh">已收到图片，正在识别手写内容<pre>filter: scan + sharpen</pre></div>
+    </div></div>
+</div></div></body></html>

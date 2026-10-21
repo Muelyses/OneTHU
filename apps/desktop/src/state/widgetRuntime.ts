@@ -1,3 +1,4 @@
+import { getLocale, subscribeLocale, t as i18n } from "../i18n/index.js";
 /**
  * 小组件运行时：数据变化 → 按「每一块」重算内容 → 推给原生重画。
  *
@@ -12,7 +13,7 @@
  * 某个功能页的 1×1 快捷方式。实例清单只能问原生（AppWidgetManager 才知道桌面上有哪几块）。
  */
 import { getHwRemindState } from "./hwRemind.js";
-import type { PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
+import type { PlanEventEntry, PlanHomework, PlanScheduleEntry } from "./notifyPlan.js";
 import type { NotifyInvoke } from "./notifyScheduler.js";
 import {
   buildDetailSnapshot, buildGridSnapshot, buildShortcutSnapshot, buildWidgetSnapshot,
@@ -20,12 +21,14 @@ import {
   type WidgetInstanceContent, type WidgetSnapshot,
 } from "./widgetSnapshot.js";
 import { collectWidgetSlots } from "../plugins/pluginWidgets.js";
+import { phoneWidgetSnapshot } from "./userext.js";
 import { atomIconPng } from "./widgetIcon.js";
 import {
   bindingOf, loadWidgetInstances, pruneWidgetInstances, type WidgetBinding,
 } from "./widgetInstances.js";
 import type { ResolvedInstance } from "./widgetSource.js";
 import { createSyncer } from "./displaySyncer.js";
+import { buildWidgetLocale } from "./widgetText.js";
 
 /** 桌面上的一块小组件（原生 AppWidgetManager 报回） */
 export interface WidgetInstanceInfo {
@@ -43,7 +46,7 @@ export interface WidgetRuntimeDeps {
   invoke: NotifyInvoke;
   /** 本平台是否有小组件承载（当前只有 Android） */
   backendAvailable: boolean;
-  collect: (now: number) => { schedule: PlanScheduleEntry[]; homework: PlanHomework[] };
+  collect: (now: number) => { schedule: PlanScheduleEntry[]; homework: PlanHomework[]; events?: PlanEventEntry[] | null };
   subscribe: (fn: () => void) => () => void;
   onError?: (m: string) => void;
   /** 读桌面上有哪些小组件（读失败返回 null：此时不推实例内容，也绝不允许原生修剪） */
@@ -78,6 +81,9 @@ export function gridCapacity(w: number, h: number): number {
 }
 
 export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
+  let stopped = false;
+  let localeGeneration = 0;
+  let queue = Promise.resolve();
   let last: WidgetSnapshot | null = null;
   let lastContents: Record<string, WidgetInstanceContent> = {};
   const icon = deps.iconPng ?? atomIconPng;
@@ -87,7 +93,7 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     if (binding.kind === "today" || !resolved) return today;
     if (resolved.kind === "detail") {
       return buildDetailSnapshot({
-        title: resolved.title, rows: resolved.rows, footer: resolved.footer,
+        language: today, title: resolved.title, rows: resolved.rows, footer: resolved.footer,
         target: resolved.target, now,
         // 候选行给足：原生 fitRows(h) 按真实高度铺满——矮的只显示一两行，拉长的全铺上
         // （校园卡流水这类「越长越有用」的内容靠这个生效）
@@ -99,22 +105,26 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
       for (const it of resolved.items) {
         items.push({ label: it.label, icon: (await icon(it.ref, 72)) ?? undefined, target: it.target });
       }
-      return buildGridSnapshot({ title: resolved.title, items, target: resolved.target, now });
+      return buildGridSnapshot({ language: today, title: resolved.title, items, target: resolved.target, now });
     }
     return buildShortcutSnapshot({
-      label: resolved.label, sub: resolved.sub, icon: (await icon(resolved.ref, 96)) ?? undefined,
+      language: today, label: resolved.label, sub: resolved.sub, icon: (await icon(resolved.ref, 96)) ?? undefined,
       target: resolved.target, now,
     });
   }
 
   async function apply(
-    inputs: { schedule: PlanScheduleEntry[]; homework: PlanHomework[] },
+    inputs: { schedule: PlanScheduleEntry[]; homework: PlanHomework[]; events?: PlanEventEntry[] | null },
     now: number,
   ): Promise<boolean> {
-    if (!deps.backendAvailable) return false;
+    if (stopped || !deps.backendAvailable) return false;
+    const generation = localeGeneration;
+    const language = buildWidgetLocale();
     const today = buildWidgetSnapshot({
+      language,
       schedule: inputs.schedule,
       homework: inputs.homework,
+      events: inputs.events,
       remind: getHwRemindState(),
       now,
     });
@@ -156,19 +166,36 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     for (const s of collectWidgetSlots()) {
       if (!s?.slot) continue;
       slots[String(s.slot)] = {
-        title: String(s.title ?? "插件小组件"),
+        title: String(s.title ?? i18n("state.widgetruntime.10243e85ea3c")),
         rows: (s.rows ?? []).map((r) => ({ text: String(r.text ?? ""), sub: r.sub ? String(r.sub) : undefined })),
         footer: String(s.footer ?? ""),
         target: String(s.target ?? ""),
       };
     }
+    // OH 用户生成行（手机小组件自进化）：占插件之后最靠后的空槽；原生只有三个槽位提供者，
+    // 编号是建立时绑死的，所以这里不用任意键——用紧接插件后的那个 ≤3 的原生槽号。
+    const pw = phoneWidgetSnapshot();
+    if (pw) {
+      const used = Object.keys(slots).length;
+      if (used < 3) {
+        slots[String(used + 1)] = {
+          title: String(pw.title || i18n("state.widgetruntime.4eafa9e925b3")),
+          rows: pw.rows.map((r) => ({ text: String(r.text), sub: r.sub ? String(r.sub) : undefined })),
+          footer: i18n("state.widgetruntime.4eafa9e925b3"),
+          target: "today",
+        };
+      }
+    }
 
+    if (stopped || generation !== localeGeneration || language.locale !== getLocale()) return false;
+    // Slots retain user/plugin-authored text; only native time recomputation uses this dictionary.
+    const localizedSlots = Object.fromEntries(Object.entries(slots).map(([key, value]) => [key, { ...value, ...language }]));
     try {
       const raw = (await deps.invoke("widget_push", {
-        snapshot: serializeWidgetPush({ instances: contents, slots, prune: insts !== null }),
+        snapshot: serializeWidgetPush({ ...language, instances: contents, slots: localizedSlots, prune: insts !== null }),
       })) as Record<string, unknown> | null;
       const ok = raw?.ok === true;
-      if (ok) {
+      if (ok && !stopped && generation === localeGeneration) {
         last = today;
         lastContents = contents;
       }
@@ -185,11 +212,19 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     collect: deps.collect,
     subscribe: deps.subscribe,
     run: async (inputs, now) => {
-      lastOk = await apply(inputs, now);
+      // Serialize native writes: an older in-flight push must finish before the new locale push.
+      const next = queue.then(async () => { lastOk = await apply(inputs, now); });
+      queue = next.catch(() => undefined);
+      await next;
     },
     debounceMs: deps.debounceMs,
     tickMs: deps.tickMs,
     onError: deps.onError,
+  });
+
+  const offLocale = subscribeLocale(() => {
+    localeGeneration++;
+    void syncer.syncNow().catch(e => deps.onError?.(String(e).slice(0, 160)));
   });
 
   return {
@@ -199,6 +234,6 @@ export function createWidgetRuntime(deps: WidgetRuntimeDeps): WidgetRuntime {
     },
     snapshot: () => last,
     contents: () => lastContents,
-    stop: () => syncer.stop(),
+    stop: () => { stopped = true; localeGeneration++; offLocale(); syncer.stop(); },
   };
 }

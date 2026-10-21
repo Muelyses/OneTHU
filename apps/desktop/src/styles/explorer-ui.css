@@ -1,0 +1,844 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Explorer 工作空间 UI v2（dev-explorer）：TabStrip / BottomBar / TabDrawer / OneGoSheet
+   + TabHost 右键菜单（.explorer-ctxmenu，Lead 在 TabHost 引用、此处供样式）。
+   配色红线：只用 OneTHU 既有 token（surface、text 系、accent、accent-soft、
+   border、hover、red、red-soft 与 md-sys 系），不引入 mockup 配色。
+   本文件在 explorer.css 之后加载，tb-* 的精修增量也在这里。
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 顶栏小件精修（explorer.css 的增量）：间距节奏与禁用态 ── */
+.tb-home { margin-right: 2px; }
+.explorer-topbar .ex-tabstrip { margin: 0 2px; }
+
+/* ── 顶栏标签条 TabStrip ── */
+.ex-tabstrip {
+  display: flex;
+  flex-wrap: nowrap; /* global.css 的讨论区 .tabstrip{flex-wrap:wrap} 会撞车——显式钉死单行滚动 */
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 2px;
+  scrollbar-width: none;
+}
+.ex-tabstrip::-webkit-scrollbar { display: none; }
+
+.ex-tab {
+  display: inline-flex;
+  align-items: center;
+  max-width: 176px;
+  min-width: 96px; /* 多 tab 到挤压区间即溢出 → 滚动条逻辑成立（用户预期「一多就滚」） */
+  height: 28px;
+  flex: 0 0 auto;
+  transition: background var(--dur-1, 0.12s) var(--ease-out, ease), color var(--dur-1, 0.12s) var(--ease-out, ease);
+}
+.ex-tab-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 4px 0 2px;
+  height: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.ex-tab.is-home .ex-tab-main { padding-left: 8px; }
+.ex-tab.is-home svg { flex: none; }
+.ex-tab-title {
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-tab-close {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 3px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity var(--dur-1, 0.12s) ease, background var(--dur-1, 0.12s) ease;
+}
+/* 命中区外扩 3px：视觉仍是 22px，可点范围 ≥28px（用户实测 16px 太小） */
+.ex-tab-close::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9px;
+}
+.ex-tab:hover .ex-tab-close,
+.ex-tab.is-active .ex-tab-close { opacity: 1; }
+.ex-tab-close:hover { background: color-mix(in srgb, var(--text-1) 10%, transparent); color: var(--text-1); }
+/* 触屏没有 hover：窄屏常显关闭钮 */
+@media (max-width: 839.98px) {
+  .ex-tab-close { opacity: 1; }
+}
+.ex-tab-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+/* ── 底栏三入口 BottomBar（全平台恒显示） ── */
+.ex-bbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: var(--explorer-bar-h, 48px);
+  padding: 0 10px;
+}
+.ex-bbar-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--md-sys-color-on-surface-variant, var(--text-3));
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--dur-1, 0.12s) var(--ease-out, ease), color var(--dur-1, 0.12s) var(--ease-out, ease);
+}
+.ex-bbar-btn:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); color: var(--text-1); }
+.ex-bbar-btn:active { transform: scale(0.96); }
+.ex-bbar-btn.is-open {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.ex-bbar-btn:first-child { justify-self: start; }
+.ex-bbar-btn:last-child { justify-self: end; }
+.ex-bbar-icon { position: relative; display: inline-flex; }
+.ex-bbar-label { line-height: 1; }
+.ex-bbar-badge {
+  position: absolute;
+  top: -6px;
+  right: -9px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--md-sys-color-on-primary, var(--on-primary, #fff));
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 15px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
+}
+.ex-bbar-center {
+  justify-self: stretch; /* 占满中槽整列：胶囊=长条（收缩会导致只有内容宽，用户拍板的长条形态） */
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* ── 抽屉/浮层共用骨架（手机底部抽屉，桌面右下浮层） ── */
+.ex-sheet-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1290;
+  animation: m-fade var(--dur-2, 0.2s) var(--ease-out, ease) both;
+}
+.ex-sheet-mask.is-closing { animation: m-fade-out var(--dur-2, 0.2s) ease both; }
+.ex-sheet {
+  position: fixed;
+  right: 20px;
+  bottom: calc(var(--explorer-bar-h, 48px) + 16px);
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  width: min(470px, 46vw);
+  max-height: min(74vh, 680px);
+  animation: m-spring-in var(--dur-3, 0.3s) var(--ease-out, ease) both;
+  overflow: hidden;
+}
+.ex-sheet.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
+.ex-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  flex: none;
+}
+.ex-sheet-head .btn { margin-left: auto; }
+.ex-sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 14px 10px;
+}
+.ex-sheet-foot {
+  display: flex;
+  justify-content: center;
+  padding: 7px 14px;
+  flex: none;
+}
+.ex-seg-row { padding: 10px 14px 0; flex: none; }
+.ex-seg { width: 100%; }
+.ex-seg button { flex: 1; }
+
+/* ── 区块头 / 分组头 ── */
+.ex-sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+.ex-sec-head b { font-size: 13px; }
+.ex-sec-head-note {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-group-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 2px;
+  padding: 0 8px;
+}
+.ex-group-name {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-3);
+}
+.ex-group-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  flex: none;
+}
+.ex-group-count {
+  min-width: 17px;
+  height: 15px;
+  padding: 0 4px;
+  line-height: 15px;
+  text-align: center;
+}
+
+/* ── 行 ── */
+.ex-row-list { display: flex; flex-direction: column; }
+.ex-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  transition: background var(--dur-1, 0.12s) var(--ease-out, ease);
+}
+.ex-row-clickable {
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ex-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ex-row-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-row-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ex-row-icon { display: inline-flex; color: var(--text-3); }
+.ex-row-actions { display: flex; gap: 1px; flex: none; opacity: 0; transition: opacity var(--dur-1, 0.12s) ease; }
+.ex-row:hover .ex-row-actions,
+.ex-row.is-active .ex-row-actions { opacity: 1; }
+/* 触屏无 hover：窄屏常显行动作 */
+@media (max-width: 839.98px) {
+  .ex-row-actions { opacity: 1; }
+}
+.ex-mini {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ── 输入 / 新建行 / 提示 ── */
+
+.ex-newrow { display: flex; gap: 8px; margin: 4px 0 8px; }
+.ex-empty-hint {
+  padding: 10px 8px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-3);
+}
+.ex-hint-line {
+  margin: 8px 0 4px;
+  padding: 0 8px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--text-3);
+}
+.ex-ws-naming { display: flex; align-items: center; gap: 6px; }
+.ex-ws-naming .ex-input { width: 140px; flex: 0 1 auto; }
+.ex-ws-list { display: flex; flex-direction: column; }
+
+/* ── 右键/长按菜单（TabHost 与 TabDrawer 的「移入工作区」共用） ── */
+.explorer-ctxmenu {
+  position: fixed;
+  z-index: 1310;
+  min-width: 168px;
+  max-width: 240px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--md-sys-color-surface-container-lowest, var(--surface, #fff));
+  box-shadow: var(--md-sys-elevation-2, 0 10px 34px rgba(0, 0, 0, 0.2));
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  animation: m-fade var(--dur-1, 0.12s) var(--ease-out, ease) both;
+}
+.explorer-ctxmenu-item {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-1);
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.explorer-ctxmenu-item:hover { background: var(--hover, rgba(0, 0, 0, 0.05)); }
+.explorer-ctxmenu-item.is-danger { color: var(--red, #d64545); }
+.explorer-ctxmenu-item.is-danger:hover { background: var(--red-soft, rgba(214, 69, 69, 0.1)); }
+.explorer-ctxmenu-naming {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px;
+}
+.explorer-ctxmenu-naming .ex-input { width: 130px; flex: 1 1 auto; }
+
+/* ── 手机（≤839.98px）：底栏三等分 + 底部抽屉 ── */
+@media (max-width: 839.98px) {
+  .ex-bbar { padding: 0 8px; }
+  .ex-bbar-btn {
+    flex-direction: column;
+    gap: 2px;
+    height: 44px;
+    padding: 3px 14px;
+    font-size: 10.5px;
+  }
+  .ex-bbar-label { line-height: 1.1; }
+  .ex-sheet {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 78vh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* ── ① 标签条滚动进度条：贴条底内侧，3px 圆角细条，scrollLeft 比例驱动 ── */
+.ex-tabstrip-wrap { position: relative; display: flex; flex: 1 1 auto; min-width: 0; }
+.ex-tabstrip-indi {
+  position: absolute;
+  left: 2px; /* 与 .ex-tabstrip 的 margin 0 2px 对齐 */
+  right: 2px;
+  bottom: -6px; /* 落在标签条底边外侧一拍（不压在标签底上），仍在顶栏 46px 之内 */
+  height: 3px;
+  pointer-events: none;
+}
+.ex-tabstrip-indi i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-1) 18%, transparent);
+}
+
+/* ── ⑨ 首页星标：home 前的特殊存在（未收藏描边灰，点亮填色） ── */
+.ex-tab-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-3);
+  cursor: pointer;
+  flex: none;
+}
+.ex-tab-star:hover:not(:disabled) { background: var(--hover, rgba(0, 0, 0, 0.05)); color: var(--text-1); }
+.ex-tab-star.is-lit { color: var(--accent); }
+.ex-tab-star.is-lit svg path { fill: currentColor; }
+
+/* ── ⑥ 桌面顶置形态（≥841px expanded）：从底栏触发柱下方弹下，手机仍是底部抽屉 ── */
+@keyframes ex-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+.ex-sheet.ex-pop {
+  bottom: auto;
+  right: auto;
+  max-height: min(70vh, 620px);
+  transform-origin: top left;
+  animation: ex-slide-down var(--dur-2, 0.2s) var(--ease-out, ease) both;
+}
+.ex-sheet.ex-pop.is-closing { animation: m-pop-out var(--dur-2, 0.2s) ease both; }
+
+/* ── ⑦ 小窗内搜索框：贴 body 顶，与抽屉同语言 ── */
+.ex-sheet-search { padding: 8px 0 2px; flex: none; }
+
+/* 标签拖动改顺序：被拖标签半透明；拖拽中全局保持抓手 */
+/* 被拖标签必须定位才能压住邻居（z-index 对非定位元素无效）；底色不透明，避免文字透出重叠 */
+.ex-tab.is-dragging { position: relative; z-index: 6; opacity: 1; }
+.ex-tab.is-dragging .ex-tab-main { cursor: grabbing; }
+
+/* 首页钉死在标签栏最左：横向滚动时不随滑动条移动 */
+.ex-tabstrip .ex-tab.is-home {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+/* 工作区底板：标签在底色板上，板前写名字；颜色由 --ws-color 注入 */
+.ex-ws-band { display: inline-flex; align-items: center; gap: 2px; padding: 2px 4px 2px 2px; border-radius: 10px; background: color-mix(in srgb, var(--ws-color, #888) 14%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ws-color, #888) 35%, transparent); flex: 0 0 auto; }
+.ex-ws-head { display: inline-flex; align-items: center; gap: 2px; padding-left: 2px; }
+.ex-ws-fold { display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; color: var(--ws-color, inherit); font-size: 12px; font-weight: 600; padding: 2px 4px; cursor: pointer; white-space: nowrap; }
+.ex-ws-count { font-size: 11px; opacity: 0.7; }
+.ex-ws-close { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; opacity: 0.7; }
+.ex-ws-close:hover { opacity: 1; background: color-mix(in srgb, var(--ws-color, #888) 22%, transparent); }
+
+/* 组合意图灰框：标签停留满 600ms 后，底下的标签被灰框括住（松手即建 / 加入工作区） */
+
+/* ══ 工作区底板：整组拖动时浮起；底板自身需要定位，层级才压得住邻居 ══ */
+.ex-ws-band { position: relative; }
+.ex-ws-band[data-ws-dragging="1"] { z-index: 6; box-shadow: 0 6px 16px rgba(0,0,0,.18); background: linear-gradient(color-mix(in srgb, var(--ws-color, #888) 14%, transparent), color-mix(in srgb, var(--ws-color, #888) 14%, transparent)), var(--dsw-alias-bg-layer-1, #fff); }
+
+/* ══ 竖版标签栏：左侧栏，标签竖排，工作区底板竖向包住组内标签 ══ */
+.ex-rail { position: fixed; top: var(--explorer-bar-h, 48px); left: 0; bottom: 0; width: 232px; overflow: hidden; padding: 8px 6px; z-index: 55; display: flex; flex-direction: column; }
+.ex-rail .ex-tabstrip-wrap, .ex-rail .explorer-tabstrip-wrap { height: 100%; }
+.ex-tabstrip.is-vertical { flex-direction: column; align-items: stretch; overflow-x: hidden; overflow-y: auto; height: 100%; width: 100%; }
+.ex-tabstrip.is-vertical .ex-tab { width: 100%; box-sizing: border-box; }
+.ex-tabstrip.is-vertical .ex-tab.is-home { position: sticky; top: 0; left: auto; }
+.ex-tabstrip.is-vertical .ex-ws-band { display: flex; flex-direction: column; align-items: stretch; width: 100%; box-sizing: border-box; padding: 2px 4px 4px; }
+.ex-tabstrip.is-vertical .ex-ws-head { justify-content: space-between; }
+.ex-tabstrip.is-vertical .ex-ws-fold { flex: 1; min-width: 0; }
+.tabs-vertical .explorer-content { margin-left: 232px; --ex-rail-w: 232px; padding-top: calc(var(--explorer-bar-h, 48px) + 12px); }
+.ex-rail-actions { display: flex; justify-content: flex-end; gap: 6px; padding-top: 6px; padding-bottom: 8px; border-top: 1px solid var(--dsw-alias-border-l1, #eee); }
+
+/* ══════════ 竖版侧栏：完整 / 窄（缩略，悬停展开为完整） ══════════ */
+.ex-rail { transition: width 0.18s ease; }
+.tabs-vertical.rail-narrow .ex-rail { width: 56px; }
+.tabs-vertical.rail-narrow .explorer-content { margin-left: 56px; --ex-rail-w: 56px; }
+.tabs-vertical.rail-narrow .ex-rail:hover { width: 232px; z-index: 50; }
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab-title,
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab-close,
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-ws-name,
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-ws-count,
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-ws-close { display: none; }
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab { justify-content: center; min-width: 0; max-width: none; width: 100%; gap: 0; }
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab .ex-tab-main { flex: none; width: 100%; padding: 0; gap: 0; justify-content: center; }
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-tab .ex-tab-main > :not(.ex-tab-glyph) { display: none; }
+.ex-row-wrap { display: flex; align-items: center; gap: 8px; }
+.ex-row-wrap > .ex-row-clickable { flex: 1 1 auto; min-width: 0; }
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-ws-fold { justify-content: center; }
+.tabs-vertical.rail-narrow .ex-rail:not(:hover) .ex-rail-actions { flex-direction: column; align-items: center; }
+.ex-rail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.ex-rail-width[aria-pressed="true"] { background: var(--dsw-alias-bg-layer-2, rgba(0, 0, 0, 0.06)); }
+
+/* 竖版标签：关闭按钮贴右，标题占中间，不紧贴文字 */
+.tabs-vertical .ex-tab { display: flex; align-items: center; gap: 6px; }
+.tabs-vertical .ex-tab .ex-tab-main { flex: 1 1 auto; min-width: 0; overflow: hidden; text-align: left; }
+.tabs-vertical .ex-tab .ex-tab-close { margin-left: auto; flex: none; }
+
+/* ══════════ 标签页 / 工作区右键就地菜单 ══════════ */
+/* 标签页 / 工作区右键就地菜单 ＝ menu tier 玻璃（v4.3：原 dsw-alias 白底实色改玻璃） */
+.ex-ctxmenu {
+  min-width: 200px;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--glass-menu-fill);
+  backdrop-filter: var(--glass-menu-blur);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+}
+.ex-ctxmenu-item {
+  display: block;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-primary, inherit);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ex-ctxmenu-item:hover { background: var(--dsw-alias-bg-layer-2, rgba(0, 0, 0, 0.06)); }
+.ex-ctxmenu-item.is-danger { color: var(--dsw-alias-state-error-primary, #f25a5a); }
+.ex-ctxmenu-sep { height: 1px; margin: 4px 6px; background: var(--dsw-alias-border-l1, rgba(0, 0, 0, 0.12)); }
+
+/* 标签前的页面 / OnePage 图标 */
+.ex-tab-glyph { display: inline-flex; align-items: center; margin-right: 4px; flex: none; opacity: 0.85; }
+
+/* ══════════ OH 胶囊：白色长条输入位（用户定案）══════════
+   占满左右按钮之间的整段；白底细边框无阴影；常态=占位文字「搜索或问小OH」；
+   按住/展开时左右弹性伸长（margin 负值扩张，快贴上两侧按钮）。 */
+.ex-bbar-center .ohx-capsule {
+  display: flex; /* 必须显式 flex：button 计算成 block 时 input(width:100%) 会掉到下一行 */
+  flex-wrap: nowrap;
+  align-items: center; /* 垂直中线（explorer-oh 基类丢了这条，文字会顶到上边框） */
+  width: 100%;
+  height: 36px;
+  min-width: 0;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-3);
+  /* 描边直读语义线二档（2026-10-14：--border 兼容链在主题/壁纸分支另有来源，
+     idle 曾被描成 accent 紫线；改直读 --og-line-2 后 idle=黑 hairline，hold/open 仍走 accent） */
+  border: 1px solid var(--og-line-2);
+  box-shadow: none;
+  justify-content: center; /* 常态占位文字整体居中（对称）；展开后 input 占满自然靠左 */
+  gap: 8px;
+  margin: 0 36px; /* 常态比满短一点点（两侧各留 36px）；点击/长按弹满 */
+  transition: margin var(--dur-3, 0.3s) var(--md-sys-motion-easing-spring, cubic-bezier(0.34, 1.4, 0.64, 1)), border-color var(--dur-2) ease, background var(--dur-2) ease;
+}
+.ex-bbar-center .ohx-capsule:hover { border-color: var(--md-sys-color-outline-variant, var(--text-3)); }
+.ex-bbar-center .ohx-capsule.is-press { transform: none; background: var(--surface); }
+.ex-bbar-center .ohx-capsule.is-hold {
+  transform: none;
+  margin: 0; /* 弹满：快贴上标签页与 OneGO */
+  border-color: var(--accent);
+  box-shadow: none;
+}
+.ex-bbar-center .ohx-capsule.is-open {
+  margin: 0;
+  border-color: var(--accent);
+  color: var(--text-1);
+  cursor: text;
+  box-shadow: none;
+}
+.ex-bbar-center .ohx-capsule-badge {
+  position: static;
+  min-width: 16px;
+  height: 16px;
+  line-height: 16px;
+  background: var(--accent);
+  color: var(--on-primary, #fff);
+  box-shadow: none;
+  flex: none;
+}
+/* 常态占位：黑显眼、不撑满（flex:none），与 HarnessMark 作为一组居中——
+   mark margin-left:auto + ph margin-right:auto 把自由空间均分到两端；
+   展开态两组 margin 归零 + input flex:1 → (OH) 自然滑动到左边、输入自然靠左 */
+.ex-bbar-center .ohx-capsule .ohx-capsule-ph {
+  flex: none !important;
+  min-width: 0 !important;
+  margin-right: auto !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-1);
+  font-weight: 500;
+  font-size: 13px;
+}
+.ex-bbar-center .ohx-capsule .harness-mark {
+  margin-left: auto;
+  transition: margin var(--dur-3, 0.3s) var(--md-sys-motion-easing-spring, cubic-bezier(0.34, 1.4, 0.64, 1));
+  flex: none;
+}
+.ex-bbar-center .ohx-capsule.is-open .harness-mark,
+.ex-bbar-center .ohx-capsule.is-hold .harness-mark {
+  margin-left: 0;
+}
+.ex-bbar-center .ohx-capsule.is-hold .ohx-capsule-voice { flex: 1 1 auto; min-width: 0; }
+
+/* 胶囊内嵌输入框（展开态）：自然占满整条胶囊——无边框/无 focus 圈/无短框底 */
+.ex-bbar-center .ohx-capsule .ohx-input {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+  caret-color: var(--accent);
+}
+.ex-bbar-center .ohx-capsule .ohx-input:focus,
+.ex-bbar-center .ohx-capsule .ohx-input:focus-visible {
+  outline: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ex-bbar-center .ohx-capsule .ohx-capsule-ph {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font-size: 13px;
+}
+
+/* 底栏安全区：全面屏手势条不压内容 */
+.ex-bbar {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── 竖栏窄轨：单一事实源铆钉——收起/展开同一套左锚 44px 槽，图标恒 x=28 ──
+   !important 压掉收起态的居中规则，两态只有文字显隐不同，布局零差异 → 无从闪动 */
+.tabs-vertical.rail-narrow .ex-rail .ex-tab { justify-content: flex-start !important; gap: 0 !important; padding-left: 0 !important; padding-right: 0 !important; min-width: 0 !important; max-width: none !important; width: 100% !important; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab .ex-tab-main { flex: 0 1 auto !important; width: auto !important; min-width: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: flex-start !important; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab .ex-tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph { flex: none !important; width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+.tabs-vertical.rail-narrow .ex-rail .ex-ws-band { padding-left: 0 !important; padding-right: 0 !important; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-add { flex: none !important; width: 44px !important; margin-left: 0 !important; justify-content: center !important; align-self: flex-start !important; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph svg,
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph img { width: 18px; height: 18px; }
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph.is-fist svg,
+.tabs-vertical.rail-narrow .ex-rail .ex-tab-glyph.is-fist svg * { stroke-width: 6; }
+.tabs-vertical.rail-narrow .ex-tabstrip.is-vertical { scrollbar-width: none; }
+.tabs-vertical.rail-narrow .ex-tabstrip.is-vertical::-webkit-scrollbar { display: none; }
+.ex-row:hover,
+.hs-detail-row:hover,
+.picker-row:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) 7%, transparent); }
+/* hover 展开只抬阴影不换底（2026-10-14）：此前换成 --glass-fill(浅色=0.52 白)，
+   亮度档玻璃(特异性 0,3,0)输给本规则(0,4,0)，有壁纸时展开那片翻白。 */
+.ex-row.is-active,
+.ex-bbar-btn.is-open {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent),
+    color-mix(in srgb, var(--md-sys-color-primary) 7%, transparent));
+  backdrop-filter: var(--glass-chip-blur);
+  -webkit-backdrop-filter: var(--glass-chip-blur);
+  box-shadow: inset 0 1px 0 var(--glass-rim-top);
+  color: var(--text-1);
+}
+
+/* ══════════ 手机端（html.is-phone）：底栏 + seeking 抽屉 ══════════
+   口径（2026-10-16 用户拍板）：**短边窄就是手机形态**（不要求触屏，桌面拖窄窗也算）；
+   **横竖都没有标签条**——底部标签条整条退役，换标签只走底栏「标签页」抽屉；
+   顶栏只留一个圆形房子钮回首页。竖栏在手机永不出现（TabRail 分流）。 */
+
+/* 手机顶栏的**圆形首页钮**（房子）：2026-10-16 用户口径「只留一个圆形的首页按钮在顶部，
+   房子形状，不是 OneTHU 形状」——所以是正圆 + IconHome，不再放品牌 monogram。 */
+.ex-tb-home-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--glass-menu-fill);
+  -webkit-backdrop-filter: var(--glass-menu-blur);
+  backdrop-filter: var(--glass-menu-blur);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-rim-top),
+    inset 0 0 0 1px var(--glass-rim-hairline);
+  color: var(--text-1);
+  cursor: pointer;
+  flex: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ex-tb-home-mark:active { transform: scale(0.97); }
+
+/* ── seeking 抽屉：把手（44px 触目标）+ 半屏/全屏两档 ── */
+html.is-phone .ex-sheet-grip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  flex: none;
+  touch-action: none;
+  cursor: grab;
+}
+html.is-phone .ex-sheet-grip.is-drag { cursor: grabbing; }
+html.is-phone .ex-sheet-grip-pill {
+  width: 44px;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-1) 24%, transparent);
+}
+/* 两档：默认档 = 半屏抽屉（0.6vh）；拉满 = 0.94vh。宽度与贴底把手机老段（媒查 839.98）统一 */
+html.is-phone .ex-sheet.is-mob-half,
+html.is-phone .ex-sheet.is-mob-full {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  max-height: none;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+html.is-phone .ex-sheet.is-mob-half { height: 60vh; }
+html.is-phone .ex-sheet.is-mob-full { height: 94vh; }
+/* 拖动中的高度由内联样式接管；这里只保证动画不跟拖打架 */
+html.is-phone .ex-sheet.is-mob-drag { animation: none; transition: none; }
+
+/* ══════════ 行级拖拽（抽屉内，电脑端与手机共用）：浮起行 + 停留合并灰框 ══════════ */
+.ex-row.is-lift-row,
+.ex-group-head.is-lift-row {
+  position: relative;
+  z-index: 6;
+  background: var(--dsw-alias-bg-layer-1, #fff);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  border-radius: 10px;
+}
+/* 停留框：拖到另一行/区块上停 0.6s，灰框罩住目标（与标签条 data-ws-frame 同语义） */
+.ex-row[data-ws-frame="1"],
+.ex-group-head[data-ws-frame="1"] {
+  box-shadow: inset 0 0 0 2px var(--dsw-alias-border-l2, #9ca3af);
+  border-radius: 10px;
+}
+
+/* ══════════ 手机底栏（三入口 + 中央 OH 胶囊）══════════
+   2026-10-16 用户三条口径落在这里：
+   ① 「Oh 胶囊初始长度有点短，加长」——两侧入口在手机档收成纯图标（文字标签隐藏，aria 仍在），
+      腾出来的宽度全给中槽胶囊；再给胶囊一个最小长度兜底（长屏机不会又缩回一小颗）。
+   ② 「部分 UI 极其拥挤 / 矮胖」——底栏抬到 56px、触目标拉到 44px、图标 22px。
+   ③ 底部安全区自己吃，别让胶囊贴在 home indicator 上。 */
+html.is-phone .ex-bbar {
+  height: calc(var(--explorer-bar-h, 48px) + 8px);
+  padding: 0 8px calc(env(safe-area-inset-bottom, 0px));
+}
+html.is-phone .ex-bbar-btn {
+  height: 44px;
+  min-width: 44px;
+  padding: 0 10px;
+  gap: 0;
+  border-radius: 12px;
+}
+html.is-phone .ex-bbar-btn .ex-bbar-label { display: none; }
+html.is-phone .ex-bbar-icon svg { width: 22px; height: 22px; }
+html.is-phone .ex-bbar-badge { top: -4px; right: -8px; min-width: 16px; height: 16px; }
+html.is-phone .ex-bbar-center { padding: 0 8px; }
+html.is-phone .ex-bbar-center .ohx-capsule {
+  height: 40px;
+  min-width: min(260px, 100%);
+  padding: 0 16px;
+}
+
+/* 手机档触目标兜底（用户口径「部分 UI 极其拥挤不堪/矮胖」）：
+   抽屉里的 ⋯/↑/↓ 只有 24px、收藏页的星标 24×36 —— 视觉尺寸不动，只把**命中区**撑到 36–40。
+   只在本形态生效，桌面像素级不变。 */
+html.is-phone .ex-mini { width: 36px; height: 36px; }
+html.is-phone .collect-star { min-width: 40px; min-height: 40px; }
+
+/* 手机档浮钮收号：62px（OneGUI 桥的 ctl-h-lg + 20）在 390 宽屏幕上过大，
+   两个圆钮还会压住卡片。48px 仍是稳的触目标（HIG 44）。选择器加到 (0,3,1) 才压得住
+   onegui-bridge.css 的 html:root :is(...)（(0,2,1)）。 */
+html:root.is-phone :is(.free-fab, .hard-refresh-fab, .top-fab, .board-fab) {
+  height: 48px;
+  min-width: 48px;
+  padding: 0;
+}
+
+/* 手机档：**分类芯片行**改横向滚动一条 —— 390 宽下 14 个分类原本折成 5 行、吃掉半屏
+   （用户口径「极其拥挤不堪」）。只认"整行都是芯片"的那种 og-inline，别把普通行也卷进去。 */
+html.is-phone .og-inline--wrap:has(> .og-chip) {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+html.is-phone .og-inline--wrap:has(> .og-chip)::-webkit-scrollbar { display: none; }
+
+/* ══════════ 手机档：课表工具栏「按钮墙」改横向滚动条 ══════════
+   课表页三行工具栏（视图/同步/新建 · 日历/步进/学期周跳 · 日历快跳）在 390 宽下折成 6 行、
+   吃掉首屏约 500px（用户口径「极其拥挤不堪」）。按钮本身是标准 42px 不该缩，
+   所以改成**每行一条横滑**：高度从 6 行降到 3 行，控件尺寸与触目标都不动，滑一下就到。
+   桌面完全不受影响（类名只在手机档生效）。 */
+html.is-phone .sched-tools {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+html.is-phone .sched-tools::-webkit-scrollbar { display: none; }
+html.is-phone .sched-tools > * { flex: none; }
+html.is-phone .sched-tools > .og-spacer { flex: 1 1 12px; min-width: 12px; }
+
+/* 课表日历格：手机档抬到 40px 高（原来 37×36，触目标偏小；列宽 50 足够）。
+   列表模式的月历是**行内样式**的原生 button（ScheduleAgenda），所以 min-height 不带 !important
+   也能生效——内联只写了 padding，不管高度。 */
+html.is-phone .sched-cal .og-btn { min-height: 40px; height: 40px; padding: 0; }
+html.is-phone .sched-cal button { min-height: 40px; }

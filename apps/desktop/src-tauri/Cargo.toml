@@ -1,6 +1,9 @@
 [package]
 name = "onethu"
-version = "0.10.0"
+# 本包有两个二进制（应用 onethu 与通知探针 notify_probe）：不给默认项时 `cargo run`
+# （tauri dev 走的就是它）无法自行选择，直接报 could not determine which binary to run
+default-run = "onethu"
+version = "0.11.0"
 description = "OneTHU — 清华万物，汇合于一体"
 edition = "2021"
 
@@ -13,24 +16,31 @@ tauri-build = { version = "2", features = [] }
 cc = "1"
 
 [dependencies]
+sha2 = "0.10"
 jni = "0.21"
 
 encoding_rs = "0.8"
-tauri = { version = "2", features = ["devtools"] }
+# protocol-asset：壁纸存档（local:<路径>）经 convertFileSrc 走 asset:// 通道渲染 —— 缺它
+# 视频/图片一片空白（2026-10-15 用户实测：dataURL 时代还能播，落盘后反而不能播）
+tauri = { version = "2", features = ["devtools", "macos-private-api", "protocol-asset"] }
 # 外链走系统浏览器：webview 内 window.open/<a target=_blank> 均无效
 tauri-plugin-opener = "2"
 tauri-plugin-onethu-calendar = { path = "plugins/onethu-calendar" }
 tauri-plugin-onethu-speech = { path = "plugins/onethu-speech" }
 tauri-plugin-onethu-mobile = { path = "plugins/onethu-mobile" }
+tauri-plugin-onethu-tts = { path = "plugins/onethu-tts" }
+tauri-plugin-onethu-overlay = { path = "plugins/onethu-overlay" }
 # Rust 插件安装：系统文件对话框选 manifest.json（Tauri v2 的 webview File 无 .path）
 tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 # 插件宿主：sidecar 进程 stdio 泵（tauri 2 同系 tokio 1.x，无版本冲突）
-tokio = { version = "1", features = ["process", "io-util", "sync", "time"] }
+tokio = { version = "1", features = ["process", "io-util", "sync", "time", "macros", "rt-multi-thread"] }
 chrono = { version = "0.4", default-features = false }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "gzip", "brotli", "charset", "http2", "multipart", "json", "cookies"] }
 zip = { version = "2", default-features = false, features = ["deflate"] }
+# Portable, host-free JavaScript computation; no Node/system/network modules.
+rquickjs = { version = "=0.14.0", default-features = false, features = ["std"] }
 # 邮箱 tab（IMAP 收 / SMTP 发，复用日历的邮箱+授权码；全 rustls 纯 Rust，Android 可交叉编译）
 imap = { version = "2.4", default-features = false }
 rustls-connector = { version = "0.23", default-features = false, features = ["webpki-root-certs"] }
@@ -41,12 +51,26 @@ url = "2"
 cookie_store = "0.22"
 # 已在依赖树中（reqwest 传递依赖 0.22.1），直连引用无新增下载
 base64 = "0.22"
+aes = "0.8"
 # OneTHU Harness 内嵌（移动端）：Rust 骨干核心直接编进 App（桌面端仍走 sidecar 进程）
 onethu-harness-core = { path = "../../../plugins/OneTHU-Harness/core" }
 tauri-plugin-geolocation = "2.3.3"
 
 # macOS 系统通知：UNUserNotificationCenter（objc2 绑定，见 src/notify_macos.rs）。
 # 与日历插件同源依赖，版本对齐避免重复编译两套 objc2。
+# ---- niko 弹幕桥：仅桌面（macOS/Windows）；Android 走 WebView 内 WS（Chromium 系无此 bug） ----
+[target.'cfg(not(target_os = "android"))'.dependencies]
+tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
+md-5 = "0.10"
+futures-util = "0.3"
+
+[target.'cfg(target_os = "android")'.dependencies]
+# Android bindings are generated with the NDK headers (upstream has no bundled Android bindings).
+rquickjs = { version = "=0.14.0", default-features = false, features = ["std", "bindgen"] }
+# Android：纯 rustls（保持可交叉编译，native-tls 无安卓后端）；指纹问题仅 macOS 网络栈实测
+tokio-tungstenite = { version = "0.24", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
+futures-util = "0.3"   # ws_bridge.rs 全平台 import（Android 交叉编译需要）
+
 [target.'cfg(target_os = "macos")'.dependencies]
 block2 = "0.6"
 objc2 = { version = "0.6", features = ["alloc", "std"] }
@@ -83,6 +107,9 @@ required-features = ["notify-probe"]
 strip = true
 lto = true
 codegen-units = 1
+
+
+
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt"] }

@@ -113,7 +113,9 @@ function looksLikeLoginHtml(html: string): boolean {
 /** 网络学堂本地登录壳（2026-09-02 诊断实录：<title>网络学堂</title> + re_log 重新登录按钮，
  *  与 info 门户登录页特征不同源——viewTlById 会话过期时服务器回这个） */
 function looksLikeLearnLoginShell(html: string): boolean {
-  return html.includes(">网络学堂<") && /re_log|重新登录/.test(html);
+  return /re_log/.test(html)
+    || (/(?:>网络学堂<|<title>[^<]*(?:Web Learning|Online Learning|Tsinghua Learning))/i.test(html)
+      && /重新登录|\/f\/login\b|(?:log|sign)\s*in again/i.test(html));
 }
 
 /** 成员串 → 姓名数组：qzmp 逗号分隔（页面渲染时 replace(/,/g," ")），表格里为空格分隔 */
@@ -439,7 +441,7 @@ function classifyLearnPage(html: string): string {
  *  没送到），重登毫无用处；R21c 真机实录：FormData 被序列化成 "[object FormData]" 导致
  *  tjzy 回 400，旧代码一律当「会话已过期」，把真因掩盖了整整一轮排查。 */
 const LEARN_LOGIN_PAGE_RE =
-  /sm2publicKey|name="i_pass"|登录页\s*-\s*清华大学网络学堂|电子身份服务系统|\/do\/off\/ui\/auth\/login\//i;
+  /sm2publicKey|name=["']i_pass["']|j_spring_security_check|登录页\s*-\s*清华大学网络学堂|电子身份服务系统|\/do\/off\/ui\/auth\/login\/|<title>[^<]*(?:login|sign in)[^<]*(?:tsinghua|learning)/i;
 
 export class LearnClient {
   #http: HttpClient;
@@ -511,20 +513,20 @@ export class LearnClient {
           return true;
         }
       } catch (e) {
-        this.#http.debug?.(`LEARN-SILENT 路径零异常 ${String(e).slice(0, 120)}`);
+        this.#http.debug?.("LEARN-SILENT 路径零异常");
       }
     }
     // 路径一：/f/login 是 learn 的服务端 302 CAS 入口
     try {
       await this.#http.text(wrap("https://learn.tsinghua.edu.cn/f/login"));
       const csrf1 = await this.#fetchCsrf();
-      this.#http.debug?.(`LEARN-SILENT 路径一 csrf=${csrf1 ? "ok" : "无"} final=${this.#http.lastFinalUrl.slice(0, 110)}`);
+      this.#http.debug?.(`LEARN-SILENT 路径一 csrf=${csrf1 ? "ok" : "无"}`);
       if (csrf1) {
         this.#csrf = csrf1;
         return true;
       }
     } catch (e) {
-      this.#http.debug?.(`LEARN-SILENT 路径一异常 ${String(e).slice(0, 120)}`);
+      this.#http.debug?.("LEARN-SILENT 路径一异常");
     }
     // 路径二：账密全链
     const cred = this.credentialProvider?.();
@@ -549,7 +551,7 @@ export class LearnClient {
         })
         .then((r) => r.text());
       this.#http.debug?.(
-        `LEARN-SILENT 路径二 check=${checkHtml.includes("登录成功") ? "成功" : checkHtml.slice(0, 80).replace(/\s+/g, " ")}`,
+        `LEARN-SILENT 路径二 confirmed=${checkHtml.includes("登录成功")} len=${checkHtml.length}`,
       );
       // 成功页锚点：必须是 learn 漫游入口（带 ticket 的 roaming_entry）——
       // 抓第一个 <a> 会拿到 oauth 回调死链（2026-09-17 逐跳实录：callback?
@@ -559,7 +561,7 @@ export class LearnClient {
         /href=['"](https?:\/\/learn\.tsinghua\.edu\.cn[^'"]+)['"]/i.exec(checkHtml);
       const anchor = anchorMatch?.[1] ?? "";
       this.#http.debug?.(
-        `LEARN-SILENT 路径二锚点 ${anchor ? anchor.slice(0, 120) : "未找到（放弃）"}`,
+        `LEARN-SILENT 路径二锚点 found=${!!anchor}`,
       );
       if (!anchor) return false;
       await this.#http.text(anchor.startsWith("http") ? wrap(anchor) : wrap("https://learn.tsinghua.edu.cn" + anchor));
@@ -571,7 +573,7 @@ export class LearnClient {
     }
   }
 
-  /** 诊断现场：最后一次课程页内容（登录凭据提取失败时用于定位） */
+  /** 诊断现场：最后一次课程页结构（不保存正文、URL 或登录凭据） */
   lastDebug = "";
 
   /** 诊断现场：最近一次取登录凭据的结果（只记种类与长度，不记凭据值本身） */
@@ -584,10 +586,10 @@ export class LearnClient {
   /** 诊断现场：最近一次 getCourseGroups 的解析情况（返回空数组时用于定位） */
   lastGroupsDebug = "";
 
-  /** 诊断现场：讨论列表解析为空时的页面 HTML 头部（空串 = 有数据） */
+  /** 诊断现场：讨论列表解析为空时的响应长度（空串 = 有数据） */
   lastBbsListDebug = "";
 
-  /** 诊断现场：话题阅读/回复为空时的原始证据（空串 = 正常） */
+  /** 诊断现场：话题阅读/回复为空时的结构计数（空串 = 正常） */
   lastBbsThreadDebug = "";
 
   async #fetchCsrf(): Promise<string | null> {
@@ -595,15 +597,15 @@ export class LearnClient {
       // 抓登录凭据的请求本身不能要求已有凭据（原 #withCsrf 写法 =
       // 「无凭据即抛」死锁，学习会话从未真正建立——2026-09-17 实录）
       const html = await this.#http.text(urls.LEARN_COURSE_LIST_PAGE());
-      this.lastDebug = html.slice(0, 1200);
+      this.lastDebug = `COURSE-PAGE kind=${classifyLearnPage(html)} len=${html.length}`;
       const hit = extractLearnCsrf(html);
       this.lastCsrfDebug = hit
         ? `ok via=${hit.via} len=${html.length}`
-        : `miss kind=${classifyLearnPage(html)} len=${html.length} final=${this.#http.lastFinalUrl.slice(0, 90)}`;
+        : `miss kind=${classifyLearnPage(html)} len=${html.length}`;
       return hit?.token ?? null;
     } catch (e) {
-      this.lastDebug = "FETCH-ERROR " + String(e);
-      this.lastCsrfDebug = "FETCH-ERROR " + String(e).replace(/\s+/g, " ").slice(0, 150);
+      this.lastDebug = "FETCH-ERROR";
+      this.lastCsrfDebug = "FETCH-ERROR";
       return null;
     }
   }
@@ -823,8 +825,10 @@ export class LearnClient {
         Promise.all(
           (["new", "submitted", "graded"] as const).map((kind) =>
             this.#fetchHomeworkKind(courseId, kind).catch((e) => {
-              this.#http.debug?.(`LEARN-HW 单项失败 course=${courseId} kind=${kind} ${String(e).slice(0, 90)}`);
-              return [] as Homework[];
+              this.#http.debug?.(`LEARN-HW 单项失败 kind=${kind}`);
+              // Callers publish this as a complete snapshot (including system
+              // calendar reconciliation). A partial failure is not an empty list.
+              throw e;
             }),
           ),
         ),
@@ -835,7 +839,7 @@ export class LearnClient {
 
   async #fetchHomeworkKind(courseId: string, kind: "new" | "submitted" | "graded"): Promise<Homework[]> {
     return this.#withRelogin(async () => {
-      this.#http.debug?.(`LEARN-HW 入口 course=${courseId} kind=${kind} csrf=${this.#csrf ? "有" : "无"}`);
+      this.#http.debug?.(`LEARN-HW 入口 kind=${kind} csrf=${this.#csrf ? "有" : "无"}`);
       const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_HOMEWORK_LIST[kind]), {
         method: "POST",
         body: this.#aoData({ wlkcid: courseId }),
@@ -846,9 +850,9 @@ export class LearnClient {
           Referer: "https://learn.tsinghua.edu.cn/f/wlxt/index/course/student/index",
         },
       });
-      // OneTHU 诊断：200 里可能是 error/分页包裹/HTML——首段落日志一轮定案
+      // 诊断只记录结构；作业标题、正文与姓名不进入日志。
       this.#http.debug?.(
-        `LEARN-API 作业 kind=${kind} course=${courseId} → ${JSON.stringify(json).slice(0, 180)}`,
+        `LEARN-API 作业 kind=${kind} rows=${asArray(json.object ?? json.resultList).length}`,
       );
       return asArray(json.object ?? json.resultList).map((raw) => {
         const d = raw as Record<string, unknown>;
@@ -908,7 +912,7 @@ export class LearnClient {
       // 返回 HTML = 会话失效被重定向到登录页/网关页（learnApi 同款判定），不能当成功吞掉。
       // R21c：抛标记交 #withRelogin 静默重登后重试一次，重试仍失败才回过期提示。
       if (/<(!DOCTYPE|html)/i.test(res.slice(0, 200))) {
-        this.lastDebug = "TJZY-HTML " + res.slice(0, 400).replace(/\s+/g, " ");
+        this.lastDebug = `TJZY-HTML len=${res.length} login=${LEARN_LOGIN_PAGE_RE.test(res)}`;
         // 只有真登录页才值得静默重登；服务器错误页如实报错（别再指向会话）
         if (LEARN_LOGIN_PAGE_RE.test(res)) {
           throw new SessionExpiredError("网络学堂会话已失效（提交后没等到确认）");
@@ -922,15 +926,17 @@ export class LearnClient {
         };
       }
       try {
-        const data = JSON.parse(res) as { result?: string; msg?: string };
-        // result === "error" 明确失败（thu-lib 只认 "success"；learnApi 宽容：非 error 即成功）
-        if (data.result === "error") {
-          this.lastDebug = "TJZY-ERR " + res.slice(0, 400);
-          return { ok: false, msg: data.msg ?? "提交失败" };
+        const data = JSON.parse(res) as { result?: unknown; msg?: unknown; message?: unknown };
+        // The machine result is language-independent. A translated failure or an
+        // unfamiliar response must never be reported as a successful submission.
+        if (data?.result !== "success") {
+          this.lastDebug = `TJZY-ERR len=${res.length} result=unconfirmed`;
+          const message = typeof data?.msg === "string" ? data.msg : typeof data?.message === "string" ? data.message : "";
+          return { ok: false, msg: message || "提交未获确认，请刷新作业状态后重试" };
         }
         return { ok: true };
       } catch {
-        this.lastDebug = "TJZY-NONJSON " + res.slice(0, 400).replace(/\s+/g, " ");
+        this.lastDebug = `TJZY-NONJSON len=${res.length}`;
         return { ok: false, msg: "返回非 JSON（可能未登录或接口变更）" };
       }
       });
@@ -1068,13 +1074,16 @@ export class LearnClient {
     // boxbox 第 2 块「本人提交的作业」的「上交作业内容」标签后：
     // <div class=" fl left" ...>上交作业内容</div><div class=" right"><span ...>HTML</span></div>，
     // 随后即 <!--作业附件-->。老 boxbox[2]+rightParts[3] 捞的是第 1 块（作业要求），恒空。
-    const cidx = viewcj.indexOf("上交作业内容");
+    // Match the label element, not a phrase inside the assignment's own prose.
+    // The zynr textarea below remains the language-neutral fallback.
+    const submittedLabel = /<(?:div|span)\b[^>]*class=["'][^"']*\bleft\b[^"']*["'][^>]*>\s*(?:上交作业内容|(?:submitted (?:homework|assignment) content|submission content|submitted content|your submission))\s*[:：]?\s*<\/(?:div|span)>/i.exec(viewcj);
+    const cidx = submittedLabel?.index ?? viewcj.indexOf("上交作业内容");
     if (cidx >= 0) {
-      const open = /<div[^>]*class="[^"]*\bright\b[^"]*"[^>]*>/i.exec(viewcj.slice(cidx));
+      const open = /<div[^>]*class=["'][^"']*\bright\b[^"']*["'][^>]*>/i.exec(viewcj.slice(cidx));
       if (open) {
         const start = cidx + open.index + open[0].length;
         const rest = viewcj.slice(start);
-        const stop = /<!--作业附件-->|<div[^>]*class="[^"]*fujian/i.exec(rest);
+        const stop = /<!--(?:作业附件|(?:homework |assignment )?attachments?)-->|<div[^>]*class=["'][^"']*\bfujian\b/i.exec(rest);
         let inner = stop ? rest.slice(0, stop.index) : rest;
         inner = inner.replace(/(?:\s*<\/div>)+\s*$/, "").trim();
         // style/script 经 innerHTML 注入既不显示也不执行，但会让「有内容」误判——直接剥掉；
@@ -1092,7 +1101,7 @@ export class LearnClient {
       if (draft) out.submittedContent = decodeHtml(draft);
     }
     this.lastPageDetailDebug =
-      `viewCj=${viewcj.length} tijiao=${tijiao.length} 上交作业内容@${cidx} form=${out.hasSubmitForm} 提取=${out.submittedContent?.length ?? -1} 原文=${JSON.stringify((out.submittedContent ?? "").slice(0, 180))}`;
+      `viewCj=${viewcj.length} tijiao=${tijiao.length} submittedLabel@${cidx} form=${out.hasSubmitForm} submittedLength=${out.submittedContent?.length ?? -1}`;
     return out;
   }
 
@@ -1122,7 +1131,11 @@ export class LearnClient {
     return { attachment: { id, name, downloadUrl, size: size || undefined } };
   }
 
-  /** 通知（全部课程或指定课程）；expired=已过期 */
+  /** 通知（全部课程或指定课程）；expired=已过期。
+   *  **返回按发布时间倒序**：跨课程聚合的天然顺序是「按课程分组」（先课1的全部、再课2的…），
+   *  课内顺序也由服务器给（实测同一门课里 09-11/10-10/09-22 这种乱序）。
+   *  下游「最近通知」卡直接取前 3 条，不在这里定序就会永远只显示第一门课的通知。
+   *  按课程分组对调用方无用（各页要的都是「最新」），故在源头定序，课内/跨课程一次解决。 */
   async getAllNotifications(courseIds: string[], expired = false): Promise<Notification[]> {
     await this.#ensureCsrfReady();
     this.#requireCsrf();
@@ -1138,7 +1151,7 @@ export class LearnClient {
               Referer: "https://learn.tsinghua.edu.cn/f/wlxt/index/course/student/index",
             },
           });
-          this.#http.debug?.(`LEARN-API 通知 → ${JSON.stringify(json).slice(0, 180)}`);
+          this.#http.debug?.(`LEARN-API 通知 rows=${asArray(json.object ?? json.resultList).length}`);
           return asArray(json.object ?? json.resultList).map((raw) => {
             const d = raw as Record<string, unknown>;
             const cid = str(d.wlkcid) || courseId;
@@ -1161,7 +1174,9 @@ export class LearnClient {
         }).catch(() => [] as Notification[]),
       ),
     );
-    return groups.flat();
+    // 发布时间倒序（normalizeTime 统一为 "YYYY-MM-DD HH:mm"/"YYYY-MM-DD"，字典序即时序；
+    // 解析失败的 "" 排在最后）。等于同时抹掉「按课程分组」与「课内乱序」两层缺陷。
+    return groups.flat().sort((a, b) => b.publishTime.localeCompare(a.publishTime));
   }
 
   async getFileList(courseId: string): Promise<CourseFile[]> {
@@ -1212,7 +1227,7 @@ export class LearnClient {
           : Array.isArray((arr as Record<string, unknown>)?.resultList)
             ? ((arr as Record<string, unknown>).resultList as unknown[])
             : [];
-      if (rawList.length === 0) this.lastBbsListDebug = `BOARD RESP:\n` + res.slice(0, 1000);
+      this.lastBbsListDebug = rawList.length === 0 ? `BOARD empty len=${res.length}` : "";
       return rawList.map((raw: unknown) => {
         const o = (raw ?? {}) as Record<string, unknown>;
         return {
@@ -1264,7 +1279,7 @@ export class LearnClient {
       const rows = Array.isArray(inner.aaData) ? inner.aaData : [];
       const threads = rows.map(parseBbsThreadRow);
       const total = parseInt(String(inner.iTotalDisplayRecords ?? inner.iTotalRecords ?? threads.length), 10);
-      this.lastBbsListDebug = threads.length === 0 ? `THREAD-PAGE RESP(${opts.kind},bqid=${opts.bqid},start=${opts.start}):\n` + res.slice(0, 1200) : "";
+      this.lastBbsListDebug = threads.length === 0 ? `THREAD-PAGE empty kind=${opts.kind} len=${res.length}` : "";
       return { total: Number.isFinite(total) ? total : threads.length, threads };
     });
   }
@@ -1291,12 +1306,11 @@ export class LearnClient {
         html = await view(urls.LEARN_BBS_THREAD_VIEW(wlkcid, threadId, bqid));
       }
       const main = parseBbsMainBlock(html);
-      // 诊断：楼主块空 = 页面结构/会话异常，留标题区+楼主区+长度指纹
+      // 诊断：楼主块空 = 页面结构/会话异常；仅保留标记存在与长度。
       this.lastBbsThreadDebug =
         main.html || main.author
           ? ""
-          : `THREAD-VIEW len=${html.length} loginShell=${looksLikeLearnLoginShell(html)} louzhuu=${html.includes("louzhuu")} tlbt=${html.includes("tlbt")}\n` +
-            html.slice(0, 900);
+          : `THREAD-VIEW len=${html.length} loginShell=${looksLikeLearnLoginShell(html)} louzhuu=${html.includes("louzhuu")} tlbt=${html.includes("tlbt")}`;
       const span = (re: RegExp): string => re.exec(html)?.[1] ?? "";
       return {
         posts: parseBbsReplyBlocks(html),
@@ -1312,25 +1326,10 @@ export class LearnClient {
           const n = parseInt(span(/loadpage2\([^,]+,\s*(\d+)\s*,/), 10);
           // 回复 ≤8 时页面无分页器，loadpage2 不存在 → 用首屏渲染数兜底
           const fallback = main ? parseBbsReplyBlocks(html).length : 0;
-          // OneTHU 诊断（2026-09-17 回复翻页失灵）：全部 loadpage 形态 + 分页器标记
-          {
-            const chunks: string[] = [];
-            let at = html.indexOf("loadpage");
-            while (at >= 0 && chunks.length < 6) {
-              chunks.push(JSON.stringify(html.slice(at, at + 90)));
-              at = html.indexOf("loadpage", at + 1);
-            }
-            const pagerAt = html.search(/下一页|上一页|pagination|pager|pagebox|countindex/);
-            const pagerChunk = pagerAt >= 0 ? JSON.stringify(html.slice(Math.max(0, pagerAt - 80), pagerAt + 260)) : "无标记";
-            const itemMarks = (html.match(/item_[0-9a-f]{8,}/g) ?? []).length;
-            // loadpage(num) 主分页函数体（真实 ajax 姿势在此）——全量输出
-            const fnAt = html.search(/function loadpage\(/);
-            const fnBody = fnAt >= 0 ? html.slice(fnAt, fnAt + 900).replace(/\s+/g, " ") : "无";
-            this.#http.debug?.(
-              `BBS-REPLY n=${n} fallback=${fallback} item数=${itemMarks} pager=${pagerChunk.slice(0, 80)}`,
-            );
-            this.#http.debug?.(`BBS-LOADPAGE ${fnBody}`);
-          }
+          // 分页结构计数足以诊断，不记录页面片段、脚本或带令牌的链接。
+          this.#http.debug?.(
+            `BBS-REPLY total=${Number.isFinite(n) ? n : 0} parsed=${fallback} items=${(html.match(/item_[0-9a-f]{8,}/g) ?? []).length} pager=${/下一页|上一页|pagination|pager|pagebox|countindex/.test(html)} loadpage=${/function loadpage\(/.test(html)}`,
+          );
           return Number.isFinite(n) && n > 0 ? n : fallback;
         })(),
         tabbh: span(/tabbh=(\d+)/),
@@ -1449,7 +1448,7 @@ export class LearnClient {
         urls.LEARN_PREFIX + "/f/wlxt/qz/v_wlkc_qzcyb/student/beforePageWdfzList?wlkcid=" + encodeURIComponent(wlkcid);
       const html = await this.#http.text(pageUrl);
       if (looksLikeLoginHtml(html)) {
-        this.lastGroupsDebug = "GROUPS login-page len=" + html.length + " " + html.slice(0, 300).replace(/\s+/g, " ");
+        this.lastGroupsDebug = "GROUPS login-page len=" + html.length;
         throw new SessionExpiredError("网络学堂会话已失效（分组页面返回了登录页）");
       }
       const table = parseGroupTables(html);
@@ -1462,8 +1461,7 @@ export class LearnClient {
         this.lastGroupsDebug = "GROUPS ok source=html-rawlines rows=" + rawLines.length;
         return rawLines;
       }
-      const tbody = /<tbody[^>]*>([\s\S]{0,400})/i.exec(html)?.[1] ?? "";
-      debug.push("html len=" + html.length + " tbody=" + tbody.replace(/\s+/g, " ").slice(0, 200));
+      debug.push(`html len=${html.length} tbody=${/<tbody\b/i.test(html)}`);
       // ② 兜底：分组页 DataTables 的数据源（页面自身 fnServerData 同款 POST aoData）。
       //    静态 HTML 只有空 tbody，行数据必须从这里拿。
       try {
@@ -1481,10 +1479,10 @@ export class LearnClient {
           this.lastGroupsDebug = "GROUPS ok source=json rows=" + groups.length;
           return groups;
         }
-        debug.push("json rows=" + rows.length + " result=" + str(json.result));
+        debug.push("json rows=" + rows.length);
       } catch (e) {
         // 页面 HTML 正常而 JSON 端点异常（404/改版）≠ 会话失效：不外抛，留现场
-        debug.push("json-ERR " + String(e).slice(0, 200));
+        debug.push("json-ERR");
       }
       this.lastGroupsDebug = "GROUPS empty " + debug.join(" | ").slice(0, 1200);
       return [];

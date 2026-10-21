@@ -1,5 +1,8 @@
 # OneTHU UI/UX 体验改造方案（下一个大版本）v2
 
+> 历史记录 / Historical record：本文保留当时的计划、研究或验收证据，不代表 0.11 当前能力全集。现行说明见 [文档入口](README.md)；英文入口见 [English overview](en/index.md)。
+
+
 > 状态：草案 v2.1（对接需求用；已融合外部咨询《建议.md》并根据项目实际情况修订；**§1 现状描述已逐项对照代码核实，2026-09-25**）
 > 分支：`next/ui-ux-overhaul`
 > 目标读者：参与本大版本的全部开发 / 设计 / 文案同学
@@ -109,7 +112,7 @@
 | 在线服务 / THOS 服务大厅（含进行中/待办任务、**亲友入校报备**） | `info/ThosPage.tsx` | group（行政组；报备假期前置顶——P2 时间敏感项） |
 | 其他 Info 应用导航（门户应用目录，点击走系统浏览器） | `pages/OtherInfoPage.tsx` + `lib/infoApps.ts` | buried |
 | 个人信息 / 体测（`ProfileTab` `FitnessTab`，InfoPage tab；卫生成绩在 LifePage） | group（我的/行政） |
-| Thubook（`ThubookPage.tsx`） | group |
+| THUBook（`ThubookPage.tsx`） | group |
 
 **高级能力（标准模式不可见）**
 | 功能 | 分级 |
@@ -310,7 +313,7 @@
 ### 3.4 动态取色（Android 12+）
 
 - [x] `plugins/onethu-mobile` 新增 `getDynamicColor()` 命令（Rust: src-tauri/src/lib.rs dynamic_color → run_mobile_plugin_async("getDynamicColor")，supported=false 时返回 None 走降级），读取系统 monet 取色返回 seed/tone；
-- [x] 前端注入 Reference 层变量，Compat 层自动生效（src/lib/dynamicColor.ts：注入 <style id="onethu-dynamic-color">，选择器 html:root[data-dynamic="on"] 特异性高于令牌/暗色套/主题注入，关开关即整体移除）；
+- [x] 前端注入 Reference 层变量，Compat 层自动生效（src/lib/dynamicColor.ts：注入 `<style id="onethu-dynamic-color">`，选择器 html:root[data-dynamic="on"] 特异性高于令牌/暗色套/主题注入，关开关即整体移除）；
 - [x] 降级链：Android 12+ 取色 → 清华紫 → 跟随系统亮暗。设置中提供"跟随系统取色"开关。
 
 
@@ -502,6 +505,9 @@ B3c 余项（勿丢）：
       共 6 项 ≤ 7，未新增栏目。计划里的「日历」落在数据与同步的云同步分节、「隐私」落在账号的安全分节；
       「帮助」等 §4.6 做完再进来。
 - [x] 高级模式（@BT@Settings.tsx@BT@ 内显式开关开启）：插件系统、插件市场、Trace、开发者面板、实验特性。
+      **2026-10-09 决策变更（用户拍板）**：插件系统升回一级菜单（侧栏「插件」；@BT@ADVANCED_SETTINGS_TABS@BT@
+      清空、@BT@navigation.ts@BT@ 升 group、Layout 不再重定向到设置）——插件无论逻辑还是功能都不该藏在高级设置里；
+      本行保留为历史决策记录，下方「落地」描述中与插件相关部分同此变更。
       落地：开关在 **设置 → 关于 → 高级模式**（存 @BT@localStorage@BT@，默认关）。它收放的是**可见性**不是功能：
       关着时侧栏「插件」入口与设置「插件」页签收起，人在插件页会被送回今日；打开即原样回来。
       插件市场与 Trace 都在插件系统内，随之收放；开发者面板本来就是 dev 构建专属；
@@ -564,9 +570,9 @@ B3c 余项（勿丢）：
       才折进「详情」——HTTP 状态码 / TypeError / URL / fetch failed；"网络不通""未读满 5 个"这类人话不误判，
       否则等于把用户唯一看得懂的那行也拿走了）。
 - [x] 覆盖面：`ErrorNote`（所有页面错误态的总闸）改走拆分渲染，一处改动全网受益；
-      Thubook 两处 `HTTP <码>` 改成「人话：HTTP <码>」；设置页 5 处 `失败：<原始串>` 改用拆分器。
+      THUBook 两处 `HTTP <码>` 改成「人话：HTTP <码>」；设置页 5 处 `失败：<原始串>` 改用拆分器。
 - [x] 护栏 `tools/tech-details-test.mjs` 会**真跑一遍分类器**（5 个技术串 + 4 句人话），
-      并守住 Thubook 不再出现裸 HTTP 状态码（按 HTTP 出现次数与带人话的次数必须相等来判）。
+      并守住 THUBook 不再出现裸 HTTP 状态码（按 HTTP 出现次数与带人话的次数必须相等来判）。
 - [x] 全量文案改写产出对照表，归档 `docs/ui-copy-audit.md` 续篇，双人审定。
       · 2026-02 审定后同批落地：词表扩展与全部改写一次提交，扫描命中从 63 处（术语 42 / 语气 21）清到 0，另人工清出扫描范围外的 7 处用户可见文案；「原子」按你的定名统一改「收藏项」（只动文案，收藏行为不变）；语气按你的意见从「口语」收敛为「书面语但亲民」。
 

@@ -29,38 +29,45 @@ ok(/\.chip-btn::after/.test(CSS), ".chip-btn 未接入共用状态层");
 ok(/\.chip-btn:focus-visible/.test(CSS), ".chip-btn 缺焦点环");
 ok(!CSS.includes("border-radius: 999px"), "全文仍有字面 999px 胶囊（应 var(--r-pill)）");
 
-/* 开关：两套实现归一（同几何、同令牌、同 on 态） */
+/* 开关：遗留 .switch（global.css）与新 OneGUI .og-switch（gui form.css）各自钉几何/令牌/焦点环；
+   on 态都走强调色，不再出现语义绿（2026-10-19 控件收编 OneGUI 后，两套几何不再强求一致）。 */
+const GUI_FORM = readFileSync("packages/gui/src/styles/form.css", "utf8");
 const sw = block(".switch");
-const ps = block(".plg-switch");
-ok(sw !== null && ps !== null, "开关规则缺失");
-if (sw && ps) {
-  ok(/width: 36px/.test(sw) && /width: 36px/.test(ps), "两个开关宽度不一致");
-  ok(/height: 22px/.test(sw) && /height: 22px/.test(ps), "两个开关高度不一致");
-  for (const [name, b] of [[".switch", sw], [".plg-switch", ps]]) {
-    ok(!b.includes("var(--surface-3)") && !b.includes("var(--border-strong)"), name + " 仍用 Compat 底色/描边");
-    ok(b.includes("--md-sys-color-surface-container-high"), name + " 轨道底色应走 System 令牌");
-  }
-  ok(!/var\(--green\)/.test(CSS.slice(CSS.indexOf(".plg-switch.is-on"), CSS.indexOf(".plg-switch.is-on") + 200)), ".plg-switch 的 on 态仍是语义绿（应与 .switch 同走 primary）");
-  ok(/\.plg-switch\.is-on[^}]*--md-sys-color-primary/.test(CSS), ".plg-switch 的 on 态应走 primary");
-  ok(/\.switch\.on[^}]*--md-sys-color-primary/.test(CSS), ".switch 的 on 态应走 primary");
+ok(sw !== null, ".switch 规则缺失");
+if (sw) {
+  ok(/width: 36px/.test(sw) && /height: 22px/.test(sw), ".switch 几何应为 36×22");
+  ok(!sw.includes("var(--surface-3)") && !sw.includes("var(--border-strong)"), ".switch 仍用 Compat 底色/描边");
+  ok(sw.includes("--md-sys-color-surface-container-high"), ".switch 轨道底色应走 System 令牌");
 }
+ok(!/var\(--green\)/.test(CSS.slice(CSS.indexOf(".switch.on"), CSS.indexOf(".switch.on") + 200)), ".switch 的 on 态仍是语义绿（应与强调色一致）");
+ok(/\.switch\.on[^}]*--md-sys-color-primary/.test(CSS), ".switch 的 on 态应走 primary");
 ok(/\.switch:hover::before/.test(CSS) || /\.switch:hover/.test(CSS), ".switch 缺 hover 状态层");
 ok(/\.switch:focus-visible/.test(CSS), ".switch 缺焦点环");
-ok(/\.plg-switch:focus-visible/.test(CSS), ".plg-switch 缺焦点环");
-
-/* 进度：两条配方归一 */
-for (const sel of [".thos-progress-bar", ".cloud-quota-bar"]) {
-  const b = block(sel);
-  ok(b !== null, sel + " 规则缺失");
-  if (b) {
-    ok(b.includes("var(--r-pill)"), sel + " 端点应为胶囊令牌");
-    ok(b.includes("--md-sys-color-surface-container-high"), sel + " 轨道应走 System 令牌");
-    ok(!/var\(--surface-3\)|var\(--border-soft\)/.test(b), sel + " 仍用 Compat 轨道色");
-  }
+/* OneGUI 开关：几何走令牌、on 态走强调色、焦点环不许漏 */
+ok(GUI_FORM.includes(".og-switch {"), "OneGUI .og-switch 规则缺失");
+if (GUI_FORM.includes(".og-switch {")) {
+  const ogSwitch = GUI_FORM.slice(GUI_FORM.indexOf(".og-switch {"), GUI_FORM.indexOf("}", GUI_FORM.indexOf(".og-switch {")));
+  ok(ogSwitch.includes("var(--og-ctl-switch-w)") && ogSwitch.includes("var(--og-ctl-switch-h)"), ".og-switch 几何应走开关令牌");
+  ok(/\.og-switch\.is-checked[^}]*\{[^}]*var\(--og-accent\)/.test(GUI_FORM), ".og-switch 的 on 态应走强调色");
+  ok(/\.og-switch:focus-visible \{ box-shadow: var\(--og-ring\); \}/.test(GUI_FORM), ".og-switch 缺焦点环");
 }
-for (const sel of [".thos-progress-bar > span", ".cloud-quota-bar > div"]) {
-  const b = block(sel);
-  ok(b !== null && b.includes("var(--md-sys-color-primary)") && b.includes("var(--r-pill)"), sel + " 填充应走 primary + 胶囊令牌");
+
+/* 进度：遗留 .thos-progress-bar 与 OneGUI .og-progress（chip.css）都是胶囊端点 + 令牌轨道/强调色填充 */
+const GUI_CHIP = readFileSync("packages/gui/src/styles/chip.css", "utf8");
+const pb = block(".thos-progress-bar");
+ok(pb !== null, ".thos-progress-bar 规则缺失");
+if (pb) {
+  ok(pb.includes("var(--r-pill)"), ".thos-progress-bar 端点应为胶囊令牌");
+  ok(pb.includes("--md-sys-color-surface-container-high"), ".thos-progress-bar 轨道应走 System 令牌");
+  ok(!/var\(--surface-3\)|var\(--border-soft\)/.test(pb), ".thos-progress-bar 仍用 Compat 轨道色");
+}
+const pbFill = block(".thos-progress-bar > span");
+ok(pbFill !== null && pbFill.includes("var(--md-sys-color-primary)") && pbFill.includes("var(--r-pill)"), ".thos-progress-bar > span 填充应走 primary + 胶囊令牌");
+ok(GUI_CHIP.includes(".og-progress {") && /--og-c-progress-h/.test(GUI_CHIP), "OneGUI .og-progress 规则缺失");
+if (GUI_CHIP.includes(".og-progress {")) {
+  const ogProg = GUI_CHIP.slice(GUI_CHIP.indexOf(".og-progress {"), GUI_CHIP.indexOf("}", GUI_CHIP.indexOf(".og-progress {")));
+  ok(ogProg.includes("var(--og-radius-full)") && ogProg.includes("var(--og-surface-4)"), "OneGUI .og-progress 应走胶囊端点 + 表面令牌轨道");
+  ok(/\.og-progress-fill \{[^}]*var\(--og-accent\)/.test(GUI_CHIP), "OneGUI .og-progress-fill 应走强调色");
 }
 
 /* 骨架屏：只许一条规则，流光只许走 --skeleton-shine */

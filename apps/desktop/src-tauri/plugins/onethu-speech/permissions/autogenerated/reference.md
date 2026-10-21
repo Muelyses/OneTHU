@@ -1,7 +1,7 @@
 ## Default Permission
 
 允许使用灵动岛语音输入：
-查询支持平台、开始/轮询/停止原生语音识别（需麦克风权限）。
+查询支持平台、开始/轮询/停止原生语音识别、读取输入电平（需麦克风权限）。
 
 #### This default permission set includes the following:
 
@@ -9,6 +9,7 @@
 - `allow-speech-start`
 - `allow-speech-poll`
 - `allow-speech-stop`
+- `allow-speech-level`
 
 ## Permission Table
 
@@ -18,6 +19,32 @@
 <th>Description</th>
 </tr>
 
+
+<tr>
+<td>
+
+`onethu-speech:allow-speech-level`
+
+</td>
+<td>
+
+Enables the speech_level command without any pre-configured scope.
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+`onethu-speech:deny-speech-level`
+
+</td>
+<td>
+
+Denies the speech_level command without any pre-configured scope.
+
+</td>
+</tr>
 
 <tr>
 <td>

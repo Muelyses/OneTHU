@@ -1,0 +1,33 @@
+{
+  "entries": [
+    {
+      "key": "xiaoda-chat",
+      "file": "xiaoda-chat.png",
+      "sha256": "bdcf66924c1b9b1d43556ed4761da572b8d8f719f0f85acbb8eeb84f9a888c2b",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "route": "xiaoda",
+      "source": "Uncomposited real app screenshot; production components and styles; isolated Xiaoda/skill data adapter; no school requests or private account data"
+    },
+    {
+      "key": "xiaoda-skills",
+      "file": "xiaoda-skills.png",
+      "sha256": "db650eb2de184f3ea275e6a613c69b28454afc3a9e685ca5f8965a64516d2ab5",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "deviceScaleFactor": 2
+      },
+      "mode": "full",
+      "route": "xiaoda",
+      "source": "Uncomposited real app screenshot; production components and styles; isolated Xiaoda/skill data adapter; no school requests or private account data"
+    }
+  ],
+  "errors": [],
+  "passed": true,
+  "command": "node tools/capture-tour-xiaoda.mjs"
+}

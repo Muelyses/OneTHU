@@ -99,17 +99,72 @@ import {
 import {CrTimetable, SearchCoursePriorityQuery, SearchParams} from "./models/cr/cr";
 import {BankPaymentByMonth, GraduateIncome} from "./models/home/bank";
 import {
+    addAward,
+    addDiscussionNote,
+    addIssueNote,
+    addMergeRequestNote,
+    assignTo,
+    createDiscussion,
+    createMergeRequest,
+    createProjectIssue,
+    deleteDiscussionNote,
+    getAwards,
+    getCurrentUser,
+    getDiscussions,
+    getIssueNotes,
+    getJobTrace,
+    getMergeRequestChanges,
+    getMergeRequestNotes,
+    addGroupMember,
+    addProjectMember,
+    createGroup,
     getNamespaces,
     getPersonalProjects,
+    getPipelineJobs,
     getProjectBranches,
+    getProjectByPath,
     getProjectDetail,
     getProjectFileBlob,
+    getProjectIssue,
+    getProjectIssues,
+    getProjectMergeRequest,
+    getProjectMergeRequests,
+    getProjectPipelines,
     getProjectTree,
     getRecentProjects,
+    getRequestCounts,
     getStarredProjects,
+    createProject,
+    mergeMergeRequest,
+    removeAward,
     renderMarkdown,
+    resolveDiscussion,
     searchProjects,
+    searchUsers,
+    setIssueState,
+    setMergeRequestState,
+    updateDiscussionNote,
+    updateIssueNote,
+    updateMergeRequestNote,
 } from "./lib/gitlab";
+export type {
+    Award as GitAward,
+    Branch as GitBranch,
+    DiffChange as GitDiffChange,
+    Discussion as GitDiscussion,
+    File as GitFile,
+    Issue as GitIssue,
+    Job as GitJob,
+    MergeRequest as GitMergeRequest,
+    MergeRequestChanges as GitMergeRequestChanges,
+    Namespace as GitNamespace,
+    Note as GitNote,
+    Pipeline as GitPipeline,
+    PipelineStatus as GitPipelineStatus,
+    Project as GitProject,
+    ProjectDetail as GitProjectDetail,
+    User as GitUser,
+} from "./models/gitlab/gitlab";
 import {CalendarData} from "./models/schedule/calendar";
 import {bookDetail, downloadChapters, searchReservesLib} from "./lib/reserves-lib";
 import {BookChapter} from "./models/home/reserves-lib";
@@ -209,6 +264,10 @@ export class InfoHelper {
     public clearCookieHandler = async () => {
     };
 
+    /** Admission/cooldown for every new authentication attempt, including roaming
+     * and silent re-login. Joining an outstanding attempt does not run it again. */
+    public beforeLoginAttemptHook: (() => Promise<void>) | undefined = undefined;
+
     /**
      * Invoked when a login error occurs.
      *
@@ -236,6 +295,12 @@ export class InfoHelper {
      * Override this value to customize.
      */
     public twoFactorAuthLimitHook: (() => Promise<void>) | undefined = undefined;
+
+    /**
+     * 【上游 v3.19.0】信任浏览器复选框（singleLogin）：id 会话可被校内其他系统
+     * 免密复用（passwordlessEntry）。关闭后登录链回到纯账密模式。
+     */
+    public trustBrowser = true;
 
     /**
      * Invoked when it has to be decided whether to trust the current fingerprint.
@@ -988,6 +1053,28 @@ export class InfoHelper {
 
     public getGitProjectDetail = async (id: number) => getProjectDetail(this, id);
 
+    /** 按完整路径取仓库（group/project）；关联已有 GitLab 仓库用。 */
+    public getGitProjectByPath = async (path: string) => getProjectByPath(this, path);
+
+    /** 新建 GitLab 仓库（建在当前账号命名空间下）。 */
+    public createGitProject = async (input: {name: string; path?: string; description?: string; visibility?: "private" | "internal" | "public"}) =>
+        createProject(this, input);
+
+    /** 搜 GitLab 用户（组织成员邮箱 → 账号关联用）。 */
+    public searchGitUsers = async (search: string) => searchUsers(this, search);
+
+    /** 把 GitLab 用户加入项目（30 developer / 20 reporter）。 */
+    public addGitProjectMember = async (id: number, userId: number, accessLevel = 30) =>
+        addProjectMember(this, id, userId, accessLevel);
+
+    /** 新建 GitLab 组织（群组）。 */
+    public createGitGroup = async (input: {name: string; path: string; description?: string; visibility?: "private" | "internal" | "public"}) =>
+        createGroup(this, input);
+
+    /** 把 GitLab 用户加进组织（群组）。 */
+    public addGitGroupMember = async (groupId: number, userId: number, accessLevel = 30) =>
+        addGroupMember(this, groupId, userId, accessLevel);
+
     public getGitProjectTree = async (
         id: number,
         path: string,
@@ -1000,6 +1087,108 @@ export class InfoHelper {
     public getGitProjectFileBlob = async (id: number, sha: string) => getProjectFileBlob(this, id, sha);
 
     public renderGitMarkdown = async (text: string) => renderMarkdown(this, text);
+
+    public getGitCurrentUser = async () => getCurrentUser(this);
+
+    public getGitProjectIssues = async (id: number, state = "opened", search = "", page = 1) =>
+        getProjectIssues(this, id, state, search, page);
+
+    public getGitProjectIssue = async (id: number, iid: number) => getProjectIssue(this, id, iid);
+
+    public getGitIssueNotes = async (id: number, iid: number) => getIssueNotes(this, id, iid);
+
+    public getGitProjectMergeRequests = async (id: number, state = "opened", search = "", page = 1) =>
+        getProjectMergeRequests(this, id, state, search, page);
+
+    public getGitProjectMergeRequest = async (id: number, iid: number) => getProjectMergeRequest(this, id, iid);
+
+    public getGitMergeRequestNotes = async (id: number, iid: number) => getMergeRequestNotes(this, id, iid);
+
+    public getGitProjectPipelines = async (id: number, ref = "", page = 1) => getProjectPipelines(this, id, ref, page);
+
+    public getGitPipelineJobs = async (id: number, pipelineId: number) => getPipelineJobs(this, id, pipelineId);
+
+    public getGitJobTrace = async (id: number, jobId: number) => getJobTrace(this, id, jobId);
+
+    public createGitProjectIssue = async (id: number, title: string, description: string) =>
+        createProjectIssue(this, id, title, description);
+
+    public setGitIssueState = async (id: number, iid: number, state: "close" | "reopen") =>
+        setIssueState(this, id, iid, state);
+
+    public addGitIssueNote = async (id: number, iid: number, body: string) => addIssueNote(this, id, iid, body);
+
+    public setGitMergeRequestState = async (id: number, iid: number, state: "close" | "reopen") =>
+        setMergeRequestState(this, id, iid, state);
+
+    public addGitMergeRequestNote = async (id: number, iid: number, body: string) =>
+        addMergeRequestNote(this, id, iid, body);
+
+    public updateGitIssueNote = async (id: number, iid: number, noteId: number, body: string) =>
+        updateIssueNote(this, id, iid, noteId, body);
+
+    public updateGitMergeRequestNote = async (id: number, iid: number, noteId: number, body: string) =>
+        updateMergeRequestNote(this, id, iid, noteId, body);
+
+    public getGitAwards = async (kind: "issue" | "mr", id: number, iid: number, noteId?: number) =>
+        getAwards(this, kind, id, iid, noteId);
+
+    public addGitAward = async (kind: "issue" | "mr", id: number, iid: number, name: string, noteId?: number) =>
+        addAward(this, kind, id, iid, name, noteId);
+
+    public removeGitAward = async (kind: "issue" | "mr", id: number, iid: number, awardId: number, noteId?: number) =>
+        removeAward(this, kind, id, iid, awardId, noteId);
+
+    public getGitMergeRequestChanges = async (id: number, iid: number) => getMergeRequestChanges(this, id, iid);
+
+    public createGitMergeRequest = async (
+        id: number,
+        sourceBranch: string,
+        targetBranch: string,
+        title: string,
+        description: string,
+    ) => createMergeRequest(this, id, sourceBranch, targetBranch, title, description);
+
+    public mergeGitMergeRequest = async (id: number, iid: number) => mergeMergeRequest(this, id, iid);
+
+    public getGitDiscussions = async (kind: "issue" | "mr", id: number, iid: number, page = 1) =>
+        getDiscussions(this, kind, id, iid, page);
+
+    public createGitDiscussion = async (kind: "issue" | "mr", id: number, iid: number, body: string) =>
+        createDiscussion(this, kind, id, iid, body);
+
+    public addGitDiscussionNote = async (kind: "issue" | "mr", id: number, iid: number, discussionId: string, body: string) =>
+        addDiscussionNote(this, kind, id, iid, discussionId, body);
+
+    public updateGitDiscussionNote = async (
+        kind: "issue" | "mr",
+        id: number,
+        iid: number,
+        discussionId: string,
+        noteId: number,
+        body: string,
+    ) => updateDiscussionNote(this, kind, id, iid, discussionId, noteId, body);
+
+    public deleteGitDiscussionNote = async (
+        kind: "issue" | "mr",
+        id: number,
+        iid: number,
+        discussionId: string,
+        noteId: number,
+    ) => deleteDiscussionNote(this, kind, id, iid, discussionId, noteId);
+
+    public resolveGitDiscussion = async (
+        kind: "issue" | "mr",
+        id: number,
+        iid: number,
+        discussionId: string,
+        resolved: boolean,
+    ) => resolveDiscussion(this, kind, id, iid, discussionId, resolved);
+
+    public assignGitTo = async (kind: "issue" | "mr", id: number, iid: number, userIds: number[]) =>
+        assignTo(this, kind, id, iid, userIds);
+
+    public getGitRequestCounts = async (kind: "issue" | "mr", id: number) => getRequestCounts(this, kind, id);
 
     public searchReservesLib = async (bookName: string, page?: number) => searchReservesLib(this, bookName, page);
 
@@ -1076,3 +1265,9 @@ export class InfoHelper {
 export {roam, clearOutstandingLogin};
 /** 静默重登（info app 同源）：取用户信息比对 ryh 判活，死则用 helper 上的凭据重登 */
 export {verifyAndReLogin} from "./lib/core";
+export {hasOutstandingLogin, getOutstandingLoginIdentity} from "./lib/core";
+
+export { organizationGitApi } from "./lib/gitlab";
+export { LoginPreparationError } from "./utils/error";
+export type { LoginPreparationReason } from "./utils/error";
+export type { GitOrgMember, GitOrgGroup, GitOrgProject, GitOrgFile, GitOrgProtection } from "./lib/gitlab";

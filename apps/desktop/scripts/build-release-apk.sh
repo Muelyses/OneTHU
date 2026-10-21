@@ -26,9 +26,20 @@ TAURI_DIR="$REPO/apps/desktop/src-tauri"
 GEN="$TAURI_DIR/gen/android"
 PROJ_PRIMARY="$HOME/onethu-android"
 OUT_DIR="${ONETHU_APK_OUT:-$HOME/Desktop/OneTHU-builds}"
-CARGO_TARGET="${CARGO_TARGET_DIR:-$HOME/Library/Caches/onethu/cargo-target}"
+# 编译盘探测（可选）：本机 SSD APFS 镜像；存在则优先（SDK/NDK/target 都在上面）
+ONETHU_BUILD_VOL="${ONETHU_BUILD_VOL:-/Volumes/OneTHUBuild}"
+if [ -d "$ONETHU_BUILD_VOL/oh-android-sdk" ]; then
+  CARGO_TARGET="${CARGO_TARGET_DIR:-$ONETHU_BUILD_VOL/oh-desktop/cargo-target}"
+  export CARGO_HOME="${CARGO_HOME:-$ONETHU_BUILD_VOL/cargo-home}"
+  export RUSTUP_HOME="${RUSTUP_HOME:-$ONETHU_BUILD_VOL/rustup-home}"
+  export PATH="$CARGO_HOME/bin:$PATH"
+  DEFAULT_SDK="$ONETHU_BUILD_VOL/oh-android-sdk"
+else
+  CARGO_TARGET="${CARGO_TARGET_DIR:-$HOME/Library/Caches/onethu-cargo-target}"
+  DEFAULT_SDK="$HOME/Library/Android/sdk"
+fi
 
-export ANDROID_HOME="${ANDROID_HOME:-$HOME/Library/Android/sdk}"
+export ANDROID_HOME="${ANDROID_HOME:-$DEFAULT_SDK}"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export NDK_HOME="${NDK_HOME:-$(ls -d "$ANDROID_HOME"/ndk/* 2>/dev/null | tail -1)}"
 export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk@17}"
@@ -37,6 +48,7 @@ export COPYFILE_DISABLE=1
 export PATH="$JAVA_HOME/bin:$PATH"
 
 TC="$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin"
+export BINDGEN_EXTRA_CLANG_ARGS_aarch64_linux_android="--sysroot=${TC%/bin}/sysroot -I${TC%/bin}/sysroot/usr/include/aarch64-linux-android"
 export CC_aarch64_linux_android="$TC/aarch64-linux-android24-clang"
 export AR_aarch64_linux_android="$TC/llvm-ar"
 export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$TC/aarch64-linux-android24-clang"
@@ -120,6 +132,7 @@ rm -rf "$TAURI_DIR/target" # 误落在 exFAT 上的 target（若上一次构建�
 # ⑤ 构建
 echo "· 开始构建（JDK $(java -version 2>&1 | head -1 | sed 's/.*"\(.*\)".*/\1/')，NDK $(basename "$NDK_HOME")）"
 cd "$REPO/apps/desktop"
+mkdir -p "$OUT_DIR"
 LOG="$OUT_DIR/apk-build.log"
 if ! npx tauri android build --apk --target aarch64 > "$LOG" 2>&1; then
   echo "✗ 构建失败，错误摘要："
@@ -147,8 +160,13 @@ KS="${ONETHU_KEYSTORE:-$HOME/.android/debug.keystore}"
 KS_ALIAS="${ONETHU_KEY_ALIAS:-androiddebugkey}"
 KS_PASS="${ONETHU_KS_PASS:-android}"
 KEY_PASS="${ONETHU_KEY_PASS:-android}"
+# 不把私钥口令放进可被进程列表读取的 argv。只传变量名给 apksigner。
+export ONETHU_APK_SIGN_STORE_PASS="$KS_PASS"
+export ONETHU_APK_SIGN_KEY_PASS="$KEY_PASS"
 "$BT/apksigner" sign --ks "$KS" --ks-key-alias "$KS_ALIAS" \
-  --ks-pass "pass:$KS_PASS" --key-pass "pass:$KEY_PASS" "$OUT"
+  --ks-pass env:ONETHU_APK_SIGN_STORE_PASS --key-pass env:ONETHU_APK_SIGN_KEY_PASS "$OUT"
+unset ONETHU_APK_SIGN_STORE_PASS ONETHU_APK_SIGN_KEY_PASS
+"$BT/apksigner" verify --verbose "$OUT"
 
 echo
 echo "✓ 产物：$OUT ($(du -h "$OUT" | cut -f1))"

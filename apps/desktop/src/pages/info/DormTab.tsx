@@ -1,3 +1,7 @@
+import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
+import { Input } from "@onethu/gui";
+import { Select } from "@onethu/gui";
 /**
  * 宿舍页 —— 电费余额/缴费记录 + 订水。
  * - 电费：thu-info-lib dorm.ts 移植（家园网 myhome 会话，ELE_REMAINDER / ELE_PAY_RECORD）；
@@ -39,6 +43,8 @@ const ELEC_KEY = "dorm:elec.v2";
 const ELEC_TTL = 5 * 60 * 1000;
 
 export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {}) {
+  const uiLocale = useUiLocale();
+
   const { status } = useApp();
 
   /* ---------------- 充值记录（家园网会话 + SWR 缓存） ----------------
@@ -102,7 +108,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
   const queryWater = async (): Promise<void> => {
     if (!waterId.trim()) {
       setWaterState("error");
-      setWaterMsg("请输入订水编号");
+      setWaterMsg(i18n("pages.info.dormtab.e115f82b905e"));
       return;
     }
     setWaterState("busy");
@@ -112,7 +118,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
       setContact(u.name ?? "");
       setAddress(u.address ?? "");
       setWaterState("ok");
-      setWaterMsg(u.name || u.address ? "已载入联系人/地址" : "水站未返回该编号信息，可手动填写");
+      setWaterMsg(u.name || u.address ? i18n("pages.info.dormtab.3dd6c0cbae44") : i18n("pages.info.dormtab.dd57d5ccb2f3"));
     } catch (err) {
       logErr("WATER-Q", err);
       setWaterState("error");
@@ -123,7 +129,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
   const submitWater = async (): Promise<void> => {
     if (!waterId.trim() || !address.trim()) {
       setWaterState("error");
-      setWaterMsg("订水编号与送达地址必填");
+      setWaterMsg(i18n("pages.info.dormtab.cdf03a9a9579"));
       return;
     }
     setWaterState("busy");
@@ -131,7 +137,7 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
     try {
       await submitWaterOrder(universalFetch, { id: waterId, num, num1, lid: brand, address });
       setWaterState("ok");
-      setWaterMsg("订水提交成功");
+      setWaterMsg(i18n("pages.info.dormtab.40819c08f4e1"));
     } catch (err) {
       logErr("WATER-SUB", err);
       setWaterState("error");
@@ -151,15 +157,13 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
   return (
     <>
       <div data-sec="ele">
-        <SectionHead title="电费" aside="家园网 myhome.tsinghua.edu.cn · 宿舍绑定房间" />
+        <SectionHead title={i18n("pages.info.dormtab.ab8cff9a597a")} aside={i18n("pages.info.dormtab.a0d22c766730")} />
       </div>
       {/* 余额接口不可用说明条（固定展示） */}
       <Card style={{ padding: "12px 16px" }}>
-        <span style={{ fontSize: 13, color: "var(--text-dim)" }}>
-          家园网系统暂时无法获取余额接口
-        </span>
+        <span style={{ fontSize: 13, color: "var(--text-dim)" }}>{i18n("pages.info.dormtab.c70f03b85ab5")}</span>
       </Card>
-      <SectionHead title="充值记录" aside="Netweb 缴费流水" />
+      <SectionHead title={i18n("pages.info.dormtab.3da69f3bb5a2")} aside={i18n("pages.info.dormtab.337269e5b07c")} />
       {recState === "error" ? (
         <ErrorNote
           text={recError ?? ""}
@@ -175,9 +179,9 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
         <Card className="list">
           {records.map((r, i) => (
             <div className="row" key={`${r.id}-${i}`}>
-              <span className={STATUS_CHIP[r.status] ?? "chip chip-gray"}>{r.status || "缴费"}</span>
+              <span className={STATUS_CHIP[r.status] ?? "chip chip-gray"}>{r.status || i18n("pages.info.dormtab.658c536de644")}</span>
               <div className="row-main">
-                <div className="row-title">{r.name || "电费充值"}</div>
+                <div className="row-title">{r.name || i18n("pages.info.dormtab.f06a3f64f717")}</div>
                 <div className="row-sub">
                   {r.time || "–"}
                   {r.channel ? ` · ${r.channel}` : ""}
@@ -191,68 +195,49 @@ export function DormTab({ deepSection }: { deepSection?: "ele" | "water" } = {})
         </Card>
       ) : (
         <Card>
-          <Empty text="暂无充值记录。" />
+          <Empty text={i18n("pages.info.dormtab.d962ed9d270e")} />
         </Card>
       )}
 
       <div data-sec="water">
-        <SectionHead title="订水" aside="清华水站 dingshui.bjqzhd.com · 公开数据" />
+        <SectionHead title={i18n("pages.info.dormtab.bb8c939d0fcd")} aside={i18n("pages.info.dormtab.8d6ebc4e3453")} />
       </div>
       <Card style={{ padding: 18 }}>
         <div className="field">
-          <label htmlFor="water-id">订水编号（水站用户编号）</label>
+          <label htmlFor="water-id">{i18n("pages.info.dormtab.fbfad2e4053e")}</label>
           <div style={{ display: "flex", gap: 8 }}>
-            <input
-              id="water-id"
-              className="input"
-              style={{ flex: 1, minWidth: 0 }}
-              value={waterId}
-              onChange={(e) => setWaterId(e.target.value)}
-              placeholder="水站发票/标签上的用户编号"
-            />
-            <button className="btn" onClick={() => void queryWater()} disabled={waterState === "busy"}>
-              查询
-            </button>
+            <div style={{ flex: 1, minWidth: 0 }}>{<Input value={waterId} onChange={(value) => setWaterId(value)} placeholder={i18n("pages.info.dormtab.c3fc6114b55c")} />}</div>
+            <Btn variant="outline" onClick={() => void queryWater()} disabled={waterState === "busy"}>{i18n("pages.info.dormtab.bcd6771e08ec")}</Btn>
           </div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "0 14px" }}>
           <div className="field">
-            <label htmlFor="water-contact">联系人</label>
-            <input id="water-contact" className="input" value={contact} onChange={(e) => setContact(e.target.value)} />
+            <label htmlFor="water-contact">{i18n("pages.info.dormtab.3303b56982a0")}</label>
+            <Input value={contact} onChange={(value) => setContact(value)} />
           </div>
           <div className="field">
-            <label htmlFor="water-num">订水量（桶）</label>
+            <label htmlFor="water-num">{i18n("pages.info.dormtab.6cb5a329f274")}</label>
             <input id="water-num" className="input" type="number" min={1} value={num} onChange={(e) => setNum(e.target.value)} />
           </div>
           <div className="field">
-            <label htmlFor="water-num1">水票数</label>
+            <label htmlFor="water-num1">{i18n("pages.info.dormtab.e7d4e116f779")}</label>
             <input id="water-num1" className="input" type="number" min={0} value={num1} onChange={(e) => setNum1(e.target.value)} />
           </div>
         </div>
         <div className="field">
-          <label htmlFor="water-brand">水种</label>
-          <select id="water-brand" className="input" value={brand} onChange={(e) => setBrand(e.target.value)}>
-            {Object.entries(WATER_BRANDS).map(([id, name]) => (
+          <label htmlFor="water-brand">{i18n("pages.info.dormtab.3a37484d933f")}</label>
+          <Select id="water-brand" value={brand} onChange={(value) => setBrand(value)}>{Object.entries(WATER_BRANDS).map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
               </option>
-            ))}
-          </select>
+            ))}</Select>
         </div>
         <div className="field">
-          <label htmlFor="water-addr">送达地址（楼栋 + 房间号）</label>
-          <input
-            id="water-addr"
-            className="input"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="如：紫荆 1 号楼 301A"
-          />
+          <label htmlFor="water-addr">{i18n("pages.info.dormtab.d872b26584ac")}</label>
+          <Input value={address} onChange={(value) => setAddress(value)} placeholder={i18n("pages.info.dormtab.b09dff2cb1cb")} />
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button className="btn btn-primary" onClick={() => void submitWater()} disabled={waterState === "busy"}>
-            {waterState === "busy" ? "提交中…" : "提交订水"}
-          </button>
+          <Btn variant="solid" tone="brand" onClick={() => void submitWater()} disabled={waterState === "busy"}>{waterState === "busy" ? i18n("pages.info.dormtab.18931020ad52") : i18n("pages.info.dormtab.d189e0a2a1c5")}</Btn>
           {waterMsg ? (
             <span className={waterState === "error" ? "t-red" : ""} style={{ fontSize: 13 }}>
               {waterMsg}

@@ -1,3 +1,5 @@
+import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../../i18n/index.js";
+import { Btn } from "@onethu/gui";
 /** 学期切换（learnX SemesterSelection）：列表 + 最新/当前标记，选择后回到课程列表 */
 import { useMemo } from "react";
 import { PageAtomStar } from "../..//components/Collect.js";
@@ -8,6 +10,8 @@ import { getSelectedSemester, setSelectedSemester, useLearnData, useSemesters } 
 import { BackButton, semesterText } from "./shared.js";
 
 export function SemesterSelectionPage() {
+  const uiLocale = useUiLocale();
+
   const { navigate } = useApp();
   const { data: bundle } = useLearnData();
   const { list, current, state, error, reload } = useSemesters();
@@ -15,7 +19,7 @@ export function SemesterSelectionPage() {
   // 正在展示的学期：已选学期 ?? 数据实际加载的学期
   const active = useMemo(
     () => getSelectedSemester() ?? bundle?.semester.id ?? current ?? null,
-    [bundle, current],
+    [uiLocale, bundle, current],
   );
 
   const choose = (id: string | null) => {
@@ -28,16 +32,13 @@ export function SemesterSelectionPage() {
   return (
     <>
       <PageHead
-        title="切换学期"
+        title={i18n("pages.learn.semesterselectionpage.780a32a91907")}
         
         actions={
           <>
-            <PageAtomStar atomKey="learn-semester" title="学期切换" />
-            <BackButton to="learn" label="课程列表" />
-            <button className="btn" onClick={() => void reload()} disabled={state === "loading"}>
-              <IconRefresh width={14} height={14} />
-              刷新
-            </button>
+            <PageAtomStar atomKey="learn-semester" title={i18n("pages.learn.semesterselectionpage.231ff6cd9b63")} />
+            <BackButton to="learn" label={i18n("pages.learn.semesterselectionpage.e5da2c107242")} />
+            <Btn variant="outline" onClick={() => void reload()} disabled={state === "loading"}><IconRefresh width={14} height={14} />{i18n("pages.learn.semesterselectionpage.aee887434131")}</Btn>
           </>
         }
       />
@@ -52,7 +53,7 @@ export function SemesterSelectionPage() {
             <SemesterRow
               id={current}
               active={active === current}
-              badge="最新"
+              badge={i18n("pages.learn.semesterselectionpage.569af1a47dbd")}
               onChoose={() => choose(current)}
             />
           ) : null}
@@ -61,7 +62,7 @@ export function SemesterSelectionPage() {
               key={id}
               id={id}
               active={active === id}
-              badge={id === current ? "最新" : undefined}
+              badge={id === current ? i18n("pages.learn.semesterselectionpage.569af1a47dbd") : undefined}
               onChoose={() => choose(id)}
             />
           ))}
@@ -74,15 +75,15 @@ export function SemesterSelectionPage() {
               onKeyDown={(e) => e.key === "Enter" && choose(null)}
             >
               <div className="row-main">
-                <div className="row-title">跟随最新学期{current ? `（${semesterText(current)}）` : ""}</div>
-                <div className="row-sub">默认跟随学校当前学期</div>
+                <div className="row-title">{i18nRich("pages.learn.semesterselectionpage.5f408a394c38", { value: current ? `（${semesterText(current)}）` : "" })}</div>
+                <div className="row-sub">{i18n("pages.learn.semesterselectionpage.0228408fe073")}</div>
               </div>
               {!getSelectedSemester() ? (
-                <span className="chip chip-blue"><IconCheck width={12} height={12} />当前</span>
+                <span className="chip chip-blue"><IconCheck width={12} height={12} />{i18n("pages.learn.semesterselectionpage.cb62ebd689ee")}</span>
               ) : null}
             </div>
           )}
-          {(list ?? []).length === 0 && !current ? <Empty text="暂无可选学期。" /> : null}
+          {(list ?? []).length === 0 && !current ? <Empty text={i18n("pages.learn.semesterselectionpage.067635691aed")} /> : null}
         </Card>
       )}
     </>
@@ -90,6 +91,8 @@ export function SemesterSelectionPage() {
 }
 
 function SemesterRow({ id, active, badge, onChoose }: { id: string; active: boolean; badge?: string; onChoose: () => void }) {
+  const uiLocale = useUiLocale();
+
   return (
     <div
       className="row row-click"
@@ -104,7 +107,7 @@ function SemesterRow({ id, active, badge, onChoose }: { id: string; active: bool
       </div>
       {badge ? <span className="chip chip-gray">{badge}</span> : null}
       {active ? (
-        <span className="chip chip-blue"><IconCheck width={12} height={12} />正在查看</span>
+        <span className="chip chip-blue"><IconCheck width={12} height={12} />{i18n("pages.learn.semesterselectionpage.ee04f93a02b7")}</span>
       ) : null}
     </div>
   );

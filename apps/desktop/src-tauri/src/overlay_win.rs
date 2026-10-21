@@ -526,11 +526,18 @@ fn watch_main_activation(app: &AppHandle) {
 }
 
 // ── 建窗（懒创建、复用；label 固定 oh-orb，与 capabilities 对齐） ─────────────
+// Windows WebView2 deadlocks if a synchronous IPC command creates a WebView.
+// Keep every lazy-creation caller async, and serialize concurrent first opens.
 #[cfg(desktop)]
-fn ensure_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+static WINDOW_CREATION: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
+
+#[cfg(desktop)]
+async fn ensure_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+    let _creating = WINDOW_CREATION.lock().await;
     if let Some(w) = app.get_webview_window(OVERLAY_LABEL) {
         return Ok(w);
     }
+    log("create start (async IPC)");
     let win = WebviewWindowBuilder::new(app, OVERLAY_LABEL, WebviewUrl::App(OVERLAY_URL.into()))
         .title("OH")
         .inner_size(BALL_BOX, BALL_BOX)
@@ -618,10 +625,10 @@ pub fn overlay_supported() -> bool {
 
 /// 显示球（用户在本体 OH 对话界面点「打开悬浮球」时调；不激活主窗口、不抢焦点）
 #[tauri::command]
-pub fn overlay_show(app: AppHandle) -> Result<(), String> {
+pub async fn overlay_show(app: AppHandle) -> Result<(), String> {
     #[cfg(desktop)]
     {
-        let win = ensure_window(&app)?;
+        let win = ensure_window(&app).await?;
         let reload = {
             let mut s = st();
             let r = s.reload_pending;
@@ -715,7 +722,7 @@ pub fn overlay_hide(app: AppHandle) -> Result<(), String> {
 
 /// 切形态：ball（球）/ bar（语音条）/ panel（半屏对话面）/ hidden（= 本次关闭）
 #[tauri::command]
-pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
+pub async fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
     #[cfg(desktop)]
     {
         // 兼容写法 `panel:<逻辑高度>`：把手改高度走这条时，**即使专用命令没注册也能工作**
@@ -728,7 +735,7 @@ pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
         if m == Mode::Hidden {
             return overlay_hide(app);
         }
-        let win = ensure_window(&app)?;
+        let win = ensure_window(&app).await?;
         let ball = { st().ball }.or_else(|| load_pos(&app));
         if let Some(h) = inline_h {
             let mon2 = pick_monitor(&win, ball);
@@ -782,10 +789,10 @@ pub fn overlay_set_mode(app: AppHandle, mode: String) -> Result<(), String> {
 /// 顶部把手拖动改面板高度（参数 = **视觉块**的逻辑 px）。
 /// Rust 侧权威夹取到屏高 30%~80%，立刻改窗 + 落盘（下次打开沿用），并回传新 geometry。
 #[tauri::command]
-pub fn overlay_set_panel_height(app: AppHandle, h: f64) -> Result<(), String> {
+pub async fn overlay_set_panel_height(app: AppHandle, h: f64) -> Result<(), String> {
     #[cfg(desktop)]
     {
-        let win = ensure_window(&app)?;
+        let win = ensure_window(&app).await?;
         let ball = { st().ball }.or_else(|| load_pos(&app));
         let mon = pick_monitor(&win, ball);
         let work_h_log = mon.wh as f64 / mon.scale;
@@ -813,10 +820,10 @@ pub fn overlay_set_panel_height(app: AppHandle, h: f64) -> Result<(), String> {
 
 /// 把悬浮窗移到屏幕绝对位置（物理像素，与 OverlayEvent.x/y 同一坐标系）——JS 拖动兜底通道
 #[tauri::command]
-pub fn overlay_move(app: AppHandle, x: f64, y: f64) -> Result<(), String> {
+pub async fn overlay_move(app: AppHandle, x: f64, y: f64) -> Result<(), String> {
     #[cfg(desktop)]
     {
-        let win = ensure_window(&app)?;
+        let win = ensure_window(&app).await?;
         let pos = PhysicalPosition::new(x.round() as i32, y.round() as i32);
         win.set_position(pos)
             .map_err(|e| format!("移动悬浮窗失败：{e}"))?;
@@ -832,10 +839,10 @@ pub fn overlay_move(app: AppHandle, x: f64, y: f64) -> Result<(), String> {
 
 /// 相对移动（逻辑 px 增量）——JS 拖动兜底用，避免把 CSS 屏幕坐标硬换算成物理像素
 #[tauri::command]
-pub fn overlay_nudge(app: AppHandle, dx: f64, dy: f64) -> Result<(), String> {
+pub async fn overlay_nudge(app: AppHandle, dx: f64, dy: f64) -> Result<(), String> {
     #[cfg(desktop)]
     {
-        let win = ensure_window(&app)?;
+        let win = ensure_window(&app).await?;
         let cur = win
             .outer_position()
             .map_err(|e| format!("读取悬浮窗位置失败：{e}"))?;
@@ -882,7 +889,10 @@ fn note_ball(app: &AppHandle, win: &WebviewWindow, pos: PhysicalPosition<i32>) {
 pub fn overlay_drag_start(app: AppHandle) -> Result<(), String> {
     #[cfg(desktop)]
     {
-        let win = ensure_window(&app)?;
+        // Dragging needs the current native mouse event, so keep this command
+        // synchronous, but never create a WebView here (Windows deadlock).
+        let win = app.get_webview_window(OVERLAY_LABEL)
+            .ok_or("悬浮窗尚未打开")?;
         log("drag_start：交给原生开始拖窗（拖不动时前端会自动退 nudge 兜底）");
         win.start_dragging()
             .map_err(|e| format!("启动窗口拖动失败：{e}"))

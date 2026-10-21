@@ -19,7 +19,7 @@ Windows 0.11 的现场日志确认：OAuth 登录页 HTTP 200、17524 字符；S
 - 登录行为回归 30 项通过，包括标题空壳、字符实体、脚本/隐藏文字反例、错误密码、HTTP 429、一次凭据提交和完整 TOTP 流程。
 - 生产构建浏览器验收 103 项通过：桌面/手机、微信与 TOTP、语言即时切换、错误重译、保留输入、刷新持久化、320 像素窄屏无横向溢出；无浏览器运行时错误。
 - info-lib 构建、desktop 类型检查、CSS、发布身份、Windows WebView 线程护栏、网络日志隐私 20 项通过；i18n 7552/7552、errors 0，无新增待翻译词条。
-- 浏览器使用 macOS Chromium、模拟 Tauri IPC 与学校响应；不使用真实密码、不发送学校认证请求。这不等于 Windows WebView2 实机验收或真实会话长期稳定性验收。最终截图后，未实现的首页数据接口可能使模拟会话回到登录页。
+- 浏览器使用 macOS Chromium、模拟 Tauri IPC 与学校响应；不使用真实密码、不发送学校认证请求。这不等于 Windows WebView2 实机验收或真实会话长期稳定性验收。这轮早期验收没有覆盖进入主界面后的数据错误，后文记录了用户随后发现的问题和补充验收。
 - 初次 dev 预览夹具遇到 React 双实例；改用生产构建完成上列验收。旧 GitLab 源码文字断言失败于未修改的 `GitLabPage.tsx` 中已被 i18n 提取的中文原文，HEAD 同样不含该原文；不将这项旧静态断言计为通过。
 - 产物与浏览器记录：`/Volumes/OneTHUBuild/artifacts/windows-auth-title/`。
 
@@ -41,3 +41,20 @@ Windows 0.11 的现场日志确认：OAuth 登录页 HTTP 200、17524 字符；S
 新增验证：生产浏览器 117 项通过，覆盖受信直登、微信/TOTP、故意不提供学习会话、等待实际数据 hook 报错后仍保留主界面、成功冷却清空、不重放密码；恢复行为 7 项、门禁/指纹 28 项、认证行为 30 项、JS 隐私 23 项、Rust native_security 11 项通过。类型与生产构建通过。依然不能替代受影响 Windows 的真实校园账户验收。
 
 此前 `6a5803ff` 的 Mac/APK 与 Windows Actions 39597291885 已构建，但用户新反馈到达时尚未上传。该批已标记 **DO-NOT-PUBLISH**，必须以本次进一步修复后的同一提交重新构建三端。正式渠道此时仍保持上一批已发布安装包，未混发新旧补包。
+
+## 三端重发结果
+
+- 安装包源码固定为 `fc626cfd187ecd9ede05b801caee48b8e75cf974`；Windows Actions [39600985096](https://github.com/smartThise/OneTHU/actions/runs/39600985096) 成功，macOS 与 Android 本地构建。
+- 三端内置同一前端 `index-Dq3utnxa.js`，SHA-256 为 `9554a3ac6de4dae352d70319b6eeea6f891df8c696b34ba008a113c680d4e492`。Windows 从 PE 资源目录核对 app/NSIS 的 0.11.0.0 版本与 x64 app 架构；NSIS 的 `VS_FIXEDFILEINFO.dwStrucVersion` 为 0，与应用的 0x10000 不同，验证脚本按实际资源格式读取。
+- macOS DMG 挂载后严格验签通过，app 与 Harness 均为 arm64。Android 为 0.11.0 / versionCode 11003，正式证书 SHA-256 保持 `cc14d735667bb8b5d3134e7dfdccf6a4d9353e1a2fce54503f4a29705423aa97`，APK ZIP、ARM64 ELF、无开发者面板检查通过。
+- 已替换 [Release v0.11.0](https://github.com/smartThise/OneTHU/releases/tag/v0.11.0) 与[清华云盘固定分享](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/) 内的 `/macOS`、`/Windows`、`/Android` 原文件，同时更新双源 `latest.json`、SHA256SUMS 和双语发行说明；保留旧版本目录内容。
+- 公开匿名下载三个云盘安装包，大小与 SHA-256 均和 GitHub Release API digest、本地文件及两个版本清单一致。官网使用这一轮重新生成的核验快照。
+- 同版本安装包替换需要用户下载安装；不把同版本重发描述为已安装客户端自动升级。受影响 Windows 的真实账号登录仍待用户复测。
+
+| 安装包 | SHA-256 |
+|---|---|
+| `OneTHU_0.11.0_aarch64.dmg` | `9b5cddf8b9946a83e9044bbbb4490e55de985d03840c050f732640efa0222f44` |
+| `OneTHU_0.11.0_x64-setup.exe` | `97b359e635c57483272fa74bb50be78f963ad1fc2c72021be5e5a7db5fd70caf` |
+| `OneTHU_0.11.0_arm64.apk` | `f614ddd725067d3b8d7331eccfbfdf10d22d5ba871a408c719be99c3201fa59e` |
+
+完整产物与校验记录保存在 `/Volumes/OneTHUBuild/artifacts/release-0.11/login-session/`，不提交原始校园认证日志或签名私钥。

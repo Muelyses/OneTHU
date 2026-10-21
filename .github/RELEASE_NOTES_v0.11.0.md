@@ -1,5 +1,25 @@
 # OneTHU 0.11 · Revolution
 
+## 登录与语言补包 / Sign-in and language rebuild (2026-10-21)
+
+- 修复只有网页标题包含认证标记的二次认证页被误报为不可用登录表单；登录页和验证码页新增语言选择，切换保留输入并即时翻译应用错误。
+- Recognize the university’s title-only two-factor authentication page. Choose a language before signing in or entering a verification code, while retaining drafts and updating application error messages.
+- Source: `fc626cfd187ecd9ede05b801caee48b8e75cf974`. Android: 0.11.0 / versionCode **11003**, same release signing certificate.
+- 修复首次登录后被学习服务恢复流程误退回登录页、成功后仍被 20 秒重试保护阻挡的问题；学习服务暂时不可用时保留已登录界面，失败尝试的保护仍然有效。日志同时隐藏 URL 路径中的会话参数。
+- Keep the authenticated interface during learning-service recovery, clear the retry guard after a completed sign-in, and redact session parameters from diagnostic URLs. Failed attempts retain retry protection.
+- 117 production-browser checks, 30 authentication regressions, 28 login-state checks, 7 session-readiness regressions, 23 log-privacy checks and 11 native-security tests passed. Browser authentication used simulated school responses; the reported Windows machine still needs a real sign-in retest.
+
+## 2026-10-21 三端补包 / Updated installers
+
+- 导览语言选择前增加中英双语权限须知，首行红字提醒手动授权；每次重放导览都会显示。
+- 云盘与 OH 分别授权、默认关闭。未授权云盘时无法进入完整模式，极简／实用模式仍可使用；云盘页面可直达导览撤回许可。
+- 手机首页与 OnePage 白板默认锁定，点击编辑后才可拖动、改变大小或使用编辑工具。
+- 修复 macOS 悬浮球后台线程修改窗口属性引起的崩溃；旧原生壳无法保存许可时直接显示原因。
+
+The guide now begins with a bilingual permissions notice and a prominent reminder to authorize services manually. Cloud and OH permissions are separate and off by default. Full mode requires cloud consent; Minimal and Practical remain usable without it. Mobile boards stay locked until Edit is enabled. This rebuild also fixes an AppKit threading crash and explains permission-save failures on outdated native hosts.
+
+三端构建源码 / Source for all installers: [`fc626cfd`](https://github.com/smartThise/OneTHU/commit/fc626cfd187ecd9ede05b801caee48b8e75cf974). Android: `versionName 0.11.0`, `versionCode 11003`, 原正式签名 / existing release certificate. 使用旧版 0.11 的用户可下载本次安装包覆盖更新。 / Users on an earlier 0.11 build can install this replacement package to update.
+
 从 0.10 的公测版走向统一的校园工作台。主题、壁纸、布局按你的习惯调整，原版上下 Logo 保持不变。
 
 ## 这一版有什么
@@ -44,14 +64,9 @@ Downloads: **macOS Apple Silicon DMG**, **Windows x64 installer**, and **Android
 
 [English website](https://onethu.github.io/en/) · [English guide](https://onethu.github.io/docs/en/getting-started/)
 
+---
+
+**构建 / Build**：[`fc626cfd`](https://github.com/smartThise/OneTHU/commit/fc626cfd187ecd9ede05b801caee48b8e75cf974) · Windows [Actions](https://github.com/smartThise/OneTHU/actions/runs/39600985096) · macOS / Android 本地构建，Android 沿用正式签名 / locally built; Android retains the existing release key.
+
 
 **清华云盘镜像 / Cloud mirror**：[固定下载入口](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/)，按 `Android` / `macOS` / `Windows` 系统目录直接下载 / download directly from your platform folder。三端安装包与校验文件已同步，匿名下载 SHA-256 核对一致 / all three installers and checksums are mirrored and verified.
-
-
-### Android 补包 / Android rebuild · 2026-10-21
-
-Android `0.11.0` 已更新至内部构建号 `11001`：手机首页和所有 OnePage 白板新增「编辑白板 / 完成编辑」。默认锁定，进入编辑后才能移动、缩放、绘画、增删和调整布局；退出后正常点击与滑动阅读。正式签名不变，可覆盖原同签名 0.11。Windows/macOS 安装包未更换。
-
-The Android `0.11.0` APK is now build `11001`. Home and every OnePage board start locked on mobile. Tap **Edit board** to arrange widgets and reveal editing tools; tap **Done editing** to return to normal browsing. The release signing identity is unchanged. Windows and macOS installers are unchanged.
-
-Android source: [`f1e06f94`](https://github.com/smartThise/OneTHU/commit/f1e06f94). Updated checksums and both update manifests accompany this APK.

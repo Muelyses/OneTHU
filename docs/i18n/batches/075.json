@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.zhjwxk.courses.30db88b23b2e",
+      "source": "活动名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1437,
+          "context": "{i18n(\"pages.zhjwxk.courses.30db88b23b2e\")}"
+        }
+      ],
+      "translation": "Event name",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.312e77e57076",
+      "source": "研院余量: 不限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 789,
+          "context": "{i18n(\"pages.zhjwxk.courses.312e77e57076\")}"
+        }
+      ],
+      "translation": "Grad school openings: Any",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.31ba5905672b",
+      "source": " 提供 · 仅限非商业用途",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 317,
+          "context": "{i18n(\"pages.zhjwxk.courses.31ba5905672b\")}"
+        }
+      ],
+      "translation": " provided · Non-commercial use only",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.zhjwxk.courses.33fabd4ae4d8",
       "source": "例如：社团例会",
@@ -1496,54 +1544,6 @@
         }
       ],
       "translation": "★≤3.0 caution line",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.8a8542f69648",
-      "source": "下一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 822,
-          "context": "{i18n(\"pages.zhjwxk.courses.8a8542f69648\")}"
-        }
-      ],
-      "translation": "Next page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.8ade52e3ff55",
-      "source": "暂无培养方案数据（该学期可能未配置，或登录已过期）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 850,
-          "context": "{i18n(\"pages.zhjwxk.courses.8ade52e3ff55\")}"
-        }
-      ],
-      "translation": "No degree plan data (this semester may not be configured, or your sign-in has expired)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.zhjwxk.courses.90c4b556f895",
-      "source": "候选中（队列未出位次）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
-          "line": 1013,
-          "context": "r.cand.myPos ? i18n(\"pages.zhjwxk.courses.f09113c77540\", { myPos: String(r.cand.myPos), queueTotal: String(r.cand.queueTotal) }) : i18n(\"pages.zhjwxk.courses.90c4b556f895\")"
-        }
-      ],
-      "translation": "Candidate (no queue position yet)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

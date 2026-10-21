@@ -1,5 +1,5 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -683,7 +683,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 8,
+          "line": 13,
           "context": "return t(\"enum.label.15d208d1b4c9\");"
         }
       ],
@@ -699,7 +699,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 13,
+          "line": 18,
           "context": "return t(\"enum.label.1760b98532ec\");"
         }
       ],
@@ -715,7 +715,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 42,
+          "line": 47,
           "context": "return t(\"enum.label.1eed24ed8f6f\");"
         }
       ],
@@ -731,7 +731,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 6,
+          "line": 11,
           "context": "return t(\"enum.label.2118cbc10988\");"
         }
       ],
@@ -747,7 +747,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 22,
+          "line": 27,
           "context": "return t(\"enum.label.21255f717947\");"
         }
       ],
@@ -763,7 +763,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 50,
+          "line": 55,
           "context": "return t(\"enum.label.266e6cb77079\");"
         }
       ],
@@ -779,7 +779,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 47,
+          "line": 52,
           "context": "return t(\"enum.label.26ee9467d4b0\");"
         }
       ],
@@ -795,7 +795,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 25,
+          "line": 30,
           "context": "return t(\"enum.label.31c5f1aaa0d5\");"
         }
       ],
@@ -811,7 +811,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 36,
+          "line": 41,
           "context": "return t(\"enum.label.3303b56982a0\");"
         }
       ],
@@ -827,7 +827,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 9,
+          "line": 14,
           "context": "return t(\"enum.label.352cdc807892\");"
         }
       ],
@@ -843,7 +843,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 33,
+          "line": 38,
           "context": "return t(\"enum.label.3b806a76e492\");"
         }
       ],
@@ -859,7 +859,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 60,
+          "line": 65,
           "context": "return t(\"enum.label.3d708e8e8b1f\");"
         }
       ],
@@ -875,7 +875,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 23,
+          "line": 28,
           "context": "return t(\"enum.label.3deae16f1adb\");"
         }
       ],
@@ -891,7 +891,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 61,
+          "line": 66,
           "context": "return t(\"enum.label.452c7b10d57a\");"
         }
       ],
@@ -907,7 +907,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 38,
+          "line": 43,
           "context": "return t(\"enum.label.4a3572036143\");"
         }
       ],
@@ -923,7 +923,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 51,
+          "line": 56,
           "context": "return t(\"enum.label.4c11cd93c142\");"
         }
       ],
@@ -939,7 +939,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 17,
+          "line": 22,
           "context": "return t(\"enum.label.506c068a2a1e\");"
         }
       ],
@@ -955,7 +955,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 34,
+          "line": 39,
           "context": "return t(\"enum.label.541fbddf4725\");"
         }
       ],
@@ -971,7 +971,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 12,
+          "line": 17,
           "context": "return t(\"enum.label.5c55a67935af\");"
         }
       ],
@@ -987,7 +987,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 21,
+          "line": 26,
           "context": "return t(\"enum.label.5f45bb826b16\");"
         }
       ],
@@ -1003,7 +1003,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 15,
+          "line": 20,
           "context": "return t(\"enum.label.6ac380cbd716\");"
         }
       ],
@@ -1019,7 +1019,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 55,
+          "line": 60,
           "context": "return t(\"enum.label.6acfa1db6a62\");"
         }
       ],
@@ -1035,7 +1035,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 19,
+          "line": 24,
           "context": "return t(\"enum.label.6e098153a586\");"
         }
       ],
@@ -1051,7 +1051,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 41,
+          "line": 46,
           "context": "return t(\"enum.label.75bd5f68e277\");"
         }
       ],
@@ -1067,7 +1067,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 58,
+          "line": 63,
           "context": "return t(\"enum.label.783d638053ea\");"
         }
       ],
@@ -1083,7 +1083,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 14,
+          "line": 19,
           "context": "return t(\"enum.label.8289e67df525\");"
         }
       ],
@@ -1099,7 +1099,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 39,
+          "line": 44,
           "context": "return t(\"enum.label.8459c1e91bc0\");"
         }
       ],
@@ -1115,7 +1115,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 45,
+          "line": 50,
           "context": "return t(\"enum.label.9151a836f996\");"
         }
       ],
@@ -1131,7 +1131,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 24,
+          "line": 29,
           "context": "return t(\"enum.label.a0f88ca9398c\");"
         }
       ],
@@ -1147,7 +1147,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 7,
+          "line": 12,
           "context": "return t(\"enum.label.a14f23af7016\");"
         }
       ],
@@ -1163,7 +1163,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 27,
+          "line": 32,
           "context": "return t(\"enum.label.a17b8666e5d9\");"
         }
       ],
@@ -1179,7 +1179,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 54,
+          "line": 59,
           "context": "return t(\"enum.label.a626aad412b7\");"
         }
       ],
@@ -1195,7 +1195,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 37,
+          "line": 42,
           "context": "return t(\"enum.label.a914a7b52cec\");"
         }
       ],
@@ -1211,8 +1211,23 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 59,
+          "line": 64,
           "context": "return t(\"enum.label.aa39cac2b409\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 437,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 505,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 545,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
         }
       ],
       "translation": "Web Learning",
@@ -1227,7 +1242,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 16,
+          "line": 21,
           "context": "return t(\"enum.label.aaabe42b5a23\");"
         }
       ],
@@ -1243,7 +1258,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 18,
+          "line": 23,
           "context": "return t(\"enum.label.b0938ffbd07c\");"
         }
       ],
@@ -1259,7 +1274,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 30,
+          "line": 35,
           "context": "return t(\"enum.label.bd2d74b297d1\");"
         }
       ],
@@ -1275,7 +1290,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 35,
+          "line": 40,
           "context": "return t(\"enum.label.be67cc45b9f0\");"
         }
       ],
@@ -1291,7 +1306,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 53,
+          "line": 58,
           "context": "return t(\"enum.label.d39567b2b9f1\");"
         }
       ],
@@ -1307,7 +1322,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 46,
+          "line": 51,
           "context": "return t(\"enum.label.d4f7864690bb\");"
         }
       ],

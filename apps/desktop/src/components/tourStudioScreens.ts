@@ -1,6 +1,6 @@
-import { t as i18n } from "../i18n/index.js";
+import { t as i18n, getLocale } from "../i18n/index.js";
 /** Bundled captures of the running OneTHU app. Never synthesize a screen here. */
-const bundledUrls = import.meta.glob<string>("../assets/tour/real-ui/*.png", {
+const bundledUrls = import.meta.glob<string>("../assets/tour/real-ui/**/*.png", {
   eager: true, query: "?url", import: "default",
 });
 export const STUDIO_SCREEN_KEYS = [
@@ -22,12 +22,26 @@ export interface StudioScreenSelection {
 export const STUDIO_SCREEN_URLS = Object.fromEntries(STUDIO_SCREEN_KEYS.map(key => [
   key, bundledUrls[`../assets/tour/real-ui/${key}.png`] ?? "",
 ])) as Readonly<Record<StudioScreenKey, string>>;
+const bundledVideos = import.meta.glob<string>("../assets/tour/real-ui/**/vault-drag.mp4", {
+  eager: true, query: "?url", import: "default",
+});
+/** Non-Chinese locales use the English demonstration, never a Chinese screen. */
+export const studioAssetLocale = (locale = getLocale()): "zh-CN" | "en-US" => locale.toLowerCase().startsWith("zh") ? "zh-CN" : "en-US";
+export function studioScreenUrls(locale = getLocale()): Readonly<Record<StudioScreenKey, string>> {
+  const folder = studioAssetLocale(locale) === "zh-CN" ? "" : "en-US/";
+  return Object.fromEntries(STUDIO_SCREEN_KEYS.map(key => [key, bundledUrls[`../assets/tour/real-ui/${folder}${key}.png`] ?? ""])) as Record<StudioScreenKey, string>;
+}
+export function studioVaultVideo(locale = getLocale()): string {
+  const folder = studioAssetLocale(locale) === "zh-CN" ? "" : "en-US/";
+  return bundledVideos[`../assets/tour/real-ui/${folder}vault-drag.mp4`] ?? "";
+}
 
 /** Used by the physical models and the CSS fallback, so both show the same UI. */
 export function selectStudioScreen(
   lesson: string, mode: "simple" | "practical" | "full" = "full", after = false,
 ): StudioScreenSelection {
-  const source = (key: StudioScreenKey): StudioScreenSource => ({ key, url: STUDIO_SCREEN_URLS[key] });
+  const urls = studioScreenUrls();
+  const source = (key: StudioScreenKey): StudioScreenSource => ({ key, url: urls[key] });
   const home: StudioScreenKey = mode === "practical" ? "practical-home" : mode === "simple" ? "simple-home" : "full-home-mobile";
   if (lesson === "nfc") return {
     primary: source(after ? "vault-send-code" : "vault-send-preview"),
@@ -55,7 +69,7 @@ export function selectStudioScreen(
 }
 
 const decoded = new Map<string, Promise<HTMLImageElement>>();
-let pending: Promise<StudioScreenAssets> | undefined;
+const pending = new Map<string, Promise<StudioScreenAssets>>();
 function decodeScreen(url: string): Promise<HTMLImageElement> {
   const cached = decoded.get(url);
   if (cached) return cached;
@@ -76,15 +90,18 @@ function decodeScreen(url: string): Promise<HTMLImageElement> {
 }
 
 /** CPU images are shared; each assembly creates and disposes its own GPU textures. */
-export function loadStudioScreenAssets(): Promise<StudioScreenAssets> {
-  if (pending) return pending;
-  pending = Promise.all(STUDIO_SCREEN_KEYS.map(async key => {
-    const url = STUDIO_SCREEN_URLS[key];
+export function loadStudioScreenAssets(locale = getLocale()): Promise<StudioScreenAssets> {
+  const language = studioAssetLocale(locale), cached = pending.get(language);
+  if (cached) return cached;
+  const urls = studioScreenUrls(locale);
+  const result = Promise.all(STUDIO_SCREEN_KEYS.map(async key => {
+    const url = urls[key];
     if (!url) throw new Error(i18n("components.tourstudioscreens.fca0380c4f7e", { key: String(key) }));
     return [key, await decodeScreen(url)] as const;
   })).then(entries => Object.fromEntries(entries) as StudioScreenAssets).catch((error: unknown) => {
-    pending = undefined;
+    pending.delete(language);
     throw error;
   });
-  return pending;
+  pending.set(language, result);
+  return result;
 }

@@ -1,8 +1,7 @@
 import { t as i18n } from "../i18n/index.js";
 import * as THREE from "three";
-import vaultDragVideo from "../assets/tour/real-ui/vault-drag.mp4?url";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { selectStudioScreen, type StudioScreenAssets, type StudioScreenKey } from "./tourStudioScreens.js";
+import { selectStudioScreen, studioVaultVideo, type StudioScreenAssets, type StudioScreenKey } from "./tourStudioScreens.js";
 
 /** Resolved OneGUI material colours. Each assembly owns and disposes its resources. */
 export interface StudioPalette {
@@ -151,7 +150,7 @@ export function createStudioAssembly(lesson: string, palette: StudioPalette, mod
     const screen = screenshotFace(beforeKey); screen.name = `${name}-screen`; screen.position.set(0, 0, .109); result.add(screen);
     if (lesson === "vault" && !receiver) {
       const video = document.createElement("video");
-      video.src = vaultDragVideo; video.loop = true; video.muted = true; video.playsInline = true; video.preload = "auto";
+      video.src = studioVaultVideo(); video.loop = true; video.muted = true; video.playsInline = true; video.preload = "auto";
       video.dataset.tourVaultDemo = "true";
       Object.defineProperty(group.userData, "media", { get: () => ({ kind: "recorded-drag", src: video.currentSrc || video.src, currentTime: video.currentTime, duration: Number.isFinite(video.duration) ? video.duration : null, paused: video.paused }) });
       const texture = new THREE.VideoTexture(video); texture.colorSpace = THREE.SRGBColorSpace; textures.add(texture);

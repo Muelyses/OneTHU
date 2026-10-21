@@ -1,7 +1,65 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.island.b1b5b78e6398",
+      "source": "还有{value}天",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(m / 1440))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/island.ts",
+          "line": 28,
+          "context": "return i18n(\"state.island.b1b5b78e6398\", { value: String(Math.round(m / 1440)) });"
+        }
+      ],
+      "translation": "{value} days left",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.island.f61e332cda51",
+      "source": "还有{value}小时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(m / 60))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/island.ts",
+          "line": 27,
+          "context": "return i18n(\"state.island.f61e332cda51\", { value: String(Math.round(m / 60)) });"
+        }
+      ],
+      "translation": "{value} hours left",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.madmodel.03964a43d8ea",
+      "source": "未能续签免费档 token：需要一次有效的清华统一认证会话（SSO 票取不到或兑换被拒）。请在 OneTHU 里重新登录清华账号后重试，或改用自费 API。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/madmodel.ts",
+          "line": 295,
+          "context": "new Error(\n      i18n(\"state.madmodel.03964a43d8ea\"),\n    )"
+        }
+      ],
+      "translation": "Could not renew the free-tier token: a valid Tsinghua unified authentication session is required (the SSO ticket could not be obtained or the exchange was refused). Sign in to your Tsinghua account again in OneTHU and retry, or switch to a paid API.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.madmodel.0e0df04b7d65",
       "source": "学校登录状态已过期，请重新登录",
@@ -1266,54 +1324,6 @@
         }
       ],
       "translation": "Rain Classroom assignment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.f0fc61f517f5",
-      "source": "校园 AI 学伴：聊天 · 历史 · 智能体 · 技能广场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 98,
-          "context": "return i18n(\"state.navigation.f0fc61f517f5\");"
-        }
-      ],
-      "translation": "Campus AI study companion: Chat · History · Agents · Skill plaza",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.f75562426e77",
-      "source": "云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 131,
-          "context": "return i18n(\"state.navigation.f75562426e77\");"
-        }
-      ],
-      "translation": "Cloud Drive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.navigation.fa8fe752727c",
-      "source": "全部课程文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/navigation.ts",
-          "line": 86,
-          "context": "return i18n(\"state.navigation.fa8fe752727c\");"
-        }
-      ],
-      "translation": "All course files",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

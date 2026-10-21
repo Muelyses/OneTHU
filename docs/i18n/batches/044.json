@@ -1,7 +1,73 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.cloudpage.deleteLibrary",
+      "source": "删除资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 277,
+          "context": "title: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 277,
+          "context": "confirmText: i18nMsg(\"pages.cloudpage.deleteLibrary\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 441,
+          "context": "{i18n(\"pages.cloudpage.deleteLibrary\")}"
+        }
+      ],
+      "translation": "Delete library",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.cloudpage.deleteLibraryConfirm",
+      "source": "确定删除资料库「{name}」及其中的全部文件吗？这会删除云端资料库，所有共享给好友或组织成员的访问也会失效。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 276,
+          "context": "linked.length\n          ? i18nMsg(\"pages.cloudpage.deleteLibraryOrgConfirm\", {name: target.name, organizations: linked.map((org) => org.name).join(\"、\")})\n          : i18nMsg(\"pages.cloudpage.deleteLibraryConfirm\", {name: target.name})"
+        }
+      ],
+      "translation": "Delete the library “{name}” and all its files? This deletes the cloud library and removes access for every friend or organization member it was shared with.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.cloudpage.deleteLibraryNamed",
+      "source": "删除资料库「{name}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 695,
+          "context": "{i18n(\"pages.cloudpage.deleteLibraryNamed\", {name: r.name})}"
+        }
+      ],
+      "translation": "Delete library “{name}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.cloudpage.deleteLibraryOrgConfirm",
       "source": "「{name}」已关联组织：{organizations}。删除的是整个云端资料库及其中的全部文件，不只是移除组织中的关联；所有成员会失去访问。确定删除吗？",
@@ -1342,64 +1408,6 @@
         }
       ],
       "translation": "Sub-folder name…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.folderpage.f853a70b1204",
-      "source": "上移",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 105,
-          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 437,
-          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/FolderPage.tsx",
-          "line": 488,
-          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
-        }
-      ],
-      "translation": "Move up",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.0006d696d8e1",
-      "source": "新增",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 717,
-          "context": "c.new_file ? i18n(\"pages.gitlabpage.0006d696d8e1\") : c.deleted_file ? i18n(\"pages.gitlabpage.2f9daa828907\") : c.renamed_file ? i18n(\"pages.gitlabpage.83c37e8a4a5f\") : i18n(\"pages.gitlabpage.37090f456516\")"
-        }
-      ],
-      "translation": "Added",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.04d2bbae5e67",
-      "source": "点击回应",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 618,
-          "context": "c.mine !== null ? i18n(\"pages.gitlabpage.8d26329d7f0b\") : i18n(\"pages.gitlabpage.04d2bbae5e67\")"
-        }
-      ],
-      "translation": "Tap to react",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

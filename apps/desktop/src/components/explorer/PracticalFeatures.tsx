@@ -42,7 +42,7 @@ export function PracticalFeaturesPanel({open,onClose,slots,onPlace}:{
  const slot=slots.indexOf("page:"+entry.id);
  return <div className="practical-feature-row" key={entry.id}>
  <Btn className="workbench-catalog-entry practical-feature-open" variant="ghost" onClick={()=>{openTab(entry.page,entry.params??null,{title:entry.name});onClose();}}>
- <FeatureIcon page={entry.page}/><span className="practical-feature-copy"><strong>{entry.name}</strong><small>{entry.note||entry.keywords.filter(k=>k!==entry.name).slice(0,3).join(" · ")||i18n("components.explorer.practicalfeatures.15898013a408")}</small></span>
+ <FeatureIcon page={entry.page}/><span className="practical-feature-copy"><strong>{entry.name}</strong><small>{entry.note||labelForId(entry.category)||i18n("components.explorer.practicalfeatures.15898013a408")}</small></span>
  </Btn><IconBtn size="sm" variant="ghost" className={"practical-feature-pin"+(slot>=0?" is-pinned":"")} label={i18n("components.explorer.practicalfeatures.cddf4389584d", { name: String(entry.name) })} titleAttr={slot>=0?i18n("components.explorer.practicalfeatures.af335e1f813a", { value: String(slot+1) }):i18n("components.explorer.practicalfeatures.0f6d4250e8fe")} icon={slot>=0?<span>{slot+1}</span>:<IconPlus width={14} height={14}/>} onClick={()=>place(entry)}/>
  </div>;
  })}</div></section>):<div className="practical-no-results"><strong>{i18nRich("components.explorer.practicalfeatures.6d53ec60808b", { query: query })}</strong><Text tone="faint">{i18n("components.explorer.practicalfeatures.97a5b0beb286")}</Text><Btn variant="outline" onClick={()=>{setQuery("");setCategory("全部");}}>{i18n("components.explorer.practicalfeatures.fa2ff3c379a7")}</Btn></div>}

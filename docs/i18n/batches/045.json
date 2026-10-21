@@ -1,7 +1,65 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.folderpage.f853a70b1204",
+      "source": "上移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 105,
+          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 437,
+          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/FolderPage.tsx",
+          "line": 488,
+          "context": "{i18n(\"pages.folderpage.f853a70b1204\")}"
+        }
+      ],
+      "translation": "Move up",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.0006d696d8e1",
+      "source": "新增",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 717,
+          "context": "c.new_file ? i18n(\"pages.gitlabpage.0006d696d8e1\") : c.deleted_file ? i18n(\"pages.gitlabpage.2f9daa828907\") : c.renamed_file ? i18n(\"pages.gitlabpage.83c37e8a4a5f\") : i18n(\"pages.gitlabpage.37090f456516\")"
+        }
+      ],
+      "translation": "Added",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.04d2bbae5e67",
+      "source": "点击回应",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 618,
+          "context": "c.mine !== null ? i18n(\"pages.gitlabpage.8d26329d7f0b\") : i18n(\"pages.gitlabpage.04d2bbae5e67\")"
+        }
+      ],
+      "translation": "Tap to react",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.gitlabpage.051836569928",
       "source": "编辑",
@@ -1352,73 +1410,6 @@
         }
       ],
       "translation": "The project does not exist or you have no access",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.75dfaf262f47",
-      "source": "取消中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 106,
-          "context": "return i18n(\"pages.gitlabpage.75dfaf262f47\");"
-        }
-      ],
-      "translation": "Canceling",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.7655c27b6519",
-      "source": "{value} 时 {value2} 分",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(Math.floor(sec / 3600))"
-        },
-        {
-          "name": "value2",
-          "expression": "String(Math.floor((sec % 3600) / 60))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 152,
-          "context": "return i18n(\"pages.gitlabpage.7655c27b6519\", { value: String(Math.floor(sec / 3600)), value2: String(Math.floor((sec % 3600) / 60)) });"
-        }
-      ],
-      "translation": "{value} h {value2} min",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.79c80e4b73bb",
-      "source": "流水线 #{id}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "id",
-          "expression": "mr.head_pipeline.id"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1129,
-          "context": "{i18nRich(\"pages.gitlabpage.79c80e4b73bb\", { id: mr.head_pipeline.id })}"
-        },
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 1411,
-          "context": "{i18n(\"pages.gitlabpage.79c80e4b73bb\", { id: String(pipeline.id) })}"
-        }
-      ],
-      "translation": "Pipeline #{id}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

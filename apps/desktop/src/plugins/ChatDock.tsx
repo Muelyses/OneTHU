@@ -1053,7 +1053,7 @@ function OhSearchPane({ query, onClose, onAskOh, onNotice }: {
           {result.atoms.map((a) => (
             <button key={"a:" + a.kind + "|" + a.key} className="ohx-hit" data-vault-catch={vaultCatchAttr({ type: "atom", title: a.title, sub: a.sub, atom: { kind: a.kind, key: a.key }, source: "OH 搜索" })} onClick={() => { jumpAtom(a.kind, a.key, a.title, q); onClose(); }}>
               <span className="ohx-hit-name">{a.title}</span>
-              <span className="ohx-hit-sub">{(a.group ? a.group + " · " : "") + (a.sub ?? i18n("plugins.chatdock.3c1917e1c662"))}</span>
+              <span className="ohx-hit-sub">{(a.group ? labelForId(a.group) + " · " : "") + (a.sub ?? i18n("plugins.chatdock.3c1917e1c662"))}</span>
               <span className="ohx-hit-tag">{i18n("plugins.chatdock.452c7b10d57a")}</span>
             </button>
           ))}

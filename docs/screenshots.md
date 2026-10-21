@@ -25,7 +25,15 @@ node tools/record-vault-onboarding.mjs
 
 需本地 Chromium 与 Playwright，录制/格式转换另需 FFmpeg。开发服务器仅提供界面代码；模拟适配器由采集脚本注入，不进入正式包。采集过程不插入另一套产品界面，长按录制仅增加圆形指针标记。
 
-素材保存在 `docs/assets/0.11/`。`manifest.json` 记录文件、视口、来源与 SHA-256；导览录制另有 `apps/desktop/src/assets/tour/real-ui/manifest-vault-drag.json`。官网复制同一批素材，不另行使用私人截图。重新采集后需重新核对布局与来源清单。
+中文素材保存在 `docs/assets/0.11/`，英文素材单独保存在 `docs/assets/0.11/en-US/`。英文官网、README、文档及导览使用英文界面与英文虚构内容重新采集的图片/视频，不在中文图片上覆盖文字；其他非中文导览语言使用英文演示。
+
+```bash
+ONETHU_CAPTURE_LOCALE=en-US node tools/capture-public-preview.mjs
+ONETHU_CAPTURE_LOCALE=en-US node tools/capture-localized-tour.mjs
+ONETHU_CAPTURE_LOCALE=en-US node tools/record-vault-onboarding.mjs
+```
+
+`manifest.json` 记录文件、视口、来源与 SHA-256；导览录制另有 `apps/desktop/src/assets/tour/real-ui/manifest-vault-drag.json`。官网复制同一批素材，不另行使用私人截图。重新采集后需重新核对布局与来源清单。
 
 ## 示例
 

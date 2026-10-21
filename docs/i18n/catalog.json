@@ -1,6 +1,6 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
-  "count": 7516,
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
+  "count": 7520,
   "messages": [
     {
       "key": "app.08566a4b57a3",
@@ -7274,7 +7274,7 @@
         {
           "file": "apps/desktop/src/components/explorer/PracticalFeatures.tsx",
           "line": 45,
-          "context": "entry.note||entry.keywords.filter(k=>k!==entry.name).slice(0,3).join(\" · \")||i18n(\"components.explorer.practicalfeatures.15898013a408\")"
+          "context": "entry.note||labelForId(entry.category)||i18n(\"components.explorer.practicalfeatures.15898013a408\")"
         }
       ]
     },
@@ -10549,8 +10549,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 323,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.0046b5364303\", { value: String(SOURCE_NAMES[source]) }))"
+          "line": 324,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.0046b5364303\", { value: String(labelForId(SOURCE_NAMES[source])) }))"
         }
       ]
     },
@@ -10562,7 +10562,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 495,
+          "line": 496,
           "context": "{i18n(\"components.exthwsettingssection.04bc193e4244\")}"
         }
       ]
@@ -10575,7 +10575,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 580,
+          "line": 581,
           "context": "{i18n(\"components.exthwsettingssection.07a0f114d30b\")}"
         }
       ]
@@ -10588,12 +10588,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 481,
+          "line": 482,
           "context": "configured.yuketang ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 779,
+          "line": 780,
           "context": "logged ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
         }
       ]
@@ -10606,7 +10606,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 498,
+          "line": 499,
           "context": "yktWebOpen ? i18n(\"components.exthwsettingssection.f3553abadd4a\") : i18n(\"components.exthwsettingssection.0a5f3151f8a9\")"
         }
       ]
@@ -10619,7 +10619,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 222,
+          "line": 223,
           "context": "notify(\"range\", i18n(\"components.exthwsettingssection.0cfeab7fbfd6\"))"
         }
       ]
@@ -10632,7 +10632,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 533,
+          "line": 534,
           "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
         }
       ]
@@ -10645,7 +10645,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 532,
+          "line": 533,
           "context": "busy === \"ykt-export\" ? i18n(\"components.exthwsettingssection.dce6e572314e\") : i18n(\"components.exthwsettingssection.11968ab19a8b\")"
         }
       ]
@@ -10658,7 +10658,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 755,
+          "line": 756,
           "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
         }
       ]
@@ -10671,12 +10671,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 605,
+          "line": 606,
           "context": "tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 639,
+          "line": 640,
           "context": "classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         }
       ]
@@ -10694,7 +10694,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 268,
+          "line": 269,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.177a41a28139\", { value: String(errMsg(e)) }))"
         }
       ]
@@ -10707,17 +10707,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 623,
+          "line": 624,
           "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 657,
+          "line": 658,
           "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 692,
+          "line": 693,
           "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
         }
       ]
@@ -10730,12 +10730,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 282,
+          "line": 283,
           "context": "name: i18n(\"components.exthwsettingssection.1c907131183c\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 763,
+          "line": 764,
           "context": "{i18n(\"components.exthwsettingssection.1c907131183c\")}"
         }
       ]
@@ -10748,32 +10748,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 625,
+          "line": 626,
           "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 673,
+          "line": 674,
           "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 694,
+          "line": 695,
           "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 715,
+          "line": 716,
           "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 730,
+          "line": 731,
           "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         }
       ]
@@ -10791,7 +10791,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 241,
+          "line": 242,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.1f2ada659e8f\", { value: String(st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")) }))"
         }
       ]
@@ -10804,7 +10804,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 523,
+          "line": 524,
           "context": "ext.yktSession.checkedAt === null\n                  ? i18n(\"components.exthwsettingssection.27e7d6344316\")\n                  : ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.e"
         }
       ]
@@ -10817,7 +10817,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 533,
+          "line": 534,
           "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
         }
       ]
@@ -10830,7 +10830,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 377,
+          "line": 378,
           "context": "tycheRemember ? i18n(\"components.exthwsettingssection.e9da66a5f095\") : i18n(\"components.exthwsettingssection.30060dffb676\")"
         }
       ]
@@ -10848,7 +10848,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 64,
+          "line": 65,
           "context": "logged ? i18n(\"components.exthwsettingssection.32eed2adc456\", { value: String(via ? `·${via}` : \"\") }) : i18n(\"components.exthwsettingssection.c1f658373079\")"
         }
       ]
@@ -10861,8 +10861,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 479,
+          "line": 480,
           "context": "{i18n(\"components.exthwsettingssection.38b9eabcae1b\")}"
+        },
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 6,
+          "context": "return t(\"components.exthwsettingssection.38b9eabcae1b\");"
         }
       ]
     },
@@ -10874,7 +10879,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 590,
+          "line": 591,
           "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
         }
       ]
@@ -10887,7 +10892,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 590,
+          "line": 591,
           "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
         }
       ]
@@ -10900,32 +10905,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 612,
+          "line": 613,
           "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 625,
+          "line": 626,
           "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 646,
+          "line": 647,
           "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 694,
+          "line": 695,
           "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 730,
+          "line": 731,
           "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         }
       ]
@@ -10938,7 +10943,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 701,
+          "line": 702,
           "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
         }
       ]
@@ -10956,7 +10961,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 223,
+          "line": 224,
           "context": "notify(\"range\", i18n(\"components.exthwsettingssection.434a1a95686a\", { value: String(errMsg(e)) }))"
         }
       ]
@@ -10969,7 +10974,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 576,
+          "line": 577,
           "context": "{i18n(\"components.exthwsettingssection.44ff02182964\")}"
         }
       ]
@@ -10982,27 +10987,27 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 485,
+          "line": 486,
           "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 610,
+          "line": 611,
           "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 644,
+          "line": 645,
           "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 671,
+          "line": 672,
           "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 713,
+          "line": 714,
           "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         }
       ]
@@ -11015,27 +11020,27 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 485,
+          "line": 486,
           "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 610,
+          "line": 611,
           "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 644,
+          "line": 645,
           "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 671,
+          "line": 672,
           "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 713,
+          "line": 714,
           "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         }
       ]
@@ -11048,7 +11053,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 768,
+          "line": 769,
           "context": "{i18n(\"components.exthwsettingssection.498e524101ad\")}"
         }
       ]
@@ -11061,7 +11066,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 528,
+          "line": 529,
           "context": "ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
         }
       ]
@@ -11074,7 +11079,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 533,
+          "line": 534,
           "context": "{i18n(\"components.exthwsettingssection.4ba279389d5a\")}"
         }
       ]
@@ -11087,7 +11092,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 242,
+          "line": 243,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.52ca90b5c7ad\"))"
         }
       ]
@@ -11100,7 +11105,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 511,
+          "line": 512,
           "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
         }
       ]
@@ -11113,7 +11118,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 697,
+          "line": 698,
           "context": "{i18n(\"components.exthwsettingssection.5510d7040d50\")}"
         }
       ]
@@ -11126,7 +11131,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 748,
+          "line": 749,
           "context": "{i18n(\"components.exthwsettingssection.58d2b2a8dc03\")}"
         }
       ]
@@ -11144,7 +11149,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 265,
+          "line": 266,
           "context": "return i18n(\"components.exthwsettingssection.59e30b592976\", { path: String(path) });"
         }
       ]
@@ -11162,7 +11167,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 432,
+          "line": 433,
           "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.5fd4a0702e98\", { label: String(label) }))"
         }
       ]
@@ -11180,7 +11185,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 457,
+          "line": 458,
           "context": "{i18nRich(\"components.exthwsettingssection.65493396ab5b\", { value: st.message ? `（${st.message.slice(0, 160)}）` : \"\" })}"
         }
       ]
@@ -11193,7 +11198,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 298,
+          "line": 299,
           "context": "return i18n(\"components.exthwsettingssection.6ac888d9d8a4\");"
         }
       ]
@@ -11206,7 +11211,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 764,
+          "line": 765,
           "context": "{i18n(\"components.exthwsettingssection.6c0cdf48d1b3\")}"
         }
       ]
@@ -11219,7 +11224,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 728,
+          "line": 729,
           "context": "{i18n(\"components.exthwsettingssection.73075237fd0f\")}"
         }
       ]
@@ -11232,7 +11237,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 237,
+          "line": 238,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.738b37dc7cba\"))"
         }
       ]
@@ -11250,7 +11255,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 301,
+          "line": 302,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.7a334a5f33f2\", { value: String(errMsg(e)) }))"
         }
       ]
@@ -11263,12 +11268,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 612,
+          "line": 613,
           "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 646,
+          "line": 647,
           "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         }
       ]
@@ -11281,7 +11286,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 253,
+          "line": 254,
           "context": "new Error(i18n(\"components.exthwsettingssection.7cf1f3f97fff\"))"
         }
       ]
@@ -11294,7 +11299,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 755,
+          "line": 756,
           "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
         }
       ]
@@ -11312,8 +11317,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 354,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.81c77d061430\", { value: String(SOURCE_NAMES[source]) }))"
+          "line": 355,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.81c77d061430\", { value: String(labelForId(SOURCE_NAMES[source])) }))"
         }
       ]
     },
@@ -11325,7 +11330,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 502,
+          "line": 503,
           "context": "{i18n(\"components.exthwsettingssection.8230bba29c97\")}"
         }
       ]
@@ -11338,7 +11343,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 264,
+          "line": 265,
           "context": "return i18n(\"components.exthwsettingssection.84880323c334\");"
         }
       ]
@@ -11351,7 +11356,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 531,
+          "line": 532,
           "context": "busy === \"ykt-check\" ? i18n(\"components.exthwsettingssection.fb11aa6f2982\") : i18n(\"components.exthwsettingssection.8a21d7219a96\")"
         }
       ]
@@ -11364,7 +11369,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 780,
+          "line": 781,
           "context": "{i18n(\"components.exthwsettingssection.8aee3f656a95\")}"
         }
       ]
@@ -11386,7 +11391,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 525,
+          "line": 526,
           "context": "ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
         }
       ]
@@ -11404,7 +11409,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 397,
+          "line": 398,
           "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.8da916259f48\", { value: String(errMsg(e)) }))"
         }
       ]
@@ -11417,7 +11422,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 512,
+          "line": 513,
           "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
         }
       ]
@@ -11435,7 +11440,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 780,
+          "line": 781,
           "context": "err ? <OGText tone=\"error\">{i18n(\"components.exthwsettingssection.8aee3f656a95\")}</OGText> : i18n(\"components.exthwsettingssection.92559c8f277f\", { count: String(count) })"
         }
       ]
@@ -11457,7 +11462,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 404,
+          "line": 405,
           "context": "confirmOk(i18nMsg(\"components.exthwsettingssection.9332d0724ed2\", { label: String(label), label2: String(label) }))"
         }
       ]
@@ -11475,7 +11480,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 380,
+          "line": 381,
           "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.94cd45f219ce\", { value: String(errMsg(e)) }))"
         }
       ]
@@ -11493,12 +11498,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 678,
+          "line": 679,
           "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: tycheFormOpen ? \"▾\" : \"▸\" })}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 720,
+          "line": 721,
           "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: dsaFormOpen ? \"▾\" : \"▸\" })}"
         }
       ]
@@ -11511,12 +11516,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 603,
+          "line": 604,
           "context": "tuojVia === \"cas\" || ext.tuojAuto.tuoj.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 637,
+          "line": 638,
           "context": "classicVia === \"cas\" || ext.tuojAuto.tuojClassic.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         }
       ]
@@ -11529,7 +11534,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 491,
+          "line": 492,
           "context": "yktQrOpen ? i18n(\"components.exthwsettingssection.dd647f03c880\") : i18n(\"components.exthwsettingssection.9e0181f35fc5\")"
         }
       ]
@@ -11542,7 +11547,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 241,
+          "line": 242,
           "context": "st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")"
         }
       ]
@@ -11555,7 +11560,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 754,
+          "line": 755,
           "context": "{i18n(\"components.exthwsettingssection.a3030bf8f16d\")}"
         }
       ]
@@ -11577,13 +11582,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 326,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) }))"
+          "line": 327,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) }))"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 357,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) }))"
+          "line": 358,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) }))"
         }
       ]
     },
@@ -11595,7 +11600,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 553,
+          "line": 554,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.a61cd4faa5ed\"))"
         }
       ]
@@ -11608,22 +11613,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 624,
+          "line": 625,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 658,
+          "line": 659,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 693,
+          "line": 694,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 729,
+          "line": 730,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         }
       ]
@@ -11636,7 +11641,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 700,
+          "line": 701,
           "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
         }
       ]
@@ -11654,7 +11659,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 760,
+          "line": 761,
           "context": "{i18nRich(\"components.exthwsettingssection.abf483faf3b6\", { value: advanced ? \"▾\" : \"▸\" })}"
         }
       ]
@@ -11667,7 +11672,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 283,
+          "line": 284,
           "context": "return i18n(\"components.exthwsettingssection.ae79f5df3c38\");"
         }
       ]
@@ -11680,12 +11685,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 673,
+          "line": 674,
           "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 715,
+          "line": 716,
           "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         }
       ]
@@ -11707,7 +11712,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 435,
+          "line": 436,
           "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.b666588e7bed\", { label: String(label), value: String(errMsg(e)) }))"
         }
       ]
@@ -11725,12 +11730,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 616,
+          "line": 617,
           "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: tuojPwdOpen ? \"▾\" : \"▸\" })}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 650,
+          "line": 651,
           "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: classicPwdOpen ? \"▾\" : \"▸\" })}"
         }
       ]
@@ -11743,7 +11748,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 536,
+          "line": 537,
           "context": "{i18n(\"components.exthwsettingssection.c0102ddf9ffc\")}"
         }
       ]
@@ -11756,7 +11761,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 743,
+          "line": 744,
           "context": "{i18n(\"components.exthwsettingssection.c1547f6ba316\")}"
         }
       ]
@@ -11769,22 +11774,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 64,
+          "line": 65,
           "context": "logged ? i18n(\"components.exthwsettingssection.32eed2adc456\", { value: String(via ? `·${via}` : \"\") }) : i18n(\"components.exthwsettingssection.c1f658373079\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 481,
+          "line": 482,
           "context": "configured.yuketang ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 587,
+          "line": 588,
           "context": "configured[id] ? \"✅\" : i18n(\"components.exthwsettingssection.c1f658373079\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 779,
+          "line": 780,
           "context": "logged ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
         }
       ]
@@ -11797,7 +11802,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 394,
+          "line": 395,
           "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.c5f1befc6cc9\"))"
         }
       ]
@@ -11810,7 +11815,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 744,
+          "line": 745,
           "context": "{i18n(\"components.exthwsettingssection.cd2e0ccbc607\")}"
         }
       ]
@@ -11823,7 +11828,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 765,
+          "line": 766,
           "context": "{i18n(\"components.exthwsettingssection.d066ae4f03e8\")}"
         }
       ]
@@ -11845,7 +11850,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 527,
+          "line": 528,
           "context": "ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
         }
       ]
@@ -11858,7 +11863,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 540,
+          "line": 541,
           "context": "{i18n(\"components.exthwsettingssection.da57a53a43da\")}"
         }
       ]
@@ -11871,7 +11876,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 532,
+          "line": 533,
           "context": "busy === \"ykt-export\" ? i18n(\"components.exthwsettingssection.dce6e572314e\") : i18n(\"components.exthwsettingssection.11968ab19a8b\")"
         }
       ]
@@ -11884,7 +11889,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 491,
+          "line": 492,
           "context": "yktQrOpen ? i18n(\"components.exthwsettingssection.dd647f03c880\") : i18n(\"components.exthwsettingssection.9e0181f35fc5\")"
         }
       ]
@@ -11897,7 +11902,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 502,
+          "line": 503,
           "context": "{i18n(\"components.exthwsettingssection.e1d7e2b94ecd\")}"
         }
       ]
@@ -11910,7 +11915,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 685,
+          "line": 686,
           "context": "{i18n(\"components.exthwsettingssection.e32ac47f5825\")}"
         }
       ]
@@ -11923,7 +11928,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 214,
+          "line": 215,
           "context": "notify(\"range\", i18n(\"components.exthwsettingssection.e4c4cca922f3\"))"
         }
       ]
@@ -11936,7 +11941,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 256,
+          "line": 257,
           "context": "new Error(i18n(\"components.exthwsettingssection.e980b77af601\"))"
         }
       ]
@@ -11949,7 +11954,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 472,
+          "line": 473,
           "context": "{i18n(\"components.exthwsettingssection.e9acc8eb6b0c\")}"
         }
       ]
@@ -11962,7 +11967,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 377,
+          "line": 378,
           "context": "tycheRemember ? i18n(\"components.exthwsettingssection.e9da66a5f095\") : i18n(\"components.exthwsettingssection.30060dffb676\")"
         }
       ]
@@ -11975,7 +11980,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 278,
+          "line": 279,
           "context": "new Error(i18n(\"components.exthwsettingssection.ec3a87632682\"))"
         }
       ]
@@ -11988,7 +11993,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 566,
+          "line": 567,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.ecc6fb1d43a1\"))"
         }
       ]
@@ -12006,7 +12011,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 240,
+          "line": 241,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.ee5c26c496a4\", { value: String(st.userName ? `（${st.userName}）` : \"\") }))"
         }
       ]
@@ -12019,7 +12024,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 498,
+          "line": 499,
           "context": "yktWebOpen ? i18n(\"components.exthwsettingssection.f3553abadd4a\") : i18n(\"components.exthwsettingssection.0a5f3151f8a9\")"
         }
       ]
@@ -12032,7 +12037,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 460,
+          "line": 461,
           "context": "{i18n(\"components.exthwsettingssection.f81d3377be28\")}"
         }
       ]
@@ -12045,7 +12050,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 750,
+          "line": 751,
           "context": "{i18n(\"components.exthwsettingssection.f8f540b20b2a\")}"
         }
       ]
@@ -12058,7 +12063,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 531,
+          "line": 532,
           "context": "busy === \"ykt-check\" ? i18n(\"components.exthwsettingssection.fb11aa6f2982\") : i18n(\"components.exthwsettingssection.8a21d7219a96\")"
         }
       ]
@@ -12071,7 +12076,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 532,
+          "line": 533,
           "context": "{i18n(\"components.exthwsettingssection.fb4017d5b95f\")}"
         }
       ]
@@ -16070,7 +16075,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 27,
+          "line": 28,
           "context": "small: i18n(\"components.homeworkcarousel.07b65092ac19\")"
         }
       ]
@@ -16088,7 +16093,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 337,
+          "line": 338,
           "context": "confirmDanger(\n                      i18nMsg(\"components.homeworkcarousel.11ac26dfc826\", { title: String(h.title) }),\n                        CONFIRM_IGNORE_HW,\n                      )"
         }
       ]
@@ -16101,7 +16106,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 25,
+          "line": 26,
           "context": "big: i18n(\"components.homeworkcarousel.13c68d134847\")"
         }
       ]
@@ -16114,7 +16119,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 28,
+          "line": 29,
           "context": "small: i18n(\"components.homeworkcarousel.4881997d6f3a\")"
         }
       ]
@@ -16127,7 +16132,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 176,
+          "line": 177,
           "context": "{i18n(\"components.homeworkcarousel.4bdb0fcd89b8\")}"
         }
       ]
@@ -16140,7 +16145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 28,
+          "line": 29,
           "context": "days + i18n(\"components.homeworkcarousel.4ce3054e7c4d\")"
         }
       ]
@@ -16158,7 +16163,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 131,
+          "line": 132,
           "context": "m.logLine(i18n(\"components.homeworkcarousel.759af5356c1e\", { mode: String(r.mode) }))"
         }
       ]
@@ -16171,8 +16176,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 40,
-          "context": "SOURCE_NAMES[h.source] ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
+          "line": 41,
+          "context": "labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
         }
       ]
     },
@@ -16184,7 +16189,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 345,
+          "line": 346,
           "context": "{i18n(\"components.homeworkcarousel.8cc765f4b8b9\")}"
         }
       ]
@@ -16197,7 +16202,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 41,
+          "line": 42,
           "context": "i18n(\"components.homeworkcarousel.a80f2d59cd5f\") + h.externalProgress"
         }
       ]
@@ -16210,8 +16215,8 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 40,
-          "context": "h.source ? SOURCE_NAMES[h.source] ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
+          "line": 41,
+          "context": "h.source ? labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
         }
       ]
     },
@@ -16223,7 +16228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 25,
+          "line": 26,
           "context": "small: i18n(\"components.homeworkcarousel.cac076fbec2f\")"
         }
       ]
@@ -16236,7 +16241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 178,
+          "line": 179,
           "context": "{i18n(\"components.homeworkcarousel.d4b1b25d27b2\")}"
         }
       ]
@@ -16249,7 +16254,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 42,
+          "line": 43,
           "context": "text: i18n(\"components.homeworkcarousel.da7ecec544ad\")"
         }
       ]
@@ -16262,7 +16267,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 332,
+          "line": 333,
           "context": "{i18n(\"components.homeworkcarousel.e9d65d05f085\")}"
         }
       ]
@@ -16275,7 +16280,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 27,
+          "line": 28,
           "context": "big: i18n(\"components.homeworkcarousel.f299c513a8fc\")"
         }
       ]
@@ -16288,7 +16293,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 21,
+          "line": 22,
           "context": "small: i18n(\"components.homeworkcarousel.fb37c61898d5\")"
         }
       ]
@@ -16342,6 +16347,11 @@
           "file": "apps/desktop/src/components/IdentityCard.tsx",
           "line": 32,
           "context": "organization ? i18n(\"components.identitycard.d203a5652f03\") : i18n(\"components.identitycard.487e926379fe\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 154,
+          "context": "String(input.name ?? \"\").trim().slice(0, 60) || i18n(\"components.identitycard.d203a5652f03\")"
         }
       ]
     },
@@ -26164,7 +26174,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.081c32889cff\");"
         }
       ]
@@ -26190,7 +26200,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 38,
+          "line": 37,
           "context": "return i18n(\"components.tourillustration.14904f50ba72\");"
         }
       ]
@@ -26203,7 +26213,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.16afed511861\");"
         }
       ]
@@ -26216,7 +26226,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.24a36e5f10e5\");"
         }
       ]
@@ -26229,7 +26239,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.299d568b581f\");"
         }
       ]
@@ -26242,7 +26252,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 39,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.2af3e3257866\");"
         }
       ]
@@ -26255,7 +26265,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 44,
+          "line": 43,
           "context": "return i18n(\"components.tourillustration.2f356fc75c90\");"
         }
       ]
@@ -26299,7 +26309,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 45,
+          "line": 44,
           "context": "return i18n(\"components.tourillustration.3c3ca96372d1\");"
         }
       ]
@@ -26312,7 +26322,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 38,
+          "line": 37,
           "context": "return i18n(\"components.tourillustration.413088d3b1a0\");"
         }
       ]
@@ -26325,7 +26335,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 28,
           "context": "return i18n(\"components.tourillustration.420be7bc077e\");"
         }
       ]
@@ -26338,7 +26348,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 26,
           "context": "return i18n(\"components.tourillustration.4a8eac97e960\");"
         }
       ]
@@ -26351,7 +26361,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 26,
           "context": "return i18n(\"components.tourillustration.5f716b7dedd8\");"
         }
       ]
@@ -26395,7 +26405,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.6cc2a4b7bfc9\");"
         }
       ]
@@ -26408,7 +26418,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.6d3f6f685e53\");"
         }
       ]
@@ -26434,7 +26444,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.6f56d8a61fe3\");"
         }
       ]
@@ -26447,7 +26457,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.7119f12b506b\");"
         }
       ]
@@ -26486,7 +26496,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.7b25b8069c23\");"
         }
       ]
@@ -26499,7 +26509,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 38,
+          "line": 37,
           "context": "return i18n(\"components.tourillustration.7d20856e7f07\");"
         }
       ]
@@ -26512,7 +26522,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.8173df51f2a7\");"
         }
       ]
@@ -26538,7 +26548,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 42,
+          "line": 41,
           "context": "return i18n(\"components.tourillustration.88f643c1b98a\");"
         }
       ]
@@ -26564,7 +26574,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.92ea3aacf873\");"
         }
       ]
@@ -26577,7 +26587,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.9593aef7149a\");"
         }
       ]
@@ -26590,7 +26600,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 28,
           "context": "return i18n(\"components.tourillustration.96b3145a6b73\");"
         }
       ]
@@ -26603,7 +26613,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.9c7a9fcee92f\");"
         }
       ]
@@ -26616,7 +26626,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.a134c7737c93\");"
         }
       ]
@@ -26629,7 +26639,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 74,
+          "line": 73,
           "context": "{i18n(\"components.tourillustration.a31b16bc552a\")}"
         }
       ]
@@ -26642,7 +26652,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 27,
           "context": "return i18n(\"components.tourillustration.a53febdc5466\");"
         }
       ]
@@ -26655,7 +26665,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 39,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.bb3cdc17373c\");"
         }
       ]
@@ -26668,7 +26678,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.bf5b53af13f4\");"
         }
       ]
@@ -26681,7 +26691,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.c20f83cc52d2\");"
         }
       ]
@@ -26707,7 +26717,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 39,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.c3d0e8d4b506\");"
         }
       ]
@@ -26720,7 +26730,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.c6331cafc401\");"
         }
       ]
@@ -26733,7 +26743,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.c89246ea218f\");"
         }
       ]
@@ -26746,7 +26756,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.d8aa9757d2b3\");"
         }
       ]
@@ -26759,7 +26769,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 47,
+          "line": 46,
           "context": "return i18n(\"components.tourillustration.d924d8e8fe20\");"
         }
       ]
@@ -26772,7 +26782,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 28,
           "context": "return i18n(\"components.tourillustration.d9c8475ca6a6\");"
         }
       ]
@@ -26785,7 +26795,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.dd52e4b6a630\");"
         }
       ]
@@ -26811,7 +26821,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.e8332f3f0437\");"
         }
       ]
@@ -26837,7 +26847,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 26,
           "context": "return i18n(\"components.tourillustration.ee40e75e813e\");"
         }
       ]
@@ -26850,7 +26860,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.f4ad88248fc0\");"
         }
       ]
@@ -26863,7 +26873,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.f65def27f883\");"
         }
       ]
@@ -26876,7 +26886,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 46,
+          "line": 45,
           "context": "return i18n(\"components.tourillustration.fa060d19d9cd\");"
         }
       ]
@@ -26889,7 +26899,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.fd962d16dac1\");"
         }
       ]
@@ -26902,7 +26912,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 43,
+          "line": 42,
           "context": "return i18n(\"components.tourillustration.fe0f7b11128c\");"
         }
       ]
@@ -26915,7 +26925,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 217,
+          "line": 216,
           "context": "subtitle: i18n(\"components.tourstudiomodels.06f8b75c9666\")"
         }
       ]
@@ -26928,12 +26938,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ]
@@ -26946,7 +26956,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ]
@@ -26959,7 +26969,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 217,
+          "line": 216,
           "context": "title: i18n(\"components.tourstudiomodels.1c23243a9085\")"
         }
       ]
@@ -26972,7 +26982,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "badge: i18n(\"components.tourstudiomodels.21c80015e886\")"
         }
       ]
@@ -26985,12 +26995,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ]
@@ -27003,7 +27013,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 218,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ]
@@ -27016,7 +27026,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "badge: i18n(\"components.tourstudiomodels.49ef840efe6f\")"
         }
       ]
@@ -27029,7 +27039,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 218,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ]
@@ -27042,7 +27052,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ]
@@ -27055,7 +27065,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 217,
+          "line": 216,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.6fef00bb252c\")"
         }
       ]
@@ -27068,7 +27078,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ]
@@ -27081,7 +27091,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ]
@@ -27094,7 +27104,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.90c7cebe15c6\")"
         }
       ]
@@ -27107,7 +27117,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "title: i18n(\"components.tourstudiomodels.92f20b9fa474\")"
         }
       ]
@@ -27120,7 +27130,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 218,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ]
@@ -27133,7 +27143,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 230,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.b0c8602734bb\")"
         }
       ]
@@ -27146,7 +27156,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 150,
+          "line": 149,
           "context": "new Error(i18n(\"components.tourstudiomodels.cf4324a5411f\"))"
         }
       ]
@@ -27159,7 +27169,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "title: i18n(\"components.tourstudiomodels.d38b22e68fc1\")"
         }
       ]
@@ -27172,7 +27182,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.d513aac3caac\")"
         }
       ]
@@ -27185,7 +27195,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ]
@@ -27198,7 +27208,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ]
@@ -27216,12 +27226,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 33,
+          "line": 32,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(source.key) }))"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 118,
+          "line": 117,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(key) }))"
         }
       ]
@@ -27234,7 +27244,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourStudioScene.tsx",
-          "line": 57,
+          "line": 60,
           "context": "{i18n(\"components.tourstudioscene.d689bd368468\")}"
         }
       ]
@@ -27247,7 +27257,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioScreens.ts",
-          "line": 71,
+          "line": 85,
           "context": "new Error(i18n(\"components.tourstudioscreens.18455d8d7822\"))"
         }
       ]
@@ -27265,7 +27275,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioScreens.ts",
-          "line": 83,
+          "line": 99,
           "context": "new Error(i18n(\"components.tourstudioscreens.fca0380c4f7e\", { key: String(key) }))"
         }
       ]
@@ -32709,7 +32719,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 8,
+          "line": 13,
           "context": "return t(\"enum.label.15d208d1b4c9\");"
         }
       ]
@@ -32722,7 +32732,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 13,
+          "line": 18,
           "context": "return t(\"enum.label.1760b98532ec\");"
         }
       ]
@@ -32735,7 +32745,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 42,
+          "line": 47,
           "context": "return t(\"enum.label.1eed24ed8f6f\");"
         }
       ]
@@ -32748,7 +32758,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 6,
+          "line": 11,
           "context": "return t(\"enum.label.2118cbc10988\");"
         }
       ]
@@ -32761,7 +32771,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 22,
+          "line": 27,
           "context": "return t(\"enum.label.21255f717947\");"
         }
       ]
@@ -32774,7 +32784,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 50,
+          "line": 55,
           "context": "return t(\"enum.label.266e6cb77079\");"
         }
       ]
@@ -32787,7 +32797,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 47,
+          "line": 52,
           "context": "return t(\"enum.label.26ee9467d4b0\");"
         }
       ]
@@ -32800,7 +32810,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 25,
+          "line": 30,
           "context": "return t(\"enum.label.31c5f1aaa0d5\");"
         }
       ]
@@ -32813,7 +32823,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 36,
+          "line": 41,
           "context": "return t(\"enum.label.3303b56982a0\");"
         }
       ]
@@ -32826,7 +32836,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 9,
+          "line": 14,
           "context": "return t(\"enum.label.352cdc807892\");"
         }
       ]
@@ -32839,7 +32849,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 33,
+          "line": 38,
           "context": "return t(\"enum.label.3b806a76e492\");"
         }
       ]
@@ -32852,7 +32862,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 60,
+          "line": 65,
           "context": "return t(\"enum.label.3d708e8e8b1f\");"
         }
       ]
@@ -32865,7 +32875,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 23,
+          "line": 28,
           "context": "return t(\"enum.label.3deae16f1adb\");"
         }
       ]
@@ -32878,7 +32888,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 61,
+          "line": 66,
           "context": "return t(\"enum.label.452c7b10d57a\");"
         }
       ]
@@ -32891,7 +32901,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 38,
+          "line": 43,
           "context": "return t(\"enum.label.4a3572036143\");"
         }
       ]
@@ -32904,7 +32914,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 51,
+          "line": 56,
           "context": "return t(\"enum.label.4c11cd93c142\");"
         }
       ]
@@ -32917,7 +32927,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 17,
+          "line": 22,
           "context": "return t(\"enum.label.506c068a2a1e\");"
         }
       ]
@@ -32930,7 +32940,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 34,
+          "line": 39,
           "context": "return t(\"enum.label.541fbddf4725\");"
         }
       ]
@@ -32943,7 +32953,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 12,
+          "line": 17,
           "context": "return t(\"enum.label.5c55a67935af\");"
         }
       ]
@@ -32956,7 +32966,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 21,
+          "line": 26,
           "context": "return t(\"enum.label.5f45bb826b16\");"
         }
       ]
@@ -32969,7 +32979,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 15,
+          "line": 20,
           "context": "return t(\"enum.label.6ac380cbd716\");"
         }
       ]
@@ -32982,7 +32992,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 55,
+          "line": 60,
           "context": "return t(\"enum.label.6acfa1db6a62\");"
         }
       ]
@@ -32995,7 +33005,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 19,
+          "line": 24,
           "context": "return t(\"enum.label.6e098153a586\");"
         }
       ]
@@ -33008,7 +33018,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 41,
+          "line": 46,
           "context": "return t(\"enum.label.75bd5f68e277\");"
         }
       ]
@@ -33021,7 +33031,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 58,
+          "line": 63,
           "context": "return t(\"enum.label.783d638053ea\");"
         }
       ]
@@ -33034,7 +33044,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 14,
+          "line": 19,
           "context": "return t(\"enum.label.8289e67df525\");"
         }
       ]
@@ -33047,7 +33057,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 39,
+          "line": 44,
           "context": "return t(\"enum.label.8459c1e91bc0\");"
         }
       ]
@@ -33060,7 +33070,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 45,
+          "line": 50,
           "context": "return t(\"enum.label.9151a836f996\");"
         }
       ]
@@ -33073,7 +33083,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 24,
+          "line": 29,
           "context": "return t(\"enum.label.a0f88ca9398c\");"
         }
       ]
@@ -33086,7 +33096,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 7,
+          "line": 12,
           "context": "return t(\"enum.label.a14f23af7016\");"
         }
       ]
@@ -33099,7 +33109,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 27,
+          "line": 32,
           "context": "return t(\"enum.label.a17b8666e5d9\");"
         }
       ]
@@ -33112,7 +33122,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 54,
+          "line": 59,
           "context": "return t(\"enum.label.a626aad412b7\");"
         }
       ]
@@ -33125,7 +33135,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 37,
+          "line": 42,
           "context": "return t(\"enum.label.a914a7b52cec\");"
         }
       ]
@@ -33138,8 +33148,23 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 59,
+          "line": 64,
           "context": "return t(\"enum.label.aa39cac2b409\");"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 437,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 505,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 545,
+          "context": "source: i18n(\"enum.label.aa39cac2b409\")"
         }
       ]
     },
@@ -33151,7 +33176,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 16,
+          "line": 21,
           "context": "return t(\"enum.label.aaabe42b5a23\");"
         }
       ]
@@ -33164,7 +33189,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 18,
+          "line": 23,
           "context": "return t(\"enum.label.b0938ffbd07c\");"
         }
       ]
@@ -33177,7 +33202,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 30,
+          "line": 35,
           "context": "return t(\"enum.label.bd2d74b297d1\");"
         }
       ]
@@ -33190,7 +33215,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 35,
+          "line": 40,
           "context": "return t(\"enum.label.be67cc45b9f0\");"
         }
       ]
@@ -33203,7 +33228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 53,
+          "line": 58,
           "context": "return t(\"enum.label.d39567b2b9f1\");"
         }
       ]
@@ -33216,7 +33241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 46,
+          "line": 51,
           "context": "return t(\"enum.label.d4f7864690bb\");"
         }
       ]
@@ -33229,7 +33254,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 28,
+          "line": 33,
           "context": "return t(\"enum.label.d7d6b21c2cf5\");"
         }
       ]
@@ -33242,7 +33267,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 26,
+          "line": 31,
           "context": "return t(\"enum.label.e310bbf0e506\");"
         }
       ]
@@ -33255,7 +33280,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 56,
+          "line": 61,
           "context": "return t(\"enum.label.e4d40b4d6759\");"
         }
       ]
@@ -33268,7 +33293,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 10,
+          "line": 15,
           "context": "return t(\"enum.label.e79890c96ee6\");"
         }
       ]
@@ -33281,7 +33306,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 11,
+          "line": 16,
           "context": "return t(\"enum.label.e806fbbe8ec6\");"
         }
       ]
@@ -33294,7 +33319,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 49,
+          "line": 54,
           "context": "return t(\"enum.label.e81059e1a712\");"
         }
       ]
@@ -33307,7 +33332,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 32,
+          "line": 37,
           "context": "return t(\"enum.label.e842a5dff916\");"
         }
       ]
@@ -33320,7 +33345,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 29,
+          "line": 34,
           "context": "return t(\"enum.label.e96da2049129\");"
         }
       ]
@@ -33333,7 +33358,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 40,
+          "line": 45,
           "context": "return t(\"enum.label.ea664afac033\");"
         }
       ]
@@ -33346,7 +33371,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 57,
+          "line": 62,
           "context": "return t(\"enum.label.ecc11c8afea8\");"
         }
       ]
@@ -33359,7 +33384,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 52,
+          "line": 57,
           "context": "return t(\"enum.label.ed31fbb483ee\");"
         }
       ]
@@ -33372,7 +33397,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 48,
+          "line": 53,
           "context": "return t(\"enum.label.ef7be5be3c13\");"
         }
       ]
@@ -33385,7 +33410,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 20,
+          "line": 25,
           "context": "return t(\"enum.label.ef94275bd96f\");"
         }
       ]
@@ -33398,7 +33423,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 43,
+          "line": 48,
           "context": "return t(\"enum.label.f2260568b289\");"
         }
       ]
@@ -33411,7 +33436,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 44,
+          "line": 49,
           "context": "return t(\"enum.label.f24ccb00a8ab\");"
         }
       ]
@@ -33424,8 +33449,47 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 31,
+          "line": 36,
           "context": "return t(\"enum.label.fc0c0d12a458\");"
+        }
+      ]
+    },
+    {
+      "key": "enum.label.ojPlatforms",
+      "source": "OJ 平台",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 9,
+          "context": "return t(\"enum.label.ojPlatforms\");"
+        }
+      ]
+    },
+    {
+      "key": "enum.label.tuojAI",
+      "source": "TUOJ（AI 版）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 7,
+          "context": "return t(\"enum.label.tuojAI\");"
+        }
+      ]
+    },
+    {
+      "key": "enum.label.tuojClassic",
+      "source": "TUOJ（经典版）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 8,
+          "context": "return t(\"enum.label.tuojClassic\");"
         }
       ]
     },
@@ -36893,6 +36957,16 @@
           "file": "apps/desktop/src/lib/contentExchange.ts",
           "line": 47,
           "context": "vaultTarget === 'new' ? i18n(\"lib.contentexchange.4dc6d8e7a87a\") : i18n(\"lib.contentexchange.17fa33d72406\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 143,
+          "context": "name = i18n(\"lib.contentexchange.4dc6d8e7a87a\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 144,
+          "context": "name.trim() || i18n(\"lib.contentexchange.4dc6d8e7a87a\")"
         }
       ]
     },
@@ -65712,7 +65786,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 28,
+          "line": 29,
           "context": "return i18n(\"pages.learn.assignmentspage.13c68d134847\");"
         }
       ]
@@ -65725,7 +65799,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 252,
+          "line": 253,
           "context": "filter === \"ignored\" ? i18n(\"pages.learn.assignmentspage.174b6eabff32\") : i18n(\"pages.learn.assignmentspage.5c018f6106a3\")"
         }
       ]
@@ -65738,7 +65812,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 127,
+          "line": 128,
           "context": "{i18n(\"pages.learn.assignmentspage.1dd9120b2b30\")}"
         }
       ]
@@ -65751,7 +65825,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 64,
+          "line": 65,
           "context": "{i18n(\"pages.learn.assignmentspage.1ee8c573d98e\")}"
         }
       ]
@@ -65764,7 +65838,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 29,
+          "line": 30,
           "context": "return i18n(\"pages.learn.assignmentspage.40c77cac9724\");"
         }
       ]
@@ -65777,7 +65851,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 122,
+          "line": 123,
           "context": "{i18n(\"pages.learn.assignmentspage.42338b60a3ea\")}"
         }
       ]
@@ -65790,7 +65864,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 252,
+          "line": 253,
           "context": "filter === \"unfinished\" ? i18n(\"pages.learn.assignmentspage.4ea07768437b\") : filter === \"overdue\" ? i18n(\"pages.learn.assignmentspage.f67f9df18e46\") : filter === \"ignored\" ? i18n(\"pages.learn.assignmentspage.174b6eabff32\") : i18n(\"pages.learn.assignmentspage.5c018f6106a3\")"
         }
       ]
@@ -65803,7 +65877,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 205,
+          "line": 206,
           "context": "data\n      ? semesterText(data.semester.id)\n      : i18n(\"pages.learn.assignmentspage.54209642994c\")"
         }
       ]
@@ -65816,7 +65890,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 252,
+          "line": 253,
           "context": "filter === \"ignored\" ? i18n(\"pages.learn.assignmentspage.174b6eabff32\") : i18n(\"pages.learn.assignmentspage.5c018f6106a3\")"
         }
       ]
@@ -65829,7 +65903,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 33,
+          "line": 34,
           "context": "return i18n(\"pages.learn.assignmentspage.5c55a67935af\");"
         }
       ]
@@ -65842,7 +65916,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 119,
+          "line": 120,
           "context": "{i18n(\"pages.learn.assignmentspage.6466fa8f4cad\")}"
         }
       ]
@@ -65855,7 +65929,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 202,
+          "line": 203,
           "context": "extCourseName || i18n(\"pages.learn.assignmentspage.67e5d61a802b\")"
         }
       ]
@@ -65868,7 +65942,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 65,
+          "line": 66,
           "context": "{i18n(\"pages.learn.assignmentspage.6ba20a081728\")}"
         }
       ]
@@ -65881,7 +65955,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 30,
+          "line": 31,
           "context": "return i18n(\"pages.learn.assignmentspage.85f50675dc34\");"
         }
       ]
@@ -65894,7 +65968,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 75,
+          "line": 76,
           "context": "{i18n(\"pages.learn.assignmentspage.93112c231d6a\")}"
         }
       ]
@@ -65907,12 +65981,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 210,
+          "line": 211,
           "context": "{i18n(\"pages.learn.assignmentspage.a1cabc0664cf\")}"
         },
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 214,
+          "line": 215,
           "context": "{i18n(\"pages.learn.assignmentspage.a1cabc0664cf\")}"
         }
       ]
@@ -65925,7 +65999,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 219,
+          "line": 220,
           "context": "{i18n(\"pages.learn.assignmentspage.aee887434131\")}"
         }
       ]
@@ -65938,7 +66012,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 32,
+          "line": 33,
           "context": "return i18n(\"pages.learn.assignmentspage.c9bb70bcaaa3\");"
         }
       ]
@@ -65951,7 +66025,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 217,
+          "line": 218,
           "context": "{i18n(\"pages.learn.assignmentspage.d4b1b25d27b2\")}"
         }
       ]
@@ -65964,7 +66038,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 71,
+          "line": 72,
           "context": "{i18n(\"pages.learn.assignmentspage.da697122c040\")}"
         }
       ]
@@ -65977,7 +66051,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 27,
+          "line": 28,
           "context": "return i18n(\"pages.learn.assignmentspage.dc9591e56d50\");"
         }
       ]
@@ -65990,7 +66064,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 79,
+          "line": 80,
           "context": "{i18n(\"pages.learn.assignmentspage.de32e20193ad\")}"
         }
       ]
@@ -66003,7 +66077,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 215,
+          "line": 216,
           "context": "{i18n(\"pages.learn.assignmentspage.e5da2c107242\")}"
         }
       ]
@@ -66021,7 +66095,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 202,
+          "line": 203,
           "context": "extCourseId\n    ? i18n(\"pages.learn.assignmentspage.f053f24bd333\", { value: String(extCourseName || i18n(\"pages.learn.assignmentspage.67e5d61a802b\")) })\n    : data\n      ? semesterText(data.semester.id)\n      : i18n(\"pages.learn.assignmentspage.54209642994c\")"
         }
       ]
@@ -66034,7 +66108,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 252,
+          "line": 253,
           "context": "filter === \"overdue\" ? i18n(\"pages.learn.assignmentspage.f67f9df18e46\") : filter === \"ignored\" ? i18n(\"pages.learn.assignmentspage.174b6eabff32\") : i18n(\"pages.learn.assignmentspage.5c018f6106a3\")"
         }
       ]
@@ -66047,7 +66121,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 264,
+          "line": 265,
           "context": "{i18n(\"pages.learn.assignmentspage.fb24bf947275\")}"
         }
       ]
@@ -66060,7 +66134,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/AssignmentsPage.tsx",
-          "line": 68,
+          "line": 69,
           "context": "{i18n(\"pages.learn.assignmentspage.fcd6b279b349\")}"
         }
       ]
@@ -84148,7 +84222,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 394,
+          "line": 395,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.00376d744fbd\")}"
         }
       ]
@@ -84161,7 +84235,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 387,
+          "line": 388,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.09829d304017\")}"
         }
       ]
@@ -84187,7 +84261,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 611,
+          "line": 612,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.0dd5ba052d62\")}"
         }
       ]
@@ -84200,7 +84274,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 339,
+          "line": 340,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.115f8a99ff8d\")}"
         }
       ]
@@ -84213,7 +84287,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 481,
+          "line": 482,
           "context": "(c.query.split(\"\\n\")[0] ?? \"\").slice(0, 40) || i18n(\"pages.xiaoda.xiaodapage.1587a76a2d84\")"
         }
       ]
@@ -84226,7 +84300,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 339,
+          "line": 340,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.21fbaf3a4f57\")}"
         }
       ]
@@ -84239,12 +84313,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 73,
-          "context": "id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME : i18n(\"pages.xiaoda.xiaodapage.2df7697dbb61\")"
+          "line": 74,
+          "context": "id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME() : i18n(\"pages.xiaoda.xiaodapage.2df7697dbb61\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 136,
+          "line": 137,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.2df7697dbb61\")"
         }
       ]
@@ -84257,7 +84331,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 483,
+          "line": 484,
           "context": "c.isDeepResearch ? i18n(\"pages.xiaoda.xiaodapage.34d33c5a7a08\") : undefined"
         }
       ]
@@ -84270,7 +84344,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 145,
+          "line": 146,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.350d0be1b4e7\")}"
         }
       ]
@@ -84283,7 +84357,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 469,
+          "line": 470,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.47392b6dbaa8\")}"
         }
       ]
@@ -84296,12 +84370,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 494,
+          "line": 495,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 657,
+          "line": 658,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         }
       ]
@@ -84327,7 +84401,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 406,
+          "line": 407,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.4c279d27ac1e\")}"
         }
       ]
@@ -84340,7 +84414,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 616,
+          "line": 617,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.515559957fd3\")}"
         }
       ]
@@ -84353,7 +84427,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 629,
+          "line": 630,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.56fb269924d9\")}"
         }
       ]
@@ -84375,7 +84449,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 650,
+          "line": 651,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.5aa03810e659\", { value: String(s.downloadCount ?? 0), value2: String(s.authorName ?? \"\") })}"
         }
       ]
@@ -84388,7 +84462,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 326,
+          "line": 327,
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.5d44af892c1b\") : i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")"
         }
       ]
@@ -84401,7 +84475,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 485,
+          "line": 486,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.5e2031c13ffa\")}"
         }
       ]
@@ -84414,7 +84488,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 529,
+          "line": 530,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.69543fafadb1\")}"
         }
       ]
@@ -84432,7 +84506,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 327,
+          "line": 328,
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.6beb452a379a\", { name: String(who.name) }) : `${who.name}${modelName ? ` · ${modelName}` : \"\"}`"
         }
       ]
@@ -84445,7 +84519,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 134,
+          "line": 135,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.6bf6d3f3d626\")"
         }
       ]
@@ -84458,7 +84532,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 272,
+          "line": 273,
           "context": "new Error(i18n(\"pages.xiaoda.xiaodapage.6d4fec35ccbe\"))"
         }
       ]
@@ -84471,7 +84545,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 457,
+          "line": 458,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.7fbcbca49ec5\")}"
         }
       ]
@@ -84489,7 +84563,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 457,
+          "line": 458,
           "context": "total ? i18n(\"pages.xiaoda.xiaodapage.84f7f9dfd488\", { total: String(total) }) : undefined"
         }
       ]
@@ -84502,7 +84576,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 612,
+          "line": 613,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.93588c0a42ab\")}"
         }
       ]
@@ -84515,7 +84589,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 127,
+          "line": 128,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.957244cdb9f2\")}"
         }
       ]
@@ -84528,7 +84602,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 538,
+          "line": 539,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.9577e7464c1f\")}"
         }
       ]
@@ -84541,12 +84615,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 137,
+          "line": 138,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.99aea2f9131a\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 610,
+          "line": 611,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.99aea2f9131a\")}"
         }
       ]
@@ -84559,12 +84633,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 494,
+          "line": 495,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 657,
+          "line": 658,
           "context": "loadingMore ? i18n(\"pages.xiaoda.xiaodapage.4927a53bcc88\") : i18n(\"pages.xiaoda.xiaodapage.af90a08fec8e\")"
         }
       ]
@@ -84577,7 +84651,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 135,
+          "line": 136,
           "context": "label: i18n(\"pages.xiaoda.xiaodapage.b0385cfe4b42\")"
         }
       ]
@@ -84590,7 +84664,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 124,
+          "line": 39,
+          "context": "() => i18n(\"pages.xiaoda.xiaodapage.b1abb3dc2271\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
+          "line": 125,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b1abb3dc2271\")}"
         }
       ]
@@ -84603,12 +84682,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 260,
+          "line": 261,
           "context": "me?.name ?? i18n(\"pages.xiaoda.xiaodapage.b70bb4acc048\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 343,
+          "line": 344,
           "context": "me?.name ?? i18n(\"pages.xiaoda.xiaodapage.b70bb4acc048\")"
         }
       ]
@@ -84621,22 +84700,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 148,
+          "line": 149,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 464,
+          "line": 465,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 533,
+          "line": 534,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 633,
+          "line": 634,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.b8784c8dd563\")}"
         }
       ]
@@ -84654,7 +84733,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 625,
+          "line": 626,
           "context": "total ? i18n(\"pages.xiaoda.xiaodapage.bf8875666acb\", { total: String(total) }) : undefined"
         }
       ]
@@ -84667,7 +84746,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 398,
+          "line": 399,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.c4084a277493\")}"
         }
       ]
@@ -84680,7 +84759,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 625,
+          "line": 626,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.c599990d6fb9\")}"
         }
       ]
@@ -84693,7 +84772,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 402,
+          "line": 403,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ca4d973c0b00\")}"
         }
       ]
@@ -84706,7 +84785,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 120,
+          "line": 121,
           "context": "me ? (me.zjh ? `${me.name} · ${me.zjh}` : me.name) : i18n(\"pages.xiaoda.xiaodapage.cbc3933d7f0a\")"
         }
       ]
@@ -84719,7 +84798,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 549,
+          "line": 550,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ce5b23a25653\")}"
         }
       ]
@@ -84732,7 +84811,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 359,
+          "line": 360,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.d4bdd78f6bb0\")}"
         }
       ]
@@ -84745,7 +84824,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 460,
+          "line": 461,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.d883a9b91e85\")}"
         }
       ]
@@ -84758,7 +84837,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 374,
+          "line": 375,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.de9e3ada6a80\")}"
         }
       ]
@@ -84771,12 +84850,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 326,
+          "line": 327,
           "context": "active ? i18n(\"pages.xiaoda.xiaodapage.5d44af892c1b\") : i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 331,
+          "line": 332,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.ea4b29f58f87\")}"
         }
       ]
@@ -84789,12 +84868,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 379,
+          "line": 380,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.edecf0ae6e51\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 400,
+          "line": 401,
           "context": "{i18n(\"pages.xiaoda.xiaodapage.edecf0ae6e51\")}"
         }
       ]
@@ -94123,7 +94202,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 637,
+          "line": 638,
           "context": "{i18n(\"skills.noResults\")}"
         }
       ]
@@ -94271,12 +94350,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 626,
+          "line": 627,
           "context": "{i18n(\"skills.search\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 626,
+          "line": 627,
           "context": "{i18n(\"skills.search\")}"
         }
       ]
@@ -104205,6 +104284,21 @@
       "parameters": [],
       "locations": [
         {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 163,
+          "context": "input.ownerName ?? i18n(\"state.touch.self\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 342,
+          "context": "inviter = i18n(\"state.touch.self\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 437,
+          "context": "myName = i18n(\"state.touch.self\")"
+        },
+        {
           "file": "apps/desktop/src/state/touch.ts",
           "line": 114,
           "context": "myName = i18n(\"state.touch.self\")"
@@ -104404,6 +104498,19 @@
           "file": "apps/desktop/src/state/vault.ts",
           "line": 83,
           "context": "return i18n(\"state.vault.5440f7424f28\");"
+        }
+      ]
+    },
+    {
+      "key": "state.vault.defaultName",
+      "source": "我的暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 90,
+          "context": "name = i18n(\"state.vault.defaultName\")"
         }
       ]
     },
@@ -108066,7 +108173,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 24,
           "context": "return i18n(\"tour.essentials.after\");"
         }
       ]
@@ -108079,7 +108186,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 24,
           "context": "return i18n(\"tour.essentials.before\");"
         }
       ]
@@ -108247,7 +108354,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 24,
           "context": "return i18n(\"tour.essentials.title\");"
         },
         {
@@ -108265,7 +108372,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 27,
           "context": "return i18n(\"tour.vault.drag.after\");"
         }
       ]
@@ -108278,7 +108385,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 27,
           "context": "return i18n(\"tour.vault.drag.before\");"
         }
       ]
@@ -108390,7 +108497,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 25,
           "context": "return i18n(\"tour.xiaoda.after\");"
         }
       ]
@@ -108415,7 +108522,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 25,
           "context": "return i18n(\"tour.xiaoda.before\");"
         }
       ]
@@ -108490,7 +108597,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 25,
           "context": "return i18n(\"tour.xiaoda.title\");"
         },
         {

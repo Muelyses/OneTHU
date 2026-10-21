@@ -1,7 +1,71 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.widgets.799a3fa553e0",
+      "source": "首页一级功能区，可自选服务入口，也可移动、调整大小或删除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 84,
+          "context": "return i18n(\"state.widgets.799a3fa553e0\");"
+        }
+      ],
+      "translation": "The Home main features, with service entries you can choose, and that you can move, resize, or delete.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.7a688306423b",
+      "source": "内容",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 146,
+          "context": "return i18n(\"state.widgets.7a688306423b\");"
+        }
+      ],
+      "translation": "Content",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.7b86b57f1bf0",
+      "source": "显示校园卡余额，点进去可看流水与充值。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 88,
+          "context": "return i18n(\"state.widgets.7b86b57f1bf0\");"
+        }
+      ],
+      "translation": "Shows your campus card balance; tap to view transactions and top up. Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.83778481a234",
+      "source": "成绩单里的课程门数。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 309,
+          "context": "return i18n(\"state.widgets.83778481a234\");"
+        }
+      ],
+      "translation": "Number of courses on your transcript. Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.widgets.8451b8a1bdb5",
       "source": "待完成的教学评估。需要登录。",
@@ -682,7 +746,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 24,
           "context": "return i18n(\"tour.essentials.after\");"
         }
       ],
@@ -698,7 +762,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 24,
           "context": "return i18n(\"tour.essentials.before\");"
         }
       ],
@@ -905,7 +969,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 25,
+          "line": 24,
           "context": "return i18n(\"tour.essentials.title\");"
         },
         {
@@ -926,7 +990,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 27,
           "context": "return i18n(\"tour.vault.drag.after\");"
         }
       ],
@@ -942,7 +1006,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 27,
           "context": "return i18n(\"tour.vault.drag.before\");"
         }
       ],
@@ -1081,7 +1145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 25,
           "context": "return i18n(\"tour.xiaoda.after\");"
         }
       ],
@@ -1112,7 +1176,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 25,
           "context": "return i18n(\"tour.xiaoda.before\");"
         }
       ],
@@ -1205,7 +1269,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 26,
+          "line": 25,
           "context": "return i18n(\"tour.xiaoda.title\");"
         },
         {

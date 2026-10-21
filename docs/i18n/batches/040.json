@@ -1,7 +1,69 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.trace.d5b54d668a13",
+      "source": "{m}分",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "m",
+          "expression": "String(m)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 357,
+          "context": "return i18n(\"lib.trace.d5b54d668a13\", { m: String(m) });"
+        }
+      ],
+      "translation": "{m} min",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.trace.e81f910c0f2b",
+      "source": "骑行",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/trace.ts",
+          "line": 248,
+          "context": "return i18n(\"lib.trace.e81f910c0f2b\");"
+        }
+      ],
+      "translation": "Bike",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.transport.53480e72e233",
+      "source": "重定向次数超限（{maxHops}）末跳={value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "maxHops",
+          "expression": "String(maxHops)"
+        },
+        {
+          "name": "value",
+          "expression": "String(currentUrl.slice(0, 140))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/transport.ts",
+          "line": 417,
+          "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
+        }
+      ],
+      "translation": "Too many redirects ({maxHops}), last hop = {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.transport.81870141c552",
       "source": "请求超时（90s）：{value}",
@@ -1407,63 +1469,6 @@
         }
       ],
       "translation": "Second-factor authentication didn't return a redirect URL",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.424cb0668f46",
-      "source": "AI 返回为空",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 40,
-          "context": "new Error(i18n(\"lib.xkai.424cb0668f46\"))"
-        }
-      ],
-      "translation": "AI returned an empty response",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.ae5755213df2",
-      "source": "AI 接口 {status}: {value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "status",
-          "expression": "String(res.status)"
-        },
-        {
-          "name": "value",
-          "expression": "String(t.slice(0, 160))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 36,
-          "context": "new Error(i18n(\"lib.xkai.ae5755213df2\", { status: String(res.status), value: String(t.slice(0, 160)) }))"
-        }
-      ],
-      "translation": "AI API {status}: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.xkai.cf3dc6fdc4c8",
-      "source": "请先在 AI 配置里填写 API Base URL 和模型名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/xkai.ts",
-          "line": 20,
-          "context": "new Error(i18n(\"lib.xkai.cf3dc6fdc4c8\"))"
-        }
-      ],
-      "translation": "Fill in the API Base URL and model name in AI settings first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

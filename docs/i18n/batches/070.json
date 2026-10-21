@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.d2bb025a2e51",
+      "source": "开始",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1351,
+          "context": "{i18n(\"pages.schedule.d2bb025a2e51\")}"
+        }
+      ],
+      "translation": "Start",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.d44e9b3d3b31",
+      "source": "名称",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1272,
+          "context": "k: i18n(\"pages.schedule.d44e9b3d3b31\")"
+        }
+      ],
+      "translation": "Name",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.daede9881787",
+      "source": "备注",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1365,
+          "context": "{i18n(\"pages.schedule.daede9881787\")}"
+        }
+      ],
+      "translation": "Notes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.dba0129db99f",
       "source": "{value} · 第 {weekNo} 周",
@@ -1339,68 +1387,6 @@
         }
       ],
       "translation": "Restore Home widgets, arrangement, and scaling to the default layout; other OnePages are kept.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1d6e1d3ecceb",
-      "source": "开启后按系统的深色模式自动切换：亮色用「白天主题」，深色用「黑夜主题」。{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "snap.followSystem ? <>{i18nRich(\"pages.settings.f5d889222af1\", { value: snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\") })}</> : null"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 752,
-          "context": "{i18nRich(\"pages.settings.1d6e1d3ecceb\", { value: snap.followSystem ? <>{i18nRich(\"pages.settings.f5d889222af1\", { value: snap.systemDark ? i18n(\"pages.settings.a6b75d068032\") : i18n(\"pages.settings.aa0819dfc4d8\") })}</> : null })}"
-        }
-      ],
-      "translation": "When enabled, switches automatically with the system dark mode: \"Light theme\" in light mode, \"Dark theme\" in dark mode. {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1e4072e67ba7",
-      "source": "本机可用浏览器 {length} 个；playwright 版{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(probe.browsers.length)"
-        },
-        {
-          "name": "value",
-          "expression": "String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\"))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 865,
-          "context": "probe.browsers.length > 0\n                ? i18n(\"pages.settings.1e4072e67ba7\", { length: String(probe.browsers.length), value: String(probe.playwrightReady ? i18n(\"pages.settings.e2f12da7faa6\") : i18n(\"pages.settings.dccec95b65e1\")) })\n                : i18n(\"pages.settings.4d85ccc9814b\")"
-        }
-      ],
-      "translation": "{length} browsers available on this machine; playwright version{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1eacd04cef79",
-      "source": "白天主题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 758,
-          "context": "{i18n(\"pages.settings.1eacd04cef79\")}"
-        }
-      ],
-      "translation": "Light theme",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

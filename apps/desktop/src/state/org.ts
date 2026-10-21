@@ -151,7 +151,7 @@ export function createOrg(input: { name: string; brief?: string; joinUrl?: strin
   const now = Date.now();
   const org: Org = {
     id: newId("org."),
-    name: String(input.name ?? "").trim().slice(0, 60) || "未命名组织",
+    name: String(input.name ?? "").trim().slice(0, 60) || i18n("components.identitycard.d203a5652f03"),
     brief: String(input.brief ?? "").trim().slice(0, 200),
     joinUrl: String(input.joinUrl ?? "").trim().slice(0, 300),
     cloudRepoId: "",
@@ -160,7 +160,7 @@ export function createOrg(input: { name: string; brief?: string; joinUrl?: strin
     gitlabRepos: [],
     members: [{
       id: newId("mem."),
-      name: String(input.ownerName ?? "我").slice(0, 40),
+      name: String(input.ownerName ?? i18n("state.touch.self")).slice(0, 40),
       email: normalizeOrgEmail(input.ownerEmail ?? ""),
       role: "owner",
       joinedAt: now,
@@ -339,7 +339,7 @@ function fromB64Url(s: string): Uint8Array {
 
 export async function orgInviteCode(
   org: Org,
-  inviter = "我",
+  inviter = i18n("state.touch.self"),
   meta?: { label?: string; allowEmail?: string; expireDays?: number },
 ): Promise<string> {
   const label = String(meta?.label ?? "").trim().slice(0, 60);
@@ -434,7 +434,7 @@ export async function currentOrgEmail(): Promise<string> {
   return normalizeOrgEmail(account?.email ?? "");
 }
 
-export async function acceptOrgInvite(code: string, myName = "我"): Promise<{ ok: boolean; orgId?: string; reason?: string }> {
+export async function acceptOrgInvite(code: string, myName = i18n("state.touch.self")): Promise<{ ok: boolean; orgId?: string; reason?: string }> {
   const receiving = fullModeReceiveSession();
   if (!receiving.isCurrent()) return { ok: false, reason: i18n("friends.modeChanged") };
   let resolved: string;

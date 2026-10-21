@@ -1,3 +1,4 @@
+import { labelForId } from "../i18n/staticLabels.js";
 import { getLocale as getUiLocale } from "../i18n/index.js";
 import { t as i18n, msg as i18nMsg, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -320,10 +321,10 @@ export function ExtHwSettingsSection(): ReactNode {
         await saveExtHwCreds(
           source === "tuoj" ? credsWith({ tuoj: r.cookie, tuojVia: "cas" }) : credsWith({ classic: r.cookie, classicVia: "cas" }),
         );
-        notify("oj", i18n("components.exthwsettingssection.0046b5364303", { value: String(SOURCE_NAMES[source]) }));
+        notify("oj", i18n("components.exthwsettingssection.0046b5364303", { value: String(labelForId(SOURCE_NAMES[source])) }));
         void refreshExtHw();
       })
-      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.a33c8a6739b3", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) })))
+      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.a33c8a6739b3", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -351,10 +352,10 @@ export function ExtHwSettingsSection(): ReactNode {
             ? credsWith({ tuoj: r.cookie, tuojVia: "password" })
             : credsWith({ classic: r.cookie, classicVia: "password" }),
         );
-        notify("oj", i18n("components.exthwsettingssection.81c77d061430", { value: String(SOURCE_NAMES[source]) }));
+        notify("oj", i18n("components.exthwsettingssection.81c77d061430", { value: String(labelForId(SOURCE_NAMES[source])) }));
         void refreshExtHw();
       })
-      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.a33c8a6739b3", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) })))
+      .catch((e: unknown) => notify("oj", i18n("components.exthwsettingssection.a33c8a6739b3", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) })))
       .finally(() => setBusy(null));
   };
 
@@ -400,7 +401,7 @@ export function ExtHwSettingsSection(): ReactNode {
 
   /** R12 17.2：单源退出登录 —— 确认后只清该源凭据，不影响其他源 */
   const onLogout = (source: ExtHwSourceId) => {
-    const label = SOURCE_NAMES[source];
+    const label = labelForId(SOURCE_NAMES[source]);
     void confirmOk(i18nMsg("components.exthwsettingssection.9332d0724ed2", { label: String(label), label2: String(label) })).then(
       async (ok) => {
         if (!ok) return;
@@ -465,14 +466,14 @@ export function ExtHwSettingsSection(): ReactNode {
   const fieldStyle = { display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" } as const;
   const srcRows: Array<{ id: ExtHwSourceId; label: string; logged: boolean }> = (
     ["yuketang", "tuoj", "tuojClassic", "tyche", "dsa"] as const
-  ).map((id) => ({ id, label: SOURCE_NAMES[id], logged: configured[id] }));
+  ).map((id) => ({ id, label: labelForId(SOURCE_NAMES[id]), logged: configured[id] }));
 
   return (
     <div id="settings-exthw">
       <OGText as="div" slot="label" tone="faint">{i18n("components.exthwsettingssection.e9acc8eb6b0c")}</OGText>
 
       {/* ── R14 19.1 / R15 20.3：雨课堂独立 Card，统一行范式 ── */}
-      <SectionHead title={SOURCE_CATEGORY_NAMES.courseware} />
+      <SectionHead title={labelForId(SOURCE_CATEGORY_NAMES.courseware)} />
       <Card>
         <div className="exthw-src">
           <div className="exthw-src-head">
@@ -573,7 +574,7 @@ export function ExtHwSettingsSection(): ReactNode {
       </Card>
 
       {/* ── R14 19.2 / R15 20.3：OJ 平台组默认折叠，标题行常显 4 源接入状态 ── */}
-      <SectionHead title={SOURCE_CATEGORY_NAMES.oj} aside={i18n("components.exthwsettingssection.44ff02182964")} />
+      <SectionHead title={labelForId(SOURCE_CATEGORY_NAMES.oj)} aside={i18n("components.exthwsettingssection.44ff02182964")} />
       <Card>
         <AccordionItem
           id="oj"
@@ -584,7 +585,7 @@ export function ExtHwSettingsSection(): ReactNode {
             <Inline gap={2} wrap>
               {(["tuoj", "tuojClassic", "tyche", "dsa"] as const).map((id) => (
                 <Tag key={id} tone={configured[id] ? "success" : undefined}>
-                  {SOURCE_NAMES[id]} {configured[id] ? "✅" : i18n("components.exthwsettingssection.c1f658373079")}
+                  {labelForId(SOURCE_NAMES[id])} {configured[id] ? "✅" : i18n("components.exthwsettingssection.c1f658373079")}
                 </Tag>
               ))}
               <OGText slot="label" tone="faint">{ojOpen ? i18n("components.exthwsettingssection.3afccd0197f6") : i18n("components.exthwsettingssection.3e7440664c75")}</OGText>
@@ -596,7 +597,7 @@ export function ExtHwSettingsSection(): ReactNode {
         <div className="exthw-oj-body">
             {/* TUOJ（AI 版）：主路径 = 清华统一认证漫游；账号密码收进「更多」 */}
             <OjSourceRow
-              name={SOURCE_NAMES.tuoj}
+              name={labelForId(SOURCE_NAMES.tuoj)}
               logged={configured.tuoj}
               via={
                 tuojVia === "cas" || ext.tuojAuto.tuoj.kind === "ok"
@@ -630,7 +631,7 @@ export function ExtHwSettingsSection(): ReactNode {
 
             {/* TUOJ（经典版）：同 AI 版范式，仅 base 不同 */}
             <OjSourceRow
-              name={SOURCE_NAMES.tuojClassic}
+              name={labelForId(SOURCE_NAMES.tuojClassic)}
               logged={configured.tuojClassic}
               via={
                 classicVia === "cas" || ext.tuojAuto.tuojClassic.kind === "ok"
@@ -664,7 +665,7 @@ export function ExtHwSettingsSection(): ReactNode {
 
             {/* Tyche：用户名 + 密码（校内或 sslvpn）；R21-A 支持记住密码 + 会话失效静默自动重登 */}
             <OjSourceRow
-              name={SOURCE_NAMES.tyche}
+              name={labelForId(SOURCE_NAMES.tyche)}
               logged={configured.tyche}
               primary={
                 configured.tyche ? (
@@ -706,7 +707,7 @@ export function ExtHwSettingsSection(): ReactNode {
 
             {/* DSA OJ：邮箱 + 密码（无统一认证） */}
             <OjSourceRow
-              name={SOURCE_NAMES.dsa}
+              name={labelForId(SOURCE_NAMES.dsa)}
               logged={configured.dsa}
               primary={
                 configured.dsa ? (

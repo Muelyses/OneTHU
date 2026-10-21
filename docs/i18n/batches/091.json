@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.theme.c4ef3664d417",
+      "source": "青瓷",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/theme.ts",
+          "line": 136,
+          "context": "return i18n(\"state.theme.c4ef3664d417\");"
+        }
+      ],
+      "translation": "Celadon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.theme.cb163d15eaea",
+      "source": "墨蓝夜航",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/theme.ts",
+          "line": 180,
+          "context": "return i18n(\"state.theme.cb163d15eaea\");"
+        }
+      ],
+      "translation": "Midnight blue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.theme.cfb4093a1ef4",
+      "source": "紫水晶",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/theme.ts",
+          "line": 73,
+          "context": "return i18n(\"state.theme.cfb4093a1ef4\");"
+        }
+      ],
+      "translation": "Amethyst",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.theme.e2d5803563ce",
       "source": "紫罗兰纸面、深紫文字与紫色强调。",
@@ -172,6 +220,21 @@
       "kind": "text",
       "parameters": [],
       "locations": [
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 163,
+          "context": "input.ownerName ?? i18n(\"state.touch.self\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 342,
+          "context": "inviter = i18n(\"state.touch.self\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 437,
+          "context": "myName = i18n(\"state.touch.self\")"
+        },
         {
           "file": "apps/desktop/src/state/touch.ts",
           "line": 114,
@@ -417,6 +480,22 @@
         }
       ],
       "translation": "Data",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vault.defaultName",
+      "source": "我的暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 90,
+          "context": "name = i18n(\"state.vault.defaultName\")"
+        }
+      ],
+      "translation": "My staging box",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1268,80 +1347,6 @@
         }
       ],
       "translation": "This is an old local share code; its content is baked into the code and cannot be changed. Please create a new share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.b713d28a9ae7",
-      "source": "升级后的分享不可读取",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 337,
-          "context": "secured.reason??i18n(\"state.vaultshare.b713d28a9ae7\")"
-        }
-      ],
-      "translation": "The upgraded share cannot be read",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.b8aeb1a1f261",
-      "source": "读取云盘清单失败：{error}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "error",
-          "expression": "e instanceof Error ? e.message : String(e)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 483,
-          "context": "reason: i18n(\"state.vaultshare.b8aeb1a1f261\", { error: e instanceof Error ? e.message : String(e) })"
-        }
-      ],
-      "translation": "Failed to read the cloud drive manifest: {error}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.c4591b5b1fe8",
-      "source": "口令无法解析",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 366,
-          "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
-        },
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 444,
-          "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
-        }
-      ],
-      "translation": "The share code cannot be parsed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.vaultshare.c5479cb871fa",
-      "source": "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/vaultShare.ts",
-          "line": 453,
-          "context": "reason: i18n(\"state.vaultshare.c5479cb871fa\")"
-        }
-      ],
-      "translation": "Invalid email format, like studentID@mails.tsinghua.edu.cn",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.b5069cefc0c3",
+      "source": "学习发展中心工作坊预约",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 121,
+          "context": "return i18n(\"lib.infoapps.b5069cefc0c3\");"
+        }
+      ],
+      "translation": "Learning Development Center Workshop Booking",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.b565a78c28a9",
+      "source": "信息化业务咨询和故障报修",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 267,
+          "context": "return i18n(\"lib.infoapps.b565a78c28a9\");"
+        }
+      ],
+      "translation": "IT Consultation and Fault Reporting",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.b6cdd34fc773",
+      "source": "图书采购合同（示范文本）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 41,
+          "context": "return i18n(\"lib.infoapps.b6cdd34fc773\");"
+        }
+      ],
+      "translation": "Book Procurement Contract (Model Text)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.b7c12b629219",
       "source": "校史馆预约服务",
@@ -1231,54 +1279,6 @@
         }
       ],
       "translation": "General Education Course Application Search",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f78a23b61ab7",
-      "source": "横向项目变更",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 181,
-          "context": "return i18n(\"lib.infoapps.f78a23b61ab7\");"
-        }
-      ],
-      "translation": "Industry-Sponsored Project Change",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.f9206110d4bb",
-      "source": "毕业生调查问卷",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 92,
-          "context": "return i18n(\"lib.infoapps.f9206110d4bb\");"
-        }
-      ],
-      "translation": "Graduate Survey",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.fa1d7aa7deff",
-      "source": "奖励资助管理系统",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 104,
-          "context": "return i18n(\"lib.infoapps.fa1d7aa7deff\");"
-        }
-      ],
-      "translation": "Awards and Financial Aid Management System",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

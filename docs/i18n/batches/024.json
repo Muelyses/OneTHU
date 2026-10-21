@@ -1,5 +1,5 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -26,7 +26,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.92ea3aacf873\");"
         }
       ],
@@ -42,7 +42,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.9593aef7149a\");"
         }
       ],
@@ -58,7 +58,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 28,
           "context": "return i18n(\"components.tourillustration.96b3145a6b73\");"
         }
       ],
@@ -74,7 +74,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.9c7a9fcee92f\");"
         }
       ],
@@ -90,7 +90,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.a134c7737c93\");"
         }
       ],
@@ -106,7 +106,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 74,
+          "line": 73,
           "context": "{i18n(\"components.tourillustration.a31b16bc552a\")}"
         }
       ],
@@ -122,7 +122,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 28,
+          "line": 27,
           "context": "return i18n(\"components.tourillustration.a53febdc5466\");"
         }
       ],
@@ -138,7 +138,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 39,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.bb3cdc17373c\");"
         }
       ],
@@ -154,7 +154,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 32,
+          "line": 31,
           "context": "return i18n(\"components.tourillustration.bf5b53af13f4\");"
         }
       ],
@@ -170,7 +170,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 35,
+          "line": 34,
           "context": "return i18n(\"components.tourillustration.c20f83cc52d2\");"
         }
       ],
@@ -202,7 +202,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 39,
+          "line": 38,
           "context": "return i18n(\"components.tourillustration.c3d0e8d4b506\");"
         }
       ],
@@ -218,7 +218,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 33,
+          "line": 32,
           "context": "return i18n(\"components.tourillustration.c6331cafc401\");"
         }
       ],
@@ -234,7 +234,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.c89246ea218f\");"
         }
       ],
@@ -250,7 +250,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.d8aa9757d2b3\");"
         }
       ],
@@ -266,7 +266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 47,
+          "line": 46,
           "context": "return i18n(\"components.tourillustration.d924d8e8fe20\");"
         }
       ],
@@ -282,7 +282,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 29,
+          "line": 28,
           "context": "return i18n(\"components.tourillustration.d9c8475ca6a6\");"
         }
       ],
@@ -298,7 +298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 37,
+          "line": 36,
           "context": "return i18n(\"components.tourillustration.dd52e4b6a630\");"
         }
       ],
@@ -330,7 +330,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 36,
+          "line": 35,
           "context": "return i18n(\"components.tourillustration.e8332f3f0437\");"
         }
       ],
@@ -362,7 +362,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 27,
+          "line": 26,
           "context": "return i18n(\"components.tourillustration.ee40e75e813e\");"
         }
       ],
@@ -378,7 +378,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 34,
+          "line": 33,
           "context": "return i18n(\"components.tourillustration.f4ad88248fc0\");"
         }
       ],
@@ -394,7 +394,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 31,
+          "line": 30,
           "context": "return i18n(\"components.tourillustration.f65def27f883\");"
         }
       ],
@@ -410,7 +410,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 46,
+          "line": 45,
           "context": "return i18n(\"components.tourillustration.fa060d19d9cd\");"
         }
       ],
@@ -426,7 +426,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 30,
+          "line": 29,
           "context": "return i18n(\"components.tourillustration.fd962d16dac1\");"
         }
       ],
@@ -442,7 +442,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourIllustration.tsx",
-          "line": 43,
+          "line": 42,
           "context": "return i18n(\"components.tourillustration.fe0f7b11128c\");"
         }
       ],
@@ -458,7 +458,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 217,
+          "line": 216,
           "context": "subtitle: i18n(\"components.tourstudiomodels.06f8b75c9666\")"
         }
       ],
@@ -474,12 +474,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ],
@@ -495,7 +495,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ],
@@ -511,7 +511,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 217,
+          "line": 216,
           "context": "title: i18n(\"components.tourstudiomodels.1c23243a9085\")"
         }
       ],
@@ -527,7 +527,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "badge: i18n(\"components.tourstudiomodels.21c80015e886\")"
         }
       ],
@@ -543,12 +543,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "[i18n(\"components.tourstudiomodels.28d76cd105cb\"), i18n(\"components.tourstudiomodels.07e577ff8c0d\")]"
         }
       ],
@@ -564,7 +564,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 218,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ],
@@ -580,7 +580,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "badge: i18n(\"components.tourstudiomodels.49ef840efe6f\")"
         }
       ],
@@ -596,7 +596,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 218,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ],
@@ -612,7 +612,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ],
@@ -628,7 +628,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 217,
+          "line": 216,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.6fef00bb252c\")"
         }
       ],
@@ -644,7 +644,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ],
@@ -660,7 +660,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ],
@@ -676,7 +676,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.90c7cebe15c6\")"
         }
       ],
@@ -692,7 +692,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "title: i18n(\"components.tourstudiomodels.92f20b9fa474\")"
         }
       ],
@@ -708,7 +708,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 219,
+          "line": 218,
           "context": "[i18n(\"components.tourstudiomodels.a525346277ed\"), i18n(\"components.tourstudiomodels.5c05d463d109\"), i18n(\"components.tourstudiomodels.392a69fb2ef7\")]"
         }
       ],
@@ -724,7 +724,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 231,
+          "line": 230,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.b0c8602734bb\")"
         }
       ],
@@ -740,7 +740,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 150,
+          "line": 149,
           "context": "new Error(i18n(\"components.tourstudiomodels.cf4324a5411f\"))"
         }
       ],
@@ -756,7 +756,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 230,
+          "line": 229,
           "context": "title: i18n(\"components.tourstudiomodels.d38b22e68fc1\")"
         }
       ],
@@ -772,7 +772,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 232,
+          "line": 231,
           "context": "eyebrow: i18n(\"components.tourstudiomodels.d513aac3caac\")"
         }
       ],
@@ -788,7 +788,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.dde28d3ac66c\"), i18n(\"components.tourstudiomodels.80b6a54ddb31\"), i18n(\"components.tourstudiomodels.7edb884bee96\")]"
         }
       ],
@@ -804,7 +804,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 220,
+          "line": 219,
           "context": "[i18n(\"components.tourstudiomodels.eddeec1a4275\"), i18n(\"components.tourstudiomodels.0a27a98a90c3\"), i18n(\"components.tourstudiomodels.6885fcbe795c\")]"
         }
       ],
@@ -825,12 +825,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 33,
+          "line": 32,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(source.key) }))"
         },
         {
           "file": "apps/desktop/src/components/tourStudioModels.ts",
-          "line": 118,
+          "line": 117,
           "context": "new Error(i18n(\"components.tourstudiomodels.fca0380c4f7e\", { key: String(key) }))"
         }
       ],
@@ -846,7 +846,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/TourStudioScene.tsx",
-          "line": 57,
+          "line": 60,
           "context": "{i18n(\"components.tourstudioscene.d689bd368468\")}"
         }
       ],
@@ -862,7 +862,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioScreens.ts",
-          "line": 71,
+          "line": 85,
           "context": "new Error(i18n(\"components.tourstudioscreens.18455d8d7822\"))"
         }
       ],
@@ -883,7 +883,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/tourStudioScreens.ts",
-          "line": 83,
+          "line": 99,
           "context": "new Error(i18n(\"components.tourstudioscreens.fca0380c4f7e\", { key: String(key) }))"
         }
       ],

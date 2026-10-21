@@ -1,5 +1,5 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -99,7 +99,7 @@
           "context": "status === \"error\"\n          ? null\n          : i18n(\"components.exthwloginmodal.eb13f4204eea\")"
         }
       ],
-      "translation": "Please scan the QR code with WeChat or the 雨豆 app",
+      "translation": "Please scan the QR code with WeChat or the Yudou app",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -115,7 +115,7 @@
           "context": "return i18n(\"components.exthwloginmodal.f28740ebbaec\");"
         }
       ],
-      "translation": "Open WeChat or the 雨豆 app and scan the QR code",
+      "translation": "Open WeChat or the Yudou app and scan the QR code",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -148,13 +148,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 323,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.0046b5364303\", { value: String(SOURCE_NAMES[source]) }))"
+          "line": 324,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.0046b5364303\", { value: String(labelForId(SOURCE_NAMES[source])) }))"
         }
       ],
       "translation": "{value} signed in via Tsinghua Unified Authentication and saved.",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "components.exthwsettingssection.04bc193e4244",
@@ -164,7 +164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 495,
+          "line": 496,
           "context": "{i18n(\"components.exthwsettingssection.04bc193e4244\")}"
         }
       ],
@@ -180,7 +180,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 580,
+          "line": 581,
           "context": "{i18n(\"components.exthwsettingssection.07a0f114d30b\")}"
         }
       ],
@@ -196,12 +196,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 481,
+          "line": 482,
           "context": "configured.yuketang ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 779,
+          "line": 780,
           "context": "logged ? i18n(\"components.exthwsettingssection.0a01eee1cd37\") : i18n(\"components.exthwsettingssection.c1f658373079\")"
         }
       ],
@@ -217,7 +217,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 498,
+          "line": 499,
           "context": "yktWebOpen ? i18n(\"components.exthwsettingssection.f3553abadd4a\") : i18n(\"components.exthwsettingssection.0a5f3151f8a9\")"
         }
       ],
@@ -233,7 +233,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 222,
+          "line": 223,
           "context": "notify(\"range\", i18n(\"components.exthwsettingssection.0cfeab7fbfd6\"))"
         }
       ],
@@ -249,7 +249,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 533,
+          "line": 534,
           "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
         }
       ],
@@ -265,7 +265,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 532,
+          "line": 533,
           "context": "busy === \"ykt-export\" ? i18n(\"components.exthwsettingssection.dce6e572314e\") : i18n(\"components.exthwsettingssection.11968ab19a8b\")"
         }
       ],
@@ -281,7 +281,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 755,
+          "line": 756,
           "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
         }
       ],
@@ -297,12 +297,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 605,
+          "line": 606,
           "context": "tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 639,
+          "line": 640,
           "context": "classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         }
       ],
@@ -323,7 +323,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 268,
+          "line": 269,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.177a41a28139\", { value: String(errMsg(e)) }))"
         }
       ],
@@ -339,17 +339,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 623,
+          "line": 624,
           "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 657,
+          "line": 658,
           "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 692,
+          "line": 693,
           "context": "{i18n(\"components.exthwsettingssection.1a3f0617d6de\")}"
         }
       ],
@@ -365,12 +365,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 282,
+          "line": 283,
           "context": "name: i18n(\"components.exthwsettingssection.1c907131183c\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 763,
+          "line": 764,
           "context": "{i18n(\"components.exthwsettingssection.1c907131183c\")}"
         }
       ],
@@ -386,32 +386,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 625,
+          "line": 626,
           "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 673,
+          "line": 674,
           "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 694,
+          "line": 695,
           "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 715,
+          "line": 716,
           "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 730,
+          "line": 731,
           "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         }
       ],
@@ -432,7 +432,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 241,
+          "line": 242,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.1f2ada659e8f\", { value: String(st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")) }))"
         }
       ],
@@ -448,7 +448,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 523,
+          "line": 524,
           "context": "ext.yktSession.checkedAt === null\n                  ? i18n(\"components.exthwsettingssection.27e7d6344316\")\n                  : ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.e"
         }
       ],
@@ -464,7 +464,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 533,
+          "line": 534,
           "context": "busy === \"ykt-import\" ? i18n(\"components.exthwsettingssection.2f58b6eddc08\") : i18n(\"components.exthwsettingssection.103d97629702\")"
         }
       ],
@@ -480,7 +480,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 377,
+          "line": 378,
           "context": "tycheRemember ? i18n(\"components.exthwsettingssection.e9da66a5f095\") : i18n(\"components.exthwsettingssection.30060dffb676\")"
         }
       ],
@@ -501,7 +501,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 64,
+          "line": 65,
           "context": "logged ? i18n(\"components.exthwsettingssection.32eed2adc456\", { value: String(via ? `·${via}` : \"\") }) : i18n(\"components.exthwsettingssection.c1f658373079\")"
         }
       ],
@@ -517,8 +517,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 479,
+          "line": 480,
           "context": "{i18n(\"components.exthwsettingssection.38b9eabcae1b\")}"
+        },
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 6,
+          "context": "return t(\"components.exthwsettingssection.38b9eabcae1b\");"
         }
       ],
       "translation": "Rain Classroom",
@@ -533,7 +538,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 590,
+          "line": 591,
           "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
         }
       ],
@@ -549,7 +554,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 590,
+          "line": 591,
           "context": "ojOpen ? i18n(\"components.exthwsettingssection.3afccd0197f6\") : i18n(\"components.exthwsettingssection.3e7440664c75\")"
         }
       ],
@@ -565,32 +570,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 612,
+          "line": 613,
           "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 625,
+          "line": 626,
           "context": "busy === \"tuoj-pwd-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 646,
+          "line": 647,
           "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 659,
+          "line": 660,
           "context": "busy === \"tuoj-pwd-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 694,
+          "line": 695,
           "context": "busy === \"tyche-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 730,
+          "line": 731,
           "context": "busy === \"dsa-login\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         }
       ],
@@ -606,7 +611,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 701,
+          "line": 702,
           "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
         }
       ],
@@ -627,7 +632,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 223,
+          "line": 224,
           "context": "notify(\"range\", i18n(\"components.exthwsettingssection.434a1a95686a\", { value: String(errMsg(e)) }))"
         }
       ],
@@ -643,7 +648,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 576,
+          "line": 577,
           "context": "{i18n(\"components.exthwsettingssection.44ff02182964\")}"
         }
       ],
@@ -659,27 +664,27 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 485,
+          "line": 486,
           "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 610,
+          "line": 611,
           "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 644,
+          "line": 645,
           "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 671,
+          "line": 672,
           "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 713,
+          "line": 714,
           "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         }
       ],
@@ -695,27 +700,27 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 485,
+          "line": 486,
           "context": "busy === \"logout-yuketang\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 610,
+          "line": 611,
           "context": "busy === \"logout-tuoj\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 644,
+          "line": 645,
           "context": "busy === \"logout-tuojClassic\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 671,
+          "line": 672,
           "context": "busy === \"logout-tyche\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 713,
+          "line": 714,
           "context": "busy === \"logout-dsa\" ? i18n(\"components.exthwsettingssection.4803e2da0873\") : i18n(\"components.exthwsettingssection.498e1d59b4d7\")"
         }
       ],
@@ -731,7 +736,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 768,
+          "line": 769,
           "context": "{i18n(\"components.exthwsettingssection.498e524101ad\")}"
         }
       ],
@@ -747,7 +752,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 528,
+          "line": 529,
           "context": "ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
         }
       ],
@@ -763,7 +768,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 533,
+          "line": 534,
           "context": "{i18n(\"components.exthwsettingssection.4ba279389d5a\")}"
         }
       ],
@@ -779,7 +784,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 242,
+          "line": 243,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.52ca90b5c7ad\"))"
         }
       ],
@@ -795,7 +800,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 511,
+          "line": 512,
           "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
         }
       ],
@@ -811,7 +816,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 697,
+          "line": 698,
           "context": "{i18n(\"components.exthwsettingssection.5510d7040d50\")}"
         }
       ],
@@ -827,7 +832,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 748,
+          "line": 749,
           "context": "{i18n(\"components.exthwsettingssection.58d2b2a8dc03\")}"
         }
       ],
@@ -848,7 +853,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 265,
+          "line": 266,
           "context": "return i18n(\"components.exthwsettingssection.59e30b592976\", { path: String(path) });"
         }
       ],
@@ -869,7 +874,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 432,
+          "line": 433,
           "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.5fd4a0702e98\", { label: String(label) }))"
         }
       ],
@@ -890,7 +895,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 457,
+          "line": 458,
           "context": "{i18nRich(\"components.exthwsettingssection.65493396ab5b\", { value: st.message ? `（${st.message.slice(0, 160)}）` : \"\" })}"
         }
       ],
@@ -906,7 +911,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 298,
+          "line": 299,
           "context": "return i18n(\"components.exthwsettingssection.6ac888d9d8a4\");"
         }
       ],
@@ -922,7 +927,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 764,
+          "line": 765,
           "context": "{i18n(\"components.exthwsettingssection.6c0cdf48d1b3\")}"
         }
       ],
@@ -938,7 +943,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 728,
+          "line": 729,
           "context": "{i18n(\"components.exthwsettingssection.73075237fd0f\")}"
         }
       ],
@@ -954,7 +959,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 237,
+          "line": 238,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.738b37dc7cba\"))"
         }
       ],
@@ -975,7 +980,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 301,
+          "line": 302,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.7a334a5f33f2\", { value: String(errMsg(e)) }))"
         }
       ],
@@ -991,12 +996,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 612,
+          "line": 613,
           "context": "busy === \"tuoj-cas-tuoj\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 646,
+          "line": 647,
           "context": "busy === \"tuoj-cas-tuojClassic\" ? i18n(\"components.exthwsettingssection.3f06ed8f8c38\") : i18n(\"components.exthwsettingssection.7c1c6d7e68c6\")"
         }
       ],
@@ -1012,7 +1017,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 253,
+          "line": 254,
           "context": "new Error(i18n(\"components.exthwsettingssection.7cf1f3f97fff\"))"
         }
       ],
@@ -1028,7 +1033,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 755,
+          "line": 756,
           "context": "busy === \"refresh\" || ext.state === \"loading\" ? i18n(\"components.exthwsettingssection.7f3c8312816f\") : i18n(\"components.exthwsettingssection.130123e01753\")"
         }
       ],
@@ -1049,13 +1054,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 354,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.81c77d061430\", { value: String(SOURCE_NAMES[source]) }))"
+          "line": 355,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.81c77d061430\", { value: String(labelForId(SOURCE_NAMES[source])) }))"
         }
       ],
       "translation": "{value} signed in successfully and saved.",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "components.exthwsettingssection.8230bba29c97",
@@ -1065,7 +1070,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 502,
+          "line": 503,
           "context": "{i18n(\"components.exthwsettingssection.8230bba29c97\")}"
         }
       ],
@@ -1081,7 +1086,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 264,
+          "line": 265,
           "context": "return i18n(\"components.exthwsettingssection.84880323c334\");"
         }
       ],
@@ -1097,7 +1102,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 531,
+          "line": 532,
           "context": "busy === \"ykt-check\" ? i18n(\"components.exthwsettingssection.fb11aa6f2982\") : i18n(\"components.exthwsettingssection.8a21d7219a96\")"
         }
       ],
@@ -1113,7 +1118,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 780,
+          "line": 781,
           "context": "{i18n(\"components.exthwsettingssection.8aee3f656a95\")}"
         }
       ],
@@ -1138,7 +1143,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 525,
+          "line": 526,
           "context": "ext.yktSession.alive === true\n                    ? i18n(\"components.exthwsettingssection.8b512420e036\", { value: String(ext.yktSession.userName ? `（${ext.yktSession.userName}）` : \"\"), value2: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                    : ext.yktSession.alive === false\n                      ? i18n(\"components.exthwsettingssection.d2c8f261037f\", { reason: String(ext.yktSession.reason), value: String(new Date(ext.yktSession.checkedAt).toLocaleTimeString(getUiLocale())) })\n                      : i18n(\"components.exthwsettingssection.4acec185ba86\")"
         }
       ],
@@ -1159,7 +1164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 397,
+          "line": 398,
           "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.8da916259f48\", { value: String(errMsg(e)) }))"
         }
       ],
@@ -1175,11 +1180,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 512,
+          "line": 513,
           "context": "YKT_WEB_LOGIN_AVAILABLE\n              ? i18n(\"components.exthwsettingssection.5492e8498b9c\")\n              : i18n(\"components.exthwsettingssection.9249fcc53449\")"
         }
       ],
-      "translation": "Rain Classroom now requires a captcha, so direct SMS sign-in is unavailable for now. Please scan with WeChat or the 雨豆 app.",
+      "translation": "Rain Classroom now requires a captcha, so direct SMS sign-in is unavailable for now. Please scan with WeChat or the Yudou app.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1196,7 +1201,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 780,
+          "line": 781,
           "context": "err ? <OGText tone=\"error\">{i18n(\"components.exthwsettingssection.8aee3f656a95\")}</OGText> : i18n(\"components.exthwsettingssection.92559c8f277f\", { count: String(count) })"
         }
       ],
@@ -1221,7 +1226,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 404,
+          "line": 405,
           "context": "confirmOk(i18nMsg(\"components.exthwsettingssection.9332d0724ed2\", { label: String(label), label2: String(label) }))"
         }
       ],
@@ -1242,7 +1247,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 380,
+          "line": 381,
           "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.94cd45f219ce\", { value: String(errMsg(e)) }))"
         }
       ],
@@ -1263,12 +1268,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 678,
+          "line": 679,
           "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: tycheFormOpen ? \"▾\" : \"▸\" })}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 720,
+          "line": 721,
           "context": "{i18nRich(\"components.exthwsettingssection.97434a01ddf6\", { value: dsaFormOpen ? \"▾\" : \"▸\" })}"
         }
       ],
@@ -1284,12 +1289,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 603,
+          "line": 604,
           "context": "tuojVia === \"cas\" || ext.tuojAuto.tuoj.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : tuojVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 637,
+          "line": 638,
           "context": "classicVia === \"cas\" || ext.tuojAuto.tuojClassic.kind === \"ok\"\n                  ? i18n(\"components.exthwsettingssection.99e398c6de5c\")\n                  : classicVia === \"password\"\n                    ? i18n(\"components.exthwsettingssection.164c7afc6158\")\n                    : undefined"
         }
       ],
@@ -1305,7 +1310,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 491,
+          "line": 492,
           "context": "yktQrOpen ? i18n(\"components.exthwsettingssection.dd647f03c880\") : i18n(\"components.exthwsettingssection.9e0181f35fc5\")"
         }
       ],
@@ -1321,7 +1326,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 241,
+          "line": 242,
           "context": "st.reason ?? i18n(\"components.exthwsettingssection.a1a9da9ee6ed\")"
         }
       ],
@@ -1337,7 +1342,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 754,
+          "line": 755,
           "context": "{i18n(\"components.exthwsettingssection.a3030bf8f16d\")}"
         }
       ],
@@ -1362,18 +1367,18 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 326,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) }))"
+          "line": 327,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) }))"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 357,
-          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(SOURCE_NAMES[source]), value2: String(errMsg(e)) }))"
+          "line": 358,
+          "context": "notify(\"oj\", i18n(\"components.exthwsettingssection.a33c8a6739b3\", { value: String(labelForId(SOURCE_NAMES[source])), value2: String(errMsg(e)) }))"
         }
       ],
       "translation": "{value} sign-in failed: {value2}",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "components.exthwsettingssection.a61cd4faa5ed",
@@ -1383,7 +1388,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 553,
+          "line": 554,
           "context": "notify(\"yuketang\", i18n(\"components.exthwsettingssection.a61cd4faa5ed\"))"
         }
       ],
@@ -1399,22 +1404,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 624,
+          "line": 625,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 658,
+          "line": 659,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 693,
+          "line": 694,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 729,
+          "line": 730,
           "context": "{i18n(\"components.exthwsettingssection.a621ab606db2\")}"
         }
       ],
@@ -1430,7 +1435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 700,
+          "line": 701,
           "context": "tycheRemember\n                      ? i18n(\"components.exthwsettingssection.aaa8da9598f1\")\n                      : i18n(\"components.exthwsettingssection.40c00674621e\")"
         }
       ],
@@ -1451,7 +1456,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 760,
+          "line": 761,
           "context": "{i18nRich(\"components.exthwsettingssection.abf483faf3b6\", { value: advanced ? \"▾\" : \"▸\" })}"
         }
       ],
@@ -1467,7 +1472,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 283,
+          "line": 284,
           "context": "return i18n(\"components.exthwsettingssection.ae79f5df3c38\");"
         }
       ],
@@ -1483,12 +1488,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 673,
+          "line": 674,
           "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 715,
+          "line": 716,
           "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
         }
       ],
@@ -1513,7 +1518,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 435,
+          "line": 436,
           "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.b666588e7bed\", { label: String(label), value: String(errMsg(e)) }))"
         }
       ],
@@ -1534,12 +1539,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 616,
+          "line": 617,
           "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: tuojPwdOpen ? \"▾\" : \"▸\" })}"
         },
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 650,
+          "line": 651,
           "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: classicPwdOpen ? \"▾\" : \"▸\" })}"
         }
       ],
@@ -1555,7 +1560,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 536,
+          "line": 537,
           "context": "{i18n(\"components.exthwsettingssection.c0102ddf9ffc\")}"
         }
       ],

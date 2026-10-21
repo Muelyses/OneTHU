@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.f78a23b61ab7",
+      "source": "横向项目变更",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 181,
+          "context": "return i18n(\"lib.infoapps.f78a23b61ab7\");"
+        }
+      ],
+      "translation": "Industry-Sponsored Project Change",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.f9206110d4bb",
+      "source": "毕业生调查问卷",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 92,
+          "context": "return i18n(\"lib.infoapps.f9206110d4bb\");"
+        }
+      ],
+      "translation": "Graduate Survey",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.fa1d7aa7deff",
+      "source": "奖励资助管理系统",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 104,
+          "context": "return i18n(\"lib.infoapps.fa1d7aa7deff\");"
+        }
+      ],
+      "translation": "Awards and Financial Aid Management System",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.fb199e506f1e",
       "source": "专用标志备案申请",
@@ -1225,54 +1273,6 @@
         }
       ],
       "translation": "Cloud drive, email, GitLab and Directions can be opened directly too.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.938cf6754eca",
-      "source": "首页是一块自由画布，组件的位置和大小随手调。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 35,
-          "context": "return i18n(\"lib.onboardinglessons.938cf6754eca\");"
-        }
-      ],
-      "translation": "Home is a free canvas; adjust widget position and size as you like.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.9521224b68f9",
-      "source": "装插件扩展组件、主题与 MCP 工具。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 79,
-          "context": "return i18n(\"lib.onboardinglessons.9521224b68f9\");"
-        }
-      ],
-      "translation": "Install plugins to extend widgets, themes and MCP tools.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.onboardinglessons.96110462ab73",
-      "source": "打开外观设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/onboardingLessons.ts",
-          "line": 86,
-          "context": "return i18n(\"lib.onboardinglessons.96110462ab73\");"
-        }
-      ],
-      "translation": "Open appearance settings",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -14,6 +14,7 @@ try{
   await page.locator('.md-content').getByRole('link',{name:'English',exact:true}).click();await page.waitForURL('**/docs/en/getting-started/');check(await page.locator('html').getAttribute('lang')==='en',width+': English theme and guide load');
   await page.screenshot({path:out+'/english-'+width+'.png'});
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),width+': English documentation fits viewport');
+  await page.goto('https://onethu.github.io/docs/en/sharing-and-organizations/');const replay=page.locator('.md-content img').first();await replay.scrollIntoViewIfNeeded();await replay.evaluate(image=>image.decode());check((await replay.getAttribute('src')).includes('/en-US/'),width+': English guide uses the separately recorded English animation');
   await page.goto('https://onethu.github.io/docs/en/api-surface/');check(await page.locator('.md-typeset table tbody tr').count()===255,width+': English API contains every generated method');
   await page.goto('https://onethu.github.io/docs/en/contributors/');check(await page.locator('.md-typeset table tbody tr').count()===expected.contributors.length,width+': contributor directory complete');
   await page.goto('https://onethu.github.io/docs/sharing-and-organizations/');await page.locator('.md-content img').first().scrollIntoViewIfNeeded();check(await page.locator('.md-content img').first().evaluate(image=>image.complete&&image.naturalWidth>0),width+': staging animation asset loads');

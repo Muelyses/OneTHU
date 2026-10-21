@@ -3,6 +3,11 @@ import { t } from "./index.js";
 /** Explicit labels for stable built-in IDs. Never apply to arbitrary user content. */
 export function labelForId(value: string): string {
   switch (value) {
+    case "雨课堂": return t("components.exthwsettingssection.38b9eabcae1b");
+    case "TUOJ（AI 版）": return t("enum.label.tuojAI");
+    case "TUOJ（经典版）": return t("enum.label.tuojClassic");
+    case "OJ 平台": return t("enum.label.ojPlatforms");
+
     case "学习": return t("enum.label.2118cbc10988");
     case "日程": return t("enum.label.a14f23af7016");
     case "生活": return t("enum.label.15d208d1b4c9");

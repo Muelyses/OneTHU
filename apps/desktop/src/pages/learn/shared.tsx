@@ -434,7 +434,7 @@ export function HomeworkRow({
   return (
     <div
       className={`row row-click${isIgnored ? " is-hw-ignored" : ""}`}
-      data-vault-catch={vaultCatchAttr({ type: "atom", title: h.title, sub: courseName ?? h.courseName ?? i18n("pages.learn.shared.60db1afb4022"), atom: { kind: "assignment", key: enc(h.courseId, h.id, h.title, identityCourseName ?? courseName ?? "", sem ?? "") }, source: "网络学堂" })}
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: h.title, sub: courseName ?? h.courseName ?? i18n("pages.learn.shared.60db1afb4022"), atom: { kind: "assignment", key: enc(h.courseId, h.id, h.title, identityCourseName ?? courseName ?? "", sem ?? "") }, source: i18n("enum.label.aa39cac2b409") })}
       style={isIgnored ? { ...style, opacity: 0.55 } : style}
       role="button"
       tabIndex={0}
@@ -502,7 +502,7 @@ export function NoticeRow({
   return (
     <div
       className="row row-click"
-      data-vault-catch={vaultCatchAttr({ type: "atom", title: n.title, sub: (courseName ?? i18n("pages.learn.shared.60db1afb4022")) + " · " + n.publisher, atom: { kind: "notice", key: enc(n.courseId, n.id, n.title, identityCourseName ?? courseName ?? "", sem ?? "") }, source: "网络学堂" })}
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: n.title, sub: (courseName ?? i18n("pages.learn.shared.60db1afb4022")) + " · " + n.publisher, atom: { kind: "notice", key: enc(n.courseId, n.id, n.title, identityCourseName ?? courseName ?? "", sem ?? "") }, source: i18n("enum.label.aa39cac2b409") })}
       style={style}
       role="button"
       tabIndex={0}
@@ -542,7 +542,7 @@ export function FileRow({ f, courseName, identityCourseName, from, style, sem }:
   return (
     <div
       className="row row-click"
-      data-vault-catch={vaultCatchAttr({ type: "atom", title: f.title, sub: (courseName ?? i18n("pages.learn.shared.60db1afb4022")) + i18n("pages.learn.shared.cd71d77e92a1"), atom: { kind: "file", key: enc(f.courseId, f.id, f.title, identityCourseName ?? courseName ?? "", sem ?? "") }, source: "网络学堂" })}
+      data-vault-catch={vaultCatchAttr({ type: "atom", title: f.title, sub: (courseName ?? i18n("pages.learn.shared.60db1afb4022")) + i18n("pages.learn.shared.cd71d77e92a1"), atom: { kind: "file", key: enc(f.courseId, f.id, f.title, identityCourseName ?? courseName ?? "", sem ?? "") }, source: i18n("enum.label.aa39cac2b409") })}
       style={style}
       role="button"
       tabIndex={0}

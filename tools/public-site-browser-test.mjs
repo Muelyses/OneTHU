@@ -15,6 +15,8 @@ try{
   const tabs=page.getByRole('tab');await tabs.filter({hasText:'极简'}).click();check(await page.locator('#mode-simple').isVisible(),`${width}: real mode switch`);
   await tabs.filter({hasText:'极简'}).press('ArrowRight');check(await page.locator('#mode-practical').isVisible(),`${width}: keyboard mode switch`);
   await page.locator('.language').click();await page.waitForURL('**/en/index.html');check(await page.locator('html').getAttribute('lang')==='en',`${width}: language switch reaches English page`);
+  check(await page.locator('[src*="assets/preview/"],video[poster]').evaluateAll(items=>items.length>0&&items.every(item=>[item.getAttribute('src'),item.getAttribute('poster')].filter(Boolean).every(url=>url.includes('/en-US/')))),`${width}: English page uses separately captured English images and video`);
+  await page.locator('.studio.is-ready').waitFor();await page.waitForTimeout(600);await page.screenshot({path:`${out}/english-home-${width}.png`});
   await page.goto('http://127.0.0.1:8766/en/developers.html');check(await page.locator('#contributors .contributor').count()===expected.contributors.length,`${width}: all contributors visible`);check(await page.locator('#contributors .badge').count()===expected.contributors.filter(p=>p.major).length,`${width}: exact major-contributor threshold`);
   await page.locator('#contributors').scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/contributors-${width}.png`});
   check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${width}: developer page fits horizontally`);

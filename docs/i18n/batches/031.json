@@ -1,7 +1,78 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "im.feishu.1b07b50af2fc",
+      "source": "飞书应用信息未配置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 43,
+          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
+        },
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 83,
+          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
+        }
+      ],
+      "translation": "Feishu app information is not configured",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.6852f9c70747",
+      "source": "飞书登录失败(code={value})：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(j.code ?? res.status)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(j.msg ?? \"请检查 App ID / App Secret\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 51,
+          "context": "new Error(i18n(\"im.feishu.6852f9c70747\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.checkAppCredentials\")) }))"
+        }
+      ],
+      "translation": "Feishu sign-in failed (code={value}): {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.feishu.922f42820916",
+      "source": "飞书发送失败(code={value})：{value2}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(j.code ?? res.status)"
+        },
+        {
+          "name": "value2",
+          "expression": "String(j.msg ?? \"未知原因\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/feishu.ts",
+          "line": 404,
+          "context": "new Error(i18n(\"im.feishu.922f42820916\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.unknownReason\")) }))"
+        }
+      ],
+      "translation": "Feishu send failed (code={value}): {value2}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "im.feishu.ae1ef2c16037",
       "source": "飞书长连接建立失败(code={code})：{value}",
@@ -1378,54 +1449,6 @@
         }
       ],
       "translation": "The QR code has expired; please start again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.channelLabel",
-      "source": "微信（iLink 官方 Bot）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 25,
-          "context": "return i18n(\"im.wechat.channelLabel\");"
-        }
-      ],
-      "translation": "WeChat (official iLink bot)",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "im.wechat.e3fe9d7adf2c",
-      "source": "未发起登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 146,
-          "context": "note: i18n(\"im.wechat.e3fe9d7adf2c\")"
-        }
-      ],
-      "translation": "Sign-in not started",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.wechat.ed04656fa8e1",
-      "source": "登录成功，通道已启用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/wechat.ts",
-          "line": 172,
-          "context": "note: i18n(\"im.wechat.ed04656fa8e1\")"
-        }
-      ],
-      "translation": "Signed in; channel enabled",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

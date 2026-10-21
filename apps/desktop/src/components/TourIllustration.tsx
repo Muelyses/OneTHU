@@ -1,8 +1,7 @@
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { Component, lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Btn } from "@onethu/gui";
-import vaultDragVideo from "../assets/tour/real-ui/vault-drag.mp4?url";
-import { selectStudioScreen, type StudioScreenSource } from "./tourStudioScreens.js";
+import { selectStudioScreen, studioVaultVideo, type StudioScreenSource } from "./tourStudioScreens.js";
 import type { ExperienceMode } from "../state/experienceMode.js";
 const TourStudioScene = lazy(() => import("./TourStudioScene.js").then(module => ({ default: module.TourStudioScene })));
 
@@ -80,6 +79,7 @@ function RealScreen({ before, after, tablet = false }: { before: StudioScreenSou
   </figure>;
 }
 function VaultReplay({ running, reduced }: { running: boolean; reduced: boolean }): ReactNode {
+  const locale = useUiLocale(), vaultDragVideo = studioVaultVideo(locale);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const element = video.current;
@@ -87,7 +87,7 @@ function VaultReplay({ running, reduced }: { running: boolean; reduced: boolean 
     if (running && !reduced) void element.play().catch(() => undefined);
     else element.pause();
     return () => element.pause();
-  }, [running, reduced]);
+  }, [running, reduced, vaultDragVideo]);
   if (reduced) return <RealScreen before={selectStudioScreen("vault", "full", true).primary} after={selectStudioScreen("vault", "full", true).primary} />;
   return <figure className="tour-real-device"><div className="tour-real-display"><video ref={video} src={vaultDragVideo} muted loop playsInline preload="metadata" poster={selectStudioScreen("vault", "full", false).primary.url} data-tour-vault-replay="true" /></div></figure>;
 }

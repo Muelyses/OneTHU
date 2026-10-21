@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "im.wechat.channelLabel",
+      "source": "微信（iLink 官方 Bot）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 25,
+          "context": "return i18n(\"im.wechat.channelLabel\");"
+        }
+      ],
+      "translation": "WeChat (official iLink bot)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "im.wechat.e3fe9d7adf2c",
+      "source": "未发起登录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 146,
+          "context": "note: i18n(\"im.wechat.e3fe9d7adf2c\")"
+        }
+      ],
+      "translation": "Sign-in not started",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "im.wechat.ed04656fa8e1",
+      "source": "登录成功，通道已启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/im/wechat.ts",
+          "line": 172,
+          "context": "note: i18n(\"im.wechat.ed04656fa8e1\")"
+        }
+      ],
+      "translation": "Signed in; channel enabled",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "im.wechat.f1ffea5c8b09",
       "source": "微信通道未登录",
@@ -1426,54 +1474,6 @@
         }
       ],
       "translation": "Timed out waiting for the cloud drive page; confirm you are signed in and try again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.045720f46a17",
-      "source": "这个口令里没有新内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 51,
-          "context": "r.duplicate ? i18n(\"lib.contentexchange.290e61e70691\") : i18n(\"lib.contentexchange.045720f46a17\")"
-        }
-      ],
-      "translation": "This share code contains no new content",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.17fa33d72406",
-      "source": "当前暂存箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 47,
-          "context": "vaultTarget === 'new' ? i18n(\"lib.contentexchange.4dc6d8e7a87a\") : i18n(\"lib.contentexchange.17fa33d72406\")"
-        }
-      ],
-      "translation": "Current Stash",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.contentexchange.290e61e70691",
-      "source": "本地已有这张名片（未重复添加）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/contentExchange.ts",
-          "line": 51,
-          "context": "r.duplicate ? i18n(\"lib.contentexchange.290e61e70691\") : i18n(\"lib.contentexchange.045720f46a17\")"
-        }
-      ],
-      "translation": "This card already exists locally (not added again)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

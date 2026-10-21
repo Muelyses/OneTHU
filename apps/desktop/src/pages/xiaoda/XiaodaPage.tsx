@@ -36,7 +36,7 @@ type AgentInfo = { id: string; name: string; group?: string; icon?: string };
 
 /** 平台默认助手 = 清小搭本体（路由缺省值，界面不展示编号） */
 const DEFAULT_AGENT_ID = "9999";
-const DEFAULT_AGENT_NAME = "清小搭";
+const DEFAULT_AGENT_NAME = () => i18n("pages.xiaoda.xiaodapage.b1abb3dc2271");
 /** 页面脚注（用户指定口径 + 来源标注）：实验定位与能力边界必须写在对话框里。
  *  拆两行是护栏要求（单条说明 ≤42 字），语义完整未删减。 */
 const PAGE_NOTE = () => i18n("pages.xiaoda.xiaodapage.0d46455d92d1");
@@ -54,6 +54,7 @@ function fmtTime(v: string | number | undefined): string {
 
 /** 智能体名录：id → 名字/图标（分组名只用于下拉里的区分） */
 function useAgentDirectory(): { agents: AgentInfo[]; infoOf: (id: string) => AgentInfo } {
+  const locale = useUiLocale();
   const [groups, setGroups] = useState<XiaodaAgentGroup[] | null>(null);
   useEffect(() => {
     xiaodaClient
@@ -62,15 +63,15 @@ function useAgentDirectory(): { agents: AgentInfo[]; infoOf: (id: string) => Age
       .catch(() => setGroups([]));
   }, []);
   const agents = useMemo<AgentInfo[]>(() => {
-    const all: AgentInfo[] = [{ id: DEFAULT_AGENT_ID, name: DEFAULT_AGENT_NAME }];
+    const all: AgentInfo[] = [{ id: DEFAULT_AGENT_ID, name: DEFAULT_AGENT_NAME() }];
     for (const g of groups ?? []) {
       for (const m of g.members ?? []) all.push({ id: m.uniqueId, name: m.name, group: g.name, icon: m.icon });
     }
     return all;
-  }, [groups]);
+  }, [groups, locale]);
   const infoOf = useCallback(
     (id: string): AgentInfo =>
-      agents.find((a) => a.id === id) ?? { id, name: id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME : i18n("pages.xiaoda.xiaodapage.2df7697dbb61") },
+      agents.find((a) => a.id === id) ?? { id, name: id === DEFAULT_AGENT_ID ? DEFAULT_AGENT_NAME() : i18n("pages.xiaoda.xiaodapage.2df7697dbb61") },
     [agents],
   );
   return { agents, infoOf };

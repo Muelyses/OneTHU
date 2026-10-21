@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { createStudioAssembly, type StudioPalette } from "./tourStudioModels.js";
-import { loadStudioScreenAssets, type StudioScreenAssets } from "./tourStudioScreens.js";
+import { loadStudioScreenAssets, studioAssetLocale, type StudioScreenAssets } from "./tourStudioScreens.js";
 
 export interface TourStudioSceneProps {
   lesson: string;
@@ -42,12 +42,15 @@ const COLOR_ROLES: Record<keyof StudioPalette, string> = {
 
 export function TourStudioScene(props: TourStudioSceneProps) {
   const uiLocale = useUiLocale();
+  return <LocalizedStudio key={uiLocale} {...props} assetLocale={studioAssetLocale(uiLocale)} />;
+}
 
+function LocalizedStudio(props: TourStudioSceneProps & { assetLocale: string }) {
   const [screens, setScreens] = useState<StudioScreenAssets | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     let mounted = true;
-    void loadStudioScreenAssets().then(
+    void loadStudioScreenAssets(props.assetLocale).then(
       loaded => { if (mounted) setScreens(loaded); },
       () => { if (mounted) setFailed(true); },
     );

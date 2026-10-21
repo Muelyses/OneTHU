@@ -1,3 +1,4 @@
+import { labelForId } from "../i18n/staticLabels.js";
 import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { Btn, IconBtn } from "@onethu/gui";
 import { Empty } from "./Layout.js";
@@ -37,7 +38,7 @@ export function pendingHomework(items: Homework[], ignored: { has(id: string): b
 /** 状态标签 */
 function hwTags(h: Homework): Array<{ text: string; cls: string }> {
   const tags: Array<{ text: string; cls: string }> = [];
-  tags.push({ text: h.source ? SOURCE_NAMES[h.source] ?? i18n("components.homeworkcarousel.7849c0828e15") : i18n("components.homeworkcarousel.aa39cac2b409"), cls: "task-tag-src" });
+  tags.push({ text: h.source ? labelForId(SOURCE_NAMES[h.source]) ?? i18n("components.homeworkcarousel.7849c0828e15") : i18n("components.homeworkcarousel.aa39cac2b409"), cls: "task-tag-src" });
   if (h.externalProgress) tags.push({ text: i18n("components.homeworkcarousel.a80f2d59cd5f") + h.externalProgress, cls: "task-tag" });
   if (ddlInfo(h.deadline).overdue) tags.push({ text: i18n("components.homeworkcarousel.da7ecec544ad"), cls: "task-tag-red" });
   return tags;

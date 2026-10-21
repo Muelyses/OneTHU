@@ -1,5 +1,5 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -10,7 +10,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 28,
+          "line": 33,
           "context": "return t(\"enum.label.d7d6b21c2cf5\");"
         }
       ],
@@ -26,7 +26,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 26,
+          "line": 31,
           "context": "return t(\"enum.label.e310bbf0e506\");"
         }
       ],
@@ -42,7 +42,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 56,
+          "line": 61,
           "context": "return t(\"enum.label.e4d40b4d6759\");"
         }
       ],
@@ -58,7 +58,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 10,
+          "line": 15,
           "context": "return t(\"enum.label.e79890c96ee6\");"
         }
       ],
@@ -74,7 +74,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 11,
+          "line": 16,
           "context": "return t(\"enum.label.e806fbbe8ec6\");"
         }
       ],
@@ -90,7 +90,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 49,
+          "line": 54,
           "context": "return t(\"enum.label.e81059e1a712\");"
         }
       ],
@@ -106,7 +106,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 32,
+          "line": 37,
           "context": "return t(\"enum.label.e842a5dff916\");"
         }
       ],
@@ -122,7 +122,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 29,
+          "line": 34,
           "context": "return t(\"enum.label.e96da2049129\");"
         }
       ],
@@ -138,7 +138,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 40,
+          "line": 45,
           "context": "return t(\"enum.label.ea664afac033\");"
         }
       ],
@@ -154,7 +154,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 57,
+          "line": 62,
           "context": "return t(\"enum.label.ecc11c8afea8\");"
         }
       ],
@@ -170,7 +170,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 52,
+          "line": 57,
           "context": "return t(\"enum.label.ed31fbb483ee\");"
         }
       ],
@@ -186,7 +186,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 48,
+          "line": 53,
           "context": "return t(\"enum.label.ef7be5be3c13\");"
         }
       ],
@@ -202,7 +202,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 20,
+          "line": 25,
           "context": "return t(\"enum.label.ef94275bd96f\");"
         }
       ],
@@ -218,7 +218,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 43,
+          "line": 48,
           "context": "return t(\"enum.label.f2260568b289\");"
         }
       ],
@@ -234,7 +234,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 44,
+          "line": 49,
           "context": "return t(\"enum.label.f24ccb00a8ab\");"
         }
       ],
@@ -250,11 +250,59 @@
       "locations": [
         {
           "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 31,
+          "line": 36,
           "context": "return t(\"enum.label.fc0c0d12a458\");"
         }
       ],
       "translation": "Total class hours",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.ojPlatforms",
+      "source": "OJ 平台",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 9,
+          "context": "return t(\"enum.label.ojPlatforms\");"
+        }
+      ],
+      "translation": "OJ platforms",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.tuojAI",
+      "source": "TUOJ（AI 版）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 7,
+          "context": "return t(\"enum.label.tuojAI\");"
+        }
+      ],
+      "translation": "TUOJ (AI edition)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "enum.label.tuojClassic",
+      "source": "TUOJ（经典版）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/i18n/staticLabels.ts",
+          "line": 8,
+          "context": "return t(\"enum.label.tuojClassic\");"
+        }
+      ],
+      "translation": "TUOJ (classic edition)",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     },
@@ -1333,77 +1381,6 @@
         }
       ],
       "translation": "Tabs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.feishu.1b07b50af2fc",
-      "source": "飞书应用信息未配置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/feishu.ts",
-          "line": 43,
-          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
-        },
-        {
-          "file": "apps/desktop/src/im/feishu.ts",
-          "line": 83,
-          "context": "new Error(i18n(\"im.feishu.1b07b50af2fc\"))"
-        }
-      ],
-      "translation": "Feishu app information is not configured",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.feishu.6852f9c70747",
-      "source": "飞书登录失败(code={value})：{value2}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(j.code ?? res.status)"
-        },
-        {
-          "name": "value2",
-          "expression": "String(j.msg ?? \"请检查 App ID / App Secret\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/feishu.ts",
-          "line": 51,
-          "context": "new Error(i18n(\"im.feishu.6852f9c70747\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.checkAppCredentials\")) }))"
-        }
-      ],
-      "translation": "Feishu sign-in failed (code={value}): {value2}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.feishu.922f42820916",
-      "source": "飞书发送失败(code={value})：{value2}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(j.code ?? res.status)"
-        },
-        {
-          "name": "value2",
-          "expression": "String(j.msg ?? \"未知原因\")"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/feishu.ts",
-          "line": 404,
-          "context": "new Error(i18n(\"im.feishu.922f42820916\", { value: String(j.code ?? res.status), value2: String(j.msg ?? i18n(\"im.feishu.unknownReason\")) }))"
-        }
-      ],
-      "translation": "Feishu send failed (code={value}): {value2}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

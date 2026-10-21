@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.infoapps.1c6284c6960f",
+      "source": "国内会议预算申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 219,
+          "context": "return i18n(\"lib.infoapps.1c6284c6960f\");"
+        }
+      ],
+      "translation": "Domestic Conference Budget Application",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.1c9df32962a6",
+      "source": "小额直采平台",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 235,
+          "context": "return i18n(\"lib.infoapps.1c9df32962a6\");"
+        }
+      ],
+      "translation": "Small-Amount Direct Procurement Platform",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.1dfb4355b1be",
+      "source": "用章申请（投标、合同章等）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 201,
+          "context": "return i18n(\"lib.infoapps.1dfb4355b1be\");"
+        }
+      ],
+      "translation": "Seal Use Application (Bidding, Contract Seals, etc.)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.infoapps.1e29d5490be2",
       "source": "横向项目认定",
@@ -1231,54 +1279,6 @@
         }
       ],
       "translation": "School International Affairs System Personnel Registration",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.60574ce5f6b2",
-      "source": "申请辅修学位",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 79,
-          "context": "return i18n(\"lib.infoapps.60574ce5f6b2\");"
-        }
-      ],
-      "translation": "Minor Degree Application",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.63784016fde7",
-      "source": "招生志愿申请",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 286,
-          "context": "return i18n(\"lib.infoapps.63784016fde7\");"
-        }
-      ],
-      "translation": "Admissions Volunteer Application",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.6495d0d7d2c7",
-      "source": "现金奖励分配",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 172,
-          "context": "return i18n(\"lib.infoapps.6495d0d7d2c7\");"
-        }
-      ],
-      "translation": "Cash Award Distribution",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

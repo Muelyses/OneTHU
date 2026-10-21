@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.sportstab.5e119f7a81fe",
+      "source": "手机号已保存到体育系统",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
+          "line": 168,
+          "context": "setPhoneMsg(i18n(\"pages.info.sportstab.5e119f7a81fe\"))"
+        }
+      ],
+      "translation": "Mobile number saved to the sports system",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.sportstab.6320b4a8722a",
+      "source": "状态",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
+          "line": 309,
+          "context": "{i18n(\"pages.info.sportstab.6320b4a8722a\")}"
+        }
+      ],
+      "translation": "Status",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.sportstab.649a0fc7237e",
+      "source": "免费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
+          "line": 334,
+          "context": "r.cost === 0 ? i18n(\"pages.info.sportstab.649a0fc7237e\") : `¥${r.cost}`"
+        }
+      ],
+      "translation": "Free",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.sportstab.660aa1f65abc",
       "source": "退订",
@@ -1344,64 +1392,6 @@
         }
       ],
       "translation": "In progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.a58e18d60b61",
-      "source": "取消常用 {name}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(item.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 435,
-          "context": "favorites.includes(item.id) ? i18n(\"pages.info.thospage.a58e18d60b61\", { name: String(item.name) }) : i18n(\"pages.info.thospage.ee51d7ac2424\", { name: String(item.name) })"
-        }
-      ],
-      "translation": "Remove {name} from common",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.a9b2c95f8b82",
-      "source": "节点：{node}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "node",
-          "expression": "item.node"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 461,
-          "context": "{i18nRich(\"pages.info.thospage.a9b2c95f8b82\", { node: item.node })}"
-        }
-      ],
-      "translation": "Node: {node}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.aee887434131",
-      "source": "刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 347,
-          "context": "{i18n(\"pages.info.thospage.aee887434131\")}"
-        }
-      ],
-      "translation": "Refresh",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

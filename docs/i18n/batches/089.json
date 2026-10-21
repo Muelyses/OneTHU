@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.orgsync.5784fd684c09",
+      "source": "这个组织尚未启用多人协作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 62,
+          "context": "new Error(i18n(\"state.orgsync.5784fd684c09\"))"
+        }
+      ],
+      "translation": "This organization has not enabled collaboration yet",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.66f49a483a9b",
+      "source": "请先给每位组织成员填写云盘邮箱，再关联资料库",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 254,
+          "context": "new Error(i18n(\"state.orgsync.66f49a483a9b\"))"
+        }
+      ],
+      "translation": "Fill in a Cloud Drive email for each organization member before linking libraries",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsync.68b2e1779e6b",
+      "source": "多人协作需要你拥有的独立私有 GitLab 群组，不能使用公开群组或继承权限的子群组",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSync.ts",
+          "line": 123,
+          "context": "new Error(i18n(\"state.orgsync.68b2e1779e6b\"))"
+        }
+      ],
+      "translation": "Collaboration requires your own standalone private GitLab group; public groups or subgroups with inherited permissions cannot be used",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.orgsync.6ad659d36005",
       "source": "组织中存在 GitLab Maintainer 特殊权限，无法保证只有负责人能改管理资料；请先在 GitLab 调整为负责人或普通成员",
@@ -1429,89 +1477,6 @@
         }
       ],
       "translation": "The previous library creation is still unconfirmed. Automatic creation is paused to prevent duplicates. Refresh cloud storage to check, or create the required library manually, then retry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.seafile.nativeRestartRequired",
-      "source": "此资料库缺少可核实的归属信息，已暂停对它自动建库、删除与同步；请先刷新资料库列表。旧版客户端请更新并重启。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 65,
-          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
-        },
-        {
-          "file": "apps/desktop/src/lib/ownedCloudRepo.ts",
-          "line": 68,
-          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 440,
-          "context": "!hasSeafileRepoOwnershipMetadata(repo) ? i18n(\"state.seafile.nativeRestartRequired\") : undefined"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 480,
-          "context": "{i18n(\"state.seafile.nativeRestartRequired\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 674,
-          "context": "{i18n(\"state.seafile.nativeRestartRequired\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 696,
-          "context": "!hasSeafileRepoOwnershipMetadata(r) ? i18n(\"state.seafile.nativeRestartRequired\") : undefined"
-        },
-        {
-          "file": "apps/desktop/src/state/seafile.ts",
-          "line": 179,
-          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/seafile.ts",
-          "line": 186,
-          "context": "new Error(i18n(\"state.seafile.nativeRestartRequired\"))"
-        }
-      ],
-      "translation": "Ownership information for this library is unavailable. Automatic creation, deletion and sync for it are paused. Refresh the library list; update and restart older clients.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.seafileauto.0b66b052d51d",
-      "source": "profile 页未找到 token（页面形态未知，请在云盘页手动粘贴一次）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 238,
-          "context": "error: i18n(\"state.seafileauto.0b66b052d51d\")"
-        }
-      ],
-      "translation": "Token not found on the profile page (unknown page layout; paste it manually once on the Cloud Drive page)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.seafileauto.6064f0dbf06e",
-      "source": "统一认证直登后仍未通过：请在设置里重新登录清华账号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/seafileAuto.ts",
-          "line": 197,
-          "context": "error: i18n(\"state.seafileauto.6064f0dbf06e\")"
-        }
-      ],
-      "translation": "Still not approved after direct unified authentication sign-in: sign in to your Tsinghua account again in Settings",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

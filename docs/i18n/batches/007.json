@@ -1,5 +1,5 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -373,12 +373,12 @@
         {
           "file": "apps/desktop/src/components/explorer/PracticalFeatures.tsx",
           "line": 45,
-          "context": "entry.note||entry.keywords.filter(k=>k!==entry.name).slice(0,3).join(\" · \")||i18n(\"components.explorer.practicalfeatures.15898013a408\")"
+          "context": "entry.note||labelForId(entry.category)||i18n(\"components.explorer.practicalfeatures.15898013a408\")"
         }
       ],
       "translation": "Open service",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "components.explorer.practicalfeatures.1954e6efaf49",

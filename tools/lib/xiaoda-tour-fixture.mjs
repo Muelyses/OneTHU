@@ -1,13 +1,14 @@
 /** Isolated data adapter for screenshots/navigation tests. Never contacts the school. */
-export async function installXiaodaTourFixture(page) {
-  await page.addInitScript(() => {
-    window.__tourSkills = [{ id: 'demo-notes', name: '示例资料整理', description: '阅读资料，整理要点与待办。', sha256: 'fixture', installedAt: 1, enabled: false, compatibility: 'text', requirements: [], files: ['SKILL.md'], expandedBytes: 256 }];
+import { sample } from './public-capture-locale.mjs';
+export async function installXiaodaTourFixture(page, locale = 'zh-CN') {
+  await page.addInitScript(skills => {
+    window.__tourSkills = skills;
     window.__tourSkillInvoke = async (command, args) => {
       if (command === 'skills_action' && args.action === 'list') return structuredClone(window.__tourSkills);
       if (command === 'skills_action' && args.action === 'compute') return { runtime: 'quickjs', executed: true, result: 10 };
       throw new Error('Unimplemented tour fixture command');
     };
-  });
+  }, locale === 'en-US' ? sample([{ id: 'demo-notes', name: '示例资料整理', description: '阅读资料，整理要点与待办。', sha256: 'fixture', installedAt: 1, enabled: false, compatibility: 'text', requirements: [], files: ['SKILL.md'], expandedBytes: 256 }], locale) : [{ id: 'demo-notes', name: '示例资料整理', description: '阅读资料，整理要点与待办。', sha256: 'fixture', installedAt: 1, enabled: false, compatibility: 'text', requirements: [], files: ['SKILL.md'], expandedBytes: 256 }]);
   await page.route('**/src/lib/skills.ts*', async route => {
     const response = await route.fetch();
     const body = (await response.text()).replace(/import \{ invoke \} from [^;]+;/, 'const invoke = (...args) => window.__tourSkillInvoke(...args);');
@@ -30,6 +31,7 @@ xiaodaClient.skillOverview = async () => ({ skillCount: 1, contributorCount: 1, 
 xiaodaClient.skillCategories = async () => [{ code: 'demo', name: '示例技能', count: 1 }];
 xiaodaClient.skillList = xiaodaClient.skillSearch = async () => ({ dataList: [{ id: 'demo-notes', name: '示例资料整理', description: '阅读资料，整理要点与待办。', authorName: '示例', downloadCount: 0 }], page: { totalCount: 1 } });
 `;
-    await route.fulfill({ response, body: source + fixture });
+    const localized = locale === 'en-US' ? fixture.replace(/'([^'\n]*)'/g, (literal, value) => JSON.stringify(sample(value, locale))) : fixture;
+    await route.fulfill({ response, body: source + localized });
   });
 }

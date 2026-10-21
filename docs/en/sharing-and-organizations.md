@@ -6,7 +6,7 @@
 
 Long-press an integrated item until it lifts. Move it onto the highlighted staging-box button and release to collect it. Open the box to inspect the actual result. A short click opens the box; freely dragging the floating button changes its position. These gestures have separate thresholds and outcomes.
 
-![Actual drag with fictional data](../assets/0.11/vault-drag.gif)
+![Actual drag with fictional data](../assets/0.11/en-US/vault-drag.gif)
 
 Supported integrated sources include whiteboard widgets, tabs and workspaces, OneGO items, search results, learning-platform assignments/notices/files and attachments, schedule events, name cards, mail, cloud files/folders, news, GitLab projects and integrated theme/wallpaper/plugin/settings items. Support depends on each source’s explicit drag adapter; arbitrary on-screen content is not automatically collectible. Remote files may need caching first. Desktop text-selection capture uses its dedicated shortcut where available.
 

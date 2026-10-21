@@ -1,3 +1,4 @@
+import { labelForId } from "../../i18n/staticLabels.js";
 import { courseDisplayName, courseSearchNames } from "../../lib/learnLanguage.js";
 import { t as i18n, useLocale as useUiLocale } from "../../i18n/index.js";
 import { Btn } from "@onethu/gui";
@@ -100,7 +101,7 @@ function ExtHwSourceErrorNote() {
   const [yktLoginOpen, setYktLoginOpen] = useState(false);
   const [tuojLoginOpen, setTuojLoginOpen] = useState(false);
   const rows = (["tuoj", "tuojClassic", "tyche", "yuketang"] as const)
-    .map((id) => ({ id, name: SOURCE_NAMES[id], err: ext.errors[id] }))
+    .map((id) => ({ id, name: labelForId(SOURCE_NAMES[id]), err: ext.errors[id] }))
     .filter((r) => Boolean(r.err));
   const yktFailed = rows.some((r) => r.id === "yuketang");
   // 等凭据解密完成再判断，避免就绪前闪一下

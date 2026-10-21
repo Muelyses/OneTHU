@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.types.781fead7e82d",
+      "source": "应用内跳转",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 79,
+          "context": "return i18n(\"plugins.types.781fead7e82d\");"
+        }
+      ],
+      "translation": "In-app navigation",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.78a788aeb3ed",
+      "source": "读取宿舍信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 75,
+          "context": "return i18n(\"plugins.types.78a788aeb3ed\");"
+        }
+      ],
+      "translation": "Read dorm info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.7ad8378abec1",
+      "source": "读取记忆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 70,
+          "context": "return i18n(\"plugins.types.7ad8378abec1\");"
+        }
+      ],
+      "translation": "Read memory",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.types.92acc8140843",
       "source": "读取信息门户",
@@ -1255,54 +1303,6 @@
         }
       ],
       "translation": "Delete this record",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.sync.conflict",
-      "source": "有更改需要你确认，其余内容已自动同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 32,
-          "context": "conflict:t(\"profile.sync.conflict\")"
-        }
-      ],
-      "translation": "Some changes need your choice. Everything else is synced",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.sync.deleted",
-      "source": "已删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 48,
-          "context": "return t(\"profile.sync.deleted\");"
-        }
-      ],
-      "translation": "Deleted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "profile.sync.deletedHere",
-      "source": "这一边已经删除了它",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ProfileSyncStatus.tsx",
-          "line": 69,
-          "context": "{t(\"profile.sync.deletedHere\")}"
-        }
-      ],
-      "translation": "Deleted on this device",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

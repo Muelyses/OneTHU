@@ -987,6 +987,22 @@
     "tour.vault.drag.after": {
       "zh-CN": "拖进高亮区域松手，再打开箱子查看内容。",
       "en-US": "Release inside the highlighted area, then open the box to view the item."
+    },
+    "state.vault.defaultName": {
+      "zh-CN": "我的暂存箱",
+      "en-US": "My staging box"
+    },
+    "enum.label.tuojAI": {
+      "zh-CN": "TUOJ（AI 版）",
+      "en-US": "TUOJ (AI edition)"
+    },
+    "enum.label.tuojClassic": {
+      "zh-CN": "TUOJ（经典版）",
+      "en-US": "TUOJ (classic edition)"
+    },
+    "enum.label.ojPlatforms": {
+      "zh-CN": "OJ 平台",
+      "en-US": "OJ platforms"
     }
   }
 }

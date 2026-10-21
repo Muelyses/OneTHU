@@ -87,7 +87,7 @@ function newId(prefix: string): string {
   return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
-function emptyBox(name = "我的暂存箱"): VaultBox {
+function emptyBox(name = i18n("state.vault.defaultName")): VaultBox {
   const now = Date.now();
   return { id: newId("vb."), name, items: [], createdAt: now, updatedAt: now };
 }
@@ -140,8 +140,8 @@ export function setActiveVault(id: string): void {
   commit();
 }
 
-export function createVault(name = "新暂存箱"): VaultBox {
-  const box = emptyBox(name.trim() || "新暂存箱");
+export function createVault(name = i18n("lib.contentexchange.4dc6d8e7a87a")): VaultBox {
+  const box = emptyBox(name.trim() || i18n("lib.contentexchange.4dc6d8e7a87a"));
   doc = { ...doc, boxes: [...doc.boxes, box], activeId: box.id };
   commit();
   return box;

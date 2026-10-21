@@ -1,7 +1,65 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.mailpage.4927a53bcc88",
+      "source": "加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 339,
+          "context": "{i18n(\"pages.mailpage.4927a53bcc88\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 349,
+          "context": "mail.loading ? i18n(\"pages.mailpage.4927a53bcc88\") : i18n(\"pages.mailpage.ad9a65f0c351\", { length: String(mail.heads.length), total: String(mail.total) })"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.4d0680f9efae",
+      "source": "未读",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 73,
+          "context": "{i18n(\"pages.mailpage.4d0680f9efae\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 323,
+          "context": "{i18n(\"pages.mailpage.4d0680f9efae\")}"
+        }
+      ],
+      "translation": "Unread",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.mailpage.4e2238b74ec7",
+      "source": "同步中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/MailPage.tsx",
+          "line": 309,
+          "context": "mail.loading ? i18n(\"pages.mailpage.4e2238b74ec7\") : i18n(\"pages.mailpage.aee887434131\")"
+        }
+      ],
+      "translation": "Syncing…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.mailpage.4ee153002e7b",
       "source": "全箱搜索",
@@ -1358,64 +1416,6 @@
         }
       ],
       "translation": "Default branch",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.36ce198143e6",
-      "source": "新邮箱已授权，旧邮箱权限已撤销",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 430,
-          "context": "runRemote(async () => { const binding = await resolveOrgUser(member.username!,f.email!); await changeRemoteMember(target.id,member.gitlabUserId,{...binding,role:member.role},{email:member.email,role:member.role}); }, i18n(\"pages.organization.36ce198143e6\"))"
-        }
-      ],
-      "translation": "New email authorized; the old email's access has been revoked",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.36f02dfa5d1b",
-      "source": "资料库「{name}」已创建、关联并核对成员权限",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(f.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 460,
-          "context": "showToast(i18nMsg(\"pages.organization.36f02dfa5d1b\", { name: String(f.name) }))"
-        }
-      ],
-      "translation": "Library \"{name}\" created, linked, and member access verified",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.37d624a5b84e",
-      "source": "{expireDays} 天有效",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "expireDays",
-          "expression": "String(expireDays)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 402,
-          "context": "expireDays > 0 ? i18n(\"pages.organization.37d624a5b84e\", { expireDays: String(expireDays) }) : i18n(\"pages.organization.8de1bb55709d\")"
-        }
-      ],
-      "translation": "Valid for {expireDays} days",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

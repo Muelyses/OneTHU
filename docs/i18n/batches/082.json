@@ -1,7 +1,55 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "skills.empty",
+      "source": "尚未导入技能。在下方广场选择技能，下载并检查。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 56,
+          "context": "{t(\"skills.empty\")}"
+        }
+      ],
+      "translation": "No imported skills yet. Choose a skill from the plaza below to download and inspect.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "skills.enable",
+      "source": "启用给 OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 79,
+          "context": "installed.enabled ? t(\"skills.disable\") : t(\"skills.enable\")"
+        }
+      ],
+      "translation": "Enable in OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "skills.enableBody",
+      "source": "OH 可按需读取此技能的说明与资料。启用表示允许将这些内容发送给你选择的模型；技能不会获得额外权限。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 72,
+          "context": "{t(\"skills.enableBody\")}"
+        }
+      ],
+      "translation": "OH can read this skill’s instructions and references as needed. Enabling allows those contents to be sent to your chosen model; the skill gains no additional permissions.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "skills.enabled",
       "source": "OH 已启用",
@@ -636,7 +684,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 637,
+          "line": 638,
           "context": "{i18n(\"skills.noResults\")}"
         }
       ],
@@ -817,12 +865,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 626,
+          "line": 627,
           "context": "{i18n(\"skills.search\")}"
         },
         {
           "file": "apps/desktop/src/pages/xiaoda/XiaodaPage.tsx",
-          "line": 626,
+          "line": 627,
           "context": "{i18n(\"skills.search\")}"
         }
       ],
@@ -1368,54 +1416,6 @@
         }
       ],
       "translation": "Today at a glance",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.21c882a8b432",
-      "source": "体育系统 · 场次预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 537,
-          "context": "sub: i18n(\"state.atoms.21c882a8b432\")"
-        }
-      ],
-      "translation": "Sports system · Session bookings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 230,
-          "context": "return i18n(\"state.atoms.231ff6cd9b63\");"
-        }
-      ],
-      "translation": "Switch semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.2498d064346e",
-      "source": "教学楼 · 本周空闲状态",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 519,
-          "context": "sub: i18n(\"state.atoms.2498d064346e\")"
-        }
-      ],
-      "translation": "Teaching buildings · Free rooms this week",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

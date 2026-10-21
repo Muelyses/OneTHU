@@ -1,5 +1,5 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -975,7 +975,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 27,
+          "line": 28,
           "context": "small: i18n(\"components.homeworkcarousel.07b65092ac19\")"
         }
       ],
@@ -996,7 +996,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 337,
+          "line": 338,
           "context": "confirmDanger(\n                      i18nMsg(\"components.homeworkcarousel.11ac26dfc826\", { title: String(h.title) }),\n                        CONFIRM_IGNORE_HW,\n                      )"
         }
       ],
@@ -1012,7 +1012,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 25,
+          "line": 26,
           "context": "big: i18n(\"components.homeworkcarousel.13c68d134847\")"
         }
       ],
@@ -1028,7 +1028,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 28,
+          "line": 29,
           "context": "small: i18n(\"components.homeworkcarousel.4881997d6f3a\")"
         }
       ],
@@ -1044,7 +1044,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 176,
+          "line": 177,
           "context": "{i18n(\"components.homeworkcarousel.4bdb0fcd89b8\")}"
         }
       ],
@@ -1060,7 +1060,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 28,
+          "line": 29,
           "context": "days + i18n(\"components.homeworkcarousel.4ce3054e7c4d\")"
         }
       ],
@@ -1081,7 +1081,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 131,
+          "line": 132,
           "context": "m.logLine(i18n(\"components.homeworkcarousel.759af5356c1e\", { mode: String(r.mode) }))"
         }
       ],
@@ -1097,13 +1097,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 40,
-          "context": "SOURCE_NAMES[h.source] ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
+          "line": 41,
+          "context": "labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\")"
         }
       ],
       "translation": "External assignments",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "components.homeworkcarousel.8cc765f4b8b9",
@@ -1113,7 +1113,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 345,
+          "line": 346,
           "context": "{i18n(\"components.homeworkcarousel.8cc765f4b8b9\")}"
         }
       ],
@@ -1129,7 +1129,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 41,
+          "line": 42,
           "context": "i18n(\"components.homeworkcarousel.a80f2d59cd5f\") + h.externalProgress"
         }
       ],
@@ -1145,13 +1145,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 40,
-          "context": "h.source ? SOURCE_NAMES[h.source] ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
+          "line": 41,
+          "context": "h.source ? labelForId(SOURCE_NAMES[h.source]) ?? i18n(\"components.homeworkcarousel.7849c0828e15\") : i18n(\"components.homeworkcarousel.aa39cac2b409\")"
         }
       ],
       "translation": "Web Learning",
       "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
+      "limitHint": "Keep concise; button/card label may wrap."
     },
     {
       "key": "components.homeworkcarousel.cac076fbec2f",
@@ -1161,7 +1161,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 25,
+          "line": 26,
           "context": "small: i18n(\"components.homeworkcarousel.cac076fbec2f\")"
         }
       ],
@@ -1177,7 +1177,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 178,
+          "line": 179,
           "context": "{i18n(\"components.homeworkcarousel.d4b1b25d27b2\")}"
         }
       ],
@@ -1193,7 +1193,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 42,
+          "line": 43,
           "context": "text: i18n(\"components.homeworkcarousel.da7ecec544ad\")"
         }
       ],
@@ -1209,7 +1209,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 332,
+          "line": 333,
           "context": "{i18n(\"components.homeworkcarousel.e9d65d05f085\")}"
         }
       ],
@@ -1225,7 +1225,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 27,
+          "line": 28,
           "context": "big: i18n(\"components.homeworkcarousel.f299c513a8fc\")"
         }
       ],
@@ -1241,7 +1241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
-          "line": 21,
+          "line": 22,
           "context": "small: i18n(\"components.homeworkcarousel.fb37c61898d5\")"
         }
       ],
@@ -1307,6 +1307,11 @@
           "file": "apps/desktop/src/components/IdentityCard.tsx",
           "line": 32,
           "context": "organization ? i18n(\"components.identitycard.d203a5652f03\") : i18n(\"components.identitycard.487e926379fe\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 154,
+          "context": "String(input.name ?? \"\").trim().slice(0, 60) || i18n(\"components.identitycard.d203a5652f03\")"
         }
       ],
       "translation": "Unnamed organization",

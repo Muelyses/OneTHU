@@ -1,7 +1,81 @@
 {
-  "sourceHash": "cc5c1c84a0e05a03e97f311922ba457b359803752c033d39cdde9a07055247a8",
+  "sourceHash": "3e96a07933d7b16a45d6040c371ba681746f6c18bc12f3db34f470af6f4f7bb6",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.vaultshare.b713d28a9ae7",
+      "source": "升级后的分享不可读取",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 337,
+          "context": "secured.reason??i18n(\"state.vaultshare.b713d28a9ae7\")"
+        }
+      ],
+      "translation": "The upgraded share cannot be read",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.b8aeb1a1f261",
+      "source": "读取云盘清单失败：{error}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error",
+          "expression": "e instanceof Error ? e.message : String(e)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 483,
+          "context": "reason: i18n(\"state.vaultshare.b8aeb1a1f261\", { error: e instanceof Error ? e.message : String(e) })"
+        }
+      ],
+      "translation": "Failed to read the cloud drive manifest: {error}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.c4591b5b1fe8",
+      "source": "口令无法解析",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 366,
+          "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
+        },
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 444,
+          "context": "dec.reason ?? i18n(\"state.vaultshare.c4591b5b1fe8\")"
+        }
+      ],
+      "translation": "The share code cannot be parsed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultshare.c5479cb871fa",
+      "source": "邮箱格式不对，像 学号@mails.tsinghua.edu.cn 这样",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultShare.ts",
+          "line": 453,
+          "context": "reason: i18n(\"state.vaultshare.c5479cb871fa\")"
+        }
+      ],
+      "translation": "Invalid email format, like studentID@mails.tsinghua.edu.cn",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vaultshare.c97b00b652fa",
       "source": "旧私密分享尚未升级，请重试",
@@ -1330,85 +1404,6 @@
         }
       ],
       "translation": "Submitted or overdue",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetinstances.17a0e39c6089",
-      "source": "日程与 DDL",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetInstances.ts",
-          "line": 150,
-          "context": "return i18n(\"state.widgetinstances.17a0e39c6089\");"
-        }
-      ],
-      "translation": "Schedule & DDL",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetinstances.662000cbb20d",
-      "source": "收藏项详情：{name}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "names.atom ?? b.atom.key"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetInstances.ts",
-          "line": 152,
-          "context": "return i18n(\"state.widgetinstances.662000cbb20d\", { name: names.atom ?? b.atom.key });"
-        }
-      ],
-      "translation": "Favorite item details: {name}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetinstances.6e06ed2abb7d",
-      "source": "收藏夹「{name}」图标组",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "names.folder ?? b.folderId"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetInstances.ts",
-          "line": 151,
-          "context": "return i18n(\"state.widgetinstances.6e06ed2abb7d\", { name: names.folder ?? b.folderId });"
-        }
-      ],
-      "translation": "Icon group for favorites \"{name}\"",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetinstances.993c7b4581f3",
-      "source": "快捷方式：{name}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "names.atom ?? b.atom.key"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetInstances.ts",
-          "line": 153,
-          "context": "return i18n(\"state.widgetinstances.993c7b4581f3\", { name: names.atom ?? b.atom.key });"
-        }
-      ],
-      "translation": "Shortcut: {name}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

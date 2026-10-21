@@ -18,15 +18,15 @@ OneTHU is an unofficial Tsinghua campus application for macOS, Windows and Andro
 
 The images below are captured from the application with fictional fixtures, without real accounts or private records. They cover phone portrait, landscape and desktop layouts. The example UI is Chinese. See [capture provenance](docs/en/screenshots.md)。
 
-<table><tr><th>Minimal</th><th>Practical</th><th>Full</th></tr><tr><td><img src="docs/assets/0.11/home-simple.png" alt="Minimal-mode home, fictional data" width="250"></td><td><img src="docs/assets/0.11/home-practical.png" alt="Practical-mode home, fictional data" width="250"></td><td><img src="docs/assets/0.11/home-full.png" alt="Full-mode home, fictional data" width="250"></td></tr></table>
+<table><tr><th>Minimal</th><th>Practical</th><th>Full</th></tr><tr><td><img src="docs/assets/0.11/en-US/home-simple.png" alt="Minimal-mode home, fictional data" width="250"></td><td><img src="docs/assets/0.11/en-US/home-practical.png" alt="Practical-mode home, fictional data" width="250"></td><td><img src="docs/assets/0.11/en-US/home-full.png" alt="Full-mode home, fictional data" width="250"></td></tr></table>
 
-![Fictional phone landscape home](docs/assets/0.11/home-landscape.png)
+![Fictional phone landscape home](docs/assets/0.11/en-US/home-landscape.png)
 
 <details><summary>Desktop, learning, schedule and Xiaoda screenshots</summary>
 
-![Full mode on desktop](docs/assets/0.11/home-desktop.png)
+![Full mode on desktop](docs/assets/0.11/en-US/home-desktop.png)
 
-<table><tr><td><img src="docs/assets/0.11/learn.png" width="250" alt="Learning platform, fictional data"></td><td><img src="docs/assets/0.11/schedule.png" width="250" alt="Schedule, fictional data"></td><td><img src="docs/assets/0.11/xiaoda.png" width="250" alt="Xiaoda, fictional data"></td></tr></table>
+<table><tr><td><img src="docs/assets/0.11/en-US/learn.png" width="250" alt="Learning platform, fictional data"></td><td><img src="docs/assets/0.11/en-US/schedule.png" width="250" alt="Schedule, fictional data"></td><td><img src="docs/assets/0.11/en-US/xiaoda.png" width="250" alt="Xiaoda, fictional data"></td></tr></table>
 
 </details>
 
@@ -49,7 +49,7 @@ The images below are captured from the application with fictional fixtures, with
 
 The demo uses the real pickup/drop handlers with only a pointer marker added. Integrated assignments, files, widgets, tabs, workspaces, search results, events, cards, mail and cloud sources are supported; arbitrary on-screen content is not automatically collectible.
 
-<img src="docs/assets/0.11/vault-drag.gif" width="300" alt="Actual long-press and drop into staging, with fictional assignments">
+<img src="docs/assets/0.11/en-US/vault-drag.gif" width="300" alt="Actual long-press and drop into staging, with fictional assignments">
 
 [Supported items and organization sync](docs/en/sharing-and-organizations.md)
 

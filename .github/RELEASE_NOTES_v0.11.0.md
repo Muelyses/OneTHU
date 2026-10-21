@@ -43,3 +43,6 @@ Downloads: **macOS Apple Silicon DMG**, **Windows x64 installer**, and **Android
 **NFC is currently unreliable; prefer online share codes.** Heavy Python/Node/system-dependent skills require a compatible desktop Agent. Live two-account collaboration and every device/vendor combination have not been universally validated. OneTHU is an unofficial campus tool; all public demos use fictional data.
 
 [English website](https://onethu.github.io/en/) · [English guide](https://onethu.github.io/docs/en/getting-started/)
+
+
+**清华云盘镜像 / Cloud mirror**：[固定下载入口](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/)，进入 `v0.11.0` 文件夹 / open the `v0.11.0` folder。三端安装包与校验文件已同步，匿名下载 SHA-256 核对一致 / all three installers and checksums are mirrored and verified.

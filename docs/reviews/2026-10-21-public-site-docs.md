@@ -37,6 +37,12 @@
 
 复现与更新工具：`tools/docs-api-surface.mjs`、`tools/docs-catalog.mjs`、`tools/contributors-report.py`、`tools/capture-public-preview.mjs`、`tools/record-vault-onboarding.mjs`。官网仓维护页面生成、素材同步、静态契约与中英文构建脚本。
 
+## 发布记录
+
+2026-10-21，主仓 `dev3` 实现提交 `9c226574`，官网 `main` 提交 `24c87af` 均已推送。GitHub Pages [构建及部署 39551736790](https://github.com/OneTHU/onethu.github.io/actions/runs/39551736790) 成功，官网、开发者页及中英文文档已发布至 [onethu.github.io](https://onethu.github.io/)。发布流水线会重新统计完整主仓历史中的贡献者，并校验组装产物的页面、资源与片段链接。
+
+最终源码再次通过 TypeScript、导览课程/导航检查和前端生产构建；前端构建耗时 8.66 秒，保留已有主包体积提示。导览浏览器还验证了进入实践前已打开的 OH 面板在返回导览后仍保留。
+
 ## English review summary
 
 The site and current guides have explicit Chinese/English content. Preserve the app’s original stacked logo and keep themes, wallpapers and layouts customizable. Public previews are captured from the real UI using fictional fixtures. The developer page includes every attributed contributor, a documented source-line threshold and no author emails. Historical technical records remain clearly labeled in their original language.

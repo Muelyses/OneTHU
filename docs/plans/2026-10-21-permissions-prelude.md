@@ -49,3 +49,24 @@ OneTHU 是本地客户端，界面、主要业务逻辑和缓存位于设备，�
 用户要求先不要编译，先在免责声明最前面添加显眼红字，并最终指定用语「请务必认真阅读，并在下方手动授权云盘和智能体服务。」。已使用 OneGUI 错误色与加粗标题字号，中英文同时显示；不改变授权可选、默认关闭的行为。新增保存失败的真实 UI 回归（旧原生壳命令缺失、存储失败两种情形），失败在协议页内提示且不能误前进。
 
 Actions run 39579406274 已确认 completed/cancelled，并已终止本轮本地 Android 构建进程树。未上传任何本轮安装包，未替换 Release/云盘。等待用户继续指令再恢复构建；不要自行继续发布。当前已提交的功能源码为 16d8082d7122fc9b40690a014aa4c7ebc2812138，最新红字与补充测试另提交。本轮最终浏览器权限流程 63 项通过，保存失败回归 2 项通过，i18n 7552/7552、0 错误；类型、CSS 与令牌检查通过。实际本地 App 已成功保存用户自行勾选的原生许可，确认旧壳不能前进的问题已排除。
+
+## 已恢复并完成三端渠道替换
+
+用户随后明确要求「立刻马上构建替换渠道」，已恢复执行。三端均来自 `b34ceebd3031f17a4ba0d04dc5579fe37a495c14`。
+
+- Windows x64、macOS ARM64：[Actions run 39580304804](https://github.com/smartThise/OneTHU/actions/runs/39580304804) 双平台成功，产物保存在 Actions。
+- Android ARM64：本地正式签名，0.11.0 / versionCode 11002，证书 SHA256 `cc14d735667bb8b5d3134e7dfdccf6a4d9353e1a2fce54503f4a29705423aa97`，与先前正式版一致。
+- [v0.11.0 Revolution Release](https://github.com/smartThise/OneTHU/releases/tag/v0.11.0) 三端安装包、SHA256SUMS.txt、latest.json 均已替换，发布说明含本轮新功能和源码提交。
+- [清华云盘固定镜像](https://cloud.tsinghua.edu.cn/d/56f78a2a0b144a6ab737/) 的 /Android、/macOS、/Windows 文件和根目录校验/更新清单均已替换，保留此前旧版本；没有新增版本目录。
+- 三端云盘完整匿名下载的大小、SHA256 与 GitHub Release 自动 digest 一致，两侧 latest.json 的三个平台地址/版本/大小/哈希均核对通过。
+- 实际应用更新逻辑探针三端通过，GitHub 不可达时能回退清华云盘并拿到相同 SHA256。
+- macOS DMG 校验、挂载后代码签名、ARM64 架构和原生许可嵌入检查通过；Windows 主程序 PE x64/许可嵌入通过；Android zip/正式签名/包名/构建号/ARM64 及新前端入口 `index-C-COULlV.js` 检查通过。没有宣称 Windows/Android 实体设备验收。
+- 同为 0.11.0 的旧安装用户可下载本轮补包覆盖安装，Android 构建号保证递增。
+
+| 文件 | 字节 | SHA256 |
+| --- | ---: | --- |
+| OneTHU_0.11.0_aarch64.dmg | 18820694 | `f39919baafce30789e8502c4116fdc0ba8a1bf33e12a8793ea8d2254fce98b13` |
+| OneTHU_0.11.0_arm64.apk | 31933245 | `6bb2f72398fb25c07e77d6bdcbd03f99fa88f8a1e62fde290e642302df3b2fb9` |
+| OneTHU_0.11.0_x64-setup.exe | 17250896 | `fb59d33556c574f0b20e88bcaafdb5d765667c4ea573295ab44810e4b4e1bd13` |
+
+官网生成的新下载快照及中英文下载页通过 10 页 / 136 个本地引用与渠道契约检查，另在官网仓库提交部署。构建日志、签名验证、校验清单与下载验收记录保存在 `/Volumes/OneTHUBuild/artifacts/release-0.11/permissions-prelude/`。

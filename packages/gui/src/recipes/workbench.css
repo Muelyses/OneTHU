@@ -1019,7 +1019,7 @@ html.is-phone .og-settings-row-value { flex: 0 0 auto; }
    inner widget scrollers must also yield to free-canvas manipulation; setting
    only the outer item allows a real vertical touch to cancel the drag. Reading
    order retains native card scrolling and the canvas gutters always pan. */
-html:root .freeboard-wrap:not(.is-reading) .free-item,
+html:root .freeboard-wrap:not(.is-reading):not(.is-edit-locked) .free-item,
 html:root .freeboard-wrap:not(.is-reading):not(.is-edit-locked) .free-item * { touch-action: none; }
 
 /* Corners stay at their exact screen coordinate at every canvas scale. The
@@ -1059,11 +1059,11 @@ html:root .board-note {
 html:root.is-phone .board-note { top: calc(var(--og-workbench-tabs-h) + var(--og-space-3)); }
 
 /* Mobile browsing must chain touch scrolling instead of arming layout gestures. */
-html:root.is-phone .freeboard-wrap.is-edit-locked .free-item { touch-action: pan-x pan-y; cursor: auto; }
+html:root .freeboard-wrap.is-edit-locked .free-item { touch-action: pan-x pan-y; cursor: auto; }
 
 /* The mobile editor stays operable above the movable refresh/top buttons. */
-html:root.is-phone .board-viewport-tools.has-edit-toggle { z-index: var(--og-z-board-editor); }
-html:root.is-phone .board-viewport-tools.has-edit-toggle.is-browse { padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+html:root .board-viewport-tools.has-edit-toggle { z-index: var(--og-z-board-editor); }
+html:root .board-viewport-tools.has-edit-toggle.is-browse { padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 
 /* Phone navigation is a device preference shared by the tour and settings. */
 .mobile-layout-choice { display: grid; gap: var(--og-space-4); padding: var(--og-space-4); }

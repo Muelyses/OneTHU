@@ -24,7 +24,8 @@ assert.ok(/\{\s*isAndroid \?/.test(page.replace(/\n\s+/g, " ")), "相机入口�
 
 /* ---------- [3] 复用既有提交流 ---------- */
 assert.ok(/if \(f\) setSubFile\(f\);/.test(page), "拍完的照片必须走 setSubFile（与选文件同一条路）");
-const camBlock = page.slice(page.indexOf("ref={cameraRef}"), page.indexOf("📷 拍照上传"));
+const cameraAt = page.indexOf("ref={cameraRef}");
+const camBlock = page.slice(cameraAt, page.indexOf("/>", cameraAt));
 assert.ok(!/learn\.|await invoke|upload/.test(camBlock), "相机 onChange 不得直接调用上传（须复用既有提交流）");
 
 console.log("learn-camera-upload-test: 全部断言通过（capture 相机入口 + 多信号判定 + 复用提交流）");

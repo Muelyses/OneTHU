@@ -159,12 +159,12 @@ export const http = new HttpClient({
 http.webVPNEncoder = webvpnWrap;
 http.debug = (line) => void logLine(line);
 // jar→rust 播种桥（wengine 引导页票种同步进原生仓；learn 同款，基础设施票过滤）
-http.nativeSeedHook = (url, pair) => {
+http.nativeSeedHook = (url, pair, path = "/") => {
   const name = pair.split("=")[0]!.trim();
   if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") {
     return;
   }
-  void nativeSeedCookies(url, [`${pair}; Path=/`]);
+  return nativeSeedCookies(url, [`${pair}; Path=${path}`]);
 };
 // 重定向链逐跳日志：定位教务漫游链在哪一跳断掉（CAS 票据流/登录页）
 setHopLogger((hopUrl, status, ck) => void logLine(`[HOP] ${status} ${hopUrl.slice(0, 150)} ck=${ck ?? "(无)"}`));
@@ -228,12 +228,12 @@ learnHttp.debug = (line) => void logLine(line);
 // 只进 jar 的票 rust 侧永远看不到）。但 wengine 基础设施票（wengine_vpn_ticket/
 // show_*/heartbeat/refresh）绝不播种——2026-09-17 实录：铸好的真票被引导页
 // 回放的陈旧匿名票覆盖，首页瞬间全绿→几秒后死。只播种目标应用域会话票。
-learnHttp.nativeSeedHook = (url, pair) => {
+learnHttp.nativeSeedHook = (url, pair, path = "/") => {
   const name = pair.split("=")[0]!.trim();
   if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") {
     return;
   }
-  void nativeSeedCookies(url, [`${pair}; Path=/`]);
+  return nativeSeedCookies(url, [`${pair}; Path=${path}`]);
 };
 // 脱敏版（demo 分支）在取数出口统一过一遍：姓名 / 学号 / 成绩在离开客户端时就被替换
 export const learn = withPrivacy(new LearnClient(learnHttp), "learn");

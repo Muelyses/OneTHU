@@ -9,6 +9,8 @@
  * CSS 侧与这里一一对应：媒体查询用 max-width: 839.98px / min-width: 840px，
  * 避免 839.5px 这类小数宽度落在两档之间。
  */
+import { isAndroidNavigator, type AndroidHostSignals } from "../lib/androidHost.js";
+
 export const BP = { medium: 600, expanded: 840 } as const;
 
 export type PlatformLayout = "compact" | "medium" | "expanded";
@@ -33,6 +35,27 @@ export function platformOf(width: number): PlatformLayout {
 export function hasCoarsePointer(): boolean {
   if (typeof navigator === "undefined") return false;
   return (navigator.maxTouchPoints ?? 0) > 0 || window.matchMedia?.("(pointer: coarse)").matches === true;
+}
+
+/** Input policy is independent of viewport geometry. A landscape tablet still
+ * needs touch-safe controls when its content uses the expanded layout. Android's
+ * main WebView deliberately reports a Windows UA, so reuse host signals here.
+ * iPadOS with a connected mouse can report MacIntel + a fine pointer; its touch
+ * capability remains available and should retain the explicit editing gate. */
+export function touchInteractionOf(
+  nav: (AndroidHostSignals & { maxTouchPoints?: number }) | null | undefined,
+  primaryCoarse: boolean,
+): boolean {
+  return isAndroidNavigator(nav) || primaryCoarse ||
+    /iPad|iPhone|iPod/i.test(nav?.userAgent ?? "") ||
+    (nav?.platform === "MacIntel" && (nav.maxTouchPoints ?? 0) > 1);
+}
+
+export function isTouchInteraction(): boolean {
+  return touchInteractionOf(
+    typeof navigator === "undefined" ? undefined : navigator,
+    typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches === true,
+  );
 }
 
 const PHONE_FORCE: boolean | null = (() => {

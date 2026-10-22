@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import ts from 'typescript';
-const compile = (path) => ts.transpileModule(fs.readFileSync(new URL('../' + path, import.meta.url), 'utf8'), {
+const compile = (path) => ts.transpileModule(fs.readFileSync(new URL('../' + path, import.meta.url), 'utf8').replaceAll('import.meta.env', '({ DEV: false })'), {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
 function module(code, imports, extra = {}) {
@@ -30,7 +30,7 @@ let passed = 0;
 async function test(name, run) { await run(); passed++; console.log('✓ ' + name); }
 function client(handler) {
   const calls = [];
-  const c = new LearnClient({ json: async (url, args) => { calls.push(url); return handler(url, args); }, debug() {} });
+  const c = new LearnClient({ text: async (url, args) => { calls.push(url); return JSON.stringify(await handler(url, args)); }, debug() {} });
   c.applyCsrf('fixture-only');
   return { c, calls };
 }
@@ -68,6 +68,7 @@ function stateFixture(patch = {}) {
   };
   const empty = {};
   const api = module(stateCode, {
+    '../i18n/index.js': { t: key => key, msg: key => key, useLocale: () => 'zh-CN' },
     react: { useState: (initial) => { const i = values.length; values.push(typeof initial === 'function' ? initial() : initial); return [values[i], (v) => { values[i] = typeof v === 'function' ? v(values[i]) : v; }]; },
       useCallback: (f) => f, useEffect: (f) => effects.push(f), useMemo: (f) => f(), useRef: (v) => ({ current: v }) },
     '../lib/confirm.js': empty,
@@ -77,6 +78,7 @@ function stateFixture(patch = {}) {
     '../lib/infoLib.js': { helper: {} }, '../lib/reload.js': {}, '../lib/xklogic.js': {},
     './context.js': { useApp: () => ({ status: 'ready', backToLogin() { throw Error('Unexpected logout'); } }) },
     './cache.js': { cacheGet: () => null, isPreviewMode: () => false, purgeXkCaches() {} }, './cardWarn.js': {},
+    './dataScope.js': { useDataScope: () => ({ preview: false, cacheGet: () => null }) },
   });
   return { api, values, effects, learn, calls, logs };
 }

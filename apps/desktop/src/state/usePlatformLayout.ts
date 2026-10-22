@@ -4,7 +4,7 @@
  * 之前 Layout / Today / TasksPage 各写一份，断点还分别是 860 / 1080，改一处必漏三处。
  */
 import { useEffect, useState } from "react";
-import { BP, platformOf, type PlatformLayout } from "./platform.js";
+import { BP, isTouchInteraction, platformOf, type PlatformLayout } from "./platform.js";
 
 export function usePlatformLayout(): PlatformLayout {
   const [layout, setLayout] = useState<PlatformLayout>(() =>
@@ -30,4 +30,17 @@ export function usePlatformLayout(): PlatformLayout {
 /** PC/平板横屏档（≥840px）：侧边栏壳、双栏页面 */
 export function useExpanded(): boolean {
   return usePlatformLayout() === "expanded";
+}
+
+/** A device's interaction policy stays independent of its responsive columns. */
+export function useTouchInteraction(): boolean {
+  const [touch, setTouch] = useState(isTouchInteraction);
+  useEffect(() => {
+    const pointer = window.matchMedia("(pointer: coarse)");
+    const sync = (): void => setTouch(isTouchInteraction());
+    sync();
+    pointer.addEventListener("change", sync);
+    return () => pointer.removeEventListener("change", sync);
+  }, []);
+  return touch;
 }

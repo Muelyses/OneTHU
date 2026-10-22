@@ -2916,6 +2916,7 @@ dependencies = [
  "tauri-plugin-onethu-speech",
  "tauri-plugin-onethu-tts",
  "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
  "tokio",
  "tokio-tungstenite",
  "url",
@@ -4681,6 +4682,20 @@ dependencies = [
  "thiserror 2.0.20",
  "url",
  "windows",
+ "zbus",
+]
+
+[[package]]
+name = "tauri-plugin-single-instance"
+version = "2.4.5"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror 2.0.20",
+ "tokio",
+ "tracing",
+ "windows-sys 0.60.2",
  "zbus",
 ]
 

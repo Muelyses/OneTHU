@@ -46,6 +46,18 @@ function chooseExisting(rows: SeafileRepo[], name: string, preferredId?: string)
   return preferred ?? [...owned].sort((a, b) => a.mtime - b.mtime || a.id.localeCompare(b.id))[0];
 }
 
+/** Read-only lookup for restore paths: absence must never create a library. */
+export async function findOwnedCloudRepo(token: string, name: string, preferredId?: string): Promise<SeafileRepo | undefined> {
+  const rows = await invoke<SeafileRepo[]>("seafile_repos", { token });
+  const existing = chooseExisting(rows, name, preferredId);
+  if (existing) return existing;
+  if (rows.some((repo) => repo.name === name && !hasOwnedRepoMetadata(repo))
+    || rows.some((repo) => repo.repoType === undefined)) {
+    throw new Error(i18n("state.seafile.nativeRestartRequired"));
+  }
+  return undefined;
+}
+
 /** Single-flight is shared by memory, wallpaper, vault and folder/organization
  * callers. An ambiguous POST outcome is remembered across app reloads; only a
  * later authoritative listing may resolve it, never another blind POST. */
@@ -54,15 +66,10 @@ export function ensureOwnedCloudRepo(token: string, name: string, preferredId?: 
   const current = pending.get(key);
   if (current) return current;
   const operation = (async () => {
-    const rows = await invoke<SeafileRepo[]>("seafile_repos", { token });
-    const existing = chooseExisting(rows, name, preferredId);
+    const existing = await findOwnedCloudRepo(token, name, preferredId);
     if (existing) {
       clearMarker(markerKey(existing.owner!, name));
       return existing;
-    }
-    if (rows.some((repo) => repo.name === name && !hasOwnedRepoMetadata(repo))
-      || rows.some((repo) => repo.repoType === undefined)) {
-      throw new Error(i18n("state.seafile.nativeRestartRequired"));
     }
     const account = await invoke<SeafileAccount>("seafile_account", { token });
     if (!account.email?.includes("@")) throw new Error(i18n("state.seafile.nativeRestartRequired"));

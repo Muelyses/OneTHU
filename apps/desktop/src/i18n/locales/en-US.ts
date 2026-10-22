@@ -3,6 +3,7 @@ import type { LocaleDef } from "../types.js";
 const locale = {
   "label": "English",
   "messages": {
+    "learn.responseUnexpected": "Web Learning has not returned usable data. Please refresh and try again shortly.",
     "mobile.nav.fullHint": "Use {name} in Full mode. Switch modes in Settings.",
     "mobile.nav.fullOnly": "Full mode",
     "mobile.nav.plugins": "Plugin pages",
@@ -7368,6 +7369,10 @@ const locale = {
     "state.wallpaper.cdc37c08fb5b": "Live wallpapers accept mp4 / webm only",
     "state.wallpaper.fa67a660d4b7": "Matcha",
     "state.wallpaper.fe4786177622": "Ink",
+    "state.wallpsync.archiveTooLarge": "Wallpaper backups support up to 24 MiB in total and 12 MiB per image or video. Remove large items from the wallpaper library and try again. Your current wallpaper is preserved.",
+    "state.wallpsync.permissionDenied": "Cloud access to the wallpaper backup was denied. Check that both devices use the same cloud account and that the account can access its library.",
+    "state.wallpsync.legacyLocalArchive": "This older backup contains file paths from the original device. Update OneTHU and upload the wallpaper again on that device, then restore it here.",
+    "state.wallpsync.changedLocally": "The local wallpaper changed during the download. Check your current selection, then restore again.",
     "state.wallpsync.connectBeforeRestore": "The cloud drive is not connected: connect on the Cloud Drive page first, then restore",
     "state.wallpsync.connectBeforeUpload": "The cloud drive is not connected: connect on the Cloud Drive page first, then sync",
     "state.wallpsync.invalidArchive": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",

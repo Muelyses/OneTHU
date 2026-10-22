@@ -41,7 +41,7 @@ for (const [type, body] of [
 {
   const logs = [];
   const client = new LearnClient({ text: async () => { throw Error(`Failed ${marker}?ticket=${marker}`); }, debug: line => logs.push(line) });
-  await client.resume();
+  await assert.rejects(client.resume());
   clean([...diagnostics(client), ...logs], "Request exception diagnostics cannot echo secret URL or upstream body");
 }
 for (const response of [
@@ -55,7 +55,7 @@ for (const response of [
 }
 {
   const logs = [];
-  const client = learn({ debug: line => logs.push(line), json: async () => ({ object: [{ zyid: marker, bt: marker, jsm: marker, nr: btoa(marker) }] }) });
+  const client = learn({ debug: line => logs.push(line), text: async () => JSON.stringify({ object: [{ zyid: marker, bt: marker, jsm: marker, nr: btoa(marker) }] }) });
   const homework = await client.getAllHomework([marker]);
   check(homework.length === 3 && homework[0].title === marker, "Homework data remains intact");
   clean(logs, "Homework logging omits course IDs, names and content");

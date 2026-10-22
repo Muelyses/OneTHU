@@ -64,6 +64,9 @@ tokio-tungstenite = { version = "0.24", features = ["native-tls"] }
 md-5 = "0.10"
 futures-util = "0.3"
 
+[target.'cfg(any(target_os = "macos", target_os = "windows", target_os = "linux"))'.dependencies]
+tauri-plugin-single-instance = "2"
+
 [target.'cfg(target_os = "android")'.dependencies]
 # Android bindings are generated with the NDK headers (upstream has no bundled Android bindings).
 rquickjs = { version = "=0.14.0", default-features = false, features = ["std", "bindgen"] }
@@ -96,6 +99,11 @@ windows = { version = "0.61", features = [
 [features]
 # 仅在需要实测 macOS 通知原生链路时开启（见 src/bin/notify_probe.rs）
 notify-probe = []
+
+# Local backport of the upstream Windows cold-start race/forward-timeout fix.
+# Keep the current Tauri graph; see vendor/tauri-plugin-single-instance/ONETHU_PATCH.md.
+[patch.crates-io]
+tauri-plugin-single-instance = { path = "vendor/tauri-plugin-single-instance" }
 
 # 探针二进制：放进 OneTHU.app/Contents/MacOS 里跑，才能以应用身份访问通知中心
 [[bin]]

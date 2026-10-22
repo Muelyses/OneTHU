@@ -42,6 +42,7 @@ export async function buildDiagnostics(): Promise<string> {
     ["登录状态", `${session.state} · 已保存密码 ${remembered ? "是" : "否"}`],
     ["学习会话", learn.lastCsrfDebug || "本次运行没有取过"],
     ["课程页", oneLine(learn.lastDebug, 200)],
+    ["学习响应", oneLine(learn.lastResponseDebug, 140)],
     ["分组页", oneLine(learn.lastGroupsDebug, 140)],
     ["讨论区", oneLine(learn.lastBbsThreadDebug, 140)],
     ["详情页", oneLine(learn.lastPageDetailDebug, 140)],

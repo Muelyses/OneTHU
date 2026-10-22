@@ -52,7 +52,7 @@ const submit = page.slice(page.indexOf("const doSubmit"), page.indexOf("const do
 const guardAt = submit.indexOf("isNeedFile(h.id)");
 const callAt = submit.indexOf("learn.submitHomework");
 assert.ok(guardAt > 0 && guardAt < callAt, "预检必须发生在发请求之前（拦在本地）");
-assert.ok(/本作业要求必须带附件/.test(submit), "拦下时必须说明原因");
+assert.ok(submit.includes('i18n("pages.learn.assignmentdetailpage.b7d31b81f628")'), "拦下时必须显示已登记的附件要求说明");
 assert.ok(/请上传附件/.test(submit) && /markNeedFile/.test(submit), "服务端原文须转成可行动提示并记录");
 assert.ok(page.includes('className="exthw-note is-warn"'), "附件区必须有可见提示行");
 

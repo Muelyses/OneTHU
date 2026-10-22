@@ -393,7 +393,13 @@ function parseBbsPostJson(raw: unknown): LearnBbsPost {
 
 /** 会话失效（请求回了登录页 HTML）——#withRelogin 捕获后静默重登一次再重试。
  *  继承 AuthRequiredError：既有 catch 兼容不变。 */
-class SessionExpiredError extends AuthRequiredError {}
+class SessionExpiredError extends AuthRequiredError {
+  constructor(message?: string) {
+    // This service owns its single-flight recovery. Broadcasting at construction
+    // would start a second global login before that recovery can even run.
+    super(message, { broadcast: false });
+  }
+}
 
 /** 登录状态压根没建立起来（例如取不到网页表单里的登录凭据）——与「服务器回了
  *  登录页」区分：前者可能只是一次建链没成，值得先重建再报错，文案也不该说
@@ -404,6 +410,16 @@ class SessionExpiredError extends AuthRequiredError {}
 class LearnSessionMissingError extends SessionExpiredError {
   constructor() {
     super("网络学堂的登录状态没有建立起来");
+  }
+}
+
+/** A failed upstream response is distinct from an expired university session. */
+class LearnResponseError extends Error {
+  readonly kind: string;
+  constructor(kind: string) {
+    super("LEARN_RESPONSE_UNEXPECTED");
+    this.name = "LearnResponseError";
+    this.kind = kind;
   }
 }
 
@@ -427,13 +443,37 @@ function extractLearnCsrf(html: string): { token: string; via: string } | null {
 /** 回页种类（只进诊断，不进界面）：分清「登录状态死了」与「页面换了形状」——
  *  两者的处置完全不同，以前都报同一句话，排查只能靠猜。 */
 function classifyLearnPage(html: string): string {
-  if (looksLikeLearnLoginShell(html)) return "learn-login-shell";
-  if (/id="sm2publicKey"|name="i_pass"/i.test(html)) return "id-login-form";
-  if (/j_spring_security_check/i.test(html)) return "learn-login-form";
-  if (/__vpn_|wengine/i.test(html)) return "webvpn-guide";
-  if (/<title>\s*(?:Apache Tomcat|Error report)/i.test(html)) return "server-error-page";
-  if (/\/do\/off\/ui\/auth\/login\//i.test(html)) return "id-login-link";
+  // Wengine injects its script into normal pages too. Inspect actual markup for
+  // authentication controls; unused JS strings are not a login-page signal.
+  const markup = html.replace(/<!--[\s\S]*?-->|<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+  const businessMarkup = /<(?:textarea|input)\b[^>]*name=["'](?:zynr|fileupload)["']|<div\b[^>]*class=["'][^"']*\bfujian\b/i.test(markup);
+  if (/id=["']sm2publicKey["']|name=["']i_pass["']/i.test(markup)) return "id-login-form";
+  if (/<form\b[^>]*action=["'][^"']*j_spring_security_check/i.test(markup)) return "learn-login-form";
+  const loginControl = /<(?:a|button|form)\b[^>]*(?:(?:id|class)=["'][^"']*\bre_log\b|(?:href|action)=["'][^"']*\/f\/login\b)/i.test(markup);
+  if (!businessMarkup && loginControl && looksLikeLearnLoginShell(markup)) return "learn-login-shell";
+  if (/<title>\s*(?:Apache Tomcat|Error report|HTTP Status)|<h1[^>]*>\s*HTTP Status\s+[45]\d\d/i.test(markup)) return "server-error-page";
+  if (!businessMarkup && /<(?:a|form|meta)\b[^>]*(?:\/do\/off\/ui\/auth\/login\/|oauth\.tsinghua\.edu\.cn\/thu-oauth\/auth)/i.test(markup)) return "id-login-link";
+  const learningNavigation = /\/f\/wlxt\/|name=["']_csrf["']/i.test(markup);
+  if (html.length < 4000 && html.includes("__vpn_hostname_data") && html.includes("__vpn_app_hostname_data") && !businessMarkup && !learningNavigation) return "webvpn-guide";
+  if (extractLearnCsrf(html)) return /__vpn_|wengine/i.test(html) ? "learn-page-proxied" : "learn-page";
   return html.trim().length === 0 ? "empty" : "unknown";
+}
+
+const isLearnAuthPage = (kind: string): boolean =>
+  kind === "learn-login-shell" || kind === "learn-login-form" || kind === "id-login-form" || kind === "id-login-link";
+
+/** Missing data containers are incomplete snapshots, while explicit empty arrays
+ * are authoritative. Keep the school's three established list encodings. */
+function requireLearnRows(json: LearnJson): unknown[] {
+  for (const value of [json.object, json.resultList]) {
+    if (Array.isArray(value)) return value;
+    if (value && typeof value === "object") {
+      const data = value as { aaData?: unknown; resultsList?: unknown };
+      if (Array.isArray(data.aaData)) return data.aaData;
+      if (Array.isArray(data.resultsList)) return data.resultsList;
+    }
+  }
+  throw new LearnResponseError("list-json-shape");
 }
 
 /** 真·登录页特征：learn 登录页标题 / id 登录表单 / oauth 跳转。
@@ -483,6 +523,7 @@ export class LearnClient {
       this.#csrf = csrf;
       return true;
     }
+    this.#csrf = null;
     return this.silentRelogin();
   }
 
@@ -600,26 +641,41 @@ export class LearnClient {
     try {
       // 抓登录凭据的请求本身不能要求已有凭据（原 #withCsrf 写法 =
       // 「无凭据即抛」死锁，学习会话从未真正建立——2026-09-17 实录）
-      const html = await this.#http.text(urls.LEARN_COURSE_LIST_PAGE());
-      this.lastDebug = `COURSE-PAGE kind=${classifyLearnPage(html)} len=${html.length}`;
-      const hit = extractLearnCsrf(html);
+      const html = await this.#http.text(urls.LEARN_COURSE_LIST_PAGE(), {}, { validateStatus: true });
+      const kind = classifyLearnPage(html);
+      this.lastDebug = `COURSE-PAGE kind=${kind} len=${html.length}`;
+      const hit = isLearnAuthPage(kind) || kind === "webvpn-guide" || kind === "server-error-page"
+        ? null : extractLearnCsrf(html);
       this.lastCsrfDebug = hit
         ? `ok via=${hit.via} len=${html.length}`
         : `miss kind=${classifyLearnPage(html)} len=${html.length}`;
+      if (!hit && !isLearnAuthPage(kind)) throw new LearnResponseError(kind);
       return hit?.token ?? null;
     } catch (e) {
-      this.lastDebug = "FETCH-ERROR";
-      this.lastCsrfDebug = "FETCH-ERROR";
-      return null;
+      // A first probe can explicitly report an expired session before any CSRF
+      // exists. Let the same bounded establishment path handle it as login HTML.
+      if (e instanceof Error && e.message === "HTTP 401") {
+        this.lastDebug = "COURSE-PAGE status=401";
+        this.lastCsrfDebug = "miss status=401";
+        return null;
+      }
+      if (!(e instanceof LearnResponseError)) {
+        this.lastDebug = "FETCH-ERROR";
+        this.lastCsrfDebug = "FETCH-ERROR";
+      }
+      throw e;
     }
   }
 
   /** 会话重建去重：同一时刻多个数据钩子一起撞上会话死，只重建一次
    *  （并发重链互相烧票据，2026-09-17 实录）。 */
   #reloginInflight: Promise<boolean> | null = null;
+  #sessionGeneration = 0;
 
   async #recoverSession(): Promise<boolean> {
     if (this.#reloginInflight) return this.#reloginInflight;
+    this.#sessionGeneration++;
+    this.#csrf = null;
     this.#reloginInflight = this.silentRelogin()
       .catch(() => false)
       .finally(() => {
@@ -664,17 +720,70 @@ export class LearnClient {
    *  #ensureCsrfReady 自证，不会无凭据空转重建。
    *  只重试一次：重建成功仍失效说明会话层真坏了，交还上层提示。 */
   async #withRelogin<T>(fn: () => Promise<T>): Promise<T> {
+    const generation = this.#sessionGeneration;
     try {
       return await fn();
     } catch (e) {
       if (!(e instanceof SessionExpiredError)) throw e;
       this.#http.debug?.("LEARN-RELOGIN 会话失效，静默重登后重试一次");
-      if (!(await this.#recoverSession())) {
+      // Late failures from the old session join/reuse the same recovery. A failed
+      // generation is also shared, so a fan-out cannot start a login per course.
+      const recovered = this.#reloginInflight ? await this.#reloginInflight
+        : generation !== this.#sessionGeneration ? Boolean(this.#csrf) : await this.#recoverSession();
+      if (!recovered) {
         this.#http.debug?.("LEARN-RELOGIN 静默重登失败，交还上层");
         throw e;
       }
       return await fn();
     }
+  }
+
+  /** Safe structural diagnostic for the last learning API/page response. */
+  lastResponseDebug = "";
+
+  #checkReadPage(body: string): void {
+    const kind = classifyLearnPage(body);
+    this.lastResponseDebug = `LEARN-READ kind=${kind} len=${body.length}`;
+    if (isLearnAuthPage(kind)) throw new SessionExpiredError();
+    // HttpClient has already attempted the WebVPN cookie bootstrap. A remaining
+    // gateway/server page is service failure, not evidence that credentials died.
+    if (kind === "webvpn-guide" || kind === "server-error-page") throw new LearnResponseError(kind);
+  }
+
+  async #readPage(url: string, init: RequestInit = {}): Promise<string> {
+    const body = await this.#readText(url, init);
+    this.#checkReadPage(body);
+    if (!body.trim()) throw new LearnResponseError("empty-page");
+    return body;
+  }
+
+  async #readText(url: string, init: RequestInit): Promise<string> {
+    try { return await this.#http.text(url, init, { validateStatus: true }); }
+    catch (e) {
+      if (e instanceof Error && e.message === "HTTP 401") {
+        this.lastResponseDebug = "LEARN-READ status=401";
+        throw new SessionExpiredError();
+      }
+      throw e;
+    }
+  }
+
+  async #readJson<T>(url: string, init: RequestInit = {}): Promise<T> {
+    const body = await this.#readText(url, init);
+    // Parse first: course content may itself quote login controls or error pages.
+    let parsed: unknown;
+    try { parsed = JSON.parse(body); }
+    catch {
+      this.#checkReadPage(body);
+      throw new LearnResponseError(classifyLearnPage(body));
+    }
+    if (parsed === null || typeof parsed !== "object") throw new LearnResponseError("invalid-json-shape");
+    const envelope = parsed as { result?: unknown; success?: unknown };
+    if (envelope.success === false || (typeof envelope.result === "string" && /^(?:error|failure|failed)$/i.test(envelope.result))) {
+      throw new LearnResponseError("rejected-json");
+    }
+    this.lastResponseDebug = `LEARN-READ kind=json len=${body.length}`;
+    return parsed as T;
   }
 
   #requireCsrf(): string {
@@ -712,11 +821,11 @@ export class LearnClient {
   async getCurrentSemester(): Promise<SemesterInfo> {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
-      const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_CURRENT_SEMESTER()));
+      const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_CURRENT_SEMESTER()));
       // mobile 同源字段：result.id（新）/result.xnxq（旧实现），起止 kssj/jssj
       const result = json.result as { id?: string; xnxq?: string; kssj?: string; jssj?: string } | string | undefined;
       const id = typeof result === "object" && result ? (result.id ?? result.xnxq) : result;
-      if (!id) throw new AuthRequiredError();
+      if (!id) throw new LearnResponseError("semester-json");
       return {
         id: String(id),
         startDate: typeof result === "object" && result ? (result.kssj ?? "") : "",
@@ -730,20 +839,20 @@ export class LearnClient {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
       type CalSem = { id?: string; xnxqmc?: string; kssj?: string; jssj?: string };
-      const json = await this.#http.json<{
+      const json = await this.#readJson<{
         message?: string;
         result?: CalSem;
         resultList?: CalSem[];
       }>(this.#withCsrf(urls.LEARN_CURRENT_SEMESTER()));
-      if (json.message && json.message !== "success") throw new AuthRequiredError();
-      if (!json.result || !json.result.kssj || !json.result.id) throw new AuthRequiredError();
+      if (json.message && json.message !== "success") throw new LearnResponseError("calendar-json");
+      if (!json.result || !json.result.kssj || !json.result.id) throw new LearnResponseError("calendar-json");
       const fmt = (x: Date): string =>
         `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`;
       const parse = (o: CalSem): CalendarSemester => {
         // kssj 对齐到所在教学周的周一（周二~五→本周一；周六日→下周一；demo 同款）；
         // kssj/jssj 统一走 parseLearnTime（日期串/时间戳/Date() 前后缀都可吃）
         const startDate = parseLearnTime(o.kssj);
-        if (!startDate) throw new AuthRequiredError();
+        if (!startDate) throw new LearnResponseError("calendar-date");
         const start = startDate;
         const wd = start.getDay();
         const delta = wd === 0 ? 1 : wd === 6 ? 2 : 1 - wd;
@@ -777,12 +886,12 @@ export class LearnClient {
     // queryxnxq 三路全空时退回旧端点，至少保住当前+下学期（不再出现空白列表）。
     return this.#withRelogin(async () => {
       this.#requireCsrf();
-      const text = await this.#http.text(this.#withCsrf(urls.LEARN_SEMESTER_LIST()));
+      const text = await this.#readPage(this.#withCsrf(urls.LEARN_SEMESTER_LIST()));
       if (!looksLikeLoginHtml(text)) {
         const ids = parseSemesterIdList(text);
         if (ids.length > 0) return ids.sort().reverse();
       }
-      const data = await this.#http.json<{
+      const data = await this.#readJson<{
         message?: string;
         result?: { id?: string } | null;
         resultList?: Array<{ id?: string }>;
@@ -801,8 +910,9 @@ export class LearnClient {
   async getCourseList(semesterId: string): Promise<CourseInfo[]> {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
-      const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_COURSE_LIST(semesterId)));
-      const rows = Array.isArray(json.resultList) ? json.resultList : [];
+      const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_COURSE_LIST(semesterId)));
+      if (!Array.isArray(json.resultList)) throw new LearnResponseError("course-list-json");
+      const rows = json.resultList;
       return rows.map((raw) => {
         const c = raw as Record<string, unknown>;
         const id = str(c.wlkcid);
@@ -844,7 +954,7 @@ export class LearnClient {
   async #fetchHomeworkKind(courseId: string, kind: "new" | "submitted" | "graded"): Promise<Homework[]> {
     return this.#withRelogin(async () => {
       this.#http.debug?.(`LEARN-HW 入口 kind=${kind} csrf=${this.#csrf ? "有" : "无"}`);
-      const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_HOMEWORK_LIST[kind]), {
+      const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_HOMEWORK_LIST[kind]), {
         method: "POST",
         body: this.#aoData({ wlkcid: courseId }),
         headers: {
@@ -858,7 +968,7 @@ export class LearnClient {
       this.#http.debug?.(
         `LEARN-API 作业 kind=${kind} rows=${asArray(json.object ?? json.resultList).length}`,
       );
-      return asArray(json.object ?? json.resultList).map((raw) => {
+      return requireLearnRows(json).map((raw) => {
         const d = raw as Record<string, unknown>;
         const baseId = str(d.zyid);
         const studentId = str(d.xszyid) || baseId;
@@ -956,7 +1066,7 @@ export class LearnClient {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
       const body = new URLSearchParams({ id: baseId });
-      const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_HOMEWORK_DETAIL()), {
+      const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_HOMEWORK_DETAIL()), {
         method: "POST",
         body,
         headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
@@ -1038,16 +1148,20 @@ export class LearnClient {
   async getHomeworkPageDetail(courseId: string, studentHomeworkId: string): Promise<HomeworkPageDetail> {
     await this.#ensureCsrfReady();
     this.#requireCsrf();
-    // 双页解析（thu-app learnApi 同款）：提交表单（zynr/fileupload）在 tijiao 页，
-    // viewCj 是成绩详情页——未交作业的 viewCj 上没有表单，只抓 viewCj 会把提交卡
-    // 判死（「看不到哪里能提交」的根因）。两页并行取，任一失败按空串参与解析。
-    // as const 元组：noUncheckedIndexedAccess 下非元组数组解构元素是 string|undefined
-    const [tijiao, viewcj] = await Promise.all(
-      [
-        this.#http.text(urls.LEARN_HOMEWORK_SUBMIT_PAGE(courseId, studentHomeworkId)).then((t) => t ?? "").catch(() => ""),
-        this.#http.text(urls.LEARN_HOMEWORK_PAGE(courseId, studentHomeworkId)).then((t) => t ?? "").catch(() => ""),
-      ] as const,
-    );
+    // Read both pages as one attempt. A failed page cannot safely assert that
+    // an existing submission/form is absent. Finish both reads before recovery
+    // so a late response from the old session cannot overwrite fresh cookies.
+    const [tijiao, viewcj] = await this.#withRelogin(async () => {
+      const result = await Promise.allSettled([
+        this.#readPage(urls.LEARN_HOMEWORK_SUBMIT_PAGE(courseId, studentHomeworkId)),
+        this.#readPage(urls.LEARN_HOMEWORK_PAGE(courseId, studentHomeworkId)),
+      ]);
+      const failed = result.find((r) => r.status === "rejected");
+      if (failed?.status === "rejected") throw failed.reason;
+      const pages = result.map((r) => r.status === "fulfilled" ? r.value : "") as [string, string];
+      if (!pages.some(p => p.trim())) throw new LearnResponseError("empty-detail");
+      return pages;
+    });
     const hasForm = (h: string): boolean =>
       /\btjzy\b/i.test(h) ||
       /<input\b[^>]*name=["']fileupload["']/i.test(h) ||
@@ -1114,7 +1228,7 @@ export class LearnClient {
   async getNotificationPageDetail(courseId: string, notificationId: string): Promise<NotificationPageDetail> {
     await this.#ensureCsrfReady();
     this.#requireCsrf();
-    const html = await this.#http.text(urls.LEARN_NOTIFICATION_DETAIL(courseId, notificationId));
+    const html = await this.#withRelogin(() => this.#readPage(urls.LEARN_NOTIFICATION_DETAIL(courseId, notificationId)));
     const anchors = [...html.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];
     const pick =
       anchors.find((m) => /ml-10/i.test(m[0]) || /[?&]wjid=/.test(m[1]!)) ??
@@ -1146,7 +1260,7 @@ export class LearnClient {
     const groups = await Promise.all(
       courseIds.map((courseId) =>
         this.#withRelogin(async () => {
-          const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_NOTIFICATION_LIST(expired)), {
+          const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_NOTIFICATION_LIST(expired)), {
             method: "POST",
             body: this.#aoData({ wlkcid: courseId, iDisplayStart: 0, iDisplayLength: 50 }),
             headers: {
@@ -1156,7 +1270,7 @@ export class LearnClient {
             },
           });
           this.#http.debug?.(`LEARN-API 通知 rows=${asArray(json.object ?? json.resultList).length}`);
-          return asArray(json.object ?? json.resultList).map((raw) => {
+          return requireLearnRows(json).map((raw) => {
             const d = raw as Record<string, unknown>;
             const cid = str(d.wlkcid) || courseId;
             const nid = str(d.ggid ?? d.id);
@@ -1175,7 +1289,7 @@ export class LearnClient {
               url: urls.LEARN_NOTIFICATION_DETAIL(cid, nid),
             };
           });
-        }).catch(() => [] as Notification[]),
+        }),
       ),
     );
     // 发布时间倒序（normalizeTime 统一为 "YYYY-MM-DD HH:mm"/"YYYY-MM-DD"，字典序即时序；
@@ -1186,14 +1300,10 @@ export class LearnClient {
   async getFileList(courseId: string): Promise<CourseFile[]> {
     return this.#withRelogin(async () => {
       this.#requireCsrf();
-      const json = await this.#http.json<LearnJson>(this.#withCsrf(urls.LEARN_FILE_LIST(courseId)));
+      const json = await this.#readJson<LearnJson>(this.#withCsrf(urls.LEARN_FILE_LIST(courseId)));
       // 学生端点返回 object 为行数组（thu-learn-lib getFileList 同源）；
       // 解析 resultList 会导致文件列表恒为空（"文件消失"根因）。
-      const rows = Array.isArray(json.object)
-        ? json.object
-        : Array.isArray(json.resultList)
-          ? json.resultList
-          : [];
+      const rows = requireLearnRows(json);
       return rows.map((raw) => {
         const d = raw as Record<string, unknown>;
         const fid = str(d.wjid);
@@ -1450,7 +1560,7 @@ export class LearnClient {
       //    （/f/ 静态页同 getHomeworkPageDetail/getNotificationPageDetail，直接 text 不带 _csrf）
       const pageUrl =
         urls.LEARN_PREFIX + "/f/wlxt/qz/v_wlkc_qzcyb/student/beforePageWdfzList?wlkcid=" + encodeURIComponent(wlkcid);
-      const html = await this.#http.text(pageUrl);
+      const html = await this.#readPage(pageUrl);
       if (looksLikeLoginHtml(html)) {
         this.lastGroupsDebug = "GROUPS login-page len=" + html.length;
         throw new SessionExpiredError("网络学堂会话已失效（分组页面返回了登录页）");
@@ -1469,7 +1579,7 @@ export class LearnClient {
       // ② 兜底：分组页 DataTables 的数据源（页面自身 fnServerData 同款 POST aoData）。
       //    静态 HTML 只有空 tbody，行数据必须从这里拿。
       try {
-        const json = await this.#http.json<LearnJson>(
+        const json = await this.#readJson<LearnJson>(
           this.#withCsrf(urls.LEARN_PREFIX + "/b/wlxt/qz/v_wlkc_qzcyb/student/pageFzList"),
           {
             method: "POST",
@@ -1485,7 +1595,8 @@ export class LearnClient {
         }
         debug.push("json rows=" + rows.length);
       } catch (e) {
-        // 页面 HTML 正常而 JSON 端点异常（404/改版）≠ 会话失效：不外抛，留现场
+        if (e instanceof SessionExpiredError) throw e;
+        // A changed endpoint retains the HTML fallback; authentication gets its own recovery.
         debug.push("json-ERR");
       }
       this.lastGroupsDebug = "GROUPS empty " + debug.join(" | ").slice(0, 1200);

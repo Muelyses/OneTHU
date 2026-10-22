@@ -704,7 +704,7 @@ export function PageHead({
     clearPageChrome(chromeToken.current);
   }, []);
   return (
-    <div ref={headRef}>
+    <div ref={headRef} className="page-head-host">
       {/* 渲染体走 OneGUI：标题字阶、meta、动作位与其它页面同源（旧 .page-head 的类不再产出） */}
       {title != null || meta != null || actions != null ? <OGPageHead title={title} meta={meta} actions={actions} /> : null}
     </div>

@@ -146,6 +146,96 @@ html:root .explorer-content[data-active-page="learn"] {
   flex: none;
 }
 
+/* Standalone learning controls and reading headers share the material axis.
+   These are a small, bounded set of surfaces: form controls nested inside cards
+   keep their opaque semantic pairs and do not acquire another backdrop layer. */
+html:root[data-og-skin="glass"] :is(
+  .tasks-body .hw-filter-select,
+  .tasks-body .hw-filter-clear,
+  .tasks-body .notice-strip,
+  .tasks-pane-head,
+  .tasks-detail-slot > .page-head-host > .og-pagehead,
+  .learn-page > .page-head-host > .og-pagehead,
+  .page-anim:is([data-page="tasks"], [data-page^="learn-"]) > .page-head-host > .og-pagehead
+) {
+  background: var(--og-fill-overlay);
+  border-color: var(--og-line-2);
+  box-shadow: var(--og-material-shadow);
+  backdrop-filter: var(--og-overlay-blur);
+  -webkit-backdrop-filter: var(--og-overlay-blur);
+}
+
+html:root[data-og-skin="glass"] :is(
+  .tasks-detail-slot > .page-head-host > .og-pagehead,
+  .learn-page > .page-head-host > .og-pagehead,
+  .page-anim:is([data-page="tasks"], [data-page^="learn-"]) > .page-head-host > .og-pagehead
+) {
+  padding: var(--og-space-4);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-card);
+  gap: var(--og-space-3);
+}
+
+html:root[data-og-skin="glass"] .tasks-pane-head {
+  padding: var(--og-space-2) var(--og-space-3);
+  border: 1px solid var(--og-line-2);
+  border-radius: var(--og-radius-control);
+}
+
+/* A mask on the carousel establishes a backdrop root: child card filters then
+   see a transparent intermediate layer instead of the wallpaper. The existing
+   per-card alpha/scale already provide depth. Keep that motion
+   while allowing the few mounted cards to sample the actual background. */
+html:root[data-og-skin="glass"] .tasks-body .hw-carousel {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+html:root[data-og-skin="glass"] .tasks-body .hw-card {
+  /* Group opacity also isolates a card's backdrop. Fade the content below;
+     the material itself continues sampling the wallpaper while moving. */
+  opacity: 1;
+  /* Homework is a reading surface: the overlay role gives clear glass enough
+     tint for metadata without changing the user's blur/intensity preference. */
+  background: var(--og-fill-overlay);
+  border-color: var(--og-line-2);
+  box-shadow: var(--og-material-shadow);
+  backdrop-filter: var(--og-overlay-blur);
+  -webkit-backdrop-filter: var(--og-overlay-blur);
+  /* A self mask blends the already filtered card, unlike a masked ancestor.
+     Stops follow the existing carousel geometry so edge cards disappear softly. */
+  mask-image: linear-gradient(to bottom,
+    transparent var(--hw-edge-start),
+    currentColor calc(var(--hw-edge-start) + var(--og-space-8)),
+    currentColor calc(var(--hw-edge-end) - var(--og-space-8)),
+    transparent var(--hw-edge-end));
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent var(--hw-edge-start),
+    currentColor calc(var(--hw-edge-start) + var(--og-space-8)),
+    currentColor calc(var(--hw-edge-end) - var(--og-space-8)),
+    transparent var(--hw-edge-end));
+}
+
+html:root[data-og-skin="glass"] .tasks-body .hw-card > * {
+  opacity: var(--hw-alpha, 1);
+}
+
+/* Secondary type already uses its semantic text color. Keeping full coverage
+   lets the contrast engine's chosen ink retain its measured contrast. */
+html:root[data-og-skin="glass"] .tasks-body .hw-card-ddl-sub {
+  opacity: 1;
+}
+
+html:root[data-og-skin="glass"] .tasks-body :is(.hw-card-title, .hw-card-ddl-sub) {
+  color: var(--og-content-1);
+}
+
+/* Native option popups are separate OS surfaces and need an opaque text pair. */
+html:root[data-og-skin="glass"] .hw-filter-select :is(option, optgroup) {
+  background: var(--og-surface-1);
+  color: var(--og-content-1);
+}
+
 @media (max-width: 599px) {
   /* The legacy phone shell forces every .stats row to three columns. Scope
      this override to the four Learn shortcuts instead of changing other pages. */

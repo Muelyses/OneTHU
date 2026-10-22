@@ -310,6 +310,9 @@ export function HwCarousel({ items, courseNameOf, courseLabelOf, semesterId, onP
               style={{
                 "--hw-y": yPx + "px", "--hw-scale": scale, "--hw-alpha": opacity,
                 "--hw-layer": 100 - Math.round(Math.abs(yPx)), "--hw-height": (geo.step - 2) + "px",
+                // Fade each card at the viewport edge, outside its backdrop sampling.
+                "--hw-edge-start": ((geo.step - 2) / 2 - (geo.h / 2 + yPx) / scale) + "px",
+                "--hw-edge-end": ((geo.step - 2) / 2 + (geo.h / 2 - yPx) / scale) + "px",
               } as CSSProperties}
               onClickCapture={(e) => {
                 if (movedRef.current || !front) {

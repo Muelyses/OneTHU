@@ -18,6 +18,8 @@ mod im_media;
 mod downloads;
 mod harness_embed;
 mod overlay_win;
+#[cfg(desktop)]
+mod desktop_lifecycle;
 mod updater;
 mod ws_bridge;
 mod plugins;
@@ -26,6 +28,7 @@ mod plugin_package;
 mod skill_package;
 mod skill_runtime;
 mod skills;
+mod wallpaper_io;
 use std::collections::HashMap;
 use std::error::Error as _;
 use std::time::Duration;
@@ -141,6 +144,16 @@ fn wallpaper_save(app: tauri::AppHandle, name: String, data_base64: String) -> R
     let path = dir.join(&safe);
     std::fs::write(&path, bytes).map_err(|e| format!("写入失败：{e}"))?;
     Ok(path.to_string_lossy().to_string())
+}
+
+/// A portable wallpaper backup can read only media owned by this app. Remote
+/// archives never supply local paths to this command.
+#[tauri::command]
+fn wallpaper_read(app: tauri::AppHandle, path: String) -> Result<String, String> {
+    use base64::Engine as _;
+    let root = app.path().app_data_dir().map_err(|e| e.to_string())?.join("wallpapers");
+    let bytes = wallpaper_io::read(&root, std::path::Path::new(&path))?;
+    Ok(base64::engine::general_purpose::STANDARD.encode(bytes))
 }
 
 /* ══════════ 极客模式（浏览器探索；2026-10-13 用户点名）══════════
@@ -4317,7 +4330,20 @@ async fn open_cloud_token_window(
     Ok(result)
 }
 
-tauri::Builder::default()
+let builder = tauri::Builder::default();
+    #[cfg(desktop)]
+    let builder = {
+        let builder = builder.manage(desktop_lifecycle::Lifecycle::default())
+            .on_window_event(desktop_lifecycle::window_event);
+        // Register before every other plugin/setup. Keep tauri:dev independent
+        // from installed builds without changing its existing data directory.
+        if tauri::is_dev() { builder } else {
+            builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+                desktop_lifecycle::request_activate_main(app);
+            }))
+        }
+    };
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_geolocation::init())
         .plugin(tauri_plugin_onethu_mobile::init())
@@ -4420,7 +4446,7 @@ tauri::Builder::default()
             thos_open_portal,
             http_native_seed,
             downloads::save_local_download,downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
-            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_delete,geek_browser_probe,geek_browser_launch,geek_browser_close,geek_playwright_install,
+            log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_read,wallpaper_delete,seafile::seafile_upload_wallpaper,geek_browser_probe,geek_browser_launch,geek_browser_close,geek_playwright_install,
             overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,updater::updater_download,updater::updater_cancel_download,updater::updater_open_installer,overlay_win::overlay_set_panel_height,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
             seafile::seafile_create_repo,seafile::seafile_dir,seafile::seafile_download,seafile::seafile_upload,seafile::seafile_mkdir,seafile::seafile_share,seafile::seafile_share_delete,seafile::seafile_share_read,seafile::seafile_share_folder_to_user,seafile::seafile_delete_repo,seafile::seafile_delete_owned_repo,seafile::seafile_share_read_bytes,seafile::seafile_assert_account_acl,seafile::seafile_upload_text,seafile::seafile_upload_profile,seafile::seafile_repo_owner,seafile::seafile_repo_user_shares,seafile::seafile_set_repo_user_permission,seafile::seafile_remove_repo_user_share,seafile::seafile_delete,seafile::seafile_move,seafile::seafile_search,seafile::seafile_pick_upload,seafile::seafile_read_bytes,seafile::seafile_update_file,seafile::seafile_uploaded_bytes,seafile::seafile_upload_resume,memory_mirror::memory_io,
             im_media::im_fetch_media,
@@ -4430,8 +4456,14 @@ tauri::Builder::default()
             open_external,onethu_open_path,nfc_available,nfc_read_tag,nfc_share_text,onethu_reveal_path,open_eid_window,open_ykt_window,read_ykt_cookies,close_ykt_window,start_qr_keep_alive,stop_qr_keep_alive,widget_push,widget_clear,widget_take_target,widget_status,widget_instances,widget_pin,ui_apply_insets,save_image_to_gallery,ui_set_bar_theme,ui_haptic_tick,notify_backend,notify_open_settings,notify_permission,notify_schedule,notify_cancel,notify_pending,notify_test,notify_take_target,notify_post,notify_dismiss,open_web_modal,open_app_settings,open_ykt_submit_window,open_sports_window,open_cloud_token_window,cloud_webvpn_profile,venue_sso_set,venue_open_portal,
             plugins::plugin_spawn,plugins::plugin_call,plugins::plugin_notify,plugins::plugin_rpc_reply,plugins::plugin_kill,
             harness_embed::harness_start,harness_embed::harness_bridge_take,harness_embed::harness_call,harness_embed::harness_notify,harness_embed::harness_rpc_reply,harness_embed::harness_stop])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|_app, _event| {
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. } = _event {
+                desktop_lifecycle::request_activate_main(_app);
+            }
+        });
 }
 
 

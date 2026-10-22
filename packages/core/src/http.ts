@@ -230,10 +230,10 @@ export function onAuthRequired(cb: AuthListener): () => void {
 }
 
 export class AuthRequiredError extends Error {
-  constructor(message = "会话已失效，需要重新登录") {
+  constructor(message = "会话已失效，需要重新登录", options: { broadcast?: boolean } = {}) {
     super(message);
     this.name = "AuthRequiredError";
-    if (authBroadcastSuspended) return; // 后台链自处理，不广播全局重载
+    if (options.broadcast === false || authBroadcastSuspended) return; // 服务自身恢复时不重复触发全局链
     for (const cb of authListeners) {
       try {
         cb();
@@ -429,7 +429,7 @@ export class HttpClient {
   /** 宿主可注入的调试通道（桌面端写 /tmp/onethu-debug.log） */
   debug?: (line: string) => void;
   /** 引导页票种同时播种到原生仓（jar→rust 桥；fetch 走原生通道的实例必接） */
-  nativeSeedHook?: (url: string, cookiePair: string) => void;
+  nativeSeedHook?: (url: string, cookiePair: string, path?: string) => void | Promise<void>;
   /** 引导页也可能携带令牌/姓名；调试通道只保留结构。 */
   #emitDebug(body: string): void {
     if (body.includes("__vpn_hostname_data")) {
@@ -445,7 +445,14 @@ export class HttpClient {
 
   /** GET 并解析为文本；wengine 引导页补救 + 登录页特征检测 + 自动重登录重放 */
 
-  async text(url: string, init: (RequestInit & { direct?: boolean }) = {}): Promise<string> {
+  async text(
+    url: string,
+    init: (RequestInit & { direct?: boolean }) = {},
+    options: { validateStatus?: boolean } = {},
+  ): Promise<string> {
+    // Keep request-local routing evidence: another in-flight request can update
+    // lastTarget before this response body has finished reading.
+    const wireTarget = this.resolveUrl(url, { mode: init.direct === true ? "direct" : "auto" });
     let response = await this.request(url, init);
     // myhome 等老站是 GBK；按 Content-Type charset 解码，别拿 UTF-8 硬解（否则中文
     // 全成 U+FFFD，回传按钮值变乱码被服务器 400、门户正则/登录探测全部失灵）
@@ -457,7 +464,7 @@ export class HttpClient {
     // （浏览器里由 wengine main.js 完成；demo GET_COOKIE_URL / 网络层同机制）。
     // 真·引导页（interstitial）才做 dance；被代理页面注入的 __vpn_* JS 不算
     if (this.wengineInterstitial(body)) {
-      const merged = await this.#wengineBootstrapCookies(url, this.lastTarget ?? "", body);
+      const merged = await this.#wengineBootstrapCookies(url, wireTarget, body);
       if (merged > 0) {
         response = await this.request(url, init);
         body = await response.text();
@@ -474,6 +481,9 @@ export class HttpClient {
       body = await response.text();
       this.#recordTextDebug(response, body);
     }
+    // Opt-in for callers that need to distinguish HTTP failures from login HTML.
+    // Keep response bodies and URLs out of the thrown diagnostic.
+    if (options.validateStatus && !response.ok) throw new Error(`HTTP ${response.status}`);
     return body;
   }
 
@@ -483,22 +493,42 @@ export class HttpClient {
    *   demo tauriHttp 对 wengine-vpn/cookie 响应做同款 body→jar 并入）。
    * host 参数依次尝试：引导页 __vpn_app_hostname_data（wengine 应用码，main.js 的
    * app_hostname 即取自该值）→ 真实域名（demo GET_COOKIE_URL 对 info 用真实域名的形态）。
-   * 两种来源的 cookie 全部并入（webvpn 域 + 目标应用域），再补 refresh=0。
+   * 两种来源的 cookie 按应用域归档，包装域使用对应应用的路径作用域。
    * 返回并入的 cookie 条数（0 = 未取得有效 cookie 串）。
    */
   async #wengineBootstrapCookies(logicalUrl: string, wireTarget: string, body: string): Promise<number> {
     let u: URL;
     try {
-      u = new URL(logicalUrl);
+      const logical = new URL(logicalUrl);
+      const decoded = decodeUrl(logicalUrl);
+      u = new URL(decoded ?? logicalUrl);
+      if (decoded) {
+        // decodeUrl supplies the origin; preserve the original application's
+        // exact path (including trailing/repeated slashes) for the cookie query.
+        u.pathname = logical.pathname.replace(/^\/(?:http|https)\/[^/]+/i, "") || "/";
+      }
     } catch {
       return 0;
     }
+    if (!/^https?:$/.test(u.protocol) || u.hostname === "webvpn.tsinghua.edu.cn") return 0;
     const appCode = /__vpn_app_hostname_data["']?\s*[:=]\s*"([^"]+)"/.exec(body)?.[1];
     const appScheme = /__vpn_app_protocol_data["']?\s*[:=]\s*"([^"]+)"/.exec(body)?.[1];
     const realScheme = u.protocol.replace(":", "");
-    const scheme = appScheme || realScheme;
+    const scheme = appScheme === "http" || appScheme === "https" ? appScheme : realScheme;
     const hosts = [...new Set([appCode, u.hostname].filter((h): h is string => Boolean(h)))];
-    const targets = ["https://webvpn.tsinghua.edu.cn/", `${u.protocol}//${u.hostname}/`];
+    const targets = [{ url: u.origin + "/", path: "/" }];
+    // The native transport ignores manually supplied Cookie headers. Seed the
+    // proxy too, but only under this application's encoded path: a root-scoped
+    // JSESSIONID here would overwrite or leak into other proxied school services.
+    try {
+      const wire = new URL(wireTarget);
+      const prefix = /^\/(?:http|https)\/[0-9a-f]+\//i.exec(wire.pathname)?.[0];
+      if (wire.hostname === "webvpn.tsinghua.edu.cn" && prefix && decodeUrl(wireTarget)) {
+        targets.push({ url: wire.origin + prefix, path: prefix });
+      }
+    } catch {
+      /* A direct request only seeds its actual application origin. */
+    }
     let merged = 0;
     for (const host of hosts) {
       const qp = new URLSearchParams({
@@ -512,15 +542,24 @@ export class HttpClient {
       const res = await this.request(cookieUrl, {
         headers: wireTarget ? { Referer: wireTarget.slice(0, 200) } : {},
       }).catch(() => null);
-      const text = res ? await res.text().catch(() => "") : "";
+      const text = res?.ok ? await res.text().catch(() => "") : "";
       if (!text || /[<>]/.test(text)) continue;
       for (const pair of text.split(/;|\n/)) {
         const t = pair.trim();
-        if (/^[A-Za-z0-9_.%-]+=/.test(t)) {
+        // This endpoint returns Cookie pairs, not Set-Cookie lines. Accept only
+        // cookie-octets and reject attributes/control characters before creating
+        // the explicit host/path-scoped Set-Cookie input below.
+        if (/^[A-Za-z0-9_.%-]+=(?:[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*|"[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*")$/.test(t)) {
+          const name = t.slice(0, t.indexOf("="));
+          if (/^(?:domain|path|expires|max-age|secure|httponly|samesite|partitioned)$/i.test(name)) continue;
+          // Bootstrap responses describe application cookies. Gateway control
+          // cookies are already managed by the native response cookie store;
+          // replaying an anonymous gateway ticket can replace the active login.
+          if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") continue;
           for (const d of targets) {
             try {
-              this.jar.setRaw(new URL(d), `${t}; Path=/`);
-              this.nativeSeedHook?.(d, t);
+              this.jar.setRaw(new URL(d.url), `${t}; Path=${d.path}`);
+              await this.nativeSeedHook?.(d.url, t, d.path);
               merged++;
             } catch {
               /* 容忍个别坏值 */

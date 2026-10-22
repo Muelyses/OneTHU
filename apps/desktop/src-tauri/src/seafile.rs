@@ -248,7 +248,7 @@ pub async fn seafile_download<R: tauri::Runtime>(
     path: String,
 ) -> Result<String, String> {
     let p = if path.starts_with('/') { path.clone() } else { format!("/{path}") };
-    let (bytes, content_disposition) = fetch_file_bytes(&token, &repo_id, &p).await?;
+    let (bytes, content_disposition) = fetch_file_bytes(&token, &repo_id, &p, None).await?;
     if bytes.is_empty() {
         return Err("下载失败：文件内容为空".into());
     }
@@ -330,6 +330,18 @@ async fn seafile_upload_inner(
 pub async fn seafile_upload_text(token:String, repo_id:String, parent_dir:String, name:String, content:String)->Result<i64,String>{
     if content.len()>2*1024*1024 || name.is_empty() || name.contains('/') || name.contains('\\') || name==".." {return Err("上传文本或文件名无效".into());}
     seafile_upload_data(&token,&repo_id,&parent_dir,name,content.into_bytes(),true).await
+}
+/// Portable wallpaper archives have a separate memory budget and never leave a
+/// second copy of personal media in the temporary download directory.
+#[tauri::command]
+pub async fn seafile_upload_wallpaper(token: String, repo_id: String, content: String) -> Result<i64, String> {
+    if content.len() > 24 * 1024 * 1024 { return Err("wallpaper_archive_too_large".into()); }
+    let rows = seafile_repos(token.clone()).await?;
+    if !rows.iter().any(|repo| repo.id == repo_id && repo.name == "OneTHU"
+        && repo.repo_type == "mine" && repo.is_virtual == Some(false)) {
+        return Err("壁纸同步仅限本人的 OneTHU 资料库".into());
+    }
+    seafile_upload_data(&token, &repo_id, "/壁纸", "onethu-wallpaper-v3.json".into(), content.into_bytes(), true).await
 }
 /// Private multi-device index; card covers may exceed the generic text limit.
 /// Stream from memory, never leave personal contacts in a shared temp directory.
@@ -762,7 +774,7 @@ pub async fn seafile_read_bytes(
 ) -> Result<String, String> {
     let p = if path.starts_with('/') { path } else { format!("/{path}") };
     let limit = if max_bytes > 0 { max_bytes } else { 8 * 1024 * 1024 };
-    let (bytes, _) = fetch_file_bytes(&token, &repo_id, &p).await?;
+    let (bytes, _) = fetch_file_bytes(&token, &repo_id, &p, Some(limit as u64)).await?;
     if bytes.len() as i64 > limit {
         return Err(format!("文件过大（{} 字节 > 上限 {limit}）：记忆镜像只收小文件，大文件请走 seafile_download", bytes.len()));
     }
@@ -778,6 +790,7 @@ async fn fetch_file_bytes(
     token: &str,
     repo_id: &str,
     p: &str,
+    limit: Option<u64>,
 ) -> Result<(Vec<u8>, Option<String>), String> {
     let first = check(
         client()?
@@ -793,7 +806,8 @@ async fn fetch_file_bytes(
         .get(reqwest::header::CONTENT_DISPOSITION)
         .and_then(|v| v.to_str().ok())
         .map(|s| s.to_string());
-    let mut bytes = first.bytes().await.map_err(|e| e.to_string())?;
+    // A short API response can itself be the signed URL, even for a 1-byte file.
+    let mut bytes = read_file_response(first, limit.map(|n| n.max(2048))).await?;
     if bytes.first() == Some(&b'"') && bytes.len() < 2048 {
         let link = String::from_utf8_lossy(&bytes).trim().trim_matches('"').trim().to_string();
         if link.starts_with("http") {
@@ -805,10 +819,27 @@ async fn fetch_file_bytes(
                     .await.map_err(|e| e.to_string())?,
             )
             .await?;
-            bytes = second.bytes().await.map_err(|e| e.to_string())?;
+            bytes = read_file_response(second, limit).await?;
         }
     }
-    Ok((bytes.to_vec(), content_disposition))
+    if limit.is_some_and(|n| bytes.len() as u64 > n) { return Err("文件过大，超出读取上限".into()); }
+    Ok((bytes, content_disposition))
+}
+
+/// Apply the memory limit while streaming, including chunked responses with no
+/// Content-Length. The old post-download check allowed unbounded allocation.
+async fn read_file_response(mut response: reqwest::Response, limit: Option<u64>) -> Result<Vec<u8>, String> {
+    if let Some(limit) = limit {
+        if response.content_length().is_some_and(|n| n > limit) { return Err("文件过大，超出读取上限".into()); }
+        let mut bytes = Vec::new();
+        while let Some(chunk) = response.chunk().await.map_err(|e| e.to_string())? {
+            if bytes.len() as u64 + chunk.len() as u64 > limit { return Err("文件过大，超出读取上限".into()); }
+            bytes.extend_from_slice(&chunk);
+        }
+        Ok(bytes)
+    } else {
+        response.bytes().await.map(|bytes| bytes.to_vec()).map_err(|e| e.to_string())
+    }
 }
 
 /// 覆写已存在文件（update-link 原语）：GET update-link（指向父目录）→
@@ -987,6 +1018,35 @@ fn expand_home(local_path: &str) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    async fn fixture_file_response(wire: &'static [u8]) -> reqwest::Response {
+        use std::io::{Read, Write};
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = listener.local_addr().unwrap();
+        std::thread::spawn(move || {
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request = [0u8; 2048];
+            let _ = stream.read(&mut request);
+            stream.write_all(wire).unwrap();
+        });
+        reqwest::Client::builder().no_proxy().build().unwrap()
+            .get(format!("http://{addr}/fixture")).send().await.unwrap()
+    }
+
+    #[tokio::test]
+    async fn file_read_budget_covers_known_and_chunked_bodies() {
+        let fixed = b"HTTP/1.1 200 OK\r\nContent-Length: 6\r\nConnection: close\r\n\r\nabcdef";
+        let chunked = b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n3\r\nabc\r\n3\r\ndef\r\n0\r\n\r\n";
+        assert!(read_file_response(fixture_file_response(fixed).await, Some(4)).await.is_err());
+        assert!(read_file_response(fixture_file_response(chunked).await, Some(4)).await.is_err());
+        assert_eq!(read_file_response(fixture_file_response(chunked).await, Some(6)).await.unwrap(), b"abcdef");
+        assert_eq!(read_file_response(fixture_file_response(fixed).await, None).await.unwrap(), b"abcdef");
+    }
+
+    #[tokio::test]
+    async fn wallpaper_upload_size_guard_precedes_network() {
+        assert_eq!(seafile_upload_wallpaper("unused".into(), "unused".into(), "x".repeat(24 * 1024 * 1024 + 1)).await.unwrap_err(), "wallpaper_archive_too_large");
+    }
 
     #[tokio::test]
     async fn profile_upload_rejects_invalid_names_and_oversize_before_network() {

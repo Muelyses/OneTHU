@@ -464,6 +464,7 @@ export function formatNetworkError(err: unknown): string {
   const loginExplanation = explainLoginError(err);
   if (loginExplanation) return loginExplanation;
   if (!raw) return i18n("lib.transport.noReason");
+  if (raw === "LEARN_RESPONSE_UNEXPECTED") return i18n("learn.responseUnexpected");
   // 原生侧的大小闸门：说清多大、该怎么办，而不是丢一个网络错误
   const big = /too-large:(\d+):(\d+)/.exec(raw);
   if (big) {

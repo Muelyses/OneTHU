@@ -13,7 +13,7 @@ const originalTimeout = globalThis.setTimeout;
 globalThis.setTimeout = (callback, _delay, ...args) => originalTimeout(callback, 0, ...args);
 const learn = http => { const client = new LearnClient(http); client.applyCsrf("fixture-only"); return client; };
 try {
-  const courses = await learn({ json: async () => ({ resultList: [{ wlkcid: "course-anon", kcm: "匿名课程", ywkcm: "Anonymous &amp; Example", kch: "TEST123", kxh: 2, jsm: "Example Teacher" }] }) }).getCourseList("2099-2100-1");
+  const courses = await learn({ text: async () => JSON.stringify({ resultList: [{ wlkcid: "course-anon", kcm: "匿名课程", ywkcm: "Anonymous &amp; Example", kch: "TEST123", kxh: 2, jsm: "Example Teacher" }] }) }).getCourseList("2099-2100-1");
   check(courses[0].name === "匿名课程" && courses[0].englishName === "Anonymous & Example", "Course language fields and original data stay distinct");
   check(courses[0].id === "course-anon" && courses[0].courseIndex === 2, "Course identity does not depend on display language");
   for (const payload of [{ result: "error", msg: "Submission failed" }, { result: "failure", msg: "Deadline exceeded" }, { result: "failed" }, { success: false }, { message: "Permission denied" }, {}, null, []]) {
@@ -29,7 +29,7 @@ try {
   check(!(await loginClient.submitHomework("assignment-anon", {})).ok && relogins === 1, "English login page is a session failure, not submission success");
   for (const label of ["上交作业内容", "Submitted Homework Content", "Submission Content"]) {
     const view = `<div class="fl left">${label}</div><div class='right'><span>&lt;em&gt;Original answer&lt;/em&gt;</span></div><!--Assignment attachments--><div class="list fujian clearfix"></div>`;
-    const client = learn({ text: async url => url.includes("tijiao") ? "" : view });
+    const client = learn({ text: async url => url.includes("tijiao") ? "<html><p>Submitted assignment</p></html>" : view });
     const detail = await client.getHomeworkPageDetail("course-anon", "assignment-anon");
     check(detail.submittedContent?.includes("<em>Original answer</em>"), label + ": submitted answer is extracted from its label section");
     check(!client.lastPageDetailDebug.includes("Original answer"), label + ": answer content is not copied into diagnostics");

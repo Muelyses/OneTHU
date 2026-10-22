@@ -84,7 +84,7 @@ assert.ok(
 /* ---------- [7] 界面文案不重复套前缀 ---------- */
 const transport = read("apps/desktop/src/lib/transport.ts");
 assert.ok(!/`会话已失效：\$\{raw\}/.test(transport), "不得再套「会话已失效：」前缀（#42 截图里的重复文案）");
-assert.ok(transport.includes("下拉刷新即可重试"), "会话类报错必须给出可操作的下一步");
+assert.ok(transport.includes("lib.transport.reloginAdvice"), "会话类报错必须给出可操作的下一步");
 assert.ok(transport.includes("lastErrorText"), "最近一次报错原文须留档（供用户主动复制诊断摘要）");
 
 console.log("learn-silent-relogin-test: 全部断言通过（真重登 + 去重 + 会话自证 + 过期链路 + 文案不重复）");

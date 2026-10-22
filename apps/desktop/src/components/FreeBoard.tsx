@@ -65,6 +65,7 @@ import { sanitizeUserHtml, widgetById as userWidgetById } from "../state/userext
 import { BOARD_CANVAS_H, BoardPenLayer, BoardPenToolbar } from "./BoardPenLayer.js";
 import { useContextMenu, type CtxItem } from "./ContextMenu.js";
 import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
+import { useTouchInteraction } from "../state/usePlatformLayout.js";
 import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
 import { useLearnData } from "../state/data.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
@@ -346,6 +347,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      画布自创建起就没有边界：内容在世界坐标里，这里只管"看哪一块"。视图按「板+朝向」记，
      存在 onethu.boardview.v1（视图不是文档，见 state/boardView.ts 的口径）。 */
   const phoneUi = useIsPhone();
+  const touchInteraction = useTouchInteraction();
+  const explicitEdit = phoneUi || touchInteraction;
   /** Physical phone rotation stays independent of the keyboard's reduced viewport. */
   const landscapeNow = (): boolean => {
     if (typeof window === "undefined") return false;
@@ -385,8 +388,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const phoneEditKey = boardId + "|" + orientation;
   const [phoneEditScope, setPhoneEditScope] = useState<string | null>(null);
   const phoneEditing = phoneEditScope === phoneEditKey;
-  useOverlayBack("board-edit:" + boardId, phoneUi && phoneEditing && toolsVisible, () => setPhoneEditScope(null));
-  const canEdit = !phoneUi || phoneEditing;
+  useOverlayBack("board-edit:" + boardId, explicitEdit && phoneEditing && toolsVisible, () => setPhoneEditScope(null));
+  const canEdit = !explicitEdit || phoneEditing;
   const canEditRef = useRef(canEdit);
   canEditRef.current = canEdit;
   /* 手机竖屏默认阅读顺序（堆叠）；打开「自由摆放」切回真画布，可拖动/缩放（仅完整模式：compact 下不出现）。 */
@@ -433,7 +436,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   }, [wsSnap.activeId, boardId]);
   useEffect(() => {
     setPhoneEditScope(null);
-  }, [boardId, orientation, wsSnap.activeId, phoneUi]);
+  }, [boardId, orientation, wsSnap.activeId, explicitEdit, compact]);
   /* 笔迹变化要跟着重渲染（快照本身不用取：下面按笔键直接读） */
   useSyncExternalStore(subscribePen, penSnapshot, penSnapshot);
   const penKey = penKeyOf(boardId, orientation);
@@ -1182,8 +1185,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (phoneUi ? " has-edit-toggle" : "") + (phoneUi && !phoneEditing ? " is-browse" : "") + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
-          {phoneUi ? <Btn size="sm" variant={phoneEditing ? "solid" : "tonal"} icon={<IconPen width={16} height={16}/>} data-coach="home-edit" aria-pressed={phoneEditing} onClick={() => setPhoneEditScope(phoneEditing ? null : phoneEditKey)}>{(phoneEditing ? i18n("components.freeboard.finishEdit") : i18n("components.freeboard.startEdit"))}</Btn> : null}
+        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (explicitEdit ? " has-edit-toggle" : "") + (explicitEdit && !phoneEditing ? " is-browse" : "") + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
+          {explicitEdit ? <Btn size="sm" variant={phoneEditing ? "solid" : "tonal"} icon={<IconPen width={16} height={16}/>} data-coach="home-edit" aria-pressed={phoneEditing} onClick={() => setPhoneEditScope(phoneEditing ? null : phoneEditKey)}>{(phoneEditing ? i18n("components.freeboard.finishEdit") : i18n("components.freeboard.startEdit"))}</Btn> : null}
           {canEdit ? <>
           <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>{i18n("components.freeboard.783d638053ea")}</Btn>
           {phonePortrait && orientation === "portrait" ? (
@@ -1191,7 +1194,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               {phoneCanvas ? i18n("components.freeboard.593f0f466b3e") : i18n("components.freeboard.f87eebfdca60")}
             </Btn>
           ) : null}
-          {phoneUi ? <>
+          {explicitEdit ? <>
             <Btn size="sm" variant="ghost" icon={<span aria-hidden="true">↶</span>} disabled={!ops.canUndo()} onClick={undoEdit}>{i18n("board.edit.undo")}</Btn>
             <Btn size="sm" variant="ghost" onClick={() => void restoreDefault()}>{i18n("board.edit.restore")}</Btn>
           </> : null}

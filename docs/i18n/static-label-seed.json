@@ -1,5 +1,10 @@
 {
   "messages": {
+    "state.wallpsync.archiveTooLarge": {"zh-CN": "壁纸备份最多 24 MiB，每张图片或视频最多 12 MiB。请减少壁纸库中的大文件后重新同步；当前壁纸保持原样", "en-US": "Wallpaper backups support up to 24 MiB in total and 12 MiB per image or video. Remove large items from the wallpaper library and try again. Your current wallpaper is preserved."},
+    "learn.responseUnexpected": {"zh-CN": "网络学堂暂时未返回可用数据，请稍后刷新重试。", "en-US": "Web Learning has not returned usable data. Please refresh and try again shortly."},
+    "state.wallpsync.permissionDenied": {"zh-CN": "云盘拒绝访问壁纸档案，请确认两台设备连接的是同一云盘账号，并检查该账号的资料库权限", "en-US": "Cloud access to the wallpaper backup was denied. Check that both devices use the same cloud account and that the account can access its library."},
+    "state.wallpsync.legacyLocalArchive": {"zh-CN": "这份旧备份只保存了原设备的文件位置。请在原设备更新 OneTHU 后重新同步壁纸，再到此设备恢复", "en-US": "This older backup contains file paths from the original device. Update OneTHU and upload the wallpaper again on that device, then restore it here."},
+    "state.wallpsync.changedLocally": {"zh-CN": "下载期间本机壁纸已改变，请确认当前选择后重新恢复", "en-US": "The local wallpaper changed during the download. Check your current selection, then restore again."},
     "mobile.layout.title": {
       "zh-CN": "选择手机布局",
       "en-US": "Choose your phone layout"

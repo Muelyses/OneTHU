@@ -53,13 +53,15 @@ check(oldHint.startsWith("zh:") && twoFactorMessage().startsWith("en:"), "Long-l
 
 const transport = source("lib/transport.ts");
 const explainNode = transport.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === "explainNetworkError");
-const explain = evaluate(`let lastRawError="";\n${explainNode.getText(transport)}\nexplainNetworkError;`,
-  { rawErrorText: value => String(value ?? ""), redactNetworkLog: value => value, isTauri: true });
+const formatNode = transport.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === "formatNetworkError");
+const explain = evaluate(`let lastRawError="";\n${explainNode.getText(transport)}\n${formatNode.getText(transport)}\nexplainNetworkError;`,
+  { rawErrorText: value => String(value ?? ""), redactNetworkLog: value => value, isTauri: true, loginFailureDiagnostic: () => "", explainLoginError: () => null });
 for (const language of ["zh", "en"]) {
   locale = language;
   check(explain("too-large:2097152:1048576").includes("lib.transport.fileTooLarge:2.0 MB|1.0 MB"), language + ": native size codes retain their numeric meaning");
   check(explain("会话已失效，需要重新登录").startsWith(language + ":lib.transport.reloginAdvice"), language + ": raw native session marker remains recognized");
   check(explain("HTTP 403").startsWith(language + ":lib.transport.serverRejected"), language + ": HTTP status recognition remains independent of translations");
+  check(explain("LEARN_RESPONSE_UNEXPECTED").startsWith(language + ":learn.responseUnexpected"), language + ": service response errors translate without claiming a login failure");
 }
 const wallp = source("state/wallpsync.ts");
 const directory = wallp.statements.filter(ts.isVariableStatement).flatMap(node => node.declarationList.declarations).find(node => node.name.getText(wallp) === "DIR");

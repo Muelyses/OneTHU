@@ -711,6 +711,7 @@ pub fn overlay_hide(app: AppHandle) -> Result<(), String> {
         win.hide().map_err(|e| format!("隐藏悬浮窗失败：{e}"))?;
         let _ = win.emit(OVERLAY_EVENT, serde_json::json!({ "type": "closed" }));
         log("hide（本次关闭）");
+        crate::desktop_lifecycle::overlay_hidden(&app);
         // 隐藏态下把页面刷回球态：下次 overlay_show 立刻可用（否则页面卡在 hidden 分支，
         // 窗口虽显示但什么都不渲染）。若期间又被 show 回来就放弃这次刷新。
         let w2 = win.clone();
@@ -920,12 +921,7 @@ pub fn overlay_drag_start(app: AppHandle) -> Result<(), String> {
 pub fn overlay_back_to_main(app: AppHandle) -> Result<(), String> {
     #[cfg(desktop)]
     {
-        let Some(win) = app.get_webview_window("main") else {
-            return Err("找不到主窗口（main）".into());
-        };
-        let _ = win.unminimize();
-        win.show().map_err(|e| format!("唤回主窗口失败：{e}"))?;
-        win.set_focus().map_err(|e| format!("聚焦主窗口失败：{e}"))?;
+        crate::desktop_lifecycle::activate_main(&app)?;
         log("back_to_main：用户点了「回到 OneTHU」");
         Ok(())
     }

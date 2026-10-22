@@ -52,7 +52,7 @@ try {
           check(parseXkSelectedFull(selected)[0]?.zy === 2 && parseXkSelectedFull(selected)[0]?.seq === "02", "English selected table keeps exact section and preference");
           check(parseSelectedCourses(selected)[0]?.teacher === "Example Teacher", "Display parser recognizes instructor header");
           for (const label of ["上交作业内容", "Submitted Assignment Content"]) {
-            const client = new LearnClient({ text: async url => url.includes("tijiao") ? "" : `<div class="left">${label}</div><div class="right">&lt;p&gt;Original answer&lt;/p&gt;</div><!--Homework attachments--><div class="fujian"></div>` });
+            const client = new LearnClient({ text: async url => url.includes("tijiao") ? "<html><p>Submitted assignment</p></html>" : `<div class="left">${label}</div><div class="right">&lt;p&gt;Original answer&lt;/p&gt;</div><!--Homework attachments--><div class="fujian"></div>` });
             client.applyCsrf("fixture-only");
             const detail = await client.getHomeworkPageDetail("anonymous-course", "anonymous-assignment");
             check(detail.submittedContent?.includes("Original answer"), label + ": submitted answer remains readable");

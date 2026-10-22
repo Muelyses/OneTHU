@@ -13,7 +13,7 @@
  */
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { BP, platformOf, isPhoneViewport } from "../apps/desktop/src/state/platform.ts";
+import { BP, platformOf, isPhoneViewport, touchInteractionOf } from "../apps/desktop/src/state/platform.ts";
 
 const read = (p) => readFileSync(new URL("../" + p, import.meta.url), "utf8");
 
@@ -96,4 +96,20 @@ for (const [w, h, want, label] of cases) {
 globalThis.window = realWindow;
 assert.equal(isPhoneViewport(), false, "无 window 环境不崩");
 
-console.log("双端断点：单源 " + BP.medium + "/" + BP.expanded + "；旧断点 0 处；自写宽度 matchMedia 0 处；medium 档在册；手机形态 " + cases.length + " 例全对 ✓");
+// Expanded geometry and editing capability are separate. Test Android's actual
+// spoofed UA, iPad desktop mode, and desktop machines with secondary touch input.
+const windowsUa = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/79";
+for (const [signals, coarse, expected, label] of [
+  [{ userAgent: windowsUa, platform: "Linux aarch64", maxTouchPoints: 5 }, false, true, "Android native host remains touch-safe even with a mouse"],
+  [{ userAgent: windowsUa, platform: "Linux armv8l" }, false, true, "Android native platform fallback"],
+  [{ userAgent: windowsUa, userAgentData: { platform: "Android" } }, false, true, "Android UA-CH fallback"],
+  [{ userAgent: "Mozilla/5.0 (Linux; Android 15)", platform: "Linux x86_64" }, false, true, "Android browser"],
+  [{ userAgent: "Mozilla/5.0 (Macintosh)", platform: "MacIntel", maxTouchPoints: 5 }, false, true, "iPad desktop UA with attached mouse"],
+  [{ userAgent: "Mozilla/5.0 (iPhone)", platform: "iPhone" }, false, true, "iPhone browser"],
+  [{ userAgent: windowsUa, platform: "Win32", maxTouchPoints: 5 }, true, true, "touch-first Windows tablet"],
+  [{ userAgent: windowsUa, platform: "Win32", maxTouchPoints: 5 }, false, false, "mouse-first Windows laptop"],
+  [{ platform: "MacIntel", maxTouchPoints: 0 }, false, false, "macOS desktop"],
+  [undefined, false, false, "server environment"],
+]) assert.equal(touchInteractionOf(signals, coarse), expected, label);
+
+console.log("双端断点：单源 " + BP.medium + "/" + BP.expanded + "；旧断点 0 处；自写宽度 matchMedia 0 处；medium 档在册；手机形态 " + cases.length + " 例、触摸策略 10 例全对 ✓");

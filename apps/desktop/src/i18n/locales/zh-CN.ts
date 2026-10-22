@@ -3,6 +3,7 @@ import type { LocaleDef } from "../types.js";
 const locale = {
   "label": "简体中文",
   "messages": {
+    "learn.responseUnexpected": "网络学堂暂时未返回可用数据，请稍后刷新重试。",
     "mobile.nav.fullHint": "「{name}」在完整版中使用，请在设置中切换模式。",
     "mobile.nav.fullOnly": "完整版",
     "mobile.nav.plugins": "插件功能页",
@@ -7368,6 +7369,10 @@ const locale = {
     "state.wallpaper.cdc37c08fb5b": "动态壁纸只认 mp4 / webm",
     "state.wallpaper.fa67a660d4b7": "抹茶",
     "state.wallpaper.fe4786177622": "墨",
+    "state.wallpsync.archiveTooLarge": "壁纸备份最多 24 MiB，每张图片或视频最多 12 MiB。请减少壁纸库中的大文件后重新同步；当前壁纸保持原样",
+    "state.wallpsync.permissionDenied": "云盘拒绝访问壁纸档案，请确认两台设备连接的是同一云盘账号，并检查该账号的资料库权限",
+    "state.wallpsync.legacyLocalArchive": "这份旧备份只保存了原设备的文件位置。请在原设备更新 OneTHU 后重新同步壁纸，再到此设备恢复",
+    "state.wallpsync.changedLocally": "下载期间本机壁纸已改变，请确认当前选择后重新恢复",
     "state.wallpsync.connectBeforeRestore": "云盘还没连接：先到「云盘」页连接后再恢复",
     "state.wallpsync.connectBeforeUpload": "云盘还没连接：先到「云盘」页连接后再同步",
     "state.wallpsync.invalidArchive": "云盘上的壁纸档案读不出来，请先重新同步一次",

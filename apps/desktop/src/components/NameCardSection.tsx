@@ -1,7 +1,7 @@
 import { t as i18n, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { useOrgs, orgIdentityCard } from "../state/org.js";
 import { ProfileSyncStatus } from "./ProfileSyncStatus.js";
-import { openTab } from "../state/explorer.js";
+import { openTabFromSettings as openTab } from "../state/explorer.js";
 /**
  * 通讯录与名片：我的名片、名片夹（好友 / 组织）、组织名片。
  *

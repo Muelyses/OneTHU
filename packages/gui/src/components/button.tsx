@@ -62,10 +62,9 @@ export function Btn({
   );
   const body = (
     <>
-      {icon ? <span className="og-btn-icon" aria-hidden="true">{icon}</span> : null}
+      {loading ? <span className="og-btn-spinner" aria-hidden="true" /> : icon ? <span className="og-btn-icon" aria-hidden="true">{icon}</span> : null}
       {children !== undefined && children !== null ? <span className="og-btn-label">{children}</span> : null}
       {iconRight ? <span className="og-btn-icon" aria-hidden="true">{iconRight}</span> : null}
-      {loading ? <span className="og-btn-spinner" aria-hidden="true" /> : null}
     </>
   );
   if (href && !disabled && !loading) {

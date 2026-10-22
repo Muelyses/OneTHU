@@ -198,20 +198,21 @@
 
 .og-btn.is-loading {
   pointer-events: none;
-  color: transparent;
+  cursor: progress;
 }
 
-.og-btn.is-loading > * {
-  visibility: hidden;
+.og-btn.is-loading[disabled] {
+  opacity: 1;
 }
 
 .og-btn.is-loading .og-btn-spinner {
-  visibility: visible;
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: var(--og-c-btn-on-strong, var(--og-c-btn-ink));
+  flex: 0 0 auto;
+  width: var(--og-icon-sm);
+  height: var(--og-icon-sm);
+  border: var(--og-geo-xs) solid color-mix(in srgb, currentColor 25%, transparent);
+  border-top-color: currentColor;
+  border-radius: var(--og-radius-full);
+  animation: og-spin 720ms linear infinite;
 }
 
 .og-btn.is-selected {

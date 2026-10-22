@@ -6,6 +6,8 @@ import { showToast } from "../state/toast.js";
 import { TourIllustration } from "./TourIllustration.js";
 import { PrivacyNotice, privacyBilingual } from "./PrivacyNotice.js";
 import { privacyConsent, savePrivacyConsent } from "../state/privacyConsent.js";
+import { MobileLayoutChoice } from "./MobileLayoutChoice.js";
+import { useIsPhone } from "../state/phoneSheets.js";
 import { OnboardingLanguageStep, onboardingLanguagePrompt } from "./OnboardingLanguageStep.js";
 import { ExperienceModePicker, MODE_OPTIONS } from "./ExperienceModePicker.js";
 import { experienceMode, setExperienceMode, useExperienceMode, type ExperienceMode } from "../state/experienceMode.js";
@@ -35,6 +37,9 @@ export function OnboardingTour(){
  const [open,setOpen]=useState(shouldStart);
  const [chosen,setChosen]=useState<ExperienceMode>(experienceMode);
  const [step,setStep]=useState(-3);
+ const phone=useIsPhone();
+ const [choosingLayout,setChoosingLayout]=useState(false);
+ const layoutStep=choosingLayout&&phone&&chosen!=="simple";
  const [consentDraft,setConsentDraft]=useState(privacyConsent);
  const [consentBusy,setConsentBusy]=useState(false);
  const [consentError,setConsentError]=useState("");
@@ -47,17 +52,17 @@ export function OnboardingTour(){
  const lessons=lessonsForMode(chosen);
  const privacy=step===-3;
  const language=step===-2;
- const intro=step===-1;
+ const intro=step===-1&&!layoutStep;
  const last=step===lessons.length&&!extra;
  const lesson=extra??lessons[step];
- const phase=privacy?"privacy":language?"language":intro?"intro":last?"ready":"lesson";
- const scene=privacy?"":language?"":intro?`mode-${chosen}`:last?"ready":lesson!.id;
+ const phase=privacy?"privacy":language?"language":layoutStep?"layout":intro?"intro":last?"ready":"lesson";
+ const scene=privacy?"":language?"":layoutStep?"":intro?`mode-${chosen}`:last?"ready":lesson!.id;
  const modeName=MODE_OPTIONS.find(m=>m.id===chosen)!.name;
- const move=(next:number)=>{setDirection(next<step?"back":"next");setStep(Math.max(-3,Math.min(lessons.length,next)));setExtra(null);setConnect(false);};
+ const move=(next:number)=>{setChoosingLayout(false);setDirection(next<step?"back":"next");setStep(Math.max(-3,Math.min(lessons.length,next)));setExtra(null);setConnect(false);};
  const finish=()=>{try{localStorage.setItem(KEY,"1");}catch{}endPracticePanels();setOpen(false);setPractice(null);};
  useOverlayBack("onboarding-tour",open&&!practice&&!privacy,finish);
  useEffect(()=>{
-  const replay=()=>{if(!closePracticePanels()){showToast(i18nMsg("components.onboardingtour.7d38695ada28"));return;}setChosen(experienceMode());setStep(-3);setConsentDraft(privacyConsent());setConsentError("");setExtra(null);setPractice(null);setConnect(false);setDirection("next");setMcpOn(mcpServerEnabled());setOpen(true);};
+  const replay=()=>{if(!closePracticePanels()){showToast(i18nMsg("components.onboardingtour.7d38695ada28"));return;}setChosen(experienceMode());setStep(-3);setChoosingLayout(false);setConsentDraft(privacyConsent());setConsentError("");setExtra(null);setPractice(null);setConnect(false);setDirection("next");setMcpOn(mcpServerEnabled());setOpen(true);};
   window.addEventListener(REPLAY,replay);
   return()=>window.removeEventListener(REPLAY,replay);
  },[]);
@@ -81,7 +86,7 @@ export function OnboardingTour(){
    if(item.right>rail.right)chapters.scrollLeft+=item.right-rail.right;
    else if(item.left<rail.left)chapters.scrollLeft-=rail.left-item.left;
   }
- },[step,extra,practice,open]);
+ },[step,extra,practice,open,layoutStep]);
  defineOnboardingScopes();
  const startPractice=(item:Lesson,target:TourTarget|undefined=item.target)=>{
   if(!target)return;
@@ -96,18 +101,18 @@ export function OnboardingTour(){
  }} onFinish={finish}/>:null}
  <Modal open={open&&!practice} onClose={()=>{if(!privacy)finish();}} maskClose={false} closeButton={false} size="lg" className={`experience-tour is-${phase}`} scope={TOUR_CARD_SCOPE} aria-label={i18n("components.onboardingtour.8dc51de059fe")} foot={<div className="tour-footer">
   {privacy?<Btn variant="solid" className="tour-next tour-privacy-continue" disabled={!consentDraft.acknowledged||consentBusy} onClick={()=>{setConsentError("");setConsentBusy(true);void savePrivacyConsent(consentDraft).then(()=>{setChosen(experienceMode());move(-2);}).catch(e=>setConsentError(/privacy_consent|unknown command|not found/i.test(String(e))?privacyBilingual("nativeUpdateRequired"):privacyBilingual("saveFailed"))).finally(()=>setConsentBusy(false));}}>{privacyBilingual("continue")}</Btn>:language?<Btn variant="solid" className="tour-next tour-language-continue" onClick={()=>{setLocale(uiLocale);move(-1);}}>{onboardingLanguagePrompt("continue")}</Btn>:<>
-  <Btn variant="outline" disabled={language} onClick={()=>{if(extra){setExtra(null);setDirection("back");}else move(step-1);}}>{extra?i18n("components.onboardingtour.bfa8ac132dd5"):i18n("components.onboardingtour.da336fdc0dbd")}</Btn>
+  <Btn variant="outline" disabled={language} onClick={()=>{if(layoutStep){setChoosingLayout(false);}else if(extra){setExtra(null);setDirection("back");}else if(step===0&&phone&&chosen!=="simple"){move(-1);setChoosingLayout(true);}else move(step-1);}}>{extra?i18n("components.onboardingtour.bfa8ac132dd5"):i18n("components.onboardingtour.da336fdc0dbd")}</Btn>
   <Btn variant="ghost" className="tour-skip" onClick={finish}>{i18n("components.onboardingtour.d69e80a19484")}</Btn>
-  {!extra?<Btn variant="solid" className="tour-next" onClick={()=>{if(intro)setExperienceMode(chosen);if(last)finish();else move(step+1);}}>{intro?i18n("components.onboardingtour.aa4142e144b8"):last?i18n("components.onboardingtour.715ee9dc842f"):i18n("components.onboardingtour.acfc4e74a650")}</Btn>:<Btn variant="solid" className="tour-next" onClick={finish}>{i18n("components.onboardingtour.715ee9dc842f")}</Btn>}
+  {!extra?<Btn variant="solid" className="tour-next" onClick={()=>{if(intro){setExperienceMode(chosen);if(phone&&chosen!=="simple"){setChoosingLayout(true);return;}}if(layoutStep){setChoosingLayout(false);move(0);}else if(last)finish();else move(step+1);}}>{intro?i18n("components.onboardingtour.aa4142e144b8"):last?i18n("components.onboardingtour.715ee9dc842f"):i18n("components.onboardingtour.acfc4e74a650")}</Btn>:<Btn variant="solid" className="tour-next" onClick={finish}>{i18n("components.onboardingtour.715ee9dc842f")}</Btn>}
   </>}
  </div>}>
  <div ref={body} className="tour-shell" data-tour-phase={phase} data-tour-mode={chosen} data-lesson={lesson?.id} data-tour-direction={direction}>
-  <header className="tour-header"><span className="tour-wordmark">OneTHU{!privacy&&!language?<span>{i18n("components.onboardingtour.ac794a015ee3")}</span>:null}</span><span className="tour-counter">{privacy?privacyBilingual("step"):language?onboardingLanguagePrompt("step"):intro?i18n("components.onboardingtour.ccc045ffd9b7"):extra?i18n("components.onboardingtour.a8ab98831f5c"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`}</span></header>
-  {!privacy&&!language&&!intro?<nav className="tour-chapters" aria-label={i18n("components.onboardingtour.069d9b73883f")}>
+  <header className="tour-header"><span className="tour-wordmark">OneTHU{!privacy&&!language?<span>{i18n("components.onboardingtour.ac794a015ee3")}</span>:null}</span><span className="tour-counter">{privacy?privacyBilingual("step"):language?onboardingLanguagePrompt("step"):layoutStep?i18n("mobile.layout.title"):intro?i18n("components.onboardingtour.ccc045ffd9b7"):extra?i18n("components.onboardingtour.a8ab98831f5c"):`${modeName} · ${Math.min(step+1,lessons.length)} / ${lessons.length}`}</span></header>
+  {!privacy&&!language&&!intro&&!layoutStep?<nav className="tour-chapters" aria-label={i18n("components.onboardingtour.069d9b73883f")}>
    {lessons.map((item,i)=><Btn key={item.id} variant="ghost" aria-label={i18n("components.onboardingtour.bfd00f0d13de", { value: String(CHAPTERS[item.id]) })} aria-current={!last&&!extra&&i===step?"step":undefined} onClick={()=>move(i)}><span className="tour-chapter-index">{i<step?"✓":i+1}</span>{CHAPTERS[item.id]}</Btn>)}
    <Btn variant="ghost" aria-label={i18n("components.onboardingtour.0e633d7479ee")} aria-current={last?"step":undefined} onClick={()=>move(lessons.length)}>{i18n("components.onboardingtour.c0b3fbff51cc")}</Btn>
   </nav>:null}
-  {privacy?<><PrivacyNotice value={consentDraft} onChange={setConsentDraft}/>{consentError?<p role="alert" className="privacy-save-error">{consentError}</p>:null}</>:language?<OnboardingLanguageStep/>:<div className="tour-layout">
+  {privacy?<><PrivacyNotice value={consentDraft} onChange={setConsentDraft}/>{consentError?<p role="alert" className="privacy-save-error">{consentError}</p>:null}</>:language?<OnboardingLanguageStep/>:layoutStep?<MobileLayoutChoice mode={chosen}/>:<div className="tour-layout">
    <div className="tour-visual"><TourIllustration lesson={scene} mode={chosen} playing={open&&!practice}/>{intro||last?<div className="tour-visual-note">{intro?MODE_INTRO[chosen]:i18n("components.onboardingtour.f1804844a899")}</div>:null}</div>
    <div className="tour-copy">
     {intro?<>
@@ -130,7 +135,7 @@ export function OnboardingTour(){
    </div>
   </div>
   }
-  <span className="tour-announcement" aria-live="polite" aria-atomic="true">{privacy?privacyBilingual("title"):language?onboardingLanguagePrompt("title"):intro?i18n("components.onboardingtour.fa24c12c5962"):last?i18n("components.onboardingtour.1ad7fe0f57e3"):lesson!.title}</span>
+  <span className="tour-announcement" aria-live="polite" aria-atomic="true">{privacy?privacyBilingual("title"):language?onboardingLanguagePrompt("title"):layoutStep?i18n("mobile.layout.title"):intro?i18n("components.onboardingtour.fa24c12c5962"):last?i18n("components.onboardingtour.1ad7fe0f57e3"):lesson!.title}</span>
  </div>
  </Modal>
  </>;

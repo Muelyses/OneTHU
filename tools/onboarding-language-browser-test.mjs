@@ -4,7 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { closeTestBrowser, advanceOnboardingPrivacy } from './lib/onboarding-browser-steps.mjs';
+import { closeTestBrowser, advanceOnboardingPrivacy, advanceOnboardingLayout } from './lib/onboarding-browser-steps.mjs';
 const base = process.env.ONETHU_TEST_URL ?? 'http://127.0.0.1:5180';
 const browser = await chromium.launch({
   executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -97,6 +97,7 @@ try {
       check(!/[\u3400-\u9fff]/u.test(await tour(page).locator('.tour-copy').innerText()),'Mode choice copy follows English');
       check(!/[\u3400-\u9fff]/u.test(await tour(page).locator('.tour-visual-note').innerText()),'Mode illustration caption follows English');
       await tour(page).getByRole('button',{name:'Start with this mode',exact:true}).click();
+      await advanceOnboardingLayout(page);
       await tour(page).locator('[data-tour-phase="lesson"]').waitFor();
       check(!/[\u3400-\u9fff]/u.test(await tour(page).locator('.tour-copy').innerText()),'Mode-specific lesson follows English');
       check(!/[\u3400-\u9fff]/u.test(await tour(page).locator('.tour-chapters').innerText()),'All chapter navigation follows English');
@@ -121,6 +122,7 @@ try {
   await tour(page).getByRole('heading',{name:'FR · How would you like to use OneTHU?',exact:true}).waitFor();checks++;
   await tour(page).getByRole('button',{name:'FR · Full mode',exact:true}).click();
   await tour(page).getByRole('button',{name:'FR · Start with this mode',exact:true}).click();
+  await advanceOnboardingLayout(page);
   await tour(page).getByRole('heading',{name:'FR · Search, OH and plugins',exact:true}).waitFor();checks++;
   check((await tour(page).locator('.tour-chapters').innerText()).includes('FR · Board'),'Third-language chapters use the new dictionary');
   check(errors.length===0,errors.join('; '));

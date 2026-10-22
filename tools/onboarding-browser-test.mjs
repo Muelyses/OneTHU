@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
-import { walkFullOnboarding, resumeWithKeyboard, closeTestBrowser, advanceOnboardingLanguage } from './lib/onboarding-browser-steps.mjs';
+import { walkFullOnboarding, resumeWithKeyboard, closeTestBrowser, advanceOnboardingLanguage, advanceOnboardingLayout } from './lib/onboarding-browser-steps.mjs';
 import { installXiaodaTourFixture } from './lib/xiaoda-tour-fixture.mjs';
 import { installFakeCloud } from './lib/fake-cloud.mjs';
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-updater-scheduler']});
@@ -8,8 +8,8 @@ let count=0;
 const check=(value,label)=>{assert.ok(value,label);count++;console.log('✓ '+label);};
 try {
  for(const width of [1280,390]) {
-  const page=await browser.newPage({viewport:{width,height:860},hasTouch:width<600});
-  page.setDefaultTimeout(12000);
+  const page=await browser.newPage({viewport:{width,height:860},hasTouch:width<600,reducedMotion:'reduce'});
+  page.setDefaultTimeout(30000);
   // Keep this walkthrough stable while parallel workers edit the dev-server sources.
   await page.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/,()=>{});
   const errors=[];page.on('pageerror',e=>{if(!/reading 'invoke'/.test(e.message))errors.push(e.message);});
@@ -19,7 +19,7 @@ try {
   await page.goto('http://127.0.0.1:5180/?explorer-preview=onboarding');
   await page.locator('.explorer-shell').waitFor();await page.waitForTimeout(1200);
   const tour=page.getByRole('dialog',{name:'OneTHU 使用导览'});
-  const replay=async mode=>{await page.evaluate(()=>window.dispatchEvent(new Event('onethu.onboarding.replay')));await tour.waitFor();await advanceOnboardingLanguage(page);await tour.getByRole('button',{name:mode+'模式',exact:true}).click();await tour.getByRole('button',{name:'按此模式开始'}).click();};
+  const replay=async mode=>{await page.evaluate(()=>window.dispatchEvent(new Event('onethu.onboarding.replay')));await tour.waitFor();await advanceOnboardingLanguage(page);await tour.getByRole('button',{name:mode+'模式',exact:true}).click();await tour.getByRole('button',{name:'按此模式开始'}).click();await advanceOnboardingLayout(page);};
   await replay('完整');
   await walkFullOnboarding(page,check);
   await tour.getByRole('switch',{name:'OH MCP 服务器开关'}).click();

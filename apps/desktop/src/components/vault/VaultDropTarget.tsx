@@ -140,7 +140,7 @@ function VaultButton(): ReactNode {
   const openVaultPage = (): void => {
     anchor.current?.querySelector("button")?.focus(); setMenu(false); openVaultSheet();
   };
-  const edge = useVaultAnchor(anchor, () => setMenu(false));
+  const edge = useVaultAnchor(anchor, () => setMenu(false), drag.active || menu);
   const closeMenu = (): void => { setMenu(false); anchor.current?.querySelector("button")?.focus(); };
   useOverlayBack("vault-anchor-position", menu, closeMenu);
   useEffect(() => { if (drag.active) setMenu(false); }, [drag.active]);
@@ -210,7 +210,7 @@ function VaultButton(): ReactNode {
   return (
     <>
       <span ref={edge.safe} className="vault-safe-area" aria-hidden="true" />
-      <div ref={anchor} className={"vault-floating-anchor vault-anchor is-" + edge.placement.side + (edge.ready ? " is-ready" : "") + (edge.moving ? " is-moving" : "") + (drag.active ? " is-transfer" : "") + (drag.target === "vault" ? " is-hover" : "")} style={{ left: edge.placement.left, top: edge.placement.top }}>
+      <div ref={anchor} data-vault-collapsed={edge.collapsed ? "true" : "false"} className={"vault-floating-anchor vault-anchor is-" + edge.placement.side + (edge.collapsed ? " is-collapsed" : "") + (edge.ready ? " is-ready" : "") + (edge.moving ? " is-moving" : "") + (drag.active ? " is-transfer" : "") + (drag.target === "vault" ? " is-hover" : "")} style={{ left: edge.placement.left, top: edge.placement.top }}>
         <Btn
           className="vault-box-button"
           variant="solid"

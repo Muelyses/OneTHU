@@ -17,6 +17,14 @@ export async function advanceOnboardingLanguage(page) {
   await page.locator('.experience-tour [data-tour-phase="intro"]').waitFor();
 }
 
+/** Mobile Full/Practical add a layout choice after confirming the mode. */
+export async function advanceOnboardingLayout(page) {
+  const phase = page.locator('.experience-tour .tour-shell:is([data-tour-phase="layout"],[data-tour-phase="lesson"])');
+  await phase.waitFor();
+  if (await phase.getAttribute('data-tour-phase') === 'layout') await page.locator('.experience-tour .tour-next').click();
+  await page.locator('.experience-tour [data-tour-phase="lesson"]').waitFor();
+}
+
 /** Shared real-button walkthrough: assertions cover destinations, not source-code strings. */
 export async function resumeWithKeyboard(page, panel, check, label) {
   const resume = panel.getByRole('button', { name: '继续导览', exact: true });

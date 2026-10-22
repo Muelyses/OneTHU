@@ -460,7 +460,17 @@ object OverlayViews {
 
         val backBtn = chip("回到 OneTHU")
         val speakBtn = chip("朗读 关")
-        val collapse = chip("收起")
+        val collapse = chip("⌄ 收起").apply {
+            setTextColor(fogCore(dark))
+            typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+            textSize = 13f
+            minWidth = dp(ctx, 76)
+            contentDescription = "收起"
+            background = GradientDrawable().apply {
+                cornerRadius = dp(ctx, 22).toFloat()
+                setColor(ink(dark))
+            }
+        }
         headRow.addView(
             backBtn,
             LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, CHIP_H_DP)),
@@ -468,7 +478,7 @@ object OverlayViews {
         val sbLp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, CHIP_H_DP))
         sbLp.marginStart = dp(ctx, CHIP_GAP_DP)
         headRow.addView(speakBtn, sbLp)
-        val clp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, CHIP_H_DP))
+        val clp = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(ctx, 44))
         clp.marginStart = dp(ctx, CHIP_GAP_DP)
         headRow.addView(collapse, clp)
         content.addView(

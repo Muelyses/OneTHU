@@ -15,7 +15,7 @@ type Press<Position> = {
   moved: boolean;
 };
 
-/** Reuses HardRefreshButton's original down/move/up behavior without changing that control.
+/** Shares HardRefreshButton's click slop and down/move/up behavior.
  * Do not add WebView isPrimary/buttons/capture-loss cancellation gates here. */
 export function useFloatingButtonDrag<Position>(options: FloatingButtonDragOptions<Position>) {
   const latest = useRef(options);
@@ -31,7 +31,10 @@ export function useFloatingButtonDrag<Position>(options: FloatingButtonDragOptio
     const active = press.current;
     if (!active) return;
     const dx = event.clientX - active.x, dy = event.clientY - active.y;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) active.moved = true;
+    if (!active.moved) {
+      if (Math.hypot(dx, dy) < (event.pointerType === "touch" ? 12 : 10)) return;
+      active.moved = true;
+    }
     position.current = latest.current.move(active.start, dx, dy, event.currentTarget);
     latest.current.onChange(position.current);
   };

@@ -151,6 +151,7 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
 
     // ── 界面状态 ──
     private var messagesJson = "[]"
+    private var collapseText = "收起"
     private var jsTranscript = ""
     private var voicePartial = ""
     private var voiceLevel = 0f
@@ -575,6 +576,12 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
             return
         }
         val theme = o.optString("theme", "")
+        val collapseLabel = o.optString("collapseLabel", "").trim()
+        if (collapseLabel.isNotEmpty()) {
+            collapseText = collapseLabel
+            panel?.collapseBtn?.text = "⌄ $collapseText"
+            panel?.collapseBtn?.contentDescription = collapseText
+        }
         if (theme == "dark" || theme == "light") {
             val wantDark = theme == "dark"
             if (wantDark != dark) {
@@ -930,6 +937,8 @@ class OverlayWindows(private val ctx: Context, private val host: Host) : Overlay
     private fun ensurePanel(): PanelHolder {
         panel?.let { return it }
         val p = OverlayViews.buildPanel(themed, dark)
+        p.collapseBtn.text = "⌄ $collapseText"
+        p.collapseBtn.contentDescription = collapseText
         wirePanel(p)
         panel = p
         panelLp = panelParams()

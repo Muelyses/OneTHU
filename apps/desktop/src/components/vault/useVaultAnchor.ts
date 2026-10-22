@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { useFloatingButtonDrag } from "../useFloatingButtonDrag.js";
 import { hasCoarsePointer, isPhoneViewport } from "../../state/platform.js";
-import { clamp, DEFAULT_VAULT_ANCHOR, readVaultAnchor, resolveVaultAnchor, saveVaultAnchor, type AnchorRect, type VaultAnchorPreference, type VaultAnchorProfile } from "../../state/vaultAnchor.js";
+import { clamp, commitVaultAnchor, DEFAULT_VAULT_ANCHOR, readVaultAnchor, resolveVaultAnchor, saveVaultAnchor, type AnchorRect, type VaultAnchorPreference, type VaultAnchorProfile } from "../../state/vaultAnchor.js";
 
 export const VAULT_OBSTACLES = ".explorer-topbar, .ex-bbar, .onego-bookmarks, .oneshot, .board-viewport-tools, .hard-refresh-fab, .top-fab, [data-oh-drop], .dock-panel, .ex-rail";
 type Placement = { left: number; top: number; side: "left" | "right" };
@@ -25,7 +25,7 @@ export function vaultViewport(safe: HTMLElement | null): AnchorRect {
 }
 
 /** Vault positioning only; pointer behavior is shared with the hard-refresh button. */
-export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, closeMenu: () => void) {
+export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, closeMenu: () => void, receiving = false) {
   const safe = useRef<HTMLSpanElement>(null);
   const [profile, setProfile] = useState(profileNow);
   const [preference, setPreference] = useState<VaultAnchorPreference>(() => readVaultAnchor(profile));
@@ -38,7 +38,8 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, closeMe
       const bounds = vaultViewport(safe.current);
       const width = anchor.current?.offsetWidth ?? button.offsetWidth;
       const height = anchor.current?.offsetHeight ?? button.offsetHeight;
-      const left = clamp(start.left + dx, bounds.left, bounds.right - width);
+      const reveal = profile === "phone" && preference.collapsed ? Math.min(width / 2, Math.max(0, width - 28)) : 0;
+      const left = clamp(start.left + dx, bounds.left - reveal, bounds.right - width + reveal);
       const top = clamp(start.top + dy, bounds.top, bounds.bottom - height);
       return { left, top, side: left + width / 2 < (bounds.left + bounds.right) / 2 ? "left" : "right" };
     },
@@ -46,11 +47,7 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, closeMe
     onCommit: next => {
       const bounds = vaultViewport(safe.current);
       const width = anchor.current?.offsetWidth ?? 0, height = anchor.current?.offsetHeight ?? 0;
-      const preference: VaultAnchorPreference = {
-        side: next.side,
-        xRatio: clamp((next.left + width / 2 - bounds.left) / Math.max(1, bounds.right - bounds.left), 0, 1),
-        ratio: clamp((next.top + height / 2 - bounds.top) / Math.max(1, bounds.bottom - bounds.top), 0, 1),
-      };
+      const preference = commitVaultAnchor(profile, next, bounds, width, height);
       saveVaultAnchor(profile, preference); setPreference(preference);
     },
     onPress: closeMenu,
@@ -65,7 +62,7 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, closeMe
       const nextProfile = profileNow();
       if (nextProfile !== profile) { setProfile(nextProfile); setPreference(readVaultAnchor(nextProfile)); return; }
       const rect = anchor.current.getBoundingClientRect();
-      const next = resolveVaultAnchor(preference, vaultViewport(safe.current), rect.width, rect.height, visibleVaultObstacles(), 8);
+      const next = resolveVaultAnchor({ ...preference, collapsed: profile === "phone" && preference.collapsed && !receiving }, vaultViewport(safe.current), rect.width, rect.height, visibleVaultObstacles(), 8);
       setPlacement(old => old.left === next.left && old.top === next.top && old.side === next.side ? old : next); setReady(true);
     };
     const schedule = (): void => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
@@ -80,7 +77,7 @@ export function useVaultAnchor(anchor: RefObject<HTMLDivElement | null>, closeMe
     measure(); window.addEventListener("resize", schedule); window.addEventListener("scroll", schedule, true);
     window.visualViewport?.addEventListener("resize", schedule); window.visualViewport?.addEventListener("scroll", schedule);
     return () => { cancelAnimationFrame(frame); resize.disconnect(); mutation.disconnect(); window.removeEventListener("resize", schedule); window.removeEventListener("scroll", schedule, true); window.visualViewport?.removeEventListener("resize", schedule); window.visualViewport?.removeEventListener("scroll", schedule); };
-  }, [profile, preference, anchor, pressedRef]);
+  }, [profile, preference, anchor, pressedRef, receiving]);
   const reset = (): void => { const next = { ...DEFAULT_VAULT_ANCHOR }; saveVaultAnchor(profile, next); setPreference(next); };
-  return { ...floating, safe, placement, ready, moving: floating.dragging, reset };
+  return { ...floating, safe, placement, ready, moving: floating.dragging, collapsed: profile === "phone" && preference.collapsed && !receiving && !floating.dragging, reset };
 }

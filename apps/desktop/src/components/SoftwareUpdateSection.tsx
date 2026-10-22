@@ -17,7 +17,7 @@ import { Input } from "@onethu/gui";
  * 挂载：`<SoftwareUpdateSection />`（设置 → 关于）。不传 props 即官方双源；
  * 联调时可用 `customManifestUrl` 指向一份 mock 清单。
  */
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { formatSize } from "../lib/attach.js";
 import { confirmOk } from "../lib/confirm.js";
 import { currentVersion, dismissTag, isDismissed } from "../lib/update.js";
@@ -47,16 +47,31 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
   const [dismissed, setDismissed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [customUrl, setCustomUrl] = useState("");
+  const checkController = useRef<AbortController | null>(null);
+  const checkSequence = useRef(0);
+  const [checkingSource, setCheckingSource] = useState("");
+  useEffect(() => () => { checkSequence.current++; checkController.current?.abort(); }, []);
   const version = currentVersion();
   const plat = platformKey();
 
   const check = useCallback(async (): Promise<void> => {
+    if (checkController.current) return;
+    const controller = new AbortController();
+    checkController.current = controller;
+    const sequence = ++checkSequence.current;
     setBusy(true);
     setPhase("checking");
     setErr("");
     setMsg("");
     setProgress(null);
-    const r = await checkForUpdate({ customManifestUrl: (customUrl || customManifestUrl || "").trim() || undefined });
+    setRes(null);
+    try {
+    const r = await checkForUpdate({
+      customManifestUrl: (customUrl || customManifestUrl || "").trim() || undefined,
+      signal: controller.signal,
+      onSource: source => { if (checkSequence.current === sequence) setCheckingSource(SOURCE_LABEL[source]); },
+    });
+    if (checkSequence.current !== sequence) return;
     setRes(r);
     setBusy(false);
     setCheckedAt(Date.now());
@@ -73,7 +88,20 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
       setPhase("latest");
       setMsg("");
     }
+    } catch (error) {
+      if (checkSequence.current !== sequence) return;
+      setPhase("error");
+      setErr(error instanceof Error ? error.message : String(error));
+    } finally {
+      if (checkSequence.current === sequence) { setBusy(false); checkController.current = null; }
+    }
   }, [customManifestUrl, customUrl]);
+
+  const cancelCheck = (): void => {
+    checkSequence.current++;
+    checkController.current?.abort(); checkController.current = null;
+    setBusy(false); setPhase("idle"); setMsg(i18n("update.checkCancelled"));
+  };
 
   /** 下载 + 拉起安装页（下载完自动打开安装器；安卓只拉起确认页） */
   const downloadAndInstall = useCallback(async (): Promise<void> => {
@@ -140,8 +168,9 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <Btn variant="solid" tone="brand" loading={phase === "checking"} disabled={busy} onClick={() => void check()}>
-          {phase === "checking" ? i18n("components.softwareupdatesection.fb11aa6f2982") : i18n("components.softwareupdatesection.7f68ebad19ba")}
+          {phase === "checking" ? i18n("update.checkingSource", { source: checkingSource }) : i18n("components.softwareupdatesection.7f68ebad19ba")}
         </Btn>
+        {phase === "checking" ? <Btn variant="outline" onClick={cancelCheck}>{i18n("common.cancel")}</Btn> : null}
         {phase === "available" || (phase === "error" && res?.ok && res.hasUpdate) ? (
           <Btn variant="outline" disabled={busy} onClick={() => void downloadAndInstall()}>
             {phase === "error" ? i18n("components.softwareupdatesection.ea0add721b8e") : i18n("components.softwareupdatesection.ac69f68b7010")}

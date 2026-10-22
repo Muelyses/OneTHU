@@ -1,5 +1,73 @@
 {
   "messages": {
+    "mobile.layout.title": {
+      "zh-CN": "选择手机布局",
+      "en-US": "Choose your phone layout"
+    },
+    "mobile.layout.hint": {
+      "zh-CN": "用你顺手的方式打开常用功能。",
+      "en-US": "Choose how you reach your favorite features."
+    },
+    "mobile.layout.bottom": {
+      "zh-CN": "底部快捷入口",
+      "en-US": "Bottom shortcuts"
+    },
+    "mobile.layout.bottomHint": {
+      "zh-CN": "五个入口横向排列，单手快速切换。",
+      "en-US": "Five shortcuts across the bottom for quick switching."
+    },
+    "mobile.layout.side": {
+      "zh-CN": "侧边导航",
+      "en-US": "Side navigation"
+    },
+    "mobile.layout.sideHint": {
+      "zh-CN": "常用入口竖向排列，为内容留出纵向空间。",
+      "en-US": "Vertical shortcuts leave more room above and below your content."
+    },
+    "mobile.layout.later": {
+      "zh-CN": "之后可在「外观与布局」中更改，完整与实用模式分别记住选择。",
+      "en-US": "Change this later in Appearance & layout. Full and Practical remember separate choices."
+    },
+    "overlay.collapse": {
+      "zh-CN": "收起悬浮窗",
+      "en-US": "Collapse OH"
+    },
+    "board.edit.undo": {
+      "zh-CN": "撤销上一步",
+      "en-US": "Undo"
+    },
+    "board.edit.restore": {
+      "zh-CN": "恢复默认",
+      "en-US": "Restore defaults"
+    },
+    "board.edit.undone": {
+      "zh-CN": "已撤销上一步",
+      "en-US": "Last change undone"
+    },
+    "board.edit.restored": {
+      "zh-CN": "已恢复默认，可撤销此操作",
+      "en-US": "Defaults restored. You can undo this change."
+    },
+    "board.edit.restoreHomeConfirm": {
+      "zh-CN": "恢复首页默认组件与布局？当前布局可以通过“撤销上一步”找回。",
+      "en-US": "Restore the default Home widgets and layout? Undo can bring back your current layout."
+    },
+    "board.edit.restoreBoardConfirm": {
+      "zh-CN": "将此白板恢复为空白？当前组件可以通过“撤销上一步”找回。",
+      "en-US": "Restore this board to an empty board? Undo can bring back its current widgets."
+    },
+    "update.sourceTimeout": {
+      "zh-CN": "{source} 响应超时",
+      "en-US": "{source} timed out"
+    },
+    "update.checkCancelled": {
+      "zh-CN": "已取消检查，可以重新检查。",
+      "en-US": "Check cancelled. You can try again."
+    },
+    "update.checkingSource": {
+      "zh-CN": "正在检查 {source}…",
+      "en-US": "Checking {source}…"
+    },
     "schedule.secondary.refreshFailed": {
       "zh-CN": "二级课表暂未刷新，已显示其他课程。可在日程设置中重试。",
       "en-US": "Secondary courses could not be refreshed. Other courses are shown. Retry in Schedule settings."

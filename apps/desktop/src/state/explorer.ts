@@ -443,6 +443,12 @@ export function openTab(page: Page, params?: LearnNav | null, opts?: OpenTabOpti
   return tab.id;
 }
 
+/** Settings actions that lead to a page reveal that page immediately. */
+export function openTabFromSettings(...args: Parameters<typeof openTab>): ReturnType<typeof openTab> {
+  closeSettings();
+  return openTab(...args);
+}
+
 /** 复制当前标签页（顶栏「复制」按钮 / 标签右键 / 页面右键-长按共用）：
  *  一级二级三级页都能复制成独立实例，新实例聚焦。 */
 export function duplicateTab(id: string): string {

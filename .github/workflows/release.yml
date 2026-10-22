@@ -79,6 +79,12 @@ jobs:
           node tools/secondary-schedule-test.mjs
           node --import ./tools/ts-resolve-register.mjs tools/secondary-anchor-test.mjs
           node tools/system-calendar-state-test.mjs
+      - name: Check mobile interaction state
+        run: |
+          node --import ./tools/ts-resolve-register.mjs tools/mobile-layout-test.mjs
+          node tools/update-check-lifecycle-test.mjs
+          node --import ./tools/ts-resolve-register.mjs tools/board-undo-test.mjs
+          node --import ./tools/ts-resolve-register.mjs tools/vault-docking-test.mjs
       # sidecar 必须在目标平台现场构建（仓库不带任何架构的二进制；
       # 旧版 Windows 安装包曾打进 mac 的 Mach-O → 插件宿主拉起必死）
       - name: Build harness sidecar (host-native)

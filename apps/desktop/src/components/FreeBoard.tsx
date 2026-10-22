@@ -67,6 +67,7 @@ import { useIsPhone, useSheetSnap } from "../state/phoneSheets.js";
 import { PhoneSheetGrip, useSheetDrag } from "./explorer/PhoneSheet.js";
 import { useLearnData } from "../state/data.js";
 import { IconPen, IconPlus, IconTrash, IconX } from "./Icons.js";
+import { confirmOk } from "../lib/confirm.js";
 import { fitTarget } from "../state/boardFit.js";
 import {
   boardViewKey,
@@ -352,7 +353,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
     return () => window.removeEventListener("resize", on);
   }, []);
   const phonePortrait = phoneUi && !landscape;
-  /* 手机竖屏的缩放单独一份（自由摆放首次默认 500%，不能把电脑首页也跟着放大）；横屏与电脑共用视图。 */
+  /* 手机竖屏缩放独立保存，首次按视口适配；编辑开关只控制编辑权限。 */
   const viewKey = boardViewKey(boardId, orientation) + (phonePortrait ? "|phone" : "");
   const view = useSyncExternalStore(subscribeView, () => readBoardView(viewKey), () => readBoardView(viewKey));
   const viewRef = useRef<BoardView>(view);
@@ -382,7 +383,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       const next = !prev;
       try { localStorage.setItem(PHONE_CANVAS_KEY, next ? "1" : "0"); } catch { /* 配额满：仅本次生效 */ }
       if (next) {
-        if (!hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
+        if (!hasSavedView(viewKey)) setBoardView(viewKey, { z: 1 });
         window.setTimeout(() => sayRef.current(i18n("components.freeboard.472cc80df106")), 30);
       } else {
         sayRef.current(i18n("components.freeboard.dbd17f63d721"));
@@ -647,9 +648,6 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const resetView = useCallback((): void => {
     setZoomRef.current(1);
   }, []);
-  useEffect(() => {
-    if (canEdit && !compact && phonePortrait && phoneCanvas && !hasSavedView(viewKey)) setBoardView(viewKey, { z: 5 });
-  }, [canEdit, compact, phonePortrait, phoneCanvas, viewKey]);
 
   useCanvasProbeImpl(viewKey, hostRef); // 临时探针（仅 dev）：定时上报，见函数头注释
 
@@ -821,7 +819,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       openItemMenu(it, sx, sy);
     }, LONG_PRESS_MS);
     /* 拖动即浮到与自己重叠的那簇之上（不惊动无关组件的图层序） */
-    if (!locked) ops.raise(id);
+    if (!locked) ops.raise(id, true);
     const orig: Rect = { x: it.x, y: it.y, w: it.w, h: it.h };
     const m: string = mode; // string 别名：避免 TS 对字面量联合做过强收窄
     const onMove = (ev: PointerEvent): void => {
@@ -898,6 +896,20 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       resetLayoutView();
       setTplOpen(false);
       say(i18n("components.freeboard.46090fa0d5a2") + tpl.name);
+    }
+  };
+
+  const undoEdit = (): void => {
+    if (!canEditRef.current || !ops.undo()) return;
+    setSelected(null); setEditingId(null);
+    say(i18n("board.edit.undone"));
+  };
+  const restoreDefault = async (): Promise<void> => {
+    if (!canEditRef.current) return;
+    if (!await confirmOk((boardId === HOME_BOARD_ID ? i18n("board.edit.restoreHomeConfirm") : i18n("board.edit.restoreBoardConfirm")))) return;
+    if (!canEditRef.current) return;
+    if (ops.replace(boardId === HOME_BOARD_ID ? homeStarterItems() : [])) {
+      resetLayoutView(); say(i18n("board.edit.restored"));
     }
   };
 
@@ -1154,8 +1166,8 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
           />
         ) : null}
 
-        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (phoneUi ? " has-edit-toggle" : "") + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
-          {phoneUi ? <Btn size="sm" variant={phoneEditing ? "solid" : "outline"} data-coach="home-edit" aria-pressed={phoneEditing} onClick={() => setPhoneEditScope(phoneEditing ? null : phoneEditKey)}>{(phoneEditing ? i18n("components.freeboard.finishEdit") : i18n("components.freeboard.startEdit"))}</Btn> : null}
+        {toolsVisible && !compact ? createPortal(<div className={"board-viewport-tools" + (phoneUi ? " has-edit-toggle" : "") + (phoneUi && !phoneEditing ? " is-browse" : "") + (penOn ? " is-pen-open" : "")} role="toolbar" aria-label={i18n("components.freeboard.7e8f29dd96a4")}>
+          {phoneUi ? <Btn size="sm" variant={phoneEditing ? "solid" : "tonal"} icon={<IconPen width={16} height={16}/>} data-coach="home-edit" aria-pressed={phoneEditing} onClick={() => setPhoneEditScope(phoneEditing ? null : phoneEditKey)}>{(phoneEditing ? i18n("components.freeboard.finishEdit") : i18n("components.freeboard.startEdit"))}</Btn> : null}
           {canEdit ? <>
           <Btn size="sm" data-coach="home-add" icon={<IconPlus />} onClick={() => { setAddAt(null); setAddOpen(true); }}>{i18n("components.freeboard.783d638053ea")}</Btn>
           {phonePortrait && orientation === "portrait" ? (
@@ -1163,6 +1175,10 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
               {phoneCanvas ? i18n("components.freeboard.593f0f466b3e") : i18n("components.freeboard.f87eebfdca60")}
             </Btn>
           ) : null}
+          {phoneUi ? <>
+            <Btn size="sm" variant="ghost" icon={<span aria-hidden="true">↶</span>} disabled={!ops.canUndo()} onClick={undoEdit}>{i18n("board.edit.undo")}</Btn>
+            <Btn size="sm" variant="ghost" onClick={() => void restoreDefault()}>{i18n("board.edit.restore")}</Btn>
+          </> : null}
           {stack ? null : <>
             <span className="board-tool-divider" />
             <IconBtn label={i18n("components.freeboard.290f68030501")} icon={<OgIconMinus />} disabled={view.z <= ZOOM_MIN} onClick={() => zoomBy(-1)} />

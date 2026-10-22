@@ -19,6 +19,7 @@ import { RECT_MIN_H, RECT_MIN_W, SYSTEM_BOARD_ID, appendPx, bringToFrontPx, cell
 import { replaceCells } from "./boardEdit.js";
 import { BOARD_KEY, loadBoard, saveBoard } from "./board.js";
 import { notifyBoardsChanged } from "./onePage.js";
+import { canUndoBoardEdit, recordBoardEdit, takeBoardUndo } from "./boardHistory.js";
 
 export type FreeItem = BoardPxItem;
 /** 渲染快照（useSyncExternalStore 的载荷）。 */
@@ -152,18 +153,21 @@ export function freeBoardSnapshot(boardId: string = HOME_BOARD_ID, orientation: 
 /* ── 写回 ───────────────────────────────────────────────────────────────── */
 
 /** 唯一写入口：纯函数改出新的条目列表 → 落回该板该朝向 → 广播（null = 无实质变化，不写盘）。 */
-export function commitPx(boardId: string, orientation: Orientation, next: BoardItem[] | null): boolean {
+export function commitPx(boardId: string, orientation: Orientation, next: BoardItem[] | null, history: "record" | "automatic" | "restore" = "record", mergeKey?: string): boolean {
   if (!next) return false;
   const doc = loadDoc();
   if (!doc.boards.some((b) => b.id === boardId)) return false;
+  const before = JSON.stringify(boardItemsOf(boardId, orientation)), after = JSON.stringify(next);
+  if (before === after) return false;
   saveBoard(replaceCells(doc, boardId, orientation, next));
+  if (history !== "restore") recordBoardEdit(boardId + "|" + orientation, before, JSON.stringify(boardItemsOf(boardId, orientation)), history === "automatic", mergeKey);
   notifyBoardsChanged();
   emit();
   return true;
 }
 
-function editPx(boardId: string, orientation: Orientation, fn: (items: readonly BoardItem[]) => BoardItem[] | null): boolean {
-  return commitPx(boardId, orientation, fn(boardItemsOf(boardId, orientation)));
+function editPx(boardId: string, orientation: Orientation, fn: (items: readonly BoardItem[]) => BoardItem[] | null, automatic = false, mergeKey?: string): boolean {
+  return commitPx(boardId, orientation, fn(boardItemsOf(boardId, orientation)), automatic ? "automatic" : "record", mergeKey);
 }
 
 const newId = (prefix: string): string => prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -173,6 +177,11 @@ export function freeBoardOps(boardId: string = HOME_BOARD_ID, orientation: Orien
   return {
     boardId,
     orientation,
+    canUndo: (): boolean => canUndoBoardEdit(boardId + "|" + orientation, JSON.stringify(boardItemsOf(boardId, orientation))),
+    undo: (): boolean => {
+      const previous = takeBoardUndo(boardId + "|" + orientation, JSON.stringify(boardItemsOf(boardId, orientation)));
+      return previous !== null && commitPx(boardId, orientation, JSON.parse(previous) as BoardItem[], "restore");
+    },
     items: (): BoardItem[] => boardItemsOf(boardId, orientation),
     snapshot: (): FreeBoardDoc => freeBoardSnapshot(boardId, orientation),
     add: (spec: WidgetSpec, x: number, y: number, w = 260, h = 140): string => {
@@ -193,7 +202,7 @@ export function freeBoardOps(boardId: string = HOME_BOARD_ID, orientation: Orien
     },
     /** 按内容拟合（只长高；与用户拖动区分：这条不置 manual） */
     fitHeight: (id: string, h: number): void => {
-      editPx(boardId, orientation, (items) => fitHeightPx(items, id, h));
+      editPx(boardId, orientation, (items) => fitHeightPx(items, id, h), true);
     },
     fold: (id: string, folded: boolean): void => {
       editPx(boardId, orientation, (items) => foldPx(items, id, folded));
@@ -202,7 +211,7 @@ export function freeBoardOps(boardId: string = HOME_BOARD_ID, orientation: Orien
       editPx(boardId, orientation, (items) => opacityPx(items, id, value));
     },
     props: (id: string, props: Record<string, unknown> | undefined): void => {
-      editPx(boardId, orientation, (items) => propsPx(items, id, props));
+      editPx(boardId, orientation, (items) => propsPx(items, id, props), false, "props:" + id);
     },
     pin: (id: string): void => {
       editPx(boardId, orientation, (items) => pinPx(items, id));
@@ -215,8 +224,8 @@ export function freeBoardOps(boardId: string = HOME_BOARD_ID, orientation: Orien
     bringToFront: (id: string): void => {
       editPx(boardId, orientation, (items) => bringToFrontPx(items, id));
     },
-    raise: (id: string): void => {
-      editPx(boardId, orientation, (items) => raiseAboveOverlappingPx(items, id));
+    raise: (id: string, automatic = false): void => {
+      editPx(boardId, orientation, (items) => raiseAboveOverlappingPx(items, id), automatic);
     },
   };
 }

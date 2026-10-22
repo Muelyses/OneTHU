@@ -193,7 +193,7 @@ async function httpNativeGet(url: string, headers: Record<string, string> = {}, 
   const out = await invoke<{
     status: number; status_text: string; headers: Record<string, string>; body: string; body_b64?: string | null; url: string;
   }>("http_native", {
-    input: { url, method: "GET", headers: { Accept: "*/*", ...headers }, body: null, body_b64: null },
+    input: { url, method: "GET", headers: { Accept: "*/*", ...headers }, body: null, body_b64: null, timeout_ms: 10_000 },
   });
   const loc = Object.entries(out.headers ?? {}).find(([k]) => k.toLowerCase() === "location")?.[1];
   if (out.status >= 300 && out.status < 400 && loc && hop < 3) {
@@ -388,7 +388,12 @@ async function fromCloud(key: PlatformKey): Promise<Resolved> {
  * 检查更新：主源 GitHub → 备用云盘镜像，自动切换。**不下载、不安装**。
  * `customManifestUrl` 非空时只走自定义源（「高级」里用户自己填的）。
  */
-export async function checkForUpdate(opts: { customManifestUrl?: string } = {}): Promise<UpdateCheckResult> {
+export async function checkForUpdate(opts: {
+  customManifestUrl?: string;
+  signal?: AbortSignal;
+  onSource?: (source: UpdateSource) => void;
+  sourceTimeoutMs?: number;
+} = {}): Promise<UpdateCheckResult> {
   const current = currentVersion();
   const key = platformKey();
   const attempts: UpdateAttempt[] = [];
@@ -407,8 +412,18 @@ export async function checkForUpdate(opts: { customManifestUrl?: string } = {}):
     : [{ source: "github", run: () => fromGitHub(key) }, { source: "cloud", run: () => fromCloud(key) }];
 
   for (const step of plan) {
+    if (opts.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+    opts.onSource?.(step.source);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let abort: (() => void) | undefined;
     try {
-      const r = await step.run();
+      const limit = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(i18n("update.sourceTimeout", { source: SOURCE_LABEL[step.source] }))), opts.sourceTimeoutMs ?? (step.source === "github" ? 8_000 : 15_000));
+        abort = () => reject(new DOMException("Cancelled", "AbortError"));
+        opts.signal?.addEventListener("abort", abort, { once: true });
+      });
+      const r = await Promise.race([step.run(), limit]);
+      if (opts.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
       attempts.push({ source: step.source, label: SOURCE_LABEL[step.source], ok: true });
       const failed = attempts.find((a) => !a.ok);
       void logLine(i18n("lib.updater.ddfe8fdf02cb", { value: String(SOURCE_LABEL[step.source]), latest: String(r.latest), current: String(current), value2: String(r.hasUpdate ? i18n("lib.updater.daedea385864") : i18n("lib.updater.4219a7449e26")) })).catch(
@@ -422,7 +437,11 @@ export async function checkForUpdate(opts: { customManifestUrl?: string } = {}):
         ...(failed ? { fallbackReason: i18n("lib.updater.ab90d58874ee", { label: String(failed.label), value: String(failed.error ?? i18n("lib.updater.a1a9da9ee6ed")) }) } : {}),
       };
     } catch (e) {
+      if (opts.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
       attempts.push({ source: step.source, label: SOURCE_LABEL[step.source], ok: false, error: e instanceof Error ? e.message : String(e) });
+    } finally {
+      if (timer) clearTimeout(timer);
+      if (abort) opts.signal?.removeEventListener("abort", abort);
     }
   }
   const detail = attempts.map((a) => `· ${a.label}：${a.error ?? i18n("lib.updater.a1a9da9ee6ed")}`).join("\n");

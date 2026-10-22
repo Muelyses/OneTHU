@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {setup,call,close,browser} from './capture-public-preview.mjs';
 import {closeTestBrowser} from './lib/onboarding-browser-steps.mjs';
-const out='/Volumes/OneTHUBuild/artifacts/release-0.11/mobile-board-edit';mkdirSync(out,{recursive:true});
+const out=process.env.ONETHU_TEST_OUT??'/Volumes/OneTHUBuild/artifacts/release-0.11/mobile-board-edit';mkdirSync(out,{recursive:true});
 let passed=false;
 const checks=[];const check=(v,label)=>{assert.ok(v,label);checks.push(label);console.log('✓ '+label);};
 const geometry=page=>page.evaluate(()=>JSON.parse(localStorage.getItem('onethu.board.v1')));

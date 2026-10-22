@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {recordBoardEdit as edit,canUndoBoardEdit as can,takeBoardUndo as undo} from '../apps/desktop/src/state/boardHistory.ts';
+edit('home|portrait','a','b');assert.equal(undo('home|portrait','b'),'a');assert.equal(undo('home|portrait','a'),null);
+edit('auto','before','drag');edit('auto','drag','fitted',true);assert.equal(undo('auto','fitted'),'before');
+edit('text','empty','h',false,'note');edit('text','h','hello',false,'note');assert.equal(undo('text','hello'),'empty');
+edit('external','old','local');assert.equal(can('external','remote'),false);assert.equal(undo('external','remote'),null);
+edit('branch','a','b');undo('branch','b');edit('branch','a','c');assert.equal(undo('branch','c'),'a');
+edit('p|portrait','p0','p1');edit('p|landscape','l0','l1');assert.equal(undo('p|portrait','p1'),'p0');assert.equal(can('p|landscape','l1'),true);
+edit('fitting-only','a','b',true);assert.equal(can('fitting-only','b'),false);
+for(let i=0;i<40;i++)edit('limit',String(i),String(i+1));for(let i=40;i>10;i--)assert.equal(undo('limit',String(i)),String(i-1));assert.equal(undo('limit','10'),null);
+console.log('✓ undo restores changes, coalesces typing, ignores automatic fits, rejects stale remote state, isolates orientation and bounds history');

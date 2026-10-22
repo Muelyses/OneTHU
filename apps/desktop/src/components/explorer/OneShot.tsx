@@ -9,6 +9,8 @@ import {IconMore} from '../Icons.js';
 import {PracticalFeaturesPanel} from './PracticalFeatures.js';
 import {PRACTICAL_FEATURES_EVENT} from "../../state/practicalFeatures.js";
 import {showToast} from '../../state/toast.js';
+import {useIsPhone} from '../../state/phoneSheets.js';
+import {useMobileNavigation} from '../../state/mobileLayout.js';
 export function QuickIcon({entry}:{entry?:QuickEntry}){
   const uiLocale = useUiLocale();
 const Icon=NAV.find(n=>n.page===entry?.page)?.icon;return Icon?<Icon/>:<FolderIcon name={entry?.kind==='workspace'?'folder':'star'} width={18} height={18}/>;}
@@ -32,6 +34,9 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
   const {entries,slots:saved}=useQuickEntries();
   const {slots:practical}=usePracticalEntries();
   const mode=useExperienceMode();
+  const phone=useIsPhone(), mobileLayout=useMobileNavigation(mode);
+  const sideNavigation=phone&&mode!=="simple"&&mobileLayout==="side";
+  useEffect(()=>{document.documentElement.dataset.mobileNavigation=sideNavigation?"side":"bottom";return()=>{delete document.documentElement.dataset.mobileNavigation;};},[sideNavigation]);
   const practicalMode=mode==="practical";
   const [moreOpen,setMoreOpen]=useState(false);
   /** 「放进入口」进行中：面板收起，底部四个入口亮编号，点哪个就放进哪个；Esc 取消。 */
@@ -115,7 +120,7 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
     setScheduleOpen(v=>!v);
   };
 
-  if(scheduleMode)return <nav
+  if(scheduleMode&&!sideNavigation)return <nav
     className={"oneshot is-schedule"+(collapsed?" is-collapsed":"")+(placing?" is-placing":"")+(dragging?" is-dragging":"")}
     aria-label={i18n("components.explorer.oneshot.1446be782b50")}
     style={{"--oneshot-drag":`${dragOffset}px`} as CSSProperties}
@@ -144,7 +149,7 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
     {featuresPanel}
   </nav>;
 
-  return <nav className={"oneshot"+(placing?" is-placing":"")} aria-label={i18n("components.explorer.oneshot.1446be782b50")}>
+  return <nav className={"oneshot"+(sideNavigation?" is-mobile-side":"")+(placing?" is-placing":"")} aria-label={i18n("components.explorer.oneshot.1446be782b50")}>
     {placementBar}
     {slotNodes}
     {featuresPanel}

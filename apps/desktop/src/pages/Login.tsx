@@ -1,5 +1,5 @@
 import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
-import { Btn } from "@onethu/gui";
+import { Btn, TextArea } from "@onethu/gui";
 import { BrandLogo, HardRefreshButton, Slogan } from "../components/Layout.js";
 import { useEffect, useState, type FormEvent } from "react";
 import type { TwoFactorMethod } from "@onethu/core";
@@ -22,7 +22,7 @@ function LoginErrorPanel({ error }: { error: string }) {
   return <div className="login-error" role="alert">
     <div>{error}</div>
     <Btn variant="ghost" onClick={() => void copyDiagnostics()}>{copied ? i18n("components.devpanel.cce28dd1fcdf") : i18n("components.devpanel.bbce140b7682")}</Btn>
-    {manual ? <textarea aria-label={i18n("components.devpanel.bbce140b7682")} readOnly value={manual} onFocus={e => e.currentTarget.select()} style={{ width: "100%", minHeight: 120 }} /> : null}
+    {manual ? <div onFocusCapture={e => { if (e.target instanceof HTMLTextAreaElement) e.target.select(); }}><TextArea aria-label={i18n("components.devpanel.bbce140b7682")} readOnly value={manual} rows={5} mono /></div> : null}
   </div>;
 }
 

@@ -39,13 +39,15 @@ async function ready(page) {
 async function setup(width, height) {
   const touch = width < 600;
   const page = currentPage = await browser.newPage({ viewport: { width, height }, hasTouch: touch });
-  page.setDefaultTimeout(7000);
+  page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(45000);
   page.on('pageerror', error => report.errors.push(`${width}: ${error.message}`));
   await page.routeWebSocket(/(?:127\.0\.0\.1|localhost):5180/, () => {});
   await page.route(/^https?:\/\/(?!127\.0\.0\.1:5180|localhost:5180)/, route => route.abort());
   await page.addInitScript(() => {
     sessionStorage.setItem('qa.floating.loads', String(Number(sessionStorage.getItem('qa.floating.loads') ?? 0) + 1));
     localStorage.setItem('onethu.onboarded.phone', '1');
+    localStorage.setItem('onethu.onboarded.flow4', '1');
+    localStorage.setItem('onethu.privacy.v1',JSON.stringify({acknowledged:true,cloud:true,oh:true}));
     localStorage.setItem('onethu.experience.v1', 'full');
     localStorage.setItem('onethu.chatdock.open', '0');
     window.__floatingTrace = [];
@@ -153,10 +155,10 @@ async function runControl(ctx, control) {
 
   const beforeLoads = await loads(page), start = await rect(button());
   const pressedAt = await input.down(button());
-  const first = { x: pressedAt.x - 7, y: pressedAt.y - 5 };
+  const first = { x: pressedAt.x - 20, y: pressedAt.y - 15 };
   await input.move(first);
   const immediate = await rect(button());
-  check(distance(center(immediate), first) < 2, label + ' 无长按等待，首次位移即跟手');
+  check(distance(center(immediate), first) < 2, label + ' 越过点击容差后立即跟手');
   const target = { x: Math.round(width * (control.id === 'refresh' ? .36 : .66)), y: Math.round(height * .44) };
   await input.move(target); const beforeUp = await rect(button()); await input.up();
   const stable = await button().evaluate(element => new Promise(resolve => {

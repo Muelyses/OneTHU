@@ -13,6 +13,7 @@ import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
 import { getGlassLevel, glassLevels, setGlassLevel, subscribeGlassLevel, type GlassLevel } from "../lib/glassLevel.js";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useIsPhone } from "../state/phoneSheets.js";
+import { MobileLayoutChoice } from "../components/MobileLayoutChoice.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
 import { Card, PageHead, SectionHead, Switch } from "../components/Layout.js";
@@ -425,6 +426,7 @@ export function SettingsPage() {
       </Card>
       </SettingsGroup>
       <SettingsGroup tab="外观与布局" active={tab} section="OneShot 快捷入口">
+      {isPhone ? <MobileLayoutChoice/> : null}
       <SectionHead title={i18n("pages.settings.ac32447aadc3")} />
       <SettingsList>
         <OneShotSettings />

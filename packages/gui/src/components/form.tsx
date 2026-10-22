@@ -139,7 +139,7 @@ export interface TextAreaProps extends Omit<InputProps, "type" | "icon" | "input
   mono?: boolean;
 }
 
-export function TextArea({ value, defaultValue, onChange, onFocusChange, placeholder, size = "md", disabled, readOnly, invalid, rows = 4, autoGrow, maxRows, mono, scope, className, autoFocus, spellCheck, onKeyDown }: TextAreaProps): ReactNode {
+export function TextArea({ value, defaultValue, onChange, onFocusChange, placeholder, size = "md", disabled, readOnly, invalid, rows = 4, autoGrow, maxRows, mono, scope, className, autoFocus, spellCheck, onKeyDown, "aria-label": ariaLabel }: TextAreaProps): ReactNode {
   const [focused, setFocused] = useState(false);
   const ref = useRef<HTMLTextAreaElement | null>(null);
   useEffect(() => {
@@ -157,6 +157,7 @@ export function TextArea({ value, defaultValue, onChange, onFocusChange, placeho
         {...scopeProps(scope)}
         className="og-input-el"
         rows={rows}
+        aria-label={ariaLabel}
         value={value}
         defaultValue={defaultValue}
         placeholder={placeholder}

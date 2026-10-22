@@ -424,7 +424,7 @@ export async function pushUi(state: OverlayUiState): Promise<void> {
   install();
   pollWanted = true;
   try {
-    await invokePlugin("overlay_push_ui", { state: JSON.stringify(state ?? {}) });
+    await invokePlugin("overlay_push_ui", { state: JSON.stringify({ ...state, collapseLabel: i18n("overlay.collapse") }) });
   } catch {
     /* 桌面端/未注册：静默 */
   }

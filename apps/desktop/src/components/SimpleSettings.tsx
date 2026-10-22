@@ -12,6 +12,10 @@ import { getPlugin, updatePlugin } from "../plugins/registry.js";
 import { showToast } from "../state/toast.js";
 import { useApp } from "../state/context.js";
 import { replayOnboarding } from "./OnboardingTour.js";
+import { MobileLayoutChoice } from "./MobileLayoutChoice.js";
+import { useExperienceMode } from "../state/experienceMode.js";
+import { useIsPhone } from "../state/phoneSheets.js";
+import { SoftwareUpdateSection } from "./SoftwareUpdateSection.js";
 
 export function OptionalConnections() {
   const uiLocale = useUiLocale();
@@ -27,6 +31,7 @@ export function SimpleSettings() {
   const uiLocale = useUiLocale();
 
  const { user, logout }=useApp();
+ const mode=useExperienceMode(),phone=useIsPhone();
  const [calendarOpen,setCalendarOpen]=useState(false);
  const initial=getPlugin("onethu.harness")?.settings??{};
  const [baseUrl,setBaseUrl]=useState(String(initial.baseUrl??""));
@@ -35,6 +40,7 @@ export function SimpleSettings() {
  return <div className="simple-settings"><Stack gap={4}>
  <ExperienceModeControl/>
  <LanguageControl/>
+ {phone&&mode==="practical"?<Card><MobileLayoutChoice/></Card>:null}
  <PrivacySettings/>
  <OhModelSourceCard/>
  <Card><SettingsRow title={i18n("components.simplesettings.ac794a015ee3")} sub={i18n("components.simplesettings.49454b147354")} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.simplesettings.7c4b06e07cb4")}</Btn>}/>
@@ -52,5 +58,6 @@ export function SimpleSettings() {
  <Card><SettingsRow title={i18n("components.simplesettings.bccf98c5f9fa")} sub={i18n("components.simplesettings.553df7f47b1a")} control={<Btn variant="outline" onClick={()=>setCalendarOpen(v=>!v)}>{calendarOpen?i18n("components.simplesettings.afd4b783536b"):i18n("components.simplesettings.d7d18c1f3213")}</Btn>}/></Card>
  {calendarOpen?<CalendarSyncSettings/>:null}
  <OptionalConnections/>
+ <Card><SoftwareUpdateSection/></Card>
  </Stack></div>;
 }

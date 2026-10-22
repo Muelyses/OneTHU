@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+const values=new Map();
+globalThis.localStorage={getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value)};
+const {mobileNavigationFor,setMobileNavigation}=await import('../apps/desktop/src/state/mobileLayout.ts');
+assert.equal(mobileNavigationFor('full'),'bottom');assert.equal(mobileNavigationFor('practical'),'bottom');
+setMobileNavigation('full','side');assert.equal(mobileNavigationFor('full'),'side');assert.equal(mobileNavigationFor('practical'),'bottom');
+setMobileNavigation('practical','side');setMobileNavigation('full','bottom');assert.equal(mobileNavigationFor('practical'),'side');
+setMobileNavigation('simple','side');assert.equal(mobileNavigationFor('simple'),'bottom');
+assert.deepEqual(JSON.parse(values.get('onethu.mobile-navigation.v1')),{full:'bottom',practical:'side'});
+console.log('✓ full/practical preferences remain independent and persist; Minimal stays fixed');

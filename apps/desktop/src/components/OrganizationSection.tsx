@@ -10,7 +10,7 @@ import { Btn, Card, List, Row, Text } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import { openFormModal } from "../lib/formModal.js";
 import { showToast } from "../state/toast.js";
-import { openTab } from "../state/explorer.js";
+import { openTabFromSettings as openTab } from "../state/explorer.js";
 import {
   acceptOrgInvite, createOrg, currentOrgEmail, deleteOrg, useOrgs,
 } from "../state/org.js";

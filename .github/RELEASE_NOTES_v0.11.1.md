@@ -2,12 +2,14 @@
 
 二级选课课表与手机交互修复，macOS、Windows 和 Android 同步发布。
 
+2026-10-22 安装包修订：组件预览使用独立数据作用域，修复内置示例课程、作业和课件进入真实搜索的问题。三端安装包已统一重建。已安装旧 0.11.1 的用户请重新下载覆盖安装，用户数据保留；相同版本号不会触发旧客户端的升级提醒。
+
 - 二级课表兼容学校中文与英文周次（含 `week 4`），恢复语言切换后遗漏的课程。
 - 校历加载后自动补齐二级课程。
 - 时间轴与月历列表统一显示二级课表及课程详情。
 - 刷新异常提供重试提示，其他课程继续展示。
 - 系统日历采用经过完整性校验的新版学期缓存。
-- Android 沿用正式签名与原版 Logo，versionCode 11008。
+- Android 沿用正式签名与原版 Logo，versionCode 11009。
 
 - 手机左上角按钮可展开纵向功能浮层以替代 OneShot，极简五项、完整／实用全部一级入口；完整／实用导览提供布局选择。白板新增撤销、恢复默认并保留编辑前缩放。
 - 暂存箱支持边缘半收起、点按打开、拖回自由放置；Android OH 收起入口更醒目。
@@ -21,11 +23,13 @@
 
 Secondary timetable and phone interaction fixes for macOS, Windows and Android.
 
+Installer revision, October 22: widget previews now use isolated data scopes, fixing sample courses, assignments and files appearing in live search. All three installers have been rebuilt. Existing 0.11.1 users should download and install this revision over their current installation to retain data. Older clients do not offer an update notification for the same version number.
+
 - Secondary courses load automatically when the academic calendar is ready.
 - Both the weekly timeline and monthly agenda display secondary courses and details.
 - Failed refreshes show a retry message while other courses remain visible.
 - System-calendar sync uses a newly validated complete-semester cache.
-- Android retains its production certificate and canonical logo; versionCode 11008.
+- Android retains its production certificate and canonical logo; versionCode 11009.
 
 Refresh in Schedule settings after upgrading. Choose the installer for your platform below, or use the linked Tsinghua cloud folders. SHA-256 checksums are included.
 

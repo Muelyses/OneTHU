@@ -9,7 +9,7 @@ This update restores secondary-registration courses and their synchronization on
 - The monthly agenda includes the same secondary courses, dates, session times and details.
 - A retry message appears when the secondary timetable refresh fails, while other courses remain visible.
 - System-calendar sync uses a new complete-semester cache validated against both course sources, preserving existing content on failure.
-- Android uses version 0.11.1 and versionCode 11008, with the existing production signing certificate and stacked logo.
+- Android uses version 0.11.1 and versionCode 11009, with the existing production signing certificate and stacked logo.
 
 After upgrading, refresh in Schedule settings to reload courses. Update detection, GitHub downloads and the Tsinghua cloud mirror are updated with this release.
 
@@ -21,3 +21,9 @@ After upgrading, refresh in Schedule settings to reload courses. Update detectio
 - Android OH has a more prominent Collapse control.
 - Organization management and editing open above the settings overlay.
 - Update checks keep their loading text and spinner, use bounded source fallback, and support Cancel and Retry in all three modes.
+
+## Revised installers · October 22
+
+Widget previews now use isolated, read-only data scopes. Sample courses, assignments and files remain within the preview while live searches and background refreshes use account data. All three installers include this fix.
+
+If you already installed 0.11.1, download it again and install over your current version to retain data. Older clients compare version numbers and do not notify about same-version revisions. Android versionCode is now 11009.

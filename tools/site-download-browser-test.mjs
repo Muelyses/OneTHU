@@ -1,18 +1,20 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
-import {mkdirSync,writeFileSync} from 'node:fs';
-const out='/Volumes/OneTHUBuild/artifacts/release-0.11/download-page';mkdirSync(out,{recursive:true});
+import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+const version=process.env.ONETHU_EXPECT_VERSION??JSON.parse(readFileSync('apps/desktop/package.json','utf8')).version;
+const base=process.env.ONETHU_SITE_URL??'http://127.0.0.1:8770/';
+const out=process.env.ONETHU_TEST_OUT??'/Volumes/OneTHUBuild/artifacts/release-'+version+'/download-page';mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const report=[];
 try{
  for(const width of [1440,768,390,320])for(const language of ['', 'en/']){
   const context=await browser.newContext({viewport:{width,height:900},javaScriptEnabled:false});const page=await context.newPage();
-  await page.goto('http://127.0.0.1:8770/'+language+'download.html');
+  await page.goto(base+language+'download.html');
   assert.equal(await page.locator('.cloud-download').count(),3);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Page overflows');
   for(const link of await page.locator('.cloud-download').all()){
    assert.ok(await link.isVisible());const box=await link.boundingBox();assert.ok(box.height>=44&&box.width>200,'Download action too small');
-   const u=new URL(await link.getAttribute('href'));assert.ok(/^\/(Android|macOS|Windows)\/OneTHU_0\.11\.0_/.test(u.searchParams.get('p')));assert.equal(u.searchParams.get('dl'),'1');
+   const u=new URL(await link.getAttribute('href'));assert.ok(['/Android/','/macOS/','/Windows/'].some(dir=>u.searchParams.get('p')?.startsWith(dir+'OneTHU_'+version+'_')));assert.equal(u.searchParams.get('dl'),'1');
   }
   await page.locator('.download-checksum').first().locator('summary').click();assert.ok(await page.locator('.download-checksum code').first().isVisible());
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Checksum overflows');

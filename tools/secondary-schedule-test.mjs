@@ -39,6 +39,21 @@ await test('window clipping retains only matching occurrences', async () => {
 await test('tilde week range expands every week', async () => {
   assert.equal((await parse(page(entry('范围实验课', '第3~5周')))).length, 3);
 });
+await test('school English weeks remain visible after the portal language switches', async () => {
+  const chinese = await parse(page(entry('Bilingual lab', '第3-5,7周')));
+  for (const pattern of ['week 3-5,7', 'Week 3-5,7', 'weeks 3~5,7']) {
+    const english = await parse(page(entry('Bilingual lab', pattern)));
+    assert.deepEqual(Array.from(english, r => [r.date, r.startTime, r.endTime]), Array.from(chinese, r => [r.date, r.startTime, r.endTime]));
+  }
+});
+await test('anonymized English school fixture retains all eight scheduled occurrences', async () => {
+  const html = fs.readFileSync(new URL('./fixtures/secondary-english.html', import.meta.url), 'utf8');
+  assert.equal((await parse(html)).length, 8);
+  assert.equal((await parse(html, '2026-09-14', '2026-10-19', '2026-10-25')).length, 2);
+});
+await test('unrecognized populated weeks reject rather than silently losing courses', async () => {
+  await assert.rejects(parse(page(entry('Unknown week lab', 'new week format'))), /schedule.secondary.unavailable/);
+});
 await test('genuinely empty secondary page succeeds', async () => {
   assert.equal((await parse(page(''))).length, 0);
 });
@@ -67,4 +82,12 @@ await test('shared merge deduplicates primary rows and preserves source snapshot
   assert.equal(primary.length, 1);
   assert.equal(rows[1].raw.source, 'secondary');
 });
+if (process.env.ONETHU_SECONDARY_HTML) {
+  await test('private captured school page produces the expected secondary occurrences', async () => {
+    const html = fs.readFileSync(process.env.ONETHU_SECONDARY_HTML, 'utf8');
+    const rows = await parse(html, '2026-09-14', '2026-09-14', '2027-08-31');
+    assert.equal(rows.length, Number(process.env.ONETHU_SECONDARY_EXPECT_COUNT ?? 8));
+    assert.ok(rows.every(r => r.name && r.date && r.startTime && r.endTime));
+  });
+}
 console.log(`\n${checks} secondary timetable checks passed`);

@@ -11,8 +11,8 @@ const report = { checks: [], errors: [], screenshots: [] };
 const check = (ok, name) => { assert.ok(ok, name); report.checks.push(name); console.log('✓ ' + name); };
 const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
 try {
-  for (const width of [1280, 390]) for (const mode of ['full', 'simple', 'practical']) {
-    const label = `${width} ${mode}`;
+  for (const width of [1280, 390]) for (const mode of ['full', 'simple', 'practical']) for (const schoolLanguage of ['zh', 'en']) {
+    const label = `${width} ${mode} ${schoolLanguage} school page`;
     const p = await browser.newPage({ viewport: { width, height: width < 600 ? 844 : 900 }, timezoneId: 'Asia/Shanghai', hasTouch: width < 600, isMobile: width < 600 });
     p.setDefaultTimeout(15000);
     p.on('pageerror', e => report.errors.push(`${label}: ${e.message}`));
@@ -26,7 +26,7 @@ try {
     });
     await p.goto(base + '/?explorer-preview=onboarding');
     await p.locator('.explorer-shell').waitFor();
-    await p.evaluate(async ({ mode }) => {
+    await p.evaluate(async ({ mode, schoolLanguage }) => {
       const mod = async path => {
         const url = performance.getEntriesByType('resource').map(r => r.name).findLast(u => new URL(u).pathname === path);
         if (!url) throw Error('Missing module: ' + path);
@@ -51,12 +51,13 @@ try {
         window.__secondaryRequests++;
         if (window.__secondaryFailure) return '<html>service unavailable</html>';
         const day = now.getDay() || 7;
-        return `function setInitValue() {\nstrHTML = "<span onmouseover=\\"return overlib('04_54( 测试教室，第1周)');\\" onmouseout='return nd();'>二级选课浏览器验收</span>"; document.getElementById('a4_${day}').innerHTML += strHTML+"<br>";\n}`;
+        const week = schoolLanguage === 'en' ? 'week 1' : '第1周';
+        return `function setInitValue() {\nstrHTML = "<span onmouseover=\\"return overlib('04_54( 测试教室，${week})');\\" onmouseout='return nd();'>二级选课浏览器验收</span>"; document.getElementById('a4_${day}').innerHTML += strHTML+"<br>";\n}`;
       };
       const experience = await mod('/src/state/experienceMode.ts'); experience.setExperienceMode(mode);
       if (mode === 'full') (await mod('/src/state/explorer.ts')).openTab('schedule', undefined, { forceNew: true });
       else experience.navigateSimple('schedule');
-    }, { mode });
+    }, { mode, schoolLanguage });
     const page = p.locator('.schedule-workspace:visible');
     await page.waitFor();
     await p.waitForFunction(() => window.__primaryRequests > 0);
@@ -83,7 +84,7 @@ try {
     await p.getByRole('dialog').filter({ hasText: '二级选课浏览器验收' }).waitFor();
     check(await p.getByRole('button', { name: '前往', exact: true }).isVisible(), label + ': secondary course opens an actionable detail');
     await p.keyboard.press('Escape');
-    const shot = `${out}/${width}-${mode}.png`; await p.screenshot({ path: shot }); report.screenshots.push(shot);
+    const shot = `${out}/${width}-${mode}-${schoolLanguage}.png`; await p.screenshot({ path: shot }); report.screenshots.push(shot);
     await p.close();
   }
   check(report.errors.length === 0, 'No browser runtime errors: ' + report.errors.join('; '));

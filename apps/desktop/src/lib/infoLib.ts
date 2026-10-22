@@ -641,10 +641,18 @@ export const getSecondaryEntries = async (
     const begin = beginList[session - 1] || "08:00";
     const endT = endList[session - 1] || "09:35";
     const loc = /[(（]([^，,]+)[，,]/.exec(detail)?.[1] ?? "待定";
-    const weeks = /单周/.test(detail) ? [1,3,5,7,9,11,13,15]
-      : /双周/.test(detail) ? [2,4,6,8,10,12,14,16]
-      : /全周/.test(detail) ? Array.from({length: 16}, (_, i) => i + 1)
-      : (() => { const wm = /第([\d\-~,]+)周/.exec(detail); return wm ? expand(wm[1] ?? "") : []; })();
+    // 门户语言随账号会话保留；中文 UI 也可能收到学校的 “week 4”。
+    const weeks = /单周|oddweeks?|weeks?odd/i.test(detail) ? [1,3,5,7,9,11,13,15]
+      : /双周|evenweeks?|weeks?even/i.test(detail) ? [2,4,6,8,10,12,14,16]
+      : /全周|allweeks?|everyweek/i.test(detail) ? Array.from({length: 16}, (_, i) => i + 1)
+      : /前[八8]周|first8weeks?/i.test(detail) ? [1,2,3,4,5,6,7,8]
+      : /后[八8]周|last8weeks?/i.test(detail) ? [9,10,11,12,13,14,15,16]
+      : (() => {
+          const wm = /第([\d\-~～–—,，]+)周|weeks?([\d\-~～–—,，]+)/i.exec(detail);
+          return wm ? expand((wm[1] ?? wm[2] ?? "").replace(/，/g, ",")) : [];
+        })();
+    // 有课程却无法识别周次时交给页面提示重试，避免把缺课结果写成完整缓存。
+    if (weeks.length === 0) throw new Error(i18n("schedule.secondary.unavailable"));
     for (const w of weeks) {
       const date = new Date(fd.getTime() + ((w - 1) * 7 + day - 1) * 86400000);
       const ds = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;

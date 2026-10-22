@@ -74,6 +74,11 @@ jobs:
         run: node tools/seafile-account-lifecycle-test.mjs
       - name: Check profile merge boundaries
         run: node --import ./tools/ts-resolve-register.mjs tools/profile-sync-test.mjs
+      - name: Check secondary timetable and calendar integrity
+        run: |
+          node tools/secondary-schedule-test.mjs
+          node --import ./tools/ts-resolve-register.mjs tools/secondary-anchor-test.mjs
+          node tools/system-calendar-state-test.mjs
       # sidecar 必须在目标平台现场构建（仓库不带任何架构的二进制；
       # 旧版 Windows 安装包曾打进 mac 的 Mach-O → 插件宿主拉起必死）
       - name: Build harness sidecar (host-native)

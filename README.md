@@ -2,7 +2,7 @@
 
 <img src="docs/logo-banner.png" alt="One above THU — One THUer should have OneTHU" width="640">
 
-**0.11 · Revolution**
+**0.11.1 · Revolution**
 
 [中文](README.md) · [English](README.en.md)
 
@@ -13,6 +13,10 @@
 </div>
 
 OneTHU 是非官方的清华校园应用，覆盖 macOS、Windows 与 Android。0.11 使用 OneGUI 统一交互，主题、壁纸与布局均可调整，提供极简、实用、完整三种模式；搜索与 OH 胶囊贯穿三种模式，完整模式进一步开放自由白板、暂存分享、组织、插件、OneTHU Harness 与清小搭。
+
+## 0.11.1 修复更新
+
+二级选课课程在校历加载后自动补齐，时间轴和月历列表使用相同的课程合并逻辑。系统日历按经过完整性校验的学期数据同步。macOS、Windows 与 Android 同步更新，详见 [修复说明](docs/release-0.11.1.md)。
 
 ## 真实界面，模拟数据
 

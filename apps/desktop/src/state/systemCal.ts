@@ -181,7 +181,8 @@ function currentSemester(): CalendarSemester | null {
  *  同款教训），成功即落 schedsem:<semesterId> 持久缓存（全量镜像）；任何失
  *  败只退同学期、同起点与周数的完整缓存；周窗碎屑不能覆盖整个镜像。 */
 async function fetchSemesterSchedule(sem: CalendarSemester): Promise<ScheduleEntry[]> {
-  const key = `syscal-sem-v3:${sem.semesterId}`;
+  // v4：缓存须经过二级页面完整性校验；旧空页面结果按旧协议保留。
+  const key = `syscal-sem-v4:${sem.semesterId}`;
   const d0 = parseYmd(sem.firstDay).getTime();
   const d1 = d0 + (sem.weekCount * 7 - 1) * DAY;
   const ymd = (t: number): string => {

@@ -122,6 +122,15 @@ await test("remove waits for active native write, rejects overlapping write, the
 await test("no partial week cache fallback; secondary failure also preserves previous calendar", async () => {
   for (const key of ["schedule", "secondary"]) { const f = fixture({ [key]: async () => { throw new Error("offline"); } }); f.cache.set("schedsem:2026-2027-1", [{ courseName: "legacy partial" }]); await assert.rejects(f.api.syncSystemCalendar()); assert.equal(f.nativeWrites().length, 0); }
 });
+await test("legacy v3 cache with a missing secondary source stays outside the complete-cache fallback", async () => {
+  const f = fixture({ secondary: async () => { throw new Error("secondary page unavailable"); } });
+  f.cache.set("syscal-sem-v3:2026-2027-1", {
+    firstDay: f.state.semester.firstDay, weekCount: f.state.semester.weekCount,
+    entries: [{ courseName: "legacy primary-only", date: "2026-10-20", startTime: "08:00", endTime: "09:35" }],
+  });
+  await assert.rejects(f.api.syncSystemCalendar(), /secondary page unavailable/);
+  assert.equal(f.nativeWrites().length, 0);
+});
 await test("complete same-semester cache including an empty semester is valid fallback", async () => {
   const f = fixture(); await f.api.syncSystemCalendar(); const count = f.nativeWrites()[0].args.payload.events.length; f.state.schedule = async () => { throw new Error("offline"); }; await f.api.syncSystemCalendar(); assert.equal(f.nativeWrites()[1].args.payload.events.length, count);
   f.state.semester.weekCount++; await assert.rejects(f.api.syncSystemCalendar(), /offline/); assert.equal(f.nativeWrites().length, 2);

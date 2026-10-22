@@ -29,7 +29,8 @@ for(const member of api.members){
  namespaces.push({namespace,methods});
 }
 const count=namespaces.reduce((sum,item)=>sum+item.methods.length,0);
-const json={version:'0.11.0',source:file,namespaces: namespaces.length,methods:count,entries:namespaces};
+const version=JSON.parse(readFileSync('apps/desktop/package.json','utf8')).version;
+const json={version,source:file,namespaces: namespaces.length,methods:count,entries:namespaces};
 writeFileSync('docs/api-surface.json',JSON.stringify(json,null,2)+'\n');
 let md='# 插件 API 完整清单（0.11）\n\n中文 · [English](en/api-surface.md)\n\n> 此表由 `node tools/docs-api-surface.mjs` 从 `OnethuApi` 声明生成。\n\n';
 md+=`当前声明包含 **${namespaces.length} 个命名空间、${count} 个方法入口**，含嵌套调用入口。语义、示例与权限模型见 [API 参考](api-reference.md) 和 [插件开发指南](plugin-development.md)。权限列只列出门面中可直接识别的字面量校验；其余方法须结合门面上下文核对，不代表免授权。\n\n`;

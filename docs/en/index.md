@@ -13,6 +13,7 @@ This directory describes actual 0.11 modes and capabilities. Older plans and res
 - [Schedules, assignments and sync](schedule-and-sync.md)
 - [Search, OH, Harness and Xiaoda](oh-and-xiaoda.md)
 - [Privacy and troubleshooting](privacy-and-troubleshooting.md)
+- [0.11.2 maintenance update](release-0.11.2.md)
 - [0.11 changes and boundaries](release-0.11.md)
 
 ## Development and assets

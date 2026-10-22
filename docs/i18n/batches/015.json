@@ -1,7 +1,108 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.homeworkcarousel.f299c513a8fc",
+      "source": "<1 天",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 28,
+          "context": "big: i18n(\"components.homeworkcarousel.f299c513a8fc\")"
+        }
+      ],
+      "translation": "<1 day",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.homeworkcarousel.fb37c61898d5",
+      "source": "截止",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 22,
+          "context": "small: i18n(\"components.homeworkcarousel.fb37c61898d5\")"
+        }
+      ],
+      "translation": "Due",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.identitycard.3fa24b555e9d",
+      "source": "点击编辑，写下你的介绍",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/IdentityCard.tsx",
+          "line": 75,
+          "context": "details.length ? details.join(\" · \") : i18n(\"components.identitycard.3fa24b555e9d\")"
+        }
+      ],
+      "translation": "Click to edit and write your intro",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.identitycard.487e926379fe",
+      "source": "我的名片",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/IdentityCard.tsx",
+          "line": 32,
+          "context": "organization ? i18n(\"components.identitycard.d203a5652f03\") : i18n(\"components.identitycard.487e926379fe\")"
+        }
+      ],
+      "translation": "My card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.identitycard.b8fde21bc2ca",
+      "source": "组织邀请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/IdentityCard.tsx",
+          "line": 34,
+          "context": "org.brief || i18n(\"components.identitycard.b8fde21bc2ca\")"
+        }
+      ],
+      "translation": "Organization invitations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.identitycard.d203a5652f03",
+      "source": "未命名组织",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/IdentityCard.tsx",
+          "line": 32,
+          "context": "organization ? i18n(\"components.identitycard.d203a5652f03\") : i18n(\"components.identitycard.487e926379fe\")"
+        },
+        {
+          "file": "apps/desktop/src/state/org.ts",
+          "line": 154,
+          "context": "String(input.name ?? \"\").trim().slice(0, 60) || i18n(\"components.identitycard.d203a5652f03\")"
+        }
+      ],
+      "translation": "Unnamed organization",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.identitycard.f83c8237fcf6",
       "source": "在清华，与你相遇。",
@@ -1129,7 +1230,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 106,
+          "line": 107,
           "context": "return i18n(\"components.layout.06657c279571\");"
         }
       ],
@@ -1145,7 +1246,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 159,
+          "line": 160,
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ],
@@ -1161,7 +1262,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 116,
+          "line": 117,
           "context": "return i18n(\"components.layout.15d208d1b4c9\");"
         }
       ],
@@ -1177,7 +1278,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 119,
+          "line": 120,
           "context": "return i18n(\"components.layout.1760b98532ec\");"
         }
       ],
@@ -1193,12 +1294,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 230,
+          "line": 232,
           "context": "{i18n(\"components.layout.203c08e0d44a\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 230,
+          "line": 232,
           "context": "{i18n(\"components.layout.203c08e0d44a\")}"
         }
       ],
@@ -1214,7 +1315,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 117,
+          "line": 118,
           "context": "return i18n(\"components.layout.352cdc807892\");"
         }
       ],
@@ -1230,7 +1331,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 804,
+          "line": 802,
           "context": "label: i18n(\"components.layout.487e926379fe\")"
         }
       ],
@@ -1246,7 +1347,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 120,
+          "line": 121,
           "context": "return i18n(\"components.layout.4ebe692f5dbb\");"
         }
       ],
@@ -1262,7 +1363,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 100,
+          "line": 101,
           "context": "return i18n(\"components.layout.52fdbbaeda4c\");"
         }
       ],
@@ -1278,7 +1379,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 865,
+          "line": 863,
           "context": "label: i18n(\"components.layout.56043fcf0aa1\")"
         }
       ],
@@ -1294,112 +1395,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 105,
+          "line": 106,
           "context": "return i18n(\"components.layout.60458dfb4c14\");"
         }
       ],
       "translation": "Directions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.60db1afb4022",
-      "source": "课程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 103,
-          "context": "return i18n(\"components.layout.60db1afb4022\");"
-        }
-      ],
-      "translation": "Courses",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.61156d427af0",
-      "source": "回到顶层",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 640,
-          "context": "{i18n(\"components.layout.61156d427af0\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 641,
-          "context": "{i18n(\"components.layout.61156d427af0\")}"
-        }
-      ],
-      "translation": "Back to top",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.6ac6519ea0d3",
-      "source": "切换为窄模式（缩略图，悬停展开）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 160,
-          "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
-        }
-      ],
-      "translation": "Switch to narrow mode (thumbnails, expands on hover)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.73075237fd0f",
-      "source": "邮箱",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 107,
-          "context": "return i18n(\"components.layout.73075237fd0f\");"
-        }
-      ],
-      "translation": "Email",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.76fb5d2b725f",
-      "source": "切换为完整显示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 160,
-          "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
-        }
-      ],
-      "translation": "Switch to full display",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.layout.7a007b29bf56",
-      "source": "硬刷新（整页重载）· 按住可拖动位置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 651,
-          "context": "{i18n(\"components.layout.7a007b29bf56\")}"
-        }
-      ],
-      "translation": "Hard refresh (full page reload) · press and hold to drag its position",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -968,8 +968,30 @@ export class InfoClient {
    * thu-info-lib getNewsList：`${NEWS_LIST_URL}&lmid=all&currentPage=${page}&length=${length}&_csrf=…`
    * → object.dataList：{ bt, url, xxid, time, dwmc_show, yxzd, lmid }。
    */
-  async getNews(page = 1, length = 20): Promise<NewsItem[]> {
-    return this.#withRenew(() => this.#getNewsInner(page, length));
+  async getNews(page = 1, length = 20, language: "zh" | "en" = "zh"): Promise<NewsItem[]> {
+    return this.#withNewsLanguage(language, () => this.#getNewsInner(page, length));
+  }
+
+  #newsLanguageQueue: Promise<void> = Promise.resolve();
+
+  /** The portal localizes unit names using session state, not Accept-Language.
+   * Keep its language change and the dependent read together so concurrent
+   * Chinese/English requests cannot exchange their source labels. Reapply after
+   * renewal, too. The school's news titles/body remain unmodified. */
+  #withNewsLanguage<T>(language: "zh" | "en", read: () => Promise<T>): Promise<T> {
+    const result = this.#newsLanguageQueue.then(() => this.#withRenew(async () => {
+      const csrf = await this.#csrfToken();
+      // Same protocol as info-lib switchLang; awefawef selects the Chinese default.
+      const value = language === "en" ? "en_US" : "awefawef";
+      await this.#http.text(
+        `${urls.INFO_PREFIX}/f/lang/change?websiteShowLanguage=${value}&_csrf=${encodeURIComponent(csrf)}`,
+        undefined,
+        { validateStatus: true },
+      );
+      return read();
+    }));
+    this.#newsLanguageQueue = result.then(() => undefined, () => undefined);
+    return result;
   }
 
   /** 新闻详情（thu-info-lib news.ts handleNewApiNews：NEWS_DETAIL?xxid=…&_csrf= → object.xxDto） */
@@ -1043,10 +1065,10 @@ export class InfoClient {
    * matchExact "是"/"否"；响应 object.resultsList 字段与列表接口一致
    * （yxzd 恒 null；ES 命中标记可能把 <em> 等标签混进标题——解析时剥掉）。
    */
-  async searchNews(keyword: string, page = 1, exactMatch = false): Promise<NewsItem[]> {
+  async searchNews(keyword: string, page = 1, exactMatch = false, language: "zh" | "en" = "zh"): Promise<NewsItem[]> {
     const key = keyword.trim();
     if (!key) return [];
-    return this.#withRenew(async () => {
+    return this.#withNewsLanguage(language, async () => {
       const csrf = await this.#csrfToken();
       const esParam = {
         params: { bt: key, tag: key, xxfl: key },
@@ -1083,8 +1105,8 @@ export class InfoClient {
    * UI 订阅管理据此列出可订阅单位，其 id 供 addNewsSubscription 的 fbdwnm 使用；
    * 订阅条件以服务端 getNewsSubscriptionList 为权威，localStorage 仅 UI 偏好缓存。
    */
-  async getNewsSourceList(): Promise<NewsSource[]> {
-    return this.#withRenew(async () => {
+  async getNewsSourceList(language: "zh" | "en" = "zh"): Promise<NewsSource[]> {
+    return this.#withNewsLanguage(language, async () => {
       const csrf = await this.#csrfToken();
       const text = await this.#http.text(
         `${urls.NEWS_SOURCE_LIST()}?lmid=&_csrf=${encodeURIComponent(csrf)}`,
@@ -1107,8 +1129,8 @@ export class InfoClient {
    * object.{id, fbdwmcList, lmmcList, pxz, titile, bt}[]。fbdwmcList/lmmcList 取首项为
    * 来源/栏目名，bt 为订阅关键词，titile 为条件标题（服务端字段名即此拼写），pxz 为排序。
    */
-  async getNewsSubscriptionList(): Promise<NewsSubscription[]> {
-    return this.#withRenew(async () => {
+  async getNewsSubscriptionList(language: "zh" | "en" = "zh"): Promise<NewsSubscription[]> {
+    return this.#withNewsLanguage(language, async () => {
       const csrf = await this.#csrfToken();
       const text = await this.#http.text(
         `${urls.NEWS_SUBSCRIPTION_LIST()}?_csrf=${encodeURIComponent(csrf)}`,
@@ -1139,8 +1161,8 @@ export class InfoClient {
    * = 服务端按该账号全部订阅条件合并返回；传入时按单条条件过滤）。
    * 响应 object.resultList 字段与列表接口一致，bt/url 需 HTML 实体 decode（he.decode 同义）。
    */
-  async getNewsListBySubscription(page = 1, subscriptionId?: string): Promise<NewsItem[]> {
-    return this.#withRenew(async () => {
+  async getNewsListBySubscription(page = 1, subscriptionId?: string, language: "zh" | "en" = "zh"): Promise<NewsItem[]> {
+    return this.#withNewsLanguage(language, async () => {
       const csrf = await this.#csrfToken();
       // URLSearchParams → fetch 自动 application/x-www-form-urlencoded（CONTENT_TYPE_FORM 同义）
       const form = new URLSearchParams({ currentPage: String(page) });

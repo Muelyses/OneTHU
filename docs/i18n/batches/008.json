@@ -1,7 +1,127 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorer.tabdrawer.9b62e2597e5b",
+      "source": "移出（未分组）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 703,
+          "context": "{i18n(\"components.explorer.tabdrawer.9b62e2597e5b\")}"
+        }
+      ],
+      "translation": "Remove (ungrouped)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.9da364f29a6e",
+      "source": "关闭 {label}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "String(label)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 827,
+          "context": "{i18n(\"components.explorer.tabdrawer.9da364f29a6e\", { label: String(label) })}"
+        }
+      ],
+      "translation": "Close {label}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.tabdrawer.9e76a0089e2c",
+      "source": "彻底删除工作区「{name}」及其中的 {count} 个标签页？",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(w.name)"
+        },
+        {
+          "name": "count",
+          "expression": "String(count)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 783,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(w.name), count: String(count) }))"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 909,
+          "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
+        }
+      ],
+      "translation": "Permanently delete workspace \"{name}\" and its {count} tabs?",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.a0fb6bc1d3c5",
+      "source": "存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 694,
+          "context": "{i18n(\"components.explorer.tabdrawer.a0fb6bc1d3c5\")}"
+        }
+      ],
+      "translation": "Save",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.a3030bf8f16d",
+      "source": "保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 747,
+          "context": "{i18n(\"components.explorer.tabdrawer.a3030bf8f16d\")}"
+        }
+      ],
+      "translation": "Save",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.tabdrawer.a626aad412b7",
+      "source": "标签页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 960,
+          "context": "{i18n(\"components.explorer.tabdrawer.a626aad412b7\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
+          "line": 971,
+          "context": "{i18n(\"components.explorer.tabdrawer.a626aad412b7\")}"
+        }
+      ],
+      "translation": "Tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.explorer.tabdrawer.a7d2979413c2",
       "source": "{value}天前",
@@ -1280,111 +1400,6 @@
         }
       ],
       "translation": "Built-in wallpapers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.wallpaperlibrary.9c5daef675e0",
-      "source": "；已直接应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
-          "line": 110,
-          "context": "variant === \"picker\" ? i18n(\"components.explorer.wallpaperlibrary.9c5daef675e0\") : i18n(\"components.explorer.wallpaperlibrary.0cfe12ee47a2\")"
-        }
-      ],
-      "translation": "; applied directly",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.wallpaperlibrary.a9bbc10e1c98",
-      "source": "删除：",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
-          "line": 71,
-          "context": "i18n(\"components.explorer.wallpaperlibrary.a9bbc10e1c98\") + entry.name"
-        }
-      ],
-      "translation": "Delete:",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.wallpaperlibrary.af60a612a19e",
-      "source": "同步到云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
-          "line": 144,
-          "context": "{i18n(\"components.explorer.wallpaperlibrary.af60a612a19e\")}"
-        }
-      ],
-      "translation": "Sync to Cloud Drive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.wallpaperlibrary.db7bc424df4c",
-      "source": "清除全屏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
-          "line": 147,
-          "context": "{i18n(\"components.explorer.wallpaperlibrary.db7bc424df4c\")}"
-        }
-      ],
-      "translation": "Clear full screen",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.wallpaperlibrary.edc3b613293f",
-      "source": "已收 {length}/{LIBRARY_MAX} 张；自收录的壁纸右上角有 ✕ 可删，内置渐变不可删",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "doc.library.length"
-        },
-        {
-          "name": "LIBRARY_MAX",
-          "expression": "LIBRARY_MAX"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
-          "line": 158,
-          "context": "{i18nRich(\"components.explorer.wallpaperlibrary.edc3b613293f\", { length: doc.library.length, LIBRARY_MAX: LIBRARY_MAX })}"
-        }
-      ],
-      "translation": "{length}/{LIBRARY_MAX} wallpapers saved; your own wallpapers show a ✕ in the top-right corner to delete, built-in gradients cannot be deleted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.wallpaperlibrary.f0da12c6892c",
-      "source": "更换壁纸",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/WallpaperLibrary.tsx",
-          "line": 138,
-          "context": "{i18n(\"components.explorer.wallpaperlibrary.f0da12c6892c\")}"
-        }
-      ],
-      "translation": "Change wallpaper",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

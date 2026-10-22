@@ -81,6 +81,7 @@ import { DownloadOpenButtons } from "../../components/DownloadOpenButtons.js";
 import { RichContent } from "../learn/shared.js";
 import { Highlight, rankNews, readSubs, tokenize, writeSubs } from "./newsSearch.js";
 import { openExternal } from "./openExternal.js";
+import { newsLanguage, newsMetadataForLanguage } from "../../lib/newsLanguage.js";
 
 const PAGE_SIZE = 20;
 
@@ -186,6 +187,7 @@ export function NewsTab({
   deepSubSource?: string;
 } = {}) {
   const uiLocale = useUiLocale();
+  const language = newsLanguage(uiLocale);
 
   const [page, setPage] = useState(1);
   const { data, state, error, reload } = useNews(page, PAGE_SIZE);
@@ -231,6 +233,7 @@ export function NewsTab({
   }, [initialQuery]);
   const [serverState, setServerState] = useState<"idle" | "loading" | "ok" | "fallback">("idle");
   const [serverResults, setServerResults] = useState<NewsItem[] | null>(null);
+  const [serverLanguage, setServerLanguage] = useState(language);
 
   /* --- 订阅：服务端条件为权威；localStorage onethu.news.subs 只做 UI 偏好缓存 --- */
   const [subs, setSubs] = useState<string[]>(() => readSubs());
@@ -251,14 +254,41 @@ export function NewsTab({
   /** 订阅动态来源 chip 选中项：条件 id（「all」= 全部条件合并分页） */
   const [subSel, setSubSel] = useState<string>("all");
   const [subFeed, setSubFeed] = useState<NewsItem[] | null>(null);
+  const [subFeedLanguage, setSubFeedLanguage] = useState(language);
   const [subFeedState, setSubFeedState] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [subFeedErr, setSubFeedErr] = useState<string | null>(null);
   const [subFeedTick, setSubFeedTick] = useState(0);
 
   /* 会话内已抓取新闻聚合（xxid 去重、翻页不丢）与已预览正文摘要（本地检索正文用） */
   const fetchedRef = useRef(new Map<string, NewsItem>());
+  const fetchedLanguage = useRef(language);
+  if (fetchedLanguage.current !== language) {
+    fetchedLanguage.current = language;
+    fetchedRef.current.clear();
+  }
   const plainRef = useRef(new Map<string, string>());
   const [plainBump, setPlainBump] = useState(0);
+
+  useEffect(() => {
+    setSources(null);
+    setSourcesErr(null);
+    setSubsServer(null);
+    setServerResults(null);
+    setSubFeed(null);
+    // The article body stays open; metadata is refreshed from localized list data.
+    setDetail((value) => value ? { ...value, item: { ...value.item, source: undefined } } : value);
+  }, [language]);
+
+  useEffect(() => {
+    setDetail((value) => {
+      const fresh = value && newsMetadataForLanguage(value.item.xxid, language, [
+        { language, items: data },
+        { language: serverLanguage, items: serverResults },
+        { language: subFeedLanguage, items: subFeed },
+      ]);
+      return fresh && value ? { ...value, item: fresh } : value;
+    });
+  }, [data, language, serverLanguage, serverResults, subFeedLanguage, subFeed]);
 
   useEffect(() => {
     const t = setTimeout(() => setQuery(input.trim()), 300);
@@ -286,9 +316,10 @@ export function NewsTab({
     let alive = true;
     setServerState("loading");
     info
-      .searchNews(query, 1)
+      .searchNews(query, 1, false, language)
       .then((rows) => {
         if (!alive) return;
+        setServerLanguage(language);
         setServerResults(rows);
         setServerState("ok");
       })
@@ -300,16 +331,18 @@ export function NewsTab({
     return () => {
       alive = false;
     };
-  }, [query]);
+  }, [query, language]);
 
   /* 订阅弹层首次打开拉全量可订阅单位（服务端权威集） */
   useEffect(() => {
     if (!subsOpen || sources) return;
+    let alive = true;
     info
-      .getNewsSourceList()
-      .then((rows) => setSources(rows))
-      .catch((err: unknown) => setSourcesErr(explainNetworkError(err)));
-  }, [subsOpen, sources, sourcesErr]);
+      .getNewsSourceList(language)
+      .then((rows) => { if (alive) setSources(rows); })
+      .catch((err: unknown) => { if (alive) setSourcesErr(explainNetworkError(err)); });
+    return () => { alive = false; };
+  }, [subsOpen, sources, sourcesErr, language]);
 
   /* OG Modal 自带 Esc/遮罩/滚动锁关闭（ Courses 弹窗同款出口），此处不再手挂 keydown */
 
@@ -332,7 +365,7 @@ export function NewsTab({
   useEffect(() => {
     let alive = true;
     info
-      .getNewsSubscriptionList()
+      .getNewsSubscriptionList(language)
       .then((rows) => {
         if (!alive) return;
         const conds: SubCondition[] = rows.map((r) => ({
@@ -372,7 +405,7 @@ export function NewsTab({
     return () => {
       alive = false;
     };
-  }, [subsTick]);
+  }, [subsTick, language]);
 
   /* 订阅动态来源 chips：每个订阅条件一个小子菜单（短标签 = 来源名优先，否则条件
    * 标题/栏目/关键词；key = 条件 id 即 dyid）。「全部」= 全部条件合并。 */
@@ -385,11 +418,12 @@ export function NewsTab({
   const subDyid = subSel === "all" ? undefined : subSel;
   /* 选中条件已被删除（不在 chips 中）→ 回退「全部」并重置分页 */
   useEffect(() => {
+    if (subsServer === null) return;
     if (subSel !== "all" && !subChips.some((c) => c.id === subSel)) {
       setSubSel("all");
       setSubPage(1);
     }
-  }, [subSel, subChips]);
+  }, [subSel, subChips, subsServer]);
 
   /* 订阅源原子深链：条件就绪后切「订阅动态」并选中同名条件（仅一次） */
   const deepSubApplied = useRef(false);
@@ -413,9 +447,10 @@ export function NewsTab({
     setSubFeedState("loading");
     setSubFeedErr(null);
     info
-      .getNewsListBySubscription(subPage, subDyid)
+      .getNewsListBySubscription(subPage, subDyid, language)
       .then((rows) => {
         if (!alive) return;
+        setSubFeedLanguage(language);
         setSubFeed(rows);
         setSubFeedState("ready");
       })
@@ -427,7 +462,7 @@ export function NewsTab({
     return () => {
       alive = false;
     };
-  }, [activeSeg, subPage, subFeedTick, subSel, subDyid]);
+  }, [activeSeg, subPage, subFeedTick, subSel, subDyid, language]);
 
   /* 订阅动态栏的搜索：在订阅分页结果内本地打分（服务端搜索无法圈定订阅范围） */
   const subItems = subFeed ?? [];
@@ -522,10 +557,10 @@ export function NewsTab({
           plainRef.current.set(item.xxid, d.plain);
           setPlainBump((b) => b + 1);
         }
-        setDetail({ item, state: "ok", data: d });
+        setDetail((current) => current?.item.xxid === item.xxid ? { ...current, state: "ok", data: d } : current);
       })
       .catch((err: unknown) =>
-        setDetail({ item, state: "error", err: explainNetworkError(err) }),
+        setDetail((current) => current?.item.xxid === item.xxid ? { ...current, state: "error", err: explainNetworkError(err) } : current),
       );
   };
 
@@ -897,7 +932,7 @@ export function NewsTab({
                           <Chip
                             size="sm"
                             selected={on}
-                            disabled={opBusy !== null}
+                            disabled={opBusy !== null || subsServer === null}
                             onClick={() => void toggleUnit(s)}
                           >
                             {busy ? "…" : on ? "✓ " : ""}

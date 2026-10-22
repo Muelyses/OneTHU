@@ -1,7 +1,37 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "lib.onboardinglessons.8201b1567e8a",
+      "source": "已发出口令可改接收范围或撤销；已接收副本保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 46
+        }
+      ],
+      "translation": "A share you've issued can be re-scoped or revoked; received copies stay as they are.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.onboardinglessons.821c17e0cd8b",
+      "source": "先打开收发入口，点「接收」查看设备支持。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/onboardingLessons.ts",
+          "line": 51
+        }
+      ],
+      "translation": "Open the share entry first, then tap \"Receive\" to see what your device supports.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "lib.onboardinglessons.836d1b485b82",
       "source": "在组织中管理成员、资料库、项目和公告。",
@@ -1263,38 +1293,6 @@
         }
       ],
       "translation": "Apple Maps",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.trace.53874092e000",
-      "source": "腾讯",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/trace.ts",
-          "line": 286,
-          "context": "return i18n(\"lib.trace.53874092e000\");"
-        }
-      ],
-      "translation": "Tencent",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.trace.7c25d6aa499e",
-      "source": "高德",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/trace.ts",
-          "line": 285,
-          "context": "return i18n(\"lib.trace.7c25d6aa499e\");"
-        }
-      ],
-      "translation": "Amap",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1,7 +1,118 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorer.onegosheet.ef6db76ef5a8",
+      "source": "上次正常",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
+          "line": 253,
+          "context": "f.lastOk ? i18n(\"components.explorer.onegosheet.ef6db76ef5a8\") : i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")"
+        }
+      ],
+      "translation": "Last run OK",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.onegosheet.f4f0ead1116b",
+      "source": "启用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
+          "line": 257,
+          "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.f4f0ead1116b\") : i18n(\"components.explorer.onegosheet.4e6fd0e28c55\")"
+        }
+      ],
+      "translation": "Enable",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.onegosheet.fbf2cea571ab",
+      "source": "工作区搜索结果",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
+          "line": 336,
+          "context": "{i18n(\"components.explorer.onegosheet.fbf2cea571ab\")}"
+        }
+      ],
+      "translation": "Workspace search results",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.onegosheet.ff83dbf31107",
+      "source": "{length} 个标签页",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "w.tabs.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
+          "line": 346,
+          "context": "{i18nRich(\"components.explorer.onegosheet.ff83dbf31107\", { length: w.tabs.length })}"
+        }
+      ],
+      "translation": "{length} tabs",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.oneshot.03c9fecbdd66",
+      "source": "入口已删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 86,
+          "context": "e?.title??i18n(\"components.explorer.oneshot.03c9fecbdd66\")"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 161,
+          "context": "{i18n(\"components.explorer.oneshot.03c9fecbdd66\")}"
+        }
+      ],
+      "translation": "Entry deleted",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.oneshot.1446be782b50",
+      "source": "OneShot 超级快捷",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 126,
+          "context": "{i18n(\"components.explorer.oneshot.1446be782b50\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
+          "line": 153,
+          "context": "{i18n(\"components.explorer.oneshot.1446be782b50\")}"
+        }
+      ],
+      "translation": "OneShot quick launch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.explorer.oneshot.1a54c560b1aa",
       "source": "入口 {value}：放{title}",
@@ -19,7 +130,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 79,
+          "line": 84,
           "context": "{i18n(\"components.explorer.oneshot.1a54c560b1aa\", { value: String(i+1), title: String(placing.title) })}"
         }
       ],
@@ -35,7 +146,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 84,
+          "line": 89,
           "context": "{i18n(\"components.explorer.oneshot.1d7e5eb9476d\")}"
         }
       ],
@@ -51,7 +162,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 84,
+          "line": 89,
           "context": "{i18n(\"components.explorer.oneshot.2cd0f3be8738\")}"
         }
       ],
@@ -76,7 +187,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 79,
+          "line": 84,
           "context": "{i18n(\"components.explorer.oneshot.2ecfbc3b523e\", { title: String(placing.title), value: String(entries.find(e=>e.id===id)?.title??i18n(\"components.explorer.oneshot.822020149c34\")) })}"
         }
       ],
@@ -92,7 +203,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 155,
+          "line": 161,
           "context": "kind==='board'?'OnePage':i18n(\"components.explorer.oneshot.37979829426b\")"
         }
       ],
@@ -108,7 +219,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 84,
+          "line": 89,
           "context": "{i18n(\"components.explorer.oneshot.4a0d6803186f\")}"
         }
       ],
@@ -129,7 +240,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 155,
+          "line": 161,
           "context": "{i18n(\"components.explorer.oneshot.4aac551ec544\", { value: String(i+1) })}"
         }
       ],
@@ -154,7 +265,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 74,
+          "line": 79,
           "context": "showToast(i18nMsg(\"components.explorer.oneshot.4e4edc728921\", { value: String(i+1), title: String(placing.title) }))"
         }
       ],
@@ -170,7 +281,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 141,
+          "line": 147,
           "context": "collapsed?i18n(\"components.explorer.oneshot.56c29685416d\"):i18n(\"components.explorer.oneshot.67b14a8bf539\")"
         }
       ],
@@ -186,7 +297,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 141,
+          "line": 147,
           "context": "collapsed?i18n(\"components.explorer.oneshot.56c29685416d\"):i18n(\"components.explorer.oneshot.67b14a8bf539\")"
         }
       ],
@@ -202,7 +313,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 140,
+          "line": 146,
           "context": "collapsed?i18n(\"components.explorer.oneshot.6880a01dd52e\"):i18n(\"components.explorer.oneshot.c01deadeb2db\")"
         }
       ],
@@ -218,12 +329,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 79,
+          "line": 84,
           "context": "entries.find(e=>e.id===id)?.title??i18n(\"components.explorer.oneshot.822020149c34\")"
         },
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 79,
+          "line": 84,
           "context": "entries.find(e=>e.id===id)?.title??i18n(\"components.explorer.oneshot.822020149c34\")"
         }
       ],
@@ -239,7 +350,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 78,
+          "line": 83,
           "context": "{i18n(\"components.explorer.oneshot.9c7a9fcee92f\")}"
         }
       ],
@@ -260,7 +371,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 155,
+          "line": 161,
           "context": "{i18n(\"components.explorer.oneshot.a20ba95091a1\", { value: String(i+1) })}"
         }
       ],
@@ -276,7 +387,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 78,
+          "line": 83,
           "context": "{i18n(\"components.explorer.oneshot.a2ef8a3a11b2\")}"
         }
       ],
@@ -292,7 +403,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 155,
+          "line": 161,
           "context": "kind==='page'?i18n(\"components.explorer.oneshot.ad25cadf8d13\"):kind==='board'?'OnePage':i18n(\"components.explorer.oneshot.37979829426b\")"
         }
       ],
@@ -308,7 +419,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 81,
+          "line": 86,
           "context": "e?.title??i18n(\"components.explorer.oneshot.b5a39a6494bc\")"
         }
       ],
@@ -324,7 +435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 140,
+          "line": 146,
           "context": "collapsed?i18n(\"components.explorer.oneshot.6880a01dd52e\"):i18n(\"components.explorer.oneshot.c01deadeb2db\")"
         }
       ],
@@ -340,7 +451,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 142,
+          "line": 148,
           "context": "{i18n(\"components.explorer.oneshot.d9a8514e981d\")}"
         }
       ],
@@ -1333,126 +1444,6 @@
         }
       ],
       "translation": "{length} work tabs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.9b62e2597e5b",
-      "source": "移出（未分组）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 703,
-          "context": "{i18n(\"components.explorer.tabdrawer.9b62e2597e5b\")}"
-        }
-      ],
-      "translation": "Remove (ungrouped)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.9da364f29a6e",
-      "source": "关闭 {label}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "label",
-          "expression": "String(label)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 827,
-          "context": "{i18n(\"components.explorer.tabdrawer.9da364f29a6e\", { label: String(label) })}"
-        }
-      ],
-      "translation": "Close {label}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.explorer.tabdrawer.9e76a0089e2c",
-      "source": "彻底删除工作区「{name}」及其中的 {count} 个标签页？",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(w.name)"
-        },
-        {
-          "name": "count",
-          "expression": "String(count)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 783,
-          "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(w.name), count: String(count) }))"
-        },
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 909,
-          "context": "confirmOk(i18nMsg(\"components.explorer.tabdrawer.9e76a0089e2c\", { name: String(ws.name), count: String(count) }))"
-        }
-      ],
-      "translation": "Permanently delete workspace \"{name}\" and its {count} tabs?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.a0fb6bc1d3c5",
-      "source": "存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 694,
-          "context": "{i18n(\"components.explorer.tabdrawer.a0fb6bc1d3c5\")}"
-        }
-      ],
-      "translation": "Save",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.a3030bf8f16d",
-      "source": "保存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 747,
-          "context": "{i18n(\"components.explorer.tabdrawer.a3030bf8f16d\")}"
-        }
-      ],
-      "translation": "Save",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.tabdrawer.a626aad412b7",
-      "source": "标签页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 960,
-          "context": "{i18n(\"components.explorer.tabdrawer.a626aad412b7\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/explorer/TabDrawer.tsx",
-          "line": 971,
-          "context": "{i18n(\"components.explorer.tabdrawer.a626aad412b7\")}"
-        }
-      ],
-      "translation": "Tabs",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

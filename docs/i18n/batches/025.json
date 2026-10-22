@@ -1,7 +1,23 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.issuedsharescard.533f11fea9a2",
+      "source": "持有口令即可接收",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
+          "line": 110,
+          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
+        }
+      ],
+      "translation": "Anyone holding the share code can receive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.vault.issuedsharescard.5c07ccfd4b6e",
       "source": "已发出口令{value}",
@@ -1401,27 +1417,6 @@
         }
       ],
       "translation": "My card",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultexchangeactions.542ad2d546d0",
-      "source": "组织「{orgName}」",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "orgName",
-          "expression": "String(shared.payload.orgName)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
-          "line": 72,
-          "context": "shared.payload.orgName && i18n(\"components.vault.vaultexchangeactions.542ad2d546d0\", { orgName: String(shared.payload.orgName) })"
-        }
-      ],
-      "translation": "Organization “{orgName}”",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

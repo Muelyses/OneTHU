@@ -1,7 +1,118 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.boardcards.dc9591e56d50",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 351,
+          "context": "next.left > 0 ? next.left + i18n(\"components.boardcards.a63a9dc60e00\") : i18n(\"components.boardcards.dc9591e56d50\")"
+        }
+      ],
+      "translation": "In progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.dfaa7ebc48d1",
+      "source": "天气拉取失败，可重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 678,
+          "context": "snap.reason ? i18n(\"components.boardcards.dfaa7ebc48d1\") : i18n(\"components.boardcards.7cdec8c79c4c\")"
+        }
+      ],
+      "translation": "Failed to load weather. You can retry.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.e4f817e61d06",
+      "source": "去查询",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 212,
+          "context": "{i18n(\"components.boardcards.e4f817e61d06\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 226,
+          "context": "{i18n(\"components.boardcards.e4f817e61d06\")}"
+        }
+      ],
+      "translation": "Check it",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.e515eff89f07",
+      "source": "体感 {value}°",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "Math.round(w.now.feels)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 690,
+          "context": "{i18nRich(\"components.boardcards.e515eff89f07\", { value: Math.round(w.now.feels) })}"
+        }
+      ],
+      "translation": "Feels like {value}°",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.f11e888a9be4",
+      "source": "湿度 {value}%",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "Math.round(w.now.humidity)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 691,
+          "context": "{i18nRich(\"components.boardcards.f11e888a9be4\", { value: Math.round(w.now.humidity) })}"
+        }
+      ],
+      "translation": "Humidity {value}%",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.boardcards.f88182fcd575",
+      "source": "进入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/boardCards.tsx",
+          "line": 180,
+          "context": "return i18n(\"components.boardcards.f88182fcd575\");"
+        }
+      ],
+      "translation": "Open",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.boardcards.f9d072c4804c",
       "source": "学分",
@@ -1339,122 +1450,6 @@
         }
       ],
       "translation": "Could not place it (the target board does not exist)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.2a1b5ec13325",
-      "source": "收藏到收藏夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 314,
-          "context": "{i18n(\"components.collect.2a1b5ec13325\")}"
-        }
-      ],
-      "translation": "Save to favorites",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 333,
-          "context": "{i18n(\"components.collect.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.35b079aaa129",
-      "source": "搜索并添加收藏项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 372,
-          "context": "{i18n(\"components.collect.35b079aaa129\")}"
-        }
-      ],
-      "translation": "Search and add saved items",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.3b5439064adf",
-      "source": "收藏到…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 39,
-          "context": "lit ? i18n(\"components.collect.a6cc61b5dea6\") : i18n(\"components.collect.3b5439064adf\")"
-        },
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 76,
-          "context": "{i18n(\"components.collect.3b5439064adf\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 316,
-          "context": "{i18n(\"components.collect.3b5439064adf\")}"
-        }
-      ],
-      "translation": "Save to…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.3fd47edce45b",
-      "source": "关闭",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 317,
-          "context": "{i18n(\"components.collect.3fd47edce45b\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 375,
-          "context": "{i18n(\"components.collect.3fd47edce45b\")}"
-        }
-      ],
-      "translation": "Close",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.collect.42c5be15d1a3",
-      "source": "刚收回的入口让 {names} 变成空板了，一并删掉？\n（「取消」只收回入口，板留着）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "names",
-          "expression": "String(names)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/Collect.tsx",
-          "line": 126,
-          "context": "confirmOk(i18nMsg(\"components.collect.42c5be15d1a3\", { names: String(names) }))"
-        }
-      ],
-      "translation": "With its entry just removed, {names} became an empty board. Delete it too?\n(\"Cancel\" only removes the entry; the board stays)",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

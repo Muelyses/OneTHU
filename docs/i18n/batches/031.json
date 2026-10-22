@@ -1,7 +1,22 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "gui.status.loading",
+      "source": "加载中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "packages/gui/src/locale.tsx",
+          "line": 1
+        }
+      ],
+      "translation": "Loading",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "gui.tabs.all",
       "source": "全部标签页",
@@ -1425,27 +1440,6 @@
         }
       ],
       "translation": "Delete failed.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "im.registry.f8ce08058aa6",
-      "source": "已删除编号 {arg} 的会话。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "arg",
-          "expression": "String(arg)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/im/registry.ts",
-          "line": 299,
-          "context": "replyTo(msg, i18n(\"im.registry.f8ce08058aa6\", { arg: String(arg) }))"
-        }
-      ],
-      "translation": "Deleted conversation number {arg}.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

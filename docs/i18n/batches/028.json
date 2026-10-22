@@ -1,7 +1,23 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.voicesettingssection.36aaad1be5c9",
+      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
+          "line": 269,
+          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
+        }
+      ],
+      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.voicesettingssection.3b6c48ce496b",
       "source": "全部恢复默认",
@@ -630,7 +646,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 214,
+          "line": 217,
           "context": "done(i18n(\"components.widgetbindmodal.0b38085b73e4\"))"
         }
       ],
@@ -646,7 +662,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 228,
+          "line": 231,
           "context": "{i18n(\"components.widgetbindmodal.0d59f4339593\")}"
         }
       ],
@@ -667,7 +683,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 235,
+          "line": 238,
           "context": "{i18nRich(\"components.widgetbindmodal.14b34146dee0\", { length: f.items.filter((it) => it.t === \"a\").length })}"
         }
       ],
@@ -683,7 +699,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 69,
+          "line": 70,
           "context": "return i18n(\"components.widgetbindmodal.17a0e39c6089\");"
         }
       ],
@@ -704,7 +720,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 183,
+          "line": 186,
           "context": "{i18nRich(\"components.widgetbindmodal.1d0050cf33ef\", { value: bindingSummary(cur, favs.data) })}"
         }
       ],
@@ -720,7 +736,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 147,
+          "line": 150,
           "context": "{i18n(\"components.widgetbindmodal.203497c15f75\")}"
         }
       ],
@@ -736,7 +752,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 71,
+          "line": 72,
           "context": "return i18n(\"components.widgetbindmodal.28cea6fbdb23\");"
         }
       ],
@@ -752,7 +768,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 149,
+          "line": 152,
           "context": "{i18n(\"components.widgetbindmodal.2a5e99245dd8\")}"
         }
       ],
@@ -768,7 +784,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 161,
+          "line": 164,
           "context": "{i18n(\"components.widgetbindmodal.378759fdd1e8\")}"
         }
       ],
@@ -784,12 +800,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 142,
+          "line": 145,
           "context": "{i18n(\"components.widgetbindmodal.3fd47edce45b\")}"
         },
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 180,
+          "line": 183,
           "context": "{i18n(\"components.widgetbindmodal.3fd47edce45b\")}"
         }
       ],
@@ -810,7 +826,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 125,
+          "line": 128,
           "context": "done(i18n(\"components.widgetbindmodal.40db44fd1071\", { value: String(bindingSummary(binding, favs.data)) }))"
         }
       ],
@@ -826,7 +842,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 70,
+          "line": 71,
           "context": "return i18n(\"components.widgetbindmodal.4b0011fadb3e\");"
         }
       ],
@@ -842,7 +858,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 70,
+          "line": 71,
           "context": "return i18n(\"components.widgetbindmodal.567db422036f\");"
         }
       ],
@@ -858,7 +874,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 225,
+          "line": 228,
           "context": "{i18n(\"components.widgetbindmodal.572cf45ba436\")}"
         }
       ],
@@ -874,7 +890,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 151,
+          "line": 154,
           "context": "{i18n(\"components.widgetbindmodal.57ba46d6a1b3\")}"
         }
       ],
@@ -890,7 +906,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 179,
+          "line": 182,
           "context": "{i18n(\"components.widgetbindmodal.5aaf3005e398\")}"
         }
       ],
@@ -911,7 +927,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 159,
+          "line": 162,
           "context": "{i18nRich(\"components.widgetbindmodal.5ae60d0c946d\", { value: bindingSummary(loadWidgetInstances().byId[String(inst.id)] ?? { kind: \"today\" }, favs.data) })}"
         }
       ],
@@ -927,7 +943,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 71,
+          "line": 72,
           "context": "return i18n(\"components.widgetbindmodal.5d4640f1dbd2\");"
         }
       ],
@@ -943,7 +959,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 72,
+          "line": 73,
           "context": "return i18n(\"components.widgetbindmodal.6ab335864461\");"
         }
       ],
@@ -959,7 +975,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 196,
+          "line": 199,
           "context": "showToast(i18nMsg(\"components.widgetbindmodal.6ae61cd0b12a\"))"
         }
       ],
@@ -975,7 +991,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 56,
+          "line": 57,
           "context": "resolveAtom(binding.atom)?.title ?? i18n(\"components.widgetbindmodal.73795817b5de\")"
         }
       ],
@@ -991,7 +1007,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 215,
+          "line": 218,
           "context": "{i18n(\"components.widgetbindmodal.76d1caab2105\")}"
         }
       ],
@@ -1007,7 +1023,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 249,
+          "line": 252,
           "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.7aba37c0e712\") : i18n(\"components.widgetbindmodal.bf955b4b0454\")"
         }
       ],
@@ -1023,7 +1039,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 145,
+          "line": 148,
           "context": "{i18n(\"components.widgetbindmodal.7edf6b8c5da0\")}"
         }
       ],
@@ -1044,7 +1060,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 237,
+          "line": 240,
           "context": "{i18nRich(\"components.widgetbindmodal.86a6223fda86\", { value: atomsIn(f) })}"
         }
       ],
@@ -1060,7 +1076,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 248,
+          "line": 251,
           "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.96b17d4fdea5\") : i18n(\"components.widgetbindmodal.e177d59e40d1\")"
         }
       ],
@@ -1076,7 +1092,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 139,
+          "line": 142,
           "context": "{i18n(\"components.widgetbindmodal.aa715722613a\")}"
         }
       ],
@@ -1092,7 +1108,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 141,
+          "line": 144,
           "context": "{i18n(\"components.widgetbindmodal.accde02d15d4\")}"
         }
       ],
@@ -1108,7 +1124,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 249,
+          "line": 252,
           "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.7aba37c0e712\") : i18n(\"components.widgetbindmodal.bf955b4b0454\")"
         }
       ],
@@ -1124,7 +1140,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 69,
+          "line": 70,
           "context": "return i18n(\"components.widgetbindmodal.c8c9de54712b\");"
         }
       ],
@@ -1140,12 +1156,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 222,
+          "line": 225,
           "context": "{i18n(\"components.widgetbindmodal.cb2c998643fd\")}"
         },
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 224,
+          "line": 227,
           "context": "{i18n(\"components.widgetbindmodal.cb2c998643fd\")}"
         }
       ],
@@ -1161,7 +1177,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 248,
+          "line": 251,
           "context": "picker === \"shortcut\" ? i18n(\"components.widgetbindmodal.96b17d4fdea5\") : i18n(\"components.widgetbindmodal.e177d59e40d1\")"
         }
       ],
@@ -1177,7 +1193,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 72,
+          "line": 73,
           "context": "return i18n(\"components.widgetbindmodal.e8748ab06b1a\");"
         }
       ],
@@ -1198,7 +1214,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 145,
+          "line": 148,
           "context": "{i18nRich(\"components.widgetbindmodal.ea9677c3d21f\", { value: bindingSummary(binding, favs.data) })}"
         }
       ],
@@ -1214,7 +1230,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 177,
+          "line": 180,
           "context": "{i18n(\"components.widgetbindmodal.fce3bfe1b135\")}"
         }
       ],
@@ -1230,7 +1246,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetBindModal.tsx",
-          "line": 183,
+          "line": 186,
           "context": "{i18n(\"components.widgetbindmodal.ff6541441f00\")}"
         }
       ],
@@ -1372,22 +1388,6 @@
         }
       ],
       "translation": "{length} kinds: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.widgetsettingssection.174b9ff2e902",
-      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
-          "line": 135,
-          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
-        }
-      ],
-      "translation": "No usable sizes were read yet; please report this line's content to the developers",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

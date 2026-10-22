@@ -1,7 +1,100 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.onboardingtourv3.c575f6222266",
+      "source": "骨架不动：右键大时间或功能区可调透明度（四档）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 75
+        }
+      ],
+      "translation": "The skeleton stays put: right-click the large clock or a feature area to adjust opacity (four levels).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.cb17e22bf3f0",
+      "source": "OneGO! 里还有 OneFlow：在 OH 对话里说「创建一个流程」。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 86
+        }
+      ],
+      "translation": "OneGO! also has OneFlow: tell OH “create a flow” in the conversation.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.d45c9dc68d4b",
+      "source": "演练中：把一张标签拖到另一张上，灰框出现就松手",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 188,
+          "context": "{i18n(\"components.onboardingtourv3.d45c9dc68d4b\")}"
+        }
+      ],
+      "translation": "Try it: drag one tab onto another and release when the gray frame appears",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.d6a2506f30a7",
+      "source": "首页是一张自由白板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 73,
+          "context": "return i18n(\"components.onboardingtourv3.d6a2506f30a7\");"
+        }
+      ],
+      "translation": "Home is a free-form board",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.d750e7aaed28",
+      "source": "工作区底板就在标签栏上：右键可解散（标签保留）或删除。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "The workspace base lives on the tab bar: right-click to disband it (tabs are kept) or delete it.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.onboardingtourv3.da336fdc0dbd",
+      "source": "上一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/OnboardingTourV3.tsx",
+          "line": 211,
+          "context": "{i18n(\"components.onboardingtourv3.da336fdc0dbd\")}"
+        }
+      ],
+      "translation": "Back",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.onboardingtourv3.dc819c398a78",
       "source": "底栏「OneGO!」→ 我的 OnePage：起名后点「新建」。",
@@ -1243,107 +1336,6 @@
         }
       ],
       "translation": "Type the body text; formatting and images are supported",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.rooterrorboundary.786e47d1be6b",
-      "source": "复制错误信息",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/RootErrorBoundary.tsx",
-          "line": 69,
-          "context": "{i18n(\"components.rooterrorboundary.786e47d1be6b\")}"
-        }
-      ],
-      "translation": "Copy error details",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.rooterrorboundary.7bdd5ce1e298",
-      "source": "重新加载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/RootErrorBoundary.tsx",
-          "line": 68,
-          "context": "{i18n(\"components.rooterrorboundary.7bdd5ce1e298\")}"
-        }
-      ],
-      "translation": "Reload",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.rooterrorboundary.94fb0a9e7128",
-      "source": "本页出现问题，已停留在当前页面，可刷新页面重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/RootErrorBoundary.tsx",
-          "line": 49,
-          "context": "{i18n(\"components.rooterrorboundary.94fb0a9e7128\")}"
-        }
-      ],
-      "translation": "Something went wrong on this page. It stayed where it was; refresh the page to retry",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.rooterrorboundary.b8784c8dd563",
-      "source": "重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/RootErrorBoundary.tsx",
-          "line": 67,
-          "context": "{i18n(\"components.rooterrorboundary.b8784c8dd563\")}"
-        }
-      ],
-      "translation": "Retry",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.rooterrorboundary.c77c64cd556b",
-      "source": "应用其余数据与已保存的设置不受影响。可以先「重试」回到出错前的页面；仍不行就「重新加载」。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/RootErrorBoundary.tsx",
-          "line": 50,
-          "context": "{i18n(\"components.rooterrorboundary.c77c64cd556b\")}"
-        }
-      ],
-      "translation": "The rest of the app’s data and saved settings are unaffected. You can “Retry” first to return to the page before the error; if that still fails, use “Reload”.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.searchlandingselfcheck.0489a71d8f26",
-      "source": "goSearchRow 异常：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(String(e instanceof Error ? e.message : e).slice(0, 60))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/SearchLandingSelfcheck.tsx",
-          "line": 96,
-          "context": "note = i18n(\"components.searchlandingselfcheck.0489a71d8f26\", { value: String(String(e instanceof Error ? e.message : e).slice(0, 60)) })"
-        }
-      ],
-      "translation": "goSearchRow error: {value}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

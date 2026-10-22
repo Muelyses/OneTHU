@@ -1,4 +1,4 @@
-import { t as i18n } from "../i18n/index.js";
+import { t as i18n, msg as i18nMsg, resolveMessage, type UiText } from "../i18n/index.js";
 /**
  * 应用更新——清单获取 / 版本比较 / 下载编排 / 拉起安装页。
  *
@@ -18,7 +18,7 @@ import { t as i18n } from "../i18n/index.js";
  *    "assets": { "android": { "url": "OneTHU_0.10.1_arm64.apk", "size": 20255475 } } }`
  *
  * ## 红线
- * - **必须用户触发**：本模块没有后台轮询；只有点「检查更新」才请求，点「下载并安装」才下载；
+ * - 版本检查支持启动提醒与设置手动检查；点击「下载并安装」后才下载；
  * - **绝不静默安装**：`installDownloaded()` 只把系统安装器拉到前台（安卓 = ROM 自己的确认页）；
  * - 失败一律结构化返回 + 人话原因（不抛给 UI）。
  */
@@ -71,6 +71,34 @@ export interface UpdateAttempt {
   label: string;
   ok: boolean;
   error?: string;
+  /** Application-owned timeout stays structured; remote/native reasons stay raw. */
+  errorKind?: "source-timeout";
+}
+
+class UpdateSourceTimeout extends Error {}
+
+export function updateSourceLabel(result: UpdateCheckResult): string {
+  return result.source ? SOURCE_LABEL[result.source] : result.sourceLabel ?? "";
+}
+
+export function updateAttemptError(attempt: UpdateAttempt): string {
+  return attempt.errorKind === "source-timeout"
+    ? i18n("update.sourceTimeout", { source: SOURCE_LABEL[attempt.source] })
+    : attempt.error ?? i18n("lib.updater.a1a9da9ee6ed");
+}
+
+export function updateFallbackText(result: UpdateCheckResult): string {
+  const failed = result.attempts?.find(attempt => !attempt.ok);
+  return failed
+    ? i18n("lib.updater.ab90d58874ee", { label: SOURCE_LABEL[failed.source], value: updateAttemptError(failed) })
+    : result.fallbackReason ?? "";
+}
+
+export function updateFailureText(result: UpdateCheckResult): string {
+  const attempts = result.attempts?.filter(attempt => !attempt.ok);
+  return attempts?.length
+    ? i18n("lib.updater.2985491184cc", { detail: attempts.map(attempt => `· ${SOURCE_LABEL[attempt.source]}：${updateAttemptError(attempt)}`).join("\n") })
+    : result.error ?? i18n("components.softwareupdatesection.4f6f06254d16");
 }
 
 export interface UpdateCheckResult {
@@ -418,7 +446,7 @@ export async function checkForUpdate(opts: {
     let abort: (() => void) | undefined;
     try {
       const limit = new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error(i18n("update.sourceTimeout", { source: SOURCE_LABEL[step.source] }))), opts.sourceTimeoutMs ?? (step.source === "github" ? 8_000 : 15_000));
+        timer = setTimeout(() => reject(new UpdateSourceTimeout(i18n("update.sourceTimeout", { source: SOURCE_LABEL[step.source] }))), opts.sourceTimeoutMs ?? (step.source === "github" ? 8_000 : 15_000));
         abort = () => reject(new DOMException("Cancelled", "AbortError"));
         opts.signal?.addEventListener("abort", abort, { once: true });
       });
@@ -438,7 +466,7 @@ export async function checkForUpdate(opts: {
       };
     } catch (e) {
       if (opts.signal?.aborted) throw new DOMException("Cancelled", "AbortError");
-      attempts.push({ source: step.source, label: SOURCE_LABEL[step.source], ok: false, error: e instanceof Error ? e.message : String(e) });
+      attempts.push({ source: step.source, label: SOURCE_LABEL[step.source], ok: false, error: e instanceof Error ? e.message : String(e), ...(e instanceof UpdateSourceTimeout ? { errorKind: "source-timeout" as const } : {}) });
     } finally {
       if (timer) clearTimeout(timer);
       if (abort) opts.signal?.removeEventListener("abort", abort);
@@ -494,6 +522,8 @@ export interface InstallLaunchResult {
   ok: boolean;
   hint?: string;
   error?: string;
+  hintMessage?: UiText;
+  errorMessage?: UiText;
 }
 
 /**
@@ -503,14 +533,15 @@ export interface InstallLaunchResult {
  * - 桌面：同一原生入口复核已下载文件后打开系统安装器。
  */
 export async function installDownloaded(path: string): Promise<InstallLaunchResult> {
-  if (!path) return { ok: false, error: i18n("lib.updater.42b98aa3fae8") };
+  if (!path) {
+    const errorMessage = i18nMsg("lib.updater.42b98aa3fae8");
+    return { ok: false, error: resolveMessage(errorMessage), errorMessage };
+  }
   const key = platformKey();
   try {
     await invoke("updater_open_installer", { path });
-    if (key === "android") {
-      return { ok: true, hint: i18n("lib.updater.2da47c897e30") };
-    }
-    return { ok: true, hint: key === "macos" ? i18n("lib.updater.185680ad27cd") : i18n("lib.updater.95bc488982b2") };
+    const hintMessage = key === "android" ? i18nMsg("lib.updater.2da47c897e30") : key === "macos" ? i18nMsg("lib.updater.185680ad27cd") : i18nMsg("lib.updater.95bc488982b2");
+    return { ok: true, hint: resolveMessage(hintMessage), hintMessage };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     void logLine(i18n("lib.updater.c57372e35f51", { msg: String(msg) })).catch(() => undefined);

@@ -1,7 +1,108 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.layout.60db1afb4022",
+      "source": "课程",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 104,
+          "context": "return i18n(\"components.layout.60db1afb4022\");"
+        }
+      ],
+      "translation": "Courses",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.61156d427af0",
+      "source": "回到顶层",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 638,
+          "context": "{i18n(\"components.layout.61156d427af0\")}"
+        },
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 639,
+          "context": "{i18n(\"components.layout.61156d427af0\")}"
+        }
+      ],
+      "translation": "Back to top",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.6ac6519ea0d3",
+      "source": "切换为窄模式（缩略图，悬停展开）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 161,
+          "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
+        }
+      ],
+      "translation": "Switch to narrow mode (thumbnails, expands on hover)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.73075237fd0f",
+      "source": "邮箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 108,
+          "context": "return i18n(\"components.layout.73075237fd0f\");"
+        }
+      ],
+      "translation": "Email",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.76fb5d2b725f",
+      "source": "切换为完整显示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 161,
+          "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
+        }
+      ],
+      "translation": "Switch to full display",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.layout.7a007b29bf56",
+      "source": "硬刷新（整页重载）· 按住可拖动位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/Layout.tsx",
+          "line": 649,
+          "context": "{i18n(\"components.layout.7a007b29bf56\")}"
+        }
+      ],
+      "translation": "Hard refresh (full page reload) · press and hold to drag its position",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.layout.7f1d9dd04cd1",
       "source": "我的",
@@ -10,12 +111,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 154,
+          "line": 155,
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 241,
+          "line": 243,
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         }
       ],
@@ -31,7 +132,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 877,
+          "line": 875,
           "context": "{i18n(\"components.layout.9f07d2ce4115\")}"
         }
       ],
@@ -47,7 +148,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 104,
+          "line": 105,
           "context": "return i18n(\"components.layout.a14f23af7016\");"
         }
       ],
@@ -63,7 +164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 197,
+          "line": 198,
           "context": "{i18n(\"components.layout.a626aad412b7\")}"
         }
       ],
@@ -79,7 +180,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 114,
+          "line": 115,
           "context": "return i18n(\"components.layout.b1abb3dc2271\");"
         }
       ],
@@ -95,7 +196,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 159,
+          "line": 160,
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ],
@@ -111,7 +212,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 947,
+          "line": 945,
           "context": "{i18n(\"components.layout.b8784c8dd563\")}"
         }
       ],
@@ -127,7 +228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 805,
+          "line": 803,
           "context": "label: i18n(\"components.layout.df3d58c7d84b\")"
         }
       ],
@@ -143,7 +244,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 115,
+          "line": 116,
           "context": "return i18n(\"components.layout.e7028601e7da\");"
         }
       ],
@@ -159,7 +260,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 806,
+          "line": 804,
           "context": "label: i18n(\"components.layout.e806fbbe8ec6\")"
         }
       ],
@@ -175,7 +276,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 108,
+          "line": 109,
           "context": "return i18n(\"components.layout.f75562426e77\");"
         }
       ],
@@ -191,7 +292,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 652,
+          "line": 650,
           "context": "{i18n(\"components.layout.f9e31e1d63d5\")}"
         }
       ],
@@ -207,12 +308,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 153,
+          "line": 154,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 234,
+          "line": 236,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         }
       ],
@@ -228,7 +329,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 118,
+          "line": 119,
           "context": "return i18n(\"components.layout.fd17d86dd268\");"
         }
       ],
@@ -1280,122 +1381,6 @@
         }
       ],
       "translation": "This device only",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.5c55a67935af",
-      "source": "全部",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 514,
-          "context": "label: i18n(\"components.namecardsection.5c55a67935af\")"
-        }
-      ],
-      "translation": "All",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.namecardsection.63b79babcb32",
-      "source": "粘贴口令",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 251,
-          "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 590,
-          "context": "{i18n(\"components.namecardsection.63b79babcb32\")}"
-        }
-      ],
-      "translation": "Paste share code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6773310492a9",
-      "source": "名字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 153,
-          "context": "label: i18nMsg(\"components.namecardsection.6773310492a9\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 270,
-          "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
-        },
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 606,
-          "context": "k: i18n(\"components.namecardsection.6773310492a9\")"
-        }
-      ],
-      "translation": "Name",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.namecardsection.6a7ab670dbb4",
-      "source": "从通讯录删除「{name}」？",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(shown.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 676,
-          "context": "confirmOk(i18nMsg(\"components.namecardsection.6a7ab670dbb4\", { name: String(shown.name) }))"
-        }
-      ],
-      "translation": "Remove {name} from Contacts?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6b70038c3f75",
-      "source": "卡面已备份到云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 224,
-          "context": "showToast(i18nMsg(\"components.namecardsection.6b70038c3f75\"))"
-        }
-      ],
-      "translation": "Card backed up to the cloud drive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.namecardsection.6d434210c5bf",
-      "source": "搜索好友、组织或简介",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/NameCardSection.tsx",
-          "line": 506,
-          "context": "{i18n(\"components.namecardsection.6d434210c5bf\")}"
-        }
-      ],
-      "translation": "Search friends, organizations, or bios",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

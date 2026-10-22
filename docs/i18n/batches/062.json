@@ -1,7 +1,266 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.learn.yktassignmentdetailpage.520b9d933a92",
+      "source": "重交上限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 444,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.520b9d933a92\")}"
+        }
+      ],
+      "translation": "Resubmission limit",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.5395bb5ccaaa",
+      "source": "试卷（永不提供提交入口）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 423,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.5395bb5ccaaa\")}"
+        }
+      ],
+      "translation": "Exam paper (never offers a submit entry)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.59c9e9c47dd3",
+      "source": "点击展开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 106,
+          "context": "open ? i18n(\"pages.learn.yktassignmentdetailpage.3afccd0197f6\") : i18n(\"pages.learn.yktassignmentdetailpage.59c9e9c47dd3\")"
+        }
+      ],
+      "translation": "Tap to expand",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.5e13feb09ffe",
+      "source": "第 {index} 题",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "index",
+          "expression": "p.index"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 234,
+          "context": "{i18nRich(\"pages.learn.yktassignmentdetailpage.5e13feb09ffe\", { index: p.index })}"
+        }
+      ],
+      "translation": "Question {index}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.624ab77cb450",
+      "source": "本作业暂无题目明细（老师端未提供）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 476,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.624ab77cb450\")}"
+        }
+      ],
+      "translation": "No question details for this assignment (not provided by the instructor side).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.639756756c8c",
+      "source": "不可重交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 73,
+          "context": "n !== undefined && n > 0 ? i18n(\"pages.learn.yktassignmentdetailpage.baf3903dacce\", { n: String(n) }) : i18n(\"pages.learn.yktassignmentdetailpage.639756756c8c\")"
+        }
+      ],
+      "translation": "No resubmission",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.6aad89c7a239",
+      "source": "打开官方作答页失败：{submitErr}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "submitErr",
+          "expression": "String(submitErr)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 519,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.6aad89c7a239\", { submitErr: String(submitErr) })}"
+        }
+      ],
+      "translation": "Failed to open the official answer page: {submitErr}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.6d2001d0356a",
+      "source": "打开外链题目 ↗",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 246,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.6d2001d0356a\")}"
+        }
+      ],
+      "translation": "Open external question ↗",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.700c885fd7e5",
+      "source": "图片上传中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 210,
+          "context": "uploading > 0 ? i18n(\"pages.learn.yktassignmentdetailpage.700c885fd7e5\") : unlimited ? i18n(\"pages.learn.yktassignmentdetailpage.d069d4f0d22a\") : i18n(\"pages.learn.yktassignmentdetailpage.13c3562806dd\", { remaining: String(remaining) })"
+        }
+      ],
+      "translation": "Uploading image…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.703e377b14a8",
+      "source": "本题作答次数已用尽",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 194,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.703e377b14a8\")}"
+        }
+      ],
+      "translation": "Attempt limit reached for this question",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.70cf7d0a5c47",
+      "source": "作答进度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 452,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.70cf7d0a5c47\")}"
+        }
+      ],
+      "translation": "Answer progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.742500df9468",
+      "source": "确认提交第 {index} 题作答？\n\n剩余提交次数：{value}\n提交将覆盖此前的作答（雨课堂官方截止/次数校验同步生效）。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "index",
+          "expression": "String(p.index)"
+        },
+        {
+          "name": "value",
+          "expression": "String(unlimited ? i18n(\"pages.learn.yktassignmentdetailpage.8e6465957c62\") : i18n(\"pages.learn.yktassignmentdetailpage.30254637bb0b\", { remaining: String(remaining) }))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 167,
+          "context": "confirmOk(\n      i18nMsg(\"pages.learn.yktassignmentdetailpage.742500df9468\", { index: String(p.index), value: String(unlimited ? i18n(\"pages.learn.yktassignmentdetailpage.8e6465957c62\") : i18n(\"pages.learn.yktassignmentdetailpage.30254637bb0b\", { remaining: String(remaining) })) }),\n    )"
+        }
+      ],
+      "translation": "Submit your answer to question {index}?\n\nRemaining attempts: {value}\nSubmitting will overwrite your previous answer (Rain Classroom official deadline/attempt checks apply).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.7992d2434ab2",
+      "source": "提交后可在剩余次数内重做（覆盖旧答案）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 210,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.7992d2434ab2\")}"
+        }
+      ],
+      "translation": "After submitting, you can redo it within the remaining attempts (old answer will be replaced)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.8e6465957c62",
+      "source": "不限次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 167,
+          "context": "unlimited ? i18n(\"pages.learn.yktassignmentdetailpage.8e6465957c62\") : i18n(\"pages.learn.yktassignmentdetailpage.30254637bb0b\", { remaining: String(remaining) })"
+        }
+      ],
+      "translation": "Unlimited",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.yktassignmentdetailpage.8e8d2fcb3cc5",
+      "source": "作业信息",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/YktAssignmentDetailPage.tsx",
+          "line": 432,
+          "context": "{i18n(\"pages.learn.yktassignmentdetailpage.8e8d2fcb3cc5\")}"
+        }
+      ],
+      "translation": "Assignment info",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.yktassignmentdetailpage.90ed59a33fe8",
       "source": "提交将通过应用内官方作答页完成（雨课堂官方确认 / 拦截原样保留）。",
@@ -806,7 +1065,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 88,
+          "line": 90,
           "context": "{i18n(\"pages.login.1cdc0d5b06ff\")}"
         }
       ],
@@ -822,7 +1081,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 89,
+          "line": 91,
           "context": "busy ? i18n(\"pages.login.bd7a362053a5\") : i18n(\"pages.login.1e2df9c3075a\")"
         }
       ],
@@ -838,7 +1097,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 205,
+          "line": 209,
           "context": "isTotp ? i18n(\"pages.login.213f02f73129\") : sent ? i18n(\"pages.login.702cf0e136eb\") : i18n(\"pages.login.91f1e4b13d58\")"
         }
       ],
@@ -854,7 +1113,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 103,
+          "line": 105,
           "context": "return i18n(\"pages.login.22a686a1c34c\");"
         }
       ],
@@ -870,7 +1129,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 62,
+          "line": 64,
           "context": "{i18n(\"pages.login.294044d5d232\")}"
         }
       ],
@@ -886,7 +1145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 227,
+          "line": 231,
           "context": "sending ? i18n(\"pages.login.364970d8168c\") : sent ? i18n(\"pages.login.9287ac799e54\") : i18n(\"pages.login.4656fed515ae\")"
         }
       ],
@@ -902,7 +1161,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 227,
+          "line": 231,
           "context": "sent ? i18n(\"pages.login.9287ac799e54\") : i18n(\"pages.login.4656fed515ae\")"
         }
       ],
@@ -918,7 +1177,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 229,
+          "line": 233,
           "context": "busy || submitting ? i18n(\"pages.login.fee0b2ceff3f\") : i18n(\"pages.login.4e34537e5d0c\")"
         }
       ],
@@ -934,7 +1193,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 224,
+          "line": 228,
           "context": "{i18n(\"pages.login.572898d767b6\")}"
         }
       ],
@@ -950,7 +1209,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 183,
+          "line": 186,
           "context": "{i18n(\"pages.login.64f2052d09f0\")}"
         }
       ],
@@ -966,7 +1225,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 205,
+          "line": 209,
           "context": "sent ? i18n(\"pages.login.702cf0e136eb\") : i18n(\"pages.login.91f1e4b13d58\")"
         }
       ],
@@ -982,7 +1241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 93,
+          "line": 95,
           "context": "{i18n(\"pages.login.7046d9853c1b\")}"
         }
       ],
@@ -1003,7 +1262,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 159,
+          "line": 162,
           "context": "{i18nRich(\"pages.login.718e9b90bf7d\", { username: twoFactor.username })}"
         }
       ],
@@ -1019,12 +1278,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 188,
+          "line": 191,
           "context": "{i18n(\"pages.login.747b0f9082e6\")}"
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 235,
+          "line": 239,
           "context": "{i18n(\"pages.login.747b0f9082e6\")}"
         }
       ],
@@ -1040,7 +1299,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 234,
+          "line": 238,
           "context": "{i18n(\"pages.login.8875d1e9f0a3\")}"
         }
       ],
@@ -1056,7 +1315,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 205,
+          "line": 209,
           "context": "sent ? i18n(\"pages.login.702cf0e136eb\") : i18n(\"pages.login.91f1e4b13d58\")"
         }
       ],
@@ -1072,7 +1331,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 227,
+          "line": 231,
           "context": "sent ? i18n(\"pages.login.9287ac799e54\") : i18n(\"pages.login.4656fed515ae\")"
         }
       ],
@@ -1088,7 +1347,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 158,
+          "line": 161,
           "context": "{i18n(\"pages.login.98fc3e737ae3\")}"
         }
       ],
@@ -1104,7 +1363,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 189,
+          "line": 192,
           "context": "{i18n(\"pages.login.acfc4e74a650\")}"
         }
       ],
@@ -1120,265 +1379,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 214,
+          "line": 218,
           "context": "{i18n(\"pages.login.bb015c60bafc\")}"
         }
       ],
       "translation": "Verification code",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.bd7a362053a5",
-      "source": "正在登录统一认证…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 89,
-          "context": "busy ? i18n(\"pages.login.bd7a362053a5\") : i18n(\"pages.login.1e2df9c3075a\")"
-        }
-      ],
-      "translation": "Signing in with unified authentication…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.c4d678ef6e37",
-      "source": "学号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 68,
-          "context": "{i18n(\"pages.login.c4d678ef6e37\")}"
-        }
-      ],
-      "translation": "Student ID",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.e7b51261e9c9",
-      "source": "统一认证密码",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 78,
-          "context": "{i18n(\"pages.login.e7b51261e9c9\")}"
-        }
-      ],
-      "translation": "Unified authentication password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.f3943a7b3681",
-      "source": "企业微信",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 103,
-          "context": "return i18n(\"pages.login.f3943a7b3681\");"
-        }
-      ],
-      "translation": "WeCom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.f5d462594d7c",
-      "source": "脱敏演示版：登录与正式版完全相同，姓名 / 学号替换为化名与编造学号、成绩为编造成绩； 课表、教室、洗衣机等非敏感数据仍是真实数据。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 96,
-          "context": "{i18n(\"pages.login.f5d462594d7c\")}"
-        }
-      ],
-      "translation": "Anonymized demo: sign-in works exactly like the release version, but names / student IDs are replaced with pseudonyms and fabricated IDs, and grades are fabricated; non-sensitive data such as the timetable, classrooms, and washing machines is still real.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.f87602bd9134",
-      "source": "手机短信",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 103,
-          "context": "return i18n(\"pages.login.f87602bd9134\");"
-        }
-      ],
-      "translation": "SMS",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.login.fee0b2ceff3f",
-      "source": "校验中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 229,
-          "context": "busy || submitting ? i18n(\"pages.login.fee0b2ceff3f\") : i18n(\"pages.login.4e34537e5d0c\")"
-        }
-      ],
-      "translation": "Verifying…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.0c184871f658",
-      "source": "昨天",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 27,
-          "context": "return i18n(\"pages.mailpage.0c184871f658\");"
-        }
-      ],
-      "translation": "Yesterday",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.13c8b1be20e8",
-      "source": "选择一封邮件阅读",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 364,
-          "context": "{i18n(\"pages.mailpage.13c8b1be20e8\")}"
-        }
-      ],
-      "translation": "Select an email to read",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.1c6fcf296dce",
-      "source": "{value}月{value2}日",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(d.getMonth() + 1)"
-        },
-        {
-          "name": "value2",
-          "expression": "String(d.getDate())"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 28,
-          "context": "return i18n(\"pages.mailpage.1c6fcf296dce\", { value: String(d.getMonth() + 1), value2: String(d.getDate()) });"
-        }
-      ],
-      "translation": "{value}/{value2}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.208e09900504",
-      "source": "{email} · IMAP/SMTP 直连",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "email",
-          "expression": "mail.email"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 306,
-          "context": "{i18nRich(\"pages.mailpage.208e09900504\", { email: mail.email })}"
-        }
-      ],
-      "translation": "{email} · Direct IMAP/SMTP",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.2934c3ab3025",
-      "source": "抄送",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 130,
-          "context": "{i18n(\"pages.mailpage.2934c3ab3025\")}"
-        }
-      ],
-      "translation": "Cc",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 122,
-          "context": "{i18n(\"pages.mailpage.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.2dee7a19b009",
-      "source": "邮箱与云日历共用同一个清华邮箱，绑一次两处都能用。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 289,
-          "context": "{i18n(\"pages.mailpage.2dee7a19b009\")}"
-        }
-      ],
-      "translation": "Mail and the cloud calendar share the same Tsinghua mailbox; bind it once and both work.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.mailpage.307333307c28",
-      "source": "邮箱待配置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/MailPage.tsx",
-          "line": 288,
-          "context": "{i18n(\"pages.mailpage.307333307c28\")}"
-        }
-      ],
-      "translation": "Mailbox not configured",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

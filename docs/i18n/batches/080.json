@@ -1,7 +1,247 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.types.3821452a894a",
+      "source": "读取 GitLab",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 72,
+          "context": "return i18n(\"plugins.types.3821452a894a\");"
+        }
+      ],
+      "translation": "Read GitLab",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.3c455efb9961",
+      "source": "电费余额/缴费记录/卫生分（只读）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 75,
+          "context": "return i18n(\"plugins.types.3c455efb9961\");"
+        }
+      ],
+      "translation": "Electricity balance/payment records/hygiene score (read-only)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.3fb5a1122255",
+      "source": "宿舍公共空间预约与取消（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 63,
+          "context": "return i18n(\"plugins.types.3fb5a1122255\");"
+        }
+      ],
+      "translation": "Book and cancel dorm common spaces (write operation, requires confirmation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.40a17d15ad1e",
+      "source": "触发外部作业源网络刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 93,
+          "context": "return i18n(\"plugins.types.40a17d15ad1e\");"
+        }
+      ],
+      "translation": "Trigger a network refresh of external assignment sources",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.48ad7913a562",
+      "source": "GitLab 写操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 73,
+          "context": "return i18n(\"plugins.types.48ad7913a562\");"
+        }
+      ],
+      "translation": "GitLab write operations",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.48e21aca2214",
+      "source": "上传/分享云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 69,
+          "context": "return i18n(\"plugins.types.48e21aca2214\");"
+        }
+      ],
+      "translation": "Upload to/share Cloud Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.4b9d52da5277",
+      "source": "跳转到应用的任意页面与子栏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 79,
+          "context": "return i18n(\"plugins.types.4b9d52da5277\");"
+        }
+      ],
+      "translation": "Navigate to any app page and subsection",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.4bcb26f88d39",
+      "source": "模型对话",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 91,
+          "context": "return i18n(\"plugins.types.4bcb26f88d39\");"
+        }
+      ],
+      "translation": "Model chat",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.50500d372141",
+      "source": "读取系统剪贴板内容（敏感：可能读到密码管理器复制的口令）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 87,
+          "context": "return i18n(\"plugins.types.50500d372141\");"
+        }
+      ],
+      "translation": "Read system clipboard contents (sensitive: may read passwords copied from a password manager)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.5171b9b529e4",
+      "source": "体育场馆预约与取消（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 61,
+          "context": "return i18n(\"plugins.types.5171b9b529e4\");"
+        }
+      ],
+      "translation": "Book and cancel sports venues (write operation, requires confirmation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.556c5fcee2ec",
+      "source": "从清华邮箱发信（写操作，需确认）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 67,
+          "context": "return i18n(\"plugins.types.556c5fcee2ec\");"
+        }
+      ],
+      "translation": "Send email from your Tsinghua mailbox (write operation, requires confirmation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.584c7658f468",
+      "source": "余额与消费流水（只读，不含充值）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 74,
+          "context": "return i18n(\"plugins.types.584c7658f468\");"
+        }
+      ],
+      "translation": "Balance and spending records (read-only, no top-ups)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.5bbe605e0a01",
+      "source": "雨课堂 / TUOJ / Tyche / DSA OJ 的作业快照",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 92,
+          "context": "return i18n(\"plugins.types.5bbe605e0a01\");"
+        }
+      ],
+      "translation": "Assignment snapshots from Rain Classroom / TUOJ / Tyche / DSA OJ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.5d78a4c234e1",
+      "source": "预约图书馆",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 77,
+          "context": "return i18n(\"plugins.types.5d78a4c234e1\");"
+        }
+      ],
+      "translation": "Book library resources",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.627dd0f3fd6e",
+      "source": "读取云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 68,
+          "context": "return i18n(\"plugins.types.627dd0f3fd6e\");"
+        }
+      ],
+      "translation": "Read Cloud Drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.types.6dc54a9470ed",
       "source": "读取体育场馆",
@@ -1046,237 +1286,6 @@
         }
       ],
       "translation": "Understand where data goes, then choose permissions. Minimal and Practical modes work without optional consent.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.localBody",
-      "source": "OneTHU 没有自建的校园数据汇总后端，界面与业务主要在设备上运行，并通过原生网络层连接学校及你选择的服务。它并非离线软件，也不是所有处理都只发生在本机。账号会话、缓存、设置及选择记住的凭据会保存在设备上，请保护设备与导出的文件。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OneTHU has no self-operated backend that aggregates campus data. Its interface and most application logic run on your device, with a native network layer connecting to university services and services you select. It is not offline, and not all processing stays on-device. Sessions, caches, settings and credentials you choose to remember are stored on your device. Protect your device and exported files.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.localTitle",
-      "source": "本地客户端，不是学校官方应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "A local client, not an official university app",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.nativeUpdateRequired",
-      "source": "前端已更新，但当前 App 原生壳版本过旧，无法保存权限。开发预览请重新编译并重启 App；安装版请更新安装包。刷新页面无法修复。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "The interface is updated, but this app’s native host is too old to save permissions. Rebuild and restart the app for development previews, or install the updated app. Reloading the page cannot fix this.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.ohBody",
-      "source": "开启 OH 后，你发送的对话、附件，以及为回答而调用工具读取到的数据可能发往所选模型服务商、清小搭或你配置的 API／MCP／IM 服务，并适用对方政策。不要提供密码、验证码或无关的敏感数据。AI 可能出错；涉及提交、预约、删除、发送或分享等操作应先核对确认。网页、文件和技能中的指令不构成你的授权；仅安装可信插件与技能。云盘授权关闭时，OH 也无法绕过云盘限制。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "When OH is enabled, your messages, attachments and data read by tools to answer you may be sent to your chosen model provider, QingXiaoDa or configured API / MCP / IM services, under their policies. Do not provide passwords, verification codes or unrelated sensitive data. AI may be wrong. Review and confirm submissions, bookings, deletions, sending and sharing. Instructions in pages, files or skills are not your authorization. Install only trusted plugins and skills. OH cannot bypass disabled cloud permission.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.ohEffect",
-      "source": "可选。关闭后保留搜索与校园页面，OH 对话及智能体操作停用。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Optional. When disabled, search and campus pages remain available, while OH conversations and agent actions are disabled.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.ohRequired",
-      "source": "OH 未授权。请先在「我的 → 权限与隐私」或导览中查看说明并开启。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/privacyConsent.ts",
-          "line": 48,
-          "context": "new Error(t(\"privacy.ohRequired\"))"
-        }
-      ],
-      "translation": "OH is disabled. Review the notice and enable it in My → Permissions & privacy or in the guide.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.ohTitle",
-      "source": "OH、模型与插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OH, models & plugins",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.ohToggle",
-      "source": "允许使用 OH 与所选模型服务",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Allow OH and the selected model service",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.readCarefully",
-      "source": "请务必认真阅读，并在下方手动授权云盘和智能体服务。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Please read carefully and manually authorize cloud drive and agent services below.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.replay",
-      "source": "重新导览",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 214,
-          "context": "{i18n(\"privacy.replay\")}"
-        }
-      ],
-      "translation": "Replay the guide",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.review",
-      "source": "查看与修改授权",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 31,
-          "context": "{t(\"privacy.review\")}"
-        }
-      ],
-      "translation": "Review permissions",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.revokeGuide",
-      "source": "如果想要撤销授权，请前往设置重新导览。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 214,
-          "context": "{i18n(\"privacy.revokeGuide\")}"
-        }
-      ],
-      "translation": "To withdraw consent, open Settings and replay the guide.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.saved",
-      "source": "授权选择已保存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 33,
-          "context": "showToast(t(\"privacy.saved\"))"
-        }
-      ],
-      "translation": "Permission choices saved",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.saveFailed",
-      "source": "权限选择未能保存，请稍后重试。未保存成功前，不会授予新的权限。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Your permission choices could not be saved. Please try again. No new permissions are granted until saving succeeds.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.settings",
-      "source": "权限与隐私",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
-          "line": 31,
-          "context": "{t(\"privacy.settings\")}"
-        }
-      ],
-      "translation": "Permissions & privacy",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

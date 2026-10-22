@@ -1,7 +1,23 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.tourillustration.7d20856e7f07",
+      "source": "内容可以自由组织，完整设置随时保留。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/TourIllustration.tsx",
+          "line": 37,
+          "context": "return i18n(\"components.tourillustration.7d20856e7f07\");"
+        }
+      ],
+      "translation": "Content can be organized freely, and your full settings are kept at all times.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.tourillustration.8173df51f2a7",
       "source": "首页会把今日待办和下一节课整理清楚。",
@@ -1295,22 +1311,6 @@
       "translation": "All share codes",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.vault.issuedsharescard.533f11fea9a2",
-      "source": "持有口令即可接收",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 110,
-          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
-        }
-      ],
-      "translation": "Anyone holding the share code can receive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

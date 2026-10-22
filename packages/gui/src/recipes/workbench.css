@@ -482,6 +482,10 @@ html:root .add-drawer { height: var(--sheet-h, 50dvh); max-height: calc(100dvh -
 html:root .add-drawer.is-detail { height: var(--sheet-h, 60dvh); }
 html:root .add-drawer.is-tall { height: var(--sheet-h, 86dvh); }
 html:root .add-drawer.is-detail.is-tall { height: var(--sheet-h, 86dvh); }
+/* The fixed confirmation action is separate from the sheet's scroll gesture.
+   Small thumb drift must not turn a button press into pointercancel. */
+html:root .add-detail-add { touch-action: none; user-select: none; -webkit-user-select: none; }
+html:root .add-drawer.is-out { pointer-events: none; }
 
 /* Plugin tab glyphs (page-declared SVG) align with the built-in 14px tab icons. */
 html:root .ex-tab-plugin-glyph { display: inline-flex; align-items: center; justify-content: center; width: var(--og-icon-sm); height: var(--og-icon-sm); }

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -15,7 +15,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 95,
+          "line": 100,
           "context": "showToast(i18nMsg(\"app.08566a4b57a3\", { value: String(r.account?.name ?? \"\") }))"
         }
       ],
@@ -31,11 +31,107 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 126,
+          "line": 131,
           "context": "{i18n(\"app.4d6e46fec3d4\")}"
         }
       ],
       "translation": "Restoring your sign-in session…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "board.edit.restore",
+      "source": "恢复默认",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1199,
+          "context": "{i18n(\"board.edit.restore\")}"
+        }
+      ],
+      "translation": "Restore defaults",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "board.edit.restoreBoardConfirm",
+      "source": "将此白板恢复为空白？当前组件可以通过“撤销上一步”找回。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 928,
+          "context": "boardId === HOME_BOARD_ID ? i18n(\"board.edit.restoreHomeConfirm\") : i18n(\"board.edit.restoreBoardConfirm\")"
+        }
+      ],
+      "translation": "Restore this board to an empty board? Undo can bring back its current widgets.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "board.edit.restored",
+      "source": "已恢复默认，可撤销此操作",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 931,
+          "context": "say(i18n(\"board.edit.restored\"))"
+        }
+      ],
+      "translation": "Defaults restored. You can undo this change.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "board.edit.restoreHomeConfirm",
+      "source": "恢复首页默认组件与布局？当前布局可以通过“撤销上一步”找回。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 928,
+          "context": "boardId === HOME_BOARD_ID ? i18n(\"board.edit.restoreHomeConfirm\") : i18n(\"board.edit.restoreBoardConfirm\")"
+        }
+      ],
+      "translation": "Restore the default Home widgets and layout? Undo can bring back your current layout.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "board.edit.undo",
+      "source": "撤销上一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1198,
+          "context": "{i18n(\"board.edit.undo\")}"
+        }
+      ],
+      "translation": "Undo",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "board.edit.undone",
+      "source": "已撤销上一步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 924,
+          "context": "say(i18n(\"board.edit.undone\"))"
+        }
+      ],
+      "translation": "Last change undone",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -45,6 +141,11 @@
       "kind": "text",
       "parameters": [],
       "locations": [
+        {
+          "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
+          "line": 202,
+          "context": "{i18n(\"common.cancel\")}"
+        },
         {
           "file": "apps/desktop/src/lib/confirm.tsx",
           "line": 164,
@@ -1345,112 +1446,6 @@
         }
       ],
       "translation": "Processing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.attachactionssheet.d56452bb724e",
-      "source": "这个目录还是空的",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
-          "line": 173,
-          "context": "entries.length === 0 ? i18n(\"components.attachactionssheet.d56452bb724e\") : \"\""
-        }
-      ],
-      "translation": "This directory is still empty",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.attachactionssheet.dc2ce9466206",
-      "source": "提交前会再确认一次；提交是**整体覆盖**（正文与附件以本次为准）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
-          "line": 519,
-          "context": "{i18n(\"components.attachactionssheet.dc2ce9466206\")}"
-        }
-      ],
-      "translation": "You will be asked to confirm before submitting; the submission **replaces the whole assignment** (body and attachments are based on this run).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.attachactionssheet.dc6676c23efb",
-      "source": "[附件] 打开雨课堂官方作答页失败：{msg}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "msg",
-          "expression": "String(msg)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
-          "line": 381,
-          "context": "logLine(i18n(\"components.attachactionssheet.dc6676c23efb\", { msg: String(msg) }))"
-        }
-      ],
-      "translation": "[Attachment] Failed to open the official Rain Classroom answer page: {msg}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.attachactionssheet.dfa45cea4ca8",
-      "source": "{value}图片单条最多 4 张、单张 ≤6MB，超出的会在正文里写明原因（不会静默丢件）。",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "many ? i18n(\"components.attachactionssheet.c3a336d05243\", { length: String(files.length) }) : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
-          "line": 619,
-          "context": "{i18nRich(\"components.attachactionssheet.dfa45cea4ca8\", { value: many ? i18n(\"components.attachactionssheet.c3a336d05243\", { length: String(files.length) }) : \"\" })}"
-        }
-      ],
-      "translation": "{value}At most 4 images per message and 6MB per image; anything over the limit will be explained in the message body (never silently dropped).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.attachactionssheet.dfb054a0aec6",
-      "source": "提交作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
-          "line": 522,
-          "context": "busy ? i18n(\"components.attachactionssheet.18931020ad52\") : i18n(\"components.attachactionssheet.dfb054a0aec6\")"
-        }
-      ],
-      "translation": "Submit assignment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.attachactionssheet.dfb8c1342e07",
-      "source": "发讨论区",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
-          "line": 63,
-          "context": "return i18n(\"components.attachactionssheet.dfb8c1342e07\");"
-        }
-      ],
-      "translation": "Post to discussion",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

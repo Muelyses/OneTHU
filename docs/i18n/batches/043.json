@@ -1,7 +1,247 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.boardlistpage.2f9daa828907",
+      "source": "删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 59,
+          "context": "label: i18n(\"pages.boardlistpage.2f9daa828907\")"
+        }
+      ],
+      "translation": "Delete",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.boardlistpage.3250dd5a9f03",
+      "source": "已新建并打开",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 108,
+          "context": "say(i18n(\"pages.boardlistpage.3250dd5a9f03\"))"
+        }
+      ],
+      "translation": "Created and opened",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.35ac50715f79",
+      "source": "已删除：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 66,
+          "context": "i18n(\"pages.boardlistpage.35ac50715f79\") + name"
+        }
+      ],
+      "translation": "Deleted:",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.3732febb39ac",
+      "source": "当前 OnePage：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 56,
+          "context": "i18n(\"pages.boardlistpage.3732febb39ac\") + name"
+        }
+      ],
+      "translation": "Current OnePage:",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.3a32f6df621a",
+      "source": "设为当前 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 56,
+          "context": "label: i18n(\"pages.boardlistpage.3a32f6df621a\")"
+        }
+      ],
+      "translation": "Set as current OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.boardlistpage.5cb3b8029a6e",
+      "source": "已重命名：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 49,
+          "context": "i18n(\"pages.boardlistpage.5cb3b8029a6e\") + (f.name ?? name)"
+        }
+      ],
+      "translation": "Renamed:",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.644bb757108b",
+      "source": "每一块都是一张可随意摆放组件的白板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 77,
+          "context": "{i18n(\"pages.boardlistpage.644bb757108b\")}"
+        }
+      ],
+      "translation": "Each one is a Board where you can arrange widgets freely",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.6773310492a9",
+      "source": "名字",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 46,
+          "context": "label: i18nMsg(\"pages.boardlistpage.6773310492a9\")"
+        }
+      ],
+      "translation": "Name",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.boardlistpage.88e6da1b7129",
+      "source": "还没有 OnePage。新建一块，把常用的组件摆上去。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 80,
+          "context": "{i18n(\"pages.boardlistpage.88e6da1b7129\")}"
+        }
+      ],
+      "translation": "No OnePage yet. Create one and lay out your favorite widgets.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.8b9db911f1d9",
+      "source": "新建 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 112,
+          "context": "{i18n(\"pages.boardlistpage.8b9db911f1d9\")}"
+        }
+      ],
+      "translation": "New OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.9201642820f0",
+      "source": "改图标…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 55,
+          "context": "label: i18n(\"pages.boardlistpage.9201642820f0\")"
+        }
+      ],
+      "translation": "Change icon…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.boardlistpage.97778650b3ab",
+      "source": "系统板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 94,
+          "context": "b.kind === \"system\" ? i18n(\"pages.boardlistpage.97778650b3ab\") : \"OnePage\""
+        }
+      ],
+      "translation": "System boards",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.9b3dcd2cedd1",
+      "source": "新 OnePage ",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 103,
+          "context": "i18n(\"pages.boardlistpage.9b3dcd2cedd1\") + String(rows.length + 1)"
+        }
+      ],
+      "translation": "New OnePage ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.a983d701044a",
+      "source": " · 当前 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 94,
+          "context": "b.active ? i18n(\"pages.boardlistpage.a983d701044a\") : \"\""
+        }
+      ],
+      "translation": " · Current OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.boardlistpage.e75e8b4e5c97",
+      "source": "下移",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/BoardListPage.tsx",
+          "line": 58,
+          "context": "label: i18n(\"pages.boardlistpage.e75e8b4e5c97\")"
+        }
+      ],
+      "translation": "Move down",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.boardlistpage.ec4cd05f5147",
       "source": "重命名…",
@@ -1249,303 +1489,6 @@
         }
       ],
       "translation": "\n… and {length} items in total",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.b221697cb461",
-      "source": "「{name}」删除失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(e.name)"
-        },
-        {
-          "name": "value",
-          "expression": "String(String(err).slice(0, 60))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 401,
-          "context": "showToast(i18nMsg(\"pages.cloudpage.b221697cb461\", { name: String(e.name), value: String(String(err).slice(0, 60)) }))"
-        }
-      ],
-      "translation": "Failed to delete \"{name}\": {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.b59fece6e715",
-      "source": "进入子文件夹（当前层 {length} 个）▸",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(dirs.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 196,
-          "context": "dirs.length\n                ? i18n(\"pages.cloudpage.b59fece6e715\", { length: String(dirs.length) })\n                : i18n(\"pages.cloudpage.db7deecb6f3f\")"
-        }
-      ],
-      "translation": "Enter subfolders ({length} at this level) ▸",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.b5f224115dae",
-      "source": "云盘文件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 578,
-          "context": "{i18n(\"pages.cloudpage.b5f224115dae\")}"
-        }
-      ],
-      "translation": "Cloud drive files",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.b92d3082a65a",
-      "source": "{value}年{value2}月{value3}日",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(d.getFullYear())"
-        },
-        {
-          "name": "value2",
-          "expression": "String(d.getMonth() + 1)"
-        },
-        {
-          "name": "value3",
-          "expression": "String(d.getDate())"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 63,
-          "context": "return i18n(\"pages.cloudpage.b92d3082a65a\", { value: String(d.getFullYear()), value2: String(d.getMonth() + 1), value3: String(d.getDate()) });"
-        }
-      ],
-      "translation": "{value2}/{value3}/{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.bacf701908d8",
-      "source": "文件夹名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 460,
-          "context": "placeholder: i18nMsg(\"pages.cloudpage.bacf701908d8\")"
-        }
-      ],
-      "translation": "Folder name",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.baf5b6f85f76",
-      "source": "删除文件夹「{name}」？\n\n该文件夹及其全部内容将从云盘永久删除，此操作不可撤销。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(e.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 98,
-          "context": "isDir\n      ? i18nMsg(\"pages.cloudpage.baf5b6f85f76\", { name: String(e.name) })\n      : i18nMsg(\"pages.cloudpage.5f7afa5a8570\", { name: String(e.name), value: String(fmtSize(e.size)) })"
-        }
-      ],
-      "translation": "Delete folder \"{name}\"?\n\nThe folder and all of its contents will be permanently deleted from the cloud drive. This action cannot be undone.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.bf7d41f4829b",
-      "source": "（已在原位）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 170,
-          "context": "isSamePlace ? i18n(\"pages.cloudpage.bf7d41f4829b\") : \"\""
-        }
-      ],
-      "translation": "(already in place)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.c89a8d7ca4a0",
-      "source": "[CLOUD-MOVE] 目录列表失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(String(e).slice(0, 90))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 149,
-          "context": "logLine(i18n(\"pages.cloudpage.c89a8d7ca4a0\", { value: String(String(e).slice(0, 90)) }))"
-        }
-      ],
-      "translation": "[CLOUD-MOVE] failed to list directory: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.cb7707463c16",
-      "source": "批量",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 475,
-          "context": "selMode ? i18n(\"pages.cloudpage.571e8b9e66f2\") : i18n(\"pages.cloudpage.cb7707463c16\")"
-        }
-      ],
-      "translation": "Bulk",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.cc50237edca2",
-      "source": "搜索中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 507,
-          "context": "{i18n(\"pages.cloudpage.cc50237edca2\")}"
-        }
-      ],
-      "translation": "Searching…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.cda6fdc5607b",
-      "source": "已上传 {length} 个文件",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(r.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 481,
-          "context": "r.length > 1 ? i18nMsg(\"pages.cloudpage.cda6fdc5607b\", { length: String(r.length) }) : (r[0] ?? i18n(\"pages.cloudpage.f2f02049468d\"))"
-        }
-      ],
-      "translation": "Uploaded {length} files",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.d0948549f71a",
-      "source": "生成分享链接",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 612,
-          "context": "{i18n(\"pages.cloudpage.d0948549f71a\")}"
-        }
-      ],
-      "translation": "Create share link",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.d1403c75a692",
-      "source": "已创建「{name}」",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 464,
-          "context": "showToast(i18nMsg(\"pages.cloudpage.d1403c75a692\", { name: String(name) }))"
-        }
-      ],
-      "translation": "Created \"{name}\"",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.d3d21191f32e",
-      "source": "处理中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 541,
-          "context": "batchBusy ? i18n(\"pages.cloudpage.d3d21191f32e\") : i18n(\"pages.cloudpage.14909c3a7b16\", { size: String(selSet.size) })"
-        }
-      ],
-      "translation": "Processing…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.cloudpage.d7b6a5ec5201",
-      "source": "新建资料库",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 664,
-          "context": "{i18n(\"pages.cloudpage.d7b6a5ec5201\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 665,
-          "context": "promptText(i18nMsg(\"pages.cloudpage.d7b6a5ec5201\"), { placeholder: i18nMsg(\"pages.cloudpage.08008fa506a0\") })"
-        },
-        {
-          "file": "apps/desktop/src/pages/CloudPage.tsx",
-          "line": 674,
-          "context": "{i18n(\"pages.cloudpage.d7b6a5ec5201\")}"
-        }
-      ],
-      "translation": "New library",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

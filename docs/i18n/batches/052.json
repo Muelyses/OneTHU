@@ -1,7 +1,252 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.lifepage.fa0124c14866",
+      "source": "栏目显隐与排序",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 99,
+          "context": "{i18n(\"pages.info.lifepage.fa0124c14866\")}"
+        }
+      ],
+      "translation": "Section visibility and order",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.04cb682d2b8d",
+      "source": "8~19 位，字母区分大小写，不能与用户名相同，至少含数字、字母、特殊字符(仅限 !@#$%^*().~)中的两种",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 349,
+          "context": "{i18n(\"pages.info.networktab.04cb682d2b8d\")}"
+        }
+      ],
+      "translation": "8~19 characters, case-sensitive letters, must not match the username, and must contain at least two of: digits, letters, special characters (!@#$%^*().~ only)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.08a85f4ab4ba",
+      "source": "提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 351,
+          "context": "pwdBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.08a85f4ab4ba\")"
+        }
+      ],
+      "translation": "Submit",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.18931020ad52",
+      "source": "提交中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 322,
+          "context": "countBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.37090f456516\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 351,
+          "context": "pwdBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.08a85f4ab4ba\")"
+        }
+      ],
+      "translation": "Submitting…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.21ef4abafb6f",
+      "source": "终端连接数 · Tsinghua-Secure 密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 307,
+          "context": "{i18n(\"pages.info.networktab.21ef4abafb6f\")}"
+        }
+      ],
+      "translation": "Terminal connections · Tsinghua-Secure password",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.2cd0f3be8738",
+      "source": "取消",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 352,
+          "context": "{i18n(\"pages.info.networktab.2cd0f3be8738\")}"
+        }
+      ],
+      "translation": "Cancel",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.311bb313fdec",
+      "source": "账号",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 78,
+          "context": "[i18n(\"pages.info.networktab.311bb313fdec\"), a.username || \"–\"]"
+        }
+      ],
+      "translation": "Account",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.32c49e5592c4",
+      "source": "终端连接数",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 90,
+          "context": "[i18n(\"pages.info.networktab.32c49e5592c4\"), String(cnt.value)]"
+        }
+      ],
+      "translation": "Terminal connections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.355fc1ddcfad",
+      "source": "两次输入不一致",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 167,
+          "context": "setPwdMsg(i18n(\"pages.info.networktab.355fc1ddcfad\"))"
+        }
+      ],
+      "translation": "The two entries do not match",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.37090f456516",
+      "source": "修改",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 322,
+          "context": "countBusy ? i18n(\"pages.info.networktab.18931020ad52\") : i18n(\"pages.info.networktab.37090f456516\")"
+        }
+      ],
+      "translation": "Change",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.3f06ed8f8c38",
+      "source": "登录中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 252,
+          "context": "loginBusy ? i18n(\"pages.info.networktab.3f06ed8f8c38\") : i18n(\"pages.info.networktab.4cd6b2e0e4c4\")"
+        }
+      ],
+      "translation": "Signing in…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.4927a53bcc88",
+      "source": "加载中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 236,
+          "context": "{i18n(\"pages.info.networktab.4927a53bcc88\")}"
+        }
+      ],
+      "translation": "Loading…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.4cd6b2e0e4c4",
+      "source": "登录 usereg",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 252,
+          "context": "loginBusy ? i18n(\"pages.info.networktab.3f06ed8f8c38\") : i18n(\"pages.info.networktab.4cd6b2e0e4c4\")"
+        }
+      ],
+      "translation": "Sign in to usereg",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.50b5b1d2abef",
+      "source": "姓名",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 79,
+          "context": "[i18n(\"pages.info.networktab.50b5b1d2abef\"), a.realName || \"–\"]"
+        }
+      ],
+      "translation": "Name",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.networktab.515e9c7cf7b2",
+      "source": "新密码",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NetworkTab.tsx",
+          "line": 336,
+          "context": "{i18n(\"pages.info.networktab.515e9c7cf7b2\")}"
+        }
+      ],
+      "translation": "New password",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.networktab.6320b4a8722a",
       "source": "状态",
@@ -520,7 +765,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 657,
+          "line": 692,
           "context": "subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`"
         }
       ],
@@ -536,7 +781,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 912,
+          "line": 947,
           "context": "{i18n(\"pages.info.newstab.088536fe1994\")}"
         }
       ],
@@ -557,7 +802,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 719,
+          "line": 754,
           "context": "{i18nRich(\"pages.info.newstab.0986893ba243\", { subPage: subPage })}"
         }
       ],
@@ -578,7 +823,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 576,
+          "line": 611,
           "context": "{i18nRich(\"pages.info.newstab.0b4ff6ccd332\", { value: subs.length > 0 ? `（${subs.length}）` : \"\" })}"
         }
       ],
@@ -594,7 +839,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 800,
+          "line": 835,
           "context": "{i18n(\"pages.info.newstab.13d61fea9f17\")}"
         }
       ],
@@ -610,7 +855,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 835,
+          "line": 870,
           "context": "{i18n(\"pages.info.newstab.1629c4dfeeb4\")}"
         }
       ],
@@ -626,7 +871,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 158,
+          "line": 159,
           "context": "{i18n(\"pages.info.newstab.173f88d28ebf\")}"
         }
       ],
@@ -647,7 +892,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 857,
+          "line": 892,
           "context": "c.source ? i18n(\"pages.info.newstab.1bd26803ad79\", { source: String(c.source) }) : \"\""
         }
       ],
@@ -663,7 +908,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 631,
+          "line": 666,
           "context": "serverState === \"loading\" && localResults.length === 0\n                    ? i18n(\"pages.info.newstab.1dad8492f8c1\")\n                    : i18n(\"pages.info.newstab.5a91a7f48009\", { query: String(query) })"
         }
       ],
@@ -679,7 +924,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 736,
+          "line": 771,
           "context": "page > 1 ? i18n(\"pages.info.newstab.c23d1354916d\") : i18n(\"pages.info.newstab.21ac3d54fe13\")"
         }
       ],
@@ -695,7 +940,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 654,
+          "line": 689,
           "context": "{i18n(\"pages.info.newstab.23d18fc44de0\")}"
         }
       ],
@@ -711,7 +956,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 881,
+          "line": 916,
           "context": "{i18n(\"pages.info.newstab.241cfdfe3554\")}"
         }
       ],
@@ -727,7 +972,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 573,
+          "line": 608,
           "context": "{i18n(\"pages.info.newstab.260cbb8afb63\")}"
         }
       ],
@@ -756,7 +1001,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 657,
+          "line": 692,
           "context": "searching\n                ? i18n(\"pages.info.newstab.260d6f3af87e\", { query: String(query), length: String(subShown.length), value: String(subSel === \"all\" ? i18n(\"pages.info.newstab.045f5aadace2\") : `「${subChips.find((c) => c.id === subSel)?.label ?? subSel}」`) })\n                : subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
         }
       ],
@@ -772,7 +1017,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 557,
+          "line": 592,
           "context": "{i18n(\"pages.info.newstab.279658ea601c\")}"
         }
       ],
@@ -793,7 +1038,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 623,
+          "line": 658,
           "context": "serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
         }
       ],
@@ -814,7 +1059,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 207,
+          "line": 209,
           "context": "text: i18n(\"pages.info.newstab.2d2ab24375ce\", { path: String(path) })"
         }
       ],
@@ -830,7 +1075,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 869,
+          "line": 904,
           "context": "opBusy === c.id ? i18n(\"pages.info.newstab.5e8e7af57abb\") : i18n(\"pages.info.newstab.2f9daa828907\")"
         }
       ],
@@ -846,7 +1091,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 832,
+          "line": 867,
           "context": "{i18n(\"pages.info.newstab.3725212d2092\")}"
         }
       ],
@@ -862,7 +1107,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 572,
+          "line": 607,
           "context": "{i18n(\"pages.info.newstab.3b275fe0df2c\")}"
         }
       ],
@@ -878,7 +1123,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 558,
+          "line": 593,
           "context": "{i18n(\"pages.info.newstab.3dd09b78c050\")}"
         }
       ],
@@ -894,7 +1139,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 620,
+          "line": 655,
           "context": "localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")"
         }
       ],
@@ -910,7 +1155,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 769,
+          "line": 804,
           "context": "{i18n(\"pages.info.newstab.3fd47edce45b\")}"
         }
       ],
@@ -926,7 +1171,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 698,
+          "line": 733,
           "context": "subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
         }
       ],
@@ -942,7 +1187,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 499,
+          "line": 534,
           "context": "new Error(i18n(\"pages.info.newstab.44c55113208f\"))"
         }
       ],
@@ -958,7 +1203,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 802,
+          "line": 837,
           "context": "dlAtt === a.url ? i18n(\"pages.info.newstab.bcc2333dc631\") : i18n(\"pages.info.newstab.4673a2306165\")"
         }
       ],
@@ -979,7 +1224,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 616,
+          "line": 651,
           "context": "showServer\n                ? i18n(\"pages.info.newstab.477b586d63a0\", { length: String(searchItems.length) })\n                : serverState === \"loading\"\n                  ? localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")\n                  : serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
         }
       ],
@@ -1000,7 +1245,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 622,
+          "line": 657,
           "context": "serverState === \"fallback\"\n                    ? i18n(\"pages.info.newstab.4d022a7599b4\", { length: String(fetchedList.length) })\n                    : i18n(\"pages.info.newstab.2a5dc59262cb\", { length: String(searchItems.length) })"
         }
       ],
@@ -1021,7 +1266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 632,
+          "line": 667,
           "context": "serverState === \"loading\" && localResults.length === 0\n                    ? i18n(\"pages.info.newstab.1dad8492f8c1\")\n                    : i18n(\"pages.info.newstab.5a91a7f48009\", { query: String(query) })"
         }
       ],
@@ -1037,7 +1282,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 672,
+          "line": 707,
           "context": "{i18n(\"pages.info.newstab.5c55a67935af\")}"
         }
       ],
@@ -1053,7 +1298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 869,
+          "line": 904,
           "context": "opBusy === c.id ? i18n(\"pages.info.newstab.5e8e7af57abb\") : i18n(\"pages.info.newstab.2f9daa828907\")"
         }
       ],
@@ -1069,12 +1314,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 475,
+          "line": 510,
           "context": "new Error(i18n(\"pages.info.newstab.5f172c5140ca\"))"
         },
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 495,
+          "line": 530,
           "context": "new Error(i18n(\"pages.info.newstab.5f172c5140ca\"))"
         }
       ],
@@ -1103,7 +1348,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 660,
+          "line": 695,
           "context": "subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
         }
       ],
@@ -1124,7 +1369,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 619,
+          "line": 654,
           "context": "localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")"
         }
       ],
@@ -1140,296 +1385,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 588,
+          "line": 623,
           "context": "{i18n(\"pages.info.newstab.70b6105c0180\")}"
         }
       ],
       "translation": "All news",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.71e8dd51594c",
-      "source": "可订阅单位列表加载失败：{sourcesErr}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "sourcesErr",
-          "expression": "String(sourcesErr)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 883,
-          "context": "{i18n(\"pages.info.newstab.71e8dd51594c\", { sourcesErr: String(sourcesErr) })}"
-        }
-      ],
-      "translation": "Failed to load the list of subscribable units: {sourcesErr}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.762b04cd10e9",
-      "source": "已订阅 {value} 个条件 · 第 {subPage} 页 · {length} 条",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(subsServer?.length ?? subs.length)"
-        },
-        {
-          "name": "subPage",
-          "expression": "String(subPage)"
-        },
-        {
-          "name": "length",
-          "expression": "String(subShown.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 659,
-          "context": "subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
-        }
-      ],
-      "translation": "{value} subscription conditions · Page {subPage} · {length} items",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.newstab.79515962cf6e",
-      "source": "删除该服务端订阅条件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 867,
-          "context": "{i18n(\"pages.info.newstab.79515962cf6e\")}"
-        }
-      ],
-      "translation": "Delete this server-side subscription condition",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.7c54c6a29f75",
-      "source": "正文为空。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 786,
-          "context": "{i18n(\"pages.info.newstab.7c54c6a29f75\")}"
-        }
-      ],
-      "translation": "The body is empty.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.7f6d2d65f737",
-      "source": "栏目：{channel}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "channel",
-          "expression": "String(c.channel)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 858,
-          "context": "c.channel ? i18n(\"pages.info.newstab.7f6d2d65f737\", { channel: String(c.channel) }) : \"\""
-        }
-      ],
-      "translation": "Channel: {channel}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.89bc802be658",
-      "source": "订阅动态中没有与“{query}”相关的新闻。",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "query",
-          "expression": "String(query)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 696,
-          "context": "searching\n                    ? i18n(\"pages.info.newstab.89bc802be658\", { query: String(query) })\n                    : subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
-        }
-      ],
-      "translation": "No news in the subscription feed related to \"{query}\".",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.8a8542f69648",
-      "source": "下一页",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 605,
-          "context": "{i18n(\"pages.info.newstab.8a8542f69648\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 721,
-          "context": "{i18n(\"pages.info.newstab.8a8542f69648\")}"
-        }
-      ],
-      "translation": "Next page",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.90f9253844e7",
-      "source": "下载失败：",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 209,
-          "context": "i18n(\"pages.info.newstab.90f9253844e7\") + explainNetworkError(err)"
-        }
-      ],
-      "translation": "Download failed:",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.920430f19806",
-      "source": "我的订阅{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "subsServer ? `（${subsServer.length}）` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 840,
-          "context": "{i18nRich(\"pages.info.newstab.920430f19806\", { value: subsServer ? `（${subsServer.length}）` : \"\" })}"
-        }
-      ],
-      "translation": "My subscriptions{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.94dfc8f77ac1",
-      "source": "订阅动态（{length}）",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "subs.length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 595,
-          "context": "{i18nRich(\"pages.info.newstab.94dfc8f77ac1\", { length: subs.length })}"
-        }
-      ],
-      "translation": "Subscription feed ({length})",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.988287587a26",
-      "source": "新闻分栏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 581,
-          "context": "{i18n(\"pages.info.newstab.988287587a26\")}"
-        }
-      ],
-      "translation": "News sections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.9ada62f74acb",
-      "source": "该订阅条件暂无新闻——稍后刷新，或到订阅管理调整条件。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 699,
-          "context": "subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
-        }
-      ],
-      "translation": "No news for this subscription condition yet — refresh later, or adjust the condition in Manage subscriptions.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.9dd579ff5cfa",
-      "source": "暂无订阅条件——在下方点选发布单位即可添加。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 846,
-          "context": "{i18n(\"pages.info.newstab.9dd579ff5cfa\")}"
-        }
-      ],
-      "translation": "No subscription conditions yet — tap publishing units below to add some.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.9eb3f2fa22ec",
-      "source": "新闻附件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 795,
-          "context": "label: i18n(\"pages.info.newstab.9eb3f2fa22ec\")"
-        }
-      ],
-      "translation": "News attachments",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.newstab.abf7eab39ae9",
-      "source": "新闻详情",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 762,
-          "context": "detail.item.name || detail.data?.title || i18n(\"pages.info.newstab.abf7eab39ae9\")"
-        }
-      ],
-      "translation": "News details",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

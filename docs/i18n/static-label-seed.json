@@ -1,5 +1,16 @@
 {
   "messages": {
+    "update.prompt.title": {"zh-CN": "发现新版本", "en-US": "Update available"},
+    "update.prompt.version": {"zh-CN": "OneTHU {version}", "en-US": "OneTHU {version}"},
+    "update.prompt.body": {"zh-CN": "前往软件更新，查看详情并下载安装。", "en-US": "Open Software Update to review and install this release."},
+    "update.prompt.open": {"zh-CN": "前往更新", "en-US": "Go to update"},
+    "update.prompt.delay": {"zh-CN": "下次提醒", "en-US": "Remind me"},
+    "update.prompt.hour": {"zh-CN": "1 小时后", "en-US": "In 1 hour"},
+    "update.prompt.day": {"zh-CN": "1 天后", "en-US": "In 1 day"},
+    "update.prompt.week": {"zh-CN": "7 天后", "en-US": "In 7 days"},
+    "update.prompt.later": {"zh-CN": "暂时忽略", "en-US": "Remind me later"},
+    "update.prompt.saved": {"zh-CN": "已设置提醒：{duration}", "en-US": "Reminder set: {duration}"},
+    "update.prompt.paused": {"zh-CN": "已暂缓此版本的提醒，仍可随时下载安装。", "en-US": "Reminders for this release are paused. You can still download and install it at any time."},
     "state.wallpsync.archiveTooLarge": {"zh-CN": "壁纸备份最多 24 MiB，每张图片或视频最多 12 MiB。请减少壁纸库中的大文件后重新同步；当前壁纸保持原样", "en-US": "Wallpaper backups support up to 24 MiB in total and 12 MiB per image or video. Remove large items from the wallpaper library and try again. Your current wallpaper is preserved."},
     "learn.responseUnexpected": {"zh-CN": "网络学堂暂时未返回可用数据，请稍后刷新重试。", "en-US": "Web Learning has not returned usable data. Please refresh and try again shortly."},
     "state.wallpsync.permissionDenied": {"zh-CN": "云盘拒绝访问壁纸档案，请确认两台设备连接的是同一云盘账号，并检查该账号的资料库权限", "en-US": "Cloud access to the wallpaper backup was denied. Check that both devices use the same cloud account and that the account can access its library."},

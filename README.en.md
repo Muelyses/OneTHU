@@ -2,7 +2,7 @@
 
 <img src="docs/logo-banner.png" alt="One above THU — One THUer should have OneTHU" width="640">
 
-**0.11.1 · Revolution**
+**0.11.2 · Revolution**
 
 [中文](README.md) · [English](README.en.md)
 
@@ -14,9 +14,9 @@ Your campus. In one place.
 
 OneTHU is an unofficial Tsinghua campus application for macOS, Windows and Android. Version 0.11 unifies interaction with OneGUI while keeping themes, wallpapers and layouts customizable, with minimal, practical and full experience modes. Search and the OH capsule are available in all three. Full mode adds free whiteboards, staging and sharing, organizations, plugins, OneTHU Harness and Xiaoda.
 
-## 0.11.1 maintenance update
+## 0.11.2 maintenance update
 
-Secondary-registration courses load automatically when the academic calendar becomes ready. The weekly timeline and monthly agenda share the same course merge, and system-calendar sync uses a validated complete-semester cache. Available for macOS, Windows and Android. See the [release notes](docs/en/release-0.11.1.md).
+This update improves Web Learning session recovery, includes wallpaper media in cross-device backups, respects the whiteboard editing toggle on landscape tablets, and makes glass surfaces and desktop window behavior consistent. All three modes share an update prompt with a choice of reminder delay. Available for macOS, Windows and Android. See the [release notes](docs/en/release-0.11.2.md).
 
 ## Real interface. Fictional data.
 

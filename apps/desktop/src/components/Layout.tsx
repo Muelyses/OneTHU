@@ -42,7 +42,7 @@ import {
 import { useFavs } from "../state/favs.js";
 import { pluginTabsSnapshot, subscribePluginTabs } from "../plugins/tabs.js";
 import { showToast } from "../state/toast.js";
-import { checkUpdateSilently } from "../lib/update.js";
+import { UpdatePromptHost } from "./UpdatePromptHost.js";
 import { useSegPill } from "../lib/motion.js";
 import { ErrorLine } from "./Details.js";
 import { CommandPalette } from "./CommandPalette.js";
@@ -423,11 +423,6 @@ export function Shell({ children }: { children: ReactNode }) {
     : activePageTab?.page === "board"
       ? " is-onepage-canvas"
       : "";
-  /* 启动：GitHub Releases 静默检查新版本（一次；失败静默，不打扰） */
-  useEffect(() => {
-    void checkUpdateSilently(showToast);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   return (
     <div className={"shell explorer-shell" + (simple ? " is-simple" : "")}>
       {/* 全屏档壁纸（最底层；栏体玻璃透出它）+ 亮度档供栏体文字分支 */}
@@ -457,6 +452,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <CommandPalette />
       {/* 设置浮层（个人设置 / 插件 / OneTHU Harness）：不是标签页，高于任何标签页 */}
       <SettingsOverlay />
+      <UpdatePromptHost />
       {/* dev 构建「检索落点自查路由」(?searchland=selfcheck)：release 里整块被 rollup 剥离，不进导航 */}
       {SearchLandingSelfcheck ? (
         <Suspense fallback={null}>

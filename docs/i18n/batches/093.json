@@ -1,7 +1,397 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.wallpsync.connectBeforeRestore",
+      "source": "云盘还没连接：先到「云盘」页连接后再恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 109,
+          "context": "msg: i18n(\"state.wallpsync.connectBeforeRestore\")"
+        }
+      ],
+      "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then restore",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.connectBeforeUpload",
+      "source": "云盘还没连接：先到「云盘」页连接后再同步",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 84,
+          "context": "msg: i18n(\"state.wallpsync.connectBeforeUpload\")"
+        }
+      ],
+      "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then sync",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.invalidArchive",
+      "source": "云盘上的壁纸档案读不出来，请先重新同步一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 63,
+          "context": "return i18n(\"state.wallpsync.invalidArchive\");"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 67,
+          "context": "return i18n(\"state.wallpsync.invalidArchive\");"
+        }
+      ],
+      "translation": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.legacyLocalArchive",
+      "source": "这份旧备份只保存了原设备的文件位置。请在原设备更新 OneTHU 后重新同步壁纸，再到此设备恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 65,
+          "context": "return i18n(\"state.wallpsync.legacyLocalArchive\");"
+        }
+      ],
+      "translation": "This older backup contains file paths from the original device. Update OneTHU and upload the wallpaper again on that device, then restore it here.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.noArchive",
+      "source": "云盘上还没有壁纸档案，请先在别的设备同步一次",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 116,
+          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 121,
+          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 126,
+          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
+        },
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 151,
+          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
+        }
+      ],
+      "translation": "There is no wallpaper archive on the cloud drive yet. Sync from another device first",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.permissionDenied",
+      "source": "云盘拒绝访问壁纸档案，请确认两台设备连接的是同一云盘账号，并检查该账号的资料库权限",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 68,
+          "context": "return i18n(\"state.wallpsync.permissionDenied\");"
+        }
+      ],
+      "translation": "Cloud access to the wallpaper backup was denied. Check that both devices use the same cloud account and that the account can access its library.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.restored",
+      "source": "已恢复云盘壁纸",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 146,
+          "context": "msg: i18n(\"state.wallpsync.restored\")"
+        }
+      ],
+      "translation": "Cloud drive wallpapers restored",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.restoreFailed",
+      "source": "恢复没成功（{error}），请检查云盘后再试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 71,
+          "context": "fallback === \"state.wallpsync.uploadFailed\"\n    ? i18n(\"state.wallpsync.uploadFailed\", { error: raw })\n    : i18n(\"state.wallpsync.restoreFailed\", { error: raw })"
+        }
+      ],
+      "translation": "Restore failed ({error}). Check the cloud drive and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.unknownCause",
+      "source": "原因不明",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 159,
+          "context": "s.replace(/\\s+/g, \" \").slice(0, 60) || i18n(\"state.wallpsync.unknownCause\")"
+        }
+      ],
+      "translation": "Unknown cause",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.uploaded",
+      "source": "壁纸已同步到云盘",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 100,
+          "context": "msg: i18n(\"state.wallpsync.uploaded\")"
+        }
+      ],
+      "translation": "Wallpapers synced to the cloud drive",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.uploadFailed",
+      "source": "同步没成功（{error}），请检查云盘后再试",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "error"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 70,
+          "context": "fallback === \"state.wallpsync.uploadFailed\"\n    ? i18n(\"state.wallpsync.uploadFailed\", { error: raw })\n    : i18n(\"state.wallpsync.restoreFailed\", { error: raw })"
+        }
+      ],
+      "translation": "Sync failed ({error}). Check the cloud drive and try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.0a9c46115749",
+      "source": "阵雪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 54,
+          "context": "return i18n(\"state.weather.0a9c46115749\");"
+        }
+      ],
+      "translation": "Snow showers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.124d60580dfa",
+      "source": "雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 50,
+          "context": "return i18n(\"state.weather.124d60580dfa\");"
+        }
+      ],
+      "translation": "Rain",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.30c379777e5d",
+      "source": "多云",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 46,
+          "context": "return i18n(\"state.weather.30c379777e5d\");"
+        }
+      ],
+      "translation": "Cloudy",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.448c8292f481",
+      "source": "阵雨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 53,
+          "context": "return i18n(\"state.weather.448c8292f481\");"
+        }
+      ],
+      "translation": "Showers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.4ba0128b1216",
+      "source": "{mins} 分钟前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "mins",
+          "expression": "String(mins)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 158,
+          "context": "return i18n(\"state.weather.4ba0128b1216\", { mins: String(mins) });"
+        }
+      ],
+      "translation": "{mins} minutes ago",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.53058fe2e03c",
+      "source": "雪",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 52,
+          "context": "return i18n(\"state.weather.53058fe2e03c\");"
+        }
+      ],
+      "translation": "Snow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.6379ede5c239",
+      "source": "晴",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 44,
+          "context": "return i18n(\"state.weather.6379ede5c239\");"
+        }
+      ],
+      "translation": "Sunny",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.690c01945f17",
+      "source": "{value} 小时前",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(Math.round(mins / 60))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 159,
+          "context": "return i18n(\"state.weather.690c01945f17\", { value: String(Math.round(mins / 60)) });"
+        }
+      ],
+      "translation": "{value} hours ago",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.6ac58535bcad",
+      "source": "雷阵雨伴冰雹",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 56,
+          "context": "return i18n(\"state.weather.6ac58535bcad\");"
+        }
+      ],
+      "translation": "Thunderstorm with hail",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.6aec964d8012",
+      "source": "基本晴",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 45,
+          "context": "return i18n(\"state.weather.6aec964d8012\");"
+        }
+      ],
+      "translation": "Mostly sunny",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.weather.78df214e37ef",
+      "source": "阴",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/weather.ts",
+          "line": 47,
+          "context": "return i18n(\"state.weather.78df214e37ef\");"
+        }
+      ],
+      "translation": "Overcast",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.weather.853385be3d5a",
       "source": "雾",
@@ -1111,368 +1501,6 @@
         }
       ],
       "translation": "Free",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetliveparse.eacbe16713ec",
-      "source": "本节",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 169,
-          "context": "cur >= 0 ? i18n(\"state.widgetliveparse.eacbe16713ec\") : i18n(\"state.widgetliveparse.426f5597e4bf\")"
-        }
-      ],
-      "translation": "This period",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetliveparse.fa48e8938940",
-      "source": "使用中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 100,
-          "context": "device.eta && device.eta > 0 ? i18n(\"state.widgetliveparse.8a60db5caa68\", { eta: String(device.eta) }) : i18n(\"state.widgetliveparse.fa48e8938940\")"
-        }
-      ],
-      "translation": "In use",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.10ed14b80e18",
-      "source": "一段标题文字，用来给自己的白板分区。不需要任何上下文。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 66,
-          "context": "return i18n(\"state.widgetmeta.10ed14b80e18\");"
-        }
-      ],
-      "translation": "A piece of title text for organizing your own Board. Needs no context.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.14b69bd6eeb0",
-      "source": "文字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 70,
-          "context": "return i18n(\"state.widgetmeta.14b69bd6eeb0\");"
-        },
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 80,
-          "context": "return i18n(\"state.widgetmeta.14b69bd6eeb0\");"
-        }
-      ],
-      "translation": "Text",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.1d0fd5f9336d",
-      "source": "标签",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 74,
-          "context": "return i18n(\"state.widgetmeta.1d0fd5f9336d\");"
-        }
-      ],
-      "translation": "Label",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.1e2a390bd349",
-      "source": "一条分隔线，用于在视觉上隔开上下两组组件。不需要任何上下文。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 86,
-          "context": "return i18n(\"state.widgetmeta.1e2a390bd349\");"
-        }
-      ],
-      "translation": "A divider line that visually separates two groups of widgets. Needs no context.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.4e6ff6dda14d",
-      "source": "把今天，安排好。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 64,
-          "context": "return i18n(\"state.widgetmeta.4e6ff6dda14d\");"
-        }
-      ],
-      "translation": "Get today sorted.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.655d4e9c7591",
-      "source": "文字标签",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 75,
-          "context": "return i18n(\"state.widgetmeta.655d4e9c7591\");"
-        }
-      ],
-      "translation": "Text label",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.8b686642f7d8",
-      "source": "大标题文字",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 65,
-          "context": "return i18n(\"state.widgetmeta.8b686642f7d8\");"
-        }
-      ],
-      "translation": "Large title text",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.c64dd5eb2135",
-      "source": "分隔线",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 85,
-          "context": "return i18n(\"state.widgetmeta.c64dd5eb2135\");"
-        }
-      ],
-      "translation": "Divider",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.d520acd12d16",
-      "source": "一小段说明文字，可用于备注或提示。不需要任何上下文。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 76,
-          "context": "return i18n(\"state.widgetmeta.d520acd12d16\");"
-        }
-      ],
-      "translation": "A short note for remarks or hints. Needs no context.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.d9307f3eba25",
-      "source": "例如：常用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 70,
-          "context": "return i18n(\"state.widgetmeta.d9307f3eba25\");"
-        }
-      ],
-      "translation": "e.g. Frequently used",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetmeta.fcd2119102ef",
-      "source": "例如：记得交作业",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetMeta.ts",
-          "line": 80,
-          "context": "return i18n(\"state.widgetmeta.fcd2119102ef\");"
-        }
-      ],
-      "translation": "e.g. Remember to submit the assignment",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetrender.783d638053ea",
-      "source": "组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetRender.ts",
-          "line": 36,
-          "context": "return i18n(\"state.widgetrender.783d638053ea\");"
-        }
-      ],
-      "translation": "Widget",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetruntime.10243e85ea3c",
-      "source": "插件小组件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetRuntime.ts",
-          "line": 169,
-          "context": "s.title ?? i18n(\"state.widgetruntime.10243e85ea3c\")"
-        }
-      ],
-      "translation": "Plugin widget",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.widgetruntime.4eafa9e925b3",
-      "source": "自定义",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetRuntime.ts",
-          "line": 182,
-          "context": "pw.title || i18n(\"state.widgetruntime.4eafa9e925b3\")"
-        },
-        {
-          "file": "apps/desktop/src/state/widgetRuntime.ts",
-          "line": 184,
-          "context": "footer: i18n(\"state.widgetruntime.4eafa9e925b3\")"
-        }
-      ],
-      "translation": "Custom",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.widgets.013cd6f09996",
-      "source": "来自「我的」页的余额数字，点击可进校园卡。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 188,
-          "context": "return i18n(\"state.widgets.013cd6f09996\");"
-        }
-      ],
-      "translation": "The balance figure from the Me page; tap to open your campus card.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgets.06c6908f0d42",
-      "source": "距离下一节课的倒计时与上课地点。需要登录并已同步课表。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 95,
-          "context": "return i18n(\"state.widgets.06c6908f0d42\");"
-        }
-      ],
-      "translation": "Countdown to your next class and its location. Requires sign-in and a synced timetable.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgets.10ceb5029293",
-      "source": "信息页个人信息栏目的数据卡。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 260,
-          "context": "return i18n(\"state.widgets.10ceb5029293\");"
-        }
-      ],
-      "translation": "Data card for the personal info section on the Info page.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgets.10e3c04ab010",
-      "source": "个人信息（学号、院系、邮箱）。需要登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 105,
-          "context": "return i18n(\"state.widgets.10e3c04ab010\");"
-        }
-      ],
-      "translation": "Personal info (student ID, department, email). Requires sign-in.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgets.13f9d7f0c849",
-      "source": "选一条课程文件常驻显示。需要登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 359,
-          "context": "return i18n(\"state.widgets.13f9d7f0c849\");"
-        }
-      ],
-      "translation": "Pin one course file for permanent display. Requires sign-in.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgets.140cdcdca63e",
-      "source": "历年成绩与平均绩点。需要登录。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgets.ts",
-          "line": 103,
-          "context": "return i18n(\"state.widgets.140cdcdca63e\");"
-        }
-      ],
-      "translation": "Grades from past years and your GPA. Requires sign-in.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

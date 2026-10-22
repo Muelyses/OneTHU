@@ -1,7 +1,108 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.freeboard.6374c187518d",
+      "source": "便笺",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1088,
+          "context": "{i18n(\"components.freeboard.6374c187518d\")}"
+        }
+      ],
+      "translation": "Note",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.68303cbc8d03",
+      "source": "减小高度",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1133,
+          "context": "{i18n(\"components.freeboard.68303cbc8d03\")}"
+        }
+      ],
+      "translation": "Decrease height",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.6cedd5ab1aa9",
+      "source": "增高",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1132,
+          "context": "{i18n(\"components.freeboard.6cedd5ab1aa9\")}"
+        }
+      ],
+      "translation": "Taller",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.70fba17fffb7",
+      "source": "解锁",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1151,
+          "context": "it.pinned ? i18n(\"components.freeboard.70fba17fffb7\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
+        }
+      ],
+      "translation": "Unlock",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.7230466e3998",
+      "source": "固定位置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1151,
+          "context": "it.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.7230466e3998\")"
+        }
+      ],
+      "translation": "Pin position",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.freeboard.765be150d6cb",
+      "source": "套用模板",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 979,
+          "context": "label: i18n(\"components.freeboard.765be150d6cb\")"
+        },
+        {
+          "file": "apps/desktop/src/components/FreeBoard.tsx",
+          "line": 1288,
+          "context": "{i18n(\"components.freeboard.765be150d6cb\")}"
+        }
+      ],
+      "translation": "Apply template",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "components.freeboard.7779b244eef6",
       "source": "这个 OnePage 已删除",
@@ -10,7 +111,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 169,
+          "line": 172,
           "context": "{i18n(\"components.freeboard.7779b244eef6\")}"
         }
       ],
@@ -26,7 +127,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1160,
+          "line": 1191,
           "context": "{i18n(\"components.freeboard.783d638053ea\")}"
         }
       ],
@@ -42,7 +143,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 252,
+          "line": 255,
           "context": "{i18n(\"components.freeboard.7a8a11ead507\")}"
         }
       ],
@@ -58,12 +159,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1272,
+          "line": 1307,
           "context": "title: i18n(\"components.freeboard.7c7802d8adae\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1276,
+          "line": 1311,
           "context": "title: i18n(\"components.freeboard.7c7802d8adae\")"
         }
       ],
@@ -79,7 +180,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1157,
+          "line": 1188,
           "context": "{i18n(\"components.freeboard.7e8f29dd96a4\")}"
         }
       ],
@@ -95,7 +196,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1170,
+          "line": 1205,
           "context": "{i18n(\"components.freeboard.80f8fbcfa011\")}"
         }
       ],
@@ -111,7 +212,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1102,
+          "line": 1133,
           "context": "{i18n(\"components.freeboard.837940c33698\")}"
         }
       ],
@@ -127,7 +228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 944,
+          "line": 975,
           "context": "!canEdit ? i18n(\"components.freeboard.editingHint\") : i18n(\"components.freeboard.83d2e3f15c71\")"
         }
       ],
@@ -143,12 +244,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1109,
+          "line": 1140,
           "context": "it.folded ? i18n(\"components.freeboard.00bd3960fea8\") : i18n(\"components.freeboard.84a07f292f1f\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1113,
+          "line": 1144,
           "context": "it.folded ? i18n(\"components.freeboard.2de119793cb4\") : i18n(\"components.freeboard.84a07f292f1f\")"
         }
       ],
@@ -164,7 +265,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1468,
+          "line": 1503,
           "context": "{i18n(\"components.freeboard.84d2b65c5548\")}"
         }
       ],
@@ -180,7 +281,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1055,
+          "line": 1086,
           "context": "{i18n(\"components.freeboard.8d6ca2d1e48b\")}"
         }
       ],
@@ -196,7 +297,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1233,
+          "line": 1268,
           "context": "{i18n(\"components.freeboard.8e1c845f3d61\")}"
         }
       ],
@@ -212,7 +313,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 751,
+          "line": 768,
           "context": "r.reason === \"duplicate\" ? i18n(\"components.freeboard.910046f3ea83\") : i18n(\"components.freeboard.57ce97c584ca\")"
         }
       ],
@@ -228,7 +329,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 754,
+          "line": 771,
           "context": "label: i18n(\"components.freeboard.979a332955c8\")"
         }
       ],
@@ -244,7 +345,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 947,
+          "line": 978,
           "context": "label: i18n(\"components.freeboard.97dcf4348652\")"
         }
       ],
@@ -260,7 +361,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1273,
+          "line": 1308,
           "context": "description: i18n(\"components.freeboard.9818eabd5c89\")"
         }
       ],
@@ -276,7 +377,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1169,
+          "line": 1204,
           "context": "{i18n(\"components.freeboard.996f7b2c0f27\")}"
         }
       ],
@@ -292,7 +393,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 971,
+          "line": 1002,
           "context": "{i18n(\"components.freeboard.9a3bd2de70be\")}"
         }
       ],
@@ -308,7 +409,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 922,
+          "line": 953,
           "context": "say(i18n(\"components.freeboard.a1714f5783d4\"))"
         }
       ],
@@ -324,12 +425,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 245,
+          "line": 248,
           "context": "{i18n(\"components.freeboard.a450a21ac723\")}"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1193,
+          "line": 1228,
           "context": "{i18n(\"components.freeboard.a450a21ac723\")}"
         }
       ],
@@ -345,7 +446,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 733,
+          "line": 750,
           "context": "label: i18n(\"components.freeboard.d003f87ed602\")"
         }
       ],
@@ -361,7 +462,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 726,
+          "line": 743,
           "context": "picked ? i18n(\"components.freeboard.d13523826411\") : i18n(\"components.freeboard.153d487fec51\")"
         }
       ],
@@ -377,12 +478,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 738,
+          "line": 755,
           "context": "item.pinned ? i18n(\"components.freeboard.20590a6a7b9a\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1120,
+          "line": 1151,
           "context": "it.pinned ? i18n(\"components.freeboard.70fba17fffb7\") : i18n(\"components.freeboard.d4b3f49cd2e4\")"
         }
       ],
@@ -398,7 +499,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1297,
+          "line": 1332,
           "context": "say(i18n(\"components.freeboard.daaec6369d42\"))"
         }
       ],
@@ -414,7 +515,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1455,
+          "line": 1490,
           "context": "{i18n(\"components.freeboard.dbb6d640ea9f\")}"
         }
       ],
@@ -430,7 +531,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 388,
+          "line": 408,
           "context": "sayRef.current(i18n(\"components.freeboard.dbd17f63d721\"))"
         }
       ],
@@ -446,7 +547,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 265,
+          "line": 268,
           "context": "{i18n(\"components.freeboard.e489b964ce42\")}"
         }
       ],
@@ -462,7 +563,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1095,
+          "line": 1126,
           "context": "dir < 0 ? i18n(\"components.freeboard.f853a70b1204\") : i18n(\"components.freeboard.e75e8b4e5c97\")"
         }
       ],
@@ -478,7 +579,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1331,
+          "line": 1366,
           "context": "say(i18n(\"components.freeboard.e8f9281f866e\"))"
         }
       ],
@@ -494,12 +595,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 944,
+          "line": 975,
           "context": "!canEdit ? i18n(\"components.freeboard.editingHint\") : i18n(\"components.freeboard.83d2e3f15c71\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 962,
+          "line": 993,
           "context": "!canEdit ? i18n(\"components.freeboard.editingHint\") : stack ? i18n(\"components.freeboard.2880a75c7f5f\") : i18n(\"components.freeboard.5b80d5358a4b\")"
         }
       ],
@@ -515,7 +616,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1284,
+          "line": 1319,
           "context": "description: i18n(\"components.freeboard.eef4bb73e8a0\")"
         }
       ],
@@ -531,7 +632,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1116,
+          "line": 1147,
           "context": "{i18n(\"components.freeboard.f7b6fbf1f2f6\")}"
         }
       ],
@@ -547,7 +648,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1095,
+          "line": 1126,
           "context": "dir < 0 ? i18n(\"components.freeboard.f853a70b1204\") : i18n(\"components.freeboard.e75e8b4e5c97\")"
         }
       ],
@@ -563,12 +664,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 950,
+          "line": 981,
           "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1163,
+          "line": 1194,
           "context": "phoneCanvas ? i18n(\"components.freeboard.593f0f466b3e\") : i18n(\"components.freeboard.f87eebfdca60\")"
         }
       ],
@@ -584,7 +685,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 754,
+          "line": 771,
           "context": "def ? def.description : i18n(\"components.freeboard.fa35f4f53dd5\")"
         }
       ],
@@ -600,7 +701,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1316,
+          "line": 1351,
           "context": "i18n(\"components.freeboard.fcbe33148f3a\") + size.w"
         }
       ],
@@ -616,12 +717,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1104,
+          "line": 1135,
           "context": "{i18n(\"components.freeboard.fe067a88a36d\")}"
         },
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1104,
+          "line": 1135,
           "context": "{i18n(\"components.freeboard.fe067a88a36d\")}"
         }
       ],
@@ -637,7 +738,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1132,
+          "line": 1163,
           "context": "i18n(\"components.freeboard.ff84465bf83c\") + h"
         }
       ],
@@ -653,7 +754,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1158,
+          "line": 1189,
           "context": "phoneEditing ? i18n(\"components.freeboard.finishEdit\") : i18n(\"components.freeboard.startEdit\")"
         }
       ],
@@ -669,7 +770,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/FreeBoard.tsx",
-          "line": 1158,
+          "line": 1189,
           "context": "phoneEditing ? i18n(\"components.freeboard.finishEdit\") : i18n(\"components.freeboard.startEdit\")"
         }
       ],
@@ -1299,102 +1400,6 @@
         }
       ],
       "translation": "How do I use the Board, Stash, and Organizations?",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.7a25374f5630",
-      "source": "我要改桌面小组件的内容",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 58,
-          "context": "return i18n(\"components.helpsection.7a25374f5630\");"
-        }
-      ],
-      "translation": "I want to change what desktop widgets show",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.7e5d9d2915e9",
-      "source": "校园网在「生活」里，进去按提示登录一次。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 42,
-          "context": "return i18n(\"components.helpsection.7e5d9d2915e9\");"
-        }
-      ],
-      "translation": "Campus network is in \"Life\"; open it and sign in once as prompted.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.8b4f5f124179",
-      "source": "我要查成绩、看考试安排",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 21,
-          "context": "return i18n(\"components.helpsection.8b4f5f124179\");"
-        }
-      ],
-      "translation": "I want to check grades and exam schedules",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.9889374af97c",
-      "source": "组件显示什么、刷新频率都在设置里；下面直接带你到那一栏。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 59,
-          "context": "return i18n(\"components.helpsection.9889374af97c\");"
-        }
-      ],
-      "translation": "What widgets show and how often they refresh are in Settings; the button below takes you straight there.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.abd9b1221963",
-      "source": "我要连校园网、查网费",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 41,
-          "context": "return i18n(\"components.helpsection.abd9b1221963\");"
-        }
-      ],
-      "translation": "I want to connect to the campus network and check my network fee",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.helpsection.b8c8d955a2a8",
-      "source": "绑定一次清华邮箱，日程就能多设备同步；iPhone 上也能看。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/HelpSection.tsx",
-          "line": 47,
-          "context": "return i18n(\"components.helpsection.b8c8d955a2a8\");"
-        }
-      ],
-      "translation": "Bind your Tsinghua email once and your schedule syncs across devices, including on iPhone.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

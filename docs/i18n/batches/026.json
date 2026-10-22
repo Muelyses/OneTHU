@@ -1,7 +1,28 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.vault.vaultexchangeactions.542ad2d546d0",
+      "source": "组织「{orgName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "orgName",
+          "expression": "String(shared.payload.orgName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.orgName && i18n(\"components.vault.vaultexchangeactions.542ad2d546d0\", { orgName: String(shared.payload.orgName) })"
+        }
+      ],
+      "translation": "Organization “{orgName}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.vault.vaultexchangeactions.577a1f849d63",
       "source": "暂存箱已经切换或更新，请关闭后重新确认要分享的内容。",
@@ -1298,22 +1319,6 @@
         }
       ],
       "translation": "News",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultitempresentation.d4f7864690bb",
-      "source": "Info 应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
-          "line": 26,
-          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
-        }
-      ],
-      "translation": "Info app",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

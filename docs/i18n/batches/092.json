@@ -1,7 +1,305 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.vaultcloud.20e701b06a1a",
+      "source": "改变接收范围需要重新生成分享",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 168,
+          "context": "new Error(i18n(\"state.vaultcloud.20e701b06a1a\"))"
+        }
+      ],
+      "translation": "Changing the recipient scope requires regenerating the share",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.21e554dce895",
+      "source": "没有可撤销的分享 token",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 178,
+          "context": "new Error(i18n(\"state.vaultcloud.21e554dce895\"))"
+        }
+      ],
+      "translation": "No share token to revoke",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.33798ae55697",
+      "source": "清华云盘未连接：到云盘页粘贴 token 后再生成云分享口令",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 30,
+          "context": "new Error(i18n(\"state.vaultcloud.33798ae55697\"))"
+        }
+      ],
+      "translation": "Tsinghua Cloud Drive is not connected: paste your token on the Cloud Drive page before creating a share code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.5ce19f9c3d3c",
+      "source": "分享文件路径无效",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 271,
+          "context": "new Error(i18n(\"state.vaultcloud.5ce19f9c3d3c\"))"
+        }
+      ],
+      "translation": "Invalid shared file path",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.6a07b0abd9b4",
+      "source": "这条分享没有可写的目录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 172,
+          "context": "new Error(i18n(\"state.vaultcloud.6a07b0abd9b4\"))"
+        }
+      ],
+      "translation": "This share has no writable directory",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.8adb5a5068bc",
+      "source": "云盘清单格式不受支持",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 157,
+          "context": "new Error(i18n(\"state.vaultcloud.8adb5a5068bc\"))"
+        }
+      ],
+      "translation": "Unsupported cloud drive manifest format",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.aae73c7a3e65",
+      "source": "文件「{name}」没有可读取的内容，请重新添加",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(f.name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 128,
+          "context": "new Error(i18n(\"state.vaultcloud.aae73c7a3e65\", { name: String(f.name) }))"
+        }
+      ],
+      "translation": "The file \"{name}\" has no readable content. Please add it again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.ac986af5f7b3",
+      "source": "无法分享附件目录：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(String(error))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 61,
+          "context": "new Error(i18n(\"state.vaultcloud.ac986af5f7b3\", { value: String(String(error)) }))"
+        }
+      ],
+      "translation": "Cannot share the attachment directory: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.bd2fb4465b55",
+      "source": "分享文件校验失败",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 274,
+          "context": "new Error(i18n(\"state.vaultcloud.bd2fb4465b55\"))"
+        }
+      ],
+      "translation": "Shared file verification failed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.c71c20943dfd",
+      "source": "找不到分享的发送方资料库，请在发送设备上撤销",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 181,
+          "context": "new Error(i18n(\"state.vaultcloud.c71c20943dfd\"))"
+        }
+      ],
+      "translation": "The sender's library of this share cannot be found. Please revoke it on the sending device",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.ccd9ad2a2fee",
+      "source": "这条分享缺少云盘定位（repoId）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 164,
+          "context": "new Error(i18n(\"state.vaultcloud.ccd9ad2a2fee\"))"
+        }
+      ],
+      "translation": "This share is missing its cloud drive location (repoId)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.notConnected",
+      "source": "云盘未连接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 212,
+          "context": "reason: i18n(\"state.vaultcloud.notConnected\")"
+        }
+      ],
+      "translation": "Cloud drive not connected",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultregistry.14947083ab6d",
+      "source": "主题已应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 92,
+          "context": "env.toast(i18n(\"state.vaultregistry.14947083ab6d\"))"
+        }
+      ],
+      "translation": "Theme applied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultregistry.18fb3a6dfa2c",
+      "source": "文字预览暂时无法打开，请重试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 37,
+          "context": "env.toast(i18n(\"state.vaultregistry.18fb3a6dfa2c\"))"
+        }
+      ],
+      "translation": "The text preview cannot be opened right now. Please try again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultregistry.191e4869147e",
+      "source": "文件尚未保存，请从来源重新加入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 49,
+          "context": "new Error(i18n(\"state.vaultregistry.191e4869147e\"))"
+        }
+      ],
+      "translation": "The file has not been saved. Please add it again from its source",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultregistry.24ec304b41bb",
+      "source": "文件引用缺失，请重新添加",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 41,
+          "context": "env.toast(i18n(\"state.vaultregistry.24ec304b41bb\"))"
+        }
+      ],
+      "translation": "The file reference is missing. Please add it again",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultregistry.2808a4f9d0f0",
+      "source": "这个对象暂不支持直接打开；可以先留在暂存箱里",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 150,
+          "context": "env.toast(i18n(\"state.vaultregistry.2808a4f9d0f0\"))"
+        }
+      ],
+      "translation": "This item cannot be opened directly yet; you can keep it in the Stash for now",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultregistry.666f4160f861",
+      "source": "壁纸已应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultRegistry.ts",
+          "line": 100,
+          "context": "env.toast(i18n(\"state.vaultregistry.666f4160f861\"))"
+        }
+      ],
+      "translation": "Wallpaper applied",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vaultregistry.75aa9163a82e",
       "source": "这是你自己的名片，已在「我的名片」里",
@@ -1051,340 +1349,34 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "state.wallpsync.connectBeforeRestore",
-      "source": "云盘还没连接：先到「云盘」页连接后再恢复",
+      "key": "state.wallpsync.archiveTooLarge",
+      "source": "壁纸备份最多 24 MiB，每张图片或视频最多 12 MiB。请减少壁纸库中的大文件后重新同步；当前壁纸保持原样",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
           "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 98,
-          "context": "msg: i18n(\"state.wallpsync.connectBeforeRestore\")"
+          "line": 66,
+          "context": "return i18n(\"state.wallpsync.archiveTooLarge\");"
         }
       ],
-      "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then restore",
+      "translation": "Wallpaper backups support up to 24 MiB in total and 12 MiB per image or video. Remove large items from the wallpaper library and try again. Your current wallpaper is preserved.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
-      "key": "state.wallpsync.connectBeforeUpload",
-      "source": "云盘还没连接：先到「云盘」页连接后再同步",
+      "key": "state.wallpsync.changedLocally",
+      "source": "下载期间本机壁纸已改变，请确认当前选择后重新恢复",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
           "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 73,
-          "context": "msg: i18n(\"state.wallpsync.connectBeforeUpload\")"
+          "line": 144,
+          "context": "new Error(i18n(\"state.wallpsync.changedLocally\"))"
         }
       ],
-      "translation": "The cloud drive is not connected: connect on the Cloud Drive page first, then sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.invalidArchive",
-      "source": "云盘上的壁纸档案读不出来，请先重新同步一次",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 109,
-          "context": "msg: i18n(\"state.wallpsync.invalidArchive\")"
-        }
-      ],
-      "translation": "The wallpaper archive on the cloud drive cannot be read. Please sync again first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.noArchive",
-      "source": "云盘上还没有壁纸档案，请先在别的设备同步一次",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 115,
-          "context": "msg: i18n(\"state.wallpsync.noArchive\")"
-        }
-      ],
-      "translation": "There is no wallpaper archive on the cloud drive yet. Sync from another device first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.restored",
-      "source": "已恢复云盘壁纸",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 111,
-          "context": "msg: i18n(\"state.wallpsync.restored\")"
-        }
-      ],
-      "translation": "Cloud drive wallpapers restored",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.restoreFailed",
-      "source": "恢复没成功（{error}），请检查云盘后再试",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "error"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 117,
-          "context": "msg: i18n(\"state.wallpsync.restoreFailed\", {error:raw})"
-        }
-      ],
-      "translation": "Restore failed ({error}). Check the cloud drive and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.unknownCause",
-      "source": "原因不明",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 123,
-          "context": "s.replace(/\\s+/g, \" \").slice(0, 60) || i18n(\"state.wallpsync.unknownCause\")"
-        }
-      ],
-      "translation": "Unknown cause",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.uploaded",
-      "source": "壁纸已同步到云盘",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 89,
-          "context": "msg: i18n(\"state.wallpsync.uploaded\")"
-        }
-      ],
-      "translation": "Wallpapers synced to the cloud drive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.uploadFailed",
-      "source": "同步没成功（{error}），请检查云盘后再试",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "error"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 91,
-          "context": "msg: i18n(\"state.wallpsync.uploadFailed\", {error:shortErr(e)})"
-        }
-      ],
-      "translation": "Sync failed ({error}). Check the cloud drive and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.0a9c46115749",
-      "source": "阵雪",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 54,
-          "context": "return i18n(\"state.weather.0a9c46115749\");"
-        }
-      ],
-      "translation": "Snow showers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.124d60580dfa",
-      "source": "雨",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 50,
-          "context": "return i18n(\"state.weather.124d60580dfa\");"
-        }
-      ],
-      "translation": "Rain",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.30c379777e5d",
-      "source": "多云",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 46,
-          "context": "return i18n(\"state.weather.30c379777e5d\");"
-        }
-      ],
-      "translation": "Cloudy",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.448c8292f481",
-      "source": "阵雨",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 53,
-          "context": "return i18n(\"state.weather.448c8292f481\");"
-        }
-      ],
-      "translation": "Showers",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.4ba0128b1216",
-      "source": "{mins} 分钟前",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "mins",
-          "expression": "String(mins)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 158,
-          "context": "return i18n(\"state.weather.4ba0128b1216\", { mins: String(mins) });"
-        }
-      ],
-      "translation": "{mins} minutes ago",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.53058fe2e03c",
-      "source": "雪",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 52,
-          "context": "return i18n(\"state.weather.53058fe2e03c\");"
-        }
-      ],
-      "translation": "Snow",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.6379ede5c239",
-      "source": "晴",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 44,
-          "context": "return i18n(\"state.weather.6379ede5c239\");"
-        }
-      ],
-      "translation": "Sunny",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.690c01945f17",
-      "source": "{value} 小时前",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(Math.round(mins / 60))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 159,
-          "context": "return i18n(\"state.weather.690c01945f17\", { value: String(Math.round(mins / 60)) });"
-        }
-      ],
-      "translation": "{value} hours ago",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.6ac58535bcad",
-      "source": "雷阵雨伴冰雹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 56,
-          "context": "return i18n(\"state.weather.6ac58535bcad\");"
-        }
-      ],
-      "translation": "Thunderstorm with hail",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.6aec964d8012",
-      "source": "基本晴",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 45,
-          "context": "return i18n(\"state.weather.6aec964d8012\");"
-        }
-      ],
-      "translation": "Mostly sunny",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.weather.78df214e37ef",
-      "source": "阴",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/weather.ts",
-          "line": 47,
-          "context": "return i18n(\"state.weather.78df214e37ef\");"
-        }
-      ],
-      "translation": "Overcast",
+      "translation": "The local wallpaper changed during the download. Check your current selection, then restore again.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

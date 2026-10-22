@@ -32,6 +32,8 @@ import { haptic } from "../lib/haptics.js";
 const CLOSE_MS = 200;
 /** 下滑关闭阈值：超过抽屉高度的 1/4 或速度够快就关。 */
 const DRAG_CLOSE_PX = 96;
+/** A thumb can drift within the fixed confirmation button without scrolling the sheet. */
+const CONFIRM_TOUCH_SLOP = 24;
 /** 常用组：与旧「右键添加」列表一致（便笺在最前，用户点名不能丢）。 */
 const QUICK_IDS = ["custom:note", "text-title", "text-label", "divider"] as const;
 
@@ -100,9 +102,9 @@ export function BoardAddDrawer({
   /** 抽屉拉开到高位（拖过一半高度）后保持；再往下拖可以收回半高或关掉。 */
   const [tall, setTall] = useState(false);
   const dragRef = useRef<{ y: number; h: number; dy: number } | null>(null);
-  /** 确认键的按下点（判定"滑动结束在按钮上"）与一次性闸门（指针路径与 click 路径只生效一次）。 */
-  const pressRef = useRef<{ x: number; y: number; id: number } | null>(null);
-  const firedRef = useRef(false);
+  const pressRef = useRef<{ x: number; y: number; id: number; moved: boolean } | null>(null);
+  /** Pointer activation consumes only its compatibility click, never a later intentional tap. */
+  const skipPointerClickRef = useRef(false);
 
   /* 收回：先把展开态里标题/预览的矩形记下来，再切回总览——总览会用它们做**反向 FLIP**
      （不然收回就是"啪"地一下，霖 2026-10-11：展开有动画、收回没有）。 */
@@ -172,13 +174,14 @@ export function BoardAddDrawer({
       return;
     }
     if (!shown) return;
-    /* 关：先播退场再摘节点（否则会"啪"地消失）。 */
-    setExpanded(null);
+    /* Keep the selected preview during exit. Returning to the overview here mounts
+       every preview again while the board commits its new widget. */
     setLeaving(true);
-    setTall(false);
     const t = window.setTimeout(() => {
       setShown(false);
       setLeaving(false);
+      setExpanded(null);
+      setTall(false);
       setDragY(0);
     }, CLOSE_MS);
     return () => window.clearTimeout(t);
@@ -282,14 +285,11 @@ export function BoardAddDrawer({
     .map((id) => shownDefs.find((d) => d.id === id))
     .filter((d): d is WidgetDef => Boolean(d));
   const restDefs = shownDefs.filter((d) => !(QUICK_IDS as readonly string[]).includes(d.id));
-  /** 确认（添加 / 修改大小）：指针路径与 click 路径共用，400ms 内只生效一次。 */
+  /** Touch commits on release; mouse and keyboard use the normal click path. */
   const activate = (fromPointer: boolean): void => {
-    if (!def || firedRef.current) return;
-    firedRef.current = true;
-    window.setTimeout(() => { firedRef.current = false; }, 400);
-    /* 触屏路径要 preventDefault 掉那次 click（避免二次生效），而全局触感委托
-       （lib/haptics.ts 的 installGlobalHaptics）正挂在 click 上——于是这里补一档与 .btn 相同的
-       轻触反馈；鼠标路径照旧交给全局委托，不重复。 */
+    if (!open || leaving || !def) return;
+    /* Touch feedback accompanies the release; the compatibility click is consumed
+       separately. Mouse/keyboard feedback stays with the global click delegate. */
     if (fromPointer) haptic("tick");
     if (mode === "resize") onResize?.(def, chosen);
     else onAdd(def, chosen);
@@ -408,22 +408,45 @@ export function BoardAddDrawer({
             className="btn btn-primary add-detail-add"
             data-add-confirm={def.id}
             data-add-action={mode === "resize" ? "resize" : "add"}
-            /* 确认键**在抬手时就生效**（触屏），不等浏览器的 click：
-               真机上点一次没反应、点第二次才生效（霖 2026-10-12），
-               而 CDP 里直接派发 click 是好的 —— 说明丢的是"真手指那一次 click"这条链路。
-               指针路径与 click 路径共用一次性闸门，正常情况只会生效一次。 */
-            onPointerDown={(e) => { pressRef.current = { x: e.clientX, y: e.clientY, id: e.pointerId }; }}
+            /* This fixed action owns its touch gesture. The scrollable catalog and
+               size carousel retain their own scrolling/dragging surfaces. */
+            onPointerDown={(e) => {
+              if (!e.isPrimary || e.button !== 0) return;
+              skipPointerClickRef.current = false;
+              pressRef.current = { x: e.clientX, y: e.clientY, id: e.pointerId, moved: false };
+              if (e.pointerType !== "mouse") {
+                try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* Implicit touch capture remains available. */ }
+              }
+            }}
+            onPointerMove={(e) => {
+              const p = pressRef.current;
+              if (p?.id === e.pointerId && Math.hypot(e.clientX - p.x, e.clientY - p.y) > CONFIRM_TOUCH_SLOP) p.moved = true;
+            }}
             onPointerUp={(e) => {
               const p = pressRef.current;
-              pressRef.current = null;
               if (!p || p.id !== e.pointerId) return;
-              if (Math.hypot(e.clientX - p.x, e.clientY - p.y) > 12) return;   // 滑动结束在按钮上不算点按
-              if (e.pointerType === "mouse") return;                          // 鼠标交给 click
+              pressRef.current = null;
+              if (e.pointerType === "mouse") return;
+              skipPointerClickRef.current = true;
               e.preventDefault();
+              const r = e.currentTarget.getBoundingClientRect();
+              if (p.moved || Math.hypot(e.clientX - p.x, e.clientY - p.y) > CONFIRM_TOUCH_SLOP
+                || e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
               activate(true);
             }}
-            onPointerCancel={() => { pressRef.current = null; }}
-            onClick={() => activate(false)}
+            onPointerCancel={(e) => {
+              if (pressRef.current?.id !== e.pointerId) return;
+              pressRef.current = null;
+              skipPointerClickRef.current = true;
+            }}
+            onClick={(e) => {
+              if (e.detail !== 0 && skipPointerClickRef.current) {
+                skipPointerClickRef.current = false;
+                e.preventDefault();
+                return;
+              }
+              activate(false);
+            }}
           >
             {mode === "resize" ? i18n("components.boardadddrawer.d10e6141036b") : i18n("components.boardadddrawer.7a8a11ead507")}
           </button>

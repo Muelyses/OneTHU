@@ -1,7 +1,23 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.widgetsettingssection.174b9ff2e902",
+      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 135,
+          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
+        }
+      ],
+      "translation": "No usable sizes were read yet; please report this line's content to the developers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.widgetsettingssection.17a0e39c6089",
       "source": "日程与 DDL",
@@ -1311,22 +1327,6 @@
         }
       ],
       "translation": "International affairs",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "enum.label.bd2d74b297d1",
-      "source": "课程名称",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/i18n/staticLabels.ts",
-          "line": 35,
-          "context": "return t(\"enum.label.bd2d74b297d1\");"
-        }
-      ],
-      "translation": "Course name",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
     }

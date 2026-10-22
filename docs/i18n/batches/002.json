@@ -1,7 +1,113 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.attachactionssheet.d56452bb724e",
+      "source": "这个目录还是空的",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 173,
+          "context": "entries.length === 0 ? i18n(\"components.attachactionssheet.d56452bb724e\") : \"\""
+        }
+      ],
+      "translation": "This directory is still empty",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.dc2ce9466206",
+      "source": "提交前会再确认一次；提交是**整体覆盖**（正文与附件以本次为准）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 519,
+          "context": "{i18n(\"components.attachactionssheet.dc2ce9466206\")}"
+        }
+      ],
+      "translation": "You will be asked to confirm before submitting; the submission **replaces the whole assignment** (body and attachments are based on this run).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.dc6676c23efb",
+      "source": "[附件] 打开雨课堂官方作答页失败：{msg}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "msg",
+          "expression": "String(msg)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 381,
+          "context": "logLine(i18n(\"components.attachactionssheet.dc6676c23efb\", { msg: String(msg) }))"
+        }
+      ],
+      "translation": "[Attachment] Failed to open the official Rain Classroom answer page: {msg}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.dfa45cea4ca8",
+      "source": "{value}图片单条最多 4 张、单张 ≤6MB，超出的会在正文里写明原因（不会静默丢件）。",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "many ? i18n(\"components.attachactionssheet.c3a336d05243\", { length: String(files.length) }) : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 619,
+          "context": "{i18nRich(\"components.attachactionssheet.dfa45cea4ca8\", { value: many ? i18n(\"components.attachactionssheet.c3a336d05243\", { length: String(files.length) }) : \"\" })}"
+        }
+      ],
+      "translation": "{value}At most 4 images per message and 6MB per image; anything over the limit will be explained in the message body (never silently dropped).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.dfb054a0aec6",
+      "source": "提交作业",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 522,
+          "context": "busy ? i18n(\"components.attachactionssheet.18931020ad52\") : i18n(\"components.attachactionssheet.dfb054a0aec6\")"
+        }
+      ],
+      "translation": "Submit assignment",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.attachactionssheet.dfb8c1342e07",
+      "source": "发讨论区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/AttachActionsSheet.tsx",
+          "line": 63,
+          "context": "return i18n(\"components.attachactionssheet.dfb8c1342e07\");"
+        }
+      ],
+      "translation": "Post to discussion",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.attachactionssheet.e09351dc86df",
       "source": "去云盘页选一个资料库",
@@ -461,12 +567,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 385,
+          "line": 359,
           "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
         },
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 410,
+          "line": 384,
           "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
         }
       ],
@@ -482,7 +588,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 461,
+          "line": 458,
           "context": "{i18n(\"components.boardadddrawer.3fd47edce45b\")}"
         }
       ],
@@ -498,7 +604,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 467,
+          "line": 464,
           "context": "{i18n(\"components.boardadddrawer.4563c57b5143\")}"
         }
       ],
@@ -514,7 +620,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 485,
+          "line": 482,
           "context": "{i18n(\"components.boardadddrawer.744bb8debb2c\")}"
         }
       ],
@@ -530,7 +636,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 454,
+          "line": 451,
           "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.d10e6141036b\") : i18n(\"components.boardadddrawer.7a8a11ead507\")"
         }
       ],
@@ -546,17 +652,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 385,
+          "line": 359,
           "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
         },
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 410,
+          "line": 384,
           "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.12e0be622c36\") : i18n(\"components.boardadddrawer.97dcf4348652\")"
         },
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 460,
+          "line": 457,
           "context": "{i18n(\"components.boardadddrawer.97dcf4348652\")}"
         }
       ],
@@ -572,7 +678,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 473,
+          "line": 470,
           "context": "{i18n(\"components.boardadddrawer.ccf130e68402\")}"
         }
       ],
@@ -588,7 +694,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 489,
+          "line": 486,
           "context": "{i18n(\"components.boardadddrawer.cee892960fc7\")}"
         }
       ],
@@ -604,7 +710,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 454,
+          "line": 451,
           "context": "mode === \"resize\" ? i18n(\"components.boardadddrawer.d10e6141036b\") : i18n(\"components.boardadddrawer.7a8a11ead507\")"
         }
       ],
@@ -620,12 +726,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 463,
+          "line": 460,
           "context": "{i18n(\"components.boardadddrawer.f2cd55057df5\")}"
         },
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 463,
+          "line": 460,
           "context": "{i18n(\"components.boardadddrawer.f2cd55057df5\")}"
         }
       ],
@@ -641,7 +747,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/BoardAddDrawer.tsx",
-          "line": 428,
+          "line": 402,
           "context": "{i18n(\"components.boardadddrawer.f558fcad438d\")}"
         }
       ],
@@ -1294,117 +1400,6 @@
         }
       ],
       "translation": "Earned ",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.boardcards.dc9591e56d50",
-      "source": "进行中",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 351,
-          "context": "next.left > 0 ? next.left + i18n(\"components.boardcards.a63a9dc60e00\") : i18n(\"components.boardcards.dc9591e56d50\")"
-        }
-      ],
-      "translation": "In progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.boardcards.dfaa7ebc48d1",
-      "source": "天气拉取失败，可重试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 678,
-          "context": "snap.reason ? i18n(\"components.boardcards.dfaa7ebc48d1\") : i18n(\"components.boardcards.7cdec8c79c4c\")"
-        }
-      ],
-      "translation": "Failed to load weather. You can retry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.boardcards.e4f817e61d06",
-      "source": "去查询",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 212,
-          "context": "{i18n(\"components.boardcards.e4f817e61d06\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 226,
-          "context": "{i18n(\"components.boardcards.e4f817e61d06\")}"
-        }
-      ],
-      "translation": "Check it",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.boardcards.e515eff89f07",
-      "source": "体感 {value}°",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "Math.round(w.now.feels)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 690,
-          "context": "{i18nRich(\"components.boardcards.e515eff89f07\", { value: Math.round(w.now.feels) })}"
-        }
-      ],
-      "translation": "Feels like {value}°",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.boardcards.f11e888a9be4",
-      "source": "湿度 {value}%",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "Math.round(w.now.humidity)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 691,
-          "context": "{i18nRich(\"components.boardcards.f11e888a9be4\", { value: Math.round(w.now.humidity) })}"
-        }
-      ],
-      "translation": "Humidity {value}%",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.boardcards.f88182fcd575",
-      "source": "进入",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/boardCards.tsx",
-          "line": 180,
-          "context": "return i18n(\"components.boardcards.f88182fcd575\");"
-        }
-      ],
-      "translation": "Open",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

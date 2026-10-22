@@ -1,7 +1,290 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.newstab.71e8dd51594c",
+      "source": "可订阅单位列表加载失败：{sourcesErr}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "sourcesErr",
+          "expression": "String(sourcesErr)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 918,
+          "context": "{i18n(\"pages.info.newstab.71e8dd51594c\", { sourcesErr: String(sourcesErr) })}"
+        }
+      ],
+      "translation": "Failed to load the list of subscribable units: {sourcesErr}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.762b04cd10e9",
+      "source": "已订阅 {value} 个条件 · 第 {subPage} 页 · {length} 条",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(subsServer?.length ?? subs.length)"
+        },
+        {
+          "name": "subPage",
+          "expression": "String(subPage)"
+        },
+        {
+          "name": "length",
+          "expression": "String(subShown.length)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 694,
+          "context": "subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
+        }
+      ],
+      "translation": "{value} subscription conditions · Page {subPage} · {length} items",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.newstab.79515962cf6e",
+      "source": "删除该服务端订阅条件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 902,
+          "context": "{i18n(\"pages.info.newstab.79515962cf6e\")}"
+        }
+      ],
+      "translation": "Delete this server-side subscription condition",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.7c54c6a29f75",
+      "source": "正文为空。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 821,
+          "context": "{i18n(\"pages.info.newstab.7c54c6a29f75\")}"
+        }
+      ],
+      "translation": "The body is empty.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.7f6d2d65f737",
+      "source": "栏目：{channel}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "channel",
+          "expression": "String(c.channel)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 893,
+          "context": "c.channel ? i18n(\"pages.info.newstab.7f6d2d65f737\", { channel: String(c.channel) }) : \"\""
+        }
+      ],
+      "translation": "Channel: {channel}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.89bc802be658",
+      "source": "订阅动态中没有与“{query}”相关的新闻。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "query",
+          "expression": "String(query)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 731,
+          "context": "searching\n                    ? i18n(\"pages.info.newstab.89bc802be658\", { query: String(query) })\n                    : subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
+        }
+      ],
+      "translation": "No news in the subscription feed related to \"{query}\".",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.8a8542f69648",
+      "source": "下一页",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 640,
+          "context": "{i18n(\"pages.info.newstab.8a8542f69648\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 756,
+          "context": "{i18n(\"pages.info.newstab.8a8542f69648\")}"
+        }
+      ],
+      "translation": "Next page",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.90f9253844e7",
+      "source": "下载失败：",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 211,
+          "context": "i18n(\"pages.info.newstab.90f9253844e7\") + explainNetworkError(err)"
+        }
+      ],
+      "translation": "Download failed:",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.920430f19806",
+      "source": "我的订阅{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "subsServer ? `（${subsServer.length}）` : \"\""
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 875,
+          "context": "{i18nRich(\"pages.info.newstab.920430f19806\", { value: subsServer ? `（${subsServer.length}）` : \"\" })}"
+        }
+      ],
+      "translation": "My subscriptions{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.94dfc8f77ac1",
+      "source": "订阅动态（{length}）",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "subs.length"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 630,
+          "context": "{i18nRich(\"pages.info.newstab.94dfc8f77ac1\", { length: subs.length })}"
+        }
+      ],
+      "translation": "Subscription feed ({length})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.988287587a26",
+      "source": "新闻分栏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 616,
+          "context": "{i18n(\"pages.info.newstab.988287587a26\")}"
+        }
+      ],
+      "translation": "News sections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.9ada62f74acb",
+      "source": "该订阅条件暂无新闻——稍后刷新，或到订阅管理调整条件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 734,
+          "context": "subPage > 1\n                      ? i18n(\"pages.info.newstab.44125167a03f\")\n                      : i18n(\"pages.info.newstab.9ada62f74acb\")"
+        }
+      ],
+      "translation": "No news for this subscription condition yet — refresh later, or adjust the condition in Manage subscriptions.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.9dd579ff5cfa",
+      "source": "暂无订阅条件——在下方点选发布单位即可添加。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 881,
+          "context": "{i18n(\"pages.info.newstab.9dd579ff5cfa\")}"
+        }
+      ],
+      "translation": "No subscription conditions yet — tap publishing units below to add some.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.newstab.9eb3f2fa22ec",
+      "source": "新闻附件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 830,
+          "context": "label: i18n(\"pages.info.newstab.9eb3f2fa22ec\")"
+        }
+      ],
+      "translation": "News attachments",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.info.newstab.abf7eab39ae9",
+      "source": "新闻详情",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
+          "line": 797,
+          "context": "detail.item.name || detail.data?.title || i18n(\"pages.info.newstab.abf7eab39ae9\")"
+        }
+      ],
+      "translation": "News details",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.info.newstab.acac3da6c629",
       "source": "第 {page} 页",
@@ -15,7 +298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 603,
+          "line": 638,
           "context": "{i18nRich(\"pages.info.newstab.acac3da6c629\", { page: page })}"
         }
       ],
@@ -31,12 +314,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 606,
+          "line": 641,
           "context": "{i18n(\"pages.info.newstab.aee887434131\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 722,
+          "line": 757,
           "context": "{i18n(\"pages.info.newstab.aee887434131\")}"
         }
       ],
@@ -52,7 +335,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 164,
+          "line": 165,
           "context": "n.source || i18n(\"pages.info.newstab.b5a18d43cada\")"
         }
       ],
@@ -68,7 +351,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 802,
+          "line": 837,
           "context": "dlAtt === a.url ? i18n(\"pages.info.newstab.bcc2333dc631\") : i18n(\"pages.info.newstab.4673a2306165\")"
         }
       ],
@@ -89,7 +372,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 788,
+          "line": 823,
           "context": "{i18n(\"pages.info.newstab.c10e686a2131\", { length: String(detail.data.attachments.length) })}"
         }
       ],
@@ -105,7 +388,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 736,
+          "line": 771,
           "context": "page > 1 ? i18n(\"pages.info.newstab.c23d1354916d\") : i18n(\"pages.info.newstab.21ac3d54fe13\")"
         }
       ],
@@ -121,7 +404,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 796,
+          "line": 831,
           "context": "{i18n(\"pages.info.newstab.c7225dbf105e\")}"
         }
       ],
@@ -137,7 +420,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 766,
+          "line": 801,
           "context": "{i18n(\"pages.info.newstab.c744c961f0ab\")}"
         }
       ],
@@ -158,7 +441,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 859,
+          "line": 894,
           "context": "c.keyword ? i18n(\"pages.info.newstab.c98f5ee16d10\", { keyword: String(c.keyword) }) : \"\""
         }
       ],
@@ -174,12 +457,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 604,
+          "line": 639,
           "context": "{i18n(\"pages.info.newstab.c9b9ae7a6144\")}"
         },
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 720,
+          "line": 755,
           "context": "{i18n(\"pages.info.newstab.c9b9ae7a6144\")}"
         }
       ],
@@ -200,7 +483,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 613,
+          "line": 648,
           "context": "{i18n(\"pages.info.newstab.cb6f03cf2a75\", { query: String(query) })}"
         }
       ],
@@ -216,7 +499,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 147,
+          "line": 148,
           "context": "{i18n(\"pages.info.newstab.e3e8e974ffdc\")}"
         }
       ],
@@ -232,7 +515,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 136,
+          "line": 137,
           "context": "{i18n(\"pages.info.newstab.ebfa3e62fea6\")}"
         }
       ],
@@ -1117,273 +1400,6 @@
         }
       ],
       "translation": "Public space",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.reservepage.ecc11c8afea8",
-      "source": "空教室",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
-          "line": 33,
-          "context": "return i18n(\"pages.info.reservepage.ecc11c8afea8\");"
-        }
-      ],
-      "translation": "Empty classroom",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.reservepage.ef7be5be3c13",
-      "source": "体育",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
-          "line": 34,
-          "context": "return i18n(\"pages.info.reservepage.ef7be5be3c13\");"
-        }
-      ],
-      "translation": "Sports",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.08eb78cf3163",
-      "source": "预约（下一步：验证码）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 358,
-          "context": "phoneOk ? i18n(\"pages.info.sportstab.08eb78cf3163\") : i18n(\"pages.info.sportstab.dbb234c0abe9\")"
-        }
-      ],
-      "translation": "Reserve (next: captcha)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.0e9546c6723c",
-      "source": "该场馆当日暂无可预约时段（可能未开放或已约满）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 294,
-          "context": "{i18n(\"pages.info.sportstab.0e9546c6723c\")}"
-        }
-      ],
-      "translation": "No bookable slots at this venue today (it may be closed or fully booked).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.18931020ad52",
-      "source": "提交中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 402,
-          "context": "booking ? i18n(\"pages.info.sportstab.18931020ad52\") : i18n(\"pages.info.sportstab.72944bf6d779\")"
-        }
-      ],
-      "translation": "Submitting…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.1a558735ea57",
-      "source": "我的预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 409,
-          "context": "{i18n(\"pages.info.sportstab.1a558735ea57\")}"
-        }
-      ],
-      "translation": "My reservations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.208514882cd8",
-      "source": "预约成功：{name} · {date} · {timeSession} · {fieldName}（免费场地无需支付；如需付费请到体育系统办理）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(venue.name)"
-        },
-        {
-          "name": "date",
-          "expression": "String(date)"
-        },
-        {
-          "name": "timeSession",
-          "expression": "String(picked.timeSession)"
-        },
-        {
-          "name": "fieldName",
-          "expression": "String(picked.fieldName)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 219,
-          "context": "setNoticeMsg(i18n(\"pages.info.sportstab.208514882cd8\", { name: String(venue.name), date: String(date), timeSession: String(picked.timeSession), fieldName: String(picked.fieldName) }))"
-        }
-      ],
-      "translation": "Reserved: {name} · {date} · {timeSession} · {fieldName} (free venues need no payment; for paid venues please handle payment in the sports system)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.210e2fea0238",
-      "source": "预约失败：{value}（可点击验证码图刷新后重试）",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(tabErrorText(err))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 225,
-          "context": "isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n(\"pages.info.sportstab.210e2fea0238\", { value: String(tabErrorText(err)) })"
-        }
-      ],
-      "translation": "Reservation failed: {value} (tap the captcha image to refresh and try again)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.2759ad2a6b6c",
-      "source": "退订失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(tabErrorText(err))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 149,
-          "context": "isServiceUnavailable(err) ? SPORTS_UNAVAILABLE : i18n(\"pages.info.sportstab.2759ad2a6b6c\", { value: String(tabErrorText(err)) })"
-        }
-      ],
-      "translation": "Unbooking failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 403,
-          "context": "{i18n(\"pages.info.sportstab.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.2f332d18c42d",
-      "source": "11 位手机号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 353,
-          "context": "{i18n(\"pages.info.sportstab.2f332d18c42d\")}"
-        }
-      ],
-      "translation": "11-digit mobile number",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.352cdc807892",
-      "source": "预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 348,
-          "context": "{i18n(\"pages.info.sportstab.352cdc807892\")}"
-        }
-      ],
-      "translation": "Reservations",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.35bc4552c921",
-      "source": "预约日期",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 278,
-          "context": "{i18n(\"pages.info.sportstab.35bc4552c921\")}"
-        }
-      ],
-      "translation": "Reservation date",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.4401db92a33a",
-      "source": "未支付/已支付记录（不接支付流，仅展示状态）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 409,
-          "context": "{i18n(\"pages.info.sportstab.4401db92a33a\")}"
-        }
-      ],
-      "translation": "Unpaid/paid records (no payment flow; status display only)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.sportstab.4927a53bcc88",
-      "source": "加载中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/SportsTab.tsx",
-          "line": 386,
-          "context": "{i18n(\"pages.info.sportstab.4927a53bcc88\")}"
-        }
-      ],
-      "translation": "Loading…",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

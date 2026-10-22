@@ -1,7 +1,103 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.exthwloginmodal.97528819c903",
+      "source": "保持本页在前台",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 200,
+          "context": "{i18n(\"components.exthwloginmodal.97528819c903\")}"
+        }
+      ],
+      "translation": "keep this page in the foreground",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.a55cb5714764",
+      "source": "支持扫码 / 手机号 + 图形验证码 + 短信（应用内网页）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 51,
+          "context": "return i18n(\"components.exthwloginmodal.a55cb5714764\");"
+        }
+      ],
+      "translation": "Supports QR scan / phone number + captcha + SMS (in-app web page)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.ad5aaf33d6ce",
+      "source": "正在获取二维码…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 141,
+          "context": "status === \"loading\"\n      ? i18n(\"components.exthwloginmodal.ad5aaf33d6ce\")\n      : status === \"expired\"\n        ? i18n(\"components.exthwloginmodal.2246ac32dbba\")\n        : status === \"error\"\n          ? null\n          : i18n(\"components.exthwloginmodal.eb13f4204eea\")"
+        }
+      ],
+      "translation": "Fetching QR code…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.b6317a47633c",
+      "source": "，或",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 298,
+          "context": "{i18n(\"components.exthwloginmodal.b6317a47633c\")}"
+        }
+      ],
+      "translation": ", or ",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.ba36bea2e130",
+      "source": "登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 298,
+          "context": "{i18n(\"components.exthwloginmodal.ba36bea2e130\")}"
+        }
+      ],
+      "translation": "to sign in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.exthwloginmodal.c581f565a259",
+      "source": "：本机扫码也可用（切到微信期间请勿清理通知）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/ExtHwLoginModal.tsx",
+          "line": 198,
+          "context": "{i18n(\"components.exthwloginmodal.c581f565a259\")}"
+        }
+      ],
+      "translation": ": scanning on this device also works (do not clear notifications while switching to WeChat).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.exthwloginmodal.c7a7c7509a05",
       "source": "雨课堂已启用图形验证码，短信登录暂不可用，请用微信扫码。",
@@ -1440,131 +1536,6 @@
         }
       ],
       "translation": "The password is stored encrypted on this device, never uploaded or written to logs, and cleared when you sign out.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.abf483faf3b6",
-      "source": "{value}高级：手动粘贴浏览器登录信息",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "advanced ? \"▾\" : \"▸\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 761,
-          "context": "{i18nRich(\"components.exthwsettingssection.abf483faf3b6\", { value: advanced ? \"▾\" : \"▸\" })}"
-        }
-      ],
-      "translation": "{value}Advanced: manually paste browser sign-in info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.ae79f5df3c38",
-      "source": "已取消导入。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 284,
-          "context": "return i18n(\"components.exthwsettingssection.ae79f5df3c38\");"
-        }
-      ],
-      "translation": "Import cancelled.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.afd4b783536b",
-      "source": "收起",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 674,
-          "context": "tycheFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 716,
-          "context": "dsaFormOpen ? i18n(\"components.exthwsettingssection.afd4b783536b\") : i18n(\"components.exthwsettingssection.1e2df9c3075a\")"
-        }
-      ],
-      "translation": "Collapse",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.b666588e7bed",
-      "source": "退出{label}登录失败：{value}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "label",
-          "expression": "String(label)"
-        },
-        {
-          "name": "value",
-          "expression": "String(errMsg(e))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 436,
-          "context": "notify(source === \"yuketang\" ? \"yuketang\" : \"oj\", i18n(\"components.exthwsettingssection.b666588e7bed\", { label: String(label), value: String(errMsg(e)) }))"
-        }
-      ],
-      "translation": "Sign out of {label} failed: {value}",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.exthwsettingssection.b9e0b1e6f221",
-      "source": "{value}账号密码",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "tuojPwdOpen ? \"▾\" : \"▸\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 617,
-          "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: tuojPwdOpen ? \"▾\" : \"▸\" })}"
-        },
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 651,
-          "context": "{i18nRich(\"components.exthwsettingssection.b9e0b1e6f221\", { value: classicPwdOpen ? \"▾\" : \"▸\" })}"
-        }
-      ],
-      "translation": "{value}username and password",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.exthwsettingssection.c0102ddf9ffc",
-      "source": "会话已失效：作业页将拉不到雨课堂数据。可「一键重登（扫码）」，或在其他已登录设备「导出 Cookie」后在此「导入 Cookie」恢复。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExtHwSettingsSection.tsx",
-          "line": 537,
-          "context": "{i18n(\"components.exthwsettingssection.c0102ddf9ffc\")}"
-        }
-      ],
-      "translation": "Session expired: assignment pages will fail to fetch Rain Classroom data. Use \"Re-sign in (QR scan)\", or on another signed-in device choose \"Export cookies\" and then \"Import cookies\" here to restore.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

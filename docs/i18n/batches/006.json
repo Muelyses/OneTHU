@@ -1,7 +1,103 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "components.explorer.ohcapsule.searchPlaceholder",
+      "source": "搜索或问小OH",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OhCapsule.tsx",
+          "line": 45,
+          "context": "(): string => i18n(\"components.explorer.ohcapsule.searchPlaceholder\")"
+        }
+      ],
+      "translation": "Search or ask OH",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.onegobar.0552e329ccf8",
+      "source": "删除…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 28,
+          "context": "label:i18n(\"components.explorer.onegobar.0552e329ccf8\")"
+        }
+      ],
+      "translation": "Delete…",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.onegobar.0c898fe25ba6",
+      "source": "重命名 OnePage",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 28,
+          "context": "openFormModal(i18nMsg(\"components.explorer.onegobar.0c898fe25ba6\"),[{key:'name',label:i18nMsg(\"components.explorer.onegobar.d44e9b3d3b31\"),required:true,default:e.title}])"
+        }
+      ],
+      "translation": "Rename OnePage",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.onegobar.17eac802d3f7",
+      "source": "收进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 29,
+          "context": "label:i18n(\"components.explorer.onegobar.17eac802d3f7\")"
+        }
+      ],
+      "translation": "Send to Stash",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "components.explorer.onegobar.2d1cb40d3c6d",
+      "source": "OneGO! 收藏栏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 33,
+          "context": "{i18n(\"components.explorer.onegobar.2d1cb40d3c6d\")}"
+        }
+      ],
+      "translation": "OneGO! favorites bar",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.explorer.onegobar.37979829426b",
+      "source": "工作区",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/explorer/OneGoBar.tsx",
+          "line": 17,
+          "context": "e.kind==='board'?'OnePage':i18n(\"components.explorer.onegobar.37979829426b\")"
+        }
+      ],
+      "translation": "Workspace",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "components.explorer.onegobar.4cfe5f20b9dd",
       "source": "已收进暂存箱",
@@ -1263,117 +1359,6 @@
       "translation": "Rename…",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.explorer.onegosheet.ef6db76ef5a8",
-      "source": "上次正常",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 253,
-          "context": "f.lastOk ? i18n(\"components.explorer.onegosheet.ef6db76ef5a8\") : i18n(\"components.explorer.onegosheet.4c4b273d507f\") + (f.lastError ? \"：\" + f.lastError : \"\")"
-        }
-      ],
-      "translation": "Last run OK",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.onegosheet.f4f0ead1116b",
-      "source": "启用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 257,
-          "context": "f.enabled === false ? i18n(\"components.explorer.onegosheet.f4f0ead1116b\") : i18n(\"components.explorer.onegosheet.4e6fd0e28c55\")"
-        }
-      ],
-      "translation": "Enable",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.onegosheet.fbf2cea571ab",
-      "source": "工作区搜索结果",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 336,
-          "context": "{i18n(\"components.explorer.onegosheet.fbf2cea571ab\")}"
-        }
-      ],
-      "translation": "Workspace search results",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.onegosheet.ff83dbf31107",
-      "source": "{length} 个标签页",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "w.tabs.length"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneGoSheet.tsx",
-          "line": 346,
-          "context": "{i18nRich(\"components.explorer.onegosheet.ff83dbf31107\", { length: w.tabs.length })}"
-        }
-      ],
-      "translation": "{length} tabs",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.explorer.oneshot.03c9fecbdd66",
-      "source": "入口已删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 81,
-          "context": "e?.title??i18n(\"components.explorer.oneshot.03c9fecbdd66\")"
-        },
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 155,
-          "context": "{i18n(\"components.explorer.oneshot.03c9fecbdd66\")}"
-        }
-      ],
-      "translation": "Entry deleted",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "components.explorer.oneshot.1446be782b50",
-      "source": "OneShot 超级快捷",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 120,
-          "context": "{i18n(\"components.explorer.oneshot.1446be782b50\")}"
-        },
-        {
-          "file": "apps/desktop/src/components/explorer/OneShot.tsx",
-          "line": 147,
-          "context": "{i18n(\"components.explorer.oneshot.1446be782b50\")}"
-        }
-      ],
-      "translation": "OneShot quick launch",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

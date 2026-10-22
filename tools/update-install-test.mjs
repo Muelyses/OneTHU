@@ -14,9 +14,11 @@ globalThis.__updateInstallFixture = {
   platformKey: () => fixture.platform,
   logLine: async () => undefined,
   i18n: key => key,
+  i18nMsg: key => ({kind:'i18n',key}),
+  resolveMessage: value => typeof value === 'string' ? value : value.key,
 };
 const compiled = ts.transpileModule(declaration.getText(ast), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText;
-const moduleText = 'const {invoke,platformKey,logLine,i18n}=globalThis.__updateInstallFixture;\n' + compiled;
+const moduleText = 'const {invoke,platformKey,logLine,i18n,i18nMsg,resolveMessage}=globalThis.__updateInstallFixture;\n' + compiled;
 const { installDownloaded } = await import(`data:text/javascript;base64,${Buffer.from(moduleText).toString('base64')}`);
 let checks = 0;
 for (const platform of ['macos', 'windows', 'linux', 'android']) {

@@ -1,7 +1,286 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.b179143d79a6",
+      "source": "云同步账号已变更，请重新打开日程后删除",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 788,
+          "context": "new Error(i18n(\"pages.schedule.b179143d79a6\"))"
+        }
+      ],
+      "translation": "Cloud sync account changed; reopen the schedule to delete",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b2e93997a40b",
+      "source": "未找到「{courseName}」对应的网络学堂课程，已打开课程页，可在其中查找。",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "courseName",
+          "expression": "String(d.courseName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 840,
+          "context": "setMsg(i18n(\"pages.schedule.b2e93997a40b\", { courseName: String(d.courseName) }))"
+        }
+      ],
+      "translation": "No Web Learning course matches \"{courseName}\"; the courses page is open — you can look for it there.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b4c6c3eb0bce",
+      "source": "本周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1058,
+          "context": "{i18n(\"pages.schedule.b4c6c3eb0bce\")}"
+        }
+      ],
+      "translation": "This week",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.bc37a6110a07",
+      "source": "已提交",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 985,
+          "context": "p.entry.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1254,
+          "context": "m.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1276,
+          "context": "d.hwMeta?.submitted ? i18n(\"pages.schedule.bc37a6110a07\") : i18n(\"pages.schedule.8032af4a590f\")"
+        }
+      ],
+      "translation": "Submitted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.bd2f0b059d14",
+      "source": "要做什么…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1327,
+          "context": "{i18n(\"pages.schedule.bd2f0b059d14\")}"
+        }
+      ],
+      "translation": "What to do…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.be7a93a8502e",
+      "source": "全天 · {label}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "label",
+          "expression": "c.label"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 891,
+          "context": "{i18nRich(\"pages.schedule.be7a93a8502e\", { label: c.label })}"
+        }
+      ],
+      "translation": "All day · {label}",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.schedule.c0b859346782",
+      "source": "上一周",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1048,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1048,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
+        }
+      ],
+      "translation": "Previous week",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c0eb0fdf8c4e",
+      "source": "下一月",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1071,
+          "context": "{i18n(\"pages.schedule.c0eb0fdf8c4e\")}"
+        }
+      ],
+      "translation": "Next month",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c1c41b33594e",
+      "source": "教务系统{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1285,
+          "context": "{i18nRich(\"pages.schedule.c1c41b33594e\", { value: d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\") })}"
+        }
+      ],
+      "translation": "Academic system{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c3405f8c7d9d",
+      "source": "标题",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1326,
+          "context": "{i18n(\"pages.schedule.c3405f8c7d9d\")}"
+        }
+      ],
+      "translation": "Title",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c430f4c12eaa",
+      "source": "周一",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 70
+        }
+      ],
+      "translation": "Mon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c533aa41c064",
+      "source": "选日期跳到该日期所在月份",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1097,
+          "context": "mode === \"timetable\" ? i18n(\"pages.schedule.88a5267852f9\") : i18n(\"pages.schedule.c533aa41c064\")"
+        }
+      ],
+      "translation": "Pick a date to jump to its month",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c728528fbd8f",
+      "source": "作业刷新失败，当前截止时间可能不完整：{value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(learn.error ?? \"\")"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 861,
+          "context": "{i18n(\"pages.schedule.c728528fbd8f\", { value: String(learn.error ?? \"\") })}"
+        }
+      ],
+      "translation": "Assignment refresh failed; current due dates may be incomplete: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c7b24e7997e9",
+      "source": "结束",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1350,
+          "context": "{i18n(\"pages.schedule.c7b24e7997e9\")}"
+        }
+      ],
+      "translation": "End",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.c8d7c83a9995",
+      "source": "学期 {value}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(i + 1)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1145,
+          "context": "sm.semesterName || sm.semesterId || i18n(\"pages.schedule.c8d7c83a9995\", { value: String(i + 1) })"
+        }
+      ],
+      "translation": "Term {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.ce40d3d5810a",
       "source": "最后一天",
@@ -10,7 +289,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1342,
+          "line": 1336,
           "context": "sd.allDay ? i18n(\"pages.schedule.ce40d3d5810a\") : i18n(\"pages.schedule.895cd52fbbb6\")"
         }
       ],
@@ -31,7 +310,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1156,
+          "line": 1150,
           "context": "{i18nRich(\"pages.schedule.ce708f891fc3\", { w: w })}"
         }
       ],
@@ -47,7 +326,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 69
+          "line": 70
         }
       ],
       "translation": "Tue",
@@ -62,7 +341,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1351,
+          "line": 1345,
           "context": "{i18n(\"pages.schedule.d2bb025a2e51\")}"
         }
       ],
@@ -78,7 +357,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1272,
+          "line": 1266,
           "context": "k: i18n(\"pages.schedule.d44e9b3d3b31\")"
         }
       ],
@@ -94,7 +373,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1365,
+          "line": 1359,
           "context": "{i18n(\"pages.schedule.daede9881787\")}"
         }
       ],
@@ -119,7 +398,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1068,
+          "line": 1062,
           "context": "detected ? i18n(\"pages.schedule.dba0129db99f\", { value: String(detected.sem.semesterName || detected.sem.semesterId), weekNo: String(detected.weekNo) }) : i18n(\"pages.schedule.3c3687e79a53\")"
         }
       ],
@@ -135,12 +414,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1035,
+          "line": 1029,
           "context": "{i18n(\"pages.schedule.dd5376aed47e\")}"
         },
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1047,
+          "line": 1041,
           "context": "{i18n(\"pages.schedule.dd5376aed47e\")}"
         }
       ],
@@ -156,7 +435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1372,
+          "line": 1366,
           "context": "canCloud ? i18n(\"pages.schedule.df071eb5a79b\") : i18n(\"pages.schedule.e046ece55b12\")"
         }
       ],
@@ -177,7 +456,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 865,
+          "line": 858,
           "context": "{i18n(\"pages.schedule.e017292c528c\", { value: String(calendar.error ?? \"\") })}"
         }
       ],
@@ -193,7 +472,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1372,
+          "line": 1366,
           "context": "canCloud ? i18n(\"pages.schedule.df071eb5a79b\") : i18n(\"pages.schedule.e046ece55b12\")"
         }
       ],
@@ -209,7 +488,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 684,
+          "line": 677,
           "context": "cal.lastSyncAt ? i18n(\"pages.schedule.51fdbeb883e5\", { value: String(new Date(cal.lastSyncAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" })) }) : i18n(\"pages.schedule.e6618e00221b\")"
         }
       ],
@@ -225,7 +504,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 69
+          "line": 70
         }
       ],
       "translation": "Thu",
@@ -240,7 +519,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1247,
+          "line": 1241,
           "context": "{i18n(\"pages.schedule.ebfa3e62fea6\")}"
         }
       ],
@@ -256,7 +535,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 69
+          "line": 70
         }
       ],
       "translation": "Sun",
@@ -271,7 +550,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1297,
+          "line": 1291,
           "context": "simple ? \"\" : i18n(\"pages.schedule.efa33939d466\")"
         }
       ],
@@ -287,7 +566,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1175,
+          "line": 1169,
           "context": "sysNative === false ? i18n(\"pages.schedule.exportIcs\") : i18n(\"pages.schedule.ad6d92fd400c\")"
         }
       ],
@@ -303,7 +582,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1052,
+          "line": 1046,
           "context": "{i18n(\"pages.schedule.f041b6d0cdd4\")}"
         }
       ],
@@ -336,7 +615,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 690,
+          "line": 683,
           "context": "setMsg(i18n(\"pages.schedule.f0ba269cd55d\", { total: String(r.total), added: String(r.added), updated: String(r.updated), removed: String(r.removed) }))"
         }
       ],
@@ -352,12 +631,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1126,
+          "line": 1120,
           "context": "{i18n(\"pages.schedule.f50276449943\")}"
         },
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1357,
+          "line": 1351,
           "context": "{i18n(\"pages.schedule.f50276449943\")}"
         }
       ],
@@ -373,7 +652,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 69
+          "line": 70
         }
       ],
       "translation": "Sat",
@@ -388,12 +667,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1054,
+          "line": 1048,
           "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
         },
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1054,
+          "line": 1048,
           "context": "mode === \"timetable\" ? i18n(\"pages.schedule.c0b859346782\") : i18n(\"pages.schedule.f9e727223456\")"
         }
       ],
@@ -409,7 +688,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1154,
+          "line": 1148,
           "context": "{i18n(\"pages.schedule.fa2110dcaa1b\")}"
         }
       ],
@@ -425,17 +704,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1159,
+          "line": 1153,
           "context": "{i18n(\"pages.schedule.fa96079c3b2f\")}"
         },
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1227,
+          "line": 1221,
           "context": "{i18n(\"pages.schedule.fa96079c3b2f\")}"
         },
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1230,
+          "line": 1224,
           "context": "{i18n(\"pages.schedule.fa96079c3b2f\")}"
         }
       ],
@@ -451,7 +730,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1276,
+          "line": 1270,
           "context": "k: i18n(\"pages.schedule.fb37c61898d5\")"
         }
       ],
@@ -467,7 +746,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1320,
+          "line": 1314,
           "context": "busy ? i18n(\"pages.schedule.ff509c9ba052\") : i18n(\"pages.schedule.a3030bf8f16d\")"
         }
       ],
@@ -483,7 +762,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "Tu",
@@ -498,7 +777,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 50,
+          "line": 52,
           "context": "return i18n(\"pages.scheduleagenda.0b97c851e4a7\");"
         }
       ],
@@ -514,7 +793,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 233,
+          "line": 248,
           "context": "selected === todayStr ? i18n(\"pages.scheduleagenda.13ecc2133a35\") : \"\""
         }
       ],
@@ -539,7 +818,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 232,
+          "line": 247,
           "context": "{i18nRich(\"pages.scheduleagenda.1c6fcf296dce\", { value: selD.getMonth() + 1, value2: selD.getDate() })}"
         }
       ],
@@ -555,7 +834,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 46,
+          "line": 48,
           "context": "return i18n(\"pages.scheduleagenda.32d42b97294a\");"
         }
       ],
@@ -571,7 +850,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 207,
+          "line": 222,
           "context": "monthMarks.get(c.day)?.hw ? i18n(\"pages.scheduleagenda.334905f4208c\") : \"\""
         }
       ],
@@ -587,7 +866,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "Mo",
@@ -602,7 +881,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 46,
+          "line": 48,
           "context": "return i18n(\"pages.scheduleagenda.60db1afb4022\");"
         }
       ],
@@ -618,7 +897,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "Th",
@@ -633,7 +912,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 174,
+          "line": 189,
           "context": "item.homework.submitted ? i18n(\"pages.scheduleagenda.bc37a6110a07\") : i18n(\"pages.scheduleagenda.8032af4a590f\")"
         }
       ],
@@ -649,7 +928,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 46,
+          "line": 48,
           "context": "return i18n(\"pages.scheduleagenda.83831c3f910c\");"
         }
       ],
@@ -665,7 +944,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "Su",
@@ -685,7 +964,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 251,
+          "line": 266,
           "context": "it.homework ? i18n(\"pages.scheduleagenda.8691a5ef9e5d\", { time: String(it.homework.time) }) : fmtRange(it.startMs, it.endMs, it.allDay)"
         }
       ],
@@ -701,7 +980,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "We",
@@ -716,7 +995,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 236,
+          "line": 251,
           "context": "{i18n(\"pages.scheduleagenda.ab8a294f57fc\")}"
         }
       ],
@@ -732,7 +1011,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 46,
+          "line": 48,
           "context": "return i18n(\"pages.scheduleagenda.b0dff016ff17\");"
         }
       ],
@@ -748,7 +1027,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 174,
+          "line": 189,
           "context": "item.homework.submitted ? i18n(\"pages.scheduleagenda.bc37a6110a07\") : i18n(\"pages.scheduleagenda.8032af4a590f\")"
         }
       ],
@@ -764,7 +1043,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "Fr",
@@ -779,7 +1058,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 46,
+          "line": 48,
           "context": "return i18n(\"pages.scheduleagenda.d26ef0190d6c\");"
         }
       ],
@@ -795,7 +1074,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 30
+          "line": 32
         }
       ],
       "translation": "Sa",
@@ -810,7 +1089,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 105,
+          "line": 120,
           "context": "setMonthError(i18n(\"pages.scheduleagenda.e249c9c7b564\"))"
         }
       ],
@@ -831,7 +1110,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 158,
+          "line": 173,
           "context": "e.teacher ? i18n(\"pages.scheduleagenda.ef287a1a2848\", { teacher: String(e.teacher) }) : e.weekText"
         }
       ],
@@ -860,7 +1139,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/ScheduleAgenda.tsx",
-          "line": 233,
+          "line": 248,
           "context": "{i18nRich(\"pages.scheduleagenda.fc35d33cfa4e\", { value: selected === todayStr ? i18n(\"pages.scheduleagenda.13ecc2133a35\") : \"\", value2: WEEK_SHORT[(selD.getDay() + 6) % 7], length: dayItems.length })}"
         }
       ],
@@ -1073,7 +1352,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 89,
+          "line": 90,
           "context": "return i18n(\"pages.settings.0240f8fe7f39\");"
         }
       ],
@@ -1089,7 +1368,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 104,
+          "line": 105,
           "context": "return i18n(\"pages.settings.02bd4c1bfaf2\");"
         }
       ],
@@ -1105,7 +1384,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 275,
+          "line": 276,
           "context": "{i18n(\"pages.settings.05662029b925\")}"
         }
       ],
@@ -1121,271 +1400,11 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 305,
+          "line": 306,
           "context": "{i18n(\"pages.settings.05b2d326099e\")}"
         }
       ],
       "translation": "Open Tsinghua unified identity authentication in an in-app window, with your username and password auto-filled (enter the CAPTCHA manually if shown).",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.061246bd31e0",
-      "source": "账户",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 111,
-          "context": "return i18n(\"pages.settings.061246bd31e0\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 288,
-          "context": "{i18n(\"pages.settings.061246bd31e0\")}"
-        }
-      ],
-      "translation": "Account",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.061d30212032",
-      "source": "黑夜主题",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 761,
-          "context": "{i18n(\"pages.settings.061d30212032\")}"
-        }
-      ],
-      "translation": "Dark theme",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.06f03258229a",
-      "source": "重新运行首次使用引导",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 114,
-          "context": "return i18n(\"pages.settings.06f03258229a\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 213,
-          "context": "{i18n(\"pages.settings.06f03258229a\")}"
-        }
-      ],
-      "translation": "Run the first-run tour again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.07812d003706",
-      "source": "账号与绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 108,
-          "context": "return i18n(\"pages.settings.07812d003706\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 300,
-          "context": "{i18n(\"pages.settings.07812d003706\")}"
-        }
-      ],
-      "translation": "Accounts & connections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.08a2cb9cf64f",
-      "source": "下载目录=「下载位置」一行；缓存/诊断在「运行日志」「诊断摘要」行——已带到「下载」分节。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 118,
-          "context": "return i18n(\"pages.settings.08a2cb9cf64f\");"
-        }
-      ],
-      "translation": "The download directory is the \"Download location\" row; cache / diagnostics are in the \"Run logs\" and \"Diagnostics summary\" rows — brought you to the \"Downloads\" section.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.0d6fad8138e7",
-      "source": "选择文件夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 550,
-          "context": "{i18n(\"pages.settings.0d6fad8138e7\")}"
-        }
-      ],
-      "translation": "Choose folder",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.0d8ce603b616",
-      "source": "外部作业源登录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 117,
-          "context": "return i18n(\"pages.settings.0d8ce603b616\");"
-        }
-      ],
-      "translation": "External assignment source sign-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.0e6d36a185c2",
-      "source": " 个根收藏夹）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 380,
-          "context": "i18n(\"pages.settings.fa7ee5600601\") + favs.data.order.length + i18n(\"pages.settings.0e6d36a185c2\")"
-        }
-      ],
-      "translation": " root favorites)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.12526376d387",
-      "source": "管理栏目",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 113,
-          "context": "return i18n(\"pages.settings.12526376d387\");"
-        },
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 214,
-          "context": "{i18n(\"pages.settings.12526376d387\")}"
-        }
-      ],
-      "translation": "Manage sections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.12e704c78ced",
-      "source": "下载位置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 540,
-          "context": "{i18n(\"pages.settings.12e704c78ced\")}"
-        }
-      ],
-      "translation": "Download location",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1354e42a5f65",
-      "source": "点胶囊默认进搜索还是 OH 对话",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 98,
-          "context": "return i18n(\"pages.settings.1354e42a5f65\");"
-        }
-      ],
-      "translation": "Whether tapping the pill opens search or an OH chat",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.15047c91eb6c",
-      "source": "通知与提醒设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 107,
-          "context": "return i18n(\"pages.settings.15047c91eb6c\");"
-        }
-      ],
-      "translation": "Notifications & reminders",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.16ca6dbf3de4",
-      "source": "极客模式已开启：设置里可下载探索浏览器（桌面端专属）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 821,
-          "context": "showToast(i18nMsg(\"pages.settings.16ca6dbf3de4\"))"
-        }
-      ],
-      "translation": "Geek mode on: the exploration browser can be downloaded in Settings (desktop only)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.188df41c178b",
-      "source": "恢复默认首页布局",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 349,
-          "context": "{i18n(\"pages.settings.188df41c178b\")}"
-        }
-      ],
-      "translation": "Restore default home layout",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.1cb15b820a0a",
-      "source": "诊断摘要",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 606,
-          "context": "{i18n(\"pages.settings.1cb15b820a0a\")}"
-        }
-      ],
-      "translation": "Diagnostics summary",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -42,6 +42,7 @@ import { softRecover } from "../lib/reload.js";
 import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, parseTimeSlots, type SlotItem, type XkRow, type XkKnote, applyKnote, rememberKnote, isSportsCourse } from "../lib/xklogic.js";
 import type { XkPlanItem } from "@onethu/core";
 import { useApp } from "./context.js";
+import { newsLanguage, newsCacheKey, todayNewsCacheKey } from "../lib/newsLanguage.js";
 import { cacheGet, cacheSet, cacheFetch, cacheKeys,
   purgeXkCaches, cacheSeedPreview, isPreviewMode, type CacheEntry } from "./cache.js";
 import { useDataScope } from "./dataScope.js";
@@ -2855,11 +2856,15 @@ export function useExams() {
 const NEWS_TTL = 5 * 60 * 1000;
 
 export function useNews(page: number, length = 20) {
+  const uiLocale = useUiLocale();
+  const language = newsLanguage(uiLocale);
   const { preview: scopedPreview, cacheGet, cacheFetch } = useDataScope();
   const preview = scopedPreview || isPreviewMode();
   const { status } = useApp();
-  /* 预览模式：直接给示例，且跳过加载（这条 hook 的键带分页参数，种子盖不全） */
-  const newsKey = `news:${page}:${length}`;
+  const newsKey = newsCacheKey(uiLocale, page, length);
+  const currentKey = useRef(newsKey);
+  currentKey.current = newsKey;
+  const [loadedKey, setLoadedKey] = useState(newsKey);
   const [data, setData] = useState<NewsItem[] | null>(() => cacheGet<NewsItem[]>(newsKey)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<NewsItem[]>(newsKey) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
@@ -2871,27 +2876,38 @@ export function useNews(page: number, length = 20) {
       setError(null);
     }
     try {
-      setData(await cacheFetch(newsKey, () => info.getNews(page, length)));
+      const rows = await cacheFetch(newsKey, () => info.getNews(page, length, language));
+      if (currentKey.current !== newsKey) return;
+      setData(rows);
+      setLoadedKey(newsKey);
       setState("ready");
     } catch (err) {
+      if (currentKey.current !== newsKey) return;
       logPageError("NEWS p" + page, err);
-      // SWR 语义（极限稳定目标）：已有旧值时刷新失败不闪红，旧数据继续展示——
-      // 红条只在「一无所获」时才允许露脸（useWeekSchedule 同款）
-      if (data !== null) return;
+      if (loadedKey === newsKey && data !== null) return;
+      setLoadedKey(newsKey);
+      setData(null);
       setState("error");
       setError(explainNetworkError(err));
     }
-  }, [status, page, length, data, newsKey]);
+  }, [status, page, length, data, loadedKey, newsKey, language]);
 
   useEffect(() => {
     if (status !== "ready" || preview) return;
     const cached = cacheGet<NewsItem[]>(newsKey);
+    if (cached) {
+      setData(cached.data);
+      setLoadedKey(newsKey);
+      setState("ready");
+      setError(null);
+    }
     if (!cached) void load(false);
     else if (Date.now() - cached.at > NEWS_TTL) void load(true);
   }, [status, load, newsKey, preview]);
 
   if (preview) return { data: previewNewsItems(), state: "ready" as const, error: null, reload: load };
-  return { data, state, error, reload: load };
+  // Hide the previous language/page immediately, before the new effect resolves.
+  return { data: loadedKey === newsKey ? data : null, state: loadedKey === newsKey ? state : "loading" as const, error: loadedKey === newsKey ? error : null, reload: load };
 }
 
 /** 预览用的新闻示例（today 与 info 两处共用，字段按消费方需要补齐：name/xxid/date/source/topped/channel）。 */
@@ -2974,16 +2990,17 @@ export interface TodayNewsFeed {
 
 /**
  * 首页新闻卡数据源（与 NewsTab「订阅动态」同一服务端链路）：
- * - 有订阅（localStorage onethu.news.subs，由 Today 页读好传入）：在服务端订阅条件
- *   （core getNewsSubscriptionList，权威）里按来源名映射条件 id，逐条件调
- *   getNewsListBySubscription(1, dyid)（门户订阅取数，allSettled 容错，每来源前 5 条），
- *   合并 xxid 去重、时间倒序取前 5；订阅链失败/来源无内容 → 回退最新。
+ * - 有订阅（localStorage onethu.news.subs，由 Today 页读好传入）：读取服务端条件，
+ *   使用合并订阅分页接口按当前界面语言取前 5 条；条件 ID 保持订阅身份，
+ *   切换语言后旧缓存标签也能继续匹配。订阅链失败/来源无内容 → 回退最新。
  * - 无订阅：getNews 第 1 页前 5 条（门户顺序 = 置顶 + 最新）。
  * - 失败静默（state="error"，Today 页据此整卡隐藏）。
  */
 const TODAYNEWS_TTL = 5 * 60 * 1000;
 
 export function useTodayNewsFeed(subs: string[]) {
+  const uiLocale = useUiLocale();
+  const language = newsLanguage(uiLocale);
   const { preview: scopedPreview, cacheGet, cacheSet } = useDataScope();
   const preview = scopedPreview || isPreviewMode();
   const { status } = useApp();
@@ -2993,36 +3010,41 @@ export function useTodayNewsFeed(subs: string[]) {
 
   /** 订阅集合的稳定键：内容不变不重拉（NewsTab feedKey 同款） */
   const subsKey = subs.join("\u0001");
-  const feedKey = `todaynews:${subsKey}`;
+  const feedKey = todayNewsCacheKey(uiLocale, subsKey);
+  const currentKey = useRef(feedKey);
+  currentKey.current = feedKey;
+  const [loadedKey, setLoadedKey] = useState(feedKey);
 
   const load = useCallback(async (silent = false) => {
     if (scopedPreview) return;
     if (!silent) setState("loading");
     const subList = subsKey ? subsKey.split("\u0001") : [];
     const latest = async (): Promise<TodayNewsFeed> => {
-      const items = await infoHelper.getNewsList(1, 20);
+      const items = await info.getNews(1, 20, language);
       return { list: items.slice(0, 5), from: "latest", subCount: subList.length };
     };
     try {
       if (subList.length > 0) {
-        // 服务端订阅条件（权威）→ 来源名映射条件 id（本地无对应服务端条件的来源跳过）
-        const conds: Array<{ id: string; source?: string }> = await infoHelper
-          .getNewsSubscriptionList()
+        // Server conditions are authoritative; localized labels are display metadata.
+        const conds: Array<{ id: string; source?: string }> = await info
+          .getNewsSubscriptionList(language)
           .catch(() => []);
-        const ids = subList
-          .map((s) => conds.find((c) => c.source === s)?.id ?? "")
-          .filter(Boolean);
-        const results = await Promise.allSettled(ids.map((id) => infoHelper.getNewsListBySubscription(1, id)));
-        const pooled: NewsItem[] = [];
-        for (const r of results) if (r.status === "fulfilled") pooled.push(...r.value.slice(0, 5));
+        // Saved labels can be in the previous language; server condition IDs
+        // preserve the same subscriptions across language changes.
+        const ids = [...new Set(conds.map((c) => c.id).filter(Boolean))];
+        const pooled = ids.length > 0
+          ? await info.getNewsListBySubscription(1, undefined, language).catch(() => [])
+          : [];
         const seen = new Set<string>();
         const items = pooled
           .sort((a, b) => newsTimeOf(b.date) - newsTimeOf(a.date))
           .filter((n) => (n.xxid ? !seen.has(n.xxid) && seen.add(n.xxid) : true))
           .slice(0, 5);
         if (items.length > 0) {
-          const feed = { list: items, from: "subs" as const, subCount: subList.length };
+          const feed = { list: items, from: "subs" as const, subCount: ids.length };
           cacheSet(feedKey, feed);
+          if (currentKey.current !== feedKey) return;
+          setLoadedKey(feedKey);
           setData(feed);
           setState("ready");
           return;
@@ -3031,25 +3053,31 @@ export function useTodayNewsFeed(subs: string[]) {
       }
       const feed = await latest();
       cacheSet(feedKey, feed);
+      if (currentKey.current !== feedKey) return;
+      setLoadedKey(feedKey);
       setData(feed);
       setState("ready");
     } catch (err) {
+      if (currentKey.current !== feedKey) return;
       logPageError("TODAY-NEWS", err);
-      if (silent && data !== null) return;
+      if (silent && loadedKey === feedKey && data !== null) return;
+      setLoadedKey(feedKey);
       setData(null);
       setState("error"); // 静默：Today 页据此整卡隐藏
     }
-  }, [status, subsKey, feedKey, data]);
+  }, [status, subsKey, feedKey, data, loadedKey, language]);
 
   useEffect(() => {
     if (status !== "ready" || preview) return;
     const cached = cacheGet<TodayNewsFeed>(feedKey);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > TODAYNEWS_TTL) {
+      setLoadedKey(feedKey);
       setData(cached.data);
       setState("ready");
       void load(true);
     } else {
+      setLoadedKey(feedKey);
       setData(cached.data);
       setState("ready");
     }
@@ -3062,7 +3090,7 @@ export function useTodayNewsFeed(subs: string[]) {
       reload: load,
     };
   }
-  return { data, state, reload: load };
+  return { data: loadedKey === feedKey ? data : null, state: loadedKey === feedKey ? state : "loading" as const, reload: load };
 }
 
 /** 个人信息（grjbxx HTML 解析） */

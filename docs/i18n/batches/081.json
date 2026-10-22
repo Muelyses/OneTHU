@@ -1,7 +1,238 @@
 {
-  "sourceHash": "b05b1cfb299085eb9326957c1ccba69eb6fca894275a81cb8d00c8fb5d2d9108",
+  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "privacy.localBody",
+      "source": "OneTHU 没有自建的校园数据汇总后端，界面与业务主要在设备上运行，并通过原生网络层连接学校及你选择的服务。它并非离线软件，也不是所有处理都只发生在本机。账号会话、缓存、设置及选择记住的凭据会保存在设备上，请保护设备与导出的文件。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OneTHU has no self-operated backend that aggregates campus data. Its interface and most application logic run on your device, with a native network layer connecting to university services and services you select. It is not offline, and not all processing stays on-device. Sessions, caches, settings and credentials you choose to remember are stored on your device. Protect your device and exported files.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.localTitle",
+      "source": "本地客户端，不是学校官方应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "A local client, not an official university app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.nativeUpdateRequired",
+      "source": "前端已更新，但当前 App 原生壳版本过旧，无法保存权限。开发预览请重新编译并重启 App；安装版请更新安装包。刷新页面无法修复。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "The interface is updated, but this app’s native host is too old to save permissions. Rebuild and restart the app for development previews, or install the updated app. Reloading the page cannot fix this.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohBody",
+      "source": "开启 OH 后，你发送的对话、附件，以及为回答而调用工具读取到的数据可能发往所选模型服务商、清小搭或你配置的 API／MCP／IM 服务，并适用对方政策。不要提供密码、验证码或无关的敏感数据。AI 可能出错；涉及提交、预约、删除、发送或分享等操作应先核对确认。网页、文件和技能中的指令不构成你的授权；仅安装可信插件与技能。云盘授权关闭时，OH 也无法绕过云盘限制。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "When OH is enabled, your messages, attachments and data read by tools to answer you may be sent to your chosen model provider, QingXiaoDa or configured API / MCP / IM services, under their policies. Do not provide passwords, verification codes or unrelated sensitive data. AI may be wrong. Review and confirm submissions, bookings, deletions, sending and sharing. Instructions in pages, files or skills are not your authorization. Install only trusted plugins and skills. OH cannot bypass disabled cloud permission.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohEffect",
+      "source": "可选。关闭后保留搜索与校园页面，OH 对话及智能体操作停用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Optional. When disabled, search and campus pages remain available, while OH conversations and agent actions are disabled.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohRequired",
+      "source": "OH 未授权。请先在「我的 → 权限与隐私」或导览中查看说明并开启。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/privacyConsent.ts",
+          "line": 48,
+          "context": "new Error(t(\"privacy.ohRequired\"))"
+        }
+      ],
+      "translation": "OH is disabled. Review the notice and enable it in My → Permissions & privacy or in the guide.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohTitle",
+      "source": "OH、模型与插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "OH, models & plugins",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.ohToggle",
+      "source": "允许使用 OH 与所选模型服务",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Allow OH and the selected model service",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.readCarefully",
+      "source": "请务必认真阅读，并在下方手动授权云盘和智能体服务。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Please read carefully and manually authorize cloud drive and agent services below.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.replay",
+      "source": "重新导览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 214,
+          "context": "{i18n(\"privacy.replay\")}"
+        }
+      ],
+      "translation": "Replay the guide",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.review",
+      "source": "查看与修改授权",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 31,
+          "context": "{t(\"privacy.review\")}"
+        }
+      ],
+      "translation": "Review permissions",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.revokeGuide",
+      "source": "如果想要撤销授权，请前往设置重新导览。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/CloudPage.tsx",
+          "line": 214,
+          "context": "{i18n(\"privacy.revokeGuide\")}"
+        }
+      ],
+      "translation": "To withdraw consent, open Settings and replay the guide.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.saved",
+      "source": "授权选择已保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 33,
+          "context": "showToast(t(\"privacy.saved\"))"
+        }
+      ],
+      "translation": "Permission choices saved",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.saveFailed",
+      "source": "权限选择未能保存，请稍后重试。未保存成功前，不会授予新的权限。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "docs/i18n/static-label-seed.json",
+          "line": 1
+        }
+      ],
+      "translation": "Your permission choices could not be saved. Please try again. No new permissions are granted until saving succeeds.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "privacy.settings",
+      "source": "权限与隐私",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/PrivacyNotice.tsx",
+          "line": 31,
+          "context": "{t(\"privacy.settings\")}"
+        }
+      ],
+      "translation": "Permissions & privacy",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "privacy.step",
       "source": "第 −1 步 · 使用前请了解",
@@ -1049,242 +1280,18 @@
       "limitHint": "Keep concise; button/card label may wrap."
     },
     {
-      "key": "settings.label.about",
-      "source": "关于",
+      "key": "schedule.secondary.invalidSemester",
+      "source": "请先刷新校历，再加载二级课表。",
       "kind": "text",
       "parameters": [],
       "locations": [
         {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
+          "file": "apps/desktop/src/lib/infoLib.ts",
+          "line": 597,
+          "context": "new Error(i18n(\"schedule.secondary.invalidSemester\"))"
         }
       ],
-      "translation": "About",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.account",
-      "source": "账号",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Account",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.advanced",
-      "source": "高级配置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Advanced configuration",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.appearance",
-      "source": "外观与布局",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Appearance & layout",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.basic",
-      "source": "基础设置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Basic settings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.bindings",
-      "source": "账号与绑定",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Accounts & connections",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.cloud",
-      "source": "云同步",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Cloud sync",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.download",
-      "source": "下载",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Downloads",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.downloads",
-      "source": "下载与存储",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Downloads & storage",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.favorites",
-      "source": "收藏夹",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Favorites",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.geek",
-      "source": "极客模式",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Geek mode",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.harness",
-      "source": "OneTHU Harness",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "OneTHU Harness",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.help",
-      "source": "帮助",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Help",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.home",
-      "source": "首页布局",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Home layout",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.homework",
-      "source": "外部作业源",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Assignment sources",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "settings.label.market",
-      "source": "插件市场",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/runtime-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Plugin marketplace",
+      "translation": "Refresh the academic calendar before loading secondary courses.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

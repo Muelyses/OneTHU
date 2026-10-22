@@ -31,6 +31,12 @@ try{
   await page.screenshot({path:out+'/'+label+'-locked.png'});
   await page.locator('[data-coach="home-edit"]').click();await page.locator('[data-board-editable="true"]').waitFor();
   check(await page.locator('[data-coach="home-add"]').isVisible(),label+' editing reveals add widget in the existing toolbar');
+  if(width===390){
+   await page.locator('.free-item[data-widget="text"]').first().dblclick();const editor=page.locator('.free-note-editor');await editor.waitFor();await editor.focus();
+   await page.setViewportSize({width:390,height:280});await page.waitForTimeout(150);
+   check(await page.locator('.freeboard-wrap.is-reading').count()===1,'keyboard-sized height changes retain portrait reading layout');
+   await editor.blur();await page.setViewportSize({width:390,height:844});await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+  }
   if(width===390){await page.locator('.board-viewport-tools').getByRole('button',{name:'自由摆放',exact:true}).click();await page.locator('.board-viewport-tools').getByRole('button',{name:/^\d+%$/}).click();}
   const target=page.locator('.free-item[data-widget="clock"]:visible').first();const id=await target.getAttribute('data-item-id');before=await geometry(page);const q=await point(target);assert.ok(q);await move(page,q);
   check(JSON.stringify(await geometry(page))!==JSON.stringify(before),label+' editing allows real component dragging');

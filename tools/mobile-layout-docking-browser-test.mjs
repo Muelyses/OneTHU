@@ -7,12 +7,13 @@ const out=process.env.ONETHU_TEST_OUT??'/Volumes/OneTHUBuild/artifacts/mobile-la
 const checks=[];let passed=false;const check=(v,label)=>{assert.ok(v,label);checks.push(label);console.log('✓ '+label);};
 async function drag(page,start,end){const c=await page.context().newCDPSession(page);await c.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});for(let n=1;n<=12;n++)await c.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start.x+(end.x-start.x)*n/12,y:start.y+(end.y-start.y)*n/12}]});await c.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await c.detach();}
 try{
- for(const width of (process.env.ONETHU_LAYOUT_LANGUAGE_ONLY?[]:[360,390,430]))for(const mode of ['full','practical']){
+ for(const width of (process.env.ONETHU_LAYOUT_LANGUAGE_ONLY?[]:[320,360,390,430]))for(const mode of ['full','practical']){
   const {page,context}=await setup(width,844,mode);const label=width+' '+mode;
   await call(page,'/src/state/explorer.ts','openSettings',['settings']);if(mode==='full')await page.locator('.workbench-settings-phone-nav select').selectOption('外观与布局');
   const choices=page.locator('.settings-panel .mobile-layout-choice');await choices.waitFor();await choices.getByRole('button').filter({hasText:'侧边导航'}).tap();
   await call(page,'/src/state/explorer.ts','closeSettings');await page.locator('.oneshot.is-mobile-side').waitFor();
   const layout=await page.evaluate(()=>{const r=document.querySelector('.explorer-content').getBoundingClientRect(),nav=document.querySelector('.oneshot').getBoundingClientRect();return {left:r.left,right:r.right,width:innerWidth,scroll:document.documentElement.scrollWidth,navRight:nav.right,count:document.querySelectorAll('.oneshot .oneshot-button').length};});
+  if(mode==='full'){const bounds=await page.locator('.freeboard-wrap.is-reading').evaluate(el=>{const host=el.getBoundingClientRect();return [...el.querySelectorAll('.free-item')].every(item=>item.getBoundingClientRect().right<=host.right+1);});check(bounds,label+': every reading-mode widget fits the actual board container');await page.screenshot({path:out+'/'+label.replace(' ','-')+'-home.png'});}
   check(layout.count===5&&layout.left>=60&&layout.right<=width+1&&layout.scroll<=width+1,label+': five side shortcuts leave a real content gutter and fit the screen');
   await page.locator('.oneshot.is-mobile-side').getByRole('button',{name:'生活',exact:true}).tap();await page.locator(mode==='full'?'[data-tab-page="life"]:visible':'[data-simple-page="life"]').waitFor();check(true,label+': side shortcut actually opens Life');
   await page.screenshot({path:out+'/'+label.replace(' ','-')+'-side.png'});

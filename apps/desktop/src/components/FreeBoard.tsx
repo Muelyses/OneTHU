@@ -1,4 +1,5 @@
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
+import { isAndroidNavigator } from "../lib/androidHost.js";
 import { useOverlayBack } from "../state/navStack.js";
 import { useIsSimpleLike } from "../state/experienceMode.js";
 /**
@@ -345,13 +346,28 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
      画布自创建起就没有边界：内容在世界坐标里，这里只管"看哪一块"。视图按「板+朝向」记，
      存在 onethu.boardview.v1（视图不是文档，见 state/boardView.ts 的口径）。 */
   const phoneUi = useIsPhone();
-  /** 横屏手机（宽 > 高，且是手机）：直接按电脑画布来，不堆叠。 */
-  const [landscape, setLandscape] = useState<boolean>(() => typeof window !== "undefined" && window.innerWidth > window.innerHeight);
+  /** Physical phone rotation stays independent of the keyboard's reduced viewport. */
+  const landscapeNow = (): boolean => {
+    if (typeof window === "undefined") return false;
+    const type = window.screen.orientation?.type;
+    if (isAndroidNavigator(navigator) && type) return type.startsWith("landscape");
+    return window.innerWidth > window.innerHeight;
+  };
+  const [landscape, setLandscape] = useState<boolean>(landscapeNow);
   useEffect(() => {
-    const on = (): void => setLandscape(window.innerWidth > window.innerHeight);
+    let width = window.innerWidth;
+    const on = (): void => {
+      const nextWidth = window.innerWidth;
+      const editing = document.activeElement?.matches("input,textarea,[contenteditable=true]");
+      if (!(phoneUi && editing && nextWidth === width)) setLandscape(landscapeNow());
+      width = nextWidth;
+    };
+    const rotate = (): void => { width = window.innerWidth; setLandscape(landscapeNow()); };
     window.addEventListener("resize", on);
-    return () => window.removeEventListener("resize", on);
-  }, []);
+    window.addEventListener("orientationchange", rotate);
+    window.screen.orientation?.addEventListener?.("change", rotate);
+    return () => { window.removeEventListener("resize", on); window.removeEventListener("orientationchange", rotate); window.screen.orientation?.removeEventListener?.("change", rotate); };
+  }, [phoneUi]);
   const phonePortrait = phoneUi && !landscape;
   /* 手机竖屏缩放独立保存，首次按视口适配；编辑开关只控制编辑权限。 */
   const viewKey = boardViewKey(boardId, orientation) + (phonePortrait ? "|phone" : "");
@@ -462,7 +478,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
   const stackTop = 0;
   const stackRects = useMemo(() => {
     if (!stack) return null;
-    const w = Math.max(240, Math.round(port.w || (typeof window === "undefined" ? 360 : window.innerWidth)));
+    const w = Math.max(1, Math.round(port.w || (typeof window === "undefined" ? 360 : window.innerWidth)));
     const ordered = [...items].sort((a, b) => (a.y - b.y) || (a.x - b.x));
     const map = new Map<string, Rect>();
     let y = stackTop;
@@ -589,7 +605,7 @@ export function FreeBoard({ boardId = HOME_BOARD_ID, orientation = HOME_ORIENTAT
       // The flowing panel grows with the canvas. Feeding its height back into
       // boxSize would add the home header on every ResizeObserver callback.
       const next = {
-        w: Math.max(240, el.clientWidth - Math.max(0, hostLeft) * 2),
+        w: Math.max(1, el.clientWidth - Math.max(0, hostLeft) * 2),
         h: Math.max(0, window.innerHeight - Math.max(0, hostRect.top - parentRect.top)),
       };
       setPort((prev) => (prev.w === next.w && prev.h === next.h ? prev : next));

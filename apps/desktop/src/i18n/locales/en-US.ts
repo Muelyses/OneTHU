@@ -3,6 +3,9 @@ import type { LocaleDef } from "../types.js";
 const locale = {
   "label": "English",
   "messages": {
+    "schedule.secondary.refreshFailed": "Secondary courses could not be refreshed. Other courses are shown. Retry in Schedule settings.",
+    "schedule.secondary.unavailable": "The secondary timetable page is unavailable. Please refresh and try again.",
+    "schedule.secondary.invalidSemester": "Refresh the academic calendar before loading secondary courses.",
     "app.08566a4b57a3": "Cloud Drive connected automatically: {value}",
     "app.4d6e46fec3d4": "Restoring your sign-in session…",
     "common.cancel": "Cancel",

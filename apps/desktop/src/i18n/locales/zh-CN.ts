@@ -3,6 +3,9 @@ import type { LocaleDef } from "../types.js";
 const locale = {
   "label": "简体中文",
   "messages": {
+    "schedule.secondary.refreshFailed": "二级课表暂未刷新，已显示其他课程。可在日程设置中重试。",
+    "schedule.secondary.unavailable": "二级课表页面暂不可用，请刷新重试。",
+    "schedule.secondary.invalidSemester": "请先刷新校历，再加载二级课表。",
     "app.08566a4b57a3": "云盘已自动连接：{value}",
     "app.4d6e46fec3d4": "正在恢复登录状态…",
     "common.cancel": "取消",

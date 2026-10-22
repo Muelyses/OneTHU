@@ -1,5 +1,17 @@
 {
   "messages": {
+    "schedule.secondary.refreshFailed": {
+      "zh-CN": "二级课表暂未刷新，已显示其他课程。可在日程设置中重试。",
+      "en-US": "Secondary courses could not be refreshed. Other courses are shown. Retry in Schedule settings."
+    },
+    "schedule.secondary.unavailable": {
+      "zh-CN": "二级课表页面暂不可用，请刷新重试。",
+      "en-US": "The secondary timetable page is unavailable. Please refresh and try again."
+    },
+    "schedule.secondary.invalidSemester": {
+      "zh-CN": "请先刷新校历，再加载二级课表。",
+      "en-US": "Refresh the academic calendar before loading secondary courses."
+    },
     "enum.label.2118cbc10988": {
       "zh-CN": "学习",
       "en-US": "Study"

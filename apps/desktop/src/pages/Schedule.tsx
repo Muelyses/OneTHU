@@ -41,7 +41,7 @@ import type { Homework } from "@onethu/core";
 import { PageAtomStar } from "../components/Collect.js";
 import { Card, ErrorNote, PageHead } from "../components/Layout.js";
 import { IconRefresh, IconSchedule } from "../components/Icons.js";
-import { useCalendar, getCampusSnapshot, useLearnData, invalidateLearnCache } from "../state/data.js";
+import { useCalendar, getCampusSnapshot, useLearnData, invalidateLearnCache, logPageError } from "../state/data.js";
 import { useIgnoredHw } from "../state/hwIgnore.js";
 import { useScheduleWindow, WINDOW_PRESETS, FULL_DAY, hhmm as hhmmWin } from "../state/scheduleWindow.js";
 import { cacheSet } from "../state/cache.js";
@@ -65,6 +65,7 @@ import { useNotifyBackend } from "../components/useNotifyBackend.js";
 import { openLocalPath } from "../lib/localFile.js";
 import { scheduleHomework, type ScheduleHomework } from "../lib/scheduleHomework.js";
 import { calendarDraftRange } from "../lib/calendarDraft.js";
+import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
 
 const DAY_NAMES = i18nList(["pages.schedule.c430f4c12eaa","pages.schedule.d1378a68e620","pages.schedule.2961168962be","pages.schedule.e9d3b01a5a00","pages.schedule.572388f3b096","pages.schedule.f9aa11dbb15c","pages.schedule.ee239f394329"]);
 /** 时间轴的列数：**恒为一周 7 列**（用户 2026-10-18：日程的时间轴完全以周为单位，
@@ -437,31 +438,22 @@ export function SchedulePage() {
     const grab = (): Promise<void> =>
       info
         .getSchedule(ymdOf(viewWindow[0]), ymdOf(viewWindow[1]))
-        .then(async (rows) => {
+        .then(async (primary) => {
+          if (!alive) return;
           // 二级课表（实验课）并入：core InfoClient 的 JSONP 只含一级——
           // 之前并错在无人调用的 useWeekSchedule（TICK=0 实锤），现在加在
-          // 真正的窗口取数链路。失败静默不连累一级。
+          // 时间轴和列表共享窗口合并；校历就绪后按教学周展开。
+          let rows = primary;
           try {
             const fd = calendar.data?.firstDay ?? "";
             if (fd) {
-              const { getSecondaryEntries } = await import("../lib/infoLib.js");
-              const { http } = await import("../lib/clients.js");
-              const sec = await getSecondaryEntries(http, fd, ymdOf(viewWindow[0]), ymdOf(viewWindow[1]));
-              for (const c of sec) {
-                if (rows.some((r) => r.courseName === c.name && r.date === c.date && r.startTime === c.startTime)) continue;
-                rows.push({
-                  courseName: c.name,
-                  location: c.location,
-                  date: c.date,
-                  dayOfWeek: c.dayOfWeek,
-                  startTime: c.startTime,
-                  endTime: c.endTime,
-                  category: "二级课表",
-                  raw: { source: "secondary" },
-                });
-              }
+              rows = await appendSecondarySchedule(primary, fd, ymdOf(viewWindow[0]), ymdOf(viewWindow[1]));
             }
-          } catch { /* 二级失败静默：一级照常 */ }
+          } catch (err) {
+            logPageError("SECONDARY-WEEK", err);
+            if (alive) setWinError(i18n("schedule.secondary.refreshFailed"));
+          }
+          if (!alive) return;
           // 落持久缓存：系统日历 SWR 兜底的数据源（用户实锤「看得到课表但
           // 同步报会话失效」——页内 state 对兜底不可见）；重启后也活着
           cacheSet(`schedwin:${windowKey}`, rows, true);
@@ -497,7 +489,8 @@ export function SchedulePage() {
     return () => {
       alive = false;
     };
-  }, [mode, windowKey, reloadTick, status]);
+  // 校历首次加载和学期起点更新后，补齐按教学周展开的二级课程。
+  }, [mode, windowKey, reloadTick, status, calendar.data?.firstDay]);
 
   // Learn is the live source also used by the homework page. Campus is only a cold-cache fallback.
   const deadlines = useMemo(() => {
@@ -876,6 +869,7 @@ export function SchedulePage() {
               courses={campus.data?.schedule ?? []}
               homework={deadlines}
               refreshKey={reloadTick}
+              firstDay={calendar.data?.firstDay}
               monthAnchor={new Date(anchor.getFullYear(), anchor.getMonth(), 1)}
               onMonthAnchor={(d) => setAnchor(d)}
               selected={selected}

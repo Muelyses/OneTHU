@@ -16,6 +16,8 @@ import { info } from "../lib/clients.js";
 import type { ScheduleHomework } from "../lib/scheduleHomework.js";
 import { SRC_COLOR, COURSE_PALETTE } from "../lib/courseColor.js";
 import { Text } from "@onethu/gui";
+import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
+import { logPageError } from "../state/data.js";
 
 const TZ = "Asia/Shanghai";
 const DAY_MS = 86_400_000;
@@ -60,6 +62,7 @@ export function ScheduleAgenda({
   courses,
   homework,
   refreshKey,
+  firstDay,
   monthAnchor,
   onMonthAnchor,
   selected,
@@ -70,6 +73,8 @@ export function ScheduleAgenda({
   courses: ScheduleEntry[];
   homework: ScheduleHomework[];
   refreshKey: number;
+  /** 校历就绪后补拉二级选课，和时间轴使用同一份窗口合并。 */
+  firstDay?: string;
   /** 月历锚点（页面级状态：学期切换时页面可联动跳月） */
   monthAnchor: Date;
   onMonthAnchor: (d: Date) => void;
@@ -98,7 +103,17 @@ export function ScheduleAgenda({
     setMonthError(null);
     info
       .getSchedule(f2(first), f2(last))
-      .then((rows) => {
+      .then(async (primary) => {
+        if (!alive) return;
+        let rows = primary;
+        if (firstDay) {
+          try {
+            rows = await appendSecondarySchedule(primary, firstDay, f2(first), f2(last));
+          } catch (err) {
+            logPageError("SECONDARY-MONTH", err);
+            if (alive) setMonthError(i18n("schedule.secondary.refreshFailed"));
+          }
+        }
         if (alive) setMonthSchedule(rows);
       })
       .catch(() => {
@@ -107,7 +122,7 @@ export function ScheduleAgenda({
     return () => {
       alive = false;
     };
-  }, [monthKey, status, refreshKey]);
+  }, [monthKey, status, refreshKey, firstDay]);
 
   /** 展示用课程：月窗口数据优先（整月覆盖），未就绪退 campus（±3 周窗口） */
   const effectiveCourses = monthSchedule ?? courses;

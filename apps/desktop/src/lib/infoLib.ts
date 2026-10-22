@@ -24,7 +24,7 @@ import { InfoHelper, roam, verifyAndReLogin, getOutstandingLoginIdentity } from 
 import { loadRemembered } from "./clients.js";
 import { fileRead, fileWrite, obfuscateSecret, deobfuscateSecret } from "./clients.js";
 import { withPrivacy } from "./privacy.js";
-import { sm2crypto, makeFingerprint, webvpnDecodeUrl, parseCellAnchor, type TwoFactorMethod } from "@onethu/core";
+import { sm2crypto, makeFingerprint, webvpnDecodeUrl, parseCellAnchor, AuthRequiredError, type TwoFactorMethod } from "@onethu/core";
 
 let initialized = false;
 
@@ -593,29 +593,41 @@ export const getSecondaryEntries = async (
   http: { text: (url: string) => Promise<string> },
   firstDay: string, from: string, to: string,
 ): Promise<Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }>> => {
+  const fd = new Date((firstDay ?? "").replace(/-/g, "/"));
+  if (!Number.isFinite(fd.getTime())) throw new Error(i18n("schedule.secondary.invalidSemester"));
   // core HttpClient 直连（zhjw.cic 已在 PUBLIC_DIRECT_HOSTS 白名单，与课表
   // JSONP 同会话桶）。lib 的 uFetch 未从 index 导出（mod.uFetch undefined），
   // 之前每次都在守卫处静默抛错——全程「静默空」的最终根源（2026-09-19 实锤）。
   const html = await http.text("http://zhjw.cic.tsinghua.edu.cn/portal3rd.do?m=bks_ejkbSearch");
-  const lo = html.indexOf("function setInitValue");
+  const lo = html.search(/function\s+setInitValue\s*\(/);
   void log(`SECONDARY-FETCH len=${html.length} setInit=${lo}`).catch(() => undefined);
-  if (lo < 0) return [];
-  const script = html.substring(lo, html.indexOf("}", lo));
+  if (lo < 0) {
+    if (/jsp\.timeout|登录超时|用户登陆超时|do\/off\/ui\/auth\/login|name=["']i_pass|wengine-vpn\/js/i.test(html)) {
+      throw new AuthRequiredError();
+    }
+    throw new Error(i18n("schedule.secondary.unavailable"));
+  }
+  const hi = html.indexOf("}", lo);
+  if (hi < 0) throw new Error(i18n("schedule.secondary.unavailable"));
+  const script = html.substring(lo, hi);
   const beginList = ["08:00", "09:50", "13:30", "15:20", "17:05", "19:20"];
   const endList = ["09:35", "12:15", "15:05", "16:55", "18:40", "21:45"];
   const reg = /"<span onmouseover=\\"return overlib\('(.+?)'\);\\" onmouseout='return nd\(\);'>(.+?)<\/span>";[ \n\t\r]+?document\.getElementById\('(.+?)'\)\.innerHTML \+= strHTML\+"<br>";/g;
-  const fd = new Date((firstDay ?? "").replace(/-/g, "/"));
   const expand = (pat: string): number[] => {
     const out: number[] = [];
     for (const part of pat.split(",")) {
-      const [a, b] = part.split("-");
+      const [a, b] = part.replace(/[~～–—]/g, "-").split("-");
       const s = parseInt(a ?? "", 10), e = b ? parseInt(b, 10) : s;
       for (let w = s; w <= e; w++) out.push(w);
     }
     return out.filter((w) => w > 0);
   };
   const out: Array<{ name: string; location: string; date: string; dayOfWeek: number; startTime: string; endTime: string }> = [];
-  for (const m of script.matchAll(reg)) {
+  const matches = [...script.matchAll(reg)];
+  if (matches.length === 0 && /overlib\s*\(|innerHTML\s*\+=/.test(script)) {
+    throw new Error(i18n("schedule.secondary.unavailable"));
+  }
+  for (const m of matches) {
     const detail = (m[1] ?? "").replace(/\s/g, "");
     const title = m[2] ?? "";
     // 格子 id = a{session}_{day}（口径见 core parseCellAnchor / info app parseScript）。

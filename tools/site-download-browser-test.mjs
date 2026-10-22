@@ -4,7 +4,8 @@ import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 const version=process.env.ONETHU_EXPECT_VERSION??JSON.parse(readFileSync('apps/desktop/package.json','utf8')).version;
 const base=process.env.ONETHU_SITE_URL??'http://127.0.0.1:8770/';
 const out=process.env.ONETHU_TEST_OUT??'/Volumes/OneTHUBuild/artifacts/release-'+version+'/download-page';mkdirSync(out,{recursive:true});
-const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+const proxy=process.env.ONETHU_BROWSER_PROXY?new URL(process.env.ONETHU_BROWSER_PROXY):null;
+const browser=await chromium.launch({...(proxy?{proxy:{server:proxy.origin,username:decodeURIComponent(proxy.username),password:decodeURIComponent(proxy.password)}}:{}),executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const report=[];
 try{
  for(const width of [1440,768,390,320])for(const language of ['', 'en/']){

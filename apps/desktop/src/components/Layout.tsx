@@ -4,6 +4,7 @@ import { allSearchRows } from "../state/searchRows.js";
 import { t as i18n, useLocale as useUiLocale } from "../i18n/index.js";
 import { BrandLogo } from "./BrandLogo.js";
 import { useExperienceMode, useIsSimpleLike, useSimpleRoute } from "../state/experienceMode.js";
+import { MobileFeatureNavigation } from "./MobileFeatureNavigation.js";
 import { SimpleHeader } from "./SimpleExperience.js";
 import { IconBtn, IconUser } from "@onethu/gui";
 /** Explorer 顶栏 + 内容骨架 + 基础 UI 件（卡片 / 徽标 / 骨架屏 / 开关）。
@@ -224,6 +225,7 @@ function TopBar(): ReactNode {
       {/* dev-explorer（用户拍板）：OneTHU 品牌标与「首页」标签并成 TabStrip 首位，左上单独的
           Logo 钮退役——复制按钮成为顶栏最左；首页仍恒在（TabStrip 首位不可关） */}
       {/* 竖版：复制 / 设置移到左侧栏底部，顶栏只保留横版标签条 */}
+      <MobileFeatureNavigation/>
       {phone ? (
         /* 手机档（2026-10-16 用户口径）：顶部只留一个**圆形房子钮**回首页——
            横竖都不再有标签条（换标签只走底栏「标签页」抽屉）。此前是 OneTHU monogram 玻璃片。 */

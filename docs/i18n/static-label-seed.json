@@ -17,16 +17,16 @@
       "en-US": "Five shortcuts across the bottom for quick switching."
     },
     "mobile.layout.side": {
-      "zh-CN": "侧边导航",
-      "en-US": "Side navigation"
+      "zh-CN": "弹出式侧边导航",
+      "en-US": "Pop-out navigation"
     },
     "mobile.layout.sideHint": {
-      "zh-CN": "常用入口竖向排列，为内容留出纵向空间。",
-      "en-US": "Vertical shortcuts leave more room above and below your content."
+      "zh-CN": "点击左上角按钮，展开纵向功能列表。",
+      "en-US": "Open a vertical feature list from the top-left button."
     },
     "mobile.layout.later": {
-      "zh-CN": "之后可在「外观与布局」中更改，完整与实用模式分别记住选择。",
-      "en-US": "Change this later in Appearance & layout. Full and Practical remember separate choices."
+      "zh-CN": "可在设置中更改，各模式分别记住选择。",
+      "en-US": "Change this in Settings. Each mode remembers its own choice."
     },
     "overlay.collapse": {
       "zh-CN": "收起悬浮窗",
@@ -1215,6 +1215,26 @@
     "privacy.readCarefully": {
       "zh-CN": "请务必认真阅读，并在下方手动授权云盘和智能体服务。",
       "en-US": "Please read carefully and manually authorize cloud drive and agent services below."
+    },
+    "mobile.nav.open": {
+      "zh-CN": "打开功能导航",
+      "en-US": "Open feature navigation"
+    },
+    "mobile.nav.title": {
+      "zh-CN": "一级功能区",
+      "en-US": "Main features"
+    },
+    "mobile.nav.plugins": {
+      "zh-CN": "插件功能页",
+      "en-US": "Plugin pages"
+    },
+    "mobile.nav.fullOnly": {
+      "zh-CN": "完整版",
+      "en-US": "Full mode"
+    },
+    "mobile.nav.fullHint": {
+      "zh-CN": "「{name}」在完整版中使用，请在设置中切换模式。",
+      "en-US": "Use {name} in Full mode. Switch modes in Settings."
     }
   }
 }

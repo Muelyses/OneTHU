@@ -1082,15 +1082,22 @@ html:root.is-phone .board-viewport-tools.has-edit-toggle.is-browse { padding: 0;
 .mobile-layout-preview-nav { position: absolute; inset: auto 6% 17%; display: flex; gap: 3%; height: 8%; }
 .mobile-layout-preview-nav i { flex: 1; background: var(--og-action); border-radius: var(--og-radius-full); }
 .mobile-layout-preview-oh { position: absolute; inset: auto 9% 6%; height: 6%; background: var(--og-line-2); border-radius: var(--og-radius-full); }
-.mobile-layout-preview.is-side .mobile-layout-preview-nav { inset: 22% auto 25% 5%; width: 12%; height: auto; flex-direction: column; gap: 8%; }
-.mobile-layout-preview.is-side .mobile-layout-preview-content { left: 24%; bottom: 17%; }
-html:root.is-phone .oneshot.is-mobile-side { display: flex; left: calc(var(--og-safe-left,0px) + var(--og-space-1)); right: auto; top: calc(var(--og-safe-top,0px) + 76px); bottom: calc(var(--explorer-bar-h) + var(--og-safe-bottom,0px) + var(--og-space-3)); width: var(--og-mobile-nav-width); max-width: var(--og-mobile-nav-width); height: auto; transform: none; flex-direction: column; justify-content: center; gap: var(--og-space-2); overflow-y: auto; overflow-x: hidden; }
-html:root.is-phone .oneshot.is-mobile-side .oneshot-button { flex: 0 0 auto; width: var(--og-mobile-nav-width); min-width: 0; min-height: var(--og-mobile-nav-width); height: auto; padding: var(--og-space-2) var(--og-space-1); flex-direction: column; gap: var(--og-space-1); border-radius: var(--og-radius-lg); }
-html:root.is-phone .oneshot.is-mobile-side .oneshot-button .og-btn-label { font-size: var(--og-text-micro); white-space: normal; overflow-wrap: anywhere; }
-html:root.is-phone[data-mobile-navigation="side"] .home-services-widget .hs-dock-row { grid-template-columns: repeat(3,minmax(0,1fr)); }
-html:root.is-phone[data-mobile-navigation="side"] .home-services-widget > .hs-dock-actions { flex-wrap: wrap; min-width: 0; }
-html:root.is-phone[data-mobile-navigation="side"] .free-item > .wg-title { font-size: clamp(var(--og-text-title), 7vw, var(--og-text-title-lh)); overflow-wrap: anywhere; min-width: 0; }
-html:root.is-phone[data-mobile-navigation="side"] .explorer-shell > .explorer-content { margin-inline-start: var(--og-mobile-nav-gutter) !important; inline-size: calc(100% - var(--og-mobile-nav-gutter)); min-inline-size: 0; }
+.mobile-layout-preview.is-side .mobile-layout-preview-nav { inset: 22% 31% 19% 7%; padding: 9% 5%; height: auto; flex-direction: column; gap: 8%; background: var(--og-surface-overlay); box-shadow: var(--og-elev-1); border-radius: var(--og-radius-sm); }
+.mobile-layout-preview.is-side .mobile-layout-preview-nav i { flex: none; height: 8%; width: 90%; border-radius: var(--og-radius-xs); }
+.mobile-layout-preview.is-side::after { content: "☰"; position: absolute; top: 6%; left: 8%; font-size: var(--og-text-micro); color: var(--og-content-1); }
+.mobile-layout-preview.is-side .mobile-layout-preview-content { inset: 21% 10% 17%; }
+/* Navigation overlays the page only while open; content keeps its full width. */
+.mobile-nav-trigger { flex: none; }
+.mobile-feature-drawer.og-drawer { --og-c-drawer-w: var(--og-rail-full-width); max-width: calc(100vw - var(--og-space-8)); }
+.mobile-feature-drawer .og-panel-body { padding: var(--og-space-2); }
+.mobile-feature-list { display: grid; gap: var(--og-space-1); }
+.mobile-feature-link.og-btn { justify-content: flex-start; min-height: var(--og-ctl-h-lg); height: auto; text-align: start; padding: var(--og-space-3); }
+.mobile-feature-link > .og-btn-label { display: flex; align-items: center; gap: var(--og-space-2); flex: 1; white-space: normal; }
+.mobile-feature-link > .og-btn-label > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.mobile-feature-link small { flex: none; font-size: var(--og-text-micro); color: var(--og-content-3); }
+.mobile-feature-group { padding: var(--og-space-4) var(--og-space-3) var(--og-space-2); font-size: var(--og-text-micro); color: var(--og-content-3); }
+html:root.is-phone[data-mobile-navigation="side"] { --og-mobile-tools-gap: var(--og-space-3); --og-mobile-content-clearance: calc(var(--explorer-bar-h) + var(--og-safe-bottom,0px) + var(--og-space-6)); }
+html:root.is-phone[data-mobile-navigation="side"] .explorer-shell.is-simple > .explorer-content { padding-bottom: var(--og-mobile-content-clearance) !important; }
 html:root.is-phone .vault-floating-anchor.is-collapsed.is-left .vault-box-button > .og-btn-label { flex-direction: row-reverse; }
 html:root.is-phone .vault-floating-anchor.is-collapsed .vault-box-count { opacity: 0; }
 

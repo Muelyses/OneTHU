@@ -35,7 +35,7 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
   const {slots:practical}=usePracticalEntries();
   const mode=useExperienceMode();
   const phone=useIsPhone(), mobileLayout=useMobileNavigation(mode);
-  const sideNavigation=phone&&mode!=="simple"&&mobileLayout==="side";
+  const sideNavigation=phone&&mobileLayout==="side";
   useEffect(()=>{document.documentElement.dataset.mobileNavigation=sideNavigation?"side":"bottom";return()=>{delete document.documentElement.dataset.mobileNavigation;};},[sideNavigation]);
   const practicalMode=mode==="practical";
   const [moreOpen,setMoreOpen]=useState(false);
@@ -120,6 +120,7 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
     setScheduleOpen(v=>!v);
   };
 
+  if(sideNavigation&&!placing)return <>{featuresPanel}</>;
   if(scheduleMode&&!sideNavigation)return <nav
     className={"oneshot is-schedule"+(collapsed?" is-collapsed":"")+(placing?" is-placing":"")+(dragging?" is-dragging":"")}
     aria-label={i18n("components.explorer.oneshot.1446be782b50")}
@@ -149,7 +150,7 @@ export function OneShot({scheduleMode=false}:{scheduleMode?:boolean}){
     {featuresPanel}
   </nav>;
 
-  return <nav className={"oneshot"+(sideNavigation?" is-mobile-side":"")+(placing?" is-placing":"")} aria-label={i18n("components.explorer.oneshot.1446be782b50")}>
+  return <nav className={"oneshot"+(placing?" is-placing":"")} aria-label={i18n("components.explorer.oneshot.1446be782b50")}>
     {placementBar}
     {slotNodes}
     {featuresPanel}

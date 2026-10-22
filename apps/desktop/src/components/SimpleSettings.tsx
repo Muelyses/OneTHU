@@ -13,7 +13,6 @@ import { showToast } from "../state/toast.js";
 import { useApp } from "../state/context.js";
 import { replayOnboarding } from "./OnboardingTour.js";
 import { MobileLayoutChoice } from "./MobileLayoutChoice.js";
-import { useExperienceMode } from "../state/experienceMode.js";
 import { useIsPhone } from "../state/phoneSheets.js";
 import { SoftwareUpdateSection } from "./SoftwareUpdateSection.js";
 
@@ -31,7 +30,7 @@ export function SimpleSettings() {
   const uiLocale = useUiLocale();
 
  const { user, logout }=useApp();
- const mode=useExperienceMode(),phone=useIsPhone();
+ const phone=useIsPhone();
  const [calendarOpen,setCalendarOpen]=useState(false);
  const initial=getPlugin("onethu.harness")?.settings??{};
  const [baseUrl,setBaseUrl]=useState(String(initial.baseUrl??""));
@@ -40,7 +39,7 @@ export function SimpleSettings() {
  return <div className="simple-settings"><Stack gap={4}>
  <ExperienceModeControl/>
  <LanguageControl/>
- {phone&&mode==="practical"?<Card><MobileLayoutChoice/></Card>:null}
+ {phone?<Card><MobileLayoutChoice/></Card>:null}
  <PrivacySettings/>
  <OhModelSourceCard/>
  <Card><SettingsRow title={i18n("components.simplesettings.ac794a015ee3")} sub={i18n("components.simplesettings.49454b147354")} control={<Btn variant="outline" onClick={replayOnboarding}>{i18n("components.simplesettings.7c4b06e07cb4")}</Btn>}/>

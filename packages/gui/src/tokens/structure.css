@@ -185,8 +185,6 @@
   /* Workbench geometry: page hierarchy and chrome share one scale. */
   --og-workbench-max: 1120px;
   --og-workbench-gutter: 40px;
-  --og-mobile-nav-width: 54px;
-  --og-mobile-nav-gutter: 64px;
   --og-tour-phone-max: 380px;
   --og-tour-chrome-clearance: 320px;
   --og-tour-chrome-short: 180px;

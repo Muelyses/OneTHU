@@ -5,6 +5,6 @@ const {mobileNavigationFor,setMobileNavigation}=await import('../apps/desktop/sr
 assert.equal(mobileNavigationFor('full'),'bottom');assert.equal(mobileNavigationFor('practical'),'bottom');
 setMobileNavigation('full','side');assert.equal(mobileNavigationFor('full'),'side');assert.equal(mobileNavigationFor('practical'),'bottom');
 setMobileNavigation('practical','side');setMobileNavigation('full','bottom');assert.equal(mobileNavigationFor('practical'),'side');
-setMobileNavigation('simple','side');assert.equal(mobileNavigationFor('simple'),'bottom');
-assert.deepEqual(JSON.parse(values.get('onethu.mobile-navigation.v1')),{full:'bottom',practical:'side'});
-console.log('✓ full/practical preferences remain independent and persist; Minimal stays fixed');
+setMobileNavigation('simple','side');assert.equal(mobileNavigationFor('simple'),'side');assert.equal(mobileNavigationFor('full'),'bottom');
+assert.deepEqual(JSON.parse(values.get('onethu.mobile-navigation.v1')),{full:'bottom',practical:'side',simple:'side'});
+console.log('✓ full/practical preferences remain independent and persist; Minimal also keeps an independent choice');

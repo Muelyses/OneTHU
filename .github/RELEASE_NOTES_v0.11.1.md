@@ -9,7 +9,7 @@
 - 系统日历采用经过完整性校验的新版学期缓存。
 - Android 沿用正式签名与原版 Logo，versionCode 11008。
 
-- 手机完整／实用模式加入导览与设置中的布局选择；白板新增撤销、恢复默认并保留编辑前缩放。
+- 手机左上角按钮可展开纵向功能浮层以替代 OneShot，极简五项、完整／实用全部一级入口；完整／实用导览提供布局选择。白板新增撤销、恢复默认并保留编辑前缩放。
 - 暂存箱支持边缘半收起、点按打开、拖回自由放置；Android OH 收起入口更醒目。
 - 修复组织管理被设置浮层挡住、检查更新加载按钮变空的问题；更新检查支持超时、取消和重试。
 
@@ -29,6 +29,6 @@ Secondary timetable and phone interaction fixes for macOS, Windows and Android.
 
 Refresh in Schedule settings after upgrading. Choose the installer for your platform below, or use the linked Tsinghua cloud folders. SHA-256 checksums are included.
 
-- Full/Practical phone onboarding and settings offer separate navigation choices; board editing adds Undo and Restore defaults while retaining zoom.
+- A top-left phone button opens a vertical feature overlay in place of OneShot: five entries in Minimal, all primary features in Full/Practical. Full/Practical onboarding offers the layout choice. Board editing adds Undo and Restore defaults while retaining zoom.
 - The vault can dock and half-hide at screen edges, and Android OH has a clearer Collapse control.
 - Organization actions reveal their destination. Update checks show readable progress, bounded fallback, Cancel and Retry.

@@ -8,7 +8,6 @@ export function MobileLayoutChoice({ mode }: { mode?: ExperienceMode }) {
   useLocale();
   const activeMode = useExperienceMode(), chosen = mode ?? activeMode;
   const value = useMobileNavigation(chosen);
-  if (chosen === "simple") return null;
   return <section className="mobile-layout-choice" aria-label={t("mobile.layout.title")}>
     <h2>{t("mobile.layout.title")}</h2>
     <Text tone="quiet">{t("mobile.layout.hint")}</Text>

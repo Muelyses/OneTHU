@@ -15,7 +15,7 @@ After upgrading, refresh in Schedule settings to reload courses. Update detectio
 
 ## Phone controls and layout
 
-- Full and Practical offer bottom shortcuts or side navigation in onboarding and settings, with separate saved choices. Minimal keeps its fixed navigation.
+- Phone navigation offers bottom OneShot shortcuts or a top-left button opening a vertical feature overlay: five entries in Minimal, all primary features in Full and Practical. Each mode saves its own setting; Full and Practical include the choice in onboarding.
 - Board editing retains the current zoom and layout, with clearer controls, Undo and confirmed Restore defaults.
 - Drag the vault toward an edge to dock and half-hide it. Tap once to open it, or drag inward for free placement. Transfers expand the target.
 - Android OH has a more prominent Collapse control.

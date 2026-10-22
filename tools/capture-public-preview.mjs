@@ -105,7 +105,7 @@ async function capture(page,key,description){
  entries.push({key,file,description,locale:captureLocale,visibleText:captureEnglish?visibleText:undefined,viewport:page.viewportSize(),deviceScaleFactor:2,orientation:page.viewportSize().width>page.viewportSize().height?'landscape':'portrait',sha256:createHash('sha256').update(readFileSync(out+'/'+file)).digest('hex'),fixture:'Fictional courses, assignments, people and services. Real React/OneGUI components; no real account or campus requests.',source:'Uncomposited screenshot of an isolated browser viewport. No inserted UI or real personal data.'});
  console.log('Captured '+key);
 }
-async function close(page,context){await page.unrouteAll({behavior:'ignoreErrors'});await context.request.dispose();await context.close();}
+async function close(page,context){await page.unrouteAll({behavior:'wait'});await context.close();}
 export { setup, call, capture, close, browser };
 if (process.argv[1]?.endsWith('capture-public-preview.mjs')) {
 try{

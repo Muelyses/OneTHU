@@ -1,4 +1,5 @@
 import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/index.js";
+import { MobileFeatureNavigation } from "./MobileFeatureNavigation.js";
 import { ExperienceModePicker, MODE_OPTIONS } from "./ExperienceModePicker.js";
 import { useMemo, useState } from "react";
 import { Btn, Card, Text, Stack } from "@onethu/gui";
@@ -28,7 +29,7 @@ export function ExperienceModeControl() {
 
 export function SimpleHeader(){
   const uiLocale = useUiLocale();
-return <header className="simple-header"><Btn variant="ghost" aria-label={i18n("components.simpleexperience.203c08e0d44a")} onClick={()=>navigateSimple("homepage")}><span className="simple-wordmark">OneTHU</span><span className="simple-home-label">{i18n("components.simpleexperience.203c08e0d44a")}</span></Btn><span className="simple-header-date">{new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"long"}).format(new Date())}</span><Btn variant="ghost" onClick={()=>openSettings("settings")}>{i18n("components.simpleexperience.df3d58c7d84b")}</Btn></header>;}
+return <header className="simple-header"><MobileFeatureNavigation/><Btn variant="ghost" aria-label={i18n("components.simpleexperience.203c08e0d44a")} onClick={()=>navigateSimple("homepage")}><span className="simple-wordmark">OneTHU</span><span className="simple-home-label">{i18n("components.simpleexperience.203c08e0d44a")}</span></Btn><span className="simple-header-date">{new Intl.DateTimeFormat("zh-CN",{month:"long",day:"numeric",weekday:"long"}).format(new Date())}</span><Btn variant="ghost" onClick={()=>openSettings("settings")}>{i18n("components.simpleexperience.df3d58c7d84b")}</Btn></header>;}
 export function SimpleHost(){
   const uiLocale = useUiLocale();
 

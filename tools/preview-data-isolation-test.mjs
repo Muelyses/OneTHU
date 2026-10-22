@@ -1,0 +1,25 @@
+/** Production fixture gates and scoped cache boundaries. */
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+import {createPreviewScope} from '../apps/desktop/src/state/dataScope.ts';
+import {cacheGet,cacheSet} from '../apps/desktop/src/state/cache.ts';
+cacheSet('preview-isolation-test',{name:'account'},false);
+const entries=new Map([['preview-isolation-test',{data:{name:'sample'},at:Number.MAX_SAFE_INTEGER}],['card',{data:{balance:123.45},at:Number.MAX_SAFE_INTEGER}]]);
+const scope=createPreviewScope(entries);
+assert.equal(scope.cacheGet('preview-isolation-test').data.name,'sample');
+assert.equal(cacheGet('preview-isolation-test').data.name,'account');
+scope.cacheSet('preview-isolation-test',{name:'attempted-write'},true);
+assert.equal(scope.cacheGet('preview-isolation-test').data.name,'sample');assert.equal(cacheGet('preview-isolation-test').data.name,'account');
+assert.equal(scope.cacheGet('card:7').data.balance,123.45);
+let fetched=false;assert.equal((await scope.cacheFetch('preview-isolation-test',async()=>{fetched=true;})).name,'sample');
+await assert.rejects(scope.cacheFetch('missing',async()=>{fetched=true;}));assert.equal(fetched,false);
+const source=readFileSync('apps/desktop/src/state/cache.ts','utf8').replaceAll('import.meta.env?.DEV','false');
+const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ES2022,target:ts.ScriptTarget.ES2022}}).outputText;
+const production=await import('data:text/javascript;base64,'+Buffer.from(js).toString('base64'));
+assert.throws(()=>production.cacheSeedPreview('campus',{fake:true}),/only in development/);
+assert.throws(()=>production.setPreviewMode(true),/only in development/);
+assert.equal(production.cacheGet('campus'),null);assert.equal(production.isPreviewMode(),false);
+const provider=readFileSync('apps/desktop/src/components/PreviewData.tsx','utf8');
+assert.doesNotMatch(provider,/seedPreviewData|setPreviewMode|useLayoutEffect|restore\(/);
+console.log('✓ scoped values/writes/fetches stay isolated; production fixture gates reject global seeds; provider has no global mutation lifecycle');

@@ -82,6 +82,7 @@ jobs:
       - name: Check mobile interaction state
         run: |
           node --import ./tools/ts-resolve-register.mjs tools/mobile-layout-test.mjs
+          node --import ./tools/ts-resolve-register.mjs tools/preview-data-isolation-test.mjs
           node tools/update-check-lifecycle-test.mjs
           node --import ./tools/ts-resolve-register.mjs tools/board-undo-test.mjs
           node --import ./tools/ts-resolve-register.mjs tools/vault-docking-test.mjs

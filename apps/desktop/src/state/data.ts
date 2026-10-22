@@ -43,7 +43,8 @@ import { buildRows, buildSlotIndex, canAdjustZy as canAdjustZyFn, levelTypesOf, 
 import type { XkPlanItem } from "@onethu/core";
 import { useApp } from "./context.js";
 import { cacheGet, cacheSet, cacheFetch, cacheKeys,
-  purgeXkCaches, cacheSeedPreview, isPreviewMode } from "./cache.js";
+  purgeXkCaches, cacheSeedPreview, isPreviewMode, type CacheEntry } from "./cache.js";
+import { useDataScope } from "./dataScope.js";
 import { observeCardBalance } from "./cardWarn.js";
 
 /** info/zhjwxk 页内错误落盘（/tmp/onethu-debug.log），解析不匹配时可一轮定位 */
@@ -133,12 +134,14 @@ const CAMPUS_KEY = "campus";
 const CAMPUS_TTL = 3 * 60 * 1000;
 
 export function useCampusData() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
   const { status } = useApp();
   const [data, setData] = useState<CampusData | null>(() => cacheGet<CampusData>(CAMPUS_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<CampusData>(CAMPUS_KEY) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -176,7 +179,7 @@ export function useCampusData() {
   }, [status, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<CampusData>(CAMPUS_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > CAMPUS_TTL) void load(true);
@@ -470,12 +473,14 @@ export function stopLearnAutoRefresh(): void {
 }
 
 export function useLearnData() {
+  const { preview, cacheGet } = useDataScope();
   const { status } = useApp();
-  const [data, setData] = useState<LearnBundle | null>(() => cache?.data ?? null);
-  const [state, setState] = useState<DataState>(cache?.data ? "ready" : "loading");
+  const [data, setData] = useState<LearnBundle | null>(() => preview ? cacheGet<LearnBundle>("learn")?.data ?? null : cache?.data ?? null);
+  const [state, setState] = useState<DataState>((preview ? cacheGet<LearnBundle>("learn") : cache?.data) ? "ready" : "loading");
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    if (preview) return;
     const at = learnGeneration;
     const key = selectedSemester ?? "current";
     const active = (): boolean => at === learnGeneration && key === (selectedSemester ?? "current");
@@ -541,21 +546,23 @@ export function useLearnData() {
 
   useEffect(() => {
     /* 预览模式（抽屉里的组件预览）跳过：这条 hook 是「挂载即拉」，不跳过就会现爬数据 */
-    if (status === "ready" && !isPreviewMode()) void load();
+    if (status === "ready" && !preview && !isPreviewMode()) void load();
   }, [status, load]);
 
   // 后台静默刷新（learnX 式）换缓存时，挂载中的页面实时跟进
   useEffect(
-    () =>
-      subscribeLearnData(() => {
+    () => {
+      if (preview) return;
+      return subscribeLearnData(() => {
         const d = getLearnSnapshot();
         if (d) {
           setData((prev) => (prev === d ? prev : d));
           setState("ready");
           setError(null);
         }
-      }),
-    [],
+      });
+    },
+    [preview],
   );
 
   return { data, state, error, reload: load };
@@ -568,6 +575,7 @@ const SEM_KEY = "semesters";
 const SEM_TTL = 30 * 60 * 1000;
 
 export function useSemesters() {
+  const { preview, cacheGet, cacheSet } = useDataScope();
   const { status } = useApp();
   const cachedSem = cacheGet<{ list: string[]; current: string | null }>(SEM_KEY)?.data;
   const [list, setList] = useState<string[] | null>(() => cachedSem?.list ?? null);
@@ -576,6 +584,7 @@ export function useSemesters() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -596,7 +605,7 @@ export function useSemesters() {
   }, [status]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<{ list: string[]; current: string | null }>(SEM_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > SEM_TTL) void load(true);
@@ -619,12 +628,14 @@ export interface ZhjwxkData {
  * loading / error / retry 三态；accessDenied → AuthRequiredError → 送回登录页。
  */
 export function useZhjwxkCourses() {
+  const { preview } = useDataScope();
   const { status } = useApp();
   const [data, setData] = useState<ZhjwxkData | null>(null);
   const [state, setState] = useState<DataState>("loading");
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    if (preview) return;
     setState("loading");
     setError(null);
     try {
@@ -654,7 +665,7 @@ export function useZhjwxkCourses() {
   }, [status]);
 
   useEffect(() => {
-    if (status === "ready") void load();
+    if (status === "ready" && !preview) void load();
   }, [status, load]);
 
   return { data, state, error, reload: load };
@@ -2098,22 +2109,10 @@ export interface CardBundle {
 const REPORT_KEY = "report";
 const REPORT_TTL = 10 * 60 * 1000;
 
-/**
- * 预览模式的示例数据（霖 2026-10-12）。
- *
- * 抽屉里的组件预览渲染的是**真组件**，它们各自 useCard / useReport / useCampusData… 取数——
- * 挑一个组件会连带把整套数据爬一遍，还会把真实数字当成示例展示。
- *
- * 做法：把示例**写进数据层的缓存**（cacheSeedPreview：时间戳取远未来 → 各 hook 的 SWR 判定
- * 永不触发刷新，因此一次真实请求都不会发），返回还原函数；组件与各 hook 一行不用改。
- * 少数「挂载即拉」或「键带参数」的 hook（useLearnData / useNews / useTodayNewsFeed）
- * 另用 isPreviewMode() 在预览期跳过加载并直接返回示例。
- *
- * 示例数据要**足够完整**：预览里渲染的是真组件，字段缺了会当场抛错。
- * 因此按「该键的所有消费方在预览里会读到的字段」逐个补齐。
- */
-export function seedPreviewData(): () => void {
-  const undo: Array<() => void> = [];
+/** Pure dataset builder for widget previews. It never touches live stores or emits events. */
+export function createPreviewDataset(): ReadonlyMap<string, CacheEntry<unknown>> {
+  const entries = new Map<string, CacheEntry<unknown>>();
+  const seed = <T,>(key: string, data: T): void => { entries.set(key, { data, at: Number.MAX_SAFE_INTEGER }); };
 
   /* 成绩单：成绩统计四张 + 成绩明细都读它 */
   const report: ReportRow[] = [
@@ -2123,7 +2122,7 @@ export function seedPreviewData(): () => void {
     { name: i18n("state.data.f830684c231e"), credit: 3, grade: "B+", point: 3.3, semester: "2024-2025春", raw: [] },
     { name: i18n("state.data.29a6e56cb5af"), credit: 2, grade: "A", point: 4.0, semester: "2024-2025春", raw: [] },
   ];
-  undo.push(cacheSeedPreview(REPORT_KEY, report));
+  seed(REPORT_KEY, report);
 
   /* 校园卡：数字卡只读 info.balance；生活页校园卡栏目还要读流水 */
   const cardBundle: CardBundle = {
@@ -2144,8 +2143,8 @@ export function seedPreviewData(): () => void {
       { id: "t2", summary: i18n("state.data.b5481d51eb1a"), timestamp: new Date(Date.now() - 86400000), amount: 100, balance: 135.95 },
     ],
   };
-  undo.push(cacheSeedPreview("card:1", cardBundle));
-  undo.push(cacheSeedPreview("card:30", cardBundle));
+  seed("card:1", cardBundle);
+  seed("card:30", cardBundle);
 
   /* 校内数据（campus）：今日概览、下一节课、今日课程、作业/通知/文件入口都读它。
      课表按「今天」生成（dayOfWeek 用真实星期几），否则下一节课/今日课程会空。 */
@@ -2182,17 +2181,16 @@ export function seedPreviewData(): () => void {
     ],
     user: { name: i18n("state.data.f9b45f6b66e0"), studentId: "2023000000", department: "示例院系", email: "demo@mails.tsinghua.edu.cn" },
   };
-  undo.push(cacheSeedPreview(CAMPUS_KEY, campus));
+  seed(CAMPUS_KEY, campus);
 
   /* 倒计时提醒（deadlines）：日程与提醒卡读它；起止时间要落进「开始前 14 天 ~ 结束前」的窗口里 */
   const deadlines: DeadlineItem[] = [
     { title: i18n("state.data.3efc9adfbfb8"), begin: ymdOf(-2) + " 08:00", end: ymdOf(7) + " 16:00", url: "" },
     { title: i18n("state.data.ce63956984a9"), begin: ymdOf(-1) + " 08:00", end: ymdOf(9) + " 16:00", url: "" },
   ];
-  undo.push(cacheSeedPreview(DEADLINES_KEY, deadlines));
+  seed(DEADLINES_KEY, deadlines);
 
-  /* 网络学堂（learn）：它的缓存不是一个通用键，而是模块级变量 cache（且 hook 挂载即拉），
-     所以这里既要写这个变量，也要靠 isPreviewMode() 让 useLearnData 的效果跳过加载。 */
+  /* Learning fixtures stay inside the preview scope, separate from the module snapshot. */
   const learnSample: LearnBundle = {
     semester: { id: "2025-2026-1" },
     courses: [course("c1", "高等数学A(1)", "示例老师", "六教 6A101"), course("c2", "大学物理B(1)", "示例老师", "三教 3200")],
@@ -2200,23 +2198,24 @@ export function seedPreviewData(): () => void {
     notifications: campus.notifications,
     files: campus.files,
   };
-  const prevLearn = cache;
-  cache = { key: "current", ts: Number.MAX_SAFE_INTEGER, promise: Promise.resolve(learnSample), data: learnSample };
-  undo.push(() => { cache = prevLearn; });
+  seed("learn", learnSample);
+  seed(SEM_KEY, { list: [learnSample.semester.id], current: learnSample.semester.id });
+  seed("card", cardBundle);
+  seed("weeksched", campus.schedule);
 
   /* 今日预约：座位 + 研讨间各一条（ResvRows 会读 kind/venue/place/start/end） */
   const resv: TodayReservation[] = [
     { key: "seat-demo-1", kind: "seat", venue: "图书馆 北馆", place: "A-12", start: new Date(d0.getTime() + 3600000), end: null, note: i18n("state.data.21c05833ab53") },
     { key: "room-demo-1", kind: "room", venue: "研讨间 4-201", place: "", start: new Date(d0.getTime() + 7200000), end: new Date(d0.getTime() + 10800000), note: "" },
   ];
-  undo.push(cacheSeedPreview(TODAYRESV_KEY, resv));
+  seed(TODAYRESV_KEY, resv);
 
   /* 日程与提醒（今日校历节点）：AgendaWidget 读 name/date/daysUntil */
   const calNodes: TodayCalendarNode[] = [
     { key: "cal-demo-1", name: i18n("state.data.38509e346ecf"), date: new Date(d0.getTime() + 7 * 86400000), daysUntil: 7 },
     { key: "cal-demo-2", name: i18n("state.data.9e6183684b78"), date: new Date(d0.getTime() + 9 * 86400000), daysUntil: 9 },
   ];
-  undo.push(cacheSeedPreview(TODAYCAL_KEY, calNodes));
+  seed(TODAYCAL_KEY, calNodes);
 
   /* 个人信息（profile）：信息页「个人信息栏目」与学生卡都读它，字段就是 BasicUserInfo */
   const profileSample: BasicUserInfo = {
@@ -2227,14 +2226,14 @@ export function seedPreviewData(): () => void {
     major: "示例专业",
     email: "demo@mails.tsinghua.edu.cn",
   };
-  undo.push(cacheSeedPreview(PROFILE_KEY, profileSample));
+  seed(PROFILE_KEY, profileSample);
 
   /* 考试安排（exams）：ExamsTab 按日期分组渲染，给两场不同日期的考试 */
   const exams: ExamEntry[] = [
     { courseName: "高等数学A(1)", date: ymdOf(12), startTime: "14:00", endTime: "16:00", location: "六教 6A101", category: "考试", raw: {} },
     { courseName: "大学物理B(1)", date: ymdOf(15), startTime: "09:00", endTime: "11:00", location: "三教 3200", category: "考试", raw: {} },
   ];
-  undo.push(cacheSeedPreview(EXAMS_KEY, exams));
+  seed(EXAMS_KEY, exams);
 
   /* 信息页校历（calendar）：CalendarData；firstDay 取「八周前的周一」，于是当前落在第 9 教学周 */
   const mondayOffset = -(wd - 1);
@@ -2247,9 +2246,20 @@ export function seedPreviewData(): () => void {
       { firstDay: ymdOf(mondayOffset + 70), semesterId: "2025-2026-2", semesterName: "2025-2026 春季学期", weekCount: 16 },
     ],
   };
-  undo.push(cacheSeedPreview(CAL_KEY, calendar));
+  seed(CAL_KEY, calendar);
 
-  return () => { for (const f of undo.reverse()) f(); };
+  return entries;
+}
+
+/** DEV-only compatibility for existing isolated regression drivers; never used by UI previews. */
+export function seedPreviewData(): () => void {
+  if (!import.meta.env?.DEV) throw new Error("Fixture seeding is available only in development tests");
+  const entries = createPreviewDataset();
+  const undo = [...entries].map(([key, entry]) => cacheSeedPreview(key, entry.data));
+  const previous = cache;
+  const sample = entries.get("learn")!.data as LearnBundle;
+  cache = { key: "current", ts: Number.MAX_SAFE_INTEGER, promise: Promise.resolve(sample), data: sample };
+  return () => { for (const restore of undo.reverse()) restore(); cache = previous; };
 }
 
 /* 成绩变化事件：useReport 每次真的拿到一份新成绩单时比对签名（首次加载只建基线）。
@@ -2257,12 +2267,14 @@ export function seedPreviewData(): () => void {
 let lastReportSig: string | null = null;
 
 export function useReport() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
   const { status } = useApp();
   const [data, setData] = useState<ReportRow[] | null>(() => cacheGet<ReportRow[]>(REPORT_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<ReportRow[]>(REPORT_KEY) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -2286,7 +2298,7 @@ export function useReport() {
   }, [status, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<ReportRow[]>(REPORT_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > REPORT_TTL) void load(true);
@@ -2317,6 +2329,7 @@ function reviveCardBundle(b: CardBundle): CardBundle {
 }
 
 export function useCard(days = 30) {
+  const { preview, cacheGet, cacheSet } = useDataScope();
   const { status } = useApp();
   const cardKey = `card:${days}`;
   const [data, setData] = useState<CardBundle | null>(() => {
@@ -2335,6 +2348,7 @@ export function useCard(days = 30) {
   const recover = useRef(0);
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -2385,7 +2399,7 @@ export function useCard(days = 30) {
   }, [status, days, data, cardKey]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<CardBundle>(cardKey);
     if (!cached) void load(false);
     // 过期太久（跨天级别的旧缓存）不再静默：静默失败会让旧数据无限压着（用户实录），
@@ -2437,11 +2451,13 @@ const TODAYRESV_KEY = "todayresv";
 const TODAYRESV_TTL = 2 * 60 * 1000;
 
 export function useTodayReservations() {
+  const { preview, cacheGet, cacheSet } = useDataScope();
   const { status } = useApp();
   const [list, setList] = useState<TodayReservation[] | null>(() => cacheGet<TodayReservation[]>(TODAYRESV_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<TodayReservation[]>(TODAYRESV_KEY) ? "ready" : "loading"));
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) setState("loading");
     const [seatRes, roomRes] = await Promise.allSettled([
       info.getLibBookRecords(),
@@ -2494,7 +2510,7 @@ export function useTodayReservations() {
   }, [status]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<TodayReservation[]>(TODAYRESV_KEY);
     if (!cached) {
       // 错峰（2026-09-17）：旧 venue 客户端的 id 舞与登录/漫游抢第一秒会
@@ -2564,11 +2580,13 @@ const TODAYCAL_KEY = "todaycal";
 const TODAYCAL_TTL = 30 * 60 * 1000;
 
 export function useTodayCalendar() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
   const { status } = useApp();
   const [nodes, setNodes] = useState<TodayCalendarNode[] | null>(() => cacheGet<TodayCalendarNode[]>(TODAYCAL_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<TodayCalendarNode[]>(TODAYCAL_KEY) ? "ready" : "loading"));
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) setState("loading");
     try {
       const nodes2 = calendarNodes(await cacheFetch(TODAYCAL_KEY, () => infoHelper.getCalendar()));
@@ -2583,7 +2601,7 @@ export function useTodayCalendar() {
   }, [status, nodes]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<TodayCalendarNode[]>(TODAYCAL_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > TODAYCAL_TTL) void load(true);
@@ -2611,12 +2629,14 @@ const CAL_KEY = "calendar";
 const CAL_TTL = 30 * 60 * 1000;
 
 export function useCalendar() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
   const { status } = useApp();
   const [data, setData] = useState<CalendarData | null>(() => cacheGet<CalendarData>(CAL_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<CalendarData>(CAL_KEY) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -2643,7 +2663,7 @@ export function useCalendar() {
   }, [status, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<CalendarData>(CAL_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > CAL_TTL) void load(true);
@@ -2684,6 +2704,7 @@ export function getWeekSchedSnapshot(semesterId?: string): ScheduleEntry[] | nul
 }
 
 export function useWeekSchedule(semester: CalendarSemester | null, week: number) {
+  const { preview, cacheGet, cacheSet } = useDataScope();
   const { status } = useApp();
   const wsKey = semester ? `weeksched:${semester.semesterId}:${week}` : null;
   const [data, setData] = useState<ScheduleEntry[] | null>(
@@ -2696,7 +2717,7 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
   const [nonce, setNonce] = useState(0);
 
   useEffect(() => {
-    if (status !== "ready" || !semester || !wsKey) return;
+    if (status !== "ready" || preview || !semester || !wsKey) return;
     let cancelled = false;
     const base = new Date(semester.firstDay.replace(/-/g, "/"));
     const start = new Date(base.getTime() + (week - 1) * 7 * 86400000);
@@ -2756,7 +2777,9 @@ export function useWeekSchedule(semester: CalendarSemester | null, week: number)
 const EXAMS_KEY = "exams";
 const EXAMS_TTL = 10 * 60 * 1000;
 
-export function useExams() {  const { status } = useApp();
+export function useExams() {
+  const { preview, cacheGet, cacheSet, cacheFetch } = useDataScope();
+  const { status } = useApp();
   const [data, setData] = useState<ExamEntry[] | null>(() => cacheGet<ExamEntry[]>(EXAMS_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<ExamEntry[]>(EXAMS_KEY) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
@@ -2765,6 +2788,7 @@ export function useExams() {  const { status } = useApp();
   stateRef.current = state;
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -2813,7 +2837,7 @@ export function useExams() {  const { status } = useApp();
   }, [status, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<ExamEntry[]>(EXAMS_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > EXAMS_TTL) {
@@ -2831,15 +2855,17 @@ export function useExams() {  const { status } = useApp();
 const NEWS_TTL = 5 * 60 * 1000;
 
 export function useNews(page: number, length = 20) {
+  const { preview: scopedPreview, cacheGet, cacheFetch } = useDataScope();
+  const preview = scopedPreview || isPreviewMode();
   const { status } = useApp();
   /* 预览模式：直接给示例，且跳过加载（这条 hook 的键带分页参数，种子盖不全） */
-  const preview = isPreviewMode();
   const newsKey = `news:${page}:${length}`;
   const [data, setData] = useState<NewsItem[] | null>(() => cacheGet<NewsItem[]>(newsKey)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<NewsItem[]>(newsKey) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
+    if (scopedPreview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -2889,11 +2915,13 @@ const DEADLINES_KEY = "deadlines";
 const DEADLINES_TTL = 10 * 60 * 1000;
 
 export function useTodayDeadlines() {
+  const { preview, cacheGet, cacheFetch } = useDataScope();
   const { status } = useApp();
   const [list, setList] = useState<DeadlineItem[] | null>(() => cacheGet<DeadlineItem[]>(DEADLINES_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<DeadlineItem[]>(DEADLINES_KEY) ? "ready" : "loading"));
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) setState("loading");
     try {
       const items = await cacheFetch(DEADLINES_KEY, async () => {
@@ -2918,7 +2946,7 @@ export function useTodayDeadlines() {
   }, [status, list]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<DeadlineItem[]>(DEADLINES_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > DEADLINES_TTL) void load(true);
@@ -2956,9 +2984,10 @@ export interface TodayNewsFeed {
 const TODAYNEWS_TTL = 5 * 60 * 1000;
 
 export function useTodayNewsFeed(subs: string[]) {
+  const { preview: scopedPreview, cacheGet, cacheSet } = useDataScope();
+  const preview = scopedPreview || isPreviewMode();
   const { status } = useApp();
   /* 预览模式：直接给示例并跳过加载（键里带订阅集合，种子盖不全） */
-  const preview = isPreviewMode();
   const [data, setData] = useState<TodayNewsFeed | null>(null);
   const [state, setState] = useState<DataState>("loading");
 
@@ -2967,6 +2996,7 @@ export function useTodayNewsFeed(subs: string[]) {
   const feedKey = `todaynews:${subsKey}`;
 
   const load = useCallback(async (silent = false) => {
+    if (scopedPreview) return;
     if (!silent) setState("loading");
     const subList = subsKey ? subsKey.split("\u0001") : [];
     const latest = async (): Promise<TodayNewsFeed> => {
@@ -3040,12 +3070,14 @@ const PROFILE_KEY = "profile";
 const PROFILE_TTL = 30 * 60 * 1000;
 
 export function useProfile() {
+  const { preview, cacheGet, cacheSet } = useDataScope();
   const { status } = useApp();
   const [data, setData] = useState<BasicUserInfo | null>(() => cacheGet<BasicUserInfo>(PROFILE_KEY)?.data ?? null);
   const [state, setState] = useState<DataState>(() => (cacheGet<BasicUserInfo>(PROFILE_KEY) ? "ready" : "loading"));
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
+    if (preview) return;
     if (!silent) {
       setState("loading");
       setError(null);
@@ -3078,7 +3110,7 @@ export function useProfile() {
   }, [status, data]);
 
   useEffect(() => {
-    if (status !== "ready") return;
+    if (status !== "ready" || preview) return;
     const cached = cacheGet<BasicUserInfo>(PROFILE_KEY);
     if (!cached) void load(false);
     else if (Date.now() - cached.at > PROFILE_TTL) void load(true);

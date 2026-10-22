@@ -347,8 +347,7 @@ export function BoardAddDrawer({
   /* portal 到 body：外壳里若有 transform/will-change 祖先，`position: fixed` 会退化成相对该祖先定位，
      页面一滚抽屉就跟着滚（霖 2026-10-11：上滑时"页面跟着动 + 抽屉多移一截"）。 */
   return createPortal(
-    /* 预览数据层：抽屉里渲染的都是真组件，这里把示例数据写进数据缓存，
-       预览不再现爬数据、也不会把真实数字当示例展示（详见 components/PreviewData.tsx）。 */
+    /* Scoped sample data belongs only to this drawer; live board/cache data stays untouched. */
     <PreviewDataProvider>
     <>
       {/* 遮罩：点抽屉外收回；编辑抽屉和确认按钮高于常驻导航，避免手机底栏拦住提交。 */}

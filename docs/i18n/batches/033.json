@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -10,7 +10,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 81,
+          "line": 80,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.172f588670fa\"))"
         }
       ],
@@ -26,7 +26,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 84,
+          "line": 83,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.27ac14d14b12\"))"
         }
       ],
@@ -42,7 +42,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 40,
+          "line": 41,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.63c8ea2f536a\"))"
         }
       ],
@@ -58,7 +58,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
+          "line": 141,
           "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
         }
       ],
@@ -74,7 +74,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
+          "line": 141,
           "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
         }
       ],

@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.plugins.1b568ba90ae3",
+      "source": "选择插件文件夹内的 manifest.json",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 1409,
+          "context": "title: i18n(\"pages.plugins.1b568ba90ae3\")"
+        }
+      ],
+      "translation": "Select manifest.json inside the plugin folder",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.1b70686b644a",
+      "source": "我的插件",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 266,
+          "context": "label: i18n(\"pages.plugins.1b70686b644a\")"
+        }
+      ],
+      "translation": "My plugins",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.plugins.1bd91a7d0c53",
+      "source": "已保存",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 983,
+          "context": "{i18n(\"pages.plugins.1bd91a7d0c53\")}"
+        }
+      ],
+      "translation": "Saved",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.plugins.1c44993e8d35",
       "source": "📢 插件公告",
@@ -1406,54 +1454,6 @@
       "translation": "Select a .js file",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.plugins.91d07ffe8162",
-      "source": "正在从插件本体仓库获取最新版本…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 516,
-          "context": "msg: i18n(\"pages.plugins.91d07ffe8162\")"
-        }
-      ],
-      "translation": "Fetching the latest version from the plugin's own repository…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.946d16b17a2b",
-      "source": "内置核心",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 373,
-          "context": "{i18n(\"pages.plugins.946d16b17a2b\")}"
-        }
-      ],
-      "translation": "Built-in core",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.95e35aabd9a9",
-      "source": "内置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 595,
-          "context": "{i18n(\"pages.plugins.95e35aabd9a9\")}"
-        }
-      ],
-      "translation": "Built-in",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

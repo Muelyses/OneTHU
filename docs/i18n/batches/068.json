@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.plugins.91d07ffe8162",
+      "source": "正在从插件本体仓库获取最新版本…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 516,
+          "context": "msg: i18n(\"pages.plugins.91d07ffe8162\")"
+        }
+      ],
+      "translation": "Fetching the latest version from the plugin's own repository…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.946d16b17a2b",
+      "source": "内置核心",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 373,
+          "context": "{i18n(\"pages.plugins.946d16b17a2b\")}"
+        }
+      ],
+      "translation": "Built-in core",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.plugins.95e35aabd9a9",
+      "source": "内置",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Plugins.tsx",
+          "line": 595,
+          "context": "{i18n(\"pages.plugins.95e35aabd9a9\")}"
+        }
+      ],
+      "translation": "Built-in",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.plugins.979a332955c8",
       "source": "详情",
@@ -1370,68 +1418,6 @@
         }
       ],
       "translation": "All day",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.0eaedd12dc70",
-      "source": "起始时间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1117,
-          "context": "{i18n(\"pages.schedule.0eaedd12dc70\")}"
-        }
-      ],
-      "translation": "Start time",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.0f02af2d5985",
-      "source": "{value} 年 {value2} 月",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(anchor.getFullYear())"
-        },
-        {
-          "name": "value2",
-          "expression": "String(anchor.getMonth() + 1)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 806,
-          "context": "mode === \"timetable\"\n      ? i18n(\"pages.schedule.28ee8c1f603e\", { value: String(weekStart.getMonth() + 1), value2: String(weekStart.getDate()), value3: String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate()) })\n      : i18n(\"pages.schedule.0f02af2d5985\", { value: String(anchor.getFullYear()), value2: String(anchor.getMonth() + 1) })"
-        },
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1070,
-          "context": "{i18nRich(\"pages.schedule.0f02af2d5985\", { value: calView.getFullYear(), value2: calView.getMonth() + 1 })}"
-        }
-      ],
-      "translation": "{value2}/{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.1258adb63f05",
-      "source": "已导出课表、作业截止时间与日程，系统日历导入窗口应已打开（选择要写入的日历）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 712,
-          "context": "setMsg(i18n(\"pages.schedule.1258adb63f05\"))"
-        }
-      ],
-      "translation": "Exported timetable, assignment deadlines, and events; the system calendar import window should have opened (choose the calendar to write to).",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

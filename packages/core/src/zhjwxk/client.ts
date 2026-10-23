@@ -295,9 +295,9 @@ async function ensure(
         for (const u of ["https://id.tsinghua.edu.cn/", "https://oauth.tsinghua.edu.cn/"]) {
           try { s.http.jar.clear(new URL(u).hostname); http.jar.clear(new URL(u).hostname); } catch { /* 域无 cookie */ }
         }
-        // 健康票种回（rust 仓走 nativeSeedHook，TS jar 走 setRaw）
+        // Domain-only clearing already preserves healthy native cookies. Keep
+        // the TS mirror without replaying an unversioned snapshot into native.
         for (const [dom, pair] of rescue) {
-          try { s.http.nativeSeedHook?.(dom, pair); } catch { /* rust 种子失败不阻断 */ }
           try { s.http.jar.setRaw(new URL(dom), `${pair}; Path=/`); } catch { /* 忽略 */ }
         }
         zhjwxkDebug?.(`[XK-CHECKSINGLE] 健康票抢救 ${rescue.length} 条完成`);

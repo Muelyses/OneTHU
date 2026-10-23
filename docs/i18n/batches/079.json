@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.facade.9ab26357bd06",
+      "source": "dateYmd 需要 YYYY-MM-DD",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 261,
+          "context": "new Error(i18n(\"plugins.facade.9ab26357bd06\"))"
+        }
+      ],
+      "translation": "dateYmd requires YYYY-MM-DD",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.a31a8e09b143",
+      "source": "清华登录状态未能建立：请在 OneTHU 中重新登录后再试。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1649,
+          "context": "new AuthRequiredError(i18n(\"plugins.facade.a31a8e09b143\"))"
+        }
+      ],
+      "translation": "Could not establish the Tsinghua sign-in session: sign in again in OneTHU and try again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.facade.a80c49c4e2cd",
+      "source": "不认识的组件类型或引用无效，可用：text / atom-link / custom",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/facade.ts",
+          "line": 1040,
+          "context": "new Error(i18n(\"plugins.facade.a80c49c4e2cd\"))"
+        }
+      ],
+      "translation": "Unknown widget type or invalid reference; available: text / atom-link / custom",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.facade.aa0117c0a684",
       "source": "收藏夹不存在",
@@ -1315,54 +1363,6 @@
         }
       ],
       "translation": "Desktop widgets",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.2cc9c0bad3d7",
-      "source": "预约公共空间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 63,
-          "context": "return i18n(\"plugins.types.2cc9c0bad3d7\");"
-        }
-      ],
-      "translation": "Book common spaces",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.2f907548af0c",
-      "source": "经内置 Harness 调用大模型（清华免费档或你的自费 API）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 91,
-          "context": "return i18n(\"plugins.types.2f907548af0c\");"
-        }
-      ],
-      "translation": "Call LLMs through the built-in Harness (Tsinghua free tier or your self-paid API)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.types.33a65099fe72",
-      "source": "主题控制",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/types.ts",
-          "line": 90,
-          "context": "return i18n(\"plugins.types.33a65099fe72\");"
-        }
-      ],
-      "translation": "Theme control",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

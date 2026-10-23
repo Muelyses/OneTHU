@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.organization.bd1aee6959f6",
+      "source": "还没有公告。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 868,
+          "context": "{i18n(\"pages.organization.bd1aee6959f6\")}"
+        }
+      ],
+      "translation": "No announcements yet.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.be276e340929",
+      "source": "公告已同步给组织成员",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 593,
+          "context": "runRemote(async()=>{\n      try { await saveRemoteContent(target.id,\"announcements\",notice,{id:notice?.id??crypto.randomUUID(),title:f.title!,body:f.body!,pinned:notice?.pinned??false,updatedAt:Date.now()}); setRetainedDraft(null); }\n      catch(e) { setRetainedDraft({label:i18n(\"pages.organization.51902a13beff\"),text:JSON.stringify(f,null,2),reopen:()=>void editNotice(orgSnapshot().orgs.find(o=>o.id===target.id)??target,orgSnapshot().orgs.find(o=>o.id===target.id)?.announcements?.find(n=>n.id===notice?.id),f)}); throw e; }\n    },i18n(\"pages.organization.be276e340929\"))"
+        }
+      ],
+      "translation": "Announcement synced to organization members",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
+    {
+      "key": "pages.organization.c04beb5908e7",
+      "source": "这个资料库还是空的：可以到云盘里上传文件，回来就能预览。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 202,
+          "context": "{i18n(\"pages.organization.c04beb5908e7\")}"
+        }
+      ],
+      "translation": "This library is still empty: upload files in Cloud Drive, then come back to preview them.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.organization.c1e0eabac88e",
       "source": "重试未完成的权限变更",
@@ -1364,54 +1412,6 @@
         }
       ],
       "translation": "Installed and activated: {name} v{version}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.plugins.1b568ba90ae3",
-      "source": "选择插件文件夹内的 manifest.json",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 1409,
-          "context": "title: i18n(\"pages.plugins.1b568ba90ae3\")"
-        }
-      ],
-      "translation": "Select manifest.json inside the plugin folder",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.plugins.1b70686b644a",
-      "source": "我的插件",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 266,
-          "context": "label: i18n(\"pages.plugins.1b70686b644a\")"
-        }
-      ],
-      "translation": "My plugins",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.plugins.1bd91a7d0c53",
-      "source": "已保存",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Plugins.tsx",
-          "line": 983,
-          "context": "{i18n(\"pages.plugins.1bd91a7d0c53\")}"
-        }
-      ],
-      "translation": "Saved",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

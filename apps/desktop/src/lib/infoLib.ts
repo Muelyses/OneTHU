@@ -14,15 +14,16 @@ import { t as i18n, msg as i18nMsg } from "../i18n/index.js";
  * - 2FA futures：lib 的同步 hooks 桥接 OneTHU 的两段式 UI（选方式→发码→输码）
  * - 登录/验证/登出/会话守卫（libEnsureSession：lib verifyAndReLogin 语义）
  */
-import { nativeFetch, nativeCookieClear, nativeSeedCookies } from "./transport.js";
+import { nativeFetch, nativeSeedCookies, nativeSessionEpoch, isTauri } from "./transport.js";
+import { createAuthCookieBoundary } from "./authCookieBoundary.js";
 import { markLoginAttempt, markLoginSucceeded, loginCooldownLeftMs } from "./loginGate.js";
 import { networkLogUrl } from "./networkLog.js";
-import { http } from "./clients.js";
+import { http, session } from "./clients.js";
 import { setPlatformFetch, setPlatformClearCookies, uFetch } from "@onethu/info-lib/network";
 const SAVE_FINGER_URL = "https://id.tsinghua.edu.cn/b/doubleAuth/personal/saveFinger";
 import { InfoHelper, roam, verifyAndReLogin, getOutstandingLoginIdentity } from "@onethu/info-lib";
 import { loadRemembered } from "./clients.js";
-import { fileRead, fileWrite, obfuscateSecret, deobfuscateSecret } from "./clients.js";
+import { fileRead, fileWrite, fileDelete, obfuscateSecret, deobfuscateSecret } from "./clients.js";
 import { withPrivacy } from "./privacy.js";
 import { sm2crypto, makeFingerprint, webvpnDecodeUrl, parseCellAnchor, AuthRequiredError, type TwoFactorMethod } from "@onethu/core";
 
@@ -147,6 +148,68 @@ export function initInfoLib(): InfoHelper {
 /** InfoHelper 单例（userId/password/fingerGenPrint 驻留内存，供静默重登免 2FA） */
 export const helper = withPrivacy(new InfoHelper(), "helper");
 
+const cookieBoundary = createAuthCookieBoundary({
+  async readOwner() {
+    const { store } = await import("./clients.js");
+    const saved = await store.loadSession();
+    const raw = await fileRead("session", { strict: true });
+    let backup: { username?: string } | null = null;
+    try { if (raw) backup = JSON.parse(raw); } catch { return null; }
+    const local = typeof saved?.username === "string" ? saved.username : "";
+    const file = typeof backup?.username === "string" ? backup.username : "";
+    // Conflicting durable snapshots cannot establish which account owns the jar.
+    if (saved && backup && local !== file) return null;
+    return local || file || null;
+  },
+  async clearCookies() {
+    http.jar.clear();
+    gitlabSessionValue = "";
+    gitlabSessionRestored = true;
+    // Native clearing also rejects old in-flight responses. Wait for that fence
+    // before deleting the separate GitLab seed, including any queued old write.
+    const cleared = await Promise.allSettled([
+      (async () => {
+        if (!isTauri) return;
+        const { invoke } = await import("@tauri-apps/api/core");
+        await invoke("http_native_clear_cookies");
+      })(),
+    ]);
+    http.jar.clear();
+    gitlabSessionValue = "";
+    const deleted = await Promise.allSettled([
+      persistGitlabSession(() => fileDelete(GITLAB_SESSION_FILE, { strict: true })),
+    ]);
+    // Also clear on failure: no stale TS mirror should survive a failed boundary.
+    http.jar.clear();
+    const failure = [...cleared, ...deleted].find((result) => result.status === "rejected");
+    if (failure?.status === "rejected") throw failure.reason;
+  },
+  clearAccountTrust() {
+    selfFinger3 = "";
+    pendingTrust = false;
+    setLibFinger3("");
+    // Keep the installation fingerprint, remove only account-bound credentials.
+    session.finger3 = "";
+  },
+  async recordOwner(username) {
+    const { store } = await import("./clients.js");
+    // This records cookie ownership, not an authenticated session: an empty jar
+    // cannot resume login. It also removes the previous account's saved snapshot
+    // before any request for the new account can create cookies.
+    const snapshot = {
+      username: username ?? "", fingerprint: session.fingerprint,
+      finger3: "", cookiesJson: "{}", savedAt: Date.now(),
+    };
+    const stored = await Promise.allSettled([
+      store.saveSession(snapshot),
+      fileWrite("session", JSON.stringify(snapshot), { strict: true }),
+    ]);
+    if (stored.every((result) => result.status === "rejected")) {
+      throw (stored[0] as PromiseRejectedResult).reason;
+    }
+  },
+});
+
 // Runs inside the library's single flight: manual login AND internal recovery share
 // the same gate. Joining a pending chain or submitting a 2FA code never clears cookies.
 helper.beforeLoginAttemptHook = async () => {
@@ -159,9 +222,8 @@ helper.beforeLoginAttemptHook = async () => {
   activeMethod = null;
   resolveMethod = resolveCode = null;
   rejectMethod = rejectCode = null;
-  void log("AUTH-PHASE cookie-clear-start");
-  await nativeCookieClear();
-  void log("AUTH-PHASE cookie-clear-done");
+  const boundary = await cookieBoundary.prepare(helper.userId);
+  void log(`AUTH-PHASE cookies-${boundary}`);
 };
 helper.afterLoginSuccessHook = () => {
   markLoginSucceeded();
@@ -180,6 +242,14 @@ const GITLAB_SESSION_FILE = "gitlab.session";
 const GITLAB_SESSION_KEY = "gitlab";
 let gitlabSessionValue = "";
 let gitlabSessionRestored = false;
+let gitlabSessionPersistence: Promise<unknown> = Promise.resolve();
+
+/** Keep old response writes ahead of account-boundary deletion. */
+function persistGitlabSession(operation: () => Promise<unknown>): Promise<unknown> {
+  const pending = gitlabSessionPersistence.then(operation, operation);
+  gitlabSessionPersistence = pending.catch(() => undefined);
+  return pending;
+}
 
 function gitlabSessionFromRes(url: string, res: Response): string {
   try {
@@ -206,7 +276,7 @@ function rememberGitlabSession(url: string, res: Response): void {
   const value = gitlabSessionFromRes(url, res);
   if (!value || value === gitlabSessionValue) return;
   gitlabSessionValue = value;
-  void fileWrite(GITLAB_SESSION_FILE, JSON.stringify({ secret: obfuscateSecret(value, GITLAB_SESSION_KEY) })).catch(
+  void persistGitlabSession(() => fileWrite(GITLAB_SESSION_FILE, JSON.stringify({ secret: obfuscateSecret(value, GITLAB_SESSION_KEY) }))).catch(
     () => undefined,
   );
 }
@@ -215,13 +285,14 @@ function rememberGitlabSession(url: string, res: Response): void {
 export async function restoreGitlabSession(): Promise<void> {
   if (gitlabSessionRestored) return;
   gitlabSessionRestored = true;
+  const epoch = await nativeSessionEpoch();
   const raw = await fileRead(GITLAB_SESSION_FILE).catch(() => null);
   if (!raw) return;
   try {
     const value = deobfuscateSecret((JSON.parse(raw) as { secret?: string }).secret ?? "", GITLAB_SESSION_KEY);
     if (!value) return;
     gitlabSessionValue = value;
-    await nativeSeedCookies(GITLAB_ORIGIN, [`_gitlab_session=${value}; Path=/`]);
+    await nativeSeedCookies(GITLAB_ORIGIN, [`_gitlab_session=${value}; Path=/`], epoch);
   } catch {
     /* 坏文件视作没存过 */
   }
@@ -487,13 +558,24 @@ export async function libVerify2FA(type: string, code: string, trust: boolean): 
 }
 
 /** 登出（lib 链 + 共享 jar） */
+export async function libDiscardLocalSession(): Promise<void> {
+  await libAbandonLogin();
+  helper.userId = "";
+  helper.password = "";
+  await cookieBoundary.logout();
+}
+
 export async function libLogout(): Promise<void> {
+  await libAbandonLogin();
   try {
     await helper.logout();
   } catch {
     /* 网络层失败不阻断本地登出 */
+  } finally {
+    helper.userId = "";
+    helper.password = "";
+    await cookieBoundary.logout();
   }
-  http.jar.clear();
 }
 
 /** 会话守卫（lib verifyAndReLogin 语义，供 InfoClient renewers / auth-dance 重连）：
@@ -527,7 +609,8 @@ export async function libHydrateCredentials(): Promise<boolean> {
   const h = helper as unknown as { userId: string; password: string; fingerGenPrint?: string };
   if (!h.userId || !h.password) {
     const remembered = await loadRemembered().catch(() => null);
-    if (remembered?.username && remembered.password) {
+    if (remembered?.username && remembered.password
+        && (!session.username || session.username === remembered.username)) {
       h.userId = remembered.username;
       h.password = remembered.password;
       void log(`LIB-CRED 从「记住密码」回灌凭据（${remembered.username.slice(0, 4)}****）`);
@@ -542,48 +625,35 @@ export async function libEnsureSession(): Promise<boolean> {
   // ① 对齐 info app：凭据 + 受信指纹先就位（否则重启后无从重登）
   const hasCreds = await libHydrateCredentials();
   // ② 权威探活 + 按需重登（info app 的 verifyAndReLogin 同源实现）：
-  //    取用户信息比对 ryh——活着且是本人 → 无需重登；否则用 helper 上的凭据重登。
+  //    取用户信息比对 ryh；只有明确过期才使用 helper 上的凭据重登。
   //    比原来「webvpn 端点里有 XSRF-TOKEN 就算活」强：后者只证明网关发了票，
   //    不证明 info 域会话是本人的活会话，会「假活」→ 后续 401 → 用户被踢。
   if (hasCreds && loginCooldownLeftMs() <= 0) {
+    const relogged = await verifyAndReLogin(helper); // 返回 false = 会话还活着
+    if (relogged) void log("LIB-ENSURE 静默重登成功（verifyAndReLogin）");
+    return true;
+  }
+  // 探针走原生通道（Rust 仓=权威会话，重定向透明跟完）+ 现行 info 域。
+  const probe = await nativeFetch(
+    "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=info.tsinghua.edu.cn&scheme=https&path=/f/info/gxfw_fg/common/index",
+    { method: "GET" },
+  );
+  if (probe.status !== 200) {
+    if (probe.status === 401) return false;
+    throw Object.assign(new Error(`University session probe failed (HTTP ${probe.status}).`), { status: probe.status });
+  }
+  const body = await probe.text();
+  if (/XSRF-TOKEN=/.test(body)) {
     try {
-      const relogged = await verifyAndReLogin(helper); // 返回 false = 会话还活着
-      if (relogged) void log("LIB-ENSURE 静默重登成功（verifyAndReLogin）");
-      return true;
-    } catch (e) {
-      // 需要 2FA / 网络异常 → 落到下面的轻探针，仍活着就别误判成死
-      void log(`LIB-ENSURE verifyAndReLogin 失败：${e instanceof Error ? e.message : e}`);
+      http.jar.setFromResponse(new URL("https://webvpn.tsinghua.edu.cn/"), probe);
+    } catch {
+      /* ignore */
     }
+    return true;
   }
-  try {
-    // 探针走原生通道（Rust 仓=权威会话，重定向透明跟完）+ 现行 info 域
-    // （info2021 已被服务端弃用，旧探针永远探死 → 每轮误触发重登循环）
-    const probe = await nativeFetch(
-      "https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?method=get&host=info.tsinghua.edu.cn&scheme=https&path=/f/info/gxfw_fg/common/index",
-      { method: "GET" },
-    );
-    const body = await probe.text();
-    if (probe.status === 200 && /XSRF-TOKEN=/.test(body)) {
-      try {
-        http.jar.setFromResponse(new URL("https://webvpn.tsinghua.edu.cn/"), probe);
-      } catch {
-        /* ignore */
-      }
-      return true;
-    }
-  } catch {
-    /* 网络失败按死会话处理 */
-  }
-  if (!inflight || inflight.settled) {
-    if (!inflight?.username || !inflight?.password) return false;
-    // 冷却期内不再自动重登（防恢复环风暴把设备拉黑）
-    if (loginCooldownLeftMs() > 0) return false;
-    const r = await libLogin(inflight.username, inflight.password, helper.fingerprint).catch(() => null);
-    if (r?.state === "ready") return true;
-    return false; // need-2fa：静默重登撞墙，等人工
-  }
-  await inflight.p.catch(() => undefined);
-  return true;
+  // This read-only fallback has no verified credentials (or is cooling down).
+  // It cannot promote an old in-flight attempt into a new password submission.
+  return false;
 }
 
 /** 二级课表（实验课）自实现：直连拉 portal3rd + 正则解析（本地验证过）。

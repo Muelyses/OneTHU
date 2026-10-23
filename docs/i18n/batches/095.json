@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.widgets.c732e4d7e380",
+      "source": "黄",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 147,
+          "context": "return i18n(\"state.widgets.c732e4d7e380\");"
+        }
+      ],
+      "translation": "Yellow",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.cb232f86e59b",
+      "source": "课程文件条目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 358,
+          "context": "return i18n(\"state.widgets.cb232f86e59b\");"
+        }
+      ],
+      "translation": "Course file entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.cbc4fafd7657",
+      "source": "考试栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 227,
+          "context": "return i18n(\"state.widgets.cbc4fafd7657\");"
+        }
+      ],
+      "translation": "Exams section",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.widgets.cd92acd73a04",
       "source": "写点什么…",
@@ -874,7 +922,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 126,
+          "line": 158,
           "context": "setMsg(i18nMsg(\"update.checkCancelled\"))"
         }
       ],
@@ -894,8 +942,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 200,
+          "line": 253,
           "context": "phase === \"checking\" ? i18n(\"update.checkingSource\", { source: checkingSource ? SOURCE_LABEL[checkingSource] : \"\" }) : i18n(\"components.softwareupdatesection.7f68ebad19ba\")"
+        },
+        {
+          "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
+          "line": 157,
+          "context": "{t(\"update.checkingSource\", { source: \"\" })}"
         }
       ],
       "translation": "Checking {source}…",
@@ -910,7 +963,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 102,
+          "line": 141,
           "context": "{t(\"update.prompt.body\")}"
         }
       ],
@@ -926,17 +979,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 175,
+          "line": 228,
           "context": "day: i18n(\"update.prompt.day\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 216,
+          "line": 269,
           "context": "label: i18n(\"update.prompt.day\")"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 107,
+          "line": 149,
           "context": "label: t(\"update.prompt.day\")"
         }
       ],
@@ -952,17 +1005,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 215,
+          "line": 268,
           "context": "{i18n(\"update.prompt.delay\")}"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 105,
+          "line": 147,
           "context": "{t(\"update.prompt.delay\")}"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 106,
+          "line": 148,
           "context": "{t(\"update.prompt.delay\")}"
         }
       ],
@@ -978,17 +1031,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 175,
+          "line": 228,
           "context": "hour: i18n(\"update.prompt.hour\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 216,
+          "line": 269,
           "context": "label: i18n(\"update.prompt.hour\")"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 107,
+          "line": 149,
           "context": "label: t(\"update.prompt.hour\")"
         }
       ],
@@ -1004,12 +1057,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 218,
+          "line": 271,
           "context": "{i18n(\"update.prompt.later\")}"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 109,
+          "line": 151,
           "context": "{t(\"update.prompt.later\")}"
         }
       ],
@@ -1025,7 +1078,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 103,
+          "line": 145,
           "context": "{t(\"update.prompt.open\")}"
         }
       ],
@@ -1041,7 +1094,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 249,
+          "line": 302,
           "context": "i18n(\"update.prompt.paused\")}`"
         }
       ],
@@ -1061,7 +1114,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 219,
+          "line": 272,
           "context": "{i18n(\"update.prompt.saved\", { duration: reminderLabels[savedReminder] })}"
         }
       ],
@@ -1077,7 +1130,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 99,
+          "line": 138,
           "context": "{t(\"update.prompt.title\")}"
         }
       ],
@@ -1097,7 +1150,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 101,
+          "line": 140,
           "context": "{t(\"update.prompt.version\", { version: release?.latest ?? \"\" })}"
         }
       ],
@@ -1113,17 +1166,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 175,
+          "line": 228,
           "context": "week: i18n(\"update.prompt.week\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 216,
+          "line": 269,
           "context": "label: i18n(\"update.prompt.week\")"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 107,
+          "line": 149,
           "context": "label: t(\"update.prompt.week\")"
         }
       ],

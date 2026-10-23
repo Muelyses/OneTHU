@@ -1,7 +1,69 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.0eaedd12dc70",
+      "source": "起始时间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1117,
+          "context": "{i18n(\"pages.schedule.0eaedd12dc70\")}"
+        }
+      ],
+      "translation": "Start time",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.0f02af2d5985",
+      "source": "{value} 年 {value2} 月",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(anchor.getFullYear())"
+        },
+        {
+          "name": "value2",
+          "expression": "String(anchor.getMonth() + 1)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 806,
+          "context": "mode === \"timetable\"\n      ? i18n(\"pages.schedule.28ee8c1f603e\", { value: String(weekStart.getMonth() + 1), value2: String(weekStart.getDate()), value3: String(new Date(weekStart.getTime() + 6 * 86_400_000).getDate()) })\n      : i18n(\"pages.schedule.0f02af2d5985\", { value: String(anchor.getFullYear()), value2: String(anchor.getMonth() + 1) })"
+        },
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1070,
+          "context": "{i18nRich(\"pages.schedule.0f02af2d5985\", { value: calView.getFullYear(), value2: calView.getMonth() + 1 })}"
+        }
+      ],
+      "translation": "{value2}/{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.1258adb63f05",
+      "source": "已导出课表、作业截止时间与日程，系统日历导入窗口应已打开（选择要写入的日历）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 712,
+          "context": "setMsg(i18n(\"pages.schedule.1258adb63f05\"))"
+        }
+      ],
+      "translation": "Exported timetable, assignment deadlines, and events; the system calendar import window should have opened (choose the calendar to write to).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.135b82866399",
       "source": "{length} 件事",
@@ -1451,54 +1513,6 @@
         }
       ],
       "translation": "List",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.aee887434131",
-      "source": "刷新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1177,
-          "context": "{i18n(\"pages.schedule.aee887434131\")}"
-        }
-      ],
-      "translation": "Refresh",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.af3a93e86aa6",
-      "source": " · 考试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1285,
-          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
-        }
-      ],
-      "translation": " · Exams",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.schedule.b0e3601510d8",
-      "source": "在桌面小组件显示",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Schedule.tsx",
-          "line": 1369,
-          "context": "{i18n(\"pages.schedule.b0e3601510d8\")}"
-        }
-      ],
-      "translation": "Show on the desktop widget",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -1952,7 +1952,7 @@ export class InfoClient {
    * ② lib roam("id") 正门：GET 服务表单页抓 sm2publicKey → SM2 加密账密 POST
    *  id /do/off/ui/auth/login/check。两套字段集先后尝试（curl 实证 check 对
    *  正常表单请求恒返 HTML，空体只来自被跟跳的 302 链）：
-   *  a) zhjwxk xklogin→check 实测直连字段集（i_user/i_pass/sm2pass/singleLogin/…）；
+   *  a) zhjwxk xklogin→check 直连字段集（i_user/i_pass/sm2pass/…）；
    *  b) lib roam("id") 最小字段集（i_user/i_pass/fingerPrint/fingerGenPrint/i_captcha，
    *     不带页面 hidden 字段）。
    *  check 用 redirect:"manual"：302 Location 直接就是兑付地址，自动跟跳会冲进
@@ -2129,9 +2129,13 @@ export class InfoClient {
     };
     const body = new URLSearchParams(
       variant === "zhjwxk"
-        ? { ...form.hiddenFields, ...base, sm2pass: enc, singleLogin: "on", fingerGenPrint3: creds.finger3 ?? "" }
+        ? { ...form.hiddenFields, ...base, sm2pass: enc, fingerGenPrint3: creds.finger3 ?? "" }
         : base,
     );
+    // Automatic service recovery reuses existing trust without opting into the
+    // school's unified-login checkbox, including an echoed hidden-field value.
+    body.delete("singleLogin");
+    body.delete("deviceName");
     const checkUrl = form.action
       ? form.action.startsWith("http")
         ? form.action

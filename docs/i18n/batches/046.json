@@ -1,7 +1,65 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.gitlabpage.51ff92f247e0",
+      "source": "读取流水线…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1486,
+          "context": "{i18n(\"pages.gitlabpage.51ff92f247e0\")}"
+        }
+      ],
+      "translation": "Loading pipelines…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.52a935b7c8d8",
+      "source": "已创建合并请求 !{iid}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "iid",
+          "expression": "String(mr.iid)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 1290,
+          "context": "showToast(i18nMsg(\"pages.gitlabpage.52a935b7c8d8\", { iid: String(mr.iid) }))"
+        }
+      ],
+      "translation": "Merge request !{iid} created",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.gitlabpage.52daa71ebc31",
+      "source": "目录",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 176,
+          "context": "{i18n(\"pages.gitlabpage.52daa71ebc31\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/GitLabPage.tsx",
+          "line": 465,
+          "context": "e.type === \"tree\" ? i18n(\"pages.gitlabpage.52daa71ebc31\") : \"\""
+        }
+      ],
+      "translation": "Directories",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.gitlabpage.53a6443f5f35",
       "source": "这次流水线没有作业",
@@ -1410,54 +1468,6 @@
         }
       ],
       "translation": "(no description)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.cf945e21ddef",
-      "source": "回复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 953,
-          "context": "replying ? i18n(\"pages.gitlabpage.d346633d3a4e\") : i18n(\"pages.gitlabpage.cf945e21ddef\")"
-        }
-      ],
-      "translation": "Reply",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.cfcbf4636b9f",
-      "source": "重新打开讨论",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 955,
-          "context": "resolved ? i18n(\"pages.gitlabpage.cfcbf4636b9f\") : i18n(\"pages.gitlabpage.319f50e7c074\")"
-        }
-      ],
-      "translation": "Reopen discussion",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.gitlabpage.d1478089db85",
-      "source": "选择回应",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/GitLabPage.tsx",
-          "line": 640,
-          "context": "{i18n(\"pages.gitlabpage.d1478089db85\")}"
-        }
-      ],
-      "translation": "Choose reaction",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

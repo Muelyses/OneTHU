@@ -1,7 +1,73 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.notifydoctor.91e36d30a350",
+      "source": "、{warned} 项提示",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "warned",
+          "expression": "String(warned)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 64,
+          "context": "warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\""
+        }
+      ],
+      "translation": ", {warned} warnings",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.962a6e0b8f61",
+      "source": "桌面已放 {placed} 个（宿主 {hostPlaced}）{slotInfo}",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "placed",
+          "expression": "String(placed)"
+        },
+        {
+          "name": "hostPlaced",
+          "expression": "String(ws.hostPlaced)"
+        },
+        {
+          "name": "slotInfo",
+          "expression": "String(slotInfo)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 114,
+          "context": "placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\")"
+        }
+      ],
+      "translation": "{placed} placed on the desktop ({hostPlaced} in the host){slotInfo}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.notifydoctor.a14a16f450ae",
+      "source": "投递测试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/notifyDoctor.ts",
+          "line": 153,
+          "context": "push(\"deliver\", i18n(\"state.notifydoctor.a14a16f450ae\"), sent ? \"ok\" : \"fail\", sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\"))"
+        }
+      ],
+      "translation": "Delivery test",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.notifydoctor.a1a9da9ee6ed",
       "source": "未知原因",
@@ -1271,54 +1337,6 @@
       "translation": "Update {username}",
       "status": "prefilled-review",
       "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "state.orgsynccore.13447b8f6ab6",
-      "source": "降权回读不符",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSyncCore.ts",
-          "line": 168,
-          "context": "new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"))"
-        }
-      ],
-      "translation": "Permission downgrade readback mismatch",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsynccore.15f11e1c75da",
-      "source": "至少保留一位服务器上的组织负责人",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSyncCore.ts",
-          "line": 114,
-          "context": "new Error(i18n(\"state.orgsynccore.15f11e1c75da\"))"
-        }
-      ],
-      "translation": "Keep at least one organization Owner on the server",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.orgsynccore.181c794c590b",
-      "source": "组织协作内容损坏",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/orgSyncCore.ts",
-          "line": 41,
-          "context": "new Error(i18n(\"state.orgsynccore.181c794c590b\"))"
-        }
-      ],
-      "translation": "The organization collaboration content is corrupted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
     }
   ]
 }

@@ -1,7 +1,64 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.cardtab.780317fc7e6f",
+      "source": "生成微信收银台二维码，手机微信扫码支付",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 92,
+          "context": "return i18n(\"pages.info.cardtab.780317fc7e6f\");"
+        }
+      ],
+      "translation": "Generate the WeChat cashier QR code and pay by scanning it in WeChat on your phone",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.7c250813afe4",
+      "source": "刷新失败，当前显示 {value}的数据（{refreshError}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\"))"
+        },
+        {
+          "name": "refreshError",
+          "expression": "String(refreshError)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 450,
+          "context": "refreshError\n                ? i18n(\"pages.info.cardtab.7c250813afe4\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.f664edd9036b\")), refreshError: String(refreshError) })\n                : i18n(\"pages.info.cardtab.705ff9657d5d\", { value: String(updatedAt ? fmtAgo(updatedAt) : i18n(\"pages.info.cardtab.65c9b80829a8\")) })"
+        }
+      ],
+      "translation": "Refresh failed; showing data from {value} ({refreshError})",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.cardtab.7f3c8312816f",
+      "source": "刷新中…",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/CardTab.tsx",
+          "line": 407,
+          "context": "state === \"loading\" ? i18n(\"pages.info.cardtab.7f3c8312816f\") : i18n(\"pages.info.cardtab.aee887434131\")"
+        }
+      ],
+      "translation": "Refreshing…",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.cardtab.7f77f23af7b0",
       "source": "元",
@@ -1297,54 +1354,6 @@
         }
       ],
       "translation": "MyHome myhome.tsinghua.edu.cn · dorm-bound room",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.dormtab.ab8cff9a597a",
-      "source": "电费",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/DormTab.tsx",
-          "line": 160,
-          "context": "{i18n(\"pages.info.dormtab.ab8cff9a597a\")}"
-        }
-      ],
-      "translation": "Electricity",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.dormtab.b09dff2cb1cb",
-      "source": "如：紫荆 1 号楼 301A",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/DormTab.tsx",
-          "line": 237,
-          "context": "{i18n(\"pages.info.dormtab.b09dff2cb1cb\")}"
-        }
-      ],
-      "translation": "e.g. Zijing Building 1, 301A",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.dormtab.bb8c939d0fcd",
-      "source": "订水",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/DormTab.tsx",
-          "line": 203,
-          "context": "{i18n(\"pages.info.dormtab.bb8c939d0fcd\")}"
-        }
-      ],
-      "translation": "Order water",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

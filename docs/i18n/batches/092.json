@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.vault.5440f7424f28",
+      "source": "数据",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 83,
+          "context": "return i18n(\"state.vault.5440f7424f28\");"
+        }
+      ],
+      "translation": "Data",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vault.defaultName",
+      "source": "我的暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vault.ts",
+          "line": 90,
+          "context": "name = i18n(\"state.vault.defaultName\")"
+        }
+      ],
+      "translation": "My staging box",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.vaultcloud.124e692f8b2a",
+      "source": "这条云分享口令没有分享链接",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/vaultCloud.ts",
+          "line": 154,
+          "context": "new Error(i18n(\"state.vaultcloud.124e692f8b2a\"))"
+        }
+      ],
+      "translation": "This cloud share code has no share link",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.vaultcloud.20e701b06a1a",
       "source": "改变接收范围需要重新生成分享",
@@ -1329,54 +1377,6 @@
         }
       ],
       "translation": "Matcha",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpaper.fe4786177622",
-      "source": "墨",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpaper.ts",
-          "line": 163,
-          "context": "return i18n(\"state.wallpaper.fe4786177622\");"
-        }
-      ],
-      "translation": "Ink",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.archiveTooLarge",
-      "source": "壁纸备份最多 24 MiB，每张图片或视频最多 12 MiB。请减少壁纸库中的大文件后重新同步；当前壁纸保持原样",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 66,
-          "context": "return i18n(\"state.wallpsync.archiveTooLarge\");"
-        }
-      ],
-      "translation": "Wallpaper backups support up to 24 MiB in total and 12 MiB per image or video. Remove large items from the wallpaper library and try again. Your current wallpaper is preserved.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.wallpsync.changedLocally",
-      "source": "下载期间本机壁纸已改变，请确认当前选择后重新恢复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/wallpsync.ts",
-          "line": 144,
-          "context": "new Error(i18n(\"state.wallpsync.changedLocally\"))"
-        }
-      ],
-      "translation": "The local wallpaper changed during the download. Check your current selection, then restore again.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

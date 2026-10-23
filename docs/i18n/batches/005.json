@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -361,12 +361,12 @@
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 24,
+          "line": 30,
           "context": "copied ? i18n(\"components.devpanel.cce28dd1fcdf\") : i18n(\"components.devpanel.bbce140b7682\")"
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 25,
+          "line": 31,
           "context": "{i18n(\"components.devpanel.bbce140b7682\")}"
         }
       ],
@@ -387,7 +387,7 @@
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 24,
+          "line": 30,
           "context": "copied ? i18n(\"components.devpanel.cce28dd1fcdf\") : i18n(\"components.devpanel.bbce140b7682\")"
         }
       ],

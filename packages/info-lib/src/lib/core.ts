@@ -86,10 +86,30 @@ export const getCsrfToken = async () => {
     const cookie = await uFetch(GET_COOKIE_URL);
     const q = /XSRF-TOKEN=(.+?);/.exec(cookie + ";");
     if (q === null || q[1] === undefined) {
+        if (isConfirmedLoginPage(cookie)) {
+            throw Object.assign(new IdAuthError("The university session requires sign-in."), {code: "AUTH_SESSION_EXPIRED"});
+        }
         throw new Error("Failed to get csrf token.");
     }
     return q[1];
 };
+
+/** Positive login markers only. A gateway shell, missing token or malformed
+ * JSON cannot establish that the user's credentials need resubmission. */
+function isConfirmedLoginPage(html: string): boolean {
+    const $ = cheerio.load(html);
+    if ($("#sm2publicKey, input[name='i_pass'], input[name='password'], input[type='password']").length) return true;
+    return $("a[href], form[action]").toArray().some((element) => {
+        const target = $(element).attr("href") ?? $(element).attr("action");
+        if (!target) return false;
+        try {
+            const url = new URL(target, WEB_VPN_OAUTH_LOGIN_URL);
+            return url.protocol === "https:" && !url.username && !url.password && !url.port
+                && ((url.hostname === "id.tsinghua.edu.cn" && url.pathname.startsWith("/do/off/ui/auth/login/form/"))
+                    || (url.hostname === "webvpn.tsinghua.edu.cn" && url.pathname === "/login"));
+        } catch { return false; }
+    });
+}
 
 /**
  * 【移植自上游 v3.19.0（授权源码 thu-info-app，2026-10-04 发布）】
@@ -100,7 +120,9 @@ export const getCsrfToken = async () => {
  * `username` / `password`. The upstream login form also carries the "trusted
  * browser" checkbox `singleLogin`（本次登录使用信任浏览器访问校内其他系统时
  * 不必再输入账号密码）, which makes the resulting ID session reusable by other
- * campus systems without a password（see passwordlessEntry）.
+ * campus systems without a password（see passwordlessEntry）. This session SSO
+ * option requires explicit consent; routine sign-in/roaming keeps the existing
+ * fingerprint and trust token without automatically selecting the checkbox.
  */
 export const __idCredentialFormForTest = async (
     helper: InfoHelper,
@@ -115,7 +137,7 @@ export const __idCredentialFormForTest = async (
         fingerGenPrint: helper.fingerGenPrint ?? "",
         i_captcha: "",
     };
-    if (helper.trustBrowser) {
+    if (helper.trustBrowser && helper.singleSignOn === true) {
         form.singleLogin = "on";
         form.deviceName = await helper.trustFingerprintNameHook();
     }
@@ -140,6 +162,14 @@ function preparationFailure(html: string, stage: LoginPreparationStage): LoginPr
     }
     if (!html.trim()) return new LoginPreparationError("empty-response", stage);
     const $ = cheerio.load(html);
+    // Wengine also injects these scripts into valid pages. Only classify its
+    // small, form-free shell; never evaluate its scripts or follow body URLs.
+    const hasAuthForm = $("input[type='password'], input[name='i_pass'], input[name='password'], #sm2publicKey, form[action*='checkSingle'], form[action*='security_check']").length > 0;
+    const gatewayShell = html.length < 4000 && html.includes("__vpn_hostname_data")
+        && html.includes("__vpn_app_hostname_data") && !hasAuthForm;
+    const serverError = /^(?:503 Service Unavailable|502 Bad Gateway|504 Gateway Time-out|HTTP Status [45]\d\d|Error report)/i.test($("title").text().trim())
+        || /^(?:502 Bad Gateway|503 Service Unavailable|504 Gateway Time-out)$/i.test($("h1").first().text().trim());
+    if (!hasAuthForm && (gatewayShell || serverError)) return new LoginPreparationError("gateway-unavailable", stage);
     return new LoginPreparationError(
         $("input[name='i_pass'], input[name='password'], #sm2publicKey").length ? "missing-public-key" : "unexpected-page",
         stage,
@@ -611,14 +641,28 @@ export const verifyAndReLogin = async (helper: InfoHelper): Promise<boolean> => 
         return true;
     }
     try {
-        const {object} = await uFetch(`${USER_DATA_URL}?_csrf=${await getCsrfToken()}`).then(JSON.parse);
-        if (object.ryh === helper.userId) {
+        const body = await uFetch(`${USER_DATA_URL}?_csrf=${await getCsrfToken()}`);
+        if (isConfirmedLoginPage(body)) {
+            throw Object.assign(new IdAuthError("The university session requires sign-in."), {code: "AUTH_SESSION_EXPIRED"});
+        }
+        const result = JSON.parse(body);
+        if (result?.status === 401 || result?.code === 401
+            || /^(?:未登录|请先登录|登录已失效|登录状态已失效|login required|not authenticated)[。.!]?$/i.test(String(result?.msg ?? result?.message ?? "").trim())) {
+            throw Object.assign(new IdAuthError("The university session requires sign-in."), {code: "AUTH_SESSION_EXPIRED"});
+        }
+        if (result?.object?.ryh == null || String(result.object.ryh).trim() === "") {
+            throw new Error("The university session probe returned an unexpected response.");
+        }
+        if (String(result.object.ryh) === helper.userId) {
             return false;
         }
+        throw Object.assign(new IdAuthError("Saved session ownership could not be verified. Please sign in again."), {code: "AUTH_SESSION_CONFLICT"});
     } catch (e) {
-        // A restricted session probe is not evidence that another password login
-        // should be attempted. Keep the original server/admission error.
-        if (stopAuthenticationRecovery(e)) throw e;
+        // Only a confirmed login page or HTTP 401 can start a new login chain.
+        // Transport, gateway, malformed JSON and unknown response shapes retain
+        // their original failure and never trigger a credential POST.
+        const detail = e && typeof e === "object" ? e as {status?: number; code?: string} : {};
+        if (detail.status !== 401 && detail.code !== "AUTH_SESSION_EXPIRED") throw e;
     }
     const {userId, password} = helper;
     await login(helper, userId, password);
@@ -631,8 +675,8 @@ function stopAuthenticationRecovery(error: unknown): boolean {
     if (error instanceof LoginError) return true;
     if (!error || typeof error !== "object") return false;
     const detail = error as {status?: unknown; code?: unknown};
-    return detail.status === 429 || detail.status === 403
-        || (typeof detail.code === "string" && detail.code.startsWith("AUTH_"));
+    return (typeof detail.status === "number" && detail.status >= 400 && detail.status !== 401)
+        || (typeof detail.code === "string" && detail.code.startsWith("AUTH_") && detail.code !== "AUTH_SESSION_EXPIRED");
 }
 
 export const roamingWrapper = async <R>(

@@ -22,7 +22,7 @@ import { confirmOk } from "../lib/confirm.js";
 import { currentVersion, isDismissed } from "../lib/update.js";
 import { consumeUpdateReview, snoozeUpdate, type UpdateSnooze } from "../lib/updateReminder.js";
 import {
-  cancelUpdateDownload, checkForUpdate, downloadUpdate, installDownloaded, platformKey,
+  checkForUpdate, downloadUpdate, installDownloaded, platformKey,
   PLATFORM_LABEL, SOURCE_LABEL, updateSourceLabel, updateFallbackText, updateFailureText, type UpdateCheckResult, type UpdateProgress, type UpdateSource,
 } from "../lib/updater.js";
 import { Btn, Progress, Select, Stack } from "@onethu/gui";
@@ -39,9 +39,16 @@ type Phase = "idle" | "checking" | "latest" | "available" | "downloading" | "dow
 export interface SoftwareUpdateSectionProps {
   /** 联调/验收用：直接查这份清单 URL（不填 = 官方双源自动切换） */
   customManifestUrl?: string;
+  /** A login-screen review reuses the already fetched release. */
+  initialResult?: UpdateCheckResult | null;
+  autoCheck?: boolean;
+  /** Stop work immediately when a modal starts closing, before its exit unmount. */
+  active?: boolean;
+  onSnooze?: () => void;
+  onChecked?: (result: UpdateCheckResult) => void;
 }
 
-export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSectionProps = {}): ReactNode {
+export function SoftwareUpdateSection({ customManifestUrl, initialResult, autoCheck = false, active = true, onSnooze, onChecked }: SoftwareUpdateSectionProps = {}): ReactNode {
   const uiLocale = useUiLocale();
 
   const [phase, setPhase] = useState<Phase>("idle");
@@ -63,21 +70,38 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
   const checkController = useRef<AbortController | null>(null);
   const checkSequence = useRef(0);
   const [checkingSource, setCheckingSource] = useState<UpdateSource | null>(null);
+  const autoStarted = useRef(false);
+  const mounted = useRef(true);
+  const activeRef = useRef(active); activeRef.current = active;
+  const downloadController = useRef<AbortController | null>(null);
+  const downloadSequence = useRef(0);
+  useEffect(() => { mounted.current = true; return () => {
+    mounted.current = false;
+    downloadSequence.current++;
+    downloadController.current?.abort(); downloadController.current = null;
+  }; }, []);
   useEffect(() => () => { checkSequence.current++; checkController.current?.abort(); }, []);
+  useEffect(() => {
+    if (active) return;
+    checkSequence.current++; checkController.current?.abort(); checkController.current = null;
+    downloadSequence.current++; downloadController.current?.abort(); downloadController.current = null;
+    setBusy(false);
+    setPhase(previous => previous === "checking" ? "idle" : previous === "downloading" ? (res?.ok && res.hasUpdate ? "available" : "idle") : previous);
+  }, [active]);
   const version = currentVersion();
   const plat = platformKey();
 
   useEffect(() => {
-    const review = initialReview.current ?? consumeUpdateReview();
+    const review = initialResult ?? initialReview.current ?? consumeUpdateReview();
     initialReview.current = review;
-    if (!review?.ok || !review.hasUpdate) return;
-    setRes(review); setPhase("available"); setCheckedAt(Date.now());
+    if (!review) return;
+    setRes(review); setPhase(!review.ok ? "error" : review.hasUpdate ? "available" : "latest"); setCheckedAt(Date.now());
     const timer = window.setTimeout(() => sectionRef.current?.scrollIntoView({ block: "center", behavior: "smooth" }), 240);
     return () => window.clearTimeout(timer);
   }, []);
 
   const check = useCallback(async (): Promise<void> => {
-    if (checkController.current) return;
+    if (!activeRef.current || checkController.current) return;
     const controller = new AbortController();
     checkController.current = controller;
     const sequence = ++checkSequence.current;
@@ -92,10 +116,11 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     const r = await checkForUpdate({
       customManifestUrl: (customUrl || customManifestUrl || "").trim() || undefined,
       signal: controller.signal,
-      onSource: source => { if (checkSequence.current === sequence) setCheckingSource(source); },
+      onSource: source => { if (activeRef.current && checkSequence.current === sequence) setCheckingSource(source); },
     });
-    if (checkSequence.current !== sequence) return;
+    if (!activeRef.current || checkSequence.current !== sequence) return;
     setRes(r);
+    onChecked?.(r);
     setBusy(false);
     setCheckedAt(Date.now());
     if (!r.ok) {
@@ -112,13 +137,20 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
       setMsg("");
     }
     } catch (error) {
-      if (checkSequence.current !== sequence) return;
+      if (!activeRef.current || checkSequence.current !== sequence) return;
       setPhase("error");
       setErr(error instanceof Error ? error.message : String(error));
     } finally {
       if (checkSequence.current === sequence) { setBusy(false); checkController.current = null; }
     }
-  }, [customManifestUrl, customUrl]);
+  }, [customManifestUrl, customUrl, onChecked]);
+
+  useEffect(() => {
+    if (!active || !autoCheck || initialReview.current || autoStarted.current) return;
+    // A deferred start survives React StrictMode's setup/cleanup/setup cycle.
+    const timer = window.setTimeout(() => { autoStarted.current = true; void check(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [active, autoCheck, check]);
 
   const cancelCheck = (): void => {
     checkSequence.current++;
@@ -129,13 +161,18 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
   /** 下载 + 拉起安装页（下载完自动打开安装器；安卓只拉起确认页） */
   const downloadAndInstall = useCallback(async (): Promise<void> => {
     const r = res;
-    if (!r?.ok || !r.downloadUrl || !r.downloadName) return;
+    if (!activeRef.current || downloadController.current || !r?.ok || !r.downloadUrl || !r.downloadName) return;
+    const controller = new AbortController();
+    downloadController.current = controller;
+    const sequence = ++downloadSequence.current;
+    const current = (): boolean => mounted.current && activeRef.current && downloadSequence.current === sequence && !controller.signal.aborted;
+    try {
     const asset = r.asset;
     const sizeText = asset?.size ? formatSize(asset.size) : i18n("components.softwareupdatesection.f8f5f153c20d");
     const ok = await confirmOk(
       i18nMsg("components.softwareupdatesection.f22fe456ba20", { value: String(updateSourceLabel(r) || i18n("components.softwareupdatesection.4d8c1c5b4283")), latest: String(r.latest), value2: String(PLATFORM_LABEL[plat]), downloadName: String(r.downloadName), sizeText: String(sizeText) }),
     );
-    if (!ok) return;
+    if (!ok || !current()) return;
     setBusy(true);
     setPhase("downloading");
     setErr("");
@@ -146,8 +183,10 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
       fileName: r.downloadName,
       expectSize: asset?.size,
       expectSha256: asset?.sha256,
-      onProgress: setProgress,
+      signal: controller.signal,
+      onProgress: value => { if (current()) setProgress(value); },
     });
+    if (!current()) return;
     if (!d.ok) {
       setBusy(false);
       setPhase("error");
@@ -158,6 +197,7 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
     setPhase("downloaded");
     setMsg(i18nMsg("components.softwareupdatesection.388289c18d09", { value: String(d.size ? formatSize(d.size) : "?"), value2: "" }), { value2: d.verified ? i18nMsg("components.softwareupdatesection.9957c2dd1877") : "" });
     const inst = await installDownloaded(d.path ?? "");
+    if (!current()) return;
     setBusy(false);
     if (inst.ok) {
       setMsg(i18nMsg("components.softwareupdatesection.1e178bb2ba4b", { path: String(d.path), value: "" }), { value: inst.hintMessage ?? inst.hint ?? i18nMsg("components.softwareupdatesection.78ed0342345e") });
@@ -165,13 +205,26 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
       setPhase("error");
       setErr(i18nMsg("components.softwareupdatesection.fe8283074c76", { path: String(d.path), value: "" }), { value: inst.errorMessage ?? inst.error ?? i18nMsg("components.softwareupdatesection.a1a9da9ee6ed") });
     }
+    } finally {
+      if (downloadController.current === controller) downloadController.current = null;
+      if (current()) setBusy(false);
+    }
   }, [plat, res]);
+
+  const cancelDownload = (): void => {
+    downloadSequence.current++;
+    downloadController.current?.abort(); downloadController.current = null;
+    setBusy(false); setPhase("error");
+    setMsg(""); setProgress(null);
+    setErr(i18nMsg("components.softwareupdatesection.505052ea96fc"));
+  };
 
   const onDismiss = useCallback((): void => {
     if (res?.latest) snoozeUpdate(res.latest, reminderDuration);
     setDismissed(true);
     setSavedReminder(reminderDuration);
-  }, [res, reminderDuration]);
+    onSnooze?.();
+  }, [res, reminderDuration, onSnooze]);
   const reminderLabels = { hour: i18n("update.prompt.hour"), day: i18n("update.prompt.day"), week: i18n("update.prompt.week") };
 
   const pct = progress?.percent ?? 0;
@@ -205,9 +258,9 @@ export function SoftwareUpdateSection({ customManifestUrl }: SoftwareUpdateSecti
             {phase === "error" ? i18n("components.softwareupdatesection.ea0add721b8e") : i18n("components.softwareupdatesection.ac69f68b7010")}
           </Btn>
         ) : null}
-        {showBar ? <Btn variant="ghost" onClick={() => void cancelUpdateDownload()}>{i18n("components.softwareupdatesection.2cd0f3be8738")}</Btn> : null}
+        {showBar ? <Btn variant="ghost" onClick={cancelDownload}>{i18n("components.softwareupdatesection.2cd0f3be8738")}</Btn> : null}
         {phase === "downloaded" && localPath ? (
-          <Btn variant="outline" onClick={() => void installDownloaded(localPath)}>{i18n("components.softwareupdatesection.20f2c779de7a")}</Btn>
+          <Btn variant="outline" disabled={!active || busy} onClick={() => { if (activeRef.current) void installDownloaded(localPath); }}>{i18n("components.softwareupdatesection.20f2c779de7a")}</Btn>
         ) : null}
       </div>
 

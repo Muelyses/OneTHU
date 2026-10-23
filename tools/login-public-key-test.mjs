@@ -3,7 +3,7 @@
  * Run: node --import tsx tools/login-public-key-test.mjs */
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { idLoginResponse, passwordlessEntry, login, roam, roamingWrapper, clearOutstandingLogin, getOutstandingLoginIdentity } from "../packages/info-lib/src/lib/core.ts";
+import { idLoginResponse, passwordlessEntry, login, roam, roamingWrapper, verifyAndReLogin, clearOutstandingLogin, getOutstandingLoginIdentity } from "../packages/info-lib/src/lib/core.ts";
 import { setPlatformFetch, ResponseStatusError } from "../packages/info-lib/src/utils/network.ts";
 import { LoginError, LoginPreparationError } from "../packages/info-lib/src/utils/error.ts";
 
@@ -46,8 +46,37 @@ await check("text and input keys trim and submit encrypted credentials once", as
     assert.equal(form.get("i_user"), "123456");
     assert.notEqual(form.get("i_pass"), "fixture-only");
     assert.equal(form.get("fingerGenPrint"), "fixture-trust");
-    assert.equal(form.get("singleLogin"), "on");
+    assert.equal(form.has("singleLogin"), false);
+    assert.equal(form.has("deviceName"), false);
   }
+});
+await check("ordinary repeated credential submissions reuse trust without auto-selecting session SSO", async () => {
+  const calls = [];
+  setPlatformFetch(async (url, init) => { calls.push(new URLSearchParams(init.body)); return reply(SUCCESS, url); });
+  for (let i = 0; i < 3; i++) await idLoginResponse(helper(), KEY, ID_CHECK, "i_user");
+  assert.equal(calls.length, 3);
+  for (const body of calls) {
+    assert.equal(body.get("fingerGenPrint"), "fixture-trust");
+    assert.equal(body.get("fingerPrint"), "fixture-fingerprint");
+    assert.equal(body.has("singleLogin"), false);
+    assert.equal(body.has("deviceName"), false);
+  }
+  await idLoginResponse({ ...helper(), singleSignOn: true }, KEY, ID_CHECK, "i_user");
+  assert.equal(calls[3].get("singleLogin"), "on");
+  assert.equal(calls[3].get("deviceName"), "Fixture");
+});
+await check("gateway shells stop before credentials; post-submit failures are not replayed", async () => {
+  const shell = '<html><body><script>var __vpn_hostname_data="fixture-secret";var __vpn_app_hostname_data="fixture-secret";</script></body></html>';
+  for (const html of [shell, '<title>503 Service Unavailable</title><h1>503 Service Unavailable</h1>']) {
+    let posts = 0;
+    setPlatformFetch(async url => { posts++; return reply(html, url); });
+    await assert.rejects(idLoginResponse(helper(), html, ID_CHECK, "i_user"), errorIs("gateway-unavailable"));
+    assert.equal(posts, 0);
+    await assert.rejects(idLoginResponse(helper(), KEY, ID_CHECK, "i_user"), errorIs("gateway-unavailable"));
+    assert.equal(posts, 1);
+  }
+  setPlatformFetch(async url => reply(SUCCESS, url));
+  assert.equal(await idLoginResponse(helper(), shell + KEY, ID_CHECK, "i_user"), SUCCESS);
 });
 await check("confirmation fallback keeps returned key, then one credential POST", async () => {
   const calls = [];
@@ -231,6 +260,58 @@ await check("a restricted session probe cannot escalate ordinary resource failur
   await assert.rejects(roamingWrapper(h, undefined, "fixture", async () => { throw new Error("resource session expired"); }), e => e.status === 429);
   assert.equal(requests, 1);
   assert.equal(admissions, 0);
+});
+await check("session probe transport, HTTP errors and malformed responses cannot submit credentials", async () => {
+  const cases = ["network", "403", "429", "500", "502", "503", "504", "cookie-empty", "cookie-guide", "invalid-json", "empty-object", "wrong-owner"];
+  for (const shape of cases) {
+    clearOutstandingLogin();
+    let posts = 0, admissions = 0;
+    const h = { ...helper(), beforeLoginAttemptHook: async () => { admissions++; } };
+    setPlatformFetch(async (url, init) => {
+      if (init.method === "POST") posts++;
+      if (shape === "network") throw new TypeError("fixture connection failure");
+      if (/^\d+$/.test(shape)) return reply("unavailable", url, Number(shape));
+      if (url.includes("/wengine-vpn/cookie")) {
+        return reply(shape === "cookie-empty" ? "" : shape === "cookie-guide" ? '<script>var __vpn_hostname_data="fixture";var __vpn_app_hostname_data="fixture";</script>' : "XSRF-TOKEN=fixture-csrf;", url);
+      }
+      return reply(shape === "invalid-json" ? "<main>Upstream unavailable</main>" : shape === "wrong-owner" ? '{"object":{"ryh":"654321"}}' : '{"object":null}', url);
+    });
+    await assert.rejects(verifyAndReLogin(h));
+    assert.equal(posts, 0, shape);
+    assert.equal(admissions, 0, shape);
+  }
+});
+await check("only confirmed HTTP 401, login pages and explicit JSON expiry permit normal recovery", async () => {
+  for (const shape of ["401", "cookie-login", "user-login", "json-expired", "alive"]) {
+    clearOutstandingLogin();
+    let posts = 0, admissions = 0;
+    const h = { ...helper(), beforeLoginAttemptHook: async () => { admissions++; } };
+    setPlatformFetch(async (url, init) => {
+      if (init.method === "POST") posts++;
+      if (url.includes("/wengine-vpn/cookie")) {
+        if (shape === "401") return reply("expired", url, 401);
+        return reply(shape === "cookie-login" ? '<a href="https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/fixture/0">Sign in</a>' : "XSRF-TOKEN=fixture-csrf;", url);
+      }
+      if (url.includes("/grjbxx")) return reply(shape === "user-login" ? KEY : shape === "json-expired" ? '{"status":401}' : '{"object":{"ryh":"123456"}}', url);
+      if (url.includes("/login?oauth_login=true")) return reply(KEY, url);
+      if (url === ID_CHECK || url.includes("/do/off/ui/auth/login/form/")) return reply(SUCCESS, url);
+      if (url.endsWith("/fixture-callback")) return reply("portal", "https://webvpn.tsinghua.edu.cn/");
+      if (url.includes("/lb-auth/lbredirect?")) return reply("info page", url);
+      throw new Error("Unexpected fixture recovery request");
+    });
+    assert.equal(await verifyAndReLogin(h), shape !== "alive", shape);
+    assert.equal(posts, shape === "alive" ? 0 : 1, shape);
+    assert.equal(admissions, shape === "alive" ? 0 : 1, shape);
+  }
+});
+await check("service HTTP 5xx stops at the failed operation before attempting roaming", async () => {
+  for (const status of [500, 502, 503, 504]) {
+    let requests = 0;
+    const error = new ResponseStatusError("fixture service unavailable", status);
+    setPlatformFetch(async () => { requests++; throw Error("Must not start authentication"); });
+    await assert.rejects(roamingWrapper(helper(), "id", "fixture", async () => { throw error; }), e => e === error);
+    assert.equal(requests, 0);
+  }
 });
 
 function deferred() { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; }

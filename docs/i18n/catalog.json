@@ -1,6 +1,6 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
-  "count": 7588,
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "count": 7591,
   "messages": [
     {
       "key": "app.08566a4b57a3",
@@ -15,7 +15,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 100,
+          "line": 101,
           "context": "showToast(i18nMsg(\"app.08566a4b57a3\", { value: String(r.account?.name ?? \"\") }))"
         }
       ]
@@ -28,7 +28,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 131,
+          "line": 132,
           "context": "{i18n(\"app.4d6e46fec3d4\")}"
         }
       ]
@@ -119,7 +119,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 202,
+          "line": 255,
           "context": "{i18n(\"common.cancel\")}"
         },
         {
@@ -5007,12 +5007,12 @@
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 24,
+          "line": 30,
           "context": "copied ? i18n(\"components.devpanel.cce28dd1fcdf\") : i18n(\"components.devpanel.bbce140b7682\")"
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 25,
+          "line": 31,
           "context": "{i18n(\"components.devpanel.bbce140b7682\")}"
         }
       ]
@@ -5030,7 +5030,7 @@
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 24,
+          "line": 30,
           "context": "copied ? i18n(\"components.devpanel.cce28dd1fcdf\") : i18n(\"components.devpanel.bbce140b7682\")"
         }
       ]
@@ -17420,7 +17420,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 107,
+          "line": 106,
           "context": "return i18n(\"components.layout.06657c279571\");"
         }
       ]
@@ -17433,7 +17433,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 160,
+          "line": 159,
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ]
@@ -17446,7 +17446,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 117,
+          "line": 116,
           "context": "return i18n(\"components.layout.15d208d1b4c9\");"
         }
       ]
@@ -17459,7 +17459,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 120,
+          "line": 119,
           "context": "return i18n(\"components.layout.1760b98532ec\");"
         }
       ]
@@ -17472,12 +17472,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 232,
+          "line": 231,
           "context": "{i18n(\"components.layout.203c08e0d44a\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 232,
+          "line": 231,
           "context": "{i18n(\"components.layout.203c08e0d44a\")}"
         }
       ]
@@ -17490,7 +17490,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 118,
+          "line": 117,
           "context": "return i18n(\"components.layout.352cdc807892\");"
         }
       ]
@@ -17503,7 +17503,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 802,
+          "line": 800,
           "context": "label: i18n(\"components.layout.487e926379fe\")"
         }
       ]
@@ -17516,7 +17516,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 121,
+          "line": 120,
           "context": "return i18n(\"components.layout.4ebe692f5dbb\");"
         }
       ]
@@ -17529,7 +17529,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 101,
+          "line": 100,
           "context": "return i18n(\"components.layout.52fdbbaeda4c\");"
         }
       ]
@@ -17542,7 +17542,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 863,
+          "line": 861,
           "context": "label: i18n(\"components.layout.56043fcf0aa1\")"
         }
       ]
@@ -17555,7 +17555,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 106,
+          "line": 105,
           "context": "return i18n(\"components.layout.60458dfb4c14\");"
         }
       ]
@@ -17568,7 +17568,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 104,
+          "line": 103,
           "context": "return i18n(\"components.layout.60db1afb4022\");"
         }
       ]
@@ -17581,12 +17581,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 638,
+          "line": 636,
           "context": "{i18n(\"components.layout.61156d427af0\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 639,
+          "line": 637,
           "context": "{i18n(\"components.layout.61156d427af0\")}"
         }
       ]
@@ -17599,7 +17599,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 161,
+          "line": 160,
           "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
         }
       ]
@@ -17612,7 +17612,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 108,
+          "line": 107,
           "context": "return i18n(\"components.layout.73075237fd0f\");"
         }
       ]
@@ -17625,7 +17625,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 161,
+          "line": 160,
           "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
         }
       ]
@@ -17638,7 +17638,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 649,
+          "line": 647,
           "context": "{i18n(\"components.layout.7a007b29bf56\")}"
         }
       ]
@@ -17651,12 +17651,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 155,
+          "line": 154,
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 243,
+          "line": 242,
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         }
       ]
@@ -17669,7 +17669,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 875,
+          "line": 873,
           "context": "{i18n(\"components.layout.9f07d2ce4115\")}"
         }
       ]
@@ -17682,7 +17682,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 105,
+          "line": 104,
           "context": "return i18n(\"components.layout.a14f23af7016\");"
         }
       ]
@@ -17695,7 +17695,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 198,
+          "line": 197,
           "context": "{i18n(\"components.layout.a626aad412b7\")}"
         }
       ]
@@ -17708,7 +17708,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 115,
+          "line": 114,
           "context": "return i18n(\"components.layout.b1abb3dc2271\");"
         }
       ]
@@ -17721,7 +17721,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 160,
+          "line": 159,
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ]
@@ -17734,7 +17734,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 945,
+          "line": 943,
           "context": "{i18n(\"components.layout.b8784c8dd563\")}"
         }
       ]
@@ -17747,7 +17747,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 803,
+          "line": 801,
           "context": "label: i18n(\"components.layout.df3d58c7d84b\")"
         }
       ]
@@ -17760,7 +17760,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 116,
+          "line": 115,
           "context": "return i18n(\"components.layout.e7028601e7da\");"
         }
       ]
@@ -17773,7 +17773,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 804,
+          "line": 802,
           "context": "label: i18n(\"components.layout.e806fbbe8ec6\")"
         }
       ]
@@ -17786,7 +17786,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 109,
+          "line": 108,
           "context": "return i18n(\"components.layout.f75562426e77\");"
         }
       ]
@@ -17799,7 +17799,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 650,
+          "line": 648,
           "context": "{i18n(\"components.layout.f9e31e1d63d5\")}"
         }
       ]
@@ -17812,12 +17812,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 154,
+          "line": 153,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 236,
+          "line": 235,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         }
       ]
@@ -17830,7 +17830,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 119,
+          "line": 118,
           "context": "return i18n(\"components.layout.fd17d86dd268\");"
         }
       ]
@@ -25060,7 +25060,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 228,
+          "line": 281,
           "context": "progress?.total\n              ? `${Math.round(pct)}%（${formatSize(progress.received)} / ${formatSize(progress.total)}）`\n              : i18n(\"components.softwareupdatesection.165defdf8038\", { value: String(progress ? formatSize(progress.received) : \"0\") })"
         }
       ]
@@ -25078,7 +25078,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 245,
+          "line": 298,
           "context": "fallbackReason ? i18n(\"components.softwareupdatesection.18697440c895\", { fallbackReason }) : \"\""
         }
       ]
@@ -25100,7 +25100,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 195,
+          "line": 248,
           "context": "{i18nRich(\"components.softwareupdatesection.1aec2113851b\", { version: version, value: PLATFORM_LABEL[plat] })}"
         }
       ]
@@ -25122,7 +25122,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 235,
+          "line": 288,
           "context": "{i18nRich(\"components.softwareupdatesection.1b6ff015b8a8\", { current: res.current, value: checkedAt ? i18n(\"components.softwareupdatesection.71ebab125a66\", { checkedAt: new Date(checkedAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" }) }) : \"\" })}"
         }
       ]
@@ -25144,7 +25144,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 163,
+          "line": 203,
           "context": "setMsg(i18nMsg(\"components.softwareupdatesection.1e178bb2ba4b\", { path: String(d.path), value: \"\" }), { value: inst.hintMessage ?? inst.hint ?? i18nMsg(\"components.softwareupdatesection.78ed0342345e\") })"
         }
       ]
@@ -25157,7 +25157,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 210,
+          "line": 263,
           "context": "{i18n(\"components.softwareupdatesection.20f2c779de7a\")}"
         }
       ]
@@ -25170,7 +25170,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 208,
+          "line": 261,
           "context": "{i18n(\"components.softwareupdatesection.2cd0f3be8738\")}"
         }
       ]
@@ -25192,7 +25192,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 159,
+          "line": 198,
           "context": "setMsg(i18nMsg(\"components.softwareupdatesection.388289c18d09\", { value: String(d.size ? formatSize(d.size) : \"?\"), value2: \"\" }), { value2: d.verified ? i18nMsg(\"components.softwareupdatesection.9957c2dd1877\") : \"\" })"
         }
       ]
@@ -25214,7 +25214,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 109,
+          "line": 134,
           "context": "setMsg(i18nMsg(\"components.softwareupdatesection.3b98279a2021\", { latest: String(r.latest), current: String(r.current) }))"
         }
       ]
@@ -25227,7 +25227,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 186,
+          "line": 239,
           "context": "res.hashAvailable\n      ? i18n(\"components.softwareupdatesection.3c0fc35e4fb6\")\n      : i18n(\"components.softwareupdatesection.e18465dcfa9e\")"
         }
       ]
@@ -25240,7 +25240,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 263,
+          "line": 316,
           "context": "{i18n(\"components.softwareupdatesection.4370d1b15447\")}"
         }
       ]
@@ -25262,7 +25262,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 246,
+          "line": 299,
           "context": "i18n(\"components.softwareupdatesection.d54a23c91b8f\", { latest: String(res.latest), value: String(res.releasedAt ? `（${res.releasedAt}）` : \"\") })\n            + `${srcLine ? `\\n${srcLine}` : \"\"}`\n            + `${fallbackReason ? i18n(\"components.softwareupdatesection.18697440c895\", { fallbackReason }) : \"\"}`\n            + i18n(\"components.softwareupdatesection.43e805b35d14\", { value: String(res.asset?.name ?? res.downloadName), value2: String(res.asset?.size ? ` · ${formatSize(res.asset.size)}` : \"\") })"
         }
       ]
@@ -25275,7 +25275,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 136,
+          "line": 173,
           "context": "updateSourceLabel(r) || i18n(\"components.softwareupdatesection.4d8c1c5b4283\")"
         }
       ]
@@ -25301,8 +25301,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 154,
+          "line": 193,
           "context": "d.cancelled ? i18nMsg(\"components.softwareupdatesection.505052ea96fc\") : i18nMsg(\"components.softwareupdatesection.6dd57693b44a\", { value: \"\" })"
+        },
+        {
+          "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
+          "line": 219,
+          "context": "setErr(i18nMsg(\"components.softwareupdatesection.505052ea96fc\"))"
         }
       ]
     },
@@ -25319,7 +25324,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 180,
+          "line": 233,
           "context": "sourceLabel ? i18n(\"components.softwareupdatesection.5b6dd039fc20\", { sourceLabel }) : \"\""
         }
       ]
@@ -25337,7 +25342,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 154,
+          "line": 193,
           "context": "d.cancelled ? i18nMsg(\"components.softwareupdatesection.505052ea96fc\") : i18nMsg(\"components.softwareupdatesection.6dd57693b44a\", { value: \"\" })"
         }
       ]
@@ -25355,7 +25360,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 235,
+          "line": 288,
           "context": "checkedAt ? i18n(\"components.softwareupdatesection.71ebab125a66\", { checkedAt: new Date(checkedAt).toLocaleTimeString(getUiLocale(), { hour: \"2-digit\", minute: \"2-digit\" }) }) : \"\""
         }
       ]
@@ -25368,7 +25373,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 163,
+          "line": 203,
           "context": "inst.hintMessage ?? inst.hint ?? i18nMsg(\"components.softwareupdatesection.78ed0342345e\")"
         }
       ]
@@ -25381,7 +25386,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 259,
+          "line": 312,
           "context": "{i18n(\"components.softwareupdatesection.7e21bf73a0ef\")}"
         }
       ]
@@ -25394,8 +25399,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 200,
+          "line": 253,
           "context": "phase === \"checking\" ? i18n(\"update.checkingSource\", { source: checkingSource ? SOURCE_LABEL[checkingSource] : \"\" }) : i18n(\"components.softwareupdatesection.7f68ebad19ba\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/Login.tsx",
+          "line": 15,
+          "context": "{i18n(\"components.softwareupdatesection.7f68ebad19ba\")}"
         }
       ]
     },
@@ -25407,7 +25417,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 229,
+          "line": 282,
           "context": "{i18n(\"components.softwareupdatesection.8314625c2f52\")}"
         }
       ]
@@ -25429,7 +25439,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 265,
+          "line": 318,
           "context": "{i18nRich(\"components.softwareupdatesection.87c4f699e972\", { github: SOURCE_LABEL.github, cloud: SOURCE_LABEL.cloud })}"
         }
       ]
@@ -25442,7 +25452,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 159,
+          "line": 198,
           "context": "d.verified ? i18nMsg(\"components.softwareupdatesection.9957c2dd1877\") : \"\""
         }
       ]
@@ -25455,12 +25465,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 154,
+          "line": 193,
           "context": "d.error ?? i18nMsg(\"components.softwareupdatesection.a1a9da9ee6ed\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 166,
+          "line": 206,
           "context": "inst.errorMessage ?? inst.error ?? i18nMsg(\"components.softwareupdatesection.a1a9da9ee6ed\")"
         }
       ]
@@ -25473,7 +25483,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 262,
+          "line": 315,
           "context": "{i18n(\"components.softwareupdatesection.abae77ee2a3f\")}"
         }
       ]
@@ -25486,7 +25496,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 205,
+          "line": 258,
           "context": "phase === \"error\" ? i18n(\"components.softwareupdatesection.ea0add721b8e\") : i18n(\"components.softwareupdatesection.ac69f68b7010\")"
         }
       ]
@@ -25499,7 +25509,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 261,
+          "line": 314,
           "context": "{i18n(\"components.softwareupdatesection.b71ae82b4fba\")}"
         }
       ]
@@ -25512,7 +25522,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 255,
+          "line": 308,
           "context": "{i18n(\"components.softwareupdatesection.b7d7aca618eb\")}"
         }
       ]
@@ -25530,8 +25540,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 194,
+          "line": 247,
           "context": "{i18nRich(\"components.softwareupdatesection.c692dd3f13e4\", { value: res?.ok && res.hasUpdate ? <span className=\"update-badge\">{i18n(\"components.softwareupdatesection.daedea385864\")}</span> : null })}"
+        },
+        {
+          "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
+          "line": 156,
+          "context": "{t(\"components.softwareupdatesection.c692dd3f13e4\", { value: \"\" })}"
         }
       ]
     },
@@ -25548,7 +25563,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 248,
+          "line": 301,
           "context": "res.belowMin ? i18n(\"components.softwareupdatesection.cffe690b5ead\", { minVersion: String(res.manifest?.minVersion) }) : \"\""
         }
       ]
@@ -25570,7 +25585,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 243,
+          "line": 296,
           "context": "i18n(\"components.softwareupdatesection.d54a23c91b8f\", { latest: String(res.latest), value: String(res.releasedAt ? `（${res.releasedAt}）` : \"\") })\n            + `${srcLine ? `\\n${srcLine}` : \"\"}`"
         }
       ]
@@ -25583,7 +25598,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 194,
+          "line": 247,
           "context": "{i18n(\"components.softwareupdatesection.daedea385864\")}"
         }
       ]
@@ -25596,7 +25611,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 187,
+          "line": 240,
           "context": "res.hashAvailable\n      ? i18n(\"components.softwareupdatesection.3c0fc35e4fb6\")\n      : i18n(\"components.softwareupdatesection.e18465dcfa9e\")"
         }
       ]
@@ -25614,8 +25629,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 250,
+          "line": 303,
           "context": "res.notes ? i18n(\"components.softwareupdatesection.e5958649985d\", { notes: String(res.notes) }) : \"\""
+        },
+        {
+          "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
+          "line": 143,
+          "context": "t(\"components.softwareupdatesection.e5958649985d\", { notes: release.notes }).trim"
         }
       ]
     },
@@ -25627,7 +25647,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 205,
+          "line": 258,
           "context": "phase === \"error\" ? i18n(\"components.softwareupdatesection.ea0add721b8e\") : i18n(\"components.softwareupdatesection.ac69f68b7010\")"
         }
       ]
@@ -25661,7 +25681,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 136,
+          "line": 173,
           "context": "confirmOk(\n      i18nMsg(\"components.softwareupdatesection.f22fe456ba20\", { value: String(updateSourceLabel(r) || i18n(\"components.softwareupdatesection.4d8c1c5b4283\")), latest: String(r.latest), value2: String(PLATFORM_LABEL[plat]), downloadName: String(r.downloadName), sizeText: String(sizeText) }),\n    )"
         }
       ]
@@ -25674,7 +25694,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 134,
+          "line": 171,
           "context": "asset?.size ? formatSize(asset.size) : i18n(\"components.softwareupdatesection.f8f5f153c20d\")"
         }
       ]
@@ -25692,8 +25712,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 142,
+          "line": 179,
           "context": "setMsg(i18nMsg(\"components.softwareupdatesection.faa2f14dfa0b\", { downloadName: String(r.downloadName) }))"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 496,
+          "context": "error: i18n(\"components.softwareupdatesection.faa2f14dfa0b\", { downloadName: activeUpdateDownload.fileName })"
         }
       ]
     },
@@ -25705,7 +25730,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 224,
+          "line": 277,
           "context": "{i18n(\"components.softwareupdatesection.fad86bf65f72\")}"
         }
       ]
@@ -25727,7 +25752,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 166,
+          "line": 206,
           "context": "setErr(i18nMsg(\"components.softwareupdatesection.fe8283074c76\", { path: String(d.path), value: \"\" }), { value: inst.errorMessage ?? inst.error ?? i18nMsg(\"components.softwareupdatesection.a1a9da9ee6ed\") })"
         }
       ]
@@ -35837,7 +35862,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 467,
+          "line": 500,
           "context": "return i18n(\"learn.responseUnexpected\");"
         }
       ]
@@ -36767,7 +36792,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 822,
+          "line": 906,
           "context": "new Error(i18n(\"lib.clients.193d04db6243\"))"
         }
       ]
@@ -36789,7 +36814,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 826,
+          "line": 910,
           "context": "new Error(i18n(\"lib.clients.cbad5bdfa19f\", { mime: String(mime), length: String(buf.length) }))"
         }
       ]
@@ -36807,7 +36832,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 821,
+          "line": 905,
           "context": "new Error(i18n(\"lib.clients.dc300032c143\", { length: String(buf.length) }))"
         }
       ]
@@ -36838,7 +36863,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 143,
+          "line": 145,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.0359f86c1bb8\"))"
         }
       ]
@@ -36851,7 +36876,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 81,
+          "line": 80,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.172f588670fa\"))"
         }
       ]
@@ -36864,7 +36889,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 84,
+          "line": 83,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.27ac14d14b12\"))"
         }
       ]
@@ -36877,7 +36902,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 40,
+          "line": 41,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.63c8ea2f536a\"))"
         }
       ]
@@ -36890,7 +36915,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
+          "line": 141,
           "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
         }
       ]
@@ -36903,7 +36928,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 139,
+          "line": 141,
           "context": "reason === \"timeout\" ? i18n(\"lib.cloudtokenwebview.pageTimeout\") : i18n(\"lib.cloudtokenwebview.cancelled\")"
         }
       ]
@@ -42312,7 +42337,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 235,
+          "line": 292,
           "context": "return i18n(\"lib.infolib.22a686a1c34c\");"
         }
       ]
@@ -42325,7 +42350,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 233,
+          "line": 290,
           "context": "return i18n(\"lib.infolib.f3943a7b3681\");"
         }
       ]
@@ -42338,7 +42363,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 234,
+          "line": 291,
           "context": "return i18n(\"lib.infolib.f87602bd9134\");"
         }
       ]
@@ -42351,7 +42376,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 293,
+          "line": 350,
           "context": "showToast(i18nMsg(\"lib.infolib.fd1c426ab1aa\"), 8000, { center: true })"
         }
       ]
@@ -44324,7 +44349,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 417,
+          "line": 450,
           "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
         }
       ]
@@ -44342,7 +44367,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 214,
+          "line": 233,
           "context": "new Error(i18n(\"lib.transport.81870141c552\", { value: networkLogUrl(url) }))"
         }
       ]
@@ -44355,7 +44380,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 488,
+          "line": 521,
           "context": "return i18n(\"lib.transport.browserCors\");"
         }
       ]
@@ -44410,7 +44435,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 472,
+          "line": 505,
           "context": "return i18n(\"lib.transport.fileTooLarge\", {size:mb(big[1]!),limit:mb(big[2]!)});"
         }
       ]
@@ -44423,7 +44448,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 466,
+          "line": 499,
           "context": "return i18n(\"lib.transport.noReason\");"
         }
       ]
@@ -44436,7 +44461,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 478,
+          "line": 511,
           "context": "advice = i18n(\"lib.transport.reloginAdvice\")"
         }
       ]
@@ -44453,7 +44478,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 485,
+          "line": 518,
           "context": "return i18n(\"lib.transport.serverRejected\", {error:raw});"
         }
       ]
@@ -44466,7 +44491,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 491,
+          "line": 524,
           "context": "return i18n(\"lib.transport.timeoutAdvice\");"
         }
       ]
@@ -44602,7 +44627,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 543,
+          "line": 562,
           "context": "key === \"macos\" ? i18nMsg(\"lib.updater.185680ad27cd\") : i18nMsg(\"lib.updater.95bc488982b2\")"
         }
       ]
@@ -44669,7 +44694,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 543,
+          "line": 562,
           "context": "key === \"android\" ? i18nMsg(\"lib.updater.2da47c897e30\") : key === \"macos\" ? i18nMsg(\"lib.updater.185680ad27cd\") : i18nMsg(\"lib.updater.95bc488982b2\")"
         }
       ]
@@ -44739,7 +44764,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 537,
+          "line": 556,
           "context": "errorMessage = i18nMsg(\"lib.updater.42b98aa3fae8\")"
         }
       ]
@@ -44791,7 +44816,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 543,
+          "line": 562,
           "context": "key === \"macos\" ? i18nMsg(\"lib.updater.185680ad27cd\") : i18nMsg(\"lib.updater.95bc488982b2\")"
         }
       ]
@@ -44917,7 +44942,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 547,
+          "line": 566,
           "context": "logLine(i18n(\"lib.updater.c57372e35f51\", { msg: String(msg) }))"
         }
       ]
@@ -46344,7 +46369,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 28,
+          "line": 30,
           "context": "return t(\"login.error.changeMethod\");"
         }
       ]
@@ -46357,7 +46382,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 34,
+          "line": 37,
           "context": "return t(\"login.error.confirmationLoop\");"
         }
       ]
@@ -46376,6 +46401,19 @@
           "file": "apps/desktop/src/lib/loginErrors.ts",
           "line": 24,
           "context": "return t(\"login.error.cooldown\", { seconds });"
+        }
+      ]
+    },
+    {
+      "key": "login.error.gatewayUnavailable",
+      "source": "学校登录或 WebVPN 暂时未返回可用页面。请稍后重试，避免连续刷新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 33,
+          "context": "return t(\"login.error.gatewayUnavailable\");"
         }
       ]
     },
@@ -46400,7 +46438,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 33,
+          "line": 36,
           "context": "return t(\"login.error.invalidForm\");"
         }
       ]
@@ -46413,12 +46451,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 35,
+          "line": 38,
           "context": "return t(\"login.error.prepareFailed\");"
         },
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 38,
+          "line": 41,
           "context": "return t(\"login.error.prepareFailed\");"
         }
       ]
@@ -46431,7 +46469,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 27,
+          "line": 29,
           "context": "return t(\"login.error.restartVerification\");"
         }
       ]
@@ -46444,13 +46482,39 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 29,
+          "line": 31,
           "context": "return t(\"login.error.restricted\");"
         },
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 32,
+          "line": 35,
           "context": "return t(\"login.error.restricted\");"
+        }
+      ]
+    },
+    {
+      "key": "login.error.sessionChanged",
+      "source": "登录状态已变化，请重试当前操作。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 28,
+          "context": "return t(\"login.error.sessionChanged\");"
+        }
+      ]
+    },
+    {
+      "key": "login.error.sessionConflict",
+      "source": "本机登录记录不一致，请重新登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 27,
+          "context": "return t(\"login.error.sessionConflict\");"
         }
       ]
     },
@@ -46462,7 +46526,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 31,
+          "line": 34,
           "context": "return t(\"login.error.trustLimit\");"
         }
       ]
@@ -71069,7 +71133,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 90,
+          "line": 96,
           "context": "{i18n(\"pages.login.1cdc0d5b06ff\")}"
         }
       ]
@@ -71082,7 +71146,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 91,
+          "line": 97,
           "context": "busy ? i18n(\"pages.login.bd7a362053a5\") : i18n(\"pages.login.1e2df9c3075a\")"
         }
       ]
@@ -71095,7 +71159,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 209,
+          "line": 218,
           "context": "isTotp ? i18n(\"pages.login.213f02f73129\") : sent ? i18n(\"pages.login.702cf0e136eb\") : i18n(\"pages.login.91f1e4b13d58\")"
         }
       ]
@@ -71108,7 +71172,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 105,
+          "line": 112,
           "context": "return i18n(\"pages.login.22a686a1c34c\");"
         }
       ]
@@ -71121,7 +71185,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 64,
+          "line": 70,
           "context": "{i18n(\"pages.login.294044d5d232\")}"
         }
       ]
@@ -71134,7 +71198,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 231,
+          "line": 240,
           "context": "sending ? i18n(\"pages.login.364970d8168c\") : sent ? i18n(\"pages.login.9287ac799e54\") : i18n(\"pages.login.4656fed515ae\")"
         }
       ]
@@ -71147,7 +71211,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 231,
+          "line": 240,
           "context": "sent ? i18n(\"pages.login.9287ac799e54\") : i18n(\"pages.login.4656fed515ae\")"
         }
       ]
@@ -71160,7 +71224,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 233,
+          "line": 242,
           "context": "busy || submitting ? i18n(\"pages.login.fee0b2ceff3f\") : i18n(\"pages.login.4e34537e5d0c\")"
         }
       ]
@@ -71173,7 +71237,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 228,
+          "line": 237,
           "context": "{i18n(\"pages.login.572898d767b6\")}"
         }
       ]
@@ -71186,7 +71250,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 186,
+          "line": 194,
           "context": "{i18n(\"pages.login.64f2052d09f0\")}"
         }
       ]
@@ -71199,7 +71263,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 209,
+          "line": 218,
           "context": "sent ? i18n(\"pages.login.702cf0e136eb\") : i18n(\"pages.login.91f1e4b13d58\")"
         }
       ]
@@ -71212,7 +71276,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 95,
+          "line": 101,
           "context": "{i18n(\"pages.login.7046d9853c1b\")}"
         }
       ]
@@ -71230,7 +71294,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 162,
+          "line": 170,
           "context": "{i18nRich(\"pages.login.718e9b90bf7d\", { username: twoFactor.username })}"
         }
       ]
@@ -71243,12 +71307,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 191,
+          "line": 199,
           "context": "{i18n(\"pages.login.747b0f9082e6\")}"
         },
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 239,
+          "line": 248,
           "context": "{i18n(\"pages.login.747b0f9082e6\")}"
         }
       ]
@@ -71261,7 +71325,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 238,
+          "line": 247,
           "context": "{i18n(\"pages.login.8875d1e9f0a3\")}"
         }
       ]
@@ -71274,7 +71338,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 209,
+          "line": 218,
           "context": "sent ? i18n(\"pages.login.702cf0e136eb\") : i18n(\"pages.login.91f1e4b13d58\")"
         }
       ]
@@ -71287,7 +71351,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 231,
+          "line": 240,
           "context": "sent ? i18n(\"pages.login.9287ac799e54\") : i18n(\"pages.login.4656fed515ae\")"
         }
       ]
@@ -71300,7 +71364,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 161,
+          "line": 169,
           "context": "{i18n(\"pages.login.98fc3e737ae3\")}"
         }
       ]
@@ -71313,7 +71377,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 192,
+          "line": 200,
           "context": "{i18n(\"pages.login.acfc4e74a650\")}"
         }
       ]
@@ -71326,7 +71390,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 218,
+          "line": 227,
           "context": "{i18n(\"pages.login.bb015c60bafc\")}"
         }
       ]
@@ -71339,7 +71403,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 91,
+          "line": 97,
           "context": "busy ? i18n(\"pages.login.bd7a362053a5\") : i18n(\"pages.login.1e2df9c3075a\")"
         }
       ]
@@ -71352,7 +71416,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 70,
+          "line": 76,
           "context": "{i18n(\"pages.login.c4d678ef6e37\")}"
         }
       ]
@@ -71365,7 +71429,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 80,
+          "line": 86,
           "context": "{i18n(\"pages.login.e7b51261e9c9\")}"
         }
       ]
@@ -71378,7 +71442,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 105,
+          "line": 112,
           "context": "return i18n(\"pages.login.f3943a7b3681\");"
         }
       ]
@@ -71391,7 +71455,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 98,
+          "line": 105,
           "context": "{i18n(\"pages.login.f5d462594d7c\")}"
         }
       ]
@@ -71404,7 +71468,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 105,
+          "line": 112,
           "context": "return i18n(\"pages.login.f87602bd9134\");"
         }
       ]
@@ -71417,7 +71481,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/Login.tsx",
-          "line": 233,
+          "line": 242,
           "context": "busy || submitting ? i18n(\"pages.login.fee0b2ceff3f\") : i18n(\"pages.login.4e34537e5d0c\")"
         }
       ]
@@ -93698,7 +93762,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 597,
+          "line": 653,
           "context": "new Error(i18n(\"schedule.secondary.invalidSemester\"))"
         }
       ]
@@ -93729,22 +93793,22 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 608,
+          "line": 664,
           "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
         },
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 611,
+          "line": 667,
           "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
         },
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 628,
+          "line": 684,
           "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
         },
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 655,
+          "line": 711,
           "context": "new Error(i18n(\"schedule.secondary.unavailable\"))"
         }
       ]
@@ -109407,7 +109471,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 126,
+          "line": 158,
           "context": "setMsg(i18nMsg(\"update.checkCancelled\"))"
         }
       ]
@@ -109424,8 +109488,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 200,
+          "line": 253,
           "context": "phase === \"checking\" ? i18n(\"update.checkingSource\", { source: checkingSource ? SOURCE_LABEL[checkingSource] : \"\" }) : i18n(\"components.softwareupdatesection.7f68ebad19ba\")"
+        },
+        {
+          "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
+          "line": 157,
+          "context": "{t(\"update.checkingSource\", { source: \"\" })}"
         }
       ]
     },
@@ -109437,7 +109506,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 102,
+          "line": 141,
           "context": "{t(\"update.prompt.body\")}"
         }
       ]
@@ -109450,17 +109519,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 175,
+          "line": 228,
           "context": "day: i18n(\"update.prompt.day\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 216,
+          "line": 269,
           "context": "label: i18n(\"update.prompt.day\")"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 107,
+          "line": 149,
           "context": "label: t(\"update.prompt.day\")"
         }
       ]
@@ -109473,17 +109542,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 215,
+          "line": 268,
           "context": "{i18n(\"update.prompt.delay\")}"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 105,
+          "line": 147,
           "context": "{t(\"update.prompt.delay\")}"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 106,
+          "line": 148,
           "context": "{t(\"update.prompt.delay\")}"
         }
       ]
@@ -109496,17 +109565,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 175,
+          "line": 228,
           "context": "hour: i18n(\"update.prompt.hour\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 216,
+          "line": 269,
           "context": "label: i18n(\"update.prompt.hour\")"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 107,
+          "line": 149,
           "context": "label: t(\"update.prompt.hour\")"
         }
       ]
@@ -109519,12 +109588,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 218,
+          "line": 271,
           "context": "{i18n(\"update.prompt.later\")}"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 109,
+          "line": 151,
           "context": "{t(\"update.prompt.later\")}"
         }
       ]
@@ -109537,7 +109606,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 103,
+          "line": 145,
           "context": "{t(\"update.prompt.open\")}"
         }
       ]
@@ -109550,7 +109619,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 249,
+          "line": 302,
           "context": "i18n(\"update.prompt.paused\")}`"
         }
       ]
@@ -109567,7 +109636,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 219,
+          "line": 272,
           "context": "{i18n(\"update.prompt.saved\", { duration: reminderLabels[savedReminder] })}"
         }
       ]
@@ -109580,7 +109649,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 99,
+          "line": 138,
           "context": "{t(\"update.prompt.title\")}"
         }
       ]
@@ -109597,7 +109666,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 101,
+          "line": 140,
           "context": "{t(\"update.prompt.version\", { version: release?.latest ?? \"\" })}"
         }
       ]
@@ -109610,17 +109679,17 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 175,
+          "line": 228,
           "context": "week: i18n(\"update.prompt.week\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 216,
+          "line": 269,
           "context": "label: i18n(\"update.prompt.week\")"
         },
         {
           "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
-          "line": 107,
+          "line": 149,
           "context": "label: t(\"update.prompt.week\")"
         }
       ]

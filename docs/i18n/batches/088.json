@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.navigation.1bba779cd16c",
+      "source": "JS / Rust / Android 内嵌三类插件，市场一键安装（2026-10-09 起一级入口）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 141,
+          "context": "return i18n(\"state.navigation.1bba779cd16c\");"
+        }
+      ],
+      "translation": "Three built-in plugin types: JS, Rust, and Android; one-click install from the marketplace (a main entry since 2026-10-09)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.21e7aec68918",
+      "source": "填写课程评价与教学问卷",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 94,
+          "context": "return i18n(\"state.navigation.21e7aec68918\");"
+        }
+      ],
+      "translation": "Fill in course evaluations and teaching surveys",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.navigation.231ff6cd9b63",
+      "source": "学期切换",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/navigation.ts",
+          "line": 88,
+          "context": "return i18n(\"state.navigation.231ff6cd9b63\");"
+        }
+      ],
+      "translation": "Switch semester",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.navigation.241e209e86bb",
       "source": "生活服务总览",
@@ -1302,72 +1350,6 @@
         }
       ],
       "translation": "Exact alarms",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.91e36d30a350",
-      "source": "、{warned} 项提示",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "warned",
-          "expression": "String(warned)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 64,
-          "context": "warned ? i18n(\"state.notifydoctor.91e36d30a350\", { warned: String(warned) }) : \"\""
-        }
-      ],
-      "translation": ", {warned} warnings",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.962a6e0b8f61",
-      "source": "桌面已放 {placed} 个（宿主 {hostPlaced}）{slotInfo}",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "placed",
-          "expression": "String(placed)"
-        },
-        {
-          "name": "hostPlaced",
-          "expression": "String(ws.hostPlaced)"
-        },
-        {
-          "name": "slotInfo",
-          "expression": "String(slotInfo)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 114,
-          "context": "placed > 0 ? i18n(\"state.notifydoctor.962a6e0b8f61\", { placed: String(placed), hostPlaced: String(ws.hostPlaced), slotInfo: String(slotInfo) }) : i18n(\"state.notifydoctor.f088b81ae9c7\")"
-        }
-      ],
-      "translation": "{placed} placed on the desktop ({hostPlaced} in the host){slotInfo}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.notifydoctor.a14a16f450ae",
-      "source": "投递测试",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/notifyDoctor.ts",
-          "line": 153,
-          "context": "push(\"deliver\", i18n(\"state.notifydoctor.a14a16f450ae\"), sent ? \"ok\" : \"fail\", sent ? i18n(\"state.notifydoctor.58f371818c4f\") : i18n(\"state.notifydoctor.3edfd112e604\"))"
-        }
-      ],
-      "translation": "Delivery test",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

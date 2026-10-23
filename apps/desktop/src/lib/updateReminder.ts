@@ -1,6 +1,11 @@
 import type { UpdateCheckResult } from "./updater.js";
 
 export const UPDATE_REMINDER_CHANGED = "onethu.update.reminder-changed";
+export const UPDATE_REVIEW_REQUESTED = "onethu.update.review-requested";
+/** Login and 2FA screens can open the installer without entering authenticated settings. */
+export function requestUpdateCenter(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(UPDATE_REVIEW_REQUESTED));
+}
 export const UPDATE_SNOOZE_MS = { hour: 3_600_000, day: 86_400_000, week: 604_800_000 } as const;
 export type UpdateSnooze = keyof typeof UPDATE_SNOOZE_MS;
 export const SNOOZE_KEY = "onethu.update.snooze.v1";

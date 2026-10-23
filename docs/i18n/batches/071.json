@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.settings.02bd4c1bfaf2",
+      "source": "云盘同步与恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 105,
+          "context": "return i18n(\"pages.settings.02bd4c1bfaf2\");"
+        }
+      ],
+      "translation": "Cloud drive sync & restore",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.05662029b925",
+      "source": "清华园随身工具箱 · 开源于 GitHub",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 276,
+          "context": "{i18n(\"pages.settings.05662029b925\")}"
+        }
+      ],
+      "translation": "Your Tsinghua toolbox · open source on GitHub",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.settings.05b2d326099e",
+      "source": "在应用内的窗口打开清华统一身份认证，自动填入账号密码（有图形验证码时需手动输入）。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Settings.tsx",
+          "line": 306,
+          "context": "{i18n(\"pages.settings.05b2d326099e\")}"
+        }
+      ],
+      "translation": "Open Tsinghua unified identity authentication in an in-app window, with your username and password auto-filled (enter the CAPTCHA manually if shown).",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.settings.061246bd31e0",
       "source": "账户",
@@ -1328,54 +1376,6 @@
         }
       ],
       "translation": "Launch method",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.6b91ee3ad1f4",
-      "source": "管理主题插件的启用 / 停用（按新规范，启用与否只在这里管）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 739,
-          "context": "{i18n(\"pages.settings.6b91ee3ad1f4\")}"
-        }
-      ],
-      "translation": "Manage theme plugin enable / disable (per the new spec, enablement is managed only here)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.6f3d8aba2f3c",
-      "source": "高级选项，默认关闭；把不在 OneTHU 里的站点功能用登录态爬回来自己做插件。用独立登录态，和自己浏览器互不干扰。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 858,
-          "context": "{i18n(\"pages.settings.6f3d8aba2f3c\")}"
-        }
-      ],
-      "translation": "Advanced option, off by default; fetch site features outside OneTHU with your signed-in session and build your own plugins. Uses a separate login profile that doesn't interfere with your own browser.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.6fed7e860168",
-      "source": "工作空间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 358,
-          "context": "{i18n(\"pages.settings.6fed7e860168\")}"
-        }
-      ],
-      "translation": "Workspace",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

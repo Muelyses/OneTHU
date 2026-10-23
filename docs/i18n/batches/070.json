@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.schedule.aee887434131",
+      "source": "刷新",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1177,
+          "context": "{i18n(\"pages.schedule.aee887434131\")}"
+        }
+      ],
+      "translation": "Refresh",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.af3a93e86aa6",
+      "source": " · 考试",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1285,
+          "context": "d.src === \"exam\" ? i18n(\"pages.schedule.af3a93e86aa6\") : i18n(\"pages.schedule.1e1dc2f018da\")"
+        }
+      ],
+      "translation": " · Exams",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.schedule.b0e3601510d8",
+      "source": "在桌面小组件显示",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Schedule.tsx",
+          "line": 1369,
+          "context": "{i18n(\"pages.schedule.b0e3601510d8\")}"
+        }
+      ],
+      "translation": "Show on the desktop widget",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.schedule.b179143d79a6",
       "source": "云同步账号已变更，请重新打开日程后删除",
@@ -1357,54 +1405,6 @@
         }
       ],
       "translation": "Open the plugin market filtered to themes",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.02bd4c1bfaf2",
-      "source": "云盘同步与恢复",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 105,
-          "context": "return i18n(\"pages.settings.02bd4c1bfaf2\");"
-        }
-      ],
-      "translation": "Cloud drive sync & restore",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.05662029b925",
-      "source": "清华园随身工具箱 · 开源于 GitHub",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 276,
-          "context": "{i18n(\"pages.settings.05662029b925\")}"
-        }
-      ],
-      "translation": "Your Tsinghua toolbox · open source on GitHub",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.settings.05b2d326099e",
-      "source": "在应用内的窗口打开清华统一身份认证，自动填入账号密码（有图形验证码时需手动输入）。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Settings.tsx",
-          "line": 306,
-          "context": "{i18n(\"pages.settings.05b2d326099e\")}"
-        }
-      ],
-      "translation": "Open Tsinghua unified identity authentication in an in-app window, with your username and password auto-filled (enter the CAPTCHA manually if shown).",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

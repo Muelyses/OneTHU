@@ -88,8 +88,10 @@ export function ensureSeafileLoaded(): Promise<void> {
 }
 
 /** Validate before committing; a later clear/connect supersedes this request. */
-export async function setSeafileToken(token: string): Promise<SeafileAccount> {
+export async function setSeafileToken(token: string, expectedVersion?: number): Promise<SeafileAccount> {
   requireCloudConsent();
+  // Automatic discovery may finish after logout, before this setter even starts.
+  if (expectedVersion !== undefined && expectedVersion !== credentialVersion) throw changedAccount();
   identityVersion++;
   const version = ++credentialVersion;
   const verified = await invoke<SeafileAccount>("seafile_account", { token });

@@ -6,6 +6,7 @@ import { NotifyBridge } from "./components/NotifyBridge.js";
 import { lazy, Suspense, useEffect } from "react";
 import { FilePreviewHost } from "./components/FilePreview.js";
 import { LoginPage, TwoFactorPage } from "./pages/Login.js";
+import { UpdatePromptHost } from "./components/UpdatePromptHost.js";
 import { OnboardingTour as OnboardingTourGate } from "./components/OnboardingTour.js";
 import { useToastHost, hideToast } from "./state/toast.js";
 import { resolveMessage, useLocale } from "./i18n/index.js";
@@ -152,6 +153,7 @@ function Routed() {
   return (
     <>
       {body}
+      <UpdatePromptHost authenticated={status === "ready"} deferAutomatic={status === "2fa" || status === "connecting" || status === "booting"} />
       <PluginBridge />
       <NotifyBridge />
       {(status === "ready") && <ChatDock />}

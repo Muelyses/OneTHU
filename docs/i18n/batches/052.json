@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.lifepage.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 43,
+          "context": "return i18n(\"pages.info.lifepage.caf1f095b108\");"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.dd94488f5269",
+      "source": "校园网",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.info.lifepage.dd94488f5269\");"
+        }
+      ],
+      "translation": "Campus network",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.f221af82663b",
+      "source": "所有栏目已隐藏，点击右上「管理栏目」恢复。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 118,
+          "context": "{i18n(\"pages.info.lifepage.f221af82663b\")}"
+        }
+      ],
+      "translation": "All sections are hidden. Tap \"Manage sections\" at the top right to restore them.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.lifepage.fa0124c14866",
       "source": "栏目显隐与排序",
@@ -1324,72 +1372,6 @@
         }
       ],
       "translation": "Deletion failed. Refresh and try again",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.602e9f6984cb",
-      "source": "来源：{value} · 第 {subPage} 页 · {length} 条",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(subChips.find((c) => c.id === subSel)?.label ?? subSel)"
-        },
-        {
-          "name": "subPage",
-          "expression": "String(subPage)"
-        },
-        {
-          "name": "length",
-          "expression": "String(subShown.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 695,
-          "context": "subSel === \"all\"\n                  ? i18n(\"pages.info.newstab.762b04cd10e9\", { value: String(subsServer?.length ?? subs.length), subPage: String(subPage), length: String(subShown.length) })\n                  : i18n(\"pages.info.newstab.602e9f6984cb\", { value: String(subChips.find((c) => c.id === subSel)?.label ?? subSel), subPage: String(subPage), length: String(subShown.length) })"
-        }
-      ],
-      "translation": "Source: {value} · Page {subPage} · {length} items",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.newstab.69862d19f52a",
-      "source": "本地先行 {length} 条 · 服务端搜索中…",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(localResults.length)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 654,
-          "context": "localResults.length > 0\n                    ? i18n(\"pages.info.newstab.69862d19f52a\", { length: String(localResults.length) })\n                    : i18n(\"pages.info.newstab.3f0a56b66693\")"
-        }
-      ],
-      "translation": "Showing {length} local results · Searching on the server…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.newstab.70b6105c0180",
-      "source": "全部新闻",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/NewsTab.tsx",
-          "line": 623,
-          "context": "{i18n(\"pages.info.newstab.70b6105c0180\")}"
-        }
-      ],
-      "translation": "All news",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

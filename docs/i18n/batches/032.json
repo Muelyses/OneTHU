@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -287,7 +287,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 467,
+          "line": 500,
           "context": "return i18n(\"learn.responseUnexpected\");"
         }
       ],
@@ -1391,7 +1391,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 822,
+          "line": 906,
           "context": "new Error(i18n(\"lib.clients.193d04db6243\"))"
         }
       ],
@@ -1416,7 +1416,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 826,
+          "line": 910,
           "context": "new Error(i18n(\"lib.clients.cbad5bdfa19f\", { mime: String(mime), length: String(buf.length) }))"
         }
       ],
@@ -1437,7 +1437,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/clients.ts",
-          "line": 821,
+          "line": 905,
           "context": "new Error(i18n(\"lib.clients.dc300032c143\", { length: String(buf.length) }))"
         }
       ],
@@ -1474,7 +1474,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/cloudTokenWebview.ts",
-          "line": 143,
+          "line": 145,
           "context": "new Error(i18n(\"lib.cloudtokenwebview.0359f86c1bb8\"))"
         }
       ],

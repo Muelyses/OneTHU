@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.orgsynccore.13447b8f6ab6",
+      "source": "降权回读不符",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 168,
+          "context": "new Error(i18n(\"state.orgsynccore.13447b8f6ab6\"))"
+        }
+      ],
+      "translation": "Permission downgrade readback mismatch",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.15f11e1c75da",
+      "source": "至少保留一位服务器上的组织负责人",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 114,
+          "context": "new Error(i18n(\"state.orgsynccore.15f11e1c75da\"))"
+        }
+      ],
+      "translation": "Keep at least one organization Owner on the server",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.orgsynccore.181c794c590b",
+      "source": "组织协作内容损坏",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/orgSyncCore.ts",
+          "line": 41,
+          "context": "new Error(i18n(\"state.orgsynccore.181c794c590b\"))"
+        }
+      ],
+      "translation": "The organization collaboration content is corrupted",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.orgsynccore.22d16e7c98ba",
       "source": "解除关联后仍有共享权限",
@@ -1465,63 +1513,6 @@
         }
       ],
       "translation": "The system calendar is being synced or removed",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.ce42fc5eaca8",
-      "source": "事件数 {length} 超出上限 {MAX_EVENTS}，已中止系统日历同步",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "length",
-          "expression": "String(events.length)"
-        },
-        {
-          "name": "MAX_EVENTS",
-          "expression": "String(MAX_EVENTS)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 327,
-          "context": "new Error(i18n(\"state.systemcal.ce42fc5eaca8\", { length: String(events.length), MAX_EVENTS: String(MAX_EVENTS) }))"
-        }
-      ],
-      "translation": "The event count {length} exceeds the limit of {MAX_EVENTS}; system calendar sync was aborted",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.d2d00f793981",
-      "source": "未获得系统日历权限，请在系统设置中允许 OneTHU 访问日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 428,
-          "context": "new Error(i18n(\"state.systemcal.d2d00f793981\"))"
-        }
-      ],
-      "translation": "System calendar permission was not granted. Allow OneTHU to access calendars in system settings.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.systemcal.fb7404386af9",
-      "source": "正在移除系统日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/systemCal.ts",
-          "line": 480,
-          "context": "new Error(i18n(\"state.systemcal.fb7404386af9\"))"
-        }
-      ],
-      "translation": "Removing the system calendar",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

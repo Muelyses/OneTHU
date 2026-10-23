@@ -1,7 +1,74 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "skills.externalBody",
+      "source": "需要 Python、Node、安装依赖或外部服务的技能，当前不能在 OH 运行。可保存完整技能文件，交给电脑上的 Agent 使用。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/skills.ts",
+          "line": 75,
+          "context": "SKILL_EXTERNAL_AGENT_REQUIRED: t(\"skills.externalBody\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 54,
+          "context": "{t(\"skills.externalBody\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 73,
+          "context": "{t(\"skills.externalBody\")}"
+        }
+      ],
+      "translation": "Skills requiring Python, Node, package installation or external services cannot run in OH. Save the complete files for an agent on your computer.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "skills.failed",
+      "source": "技能操作未完成",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 55,
+          "context": "{t(\"skills.failed\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 65,
+          "context": "{t(\"skills.failed\")}"
+        }
+      ],
+      "translation": "Skill action could not be completed",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "skills.fileCount",
+      "source": "{count} 个文件",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "count"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/xiaoda/SkillLibrary.tsx",
+          "line": 70,
+          "context": "{t(\"skills.fileCount\", { count: installed.files.length })}"
+        }
+      ],
+      "translation": "{count} files",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "skills.import",
       "source": "下载并检查",
@@ -1285,54 +1352,6 @@
         }
       ],
       "translation": "Academic calendar",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.499fc8e68d81",
-      "source": "座位 · 研讨间",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 312,
-          "context": "return i18n(\"state.atoms.499fc8e68d81\");"
-        }
-      ],
-      "translation": "Seats · Seminar rooms",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.4b6ded8a7f18",
-      "source": "通知",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 438,
-          "context": "t: i18n(\"state.atoms.4b6ded8a7f18\")"
-        }
-      ],
-      "translation": "Notices",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.atoms.4c30e45ecab2",
-      "source": "收件箱 · 已发送 · 读信 · 全箱搜索",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/atoms.tsx",
-          "line": 216,
-          "context": "return i18n(\"state.atoms.4c30e45ecab2\");"
-        }
-      ],
-      "translation": "Inbox · Sent · Read mail · Search all mailboxes",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

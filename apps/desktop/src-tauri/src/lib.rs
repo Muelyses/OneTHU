@@ -1298,20 +1298,47 @@ async fn fetch_binary(
 /// 真·cookie 引擎（2026-09-17 定案）：cookie_store crate——reqwest 内建仓
 /// 背后的同一实现（RFC6265 域/路径/过期全语义，okHttp 级）。手搓 HashMap 仓
 /// 的主域归并/属性忽略是当晚一切串票怪病的根因。种子/清仓走本类型真 API。
-struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>, std::sync::atomic::AtomicBool);
+struct SharedNativeJar(std::sync::RwLock<cookie_store::CookieStore>, std::sync::atomic::AtomicBool, std::sync::atomic::AtomicU64);
+
+const COOKIE_SESSION_CHANGED: &str = "AUTH_SESSION_CHANGED";
 
 /// cookie 仓落盘（2026-09-17：纯内存仓每次进程重启丢光 id 信任票据 →
 /// 服务器反复索要 2FA；持久化后冷启动直接带票复用，登录/2FA 频率大幅下降）。
 /// 新格式保存 cookie_store 的完整属性；仍兼容旧 TSV，不读取真实凭据用于测试。
 impl SharedNativeJar {
+    fn epoch(&self) -> u64 { self.2.load(std::sync::atomic::Ordering::Acquire) }
+    fn ensure_epoch(&self, epoch: u64) -> Result<(), String> {
+        if self.epoch() == epoch { Ok(()) } else { Err(COOKIE_SESSION_CHANGED.into()) }
+    }
+    fn seed_lines_at_epoch(&self, url: &str, lines: &[String], epoch: u64) -> Result<(), String> {
+        let u = reqwest::Url::parse(url).map_err(|_| "Invalid cookie origin")?;
+        let mut jar = self.0.write().map_err(|_| "Cookie store lock failed")?;
+        self.ensure_epoch(epoch)?;
+        for line in lines { let _ = jar.parse(line, &u); }
+        self.1.store(true, std::sync::atomic::Ordering::Relaxed);
+        Ok(())
+    }
     fn seed_line(&self, url: &str, line: &str) {
         let Ok(u) = reqwest::Url::parse(url) else { return };
         let _ = self.0.write().unwrap().parse(line, &u);
         self.1.store(true, std::sync::atomic::Ordering::Relaxed);
     }
     fn clear(&self) {
-        self.0.write().unwrap().clear();
+        let mut jar = self.0.write().unwrap();
+        self.2.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+        jar.clear();
         self.1.store(true, std::sync::atomic::Ordering::Relaxed);
+    }
+    fn clear_and_save_to_file(&self, path: &std::path::Path) -> Result<(), String> {
+        let mut jar = self.0.write().map_err(|_| "Cookie 仓锁失败")?;
+        self.2.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
+        jar.clear();
+        self.1.store(true, std::sync::atomic::Ordering::Relaxed);
+        // Account changes and logout must not resurrect the previous account's
+        // persisted jar if the app exits before the regular 30-second flush.
+        native_security::private_atomic_write(path, b"[]")?;
+        self.1.store(false, std::sync::atomic::Ordering::Relaxed);
+        Ok(())
     }
     fn save_to_file(&self, path: &std::path::Path) {
         let g = self.0.read().unwrap();
@@ -1378,9 +1405,27 @@ impl reqwest::cookie::CookieStore for SharedNativeJar {
     }
 }
 
-fn build_native_client() -> reqwest::Client {
+/// A client retains the account generation it was created for. reqwest calls
+/// set_cookies before send() resolves, so response-only checks cannot guard the jar.
+struct EpochNativeJar { jar: std::sync::Arc<SharedNativeJar>, epoch: u64 }
+impl reqwest::cookie::CookieStore for EpochNativeJar {
+    fn set_cookies(&self, headers: &mut dyn Iterator<Item = &reqwest::header::HeaderValue>, url: &reqwest::Url) {
+        let mut jar = self.jar.0.write().unwrap();
+        if self.jar.ensure_epoch(self.epoch).is_err() { return; }
+        for header in headers { if let Ok(line) = header.to_str() { let _ = jar.parse(line, url); } }
+        self.jar.1.store(true, std::sync::atomic::Ordering::Relaxed);
+    }
+    fn cookies(&self, url: &reqwest::Url) -> Option<reqwest::header::HeaderValue> {
+        let jar = self.jar.0.read().unwrap();
+        if self.jar.ensure_epoch(self.epoch).is_err() { return None; }
+        let header = jar.get_request_values(url).map(|(n,v)| format!("{n}={v}")).collect::<Vec<_>>().join("; ");
+        if header.is_empty() { None } else { reqwest::header::HeaderValue::from_str(&header).ok() }
+    }
+}
+
+fn build_native_client(epoch: u64) -> reqwest::Client {
     reqwest::Client::builder()
-        .cookie_provider(std::sync::Arc::clone(&*NATIVE_JAR_ARC))
+        .cookie_provider(std::sync::Arc::new(EpochNativeJar { jar: std::sync::Arc::clone(&*NATIVE_JAR_ARC), epoch }))
         .redirect(reqwest::redirect::Policy::none())
         // UA 必须与主 webview（tauri.conf.json windows[].userAgent）完全一致：
         // wengine webvpn 会话票绑定 UA 指纹，rust 与 webview 不一致时票被判无效
@@ -1397,11 +1442,23 @@ static NATIVE_JAR_ARC: std::sync::LazyLock<std::sync::Arc<SharedNativeJar>> = st
     std::sync::Arc::new(SharedNativeJar(
         std::sync::RwLock::new(cookie_store::CookieStore::default()),
         std::sync::atomic::AtomicBool::new(false),
+        std::sync::atomic::AtomicU64::new(0),
     ))
 });
 
-static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<reqwest::Client>> =
-    std::sync::LazyLock::new(|| std::sync::RwLock::new(build_native_client()));
+static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<(u64, reqwest::Client)>> =
+    std::sync::LazyLock::new(|| { let epoch = NATIVE_JAR_ARC.epoch(); std::sync::RwLock::new((epoch, build_native_client(epoch))) });
+
+fn native_client_at_epoch(epoch: u64) -> Result<reqwest::Client, String> {
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
+    let mut state = NATIVE_CLIENT.write().map_err(|_| "Network client lock failed")?;
+    if state.0 != epoch { *state = (epoch, build_native_client(epoch)); }
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
+    Ok(state.1.clone())
+}
+
+#[tauri::command]
+fn http_native_epoch() -> u64 { NATIVE_JAR_ARC.epoch() }
 
 /// 原生浏览器语义通道（2026-09-17）：共享 reqwest client（cookie_store 原生
 /// 分域仓，等价 RN okhttp 仓）+ Rust 手动跳循环（等价原生重定向跟随）。
@@ -1412,14 +1469,20 @@ static NATIVE_CLIENT: std::sync::LazyLock<std::sync::RwLock<reqwest::Client>> =
 async fn http_native(
     app: tauri::AppHandle,
     input: HttpInput,
+    epoch: u64,
 ) -> Result<HttpOutput, String> {
     let _ = app;
     debug_log_line(&format!("[NATIVE-START] {} {}", input.method, native_security::safe_url_log(&input.url.parse().map_err(|_| "非法 URL")?)));
-    let client = NATIVE_CLIENT.read().map_err(|_| "网络客户端锁失败")?.clone();
-    http_native_with_client(input, client).await
+    let client = native_client_at_epoch(epoch)?;
+    http_native_in_session(input, client, Some((&NATIVE_JAR_ARC, epoch))).await
 }
 
+#[cfg(test)]
 async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> Result<HttpOutput, String> {
+    http_native_in_session(input, client, None).await
+}
+
+async fn http_native_in_session(input: HttpInput, client: reqwest::Client, session: Option<(&SharedNativeJar, u64)>) -> Result<HttpOutput, String> {
     let method: reqwest::Method = input
         .method
         .to_uppercase()
@@ -1461,6 +1524,7 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
     let mut final_url = url.to_string();
 
     for _hop in 0..=25u32 {
+        if let Some((jar, epoch)) = session { jar.ensure_epoch(epoch)?; }
         if public_release {
             if !privacy_consent::public_release_destination(&url) { return Err("Unexpected public release redirect".into()); }
         } else { privacy_consent::check_url(&url)?; }
@@ -1479,6 +1543,7 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
         }
         let hop_t0 = std::time::Instant::now();
         let resp = req.send().await.map_err(|e| format!("网络错误: {}", error_chain(&e.without_url())))?;
+        if let Some((jar, epoch)) = session { jar.ensure_epoch(epoch)?; }
         let hop_ms = hop_t0.elapsed().as_millis();
         let status = resp.status();
         final_status = status;
@@ -1516,6 +1581,7 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
         break;
     }
 
+    if let Some((jar, epoch)) = session { jar.ensure_epoch(epoch)?; }
     let ctype = final_headers.get("content-type").cloned().unwrap_or_default();
     let looks_text = ctype.starts_with("text/")
         || ctype.contains("html")
@@ -1553,10 +1619,25 @@ async fn http_native_with_client(input: HttpInput, client: reqwest::Client) -> R
 /// 原生 cookie 仓清空（换新匿名身份）。2026-09-17 实录：登录风暴后 id 服务器
 /// 按会话 cookie 封锁设备（同 IP 的无 cookie 客户端正常）——被封锁时唯一解法。
 #[tauri::command]
-async fn http_native_clear_cookies() -> Result<(), String> {
+async fn http_native_clear_cookies(app: tauri::AppHandle) -> Result<(), String> {
+    let cleared = clear_native_cookies_at_path(jar_store_path(&app)).await;
+    #[cfg(desktop)]
+    let webview_cleared = if let Some(window) = app.get_webview_window("cloudtoken") {
+        window.close().map_err(|e| format!("Cloud window close failed: {e}"))
+    } else { Ok(()) };
+    #[cfg(mobile)]
+    let webview_cleared = {
+        let handle = app.state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>().0.clone();
+        handle.run_mobile_plugin_async::<serde_json::Value>("closeCloudTokenWebview", serde_json::json!({"epoch": NATIVE_JAR_ARC.epoch()}))
+            .await.map(|_| ()).map_err(|e| format!("WebView account cookie clear failed: {e}"))
+    };
+    cleared?;
+    webview_cleared
+}
+
+async fn clear_native_cookies_at_path(path: std::path::PathBuf) -> Result<(), String> {
     tauri::async_runtime::spawn_blocking(move || {
-        NATIVE_JAR_ARC.clear();
-        Ok::<(), String>(())
+        NATIVE_JAR_ARC.clear_and_save_to_file(&path)
     }).await.map_err(|e| format!("Cookie 后台任务失败: {e}"))?
 }
 
@@ -1583,7 +1664,7 @@ async fn http_native_clear_cookies_domain(suffixes: Vec<String>) -> Result<(), S
 
 /// jar → rust 播种（wengine 引导页票种等不经 Set-Cookie 的会话）
 #[tauri::command]
-fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
+fn http_native_seed(url: String, lines: Vec<String>, epoch: u64) -> Result<(), String> {
     // webvpn 匿名引导票（wrdvpn1- 前缀）绝不入仓——clients.ts 203 行 TS 侧同名
     // 过滤的 Rust 对等防线。2026-10-10 实录：TS jar 的匿名票被 seed 进仓后覆盖
     // lib 真票，wengine 全线按匿名处理（在线服务点击即弹 webvpn 首页）。
@@ -1591,7 +1672,7 @@ fn http_native_seed(url: String, lines: Vec<String>) -> Result<(), String> {
         if l.starts_with("wengine_vpn_ticket=wrdvpn1-") {
             continue;
         }
-        NATIVE_JAR_ARC.seed_line(&url, l);
+        NATIVE_JAR_ARC.seed_lines_at_epoch(&url, std::slice::from_ref(l), epoch)?;
     }
     Ok(())
 }
@@ -1783,6 +1864,7 @@ async fn thos_portal_window(
     target: &str,
     dark: bool,
 ) -> Result<(), String> {
+    let epoch = NATIVE_JAR_ARC.epoch();
     use tauri::webview::Cookie;
     use tauri::{WebviewUrl, WebviewWindowBuilder};
     if !(target.starts_with("http://") || target.starts_with("https://")) {
@@ -1848,6 +1930,7 @@ async fn thos_portal_window(
     // 种完票**必须显式导航到目标页**：建窗落点固定在 webvpn 根（=门户首页），
     // 漏 navigate 用户看到的就是门户首页而非服务页（2026-10-10 用户实录，
     // 052d11c 原版有此行，中途丢失）。雨课堂/云盘窗口同款套路。
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
     win.navigate(target.parse().map_err(|e| format!("目标 URL 解析失败: {e}"))?)
         .map_err(|e| e.to_string())?;
     let _ = win.set_focus();
@@ -1863,6 +1946,7 @@ async fn thos_open_portal(
     password: String,
     dark: Option<bool>,
 ) -> Result<(), String> {
+    let epoch = NATIVE_JAR_ARC.epoch();
     // 1) 从原生仓收集三大域的未过期 cookie。
     //    注意：不能用 c.domain() 过滤——host-only cookie（服务器 Set-Cookie 不带
     //    Domain 属性，wengine_vpn_ticket 正是）的 domain() 返回 None，会全军覆没。
@@ -1974,7 +2058,7 @@ async fn thos_open_portal(
                         for pair in header.split("; ") {
                             let pair = pair.trim();
                             if pair.contains('=') {
-                                NATIVE_JAR_ARC.seed_line(base, pair);
+                                NATIVE_JAR_ARC.seed_lines_at_epoch(base, &[pair.to_string()], epoch)?;
                                 n += 1;
                             }
                         }
@@ -2233,7 +2317,7 @@ async fn thos_open_portal(
                 match webview.cookies_for_url(du.clone()) {
                     Ok(cookies) if !cookies.is_empty() => {
                         for c in &cookies {
-                            jar.seed_line(du.as_str(), &format!("{}={}", c.name(), c.value()));
+                            jar.seed_lines_at_epoch(du.as_str(), &[format!("{}={}", c.name(), c.value())], epoch)?;
                         }
                         thos_log(&format!("[THOS-SEED] 回灌 {} → {} 条", dom, cookies.len()));
                     }
@@ -2715,16 +2799,18 @@ async fn cloud_webvpn_profile(
     app: tauri::AppHandle,
     username: Option<String>,
     password: Option<String>,
+    epoch: u64,
 ) -> Result<CloudWebvpnProfile, String> {
     privacy_consent::require_cloud()?;
     let _ = &app;
-    let client = NATIVE_CLIENT.read().unwrap().clone();
+    let client = native_client_at_epoch(epoch)?;
     let mut url: url::Url = "https://cloud.tsinghua.edu.cn/profile/"
         .parse()
         .map_err(|e| format!("起始 URL: {e}"))?;
     let mut final_url = url.to_string();
     let mut body: Vec<u8> = Vec::new();
     for hop in 0..=25u32 {
+        NATIVE_JAR_ARC.ensure_epoch(epoch)?;
         let resp = client
             .get(url.clone())
             .send()
@@ -2780,6 +2866,7 @@ async fn cloud_webvpn_profile(
                 if let Some(b) = body {
                     req = req.header("Content-Type", "application/json").body(b);
                 }
+                NATIVE_JAR_ARC.ensure_epoch(epoch)?;
                 let r = req.send().await.map_err(|e| format!("网络错误: {e}"))?;
                 let code = r.status().as_u16();
                 let body_t = r.text().await.unwrap_or_default();
@@ -2806,6 +2893,7 @@ async fn cloud_webvpn_profile(
     let need_confirm = text.contains("checkSingle") || final_url.contains("checkSingle");
     // The authenticated HTML can contain non-hex credentials and personal data.
     // Return it to the caller, but never dump it into diagnostic logs.
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
     Ok(CloudWebvpnProfile { final_url, body: text, need_confirm, plain_token })
 }
 
@@ -2842,13 +2930,14 @@ fn cloud_cookie_seeds_from_native_jar() -> Vec<CloudCookieSeed> {
         .collect()
 }
 
-fn seed_native_cloud_cookies(seeds: &[CloudCookieSeed]) {
+fn seed_native_cloud_cookies(seeds: &[CloudCookieSeed], epoch: u64) -> Result<(), String> {
     for seed in seeds {
         if !is_cloud_cookie_origin(&seed.url) { continue; }
         for line in &seed.cookies {
-            NATIVE_JAR_ARC.seed_line(&seed.url, line);
+            NATIVE_JAR_ARC.seed_lines_at_epoch(&seed.url, std::slice::from_ref(line), epoch)?;
         }
     }
+    Ok(())
 }
 
 fn cloud_cookie_seeds_from_webview(window: &tauri::WebviewWindow) -> Vec<CloudCookieSeed> {
@@ -2987,7 +3076,9 @@ async fn open_cloud_token_window(
     username: Option<String>,
     password: Option<String>,
     target_url: Option<String>,
+    epoch: u64,
 ) -> Result<String, String> {
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
     privacy_consent::require_cloud()?;
     use tauri::webview::{Cookie, WebviewWindowBuilder};
     use tauri::{Emitter, WebviewUrl};
@@ -3012,11 +3103,13 @@ async fn open_cloud_token_window(
     )
     .title("清华云盘 · 读取现有访问口令")
     .inner_size(520.0, 720.0)
+    .incognito(true)
     .initialization_script(CLOUD_TOKEN_SCRIPT)
     // id 登录表单页自动填表提交（THOS eid_fill_script；无凭据时脚本自静默）
     .initialization_script(fill_js)
     // 逐跳导航日志（不带任何 cookie 值）：定位「没继承」卡在哪一跳。
-    .on_navigation(|url| {
+    .on_navigation(move |url| {
+        if NATIVE_JAR_ARC.ensure_epoch(epoch).is_err() { return false; }
         debug_log_line(&format!(
             "[CLOUD-TOKEN] 导航 {}",
             url.as_str().chars().take(180).collect::<String>()
@@ -3028,6 +3121,13 @@ async fn open_cloud_token_window(
     }
     let win = builder.build().map_err(|e| e.to_string())?;
 
+    if let Err(error) = NATIVE_JAR_ARC.ensure_epoch(epoch) { let _ = win.close(); return Err(error); }
+    // A new flow starts from the current native account, never residual WebView cookies.
+    for base in CLOUD_COOKIE_ORIGINS {
+        if let Ok(url) = base.parse() { if let Ok(cookies) = win.cookies_for_url(url) {
+            for cookie in cookies { let _ = win.delete_cookie(cookie); }
+        } }
+    }
     // 明确播种共享 jar 里的 cloud/id/oauth/webvpn 会话票；不记录 Cookie 值。
     let initial_seeds = cloud_cookie_seeds_from_native_jar();
     let mut seeded_total = 0usize;
@@ -3046,6 +3146,7 @@ async fn open_cloud_token_window(
     debug_log_line(&format!("[CLOUD-TOKEN] 共种 {seeded_total} 条（种子源 {} 组）→ 导航 profile", initial_seeds.len()));
     // WKHTTPCookieStore.setCookie 异步落库；留一拍再导航，避免竞态丢票
     std::thread::sleep(std::time::Duration::from_millis(250));
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
     win.navigate(target.parse().map_err(|e| format!("profile URL: {e}"))?)
         .map_err(|e| e.to_string())?;
     let _ = win.set_focus();
@@ -3058,15 +3159,20 @@ async fn open_cloud_token_window(
         let mut sync_tick = 0u32;
         for _ in 0..600 {
             std::thread::sleep(std::time::Duration::from_millis(1000));
+            // Never close a subsequently opened account's window from an old worker.
+            if NATIVE_JAR_ARC.ensure_epoch(epoch).is_err() {
+                let _ = app.emit("cloud-token-cancelled", serde_json::json!({"reason":"account-changed", "epoch":epoch}));
+                return;
+            }
             let Some(w) = app.get_webview_window(label) else {
-                let _ = app.emit("cloud-token-cancelled", "closed");
+                let _ = app.emit("cloud-token-cancelled", serde_json::json!({"reason":"closed", "epoch":epoch}));
                 return;
             };
             sync_tick += 1;
             if sync_tick % 5 == 0 {
                 let seeds = cloud_cookie_seeds_from_webview(&w);
                 if !seeds.is_empty() {
-                    seed_native_cloud_cookies(&seeds);
+                    if seed_native_cloud_cookies(&seeds, epoch).is_err() { return; }
                     NATIVE_JAR_ARC.save_if_dirty(&jar_store_path(&app));
                 }
             }
@@ -3080,18 +3186,19 @@ async fn open_cloud_token_window(
                 }
                 // 成功时同步 WebView 中刚建立/续期的认证票，回灌统一 jar 与 core CookieJar。
                 let cookie_seeds = cloud_cookie_seeds_from_webview(&w);
-                seed_native_cloud_cookies(&cookie_seeds);
+                if seed_native_cloud_cookies(&cookie_seeds, epoch).is_err() { return; }
                 NATIVE_JAR_ARC.save_if_dirty(&jar_store_path(&app));
-                let payload = serde_json::json!({ "token": token, "cookieSeeds": cookie_seeds });
+                let payload = serde_json::json!({ "token": token, "cookieSeeds": cookie_seeds, "epoch": epoch });
                 let _ = w.close();
                 let _ = app.emit("cloud-token", payload);
                 return;
             }
         }
+        if NATIVE_JAR_ARC.ensure_epoch(epoch).is_err() { return; }
         if let Some(w) = app.get_webview_window(label) {
             let _ = w.close();
         }
-        let _ = app.emit("cloud-token-cancelled", "timeout");
+        let _ = app.emit("cloud-token-cancelled", serde_json::json!({"reason":"timeout", "epoch":epoch}));
     });
     Ok("opened".into())
 }
@@ -4298,7 +4405,9 @@ async fn open_cloud_token_window(
     username: Option<String>,
     password: Option<String>,
     target_url: Option<String>,
+    epoch: u64,
 ) -> Result<serde_json::Value, String> {
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
     privacy_consent::require_cloud()?;
     let handle = app
         .state::<tauri_plugin_onethu_mobile::OnethuMobile<tauri::Wry>>()
@@ -4310,23 +4419,26 @@ async fn open_cloud_token_window(
     // 桌面同款：id 表单页自动填表（拼在读票脚本前；无凭据自静默）
     let fill_js = eid_fill_script(username.as_deref().unwrap_or(""), password.as_deref().unwrap_or(""));
     let script = format!("{fill_js}\n{CLOUD_TOKEN_SCRIPT}");
-    let result: serde_json::Value = handle
+    let mut result: serde_json::Value = handle
         .run_mobile_plugin_async(
             "openCloudTokenWebview",
             serde_json::json!({
                 "url": target,
                 "script": script,
                 "cookieSeedsJson": cookie_seeds_json,
+                "epoch": epoch,
             }),
         )
         .await
         .map_err(|e| e.to_string())?;
+    NATIVE_JAR_ARC.ensure_epoch(epoch)?;
     if let Some(raw) = result.get("cookieSeeds") {
         if let Ok(returned) = serde_json::from_value::<Vec<CloudCookieSeed>>(raw.clone()) {
-            seed_native_cloud_cookies(&returned);
+            seed_native_cloud_cookies(&returned, epoch)?;
             NATIVE_JAR_ARC.save_if_dirty(&jar_store_path(&app));
         }
     }
+    result["epoch"] = serde_json::json!(epoch);
     Ok(result)
 }
 
@@ -4445,6 +4557,7 @@ let builder = tauri::Builder::default();
             http_native_clear_cookies_domain,
             thos_open_portal,
             http_native_seed,
+            http_native_epoch,
             downloads::save_local_download,downloads::download_directory_get,downloads::download_directory_pick,downloads::download_directory_reset,save_file_as,
             log_debug,debug_log_export,read_file_text,read_file_base64,write_temp_file,wallpaper_save,wallpaper_read,wallpaper_delete,seafile::seafile_upload_wallpaper,geek_browser_probe,geek_browser_launch,geek_browser_close,geek_playwright_install,
             overlay_win::overlay_supported,overlay_win::overlay_show,overlay_win::overlay_hide,overlay_win::overlay_set_mode,overlay_win::overlay_move,overlay_win::overlay_nudge,overlay_win::overlay_drag_start,overlay_win::overlay_focus,overlay_win::overlay_back_to_main,updater::updater_download,updater::updater_cancel_download,updater::updater_open_installer,overlay_win::overlay_set_panel_height,trace_key,macos_location,speech_supported,speech_start,speech_poll,speech_stop,mail::mail_list,mail::mail_read,mail::mail_mark_seen,mail::mail_send,mail::mail_search,seafile::seafile_account,seafile::seafile_repos,
@@ -4981,6 +5094,8 @@ mod login_ipc_tests {
     #[tokio::test(flavor = "current_thread")]
     async fn cookie_lock_wait_keeps_the_caller_executor_responsive() {
         assert_cookie_clear_yields(http_native_clear_cookies_domain(vec!["id.tsinghua.edu.cn".into()])).await;
-        assert_cookie_clear_yields(http_native_clear_cookies()).await;
+        let path = std::env::temp_dir().join(format!("onethu-cookie-clear-{}.json", std::process::id()));
+        assert_cookie_clear_yields(clear_native_cookies_at_path(path.clone())).await;
+        let _ = std::fs::remove_file(path);
     }
 }

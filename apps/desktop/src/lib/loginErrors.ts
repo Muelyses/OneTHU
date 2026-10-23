@@ -2,7 +2,7 @@ import { t } from "../i18n/index.js";
 
 const reasons = new Set([
   "missing-public-key", "invalid-public-key", "empty-response", "access-restricted",
-  "trust-limit", "unexpected-page", "unsafe-confirmation", "confirmation-loop",
+  "trust-limit", "unexpected-page", "unsafe-confirmation", "confirmation-loop", "gateway-unavailable",
 ]);
 
 /** Stable library codes only. Never log page HTML, session IDs or server-provided attributes. */
@@ -24,10 +24,13 @@ export function explainLoginError(error: unknown): string | null {
     return t("login.error.cooldown", { seconds });
   }
   if (e.code === "AUTH_IN_PROGRESS") return t("login.error.inProgress");
+  if (e.code === "AUTH_SESSION_CONFLICT") return t("login.error.sessionConflict");
+  if (e.code === "AUTH_SESSION_CHANGED" || e.message === "AUTH_SESSION_CHANGED") return t("login.error.sessionChanged");
   if (e.code === "AUTH_2FA_RESTART") return t("login.error.restartVerification");
   if (e.code === "AUTH_2FA_METHOD") return t("login.error.changeMethod");
   if (e.status === 429) return t("login.error.restricted");
   if (e.code === "AUTH_PREPARATION_FAILED") {
+    if (e.reason === "gateway-unavailable") return t("login.error.gatewayUnavailable");
     if (e.reason === "trust-limit") return t("login.error.trustLimit");
     if (e.reason === "access-restricted") return t("login.error.restricted");
     if (e.reason === "invalid-public-key" || e.reason === "unsafe-confirmation") return t("login.error.invalidForm");

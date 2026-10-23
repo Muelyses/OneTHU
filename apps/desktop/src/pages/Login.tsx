@@ -8,6 +8,12 @@ import { loadRemembered } from "../lib/clients.js";
 import { useApp } from "../state/context.js";
 import { DESENSITIZE_BUILD } from "../lib/privacy.js";
 import { LanguageControl } from "../components/LanguageControl.js";
+import { requestUpdateCenter } from "../lib/updateReminder.js";
+
+function LoginUpdateEntry() {
+  useUiLocale();
+  return <Btn type="button" variant="ghost" onClick={requestUpdateCenter} data-testid="login-update-entry">{i18n("components.softwareupdatesection.7f68ebad19ba")}</Btn>;
+}
 
 function LoginErrorPanel({ error }: { error: string }) {
   const [copied, setCopied] = useState(false);
@@ -93,6 +99,7 @@ export function LoginPage() {
 
         <div className="login-foot">
           <span>{i18n("pages.login.7046d9853c1b")}</span>
+          <LoginUpdateEntry />
         </div>
         {DESENSITIZE_BUILD ? (
           <p className="login-note">{i18n("pages.login.f5d462594d7c")}</p>
@@ -155,6 +162,7 @@ export function TwoFactorPage() {
       <HardRefreshButton />
         <div className="login-card">
           <LanguageControl compact />
+          <LoginUpdateEntry />
           <div className="login-mark">
             <BrandLogo size={26} />
             <div>
@@ -201,6 +209,7 @@ export function TwoFactorPage() {
       <HardRefreshButton />
       <div className="login-card">
         <LanguageControl compact />
+        <LoginUpdateEntry />
         <div className="login-mark">
           <BrandLogo size={26} />
           <div>

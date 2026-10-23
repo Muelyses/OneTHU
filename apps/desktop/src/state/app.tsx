@@ -244,6 +244,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const error = errorCause === null ? null : formatNetworkError(errorCause);
   const [twoFactor, setTwoFactor] = useState<AppState["twoFactor"]>(null);
   const loginBusy = useRef(false);
+  const authActionVersion = useRef(0);
   /* dev-explorer：page/navParams 不再是本地状态——直接派生自 explorer 活动标签页
      （订阅同一份 store）；navigate = explorer 语义（首页内开新标签页 / 页标签内导航 /
      设置类走浮层）。全库 useApp() 调用点零改动。 */
@@ -260,28 +261,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     void import("../lib/clients.js").then(({ logLine }) => logLine("PROBE boot-effect")).catch(() => undefined);
     let cancelled = false;
-    void (async () => {
-      let ok = false;
-      try {
-        // 看门狗（2026-09-13 蜂窝实锤「死在恢复会话」零日志悬挂）：启动门
-        // 10s 必开——resume 链任何请求悬挂时强制放行，走静默重登/登录页，
-        // 绝不无限转圈。成功路径完全不受影响（实测正常恢复 <1s）。
-        ok = await Promise.race([
-          clients.resumeSession(),
-          new Promise<false>((res) => setTimeout(() => res(false), 10_000)),
-        ]);
-      } catch {
-        ok = false;
-      }
-      if (cancelled) return;
-      if (ok) {
-        const saved = await clients.store.loadSession();
-        setUser({ username: saved?.username ?? "" });
+    const actionVersion = authActionVersion.current;
+    const ownsBoot = () => !cancelled && actionVersion === authActionVersion.current;
+    const applyOutcome = async (outcome: clients.BootResumeOutcome): Promise<void> => {
+      if (!ownsBoot()) return;
+      if (outcome.kind === "ready") {
+        setUser({ username: outcome.username });
         setStatus("ready");
         return;
       }
-      // 恢复失败（learn/id 会话过期是常态）且勾选了记住密码 → 静默重登一次，免输密码
-      // 同款看门狗 15s：重登链悬挂时放行到登录页（用户手点也不至于困死）
+      if (outcome.kind === "unavailable") {
+        // Keep the previous account's local view while its service is unavailable.
+        // No saved account means the login screen remains available with the cause.
+        setUser(outcome.username ? { username: outcome.username } : null);
+        setStatus(outcome.username ? "ready" : "logged-out");
+        if (!outcome.username) setError(outcome.error);
+        return;
+      }
+      // Only confirmed missing authentication can submit remembered credentials.
+      // A late 401 after the boot deadline also leaves the temporary cached view.
+      setUser(null);
+      setStatus("connecting");
       const TS = Date.now();
       type SilentResult = Awaited<ReturnType<typeof clients.trySilentRelogin>>;
       const silentResult: SilentResult = await Promise.race([
@@ -292,10 +292,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       void import("../lib/clients.js").then(({ logLine }) =>
         logLine(`BOOT-T trySilentRelogin(${silent ? i18n("state.app.053461ce86d2") : i18n("state.app.28384d7afd2e")}) +${Date.now() - TS}ms`),
       ).catch(() => undefined);
-      if (cancelled) return;
+      if (!ownsBoot()) return;
       if (silent) {
-        const saved = await clients.store.loadSession();
-        setUser({ username: saved?.username ?? "" });
+        setUser({ username: clients.session.username });
         setStatus("ready");
       } else if (silentResult.twoFactor) {
         // 静默重登撞 2FA：直接弹 2FA 界面（凭据已在链上）——否则登录链停在
@@ -309,6 +308,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } else {
         setStatus("logged-out");
       }
+    };
+    void (async () => {
+      const { outcome, settlement } = await clients.resumeSessionForBoot();
+      await applyOutcome(outcome);
+      // Timeout ends the spinner; it does not abandon the original probe or
+      // start a second password login alongside it.
+      if (settlement) void settlement.then(applyOutcome);
     })();
     return () => {
       cancelled = true;
@@ -321,6 +327,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (username: string, password: string, remember = true) => {
       if (loginBusy.current) return;
+      authActionVersion.current++;
       loginBusy.current = true;
       void clients.logLine("AUTH-PHASE submit");
       setStatus("connecting");
@@ -393,6 +400,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const backToLogin = useCallback(async () => {
     if (PREVIEW_MODE) return; // 视觉自检：数据 effect 的「会话过期」误登出在无后端预览里必触发，屏蔽
+    authActionVersion.current++;
     const { libAbandonLogin } = await import("../lib/infoLib.js");
     await libAbandonLogin();
     setTwoFactor(null);
@@ -401,11 +409,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await clients.logout();
-    setUser(null);
-    setTwoFactor(null);
-    setStatus("logged-out");
-    navigate("homepage");
+    authActionVersion.current++;
+    try {
+      await clients.logout();
+      setError(null);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setUser(null);
+      setTwoFactor(null);
+      setStatus("logged-out");
+      navigate("homepage");
+    }
   }, [navigate]);
 
   const value = useMemo<AppState>(

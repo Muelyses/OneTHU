@@ -39,7 +39,7 @@ async function boot({ mode = 'full', locale = 'zh-CN', width = 390, height = 844
   active = env.page;
   const page = env.page;
   page.on('pageerror', e => errors.push(e.message));
-  const network = { version: '0.11.3', reads: 0, downloads: 0, failed: false };
+  const network = { version: '99.0.0', reads: 0, downloads: 0, failed: false };
   await page.route(manifestURL, async route => {
     network.reads++;
     if (network.hold) await network.hold;
@@ -68,7 +68,7 @@ async function chooseLater(page, duration) {
   await prompt(page).getByRole('button').last().click();
   await prompt(page).waitFor({ state: 'hidden' });
   const value = await readSnooze(page);
-  check(value?.version === '0.11.3' && Math.abs(value.until - now - durations[duration]) < 1500, `${duration}: click persists the exact version and requested duration`);
+  check(value?.version === '99.0.0' && Math.abs(value.until - now - durations[duration]) < 1500, `${duration}: click persists the exact version and requested duration`);
   return value;
 }
 async function fit(page, label) {
@@ -92,7 +92,7 @@ try {
     await waitPrompt(page);
     check(network.reads === 1, `${label}: automatic startup check shows exactly one reminder`);
     const text = await prompt(page).innerText();
-    check(text.includes('0.11.3') && (locale === 'en-US' ? !/[\u3400-\u9fff]/.test(text) && /update/i.test(text) : /更新/.test(text)), `${label}: version and localized copy are correct`);
+    check(text.includes('99.0.0') && (locale === 'en-US' ? !/[\u3400-\u9fff]/.test(text) && /update/i.test(text) : /更新/.test(text)), `${label}: version and localized copy are correct`);
     await fit(page, label);
     await page.screenshot({ path: `${out}/${label}.png` });
     await prompt(page).getByRole('button').first().click();
@@ -105,7 +105,7 @@ try {
       return { top: r.top, bottom: r.bottom, height: innerHeight, text: el.textContent, hiddenAncestor: !!el.closest('[hidden]') };
     });
     samples.push({ label, updateTarget: target });
-    check(!target.hiddenAncestor && target.top >= 0 && target.top < target.height - 60 && target.text.includes('0.11.3'), `${label}: update action lands at the visible populated software-update section`);
+    check(!target.hiddenAncestor && target.top >= 0 && target.top < target.height - 60 && target.text.includes('99.0.0'), `${label}: update action lands at the visible populated software-update section`);
     check(!/\+\s*`/.test(target.text), `${label}: update details render prose without exposed template syntax`);
     check(network.downloads === 0 && network.reads === 1, `${label}: opening update settings reuses the check without downloading`);
     await close(page, context); active = null;
@@ -134,14 +134,14 @@ try {
 
   // New browser context: restore only the previously persisted preference.
   {
-    const stored = { version: '0.11.3', until: Date.parse('2026-10-23T12:00:00Z') };
+    const stored = { version: '99.0.0', until: Date.parse('2026-10-23T12:00:00Z') };
     const { page, context, network } = await boot({ snooze: stored });
     await page.waitForTimeout(3500);
     check(network.reads === 1 && await prompt(page).count() === 0, 'fresh browser session respects a persisted same-version delay');
-    network.version = '0.11.4';
+    network.version = '99.0.1';
     await page.clock.fastForward(6 * 60 * 60 * 1000 + 1000);
     await waitPrompt(page);
-    check((await prompt(page).innerText()).includes('0.11.4'), 'a newer release bypasses the old release delay at the periodic check');
+    check((await prompt(page).innerText()).includes('99.0.1'), 'a newer release bypasses the old release delay at the periodic check');
     await close(page, context); active = null;
   }
 
@@ -183,7 +183,7 @@ try {
     }
     await prompt(page).waitFor({ state: 'hidden' });
     check((await explorer(page, 'explorerSnapshot')).activeId === before.activeId && await page.locator('.explorer-shell').isVisible(), `${method}: dismisses only the reminder and keeps the main screen`);
-    check((await readSnooze(page))?.version === '0.11.3', `${method}: dismissal records the selected delay`);
+    check((await readSnooze(page))?.version === '99.0.0', `${method}: dismissal records the selected delay`);
     await close(page, context); active = null;
   }
 

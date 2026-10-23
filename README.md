@@ -2,7 +2,7 @@
 
 <img src="docs/logo-banner.png" alt="One above THU — One THUer should have OneTHU" width="640">
 
-**0.11.2 · Revolution**
+**0.11.3 · Revolution**
 
 [中文](README.md) · [English](README.en.md)
 
@@ -14,9 +14,9 @@
 
 OneTHU 是非官方的清华校园应用，覆盖 macOS、Windows 与 Android。0.11 使用 OneGUI 统一交互，主题、壁纸与布局均可调整，提供极简、实用、完整三种模式；搜索与 OH 胶囊贯穿三种模式，完整模式进一步开放自由白板、暂存分享、组织、插件、OneTHU Harness 与清小搭。
 
-## 0.11.2 修复更新
+## 0.11.3 修复更新
 
-本次更新改善网络学堂会话恢复，将壁纸媒体纳入跨设备备份，让横屏平板遵守白板编辑开关，并统一玻璃材质与桌面窗口行为。三种模式共用更新提醒，可选择稍后提醒的时长。macOS、Windows 与 Android 同步更新，详见 [修复说明](docs/release-0.11.2.md)。
+本次更新改善学校登录与会话恢复，复用已有设备身份，并在登录界面提供更新公告、手动检查和下载安装入口。极简、实用和完整模式均可在登录受阻时获取修复版。macOS、Windows 与 Android 同步更新，详见 [修复说明](docs/release-0.11.3.md)。
 
 ## 真实界面，模拟数据
 

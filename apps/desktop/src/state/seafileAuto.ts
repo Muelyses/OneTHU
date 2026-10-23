@@ -17,9 +17,10 @@ import { t as i18n } from "../i18n/index.js";
  */
 import { http } from "../lib/clients.js";
 import { logLine } from "../lib/clients.js";
-import { setSeafileToken, type SeafileAccount } from "./seafile.js";
+import { getSeafileCredentialVersion, setSeafileToken, type SeafileAccount } from "./seafile.js";
 import type { TwoFactorMethod } from "@onethu/core";
 
+import { nativeSessionEpoch, assertNativeSessionEpoch } from "../lib/transport.js";
 import { requireCloudConsent } from "./privacyConsent.js";
 const PROFILE_URL = "https://cloud.tsinghua.edu.cn/profile/";
 
@@ -78,6 +79,8 @@ export async function autoConnectSeafile(
  *  全程零窗口零输入；幂等（已连接直接返回）。ConnectGate / 导览 / IM 指令共用。 */
 export async function silentConnectSeafile(): Promise<AutoConnectResult> {
   requireCloudConsent();
+  const credentialVersion = getSeafileCredentialVersion();
+  const epoch = await nativeSessionEpoch();
   const log = (m: string) => void logLine(`[CLOUD-DIRECT] ${m}`).catch(() => undefined);
   try {
     const { getSeafileToken } = await import("./seafile.js");
@@ -88,20 +91,23 @@ export async function silentConnectSeafile(): Promise<AutoConnectResult> {
     }
     const { invoke } = await import("@tauri-apps/api/core");
     const { info } = await import("../lib/clients.js");
-    let r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile");
+    let r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile", { epoch });
+    await assertNativeSessionEpoch(epoch);
     if (r.needConfirm) {
       log(`落确认页 → confirmIdCheckSingle（finalUrl=${r.finalUrl.slice(0, 80)}）`);
       const ok = await info.confirmIdCheckSingle(r.finalUrl).catch(() => false);
       log(`确认=${ok ? "ok" : "fail"} → 重爬 profile`);
       if (!ok) return { ok: false, error: i18n("state.seafileauto.d236f74b57c1") };
-      r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile");
+      r = await invoke<{ finalUrl: string; body: string; needConfirm: boolean; plainToken: string }>("cloud_webvpn_profile", { epoch });
     }
+    await assertNativeSessionEpoch(epoch);
     const token = (r.plainToken && /^[0-9a-f]{40}$/i.test(r.plainToken) ? r.plainToken : "") || extractToken(r.body) || "";
     if (!token) {
       log(`页面无口令（finalUrl=${r.finalUrl.slice(0, 80)} len=${r.body.length}）`);
       return { ok: false, error: i18n("state.seafileauto.64be8fcebc0a") };
     }
-    const account = await setSeafileToken(token);
+    await assertNativeSessionEpoch(epoch);
+    const account = await setSeafileToken(token, credentialVersion);
     log(`云盘已静默连接：${account.name}（${account.email}）`);
     return { ok: true, account };
   } catch (e) {
@@ -173,7 +179,7 @@ async function fetchProfile(): Promise<{ finalUrl: string; body: string }> {
 }
 
 /** 复用统一 jar 正门的云盘自动连接；retried=true 表示已做过一次直登，不再循环 */
-async function autoConnectViaHttp(retried = false, allowRelogin = true): Promise<AutoConnectResult> {
+async function autoConnectViaHttp(retried = false, allowRelogin = true, credentialVersion = getSeafileCredentialVersion()): Promise<AutoConnectResult> {
   const log = (m: string) => void logLine(`[SEAFILE-AUTO] ${m}`).catch(() => undefined);
   try {
     const { info } = await import("../lib/clients.js");
@@ -215,7 +221,7 @@ async function autoConnectViaHttp(retried = false, allowRelogin = true): Promise
       }
       log(`直登 id=${direct ? "ok" : "fail"} diag=${info.lastDebug.slice(0, 160)}`);
       if (!direct) return { ok: false, error: i18n("state.seafileauto.789c9d831ceb") };
-      return autoConnectViaHttp(true, allowRelogin);
+      return autoConnectViaHttp(true, allowRelogin, credentialVersion);
     }
 
     // ③ 二次认证页（id 端 2FA，checkSingle 回包里 JS 跳转的目标）
@@ -240,7 +246,7 @@ async function autoConnectViaHttp(retried = false, allowRelogin = true): Promise
       // Keep only route/length metadata; never dump profile HTML or inline scripts.
       return { ok: false, error: i18n("state.seafileauto.0b66b052d51d") };
     }
-    const account = await setSeafileToken(token);
+    const account = await setSeafileToken(token, credentialVersion);
     log(`云盘已自动连接：${account.name}（${account.email}）`);
     return { ok: true, account };
   } catch (e) {

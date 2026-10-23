@@ -18,6 +18,7 @@ import { useExpanded } from "../state/usePlatformLayout.js";
 import { YktQrPanel, YktWebLoginPanel, saveYuketang } from "./ExtHwLoginModal.js";
 import { extHwLogin, refreshExtHw } from "../state/exthw.js";
 import { connectCloudDisk, connectMail } from "../state/accountSetup.js";
+import { getSeafileCredentialVersion } from "../state/seafile.js";
 import { showToast } from "../state/toast.js";
 
 export type BindNeed = "yuketang" | "tuoj" | "mail" | "cloud";
@@ -107,6 +108,7 @@ export function ConnectGate({
   /** 静默优先：silentConnectSeafile（直连 SSO + checkSingle 自动确认 + by-session
    *  只读取票，与导览/IM 共用链）；取不到再回退应用内 WebView。两层都零输入。 */
   const cloudTokenFromWebview = async (): Promise<void> => {
+    const credentialVersion = getSeafileCredentialVersion();
     setBusy(true);
     setErr(null);
     setAutoMsg(i18n("components.connectgate.e66f1bb3f795"));
@@ -120,9 +122,10 @@ export function ConnectGate({
         return;
       }
       setAutoMsg(r.error ?? i18n("components.connectgate.aba4647cd558"));
+      if (credentialVersion !== getSeafileCredentialVersion()) throw new Error(i18n("state.seafile.accountChanged"));
       const { readCloudTokenInWebview } = await import("../lib/cloudTokenWebview.js");
       const token = await readCloudTokenInWebview();
-      await connectCloudDisk(token);
+      await connectCloudDisk(token, credentialVersion);
       showToast(i18nMsg("components.connectgate.90f0cb9c68db"));
       onDone?.();
       onClose();

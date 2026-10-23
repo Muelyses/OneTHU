@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "plugins.types.2cc9c0bad3d7",
+      "source": "预约公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 63,
+          "context": "return i18n(\"plugins.types.2cc9c0bad3d7\");"
+        }
+      ],
+      "translation": "Book common spaces",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.2f907548af0c",
+      "source": "经内置 Harness 调用大模型（清华免费档或你的自费 API）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 91,
+          "context": "return i18n(\"plugins.types.2f907548af0c\");"
+        }
+      ],
+      "translation": "Call LLMs through the built-in Harness (Tsinghua free tier or your self-paid API)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "plugins.types.33a65099fe72",
+      "source": "主题控制",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/plugins/types.ts",
+          "line": 90,
+          "context": "return i18n(\"plugins.types.33a65099fe72\");"
+        }
+      ],
+      "translation": "Theme control",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "plugins.types.3821452a894a",
       "source": "读取 GitLab",
@@ -1240,52 +1288,6 @@
         }
       ],
       "translation": "This is an unofficial assistance tool. University APIs, networks and third-party services may change or become unavailable; data may be delayed, incomplete or incorrect. Check deadlines, reservations, payments and other important matters in official systems, and verify action results. Back up important files. This notice does not exclude statutory rights or responsibilities.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.disclaimerTitle",
-      "source": "以官方信息为准",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Verify important actions with official services",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.fullRequired",
-      "source": "完整模式需要云盘授权。请先在权限须知中开启。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/ExperienceModePicker.tsx",
-          "line": 16,
-          "context": "m.id === \"full\" && !privacy.cloud ? i18n(\"privacy.fullRequired\") : m.detail"
-        }
-      ],
-      "translation": "Full mode requires cloud permission. Enable it in Permissions & privacy first.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "privacy.lead",
-      "source": "先了解数据去向，再决定授权。拒绝可选授权，也能使用极简与实用模式。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "docs/i18n/static-label-seed.json",
-          "line": 1
-        }
-      ],
-      "translation": "Understand where data goes, then choose permissions. Minimal and Practical modes work without optional consent.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

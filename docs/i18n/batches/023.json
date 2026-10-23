@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -10,7 +10,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 159,
+          "line": 198,
           "context": "d.verified ? i18nMsg(\"components.softwareupdatesection.9957c2dd1877\") : \"\""
         }
       ],
@@ -26,12 +26,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 154,
+          "line": 193,
           "context": "d.error ?? i18nMsg(\"components.softwareupdatesection.a1a9da9ee6ed\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 166,
+          "line": 206,
           "context": "inst.errorMessage ?? inst.error ?? i18nMsg(\"components.softwareupdatesection.a1a9da9ee6ed\")"
         }
       ],
@@ -47,7 +47,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 262,
+          "line": 315,
           "context": "{i18n(\"components.softwareupdatesection.abae77ee2a3f\")}"
         }
       ],
@@ -63,7 +63,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 205,
+          "line": 258,
           "context": "phase === \"error\" ? i18n(\"components.softwareupdatesection.ea0add721b8e\") : i18n(\"components.softwareupdatesection.ac69f68b7010\")"
         }
       ],
@@ -79,7 +79,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 261,
+          "line": 314,
           "context": "{i18n(\"components.softwareupdatesection.b71ae82b4fba\")}"
         }
       ],
@@ -95,7 +95,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 255,
+          "line": 308,
           "context": "{i18n(\"components.softwareupdatesection.b7d7aca618eb\")}"
         }
       ],
@@ -116,8 +116,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 194,
+          "line": 247,
           "context": "{i18nRich(\"components.softwareupdatesection.c692dd3f13e4\", { value: res?.ok && res.hasUpdate ? <span className=\"update-badge\">{i18n(\"components.softwareupdatesection.daedea385864\")}</span> : null })}"
+        },
+        {
+          "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
+          "line": 156,
+          "context": "{t(\"components.softwareupdatesection.c692dd3f13e4\", { value: \"\" })}"
         }
       ],
       "translation": "Software update{value}",
@@ -137,7 +142,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 248,
+          "line": 301,
           "context": "res.belowMin ? i18n(\"components.softwareupdatesection.cffe690b5ead\", { minVersion: String(res.manifest?.minVersion) }) : \"\""
         }
       ],
@@ -162,7 +167,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 243,
+          "line": 296,
           "context": "i18n(\"components.softwareupdatesection.d54a23c91b8f\", { latest: String(res.latest), value: String(res.releasedAt ? `（${res.releasedAt}）` : \"\") })\n            + `${srcLine ? `\\n${srcLine}` : \"\"}`"
         }
       ],
@@ -178,7 +183,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 194,
+          "line": 247,
           "context": "{i18n(\"components.softwareupdatesection.daedea385864\")}"
         }
       ],
@@ -194,7 +199,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 187,
+          "line": 240,
           "context": "res.hashAvailable\n      ? i18n(\"components.softwareupdatesection.3c0fc35e4fb6\")\n      : i18n(\"components.softwareupdatesection.e18465dcfa9e\")"
         }
       ],
@@ -215,8 +220,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 250,
+          "line": 303,
           "context": "res.notes ? i18n(\"components.softwareupdatesection.e5958649985d\", { notes: String(res.notes) }) : \"\""
+        },
+        {
+          "file": "apps/desktop/src/components/UpdatePromptHost.tsx",
+          "line": 143,
+          "context": "t(\"components.softwareupdatesection.e5958649985d\", { notes: release.notes }).trim"
         }
       ],
       "translation": "\n\nRelease notes:\n{notes}",
@@ -231,7 +241,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 205,
+          "line": 258,
           "context": "phase === \"error\" ? i18n(\"components.softwareupdatesection.ea0add721b8e\") : i18n(\"components.softwareupdatesection.ac69f68b7010\")"
         }
       ],
@@ -268,7 +278,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 136,
+          "line": 173,
           "context": "confirmOk(\n      i18nMsg(\"components.softwareupdatesection.f22fe456ba20\", { value: String(updateSourceLabel(r) || i18n(\"components.softwareupdatesection.4d8c1c5b4283\")), latest: String(r.latest), value2: String(PLATFORM_LABEL[plat]), downloadName: String(r.downloadName), sizeText: String(sizeText) }),\n    )"
         }
       ],
@@ -284,7 +294,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 134,
+          "line": 171,
           "context": "asset?.size ? formatSize(asset.size) : i18n(\"components.softwareupdatesection.f8f5f153c20d\")"
         }
       ],
@@ -305,8 +315,13 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 142,
+          "line": 179,
           "context": "setMsg(i18nMsg(\"components.softwareupdatesection.faa2f14dfa0b\", { downloadName: String(r.downloadName) }))"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 496,
+          "context": "error: i18n(\"components.softwareupdatesection.faa2f14dfa0b\", { downloadName: activeUpdateDownload.fileName })"
         }
       ],
       "translation": "Downloading {downloadName}…",
@@ -321,7 +336,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 224,
+          "line": 277,
           "context": "{i18n(\"components.softwareupdatesection.fad86bf65f72\")}"
         }
       ],
@@ -346,7 +361,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 166,
+          "line": 206,
           "context": "setErr(i18nMsg(\"components.softwareupdatesection.fe8283074c76\", { path: String(d.path), value: \"\" }), { value: inst.errorMessage ?? inst.error ?? i18nMsg(\"components.softwareupdatesection.a1a9da9ee6ed\") })"
         }
       ],

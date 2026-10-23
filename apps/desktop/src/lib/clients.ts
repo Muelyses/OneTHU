@@ -159,12 +159,12 @@ export const http = new HttpClient({
 http.webVPNEncoder = webvpnWrap;
 http.debug = (line) => void logLine(line);
 // jar→rust 播种桥（wengine 引导页票种同步进原生仓；learn 同款，基础设施票过滤）
-http.nativeSeedHook = (url, pair, path = "/") => {
+http.nativeSeedHook = (url, pair, path = "/", epoch) => {
   const name = pair.split("=")[0]!.trim();
   if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") {
     return;
   }
-  return nativeSeedCookies(url, [`${pair}; Path=${path}`]);
+  return nativeSeedCookies(url, [`${pair}; Path=${path}`], epoch);
 };
 // 重定向链逐跳日志：定位教务漫游链在哪一跳断掉（CAS 票据流/登录页）
 setHopLogger((hopUrl, status, ck) => void logLine(`[HOP] ${status} ${hopUrl.slice(0, 150)} ck=${ck ?? "(无)"}`));
@@ -228,12 +228,12 @@ learnHttp.debug = (line) => void logLine(line);
 // 只进 jar 的票 rust 侧永远看不到）。但 wengine 基础设施票（wengine_vpn_ticket/
 // show_*/heartbeat/refresh）绝不播种——2026-09-17 实录：铸好的真票被引导页
 // 回放的陈旧匿名票覆盖，首页瞬间全绿→几秒后死。只播种目标应用域会话票。
-learnHttp.nativeSeedHook = (url, pair, path = "/") => {
+learnHttp.nativeSeedHook = (url, pair, path = "/", epoch) => {
   const name = pair.split("=")[0]!.trim();
   if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") {
     return;
   }
-  return nativeSeedCookies(url, [`${pair}; Path=${path}`]);
+  return nativeSeedCookies(url, [`${pair}; Path=${path}`], epoch);
 };
 // 脱敏版（demo 分支）在取数出口统一过一遍：姓名 / 学号 / 成绩在离开客户端时就被替换
 export const learn = withPrivacy(new LearnClient(learnHttp), "learn");
@@ -348,6 +348,9 @@ type ClientLoginResult = { state: "ready" } | { state: "need-2fa"; methods: TwoF
 let clientLoginRequest: { username: string; p: Promise<ClientLoginResult> } | null = null;
 
 export function login(username: string, password: string, opts: { remember?: boolean } = {}): Promise<ClientLoginResult> {
+  if (resumeRequest) {
+    return Promise.reject(Object.assign(new Error("Session recovery is still in progress."), { code: "AUTH_IN_PROGRESS" }));
+  }
   if (clientLoginRequest) {
     if (clientLoginRequest.username === username) return clientLoginRequest.p;
     return Promise.reject(Object.assign(new Error("Another login is in progress."), { code: "AUTH_IN_PROGRESS" }));
@@ -508,22 +511,43 @@ export async function persist(): Promise<void> {
   }
 }
 
-export async function currentFingerprint(): Promise<string> {
-  const saved = await store.loadSession();
-  if (saved?.fingerprint) return session.fingerprint = saved.fingerprint;
-  // 首次生成即落盘（demo 的 redux-persist 初值语义）：否则登录中途崩溃会
-  // 重新随机，设备信任（fingerPrint 比对）永远建立不起来
-  const fp = makeFingerprint();
-  session.fingerprint = fp;
-  await store
-    .saveSession({
+// Keep the resolved identity as well as the in-flight read: denied/full storage
+// must not make a second login or a parallel service invent another device.
+let fingerprintRequest: Promise<string> | null = null;
+export function currentFingerprint(): Promise<string> {
+  if (fingerprintRequest) return fingerprintRequest;
+  fingerprintRequest = (async () => {
+    let saved = await store.loadSession().catch(() => null);
+    const raw = await fileRead(SESSION_FILE).catch(() => null);
+    let mirrored: SessionData | null = null;
+    try {
+      const candidate = raw ? JSON.parse(raw) as SessionData : null;
+      if (candidate && typeof candidate.fingerprint === "string" && candidate.fingerprint) mirrored = candidate;
+    } catch { /* A malformed mirror can be repaired from the local record. */ }
+    if (!saved || typeof saved.fingerprint !== "string" || !saved.fingerprint) {
+      // Authentication can start before resumeSession. Recover the same device
+      // directly from the native mirror when WebView storage was evicted.
+      saved = mirrored;
+    }
+    const snapshot: SessionData = saved ?? {
       username: "",
-      fingerprint: fp,
+      fingerprint: makeFingerprint(),
       cookiesJson: "{}",
       savedAt: Date.now(),
-    })
-    .catch(() => undefined);
-  return fp;
+    };
+    session.fingerprint = snapshot.fingerprint;
+    if (typeof snapshot.finger3 === "string") session.finger3 = snapshot.finger3;
+    // First-use identity survives a failed login, a refresh and either storage
+    // being unavailable. No credential submission is needed to persist it.
+    await Promise.allSettled([
+      store.saveSession(snapshot),
+      // Preserve an existing mirror: its owner may differ after an interrupted
+      // account switch. The cookie ownership gate must see that disagreement.
+      mirrored ? Promise.resolve() : fileWrite(SESSION_FILE, JSON.stringify(snapshot)),
+    ]);
+    return snapshot.fingerprint;
+  })();
+  return fingerprintRequest;
 }
 
 /** facade 等外部模块的安全入口（动态 import 防环） */
@@ -536,41 +560,118 @@ async function loadFinger3(): Promise<string> {
   return saved?.finger3 ?? "";
 }
 
-export async function resumeSession(): Promise<boolean> {
-  void logLine("PROBE resume-entry").catch(() => undefined);
-  let saved = await store.loadSession();
-  void logLine("PROBE store-loaded").catch(() => undefined);
-  if (!saved) {
-    // localStorage 缺失（WKWebView 驱逐/清空）：从 appData 文件回灌并写回本地
-    const raw = await fileRead(SESSION_FILE);
-    if (raw) {
-      try {
-        saved = JSON.parse(raw) as SessionData;
-        await store.saveSession(saved).catch(() => undefined);
-        await logLine("RESUME session 从本机文件回灌（localStorage 缺失）").catch(() => undefined);
-      } catch {
-        saved = null;
-      }
-    }
+let resumeRequest: Promise<boolean> | null = null;
+let resumeSnapshotUsername: string | null = null;
+let resumeGeneration = 0;
+
+export function resumeSession(): Promise<boolean> {
+  if (resumeRequest) return resumeRequest;
+  const pending = performResumeSession();
+  resumeRequest = pending;
+  const clear = () => { if (resumeRequest === pending) resumeRequest = null; };
+  void pending.then(clear, clear);
+  return pending;
+}
+
+export type BootResumeOutcome =
+  | { kind: "ready"; username: string }
+  | { kind: "unauthenticated" }
+  | { kind: "unavailable"; username: string | null; error: unknown };
+
+/** A slow/unavailable school service preserves local access without submitting
+ * credentials. The UI also observes the eventual result of a timed-out probe. */
+export async function resumeSessionForBoot(timeoutMs = 10_000): Promise<{
+  outcome: BootResumeOutcome;
+  settlement: Promise<BootResumeOutcome> | null;
+}> {
+  const pending: Promise<BootResumeOutcome> = resumeSession().then((ok): BootResumeOutcome =>
+    ok ? { kind: "ready", username: resumeSnapshotUsername! } : { kind: "unauthenticated" },
+  ).catch((error) => {
+    void logLine("RESUME unavailable; automatic password login skipped").catch(() => undefined);
+    return { kind: "unavailable", username: resumeSnapshotUsername, error };
+  });
+  let timedOut = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<BootResumeOutcome>((resolve) => {
+    timer = setTimeout(() => {
+      timedOut = true;
+      void logLine("RESUME probe-timeout; awaiting existing probe without password login").catch(() => undefined);
+      resolve({ kind: "unavailable", username: resumeSnapshotUsername,
+        error: Object.assign(new Error("Session recovery is still in progress."), { code: "AUTH_IN_PROGRESS" }) });
+    }, timeoutMs);
+  });
+  try {
+    return { outcome: await Promise.race([pending, deadline]), settlement: timedOut ? pending : null };
+  } finally {
+    if (timer) clearTimeout(timer);
   }
+}
+
+/** Read both ownership records before any cookie hydration. A half-written
+ * account switch must never attach account B's native jar to account A's UI. */
+async function loadConsistentSessionSnapshot(): Promise<SessionData | null> {
+  const [localRead, fileReadResult] = await Promise.allSettled([
+    store.loadSession(), fileRead(SESSION_FILE, { strict: true }),
+  ]);
+  const conflict = () => Object.assign(new Error("Saved session ownership could not be verified. Please sign in again."), { code: "AUTH_SESSION_CONFLICT" });
+  if (localRead.status === "rejected" || fileReadResult.status === "rejected") throw conflict();
+  let mirror: unknown = null;
+  try { if (fileReadResult.value) mirror = JSON.parse(fileReadResult.value); } catch { throw conflict(); }
+  const valid = (value: unknown): value is SessionData => !!value && typeof value === "object"
+    && typeof (value as SessionData).username === "string"
+    && typeof (value as SessionData).fingerprint === "string"
+    && !!(value as SessionData).fingerprint
+    && typeof (value as SessionData).cookiesJson === "string";
+  const local = localRead.value;
+  if ((local !== null && !valid(local)) || (mirror !== null && !valid(mirror))) throw conflict();
+  if (local && mirror && local.username !== mirror.username) throw conflict();
+  return local ?? mirror as SessionData | null;
+}
+
+async function performResumeSession(): Promise<boolean> {
+  const generation = resumeGeneration;
+  resumeSnapshotUsername = null;
+  void logLine("PROBE resume-entry").catch(() => undefined);
+  let saved: SessionData | null;
+  try {
+    saved = await loadConsistentSessionSnapshot();
+  } catch (error) {
+    if (generation !== resumeGeneration) return false;
+    const { libDiscardLocalSession } = await import("./infoLib.js");
+    if (generation !== resumeGeneration) return false;
+    await libDiscardLocalSession();
+    session.reset();
+    session.username = "";
+    session.finger3 = "";
+    pendingSecret = null;
+    throw error;
+  }
+  void logLine("PROBE store-loaded").catch(() => undefined);
+  if (generation !== resumeGeneration) return false;
+  if (saved) await store.saveSession(saved).catch(() => undefined);
+  if (generation !== resumeGeneration) return false;
   // Identity survives a failed first login and logout (both can have an empty jar).
   if (saved?.fingerprint) session.fingerprint = saved.fingerprint;
   if (saved?.finger3) session.finger3 = saved.finger3;
-  if (!saved || !saved.cookiesJson || saved.cookiesJson === "{}") {
+  if (!saved || !saved.username || !saved.cookiesJson || saved.cookiesJson === "{}") {
     await logLine("RESUME no-saved-session");
     return false;
   }
   http.jar.hydrate(saved.cookiesJson);
+  resumeSnapshotUsername = saved.username;
   session.username = saved.username;
   session.fingerprint = saved.fingerprint;
   session.finger3 = saved.finger3 ?? "";
   {
     const { setLibFinger3, helper } = await import("./infoLib.js");
+    if (generation !== resumeGeneration) return false;
     setLibFinger3(session.finger3);
     helper.fingerprint = saved.fingerprint;
   }
   // 记住的密码（仅内存）：dorm/library 的 id 直登与静默重登都要用
-  const remembered = await loadRemembered();
+  const candidate = await loadRemembered();
+  const remembered = candidate?.username === saved.username ? candidate : null;
+  if (generation !== resumeGeneration) return false;
   if (remembered) {
     session.injectCredentials(remembered.username, remembered.password);
     // learn 静默重登（路径二）的账密源：首轮 resume 即可用，不必等静默重登
@@ -584,23 +685,25 @@ export async function resumeSession(): Promise<boolean> {
   mark("水合完成(0网络)");
   // lib 单管线：webvpn 会话在 jar 里，learn/info 都经包装域 wengine SSO 透明建立——
   // resume 只需探活：learn 拿得到 _csrf = webvpn 会话活 + learn 可达。
-  const okLearn = await learn.resume().catch((e) => {
-    logLine("RESUME learn-error " + String(e)).catch(() => undefined);
-    return false;
-  });
+  // Gateway pages, HTTP 403/429/5xx and transport failures propagate as service
+  // errors. Only a confirmed missing authentication returns false.
+  const okLearn = await learn.resume();
+  if (generation !== resumeGeneration) return false;
   mark(okLearn ? "learn.resume(会话活)" : "learn.resume(过期)");
   if (!okLearn) {
     await logLine("RESUME fail (learn 探活失败——boot 将走静默重登)");
     return false;
   }
-  session.state = "ready";
   await info.resume().catch(() => false);
+  if (generation !== resumeGeneration) return false;
+  session.state = "ready";
   mark("info.resume");
   // lib 凭据注入（2026-09-17）：快路径（learn 会话活）不跑 libLogin，
   // helper.userId 恒空 → card/日历/新闻等 lib 数据调用秒抛 Please login.
   // 有记住的密码就补上（roamingWrapper 需要账密才能按需漫游）。
   if (remembered) {
     const { helper } = await import("./infoLib.js");
+    if (generation !== resumeGeneration) return false;
     if (!helper.userId) {
       helper.userId = remembered.username;
       helper.password = remembered.password;
@@ -616,18 +719,8 @@ export async function resumeSession(): Promise<boolean> {
 
 /** 是否存在「曾登录」的会话快照（显式 logout 会清空，防止 boot 静默重登顶替登出） */
 async function hasLiveSnapshot(): Promise<boolean> {
-  const saved = await store.loadSession().catch(() => null);
-  if (saved && ((saved.cookiesJson && saved.cookiesJson !== "{}") || saved.demoCookies)) return true;
-  const raw = await fileRead(SESSION_FILE);
-  if (raw) {
-    try {
-      const j = JSON.parse(raw) as SessionData;
-      if ((j.cookiesJson && j.cookiesJson !== "{}") || j.demoCookies) return true;
-    } catch {
-      /* ignore */
-    }
-  }
-  return false;
+  const saved = await loadConsistentSessionSnapshot().catch(() => null);
+  return Boolean(saved?.username && ((saved.cookiesJson && saved.cookiesJson !== "{}") || saved.demoCookies));
 }
 
 /** boot 恢复失败时的静默重登（记住密码）：成功 true；无存档/需 2FA/失败 false。
@@ -651,6 +744,8 @@ export async function trySilentRelogin(): Promise<
     await logLine("SILENT-RELOGIN skip: 无记住的密码").catch(() => undefined);
     return { ok: false };
   }
+  const saved = await loadConsistentSessionSnapshot().catch(() => null);
+  if (!saved?.username || remembered.username !== saved.username) return { ok: false };
   try {
     const result = await login(remembered.username, remembered.password, { remember: true });
     if (result.state === "ready") {
@@ -673,6 +768,9 @@ export async function trySilentRelogin(): Promise<
 }
 
 export async function logout(): Promise<void> {
+  // A probe that was still running after the boot deadline cannot revive logout.
+  resumeGeneration++;
+  resumeSnapshotUsername = null;
   // 体育系统 token 与会话解耦但跟随登出清空（防串账号）
   const { venueLogout } = await import("./venue.js");
   venueLogout();
@@ -687,29 +785,15 @@ export async function logout(): Promise<void> {
   info.resetStaticSessionCaches();
   // lib 链登出（webvpn LOGOUT + 共享 jar 清空）
   const { libLogout } = await import("./infoLib.js");
-  await libLogout().catch(() => undefined);
-  // demo（thu-app-desktop auth slice）语义：登出只清凭据，fingerprint 与 finger3
-  // 属设备信任、跨登出保留——否则下次登录指纹重随机 → 信任失效 → 每次被迫 2FA
-  // （17:40 存档丢失 → 指纹重随机的教训）。
-  const saved = await store.loadSession().catch(() => null);
-  await store.clearSession();
-  // 会话快照（本地 + 文件）一并清空：无「曾登录」快照，boot 的静默重登才不会
-  // 把显式登出顶掉。记住的密码保留（登录页预填用），仅 Settings 可清除。
-  await fileDelete(SESSION_FILE);
-  pendingSecret = null;
-  session.reset();
-  if (saved?.fingerprint) {
-    await store
-      .saveSession({
-        username: "",
-        fingerprint: saved.fingerprint,
-        finger3: saved.finger3 ?? "",
-        cookiesJson: "{}",
-        demoCookies: "",
-        idJsid: "",
-        savedAt: Date.now(),
-      })
-      .catch(() => undefined);
+  try {
+    // cookieBoundary writes an explicit signed-out record in both stores.
+    // Keep that tombstone: deleting one copy could expose an older surviving copy.
+    await libLogout();
+  } finally {
+    pendingSecret = null;
+    session.reset();
+    session.username = "";
+    session.finger3 = "";
   }
 }
 

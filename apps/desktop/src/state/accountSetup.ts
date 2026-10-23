@@ -88,9 +88,9 @@ export async function connectMail(email: string, authCode: string): Promise<Acco
 }
 
 /** 清华云盘：Web API Auth Token（setSeafileToken 会实际校验并返回账户信息） */
-export async function connectCloudDisk(token: string): Promise<AccountStatus> {
+export async function connectCloudDisk(token: string, expectedVersion?: number): Promise<AccountStatus> {
   if (!token.trim()) throw new Error(i18n("state.accountsetup.ec4d67a81570"));
-  await setSeafileToken(token.trim());
+  await setSeafileToken(token.trim(), expectedVersion);
   return readAccountStatus();
 }
 

@@ -15,6 +15,7 @@ export type LoginPreparationReason =
     | "invalid-public-key"
     | "empty-response"
     | "access-restricted"
+    | "gateway-unavailable"
     | "trust-limit"
     | "unexpected-page"
     | "unsafe-confirmation"

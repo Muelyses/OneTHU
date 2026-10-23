@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -145,7 +145,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 417,
+          "line": 450,
           "context": "new Error(i18n(\"lib.transport.53480e72e233\", { maxHops: String(maxHops), value: networkLogUrl(currentUrl) }))"
         }
       ],
@@ -166,7 +166,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 214,
+          "line": 233,
           "context": "new Error(i18n(\"lib.transport.81870141c552\", { value: networkLogUrl(url) }))"
         }
       ],
@@ -182,7 +182,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 488,
+          "line": 521,
           "context": "return i18n(\"lib.transport.browserCors\");"
         }
       ],
@@ -246,7 +246,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 472,
+          "line": 505,
           "context": "return i18n(\"lib.transport.fileTooLarge\", {size:mb(big[1]!),limit:mb(big[2]!)});"
         }
       ],
@@ -262,7 +262,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 466,
+          "line": 499,
           "context": "return i18n(\"lib.transport.noReason\");"
         }
       ],
@@ -278,7 +278,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 478,
+          "line": 511,
           "context": "advice = i18n(\"lib.transport.reloginAdvice\")"
         }
       ],
@@ -298,7 +298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 485,
+          "line": 518,
           "context": "return i18n(\"lib.transport.serverRejected\", {error:raw});"
         }
       ],
@@ -314,7 +314,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/transport.ts",
-          "line": 491,
+          "line": 524,
           "context": "return i18n(\"lib.transport.timeoutAdvice\");"
         }
       ],
@@ -477,7 +477,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 543,
+          "line": 562,
           "context": "key === \"macos\" ? i18nMsg(\"lib.updater.185680ad27cd\") : i18nMsg(\"lib.updater.95bc488982b2\")"
         }
       ],
@@ -556,7 +556,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 543,
+          "line": 562,
           "context": "key === \"android\" ? i18nMsg(\"lib.updater.2da47c897e30\") : key === \"macos\" ? i18nMsg(\"lib.updater.185680ad27cd\") : i18nMsg(\"lib.updater.95bc488982b2\")"
         }
       ],
@@ -641,7 +641,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 537,
+          "line": 556,
           "context": "errorMessage = i18nMsg(\"lib.updater.42b98aa3fae8\")"
         }
       ],
@@ -702,7 +702,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 543,
+          "line": 562,
           "context": "key === \"macos\" ? i18nMsg(\"lib.updater.185680ad27cd\") : i18nMsg(\"lib.updater.95bc488982b2\")"
         }
       ],
@@ -846,7 +846,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/updater.ts",
-          "line": 547,
+          "line": 566,
           "context": "logLine(i18n(\"lib.updater.c57372e35f51\", { msg: String(msg) }))"
         }
       ],

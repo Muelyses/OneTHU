@@ -8,7 +8,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { webvpnWrap } from "@onethu/core";
 import { http } from "./clients.js";
 import { isAndroidNavigator } from "./androidHost.js";
-import { isTauri } from "./transport.js";
+import { isTauri, nativeSessionEpoch, assertNativeSessionEpoch, nativeSeedCookies, nativeSessionChanged } from "./transport.js";
 
 export interface CloudCookieSeed {
   url: string;
@@ -17,6 +17,7 @@ export interface CloudCookieSeed {
 }
 
 interface CloudTokenPayload {
+  epoch?: number;
   token?: string;
   cancelled?: boolean;
   cookieSeeds?: CloudCookieSeed[];
@@ -55,7 +56,7 @@ export function readCloudTokenInWebview(): Promise<string> {
 // 种子一律由 Rust 侧直接从原生仓取，前端不再往里推任何票。
 
 /** 将 WebView 登录/续期得到的 Cookie 回灌统一 jar；只接收固定的清华认证域。 */
-async function mergeReturnedCookies(seeds: CloudCookieSeed[] | undefined): Promise<void> {
+async function mergeReturnedCookies(seeds: CloudCookieSeed[] | undefined, epoch: number): Promise<void> {
   if (!Array.isArray(seeds)) return;
   for (const seed of seeds) {
     let parsed: URL;
@@ -68,31 +69,32 @@ async function mergeReturnedCookies(seeds: CloudCookieSeed[] | undefined): Promi
     const lines = (Array.isArray(seed.cookies) ? seed.cookies : []).filter((line) =>
       typeof line === "string" && line.length > 0 && !/[\r\n]/.test(line) && line.includes("="),
     );
+    await nativeSeedCookies(seed.url, lines, epoch);
     for (const line of lines) http.jar.setRaw(parsed, line);
-    try {
-      await invoke("http_native_seed", { url: seed.url, lines });
-    } catch {
-      /* Token 本身仍可用；下次启动由统一登录流程恢复 */
-    }
   }
 }
 
-async function acceptPayload(payload: CloudTokenPayload): Promise<string> {
+async function acceptPayload(payload: CloudTokenPayload, epoch: number): Promise<string> {
+  if (payload.epoch !== epoch) throw nativeSessionChanged();
+  await assertNativeSessionEpoch(epoch);
   if (payload.cancelled) throw new Error(i18n("lib.cloudtokenwebview.172f588670fa"));
   const token = typeof payload.token === "string" ? payload.token.trim() : "";
   if (!TOKEN_RE.test(token)) {
     throw new Error(i18n("lib.cloudtokenwebview.27ac14d14b12"));
   }
-  await mergeReturnedCookies(payload.cookieSeeds);
+  await mergeReturnedCookies(payload.cookieSeeds, epoch);
+  await assertNativeSessionEpoch(epoch);
   return token;
 }
 
 async function runWebviewFlow(): Promise<string> {
+  const epoch = await nativeSessionEpoch();
   // 记住的清华账密（内存传递）：WebView 落到 id 登录表单页时自动填表提交
   // （THOS eid_fill_script 同款）；无记住密码时传空，脚本自静默、由用户手输。
   const { loadRemembered } = await import("./clients.js");
   const remembered = await loadRemembered().catch(() => null);
   const cred = {
+    epoch,
     username: remembered?.username ?? "",
     password: remembered?.password ?? "",
     // 零跳通道：cloud profile 的 webvpn 包装 URL——SSO 链在 wengine 服务端完成
@@ -102,7 +104,7 @@ async function runWebviewFlow(): Promise<string> {
   const android = typeof navigator !== "undefined" && isAndroidNavigator(navigator);
   if (android) {
     const payload = await invoke<CloudTokenPayload>("open_cloud_token_window", cred);
-    return acceptPayload(payload);
+    return acceptPayload(payload, epoch);
   }
 
   const { listen } = await import("@tauri-apps/api/event");
@@ -128,13 +130,15 @@ async function runWebviewFlow(): Promise<string> {
   try {
     // 先订阅再 invoke，避免 WebView 很快加载完成时错过回传事件。
     unlistenToken = await listen<CloudTokenPayload>("cloud-token", (event) => {
-      void acceptPayload(event.payload).then(
+      void acceptPayload(event.payload, epoch).then(
         (token) => finish(token),
         (error) => finish(undefined, error instanceof Error ? error : new Error(String(error))),
       );
     });
-    unlistenCancelled = await listen<string>("cloud-token-cancelled", (event) => {
-      const reason = typeof event.payload === "string" ? event.payload : "closed";
+    unlistenCancelled = await listen<{ reason: string; epoch: number }>("cloud-token-cancelled", (event) => {
+      if (event.payload?.epoch !== epoch) return;
+      const reason = event.payload.reason;
+      if (reason === "account-changed") { finish(undefined, nativeSessionChanged()); return; }
       finish(undefined, new Error(
         reason === "timeout" ? i18n("lib.cloudtokenwebview.pageTimeout") : i18n("lib.cloudtokenwebview.cancelled"),
       ));

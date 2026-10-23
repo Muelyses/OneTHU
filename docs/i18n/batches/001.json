@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -15,7 +15,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 100,
+          "line": 101,
           "context": "showToast(i18nMsg(\"app.08566a4b57a3\", { value: String(r.account?.name ?? \"\") }))"
         }
       ],
@@ -31,7 +31,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/App.tsx",
-          "line": 131,
+          "line": 132,
           "context": "{i18n(\"app.4d6e46fec3d4\")}"
         }
       ],
@@ -143,7 +143,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 202,
+          "line": 255,
           "context": "{i18n(\"common.cancel\")}"
         },
         {

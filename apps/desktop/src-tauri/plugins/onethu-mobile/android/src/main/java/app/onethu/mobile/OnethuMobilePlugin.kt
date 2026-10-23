@@ -115,6 +115,7 @@ class SeedCookiesArgs {
  *  document.title 回传（WebChromeClient 接住），不设 JavascriptInterface。 */
 @InvokeArg
 class CloudTokenWebviewArgs {
+    var epoch: Long = 0
     var url: String = ""
     /** 页面脚本（与桌面同一份，只读取已有口令；绝不点「生成/重置」） */
     var script: String = ""
@@ -837,6 +838,28 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
         return arr
     }
 
+    private var activeCloudTokenDialog: Dialog? = null
+    private var cloudNativeEpoch: Long = 0
+
+    @InvokeArg
+    class CookieEpochArgs { var epoch: Long = 0 }
+
+    @Command
+    fun closeCloudTokenWebview(invoke: Invoke) {
+        val args = invoke.parseArgs(CookieEpochArgs::class.java)
+        activity.runOnUiThread {
+            cloudNativeEpoch = maxOf(cloudNativeEpoch, args.epoch)
+            activeCloudTokenDialog?.dismiss()
+            activeCloudTokenDialog = null
+            // Clear cookies at all paths on a full account boundary. Preferences,
+            // local storage and the native installation identity stay intact.
+            CookieManager.getInstance().removeAllCookies {
+                CookieManager.getInstance().flush()
+                invoke.resolve(JSObject())
+            }
+        }
+    }
+
     @Command
     fun openCloudTokenWebview(invoke: Invoke) {
         val args = invoke.parseArgs(CloudTokenWebviewArgs::class.java)
@@ -845,9 +868,20 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
             return
         }
         activity.runOnUiThread {
+            if (args.epoch < cloudNativeEpoch) { invoke.reject("AUTH_SESSION_CHANGED"); return@runOnUiThread }
+            cloudNativeEpoch = args.epoch
             try {
                 val cm = CookieManager.getInstance()
                 cm.setAcceptCookie(true)
+                // Remove residual auth state before importing the current account.
+                // CookieManager is shared by app WebViews, so only clear these domains.
+                for (base in cloudCookieOrigins) {
+                    for (pair in (cm.getCookie(base) ?: "").split(";")) {
+                        val name = pair.substringBefore("=").trim()
+                        if (name.isNotBlank()) cm.setCookie(base, "$name=; Max-Age=0; Path=/; Secure")
+                    }
+                }
+                activeCloudTokenDialog?.dismiss()
                 // 进页面种票：种子来自 Rust 统一 jar（绝不打印内容）
                 try {
                     val seeds = JSONArray(args.cookieSeedsJson.ifBlank { "[]" })
@@ -888,6 +922,7 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                 }
 
                 val dialog = Dialog(activity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                activeCloudTokenDialog = dialog
                 var settled = false
                 var timeoutHit = false
                 val timeoutRunnable = Runnable {
@@ -976,6 +1011,8 @@ class OnethuMobilePlugin(private val activity: Activity) : Plugin(activity) {
                         if (timeoutHit) ret.put("reason", "timeout")
                         settleResult(ret)
                     }
+                    if (activeCloudTokenDialog === dialog) activeCloudTokenDialog = null
+                    web.stopLoading()
                     web.destroy()
                 }
 

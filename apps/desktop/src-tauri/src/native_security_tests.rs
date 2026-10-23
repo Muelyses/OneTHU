@@ -225,11 +225,11 @@ fn cookie_roundtrip_preserves_secure_host_only_expiry_and_legacy() {
     use reqwest::cookie::CookieStore;
     let root = temp();
     let path = root.join("native-jar.tsv");
-    let jar = crate::SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()), std::sync::atomic::AtomicBool::new(false));
+    let jar = crate::SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()), std::sync::atomic::AtomicBool::new(false), std::sync::atomic::AtomicU64::new(0));
     jar.seed_line("https://school.example/path", "host=fixture; Secure; HttpOnly; Path=/");
     jar.seed_line("https://school.example/path", "wide=fixture; Secure; Domain=school.example; Path=/");
     jar.save_to_file(&path);
-    let next = crate::SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()), std::sync::atomic::AtomicBool::new(false));
+    let next = crate::SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()), std::sync::atomic::AtomicBool::new(false), std::sync::atomic::AtomicU64::new(0));
     next.load_from_file(&path);
     assert!(next.cookies(&reqwest::Url::parse("http://school.example/").unwrap()).is_none());
     let child = next.cookies(&reqwest::Url::parse("https://sub.school.example/").unwrap()).unwrap();
@@ -241,4 +241,83 @@ fn cookie_roundtrip_preserves_secure_host_only_expiry_and_legacy() {
     assert!(next.cookies(&reqwest::Url::parse("http://school.example/").unwrap()).is_none());
     assert!(next.cookies(&reqwest::Url::parse("https://school.example/").unwrap()).is_some());
     std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn cookie_account_clear_survives_immediate_restart_and_reports_write_failure() {
+    use reqwest::cookie::CookieStore;
+    let root = temp();
+    let path = root.join("native-jar.tsv");
+    let url = reqwest::Url::parse("https://school.example/").unwrap();
+    let jar = crate::SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()), std::sync::atomic::AtomicBool::new(false), std::sync::atomic::AtomicU64::new(0));
+    jar.seed_line(url.as_str(), "old_account=fixture; Secure; HttpOnly; Path=/");
+    jar.save_to_file(&path);
+    jar.clear_and_save_to_file(&path).unwrap();
+    let restarted = crate::SharedNativeJar(std::sync::RwLock::new(cookie_store::CookieStore::default()), std::sync::atomic::AtomicBool::new(false), std::sync::atomic::AtomicU64::new(0));
+    restarted.load_from_file(&path);
+    assert!(restarted.cookies(&url).is_none());
+    jar.seed_line(url.as_str(), "another_account=fixture; Secure; Path=/");
+    assert!(jar.clear_and_save_to_file(&root.join("missing-parent/jar.json")).is_err());
+    assert!(jar.cookies(&url).is_none());
+    assert!(jar.1.load(std::sync::atomic::Ordering::Relaxed));
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+
+fn epoch_test_jar() -> Arc<crate::SharedNativeJar> {
+    Arc::new(crate::SharedNativeJar(
+        std::sync::RwLock::new(cookie_store::CookieStore::default()),
+        std::sync::atomic::AtomicBool::new(false),
+        std::sync::atomic::AtomicU64::new(0),
+    ))
+}
+
+#[tokio::test]
+async fn cookie_epoch_rejects_late_native_response_before_provider_mutates_jar() {
+    use reqwest::cookie::CookieStore;
+    let jar = epoch_test_jar();
+    let epoch = jar.epoch();
+    let provider = Arc::new(crate::EpochNativeJar { jar: jar.clone(), epoch });
+    let client = reqwest::Client::builder().no_proxy().cookie_provider(provider.clone())
+        .redirect(reqwest::redirect::Policy::none()).build().unwrap();
+    let (arrived_tx, arrived_rx) = tokio::sync::oneshot::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let arrived_tx = Mutex::new(Some(arrived_tx));
+    let (start, _, worker) = server(1, move |_, _| {
+        arrived_tx.lock().unwrap().take().unwrap().send(()).unwrap();
+        release_rx.recv_timeout(std::time::Duration::from_secs(5)).unwrap();
+        "HTTP/1.1 200 OK\r\nSet-Cookie: account=stale; Path=/\r\nContent-Type: text/plain\r\nContent-Length: 3\r\nConnection: close\r\n\r\nold".into()
+    });
+    let origin = reqwest::Url::parse(&start).unwrap();
+    let request_jar = jar.clone();
+    let request = tokio::spawn(async move {
+        crate::http_native_in_session(input(start, "GET"), client, Some((&request_jar, epoch))).await
+    });
+    arrived_rx.await.unwrap();
+    jar.clear();
+    jar.seed_lines_at_epoch(origin.as_str(), &["account=current; Path=/".into()], jar.epoch()).unwrap();
+    assert!(provider.cookies(&origin).is_none(), "old client must never read new account cookies");
+    release_tx.send(()).unwrap();
+    let error = request.await.unwrap().err().unwrap();
+    assert_eq!(error, crate::COOKIE_SESSION_CHANGED);
+    assert_eq!(jar.cookies(&origin).unwrap().to_str().unwrap(), "account=current");
+    worker.join().unwrap();
+}
+
+#[test]
+fn cookie_epoch_rejects_delayed_seed_and_accepts_current_account() {
+    use reqwest::cookie::CookieStore;
+    let jar = epoch_test_jar();
+    let old_epoch = jar.epoch();
+    jar.clear();
+    let url = reqwest::Url::parse("https://cloud.tsinghua.edu.cn/").unwrap();
+    assert!(jar.seed_lines_at_epoch(url.as_str(), &["sessionid=old; Secure; Path=/".into()], old_epoch).is_err());
+    assert!(jar.cookies(&url).is_none());
+    jar.seed_lines_at_epoch(url.as_str(), &["sessionid=new; Secure; Path=/".into()], jar.epoch()).unwrap();
+    let current = crate::EpochNativeJar { jar: jar.clone(), epoch: jar.epoch() };
+    let value = reqwest::header::HeaderValue::from_static("renewed=valid; Secure; Path=/");
+    current.set_cookies(&mut std::iter::once(&value), &url);
+    let header = current.cookies(&url).unwrap();
+    assert!(header.to_str().unwrap().contains("sessionid=new"));
+    assert!(header.to_str().unwrap().contains("renewed=valid"));
 }

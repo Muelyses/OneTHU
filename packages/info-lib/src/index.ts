@@ -299,10 +299,13 @@ export class InfoHelper {
     public twoFactorAuthLimitHook: (() => Promise<void>) | undefined = undefined;
 
     /**
-     * 【上游 v3.19.0】信任浏览器复选框（singleLogin）：id 会话可被校内其他系统
-     * 免密复用（passwordlessEntry）。关闭后登录链回到纯账密模式。
+     * Allow reuse of an existing trusted confirmation session (passwordlessEntry).
      */
     public trustBrowser = true;
+
+    /** Explicit opt-in to the school's singleLogin checkbox for this session.
+     * Ordinary login reuses existing trust; persistent 2FA trust uses SAVE_FINGER. */
+    public singleSignOn = false;
 
     /**
      * Invoked when it has to be decided whether to trust the current fingerprint.

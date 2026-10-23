@@ -334,6 +334,7 @@ export class HttpClient {
     if (!headers.has("User-Agent")) headers.set("User-Agent", this.#ua);
 
     const response = await this.#fetch(target, { ...rest, headers });
+    await (response as Response & { assertNativeSession?: () => Promise<void> }).assertNativeSession?.();
     try {
       // transport 手工构造的 Response 没有 url 属性（重定向链终点经
       // x-onethu-final-url 头回传——真机实录：ErrorPage 兑付被 302 后
@@ -429,7 +430,7 @@ export class HttpClient {
   /** 宿主可注入的调试通道（桌面端写 /tmp/onethu-debug.log） */
   debug?: (line: string) => void;
   /** 引导页票种同时播种到原生仓（jar→rust 桥；fetch 走原生通道的实例必接） */
-  nativeSeedHook?: (url: string, cookiePair: string, path?: string) => void | Promise<void>;
+  nativeSeedHook?: (url: string, cookiePair: string, path?: string, epoch?: number) => void | Promise<void>;
   /** 引导页也可能携带令牌/姓名；调试通道只保留结构。 */
   #emitDebug(body: string): void {
     if (body.includes("__vpn_hostname_data")) {
@@ -464,7 +465,7 @@ export class HttpClient {
     // （浏览器里由 wengine main.js 完成；demo GET_COOKIE_URL / 网络层同机制）。
     // 真·引导页（interstitial）才做 dance；被代理页面注入的 __vpn_* JS 不算
     if (this.wengineInterstitial(body)) {
-      const merged = await this.#wengineBootstrapCookies(url, wireTarget, body);
+      const merged = await this.#wengineBootstrapCookies(url, wireTarget, body, response);
       if (merged > 0) {
         response = await this.request(url, init);
         body = await response.text();
@@ -496,7 +497,7 @@ export class HttpClient {
    * 两种来源的 cookie 按应用域归档，包装域使用对应应用的路径作用域。
    * 返回并入的 cookie 条数（0 = 未取得有效 cookie 串）。
    */
-  async #wengineBootstrapCookies(logicalUrl: string, wireTarget: string, body: string): Promise<number> {
+  async #wengineBootstrapCookies(logicalUrl: string, wireTarget: string, body: string, sourceResponse: Response): Promise<number> {
     let u: URL;
     try {
       const logical = new URL(logicalUrl);
@@ -531,6 +532,7 @@ export class HttpClient {
     }
     let merged = 0;
     for (const host of hosts) {
+      await (sourceResponse as Response & { assertNativeSession?: () => Promise<void> }).assertNativeSession?.();
       const qp = new URLSearchParams({
         method: "get",
         host,
@@ -541,8 +543,8 @@ export class HttpClient {
       const cookieUrl = `https://webvpn.tsinghua.edu.cn/wengine-vpn/cookie?${qp.toString()}`;
       const res = await this.request(cookieUrl, {
         headers: wireTarget ? { Referer: wireTarget.slice(0, 200) } : {},
-      }).catch(() => null);
-      const text = res?.ok ? await res.text().catch(() => "") : "";
+      }).catch((error) => { if (error?.code === "AUTH_SESSION_CHANGED") throw error; return null; });
+      const text = res?.ok ? await res.text().catch((error) => { if (error?.code === "AUTH_SESSION_CHANGED") throw error; return ""; }) : "";
       if (!text || /[<>]/.test(text)) continue;
       for (const pair of text.split(/;|\n/)) {
         const t = pair.trim();
@@ -558,16 +560,20 @@ export class HttpClient {
           if (name === "wengine_vpn_ticket" || name.startsWith("show_") || name === "heartbeat" || name === "refresh") continue;
           for (const d of targets) {
             try {
+              const epochHeader = res?.headers.get("x-onethu-cookie-epoch");
+              const epoch = epochHeader == null ? undefined : Number(epochHeader);
+              await this.nativeSeedHook?.(d.url, t, d.path, epoch);
               this.jar.setRaw(new URL(d.url), `${t}; Path=${d.path}`);
-              await this.nativeSeedHook?.(d.url, t, d.path);
               merged++;
-            } catch {
+            } catch (error) {
+              if ((error as { code?: string })?.code === "AUTH_SESSION_CHANGED") throw error;
               /* 容忍个别坏值 */
             }
           }
         }
       }
     }
+    await (sourceResponse as Response & { assertNativeSession?: () => Promise<void> }).assertNativeSession?.();
     try {
       this.jar.setRaw(new URL("https://webvpn.tsinghua.edu.cn/"), "refresh=0; Path=/");
     } catch {

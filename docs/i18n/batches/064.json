@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.organization.1cfd3b432295",
+      "source": "组织名片已放进暂存箱",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 664,
+          "context": "r.ok ? i18nMsg(\"pages.organization.1cfd3b432295\") : i18nMsg(\"pages.organization.9e7804614304\")"
+        }
+      ],
+      "translation": "Organization card added to Stash",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.1da6f8b31270",
+      "source": "复制成员入口",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 778,
+          "context": "{i18n(\"pages.organization.1da6f8b31270\")}"
+        }
+      ],
+      "translation": "Copy member entry",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.organization.1e0b8202b535",
+      "source": "组织邀请口令（ON-…）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/Organization.tsx",
+          "line": 97,
+          "context": "label: i18nMsg(\"pages.organization.1e0b8202b535\")"
+        }
+      ],
+      "translation": "Organization share code (ON-…)",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    },
     {
       "key": "pages.organization.1e7f3a3d7f2d",
       "source": "删除口令",
@@ -1367,59 +1415,6 @@
         }
       ],
       "translation": "Link existing repo",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.74ab5e0d1e5f",
-      "source": "还没有 GitLab 组织：新建仓库时会先建组织并邀请成员。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 805,
-          "context": "{i18n(\"pages.organization.74ab5e0d1e5f\")}"
-        }
-      ],
-      "translation": "No GitLab organization yet: creating a repo will first create the organization and invite members.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.752caefd1bea",
-      "source": "{name}的进度",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "name",
-          "expression": "String(p.name)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 851,
-          "context": "{i18n(\"pages.organization.752caefd1bea\", { name: String(p.name) })}"
-        }
-      ],
-      "translation": "{name}'s progress",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.organization.76e68f1e2fcd",
-      "source": "置顶 · ",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/Organization.tsx",
-          "line": 872,
-          "context": "n.pinned ? i18n(\"pages.organization.76e68f1e2fcd\") : \"\""
-        }
-      ],
-      "translation": "Pinned · ",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

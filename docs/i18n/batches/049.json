@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.dormtab.ab8cff9a597a",
+      "source": "电费",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 160,
+          "context": "{i18n(\"pages.info.dormtab.ab8cff9a597a\")}"
+        }
+      ],
+      "translation": "Electricity",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.b09dff2cb1cb",
+      "source": "如：紫荆 1 号楼 301A",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 237,
+          "context": "{i18n(\"pages.info.dormtab.b09dff2cb1cb\")}"
+        }
+      ],
+      "translation": "e.g. Zijing Building 1, 301A",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.dormtab.bb8c939d0fcd",
+      "source": "订水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/DormTab.tsx",
+          "line": 203,
+          "context": "{i18n(\"pages.info.dormtab.bb8c939d0fcd\")}"
+        }
+      ],
+      "translation": "Order water",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.dormtab.bcd6771e08ec",
       "source": "查询",
@@ -1309,54 +1357,6 @@
         }
       ],
       "translation": "Morning",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.2cd0f3be8738",
-      "source": "取消",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 347,
-          "context": "{i18n(\"pages.info.kongjiantab.2cd0f3be8738\")}"
-        }
-      ],
-      "translation": "Cancel",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.2ec81db68e25",
-      "source": "全部房间…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 277,
-          "context": "{i18n(\"pages.info.kongjiantab.2ec81db68e25\")}"
-        }
-      ],
-      "translation": "All rooms…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.kongjiantab.434f5b0b9e74",
-      "source": "公共空间预约记录",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/KongjianTab.tsx",
-          "line": 360,
-          "context": "{i18n(\"pages.info.kongjiantab.434f5b0b9e74\")}"
-        }
-      ],
-      "translation": "Public space reservations",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

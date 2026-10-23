@@ -13,6 +13,7 @@
 - [日程、作业与同步](schedule-and-sync.md)
 - [搜索、OH、Harness 与清小搭](oh-and-xiaoda.md)
 - [隐私与排障](privacy-and-troubleshooting.md)
+- [0.11.3 登录与更新修复](release-0.11.3.md)
 - [0.11.2 修复更新](release-0.11.2.md)
 - [0.11 变更与边界](release-0.11.md)
 

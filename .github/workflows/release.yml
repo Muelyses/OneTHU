@@ -74,6 +74,14 @@ jobs:
         run: node tools/desktop-lifecycle-policy-test.mjs
       - name: Check cloud account boundaries
         run: node tools/seafile-account-lifecycle-test.mjs
+      - name: Check authentication recovery and account ownership
+        run: |
+          node --import tsx tools/login-public-key-test.mjs
+          node --import tsx tools/cas-recovery-trust-test.mjs
+          node tools/login-attempt-state-test.mjs
+          node --import tsx tools/auth-cookie-boundary-test.mjs
+          node tools/session-probe-policy-test.mjs
+          node tools/native-session-epoch-test.mjs
       - name: Check profile merge boundaries
         run: node --import ./tools/ts-resolve-register.mjs tools/profile-sync-test.mjs
       - name: Check secondary timetable and calendar integrity

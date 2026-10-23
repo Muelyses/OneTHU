@@ -147,13 +147,16 @@ export async function submitCasLogin(
         i_user: cred.username,
         i_pass: enc,
         sm2pass: enc,
-        singleLogin: "on",
         fingerPrint: cred.fingerprint,
         fingerGenPrint: "",
         fingerGenPrint3: "",
         i_captcha: "",
       };
   const body = new URLSearchParams({ ...form.hiddenFields, ...base });
+  // Routine recovery keeps the school's optional unified-login checkbox off.
+  // Hidden fields may echo an earlier choice; they are not fresh user consent.
+  body.delete("singleLogin");
+  body.delete("deviceName");
 
   const baseUrl = form.viaWebVPN ? WEBVPN_ROOT : ID_PREFIX;
   const submitUrl = form.action

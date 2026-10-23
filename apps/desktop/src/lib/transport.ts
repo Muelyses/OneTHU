@@ -110,13 +110,30 @@ async function invokeHttp(
 /** 原生 cookie 仓清空（换新匿名身份）——被 id 服务器按会话封锁时的自愈 */
 /** jar → rust 仓播种：wengine 引导页等「票种在响应体里」的会话（不经
  *  Set-Cookie，rust 侧收不到）。url 为该 cookie 的归属域。 */
-export async function nativeSeedCookies(url: string, lines: string[]): Promise<void> {
-  try {
-    const { invoke } = await import("@tauri-apps/api/core");
-    await invoke("http_native_seed", { url, lines });
-  } catch {
-    /* 非 tauri 环境忽略 */
-  }
+export function nativeSessionChanged(): Error & { code: string } {
+  return Object.assign(new Error("AUTH_SESSION_CHANGED"), { code: "AUTH_SESSION_CHANGED" });
+}
+function normalizeNativeSessionError(error: unknown): never {
+  if (String(error).includes("AUTH_SESSION_CHANGED")) throw nativeSessionChanged();
+  throw error;
+}
+/** Capture before reading credentials, cookies, or starting an asynchronous operation. */
+export async function nativeSessionEpoch(): Promise<number> {
+  if (!isTauri) return 0;
+  const { invoke } = await import("@tauri-apps/api/core");
+  const epoch = await invoke<number>("http_native_epoch");
+  if (!Number.isSafeInteger(epoch) || epoch < 0) throw nativeSessionChanged();
+  return epoch;
+}
+export async function assertNativeSessionEpoch(epoch: number): Promise<void> {
+  if (await nativeSessionEpoch() !== epoch) throw nativeSessionChanged();
+}
+export async function nativeSeedCookies(url: string, lines: string[], epoch?: number): Promise<void> {
+  if (!isTauri) return;
+  // Missing provenance is not permission to attach old cookies to the new account.
+  if (!Number.isSafeInteger(epoch) || epoch! < 0) throw nativeSessionChanged();
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke("http_native_seed", { url, lines, epoch }).catch(normalizeNativeSessionError);
 }
 
 export async function nativeCookieClear(): Promise<void> {
@@ -141,6 +158,7 @@ export async function nativeFetch(
     timeoutMs?: number;
   } = {},
 ): Promise<Response> {
+  const epoch = await nativeSessionEpoch();
   const { invoke } = await import("@tauri-apps/api/core");
   // body 统一压成 string / base64（2026-09-17 实录：URLSearchParams 直接传会被 invoke
   // 序列化成 map，Rust HttpInput.body 要 string——learn 作业/通知 POST 全灭根因）
@@ -201,6 +219,7 @@ export async function nativeFetch(
     /* 畸形 URL 原样 */
   }
   const p = invoke<HttpOutput>("http_native", {
+    epoch,
     input: {
       url: wireUrl,
       method: init.method ?? "GET",
@@ -215,10 +234,11 @@ export async function nativeFetch(
   });
   let res: HttpOutput;
   try {
-    res = await Promise.race([p, guard]);
+    res = await Promise.race([p, guard]).catch(normalizeNativeSessionError);
   } finally {
     if (timer) clearTimeout(timer);
   }
+  await assertNativeSessionEpoch(epoch);
   const respHeaders = new Headers(res.headers as HeadersInit);
   for (const sc of res.set_cookies) {
     try {
@@ -227,6 +247,7 @@ export async function nativeFetch(
       /* 容忍非法头值 */
     }
   }
+  respHeaders.set("x-onethu-cookie-epoch", String(epoch));
   respHeaders.set("x-onethu-final-url", res.url);
   respHeaders.set("x-onethu-set-cookie", JSON.stringify(res.set_cookies));
   if (res.set_cookie_hops) {
@@ -240,11 +261,29 @@ export async function nativeFetch(
       : res.body_b64
         ? b64ToBytes(res.body_b64)
         : res.body;
-  return new Response(bodyInit, {
+  const response = new Response(bodyInit, {
     status: res.status,
     statusText: res.status_text,
     headers: respHeaders,
   });
+  return guardNativeResponse(response, epoch);
+}
+
+function guardNativeResponse(response: Response, epoch: number): Response {
+  // Body consumers can await between receiving headers and parsing returned
+  // credentials. Keep their later read bound to this response's account too.
+  const clone = response.clone.bind(response);
+  Object.defineProperty(response, "clone", { value: () => guardNativeResponse(clone(), epoch) });
+  Object.defineProperty(response, "assertNativeSession", { value: () => assertNativeSessionEpoch(epoch) });
+  for (const method of ["text", "json", "arrayBuffer", "blob", "formData"] as const) {
+    const read = response[method].bind(response);
+    Object.defineProperty(response, method, { value: async () => {
+      const value = await read();
+      await assertNativeSessionEpoch(epoch);
+      return value;
+    } });
+  }
+  return response;
 }
 
 function collectHeaders(init: RequestInit): Record<string, string> {

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -10,7 +10,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 104,
+          "line": 103,
           "context": "return i18n(\"components.layout.60db1afb4022\");"
         }
       ],
@@ -26,12 +26,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 638,
+          "line": 636,
           "context": "{i18n(\"components.layout.61156d427af0\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 639,
+          "line": 637,
           "context": "{i18n(\"components.layout.61156d427af0\")}"
         }
       ],
@@ -47,7 +47,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 161,
+          "line": 160,
           "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
         }
       ],
@@ -63,7 +63,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 108,
+          "line": 107,
           "context": "return i18n(\"components.layout.73075237fd0f\");"
         }
       ],
@@ -79,7 +79,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 161,
+          "line": 160,
           "context": "narrow ? i18n(\"components.layout.76fb5d2b725f\") : i18n(\"components.layout.6ac6519ea0d3\")"
         }
       ],
@@ -95,7 +95,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 649,
+          "line": 647,
           "context": "{i18n(\"components.layout.7a007b29bf56\")}"
         }
       ],
@@ -111,12 +111,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 155,
+          "line": 154,
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 243,
+          "line": 242,
           "context": "{i18n(\"components.layout.7f1d9dd04cd1\")}"
         }
       ],
@@ -132,7 +132,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 875,
+          "line": 873,
           "context": "{i18n(\"components.layout.9f07d2ce4115\")}"
         }
       ],
@@ -148,7 +148,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 105,
+          "line": 104,
           "context": "return i18n(\"components.layout.a14f23af7016\");"
         }
       ],
@@ -164,7 +164,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 198,
+          "line": 197,
           "context": "{i18n(\"components.layout.a626aad412b7\")}"
         }
       ],
@@ -180,7 +180,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 115,
+          "line": 114,
           "context": "return i18n(\"components.layout.b1abb3dc2271\");"
         }
       ],
@@ -196,7 +196,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 160,
+          "line": 159,
           "context": "narrow ? i18n(\"components.layout.b5c07fc4f827\") : i18n(\"components.layout.0be1eb29d29d\")"
         }
       ],
@@ -212,7 +212,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 945,
+          "line": 943,
           "context": "{i18n(\"components.layout.b8784c8dd563\")}"
         }
       ],
@@ -228,7 +228,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 803,
+          "line": 801,
           "context": "label: i18n(\"components.layout.df3d58c7d84b\")"
         }
       ],
@@ -244,7 +244,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 116,
+          "line": 115,
           "context": "return i18n(\"components.layout.e7028601e7da\");"
         }
       ],
@@ -260,7 +260,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 804,
+          "line": 802,
           "context": "label: i18n(\"components.layout.e806fbbe8ec6\")"
         }
       ],
@@ -276,7 +276,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 109,
+          "line": 108,
           "context": "return i18n(\"components.layout.f75562426e77\");"
         }
       ],
@@ -292,7 +292,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 650,
+          "line": 648,
           "context": "{i18n(\"components.layout.f9e31e1d63d5\")}"
         }
       ],
@@ -308,12 +308,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 154,
+          "line": 153,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         },
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 236,
+          "line": 235,
           "context": "{i18n(\"components.layout.fb32cf481c29\")}"
         }
       ],
@@ -329,7 +329,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/Layout.tsx",
-          "line": 119,
+          "line": 118,
           "context": "return i18n(\"components.layout.fd17d86dd268\");"
         }
       ],

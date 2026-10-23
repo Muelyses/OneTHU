@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -1076,7 +1076,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 28,
+          "line": 30,
           "context": "return t(\"login.error.changeMethod\");"
         }
       ],
@@ -1092,7 +1092,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 34,
+          "line": 37,
           "context": "return t(\"login.error.confirmationLoop\");"
         }
       ],
@@ -1121,6 +1121,22 @@
       "limitHint": "Preserve meaning; do not truncate."
     },
     {
+      "key": "login.error.gatewayUnavailable",
+      "source": "学校登录或 WebVPN 暂时未返回可用页面。请稍后重试，避免连续刷新。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 33,
+          "context": "return t(\"login.error.gatewayUnavailable\");"
+        }
+      ],
+      "translation": "University sign-in or WebVPN is temporarily returning an unavailable page. Please wait before retrying and avoid repeated refreshes.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
       "key": "login.error.inProgress",
       "source": "已有登录正在进行，请完成验证，或返回登录页后再试。",
       "kind": "text",
@@ -1144,7 +1160,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 33,
+          "line": 36,
           "context": "return t(\"login.error.invalidForm\");"
         }
       ],
@@ -1160,12 +1176,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 35,
+          "line": 38,
           "context": "return t(\"login.error.prepareFailed\");"
         },
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 38,
+          "line": 41,
           "context": "return t(\"login.error.prepareFailed\");"
         }
       ],
@@ -1181,7 +1197,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 27,
+          "line": 29,
           "context": "return t(\"login.error.restartVerification\");"
         }
       ],
@@ -1197,16 +1213,48 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 29,
+          "line": 31,
           "context": "return t(\"login.error.restricted\");"
         },
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 32,
+          "line": 35,
           "context": "return t(\"login.error.restricted\");"
         }
       ],
       "translation": "The server is temporarily limiting requests. Wait before retrying, and avoid repeated sign-ins or refreshes.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.sessionChanged",
+      "source": "登录状态已变化，请重试当前操作。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 28,
+          "context": "return t(\"login.error.sessionChanged\");"
+        }
+      ],
+      "translation": "Your sign-in state has changed. Please retry this action.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "login.error.sessionConflict",
+      "source": "本机登录记录不一致，请重新登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/loginErrors.ts",
+          "line": 27,
+          "context": "return t(\"login.error.sessionConflict\");"
+        }
+      ],
+      "translation": "The sign-in records on this device do not match. Please sign in again.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },
@@ -1218,7 +1266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/loginErrors.ts",
-          "line": 31,
+          "line": 34,
           "context": "return t(\"login.error.trustLimit\");"
         }
       ],
@@ -1321,73 +1369,6 @@
       "translation": "Likely a verification code",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "memory.operations.6383fb8dcdcc",
-      "source": "记忆写入被拦截：{bad}——凭据类内容不允许进入长期记忆",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "bad",
-          "expression": "String(bad)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/memory/operations.ts",
-          "line": 67,
-          "context": "new Error(i18n(\"memory.operations.6383fb8dcdcc\", { bad: String(bad) }))"
-        }
-      ],
-      "translation": "Memory write blocked: {bad} — credential-like content is not allowed into long-term memory",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "memory.operations.ccc5a5900f02",
-      "source": "未找到待替换文本（{value}…）——请先 memory_read 核对原文",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(find.slice(0, 30))"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/memory/operations.ts",
-          "line": 174,
-          "context": "new Error(i18n(\"memory.operations.ccc5a5900f02\", { value: String(find.slice(0, 30)) }))"
-        }
-      ],
-      "translation": "Text to replace not found ({value}…) — use memory_read to check the original first",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "memory.operations.e613fe77a194",
-      "source": "已存在同名记忆「{title}」（{permalink}）——用 memory_append 追加观察",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "title",
-          "expression": "String(input.title)"
-        },
-        {
-          "name": "permalink",
-          "expression": "String(existing.permalink)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/memory/operations.ts",
-          "line": 130,
-          "context": "new Error(i18n(\"memory.operations.e613fe77a194\", { title: String(input.title), permalink: String(existing.permalink) }))"
-        }
-      ],
-      "translation": "A memory titled \"{title}\" already exists ({permalink}) — use memory_append to add observations",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

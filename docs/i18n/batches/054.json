@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.info.reservepage.ab070d2bfaf1",
+      "source": "游泳馆、健身房等陆续接入",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 113,
+          "context": "{i18n(\"pages.info.reservepage.ab070d2bfaf1\")}"
+        }
+      ],
+      "translation": "Swimming pool, gym, and more venues coming soon",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.reservepage.e4d40b4d6759",
+      "source": "研讨间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 32,
+          "context": "return i18n(\"pages.info.reservepage.e4d40b4d6759\");"
+        }
+      ],
+      "translation": "Seminar room",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.reservepage.e81059e1a712",
+      "source": "公共空间",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/ReservePage.tsx",
+          "line": 35,
+          "context": "return i18n(\"pages.info.reservepage.e81059e1a712\");"
+        }
+      ],
+      "translation": "Public space",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.info.reservepage.ecc11c8afea8",
       "source": "空教室",
@@ -1351,59 +1399,6 @@
         }
       ],
       "translation": "Search items (title/node/number)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.484d55613910",
-      "source": "无",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 258,
-          "context": "names.join(\" / \") || i18n(\"pages.info.thospage.484d55613910\")"
-        }
-      ],
-      "translation": "None",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.thospage.495cf63fdc4b",
-      "source": "{value}列表加载失败",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "String(KIND_LABEL[kind])"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 184,
-          "context": "warnings.push(i18n(\"pages.info.thospage.495cf63fdc4b\", { value: String(KIND_LABEL[kind]) }))"
-        }
-      ],
-      "translation": "Failed to load the {value} list",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "pages.info.thospage.497c85690c4c",
-      "source": "暂无数据",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/ThosPage.tsx",
-          "line": 489,
-          "context": "complete\n                    ? i18n(\"pages.info.thospage.994178605d6f\")\n                    : i18n(\"pages.info.thospage.497c85690c4c\")"
-        }
-      ],
-      "translation": "No data",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

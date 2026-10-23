@@ -58,6 +58,7 @@ async function setup(layout, scenario, locale = "zh-CN") {
   });
   await page.routeWebSocket(/.*/, (socket) => socket.close());
   await page.exposeFunction("__loginRecoveryInvoke", async (command, args) => {
+    if (command === "http_native_epoch") return 0;
     if (command === "log_debug") { logs.push(args.line); return null; }
     if (command === "state_read") return files.get(args.name) ?? null;
     if (command === "state_write") { files.set(args.name, args.content); return null; }
@@ -69,9 +70,10 @@ async function setup(layout, scenario, locale = "zh-CN") {
     const fields = new URLSearchParams(input.body ?? "");
     const isAuth = ["id.tsinghua.edu.cn", "oauth.tsinghua.edu.cn"].includes(url.hostname)
       || (url.hostname === "webvpn.tsinghua.edu.cn" && url.pathname === "/login");
-    if (isAuth) requests.push({ method, path: url.pathname, action: fields.get("action"), at: Date.now() });
+    if (isAuth) requests.push({ method, path: url.pathname, action: fields.get("action"), singleSignOn: fields.has("singleLogin"), at: Date.now() });
     if (url.hostname === "webvpn.tsinghua.edu.cn" && url.pathname === "/login") {
       if (holdEntry) await entryBarrier;
+      if (scenario === "gateway") return response(input.url, '<html><script>var __vpn_hostname_data="fixture";var __vpn_app_hostname_data="fixture";</script></html>');
       if (scenario === "rate-limit") return response(input.url, "Too many requests", 429);
       if (scenario === "trust-limit") return response(input.url, '<p id="msg_note">信任设备数量已达上限</p>');
       if (scenario.startsWith("two-factor") || scenario === "trusted-login") return response(input.url, keyHtml, 200, "https://id.tsinghua.edu.cn/do/off/ui/auth/login/form/fixture/0");
@@ -122,10 +124,10 @@ async function setup(layout, scenario, locale = "zh-CN") {
 
 try {
   for (const layout of Object.keys(layouts)) {
-    for (const scenario of ["unknown", "rate-limit", "trust-limit"]) {
+    for (const scenario of ["unknown", "rate-limit", "trust-limit", "gateway"]) {
       const fixture = await setup(layout, scenario);
       const { page, context, requests, logs } = fixture;
-      if (scenario === "unknown") {
+            if (scenario === "unknown") {
         const language = page.getByRole("combobox", { name: "语言 / Language", exact: true });
         check(await language.locator("option").count() >= 2, `${layout}: language can be selected before signing in`);
         await language.selectOption("en-US");
@@ -140,7 +142,7 @@ try {
         check(requests.filter((item) => item.path === "/login").length === 1, `${layout}: synchronous double submit plus Enter starts one chain`);
         fixture.releaseEntry();
       } else await page.locator("form button[type=submit]").click();
-      const expected = scenario === "unknown" ? "没有返回可用的登录表单" : scenario === "rate-limit" ? "暂时限制了请求" : "信任设备数量已达上限";
+      const expected = scenario === "gateway" ? "学校登录或 WebVPN 暂时未返回可用页面" : scenario === "unknown" ? "没有返回可用的登录表单" : scenario === "rate-limit" ? "暂时限制了请求" : "信任设备数量已达上限";
       await page.locator(".login-error").filter({ hasText: expected }).waitFor();
       check((await page.locator(".login-error").innerText()).includes(expected), `${layout}/${scenario}: actionable Chinese error is rendered`);
       check(!(await page.locator(".login-error").innerText()).includes("Failed to get public key"), `${layout}/${scenario}: generic English public-key error is absent`);
@@ -151,6 +153,14 @@ try {
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
       check(!overflow, `${layout}/${scenario}: error text stays within viewport`);
       await page.screenshot({ path: `${out}/${layout}-${scenario}.png`, fullPage: true });
+      if (scenario === "gateway") {
+        const language = page.getByRole("combobox", { name: "语言 / Language", exact: true });
+        await language.selectOption("en-US");
+        await page.locator(".login-error").filter({ hasText: "temporarily returning an unavailable page" }).waitFor();
+        check(requests.every(item => item.method !== "POST"), `${layout}/gateway: English translation does not resubmit credentials`);
+        check(logs.some(line => line.includes("AUTH-FAIL reason=gateway-unavailable")), `${layout}/gateway: diagnostic distinguishes gateway availability`);
+        await page.screenshot({ path: `${out}/${layout}-gateway-en.png`, fullPage: true });
+      }
       if (scenario === "unknown") {
         const language = page.getByRole("combobox", { name: "语言 / Language", exact: true });
         const postCount = requests.filter(item => item.method === "POST").length;
@@ -245,6 +255,7 @@ try {
     await page.waitForTimeout(2_000);
     check(await page.locator(".login-wrap").count() === 0, `${layout}/trusted-login: a scoped service failure retains the authenticated shell`);
     check(await page.evaluate(() => sessionStorage.getItem("onethu.login-attempt-at")) === null, `${layout}/trusted-login: no completed-attempt cooldown remains`);
+    check(requests.filter(item => item.path === "/do/off/ui/auth/login/check").every(item => !item.singleSignOn), `${layout}/trusted-login: credentials reuse trust without auto-selecting session SSO`);
     check(requests.filter(item => item.path === "/do/off/ui/auth/login/check").length === 1, `${layout}/trusted-login: missing learning data cannot replay the password`);
     summaries.push({ layout, scenario: "trusted-login", requests });
     await context.close();

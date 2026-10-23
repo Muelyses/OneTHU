@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -250,7 +250,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 235,
+          "line": 292,
           "context": "return i18n(\"lib.infolib.22a686a1c34c\");"
         }
       ],
@@ -266,7 +266,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 233,
+          "line": 290,
           "context": "return i18n(\"lib.infolib.f3943a7b3681\");"
         }
       ],
@@ -282,7 +282,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 234,
+          "line": 291,
           "context": "return i18n(\"lib.infolib.f87602bd9134\");"
         }
       ],
@@ -298,7 +298,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/infoLib.ts",
-          "line": 293,
+          "line": 350,
           "context": "showToast(i18nMsg(\"lib.infolib.fd1c426ab1aa\"), 8000, { center: true })"
         }
       ],

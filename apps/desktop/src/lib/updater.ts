@@ -482,34 +482,53 @@ export async function checkForUpdate(opts: {
  * 下载更新包（用户点了才调）。进度经 `onethu-updater://progress` 回传。
  * `expectSha256` 非空时由 Rust 侧流式校验，**不符即丢弃文件并报错**（不会交给安装器）。
  */
+let activeUpdateDownload: { token: symbol; fileName: string } | null = null;
+
 export async function downloadUpdate(opts: {
   url: string;
   fileName: string;
   expectSize?: number;
   expectSha256?: string;
   onProgress?: (p: UpdateProgress) => void;
+  signal?: AbortSignal;
 }): Promise<{ ok: boolean; path?: string; dir?: string; size?: number; sha256?: string; verified?: boolean; error?: string; cancelled?: boolean }> {
+  if (opts.signal?.aborted) return { ok: false, cancelled: true };
+  if (activeUpdateDownload) return { ok: false, error: i18n("components.softwareupdatesection.faa2f14dfa0b", { downloadName: activeUpdateDownload.fileName }) };
+  const token = Symbol("update-download");
+  activeUpdateDownload = { token, fileName: opts.fileName };
   let unlisten: (() => void) | undefined;
+  let nativeStarted = false;
+  const abort = (): void => {
+    if (nativeStarted && activeUpdateDownload?.token === token) void cancelUpdateDownload();
+  };
+  opts.signal?.addEventListener("abort", abort, { once: true });
   try {
     if (typeof opts.onProgress === "function") {
       const { listen } = await import("@tauri-apps/api/event");
       unlisten = await listen<UpdateProgress>("onethu-updater://progress", (ev) => {
         const p = ev.payload;
-        if (p && typeof p.received === "number") opts.onProgress?.(p);
+        if (!opts.signal?.aborted && p && typeof p.received === "number") opts.onProgress?.(p);
       });
     }
+    // Registration itself is asynchronous. A close/cancel during it must not
+    // start a new native download after the cancellation command has passed.
+    if (opts.signal?.aborted) return { ok: false, cancelled: true };
+    nativeStarted = true;
     const r = await invoke<{ path: string; dir: string; size: number; sha256: string; verified: boolean }>("updater_download", {
       url: opts.url,
       fileName: opts.fileName,
       expectSize: opts.expectSize ?? null,
       expectSha256: opts.expectSha256 ?? null,
     });
+    if (opts.signal?.aborted) return { ok: false, cancelled: true };
     return { ok: true, path: r.path, dir: r.dir, size: r.size, sha256: r.sha256, verified: r.verified };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    return { ok: false, error: msg, cancelled: /已取消/.test(msg) };
+    return { ok: false, error: msg, cancelled: opts.signal?.aborted || /已取消/.test(msg) };
   } finally {
+    opts.signal?.removeEventListener("abort", abort);
     unlisten?.();
+    if (activeUpdateDownload?.token === token) activeUpdateDownload = null;
   }
 }
 

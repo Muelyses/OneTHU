@@ -1,7 +1,69 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.learn.forum.bf0b8800ba24",
+      "source": "加载更多（已显示 {length}/{total}）",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "length",
+          "expression": "String(threads!.length)"
+        },
+        {
+          "name": "total",
+          "expression": "String(total)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/Forum.tsx",
+          "line": 191,
+          "context": "state === \"loading\" ? i18n(\"pages.learn.forum.4927a53bcc88\") : i18n(\"pages.learn.forum.bf0b8800ba24\", { length: String(threads!.length), total: String(total) })"
+        }
+      ],
+      "translation": "Load more ({length}/{total} shown)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.forum.cadf27381b43",
+      "source": "回复 @{value}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "replyTo.author || replyTo.hhid"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/Forum.tsx",
+          "line": 392,
+          "context": "{i18nRich(\"pages.learn.forum.cadf27381b43\", { value: replyTo.author || replyTo.hhid })}"
+        }
+      ],
+      "translation": "Reply to @{value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.forum.cf945e21ddef",
+      "source": "回复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/Forum.tsx",
+          "line": 466,
+          "context": "{i18n(\"pages.learn.forum.cf945e21ddef\")}"
+        }
+      ],
+      "translation": "Reply",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.learn.forum.d39961a678a1",
       "source": "还没有回复，抢个沙发",
@@ -1421,59 +1483,6 @@
         }
       ],
       "translation": "Follow the current school semester by default",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.semesterselectionpage.067635691aed",
-      "source": "暂无可选学期。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/SemesterSelectionPage.tsx",
-          "line": 86,
-          "context": "{i18n(\"pages.learn.semesterselectionpage.067635691aed\")}"
-        }
-      ],
-      "translation": "No semesters available.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.semesterselectionpage.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/SemesterSelectionPage.tsx",
-          "line": 39,
-          "context": "{i18n(\"pages.learn.semesterselectionpage.231ff6cd9b63\")}"
-        }
-      ],
-      "translation": "Switch semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.semesterselectionpage.569af1a47dbd",
-      "source": "最新",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/SemesterSelectionPage.tsx",
-          "line": 56,
-          "context": "{i18n(\"pages.learn.semesterselectionpage.569af1a47dbd\")}"
-        },
-        {
-          "file": "apps/desktop/src/pages/learn/SemesterSelectionPage.tsx",
-          "line": 65,
-          "context": "id === current ? i18n(\"pages.learn.semesterselectionpage.569af1a47dbd\") : undefined"
-        }
-      ],
-      "translation": "Latest",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

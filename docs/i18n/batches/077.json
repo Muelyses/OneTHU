@@ -1,7 +1,75 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "pages.zhjwxk.courses.d1378a68e620",
+      "source": "周二",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1358,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"), i18n(\"pages.zhjwxk.courses.d1378a68e620\"), i18n(\"pages.zhjwxk.courses.2961168962be\"), i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"), i18n(\"pages.zhjwxk.courses.572388f3b096\"), i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"), i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1420,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1441,
+          "context": "[i18n(\"pages.zhjwxk.courses.c430f4c12eaa\"),i18n(\"pages.zhjwxk.courses.d1378a68e620\"),i18n(\"pages.zhjwxk.courses.2961168962be\"),i18n(\"pages.zhjwxk.courses.e9d3b01a5a00\"),i18n(\"pages.zhjwxk.courses.572388f3b096\"),i18n(\"pages.zhjwxk.courses.f9aa11dbb15c\"),i18n(\"pages.zhjwxk.courses.ee239f394329\")]"
+        }
+      ],
+      "translation": "Tue",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.d28b333318b4",
+      "source": "{name} · 社区点评",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "String(name)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 303,
+          "context": "{i18n(\"pages.zhjwxk.courses.d28b333318b4\", { name: String(name) })}"
+        }
+      ],
+      "translation": "{name} · Community reviews",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.zhjwxk.courses.d2909f1647e7",
+      "source": "其他",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 861,
+          "context": "p.group || p.attr || i18n(\"pages.zhjwxk.courses.d2909f1647e7\")"
+        },
+        {
+          "file": "apps/desktop/src/pages/zhjwxk/Courses.tsx",
+          "line": 1145,
+          "context": "c.group || c.attr || i18n(\"pages.zhjwxk.courses.d2909f1647e7\")"
+        }
+      ],
+      "translation": "Other",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "pages.zhjwxk.courses.d2bb025a2e51",
       "source": "开始",
@@ -1451,59 +1519,6 @@
         }
       ],
       "translation": "Thinking…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.6549c7947471",
-      "source": "图片（没能读出来）",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 639,
-          "context": "alt || i18n(\"plugins.chatdock.6549c7947471\")"
-        }
-      ],
-      "translation": "Image (could not be read)",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "plugins.chatdock.67bee6acfc3c",
-      "source": "未命名",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 2575,
-          "context": "s.title || i18n(\"plugins.chatdock.67bee6acfc3c\")"
-        },
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 2583,
-          "context": "s.title || i18n(\"plugins.chatdock.67bee6acfc3c\")"
-        }
-      ],
-      "translation": "Untitled",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
-    {
-      "key": "plugins.chatdock.68a35e224268",
-      "source": "确认执行",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/plugins/ChatDock.tsx",
-          "line": 967,
-          "context": "{i18n(\"plugins.chatdock.68a35e224268\")}"
-        }
-      ],
-      "translation": "Confirm execution",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

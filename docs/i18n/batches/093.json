@@ -1,7 +1,55 @@
 {
-  "sourceHash": "b86d32180d583cd7221626ff23305432922f7627eb68c555b49739f535ffbe30",
+  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.wallpaper.fe4786177622",
+      "source": "墨",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpaper.ts",
+          "line": 163,
+          "context": "return i18n(\"state.wallpaper.fe4786177622\");"
+        }
+      ],
+      "translation": "Ink",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.archiveTooLarge",
+      "source": "壁纸备份最多 24 MiB，每张图片或视频最多 12 MiB。请减少壁纸库中的大文件后重新同步；当前壁纸保持原样",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 66,
+          "context": "return i18n(\"state.wallpsync.archiveTooLarge\");"
+        }
+      ],
+      "translation": "Wallpaper backups support up to 24 MiB in total and 12 MiB per image or video. Remove large items from the wallpaper library and try again. Your current wallpaper is preserved.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.wallpsync.changedLocally",
+      "source": "下载期间本机壁纸已改变，请确认当前选择后重新恢复",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/wallpsync.ts",
+          "line": 144,
+          "context": "new Error(i18n(\"state.wallpsync.changedLocally\"))"
+        }
+      ],
+      "translation": "The local wallpaper changed during the download. Check your current selection, then restore again.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.wallpsync.connectBeforeRestore",
       "source": "云盘还没连接：先到「云盘」页连接后再恢复",
@@ -1438,69 +1486,6 @@
         }
       ],
       "translation": "{floor}: {n} machines free",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetliveparse.d1adf68fb7c1",
-      "source": "今日课程已结束",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 78,
-          "context": "return i18n(\"state.widgetliveparse.d1adf68fb7c1\");"
-        }
-      ],
-      "translation": "Today's classes are over",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetliveparse.d3214224f7e7",
-      "source": "{buildingName}楼 · 实时占用",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "buildingName",
-          "expression": "String(buildingName)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 177,
-          "context": "footer: i18n(\"state.widgetliveparse.d3214224f7e7\", { buildingName: String(buildingName) })"
-        }
-      ],
-      "translation": "Building {buildingName} · Live occupancy",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.widgetliveparse.dae661d17c2d",
-      "source": "空闲",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 76,
-          "context": "free(cur) ? i18n(\"state.widgetliveparse.dae661d17c2d\") : i18n(\"state.widgetliveparse.c0aa76aebce6\")"
-        },
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 79,
-          "context": "free(next) ? i18n(\"state.widgetliveparse.dae661d17c2d\") : i18n(\"state.widgetliveparse.c0aa76aebce6\")"
-        },
-        {
-          "file": "apps/desktop/src/state/widgetLiveParse.ts",
-          "line": 98,
-          "context": "idleState\n    ? i18n(\"state.widgetliveparse.dae661d17c2d\")\n    : working\n      ? (device.eta && device.eta > 0 ? i18n(\"state.widgetliveparse.8a60db5caa68\", { eta: String(device.eta) }) : i18n(\"state.widgetliveparse.fa48e8938940\"))\n      : i18n(\"state.widgetliveparse.93e474c68ed5\")"
-        }
-      ],
-      "translation": "Free",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

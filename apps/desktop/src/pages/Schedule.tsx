@@ -641,6 +641,9 @@ export function SchedulePage() {
   const headRef = useRef<HTMLDivElement | null>(null);
   /** 事件画布可用高度（= 时间表可视高 − 吸顶表头高），0 = 尚未量到（首帧） */
   const [availH, setAvailH] = useState(0);
+  /** 课块标题的实际行高（px）：按块高算「能显示几行」用。从真实标题元素量，
+   *  这样手机档与桌面档的字号/行高差异不用在 TS 里写死一份。 */
+  const [titleLh, setTitleLh] = useState(16);
   useLayoutEffect(() => {
     if (mode !== "timetable") return undefined;
     const host = scrollRef.current;
@@ -651,6 +654,10 @@ export function SchedulePage() {
       const reserve = Number.parseFloat(getComputedStyle(host).paddingBottom) || 0;
       const next = Math.max(host.clientHeight - headH - reserve - 1, 0);
       setAvailH((prev) => (Math.abs(prev - next) >= 2 ? next : prev));
+      // 标题行高：优先量真实块，块还没画出来时退回 16px（桌面档量级），下一轮会自己纠正
+      const titleEl = host.querySelector(".schedule-block-title");
+      const lh = titleEl ? Number.parseFloat(getComputedStyle(titleEl).lineHeight) : Number.NaN;
+      if (Number.isFinite(lh) && lh > 0) setTitleLh((prev) => (Math.abs(prev - lh) >= 0.5 ? lh : prev));
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -661,7 +668,7 @@ export function SchedulePage() {
       ro.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [mode, allDayChips.length, panelOpen]);
+  }, [mode, allDayChips.length, panelOpen, entries.length]);
 
   /** 收紧后的显示区间 + 每分钟像素：整周课表一屏放完（见 fitAxis） */
   const axis = useMemo(() => fitAxis(entries, win, availH), [uiLocale, entries, win, availH]);
@@ -1068,6 +1075,14 @@ export function SchedulePage() {
                   const top = y(drawBegin) + 1;
                   const height = Math.max((drawEnd - drawBegin) * PX_PER_MIN - 3, 16);
                   const compact = height < 34;
+                  const showLocation = !compact && !!p.entry.location;
+                  const showTeacher = !compact && height > 88 && !!p.entry.teacher;
+                  // 标题能吃几行：块高扣掉内边距与下面的副行，剩下的都留给标题。
+                  // 以前一律 3 行，长日程在长块里只占三分之一、下面空着一大片（手机实测 387px 的块只用了 41px）。
+                  const titleLines = Math.max(
+                    1,
+                    Math.min(40, Math.floor((height - 6 - (showLocation ? titleLh : 0) - (showTeacher ? titleLh : 0)) / Math.max(titleLh, 1))),
+                  );
                   // 入场错峰：按「行」（时间带）递延——同一时刻跨天的块同时出现，从早到晚自上而下
                   const delay = Math.min(blockRows.get(Math.max(p.beginMin, AXIS_BEGIN)) ?? 0, 16) * 13;
                   return (
@@ -1099,18 +1114,20 @@ export function SchedulePage() {
                         // 数据色（一课一色）经 CSS 变量交给 schedule.css，TSX 不再写字面色
                         "--og-c-schedule-block": p.color,
                         "--og-c-schedule-delay": `${delay}ms`,
+                        // 标题行数按块高给（见 titleLines），长日程不再被固定 3 行截断
+                        "--og-c-schedule-clamp": String(titleLines),
                       } as React.CSSProperties}
                     >
                       {p.entry.manual ? <div className="schedule-block-manual">{i18n("pages.schedule.962f41ef825b")}</div> : null}
                       <div className="schedule-block-title">
                         {p.entry.src === "hw" ? `⏰ ${p.entry.courseName}` : p.entry.courseName}
                       </div>
-                      {!compact && p.entry.location ? (
+                      {showLocation ? (
                         <div className="schedule-block-sub">
                           <Text slot="micro" clamp={height > 72 ? 3 : 2}>{p.entry.location}</Text>
                         </div>
                       ) : null}
-                      {!compact && height > 88 && p.entry.teacher ? (
+                      {showTeacher ? (
                         <div className="schedule-block-sub">
                           <Text slot="micro" nowrap>{p.entry.teacher}</Text>
                         </div>
@@ -1120,6 +1137,9 @@ export function SchedulePage() {
                 })}
               </div>
             </div>
+            {/* 表格下方的呼吸区：只给滚动余量，让最末几行能滚到右下浮件之上再点。
+                在 .schedule-body 之外，不参与 availH → 表体尺寸不变。 */}
+            <div className="schedule-canvas-tail" aria-hidden="true" />
             </div>
           </>
         )}

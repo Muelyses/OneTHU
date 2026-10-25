@@ -641,9 +641,12 @@ export function SchedulePage() {
   const headRef = useRef<HTMLDivElement | null>(null);
   /** 事件画布可用高度（= 时间表可视高 − 吸顶表头高），0 = 尚未量到（首帧） */
   const [availH, setAvailH] = useState(0);
-  /** 课块标题的实际行高（px）：按块高算「能显示几行」用。从真实标题元素量，
-   *  这样手机档与桌面档的字号/行高差异不用在 TS 里写死一份。 */
-  const [titleLh, setTitleLh] = useState(16);
+  /** 课块里「标题能吃几行」要用的三个实测值（都从真实元素量，绝不在 TS 里写死档位值）：
+   *   lh   —— 标题行高（手机 13.75px / 桌面 16.9px）；
+   *   padV —— 块的内边距上下之和；
+   *   subH —— 一条副行（地点/教师）实际占高；手机档 `.schedule-block-sub` 是 display:none，
+   *           所以这里量出来是 0，标题就能吃满整块（此前按行高硬扣一条，白丢一行）。 */
+  const [blockMetrics, setBlockMetrics] = useState({ lh: 16, padV: 8, subH: 14 });
   useLayoutEffect(() => {
     if (mode !== "timetable") return undefined;
     const host = scrollRef.current;
@@ -654,10 +657,23 @@ export function SchedulePage() {
       const reserve = Number.parseFloat(getComputedStyle(host).paddingBottom) || 0;
       const next = Math.max(host.clientHeight - headH - reserve - 1, 0);
       setAvailH((prev) => (Math.abs(prev - next) >= 2 ? next : prev));
-      // 标题行高：优先量真实块，块还没画出来时退回 16px（桌面档量级），下一轮会自己纠正
-      const titleEl = host.querySelector(".schedule-block-title");
-      const lh = titleEl ? Number.parseFloat(getComputedStyle(titleEl).lineHeight) : Number.NaN;
-      if (Number.isFinite(lh) && lh > 0) setTitleLh((prev) => (Math.abs(prev - lh) >= 0.5 ? lh : prev));
+      // 块还没画出来时保留上一轮的值（首帧用默认量级），画出来后自己纠正
+      const blockEl = host.querySelector<HTMLElement>(".schedule-block");
+      const titleEl = blockEl?.querySelector<HTMLElement>(".schedule-block-title");
+      const subEl = blockEl?.querySelector<HTMLElement>(".schedule-block-sub");
+      if (!titleEl) return;
+      const lh = Number.parseFloat(getComputedStyle(titleEl).lineHeight);
+      const bcs = getComputedStyle(blockEl as HTMLElement);
+      const padV = (Number.parseFloat(bcs.paddingTop) || 0) + (Number.parseFloat(bcs.paddingBottom) || 0);
+      // 副行被 CSS 藏起来时 rect 高度为 0 → subH=0，不给标题扣空间
+      const subRect = subEl?.getBoundingClientRect().height ?? 0;
+      const subH = subRect > 0 ? subRect + (Number.parseFloat(getComputedStyle(subEl as HTMLElement).marginTop) || 0) : 0;
+      if (!Number.isFinite(lh) || lh <= 0) return;
+      setBlockMetrics((prev) =>
+        Math.abs(prev.lh - lh) >= 0.5 || Math.abs(prev.padV - padV) >= 0.5 || Math.abs(prev.subH - subH) >= 0.5
+          ? { lh, padV, subH }
+          : prev,
+      );
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -1077,11 +1093,14 @@ export function SchedulePage() {
                   const compact = height < 34;
                   const showLocation = !compact && !!p.entry.location;
                   const showTeacher = !compact && height > 88 && !!p.entry.teacher;
-                  // 标题能吃几行：块高扣掉内边距与下面的副行，剩下的都留给标题。
-                  // 以前一律 3 行，长日程在长块里只占三分之一、下面空着一大片（手机实测 387px 的块只用了 41px）。
+                  // 标题能吃几行：块高扣掉**实测**内边距与**真实占位**的副行（手机档副行
+                  // display:none → subH=0，标题吃满整块），剩下的都留给标题。
+                  // +0.25 只是吃掉亚像素：块高是小数，floor 直接切会把「正好放得下」的一行判掉
+                  // （桌面 74px 的块因此从 3 行掉到 2 行）。
+                  const innerH = height - blockMetrics.padV - ((showLocation ? blockMetrics.subH : 0) + (showTeacher ? blockMetrics.subH : 0));
                   const titleLines = Math.max(
                     1,
-                    Math.min(40, Math.floor((height - 6 - (showLocation ? titleLh : 0) - (showTeacher ? titleLh : 0)) / Math.max(titleLh, 1))),
+                    Math.min(40, Math.floor((innerH + 0.25) / Math.max(blockMetrics.lh, 1))),
                   );
                   // 入场错峰：按「行」（时间带）递延——同一时刻跨天的块同时出现，从早到晚自上而下
                   const delay = Math.min(blockRows.get(Math.max(p.beginMin, AXIS_BEGIN)) ?? 0, 16) * 13;

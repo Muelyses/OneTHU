@@ -205,6 +205,22 @@ html:root.is-schedule-page .schedule-workspace > .schedule-stage {
 }
 .schedule-block.is-compact { padding: 0 var(--og-space-1); }
 .schedule-block.is-done { background: color-mix(in srgb, var(--og-c-schedule-block) 60%, var(--og-surface-1)); }
+/* 手动补充的课程：与教务课同一格，虚线描边 + 右下角「手动」角标（2026-10-13 用户指定：
+   角标贴右下，右上留给内容）——数据来自事件仓、可编辑，但一眼看出是用户自己填的。 */
+.schedule-block.is-manual { border: 1.5px dashed color-mix(in srgb, var(--og-schedule-block-ink) 92%, transparent); }
+.schedule-block-manual {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  padding: 0 calc(var(--og-space-1) / 2);
+  border-radius: var(--og-radius-xs);
+  background: var(--og-scrim);
+  color: var(--og-schedule-block-ink);
+  font-size: var(--og-text-micro);
+  line-height: 1.35;
+  pointer-events: none;
+}
+html:root.is-phone .schedule-block-manual { display: none; }
 .schedule-block :is(.schedule-block-title, .schedule-block-sub, .og-text) { color: inherit; }
 .schedule-block-title {
   display: -webkit-box;

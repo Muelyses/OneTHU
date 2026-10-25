@@ -1,0 +1,50 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * OneGUI · 几何层：曲率连续圆角 + 同心嵌套几何
+ *
+ * ① 曲率连续：squircle（超椭圆指数 4）。圆弧与直边在切点处曲率同为 0，
+ *    不会再出现「圆弧突然接直线」的硬拐点（普通 border-radius 只是 G1 连续）。
+ *    只作用于矩形面；胶囊/标签/徽标/开关/头像保持真圆或药丸形，不参与。
+ *    不支持 corner-shape 的引擎忽略这一行，几何完全不变（圆弧回退）。
+ *
+ * ② 同心几何：容器内件的圆角 = 外圆角 − 内边距（− 描边）。同心套叠时，
+ *    内件拐角与外件拐角曲率中心重合，不会出现"内圈比外圈更胖"的观感。
+ *    两条都是几何语义；颜色、材质、模糊仍由皮肤与语义令牌决定。
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+@supports (corner-shape: squircle) {
+  /* 本体与状态层统一为曲率连续的超椭圆：
+     - 容器面（卡片/面板/浮层/提示条）；
+     - 交互件（按钮/输入/标签页/分段器/行/菜单项）同样使用 squircle；
+       `.og-btn::after` 状态层显式 corner-shape: inherit，悬停填充与本体同形。
+     圆形语义件（胶囊 .og-chip/.og-tag/徽标、开关、滑条）保持真圆/药丸，不在此列。 */
+  :where(
+    .og-surface,
+    .og-card,
+    .og-btn,
+    .og-input,
+    .og-panel,
+    .og-float,
+    .og-tab,
+    .og-vtab,
+    .og-tabs-indicator,
+    .og-segment,
+    .og-segment-item,
+    .og-segment-indicator,
+    .og-row,
+    .og-banner,
+    .og-stat,
+    .og-menu,
+    .og-menu-item,
+    .og-tooltip,
+    .og-popover
+  ) {
+    corner-shape: var(--og-corner-shape);
+  }
+}
+
+/* 分段器：轨道 md(10) + 内边距 xs(2) + 描边 1 → 内件 7px。
+   之前内外都写 md，轨道缩进一圈后内件拐角看着比轨道更圆。 */
+.og-segment-item,
+.og-segment-indicator {
+  border-radius: calc(var(--og-radius-md) - var(--og-geo-xs) - var(--og-geo-hairline));
+}

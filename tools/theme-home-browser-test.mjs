@@ -34,7 +34,7 @@ try{
  await toolbar.getByRole('button',{name:'放大',exact:true}).click();const zoomText=await toolbar.innerText();check(/125%/.test(zoomText),'viewport zoom works');await toolbar.getByRole('button',{name:'缩小',exact:true}).click();
  await p.screenshot({path:`${out}/home-carousel.png`});results.push('desktop gestures, fixed tools and persistence');
  // Actual theme UI, all builtins, all material levels, instant segment switches.
- await go(p,'settings-tab&settings-tab=外观与布局');const choices=p.locator('.theme-choice-main');check(await choices.count()===7,'one default theme entry');check((await choices.first().innerText()).includes('石墨'),'default renamed graphite');
+ await go(p,'settings-tab&settings-tab=外观');const choices=p.locator('.theme-choice-main');check(await choices.count()===7,'one default theme entry');check((await choices.first().innerText()).includes('石墨'),'default renamed graphite');
  for(let i=0;i<await choices.count();i++){
   await choices.nth(i).click();await p.waitForTimeout(80);
   const palette=await p.evaluate(()=>({theme:document.documentElement.dataset.theme,style:document.documentElement.style.cssText,dark:document.documentElement.dataset.ogScheme}));

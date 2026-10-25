@@ -65,28 +65,78 @@ if (!/className="tasks-learn stagger"/.test(readFileSync(TASKS, "utf8"))) {
   fails.push("待办页元素错峰出场没落地（tasks-learn 缺 stagger 类）");
 }
 
-/* 6. 待办页右侧详情：形态切换（展开/收起）与生活↔详情的过渡必须真的接线。
-       这两处用户明确报过「没有动画」——它们都是「条件渲染 + 硬切换」，
-       没有任何 CSS 能自动生效，全靠组件里显式接线，所以必须钉住。 */
+/* 6. 待办页右侧详情：2026-10-25 起不再做「展开成全屏浮层」，改为新标签页跳详情。
+       守卫改为钉住新行为 + 保留生活↔详情的既有进场/回退动画，防止回退成旧交互或丢掉动画。 */
 const tasksSrc = readFileSync(TASKS, "utf8");
-if (!tasksSrc.includes("ref={detailRef}") || !tasksSrc.includes("el.animate(")) {
-  fails.push("展开/收起 没有 FLIP 接线（position: static→fixed 不可过渡，必须有 detailRef + el.animate）");
+if (/detailRef|toggleFull|pcFull|tasks-detail-fullbar/.test(tasksSrc)) {
+  fails.push("待办页仍残留「展开/收起」全屏浮层接线（应改为新标签页跳转）");
 }
-if (!tasksSrc.includes("prefersReducedMotion()")) {
-  fails.push("展开/收起 的 FLIP 没有减弱动态效果判断（CSS 的 1ms !important 管不到 WAAPI）");
+if (!tasksSrc.includes("openDetailInNewTab") || !tasksSrc.includes('openTab("learn-assignment-detail"')) {
+  fails.push("待办右栏「打开详情」没有接 openTab（新标签页跳转）");
 }
-/* 三个入口都要走 toggleFull：分栏头的「展开」、全屏头的「收起」、Esc。
-   漏一个就是"这个入口没动画"——用户报过一次，所以逐条点名。 */
-if (!tasksSrc.includes("toggleFull(!pcFull)")) fails.push("分栏头的展开/收起按钮没走 toggleFull（点它不会有动画）");
-if ((tasksSrc.match(/toggleFull\(false\)/g) ?? []).length < 2) {
-  fails.push("收起入口（全屏头的收起按钮 / Esc）没走 toggleFull——至少有一处不会有动画");
+if (!tasksSrc.includes('openTab("learn-ykt-detail"')) {
+  fails.push("待办右栏未覆盖雨课堂原生详情的新标签页跳转");
 }
 if (!/tasks-detail tab-anim/.test(tasksSrc)) fails.push("生活 → 作业详情 没有进场动画（tasks-detail 缺 tab-anim）");
 if (!/tasks-life tab-anim" data-dir="prev"/.test(tasksSrc)) fails.push("作业详情 → 生活 没有回退动画（tasks-life 缺 tab-anim + data-dir=prev）");
+
+/* 7. 2026-10-25 动画专题：顶部标签 FLIP / OH 胶囊占位平移 / 页内 tab 滑块。
+       三处都是「条件渲染/布局重排」导致瞬移的位置，必须真的有运行时接线。 */
+const tabStripSrc = readFileSync("apps/desktop/src/components/explorer/TabStrip.tsx", "utf8");
+if (!tabStripSrc.includes("flipRects") || !tabStripSrc.includes("el.animate(")) {
+  fails.push("顶部标签新增/删除没有 FLIP 接线（其他标签会瞬移）");
+}
+if (!tabStripSrc.includes("transformsDirty") || !tabStripSrc.includes("layoutSeq")) {
+  fails.push("顶部标签拖拽落位没有在临时 transform 清理后重建 FLIP 基线（交换过的标签关闭时会跳位）");
+}
+if (!tabStripSrc.includes("prefersReducedMotion()")) {
+  fails.push("顶部标签 FLIP 没有减弱动态效果判断（CSS 1ms 降级管不到 WAAPI）");
+}
+const capsuleSrc = readFileSync("apps/desktop/src/components/explorer/OhCapsule.tsx", "utf8");
+if (!capsuleSrc.includes("lastRects") || !capsuleSrc.includes("ph.animate(")) {
+  fails.push("OH 胶囊占位文字没有 FLIP 接线（聚焦/失焦仍会瞬间平移）");
+}
+if (!capsuleSrc.includes("getAnimations()") || !capsuleSrc.includes('translate(${dx}px, -50%)')) {
+  fails.push("OH 胶囊 FLIP 未清残留动画/仍带纵向位移（文字会先跳到搜索栏上方）");
+}
+if (!capsuleSrc.includes("prefersReducedMotion()")) {
+  fails.push("OH 胶囊占位 FLIP 没有减弱动态效果判断");
+}
+const workbenchSrc = readFileSync("packages/gui/src/recipes/workbench.css", "utf8");
+if (/html:root .seg-track .seg-pill \{ visibility: hidden/.test(workbenchSrc)) {
+  fails.push("页内 tab 的滑块被隐藏（切换没有平移特效）");
+}
+if (!workbenchSrc.includes("html:root .seg-track .seg-pill { visibility: visible")) {
+  fails.push("页内 tab 滑块未恢复显示（切换没有平移特效）");
+}
+
+/* 8. 2026-10-25 右键菜单展开 / 课程页头材质 / OH 头部单行布局。 */
+const explorerUiCss = readFileSync("apps/desktop/src/styles/explorer-ui.css", "utf8");
+if (!explorerUiCss.includes("ex-ctxmenu-bloom") || !/\.ex-ctxmenu,[\s\S]{0,120}?animation: ex-ctxmenu-bloom/.test(explorerUiCss)) {
+  fails.push("右键就地菜单没有展开动画（ex-ctxmenu-bloom 未接线）");
+}
+if (!explorerUiCss.includes("ex-ctxmenu-out") || !/\.ex-ctxmenu\.is-out[\s\S]{0,120}?animation: ex-ctxmenu-out/.test(explorerUiCss)) {
+  fails.push("右键就地菜单没有出场动画（ex-ctxmenu-out 未接线）");
+}
+const learnCss = readFileSync("packages/gui/src/recipes/learn.css", "utf8");
+if (!/page-head-host > \.og-pagehead[\s\S]{0,500}?background: var\(--og-fill-surface\)/.test(learnCss)) {
+  fails.push("课程页头仍用 overlay 材质（暗玻璃下会比卡片深）");
+}
+const chatDockSrc = readFileSync("apps/desktop/src/plugins/ChatDock.tsx", "utf8");
+if (!chatDockSrc.includes("dock-head-close")) {
+  fails.push("OH 头部关闭键没有独立到第一行右侧");
+}
+if (!workbenchSrc.includes("grid-template-columns: auto minmax(0, 1fr) auto")) {
+  fails.push("OH 头部不是单行三列布局（模式页签左 / 操作中 / 关闭右）");
+}
+const tabLayoutSrc = readFileSync("apps/desktop/src/state/tabLayout.ts", "utf8");
+if (!tabLayoutSrc.includes("explorer.tabLayout.current") || !tabLayoutSrc.includes("persistCurrent")) {
+  fails.push("竖版标签页习惯没有落盘（重启会丢）");
+}
 
 if (fails.length) {
   console.error("动效令牌守卫：不合格");
   for (const f of fails) console.error("  ✗ " + f);
   process.exit(1);
 }
-console.log("动效令牌守卫：MD3 原语齐备 + 兼容层已接线 + 退场用 accelerate + 待办页错峰出场 ✓");
+console.log("动效令牌守卫：MD3 原语齐备 + 兼容层已接线 + 退场用 accelerate + 待办页错峰出场 + 标签/胶囊/页内滑块 FLIP 接线 ✓");

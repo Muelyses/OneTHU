@@ -1,11 +1,11 @@
 {
   "passed": true,
   "naturalCleanup": true,
-  "assertions": 984,
+  "assertions": 1141,
   "failedLoadRejected": true,
   "retrySucceeded": true,
   "checks": [
-    "All 21 bundled app captures decode as HTMLImageElement sources.",
+    "All 31 bundled app captures decode as HTMLImageElement sources.",
     "Concurrent loads share a promise; a failed image load can be retried.",
     "Mode, lesson and phase select the intended captured page.",
     "Screen textures reference the decoded images directly, without Canvas repainting.",
@@ -19,8 +19,8 @@
     "Resource assertions observe Three geometry/material/texture disposal events, not GPU-driver allocations.",
     "No physical NFC, real-account permission or physical-phone performance claim."
   ],
-  "modelCases": 48,
-  "assetCount": 21,
+  "modelCases": 54,
+  "assetCount": 31,
   "lessons": [
     "board",
     "mode-full",
@@ -37,7 +37,9 @@
     "plugin",
     "customize",
     "campus",
-    "data"
+    "data",
+    "xiaoda",
+    "essentials"
   ],
   "modes": [
     "simple",

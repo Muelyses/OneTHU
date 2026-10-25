@@ -50,7 +50,9 @@ export function WidgetHost({ item, defs, onOpen, renderers }: WidgetHostProps): 
     );
   }
   if (plan.kind === "divider") return <hr className="wg-divider" />;
-  if (plan.kind === "text-title") return <h3 className="wg-title">{plan.text ?? plan.title}</h3>;
+  /* 标题型文字是画布上的 display type：永远跟随主题墨色（--og-content-1），
+       不让字色引擎按壁纸明暗把它锁成黑/白——否则自定义壁纸下会出现「其他字白、标题黑」。 */
+  if (plan.kind === "text-title") return <h3 className="wg-title" data-tx="keep">{plan.text ?? plan.title}</h3>;
   if (plan.kind === "text-label") return <p className="wg-label">{plan.text ?? plan.title}</p>;
 
   if (plan.kind === "nav" || plan.kind === "atom-link") {

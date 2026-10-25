@@ -26,6 +26,13 @@ for (const [name, base, active] of [
   if (a) ok(!/font-weight/.test(a), name + " 激活态改了 font-weight → 切换 tab 会左右移位");
 }
 
+/* 玻璃配方：选中标签必须 50% 半透明填充，不能再铺实心 selection-fill。 */
+const glassRecipe = readFileSync("packages/gui/src/recipes/workbench.css", "utf8");
+const activeRule = glassRecipe.match(/\.ex-tab\.is-active \{[^}]*\}/)?.[0] ?? "";
+if (!/color-mix\(in srgb, var\(--og-selection-fill\) 65%, transparent\)/.test(activeRule)) {
+  fails.push("选中标签仍是实心底（应为 selection-fill 65% 透明混合）");
+}
+
 if (fails.length) {
   console.error("tab 条布局稳定性护栏：不通过");
   for (const f of fails) console.error("  ✗ " + f);

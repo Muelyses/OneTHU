@@ -1,12 +1,16 @@
 import { t as i18n, rich as i18nRich, msg as i18nMsg, useLocale as useUiLocale } from "../i18n/index.js";
 import { LanguageControl } from "../components/LanguageControl.js";
 import { ExperienceModeControl } from "../components/SimpleExperience.js";
-import { Btn, Inline, Input, List, Row, Segment, Select, SettingsList, SettingsRow, Stack, Tag, Text as OGText, TextArea } from "@onethu/gui";
+import { Btn, IconBell, IconBook, IconDownload, IconHelpCircle, IconPalette, IconSun, IconWrench, IconUser, Inline, Input, List, Row, Segment, Select, SettingsList, SettingsRow, Stack, Tag, Text as OGText, TextArea } from "@onethu/gui";
 import { defineSearchRows } from "../state/searchRows.js";
 import {
   subscribeWallpaper,
   videoSoundSnapshot,
   setVideoSound,
+  libraryItems,
+  setWallpaperSlot,
+  wallpaperDay,
+  wallpaperNight,
 } from "../state/wallpaper.js";
 import { useExplorerState, allTabs } from "../state/explorer.js";
 import { WallpaperLibrary } from "../components/explorer/WallpaperLibrary.js";
@@ -16,7 +20,7 @@ import { useIsPhone } from "../state/phoneSheets.js";
 import { MobileLayoutChoice } from "../components/MobileLayoutChoice.js";
 import { loadTabLayout, saveTabLayout, type TabLayout } from "../lib/tabLayout.js";
 import type { ReactNode } from "react";
-import { Card, PageHead, SectionHead, Switch } from "../components/Layout.js";
+import { Card, SectionHead, Switch } from "../components/Layout.js";
 import { setTabLayoutDefault, useTabLayoutDefault } from "../state/tabLayout.js";
 import { SoftwareUpdateSection } from "../components/SoftwareUpdateSection.js";
 import { ExtHwSettingsSection } from "../components/ExtHwSettingsSection.js";
@@ -35,7 +39,7 @@ import { activateTheme, deactivateTheme, setDayNightTheme, setFollowSystem, useT
 import { focusSettingsTarget } from "../components/Layout.js";
 import { ExplorerPrefsSection } from "../components/ExplorerPrefsSection.js";
 import { ThemeChoice } from "../components/ThemePickerModal.js";
-import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, settingsLabel, subscribeSettingsConsume } from "../state/settingsMode.js";
+import { consumeSettingsSectionRequest, consumeSettingsTabRequest, SETTINGS_TAB_ORDER, settingsLabel, settingsTabDescription, subscribeSettingsConsume } from "../state/settingsMode.js";
 import { installedPlugins, subscribe as subscribePlugins } from "../plugins/loader.js";
 import { requestPluginsView } from "./Plugins.js";
 import { isThemeEntry } from "../lib/market.js";
@@ -84,39 +88,50 @@ function SettingsGroup({ tab, active, section, children }: {
   </section>;
 }
 
+/** 页签图标：与页签语义一一对应；左导航与页签管理都用同一份。 */
+const SETTINGS_TAB_ICONS: Record<string, ReactNode> = {
+  账号: <IconUser />,
+  通知: <IconBell />,
+  功能: <IconWrench />,
+  外观: <IconPalette />,
+  下载: <IconDownload />,
+  帮助: <IconBook />,
+  关于: <IconHelpCircle />,
+};
+
 /* ── task-19：设置页各分节的设置行注册（声明式；与页签一一对应）── */
 defineSearchRows([
-  { id: "set-theme-board", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.788db1cfec2a"); }, aliases: ["换主题", "配色", "主题板", "暗色", "夜间"], get desc() { return i18n("pages.settings.4a944ac462b1"); } , breadcrumb: ["设置", "外观与布局", "主题", "主题"] },
-  { id: "set-theme-install", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.c3abbc2eb455"); }, aliases: ["主题市场", "装主题"], get desc() { return i18n("pages.settings.0240f8fe7f39"); } , breadcrumb: ["设置", "外观与布局", "主题", "安装主题"], go: () => requestPluginsView({ view: "market", category: "theme" }) },
-  { id: "set-theme-manage", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.5aeb7a87addf"); }, aliases: ["启用主题", "停用主题"], get desc() { return i18n("pages.settings.47a5ccceaeca"); } , breadcrumb: ["设置", "外观与布局", "主题", "管理主题"], go: () => requestPluginsView({ view: "mine", category: "theme" }) },
-  { id: "set-theme-follow", tab: "外观与布局", section: "主题", get title() { return i18n("pages.settings.b073567bc2e0"); }, aliases: ["昼夜", "白天主题", "黑夜主题", "自动切换"], get desc() { return i18n("pages.settings.590151cbdb54"); } , breadcrumb: ["设置", "外观与布局", "主题", "跟随系统昼夜"] },
-  { id: "set-appearance", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.86a63f23a076"); }, aliases: ["密度", "字号", "圆角", "主题色"], get desc() { return i18n("pages.settings.1cb7f269cc24"); } , breadcrumb: ["设置", "外观与布局", "外观", "外观"] },
-  { id: "set-wallpaper", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.bbaa9f06378b"); }, aliases: ["墙纸", "背景", "背景图", "动态壁纸", "上传壁纸", "壁纸库"], get desc() { return i18n("pages.settings.46ec3a81bd34"); } , breadcrumb: ["设置", "外观与布局", "外观", "壁纸"] },
-  { id: "set-wallpaper-sound", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.b34bc798190c"); }, aliases: ["视频壁纸声音", "壁纸静音"], get desc() { return i18n("pages.settings.4e66e6c598d5"); } , breadcrumb: ["设置", "外观与布局", "外观", "动态壁纸声音"] },
-  { id: "set-tabbar-style", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.1d08854948f4"); }, aliases: ["标签栏", "竖栏", "横栏", "标签栏默认"], get desc() { return i18n("pages.settings.a6514da1828c"); } , breadcrumb: ["设置", "外观与布局", "外观", "标签栏样式"] },
-  { id: "set-glass-level", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.865d7ae4c9e6"); }, aliases: ["玻璃", "材质", "毛玻璃", "透明", "透彻", "玻璃质感"], get desc() { return i18n("pages.settings.c85fea7bf89f"); } , breadcrumb: ["设置", "外观与布局", "外观", "玻璃程度"] },
-  { id: "set-dyn-color", tab: "外观与布局", section: "外观", get title() { return i18n("pages.settings.3d5af6644ab2"); }, aliases: ["动态取色", "壁纸取色", "系统取色", "动态颜色"], get desc() { return i18n("pages.settings.3c23082caeac"); } , breadcrumb: ["设置", "外观与布局", "外观", "跟随系统取色"] },
-  { id: "set-capsule-tap", tab: "外观与布局", section: "工作空间", get title() { return i18n("pages.settings.464f0207d4ff"); }, aliases: ["胶囊", "胶囊默认动作", "搜索与胶囊", "底栏胶囊"], get desc() { return i18n("pages.settings.1354e42a5f65"); } , breadcrumb: ["设置", "外观与布局", "工作空间", "点击胶囊默认打开"] },
-  { id: "set-search-history", tab: "外观与布局", section: "工作空间", get title() { return i18n("pages.settings.461301d93770"); }, aliases: ["搜索历史", "清空搜索记录"], get desc() { return i18n("pages.settings.b953890db0b9"); } , breadcrumb: ["设置", "外观与布局", "工作空间", "最近搜索记录"] },
-  { id: "set-geek", tab: "桌面小组件", section: "极客模式", get title() { return i18n("pages.settings.53b5c5c16016"); }, aliases: ["极客", "探索浏览器", "playwright", "浏览器自动化"], get desc() { return i18n("pages.settings.931d5e245827"); } , breadcrumb: ["设置", "桌面小组件", "极客模式", "极客模式（浏览器探索）"] },
-  { id: "set-geek-download", tab: "桌面小组件", section: "极客模式", get title() { return i18n("pages.settings.46195ccac72d"); }, aliases: ["playwright 下载", "下载浏览器", "浏览器环境"], get desc() { return i18n("pages.settings.4c2f3a5e0a01"); } , breadcrumb: ["设置", "桌面小组件", "极客模式", "探索浏览器环境"], landOn: { section: "极客模式", get note() { return i18n("pages.settings.52af44747494"); } } },
-  { id: "set-home-layout", tab: "外观与布局", section: "首页布局", get title() { return i18n("pages.settings.e7fd632d4dec"); }, aliases: ["首页", "卡片顺序"], get desc() { return i18n("pages.settings.853b03f039d3"); } , breadcrumb: ["设置", "外观与布局", "首页布局", "首页布局"] },
-  { id: "set-favs", tab: "外观与布局", section: "收藏夹", get title() { return i18n("pages.settings.796d20e91588"); }, aliases: ["收藏", "导入收藏", "导出收藏"], get desc() { return i18n("pages.settings.da4f90828ea3"); } , breadcrumb: ["设置", "外观与布局", "收藏夹", "收藏夹"] },
-  { id: "set-cloud", tab: "数据与同步", section: "云同步", get title() { return i18n("pages.settings.888977c201d1"); }, aliases: ["同步", "云盘同步", "备份"], get desc() { return i18n("pages.settings.02bd4c1bfaf2"); } , breadcrumb: ["设置", "数据与同步", "云同步", "云同步"] },
-  { id: "set-exthw", tab: "数据与同步", section: "外部作业源", get title() { return i18n("pages.settings.d4d78d3b38d0"); }, aliases: ["作业源", "OJ", "课件"], get desc() { return i18n("pages.settings.ec7b5bd71b2c"); } , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源"] },
-  { id: "set-download", tab: "下载与存储", section: "下载", get title() { return i18n("pages.settings.4673a2306165"); }, aliases: ["存储", "缓存", "清理"], get desc() { return i18n("pages.settings.44e3feed902f"); } , breadcrumb: ["设置", "下载与存储", "下载", "下载"] },
-  { id: "set-notify", tab: "通知与提醒", section: "通知", get title() { return i18n("pages.settings.4b6ded8a7f18"); }, aliases: ["提醒", "推送"], get desc() { return i18n("pages.settings.15047c91eb6c"); } , breadcrumb: ["设置", "通知与提醒", "通知", "通知"] },
+  { id: "set-theme-board", tab: "外观", section: "主题", get title() { return i18n("pages.settings.788db1cfec2a"); }, aliases: ["换主题", "配色", "主题板", "暗色", "夜间"], get desc() { return i18n("pages.settings.4a944ac462b1"); } , breadcrumb: ["设置", "外观", "主题", "主题"] },
+  { id: "set-theme-install", tab: "外观", section: "主题", get title() { return i18n("pages.settings.c3abbc2eb455"); }, aliases: ["主题市场", "装主题"], get desc() { return i18n("pages.settings.0240f8fe7f39"); } , breadcrumb: ["设置", "外观", "主题", "安装主题"], go: () => requestPluginsView({ view: "market", category: "theme" }) },
+  { id: "set-theme-manage", tab: "外观", section: "主题", get title() { return i18n("pages.settings.5aeb7a87addf"); }, aliases: ["启用主题", "停用主题"], get desc() { return i18n("pages.settings.47a5ccceaeca"); } , breadcrumb: ["设置", "外观", "主题", "管理主题"], go: () => requestPluginsView({ view: "mine", category: "theme" }) },
+  { id: "set-theme-follow", tab: "外观", section: "主题", get title() { return i18n("pages.settings.b073567bc2e0"); }, aliases: ["昼夜", "白天主题", "黑夜主题", "自动切换"], get desc() { return i18n("pages.settings.590151cbdb54"); } , breadcrumb: ["设置", "外观", "主题", "跟随系统昼夜"] },
+  { id: "set-appearance", tab: "外观", section: "外观", get title() { return i18n("pages.settings.86a63f23a076"); }, aliases: ["密度", "字号", "圆角", "主题色"], get desc() { return i18n("pages.settings.1cb7f269cc24"); } , breadcrumb: ["设置", "外观", "外观", "外观"] },
+  { id: "set-wallpaper", tab: "外观", section: "外观", get title() { return i18n("pages.settings.bbaa9f06378b"); }, aliases: ["墙纸", "背景", "背景图", "动态壁纸", "上传壁纸", "壁纸库"], get desc() { return i18n("pages.settings.46ec3a81bd34"); } , breadcrumb: ["设置", "外观", "外观", "壁纸"] },
+  { id: "set-wallpaper-sound", tab: "外观", section: "外观", get title() { return i18n("pages.settings.b34bc798190c"); }, aliases: ["视频壁纸声音", "壁纸静音"], get desc() { return i18n("pages.settings.4e66e6c598d5"); } , breadcrumb: ["设置", "外观", "外观", "动态壁纸声音"] },
+  { id: "set-tabbar-style", tab: "外观", section: "外观", get title() { return i18n("pages.settings.1d08854948f4"); }, aliases: ["标签栏", "竖栏", "横栏", "标签栏默认"], get desc() { return i18n("pages.settings.a6514da1828c"); } , breadcrumb: ["设置", "外观", "外观", "标签栏样式"] },
+  { id: "set-glass-level", tab: "外观", section: "外观", get title() { return i18n("pages.settings.865d7ae4c9e6"); }, aliases: ["玻璃", "材质", "毛玻璃", "透明", "透彻", "玻璃质感"], get desc() { return i18n("pages.settings.c85fea7bf89f"); } , breadcrumb: ["设置", "外观", "外观", "玻璃程度"] },
+  { id: "set-dyn-color", tab: "外观", section: "外观", get title() { return i18n("pages.settings.3d5af6644ab2"); }, aliases: ["动态取色", "壁纸取色", "系统取色", "动态颜色"], get desc() { return i18n("pages.settings.3c23082caeac"); } , breadcrumb: ["设置", "外观", "外观", "跟随系统取色"] },
+  { id: "set-capsule-tap", tab: "功能", section: "工作空间", get title() { return i18n("pages.settings.464f0207d4ff"); }, aliases: ["胶囊", "胶囊默认动作", "搜索与胶囊", "底栏胶囊"], get desc() { return i18n("pages.settings.1354e42a5f65"); } , breadcrumb: ["设置", "功能", "工作空间", "点击胶囊默认打开"] },
+  { id: "set-search-history", tab: "功能", section: "工作空间", get title() { return i18n("pages.settings.461301d93770"); }, aliases: ["搜索历史", "清空搜索记录"], get desc() { return i18n("pages.settings.b953890db0b9"); } , breadcrumb: ["设置", "功能", "工作空间", "最近搜索记录"] },
+  { id: "set-geek", tab: "功能", section: "极客模式", get title() { return i18n("pages.settings.53b5c5c16016"); }, aliases: ["极客", "探索浏览器", "playwright", "浏览器自动化"], get desc() { return i18n("pages.settings.931d5e245827"); } , breadcrumb: ["设置", "功能", "极客模式", "极客模式（浏览器探索）"] },
+  { id: "set-geek-download", tab: "功能", section: "极客模式", get title() { return i18n("pages.settings.46195ccac72d"); }, aliases: ["playwright 下载", "下载浏览器", "浏览器环境"], get desc() { return i18n("pages.settings.4c2f3a5e0a01"); } , breadcrumb: ["设置", "功能", "极客模式", "探索浏览器环境"], landOn: { section: "极客模式", get note() { return i18n("pages.settings.52af44747494"); } } },
+  { id: "set-home-layout", tab: "外观", section: "首页布局", get title() { return i18n("pages.settings.e7fd632d4dec"); }, aliases: ["首页", "卡片顺序"], get desc() { return i18n("pages.settings.853b03f039d3"); } , breadcrumb: ["设置", "外观", "首页布局", "首页布局"] },
+  { id: "set-favs", tab: "功能", section: "收藏夹", get title() { return i18n("pages.settings.796d20e91588"); }, aliases: ["收藏", "导入收藏", "导出收藏"], get desc() { return i18n("pages.settings.da4f90828ea3"); } , breadcrumb: ["设置", "功能", "收藏夹", "收藏夹"] },
+  { id: "set-cloud", tab: "账号", section: "云同步", get title() { return i18n("pages.settings.888977c201d1"); }, aliases: ["同步", "云盘同步", "备份"], get desc() { return i18n("pages.settings.02bd4c1bfaf2"); } , breadcrumb: ["设置", "账号", "云同步", "云同步"] },
+  { id: "set-exthw", tab: "账号", section: "外部作业源", get title() { return i18n("pages.settings.d4d78d3b38d0"); }, aliases: ["作业源", "OJ", "课件"], get desc() { return i18n("pages.settings.ec7b5bd71b2c"); } , breadcrumb: ["设置", "账号", "外部作业源", "外部作业源"] },
+  { id: "set-download", tab: "下载", section: "下载", get title() { return i18n("pages.settings.4673a2306165"); }, aliases: ["存储", "缓存", "清理"], get desc() { return i18n("pages.settings.44e3feed902f"); } , breadcrumb: ["设置", "下载", "下载", "下载"] },
+  { id: "set-notify", tab: "通知", section: "通知", get title() { return i18n("pages.settings.4b6ded8a7f18"); }, aliases: ["提醒", "推送"], get desc() { return i18n("pages.settings.15047c91eb6c"); } , breadcrumb: ["设置", "通知", "通知", "通知"] },
   { id: "set-account", tab: "账号", section: "账号与绑定", get title() { return i18n("pages.settings.07812d003706"); }, aliases: ["登录", "学号", "绑定"], get desc() { return i18n("pages.settings.ee17e69edae5"); } , breadcrumb: ["设置", "账号", "账号与绑定", "账号与绑定"] },
   { id: "set-security", tab: "账号", section: "安全", get title() { return i18n("pages.settings.afb63a620bdc"); }, aliases: ["密码", "记住密码"], get desc() { return i18n("pages.settings.372fbc07354b"); } , breadcrumb: ["设置", "账号", "安全", "安全"] },
   { id: "set-about", tab: "关于", section: "关于", get title() { return i18n("pages.settings.52d25a9e30ba"); }, aliases: ["版本", "更新", "开源"], get desc() { return i18n("pages.settings.ccdb042ac3e2"); } , breadcrumb: ["设置", "关于", "关于", "关于"] },
   { id: "set-account-row", tab: "账号", section: "账户", get title() { return i18n("pages.settings.061246bd31e0"); }, aliases: ["已登录", "退出登录"], get desc() { return i18n("pages.settings.1ffc3a676204"); } , breadcrumb: ["设置", "账号", "账户", "账户"] },
   { id: "set-saved-pwd", tab: "账号", section: "安全", get title() { return i18n("pages.settings.b7d8cb31eeb8"); }, aliases: ["保存密码", "清除密码"], get desc() { return i18n("pages.settings.8f655a35cb99"); } , breadcrumb: ["设置", "账号", "安全", "记住的密码"] },
-  { id: "set-tab-manage", tab: "关于", section: "关于", get title() { return i18n("pages.settings.12526376d387"); }, aliases: ["栏目显隐", "页签排序"], get desc() { return i18n("pages.settings.ba9385e7fd13"); } , breadcrumb: ["设置", "关于", "关于", "管理栏目"] },
+  { id: "set-tab-manage", tab: "功能", section: "功能", get title() { return i18n("pages.settings.12526376d387"); }, aliases: ["栏目显隐", "页签排序"], get desc() { return i18n("pages.settings.ba9385e7fd13"); } , breadcrumb: ["设置", "功能", "管理栏目", "管理栏目"] },
   { id: "set-tour", tab: "关于", section: "关于", get title() { return i18n("pages.settings.c8877a829fab"); }, aliases: ["重新运行引导", "新手引导"], get desc() { return i18n("pages.settings.06f03258229a"); } , breadcrumb: ["设置", "关于", "关于", "导览"] },
   { id: "set-update", tab: "关于", section: "关于", get title() { return i18n("pages.settings.b34d6b6c1193"); }, aliases: ["本体更新", "版本更新"], get desc() { return i18n("pages.settings.b07a37146f79"); } , breadcrumb: ["设置", "关于", "关于", "检查 OneTHU 更新"] },
-  { id: "set-cloud-reconnect", tab: "数据与同步", section: "云同步", get title() { return i18n("pages.settings.752d61201dda"); }, aliases: ["重新连接云盘", "token"], get desc() { return i18n("pages.settings.48b3252fa3bf"); } , breadcrumb: ["设置", "数据与同步", "云同步", "云盘重连"], landOn: { section: "云同步", get note() { return i18n("pages.settings.4b7a59bc4d83"); } } },
-  { id: "set-exthw-creds", tab: "数据与同步", section: "外部作业源", get title() { return i18n("pages.settings.0d8ce603b616"); }, aliases: ["作业源凭据", "OJ 登录"], get desc() { return i18n("pages.settings.63c3e2b4bea1"); } , breadcrumb: ["设置", "数据与同步", "外部作业源", "外部作业源登录"], landOn: { section: "外部作业源", get note() { return i18n("pages.settings.a52019e2a526"); } } },
-  { id: "set-dl-dir", tab: "下载与存储", section: "下载", get title() { return i18n("pages.settings.807f19bf853b"); }, aliases: ["缓存", "存储占用", "清理"], get desc() { return i18n("pages.settings.2cc0a2c950df"); } , breadcrumb: ["设置", "下载与存储", "下载", "下载目录 / 缓存清理"], landOn: { section: "下载", get note() { return i18n("pages.settings.08a2cb9cf64f"); } } },
+  { id: "set-cloud-reconnect", tab: "账号", section: "云同步", get title() { return i18n("pages.settings.752d61201dda"); }, aliases: ["重新连接云盘", "token"], get desc() { return i18n("pages.settings.48b3252fa3bf"); } , breadcrumb: ["设置", "账号", "云同步", "云盘重连"], landOn: { section: "云同步", get note() { return i18n("pages.settings.4b7a59bc4d83"); } } },
+  { id: "set-exthw-creds", tab: "账号", section: "外部作业源", get title() { return i18n("pages.settings.0d8ce603b616"); }, aliases: ["作业源凭据", "OJ 登录"], get desc() { return i18n("pages.settings.63c3e2b4bea1"); } , breadcrumb: ["设置", "账号", "外部作业源", "外部作业源登录"], landOn: { section: "外部作业源", get note() { return i18n("pages.settings.a52019e2a526"); } } },
+  { id: "set-dl-dir", tab: "下载", section: "下载", get title() { return i18n("pages.settings.807f19bf853b"); }, aliases: ["缓存", "存储占用", "清理"], get desc() { return i18n("pages.settings.2cc0a2c950df"); } , breadcrumb: ["设置", "下载", "下载", "下载目录 / 缓存清理"], landOn: { section: "下载", get note() { return i18n("pages.settings.08a2cb9cf64f"); } } },
   { id: "set-help", tab: "帮助", section: "帮助", get title() { return i18n("pages.settings.a57cfcb8428d"); }, aliases: ["教程", "导览"], get desc() { return i18n("pages.settings.2e7fa452ef24"); } , breadcrumb: ["设置", "帮助", "帮助", "帮助"] },
 ]);
 
@@ -142,7 +157,7 @@ export function SettingsPage() {
     if (wantTab) setTab(wantTab);
     const wantSection = consumeSettingsSectionRequest();
     const externalHomework = consumeExtHwScrollRequest();
-    if (externalHomework) setTab("数据与同步");
+    if (externalHomework) setTab("账号");
     const target = wantSection ?? (externalHomework ? "外部作业源" : null);
     if (!target) return;
     if (focusTimer.current !== null) clearTimeout(focusTimer.current);
@@ -204,21 +219,8 @@ export function SettingsPage() {
 
   return (
     <div className="workbench-settings" ref={settingsRef}>
-      <PageHead
-        title={i18n("pages.settings.df3d58c7d84b")}
-        actions={
-          <>
-            <Btn data-set-id="row-set-tour" variant="outline" onClick={() => {
-                resetActiveOnboarding();
-                location.reload();
-              }} titleAttr={i18n("pages.settings.06f03258229a")}>{i18n("pages.settings.c8877a829fab")}</Btn>
-            <Btn data-set-id="row-set-tab-manage" variant="outline" onClick={() => setManageOpen(true)} titleAttr={i18n("pages.settings.fa0124c14866")}>{i18n("pages.settings.12526376d387")}</Btn>
-          </>
-        }
-      />
-
-
-      <div className="workbench-settings-mode"><ExperienceModeControl/><LanguageControl/></div>
+      {/* 页头已移除（2026-10-24 用户定案）：设置页只剩标题栏 + 左导航 + 右内容。
+          「导览 / 管理栏目」的功能暂时移入「关于」分节，后续再重新分类。 */}
       {/* 完整模式的续签/模型源都在 OH 高级配置里调，这里不再放模型源条（用户 2026-10-19 拍板） */}
       {isPhone ? (
         <div className="workbench-settings-phone-nav">
@@ -253,13 +255,14 @@ export function SettingsPage() {
               className={tab === t ? "is-active" : ""}
               onClick={() => setTab(t)}
             >
+              <span className="workbench-settings-tab-icon" aria-hidden="true">{SETTINGS_TAB_ICONS[t] ?? null}</span>
               {settingsLabel(t)}
             </Btn>
           ))}
       </div>
       </nav>}
       <div className="workbench-settings-content" id="workbench-settings-panel" role="tabpanel" aria-label={settingsLabel(tab)}>
-      <div className="workbench-settings-title"><h2>{settingsLabel(tab)}</h2><p>{i18n("pages.settings.fc49d72df446")}</p></div>
+      <div className="workbench-settings-title"><h2>{settingsLabel(tab)}</h2><p>{settingsTabDescription(tab)}</p></div>
       <SettingsGroup tab="帮助" active={tab} section="帮助">
       <SectionHead id="row-set-help" title={i18n("pages.settings.a57cfcb8428d")} />
       <Card>
@@ -280,8 +283,13 @@ export function SettingsPage() {
             或改用开发者构建的右上角面板导出）。要恢复成正式版也显示，去掉这层门控即可。 */}
         {__ONETHU_DEV__ ? <DebugLogRow /> : null}
         <DiagnosticsRow />
-        {/* 首启流程灰度开关已退役：播放统一走 OnboardingTour，
-            「导览」按钮（页头）清 flow4 完成标记，回到三模式选择。 */}
+        {/* 原页头按钮暂时归入「关于」（2026-10-24 用户要求，后续重新分类）。 */}
+        <SettingsRow
+          id="row-set-tour"
+          title={i18n("pages.settings.c8877a829fab")}
+          sub={i18n("pages.settings.06f03258229a")}
+          control={<Btn variant="outline" size="sm" onClick={() => { resetActiveOnboarding(); location.reload(); }}>{i18n("pages.settings.c8877a829fab")}</Btn>}
+        />
       </Card>
 
       </SettingsGroup>
@@ -330,20 +338,20 @@ export function SettingsPage() {
 
 
       </SettingsGroup>
-      <SettingsGroup tab="数据与同步" active={tab} section="云同步">
+      <SettingsGroup tab="账号" active={tab} section="云同步">
       <SectionHead id="row-set-cloud" title={i18n("pages.settings.888977c201d1")} />
       <CalendarSyncSettings />
       </SettingsGroup>
-      <SettingsGroup tab="数据与同步" active={tab} section="外部作业源">
+      <SettingsGroup tab="账号" active={tab} section="外部作业源">
       <SectionHead id="row-set-exthw" title={i18n("pages.settings.d4d78d3b38d0")} />
       <ExtHwSettingsSection />
 
       </SettingsGroup>
-      <SettingsGroup tab="下载与存储" active={tab} section="下载">
+      <SettingsGroup tab="下载" active={tab} section="下载">
       <DownloadSettings />
 
       </SettingsGroup>
-      <SettingsGroup tab="外观与布局" active={tab} section="首页布局">
+      <SettingsGroup tab="外观" active={tab} section="首页布局">
       <SectionHead id="row-set-home-layout" title={i18n("pages.settings.e7fd632d4dec")} />
       <SettingsList>
         <SettingsRow
@@ -354,12 +362,31 @@ export function SettingsPage() {
       </SettingsList>
 
       </SettingsGroup>
-      <SettingsGroup tab="外观与布局" active={tab} section="工作空间">
+      <SettingsGroup tab="功能" active={tab} section="使用模式">
+      <SectionHead id="row-set-mode" title={i18n("settings.label.mode")} />
+      <ExperienceModeControl />
+      </SettingsGroup>
+      <SettingsGroup tab="功能" active={tab} section="语言">
+      <SectionHead id="row-set-language" title={i18n("settings.label.language")} />
+      <LanguageControl />
+      </SettingsGroup>
+      <SettingsGroup tab="功能" active={tab} section="管理栏目">
+      <SectionHead id="row-set-tab-manage-sec" title={i18n("pages.settings.12526376d387")} />
+      <Card>
+        <SettingsRow
+          id="row-set-tab-manage"
+          title={i18n("pages.settings.12526376d387")}
+          sub={i18n("pages.settings.fa0124c14866")}
+          control={<Btn variant="outline" size="sm" onClick={() => setManageOpen(true)}>{i18n("pages.settings.12526376d387")}</Btn>}
+        />
+      </Card>
+      </SettingsGroup>
+      <SettingsGroup tab="功能" active={tab} section="工作空间">
       <SectionHead title={i18n("pages.settings.6fed7e860168")} />
       <ExplorerPrefsSection />
 
       </SettingsGroup>
-      <SettingsGroup tab="外观与布局" active={tab} section="收藏夹">
+      <SettingsGroup tab="功能" active={tab} section="收藏夹">
       <SectionHead id="row-set-favs" title={i18n("pages.settings.796d20e91588")} />
       <SettingsList>
         <SettingsRow
@@ -416,7 +443,7 @@ export function SettingsPage() {
       </SettingsList>
 
       </SettingsGroup>
-      <SettingsGroup tab="外观与布局" active={tab} section="外观">
+      <SettingsGroup tab="外观" active={tab} section="外观">
       <SectionHead id="row-set-appearance" title={i18n("pages.settings.86a63f23a076")} />
       <SettingsList>
         <AppearanceSection />
@@ -425,26 +452,26 @@ export function SettingsPage() {
         <WallpaperSection />
       </Card>
       </SettingsGroup>
-      <SettingsGroup tab="外观与布局" active={tab} section="OneShot 快捷入口">
+      <SettingsGroup tab="功能" active={tab} section="OneShot 快捷入口">
       {isPhone ? <MobileLayoutChoice/> : null}
       <SectionHead title={i18n("pages.settings.ac32447aadc3")} />
       <SettingsList>
         <OneShotSettings />
       </SettingsList>
       </SettingsGroup>
-      <SettingsGroup tab="通知与提醒" active={tab} section="通知">
+      <SettingsGroup tab="通知" active={tab} section="通知">
       <SectionHead id="row-set-notify" title={i18n("pages.settings.4b6ded8a7f18")} />
       <Card>
         <NotifySettingsSection />
       </Card>
       </SettingsGroup>
-      <SettingsGroup tab="桌面小组件" active={tab} section="桌面小组件">
+      <SettingsGroup tab="功能" active={tab} section="桌面小组件">
       <SectionHead id="row-widget-main" title={i18n("pages.settings.28b0433b1b95")} />
       <Card>
         <WidgetSettingsSection />
       </Card>
       </SettingsGroup>
-      <SettingsGroup tab="桌面小组件" active={tab} section="极客模式">
+      <SettingsGroup tab="功能" active={tab} section="极客模式">
       <SectionHead title={i18n("pages.settings.ef5a51b132b3")} />
       <GeekSection />
       {/* 2026-10-11（用户纠正）：OH **不是设置页的二级**，而是**插件页的二级子页面**
@@ -646,6 +673,13 @@ function AppearanceSection(): ReactNode {
 
   const snap = useThemes();
   const glass = useSyncExternalStore(subscribeGlassLevel, getGlassLevel, getGlassLevel);
+  /* 跟随系统昼夜：白天/黑夜各自可指定一张背景（空 = 沿用常驻壁纸）。 */
+  const wallSlots = useSyncExternalStore(subscribeWallpaper, () => `${wallpaperDay() ?? ""}|${wallpaperNight() ?? ""}`);
+  const [wallDay = "", wallNight = ""] = wallSlots.split("|");
+  const wallpaperOptions = [
+    { value: "", label: i18n("settings.wallpaper.inherit") },
+    ...libraryItems().map((item) => ({ value: item.ref, label: item.name })),
+  ];
   /* 手机端（dev-explorer 二轮 A1）：手机只有横标签页——横/竖栏选项不渲染（TabDrawer 分段同款） */
   const isPhone = typeof document !== "undefined" && document.documentElement.classList.contains("is-phone");
   const tabLayoutDefault = useTabLayoutDefault();
@@ -761,6 +795,16 @@ function AppearanceSection(): ReactNode {
         <>
           <SettingsRow title={i18n("pages.settings.1eacd04cef79")} control={<Select value={snap.dayThemeId ?? ""} onChange={(value) => setDayNightTheme(value || null, snap.nightThemeId)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
           <SettingsRow title={i18n("pages.settings.061d30212032")} control={<Select value={snap.nightThemeId ?? ""} onChange={(value) => setDayNightTheme(snap.dayThemeId, value || null)} disabled={dyn}>{themes.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</Select>} />
+          <SettingsRow
+            title={i18n("settings.wallpaper.day")}
+            sub={i18n("settings.wallpaper.dayDesc")}
+            control={<Select value={wallDay} options={wallpaperOptions} onChange={(value) => setWallpaperSlot("day", value || null)} />}
+          />
+          <SettingsRow
+            title={i18n("settings.wallpaper.night")}
+            sub={i18n("settings.wallpaper.nightDesc")}
+            control={<Select value={wallNight} options={wallpaperOptions} onChange={(value) => setWallpaperSlot("night", value || null)} />}
+          />
         </>
       ) : null}
       <SettingsRow id="row-set-dyn-color"

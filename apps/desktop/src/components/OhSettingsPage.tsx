@@ -94,54 +94,15 @@ function takeTier(): OhTier | null {
  *  focusSettingsTarget 补 `row-<slugOf(want)>`，所以调用方传「基础设置」/「高级配置」即命中。 */
 const TIER_ANCHOR: Record<"basic" | "advanced", string> = { basic: "row-基础设置", advanced: "row-高级配置" };
 
-/** 档位切换条（分段控件，与设置页页签同形态但更轻） */
-function TierSwitch({ tier, onChange }: { tier: "basic" | "advanced"; onChange: (t: "basic" | "advanced") => void }): ReactNode {
-  const uiLocale = useUiLocale();
-
-  const item = (id: "basic" | "advanced", label: string): ReactNode => (
-    <button
-      className={"nav-item" + (tier === id ? " is-active" : "")}
-      role="tab"
-      aria-selected={tier === id}
-      /* task-22：档位根锚点——检索直达「找不到行」时落这里再解释（分节根口径）。
-         2026-10-15 oh-wire 复核：锚点值必须是**解析器会自己补前缀**的形状
-         （focusSettingsTarget 用 `row-<slugOf(want)>` 查 data-set-id）——所以这里写
-         `row-基础设置` / `row-高级配置`，调用方传「基础设置」/「高级配置」即可命中。
-         （旧值 `oh-tier-basic`/`oh-tier-advanced` 谁都命中不了：传光名字会被补成
-         `row-oh-tier-basic`，传全名会被补成 `row-row-…`。） */
-      data-set-id={TIER_ANCHOR[id]}
-      style={{ flex: 1, justifyContent: "center" }}
-      onClick={() => onChange(id)}
-    >
-      {label}
-    </button>
-  );
-  return (
-    <div
-      style={{
-        display: "flex", alignItems: "center", gap: 4, padding: 4, marginBottom: 12,
-        border: "1px solid var(--border)", borderRadius: "var(--md-sys-shape-corner-large, 12px)",
-        background: "var(--md-sys-color-surface-container-lowest)",
-      }}
-      data-set-id="row-oh-root"
-      role="tablist"
-      aria-label={i18n("components.ohsettingspage.675459adb527")}
-    >
-      {item("basic", i18n("components.ohsettingspage.692873ddd8f4"))}
-      {item("advanced", i18n("components.ohsettingspage.36a045ebcc6d"))}
-    </div>
-  );
-}
-
 /** 小节标题：**刻意不用 SectionHead**——设置页的页签显隐是按 `.section-head` 走的，
  *  这里再塞一个会被当成新分节被显隐逻辑收走。 */
 function SubHead({ children, id }: { children: ReactNode; id?: string }): ReactNode {
   const uiLocale = useUiLocale();
 
   return (
-    /* ② 左内边距对齐行（og-settings-row 的 --og-card-pad）；id（task-22 检索直达）**照挂 data-set-id**，
-       供 goSearchRow 的离家行 / 无行控件落地——OneGUI 后仍认这一锚点。 */
-    <div className="og-section-titles" data-set-id={id} style={{ paddingInline: "var(--og-card-pad)" }}>
+    /* 不再写内联 padding：Harness 内容区已有 24px 内衬，分节标题与行同一左缘；
+       横向缩进交给宿主配方（.oh-settings .og-section-titles），避免和设置页各写一套。 */
+    <div className="og-section-titles" data-set-id={id}>
       <Text slot="subtitle" as="h4" weight="semibold">{children}</Text>
     </div>
   );
@@ -247,11 +208,30 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
     });
   }, []);
 
-  return (
-    <>
-      <TierSwitch tier={tier} onChange={setTier} />
+  const tierLabel = (id: "basic" | "advanced"): string =>
+    id === "basic" ? i18n("components.ohsettingspage.692873ddd8f4") : i18n("components.ohsettingspage.36a045ebcc6d");
 
-      {tier === "basic" ? (
+  return (
+    <div className="workbench-settings oh-settings">
+      <div className="workbench-settings-layout">
+        <nav className="workbench-settings-nav" aria-label={i18n("components.ohsettingspage.675459adb527")}>
+          <div className="workbench-settings-tabs" role="tablist" aria-label={i18n("components.ohsettingspage.675459adb527")}>
+            {(["basic", "advanced"] as const).map((id) => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={tier === id}
+                data-set-id={TIER_ANCHOR[id]}
+                className={"og-btn og-btn--ghost og-interactive" + (tier === id ? " is-active" : "")}
+                onClick={() => setTier(id)}
+              >
+                <span className="og-btn-label">{tierLabel(id)}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+        <div className="workbench-settings-content" role="tabpanel" aria-label={tierLabel(tier)}>
+          {tier === "basic" ? (
         <>
           <SubHead>{i18n("components.ohsettingspage.89fcbbfdca16")}</SubHead>
           <VoiceSettingsSection />
@@ -299,7 +279,9 @@ export function OhSettingsPage({ advancedPanels }: { advancedPanels?: ReactNode 
           <SubHead id="sec-模型MCP日志">{i18n("components.ohsettingspage.3f0404bdc67a")}</SubHead>
           {advancedPanels ?? <OhAdvancedSlot />}
         </>
-      )}
-    </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

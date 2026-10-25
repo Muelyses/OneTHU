@@ -76,7 +76,7 @@ export type CourseTabKey = "notices" | "assignments" | "files";
  *  单一出处：页面与测试都调它，避免两处口径漂移。
  */
 export function yktKindToCourseTab(kind: string): CourseTabKey {
-  if (kind === "homework" || kind === "exam") return "assignments";
+  if (kind === "homework" || kind === "exam" || kind === "quiz") return "assignments";
   if (kind === "announcement") return "notices";
   return "files";
 }

@@ -94,5 +94,12 @@ export async function importWallpaperArchive(raw: unknown, save: (b64: string, e
   const local = new Map<string, string>();
   for (const [ref, value] of decoded) local.set(ref, `local:${await save(value.b64, value.ext)}`);
   const resolved = (ref: string): string => local.get(ref) ?? ref;
-  return { v: 2, global: input.global === null ? null : resolved(input.global as string), library: rows.map(row => ({ ...row, ref: resolved(row.ref) })) };
+  /* 归档暂不携带日夜背景（v3 归档只存常驻壁纸）；导入后回到「沿用常驻壁纸」。 */
+  return {
+    v: 3,
+    global: input.global === null ? null : resolved(input.global as string),
+    day: null,
+    night: null,
+    library: rows.map(row => ({ ...row, ref: resolved(row.ref) })),
+  };
 }

@@ -274,6 +274,7 @@
 
 /* 外部考试 / 旁听课堂小徽标（R9）：与 src-badge 同规格，低调配色 */
 .tag-exam,
+.tag-quiz,
 .tag-audit {
   display: inline-flex;
   align-items: center;
@@ -289,6 +290,7 @@
 }
 
 .tag-exam { background: var(--amber-soft); color: var(--amber); }
+.tag-quiz { background: var(--green-soft); color: var(--green); }
 .tag-audit { background: var(--accent-soft); color: var(--accent); }
 
 /* ---------- 统计卡 ---------- */
@@ -4797,20 +4799,6 @@ section > .svc-label { margin-top: 14px; }
 /* 每个作业一个槽位：只有当前那条可见并不滚动，其余保留挂载（=天然缓存，换回旧卡不重拉） */
 .tasks-detail-slot { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding-right: 4px; }
 .tasks-detail-slot.is-hidden { display: none; }
-/* 展开 = 同一个实例切成全屏浮层（不重挂载，所以展开/收起都不重拉数据） */
-.tasks-detail.is-full {
-  position: fixed; inset: 0; z-index: 90;
-  background: var(--bg);
-  padding: 16px clamp(16px, 5vw, 80px) calc(20px + var(--og-safe-bottom, 0px));
-}
-.tasks-detail-fullbar {
-  flex: none; display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding-bottom: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border-soft);
-}
-.tasks-detail-fulltitle {
-  font-size: 14px; font-weight: 600; color: var(--text-1);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
 /* 详情组件自带的页头（标题 + 返回）由分栏头接管——只改容器渲染，不动详情组件内部 */
 .tasks-detail .page-head { display: none; }
 .tasks-detail-slot > :first-child { margin-top: 0; }

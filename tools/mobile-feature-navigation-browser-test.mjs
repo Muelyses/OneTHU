@@ -8,7 +8,7 @@ const checks=[];let passed=false;const check=(v,s)=>{assert.ok(v,s);checks.push(
 const contentBounds=page=>page.locator('.explorer-content').evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width};});
 async function chooseLayout(page,mode,text){
  await call(page,'/src/state/explorer.ts','openSettings',['settings']);
- if(mode==='full')await page.locator('.workbench-settings-phone-nav select').selectOption('外观与布局');
+ if(mode==='full')await page.locator('.workbench-settings-phone-nav select').selectOption('外观');
  await page.locator('.settings-panel .mobile-layout-choice').getByRole('button').filter({hasText:text}).click();
  await page.locator('.settings-head').getByRole('button').last().click();await page.locator('.settings-mask').waitFor({state:'hidden'});
 }

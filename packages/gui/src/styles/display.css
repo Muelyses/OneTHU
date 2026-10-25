@@ -119,7 +119,11 @@
   top: 0;
   z-index: var(--og-z-sticky);
   padding: var(--og-space-2) var(--og-space-3);
-  background: var(--og-surface-2);
+  /* 表头是"阅读面"而不是实心白板：中性皮肤取值不变（reading = surface-2），
+     玻璃皮肤下由材质轴换成半透明阅读面 + 模糊，吸顶时仍能压住滚过的行。 */
+  background: var(--og-fill-reading);
+  backdrop-filter: var(--og-reading-blur);
+  -webkit-backdrop-filter: var(--og-reading-blur);
   color: var(--og-content-3);
   font-size: var(--og-text-label);
   font-weight: var(--og-weight-medium);

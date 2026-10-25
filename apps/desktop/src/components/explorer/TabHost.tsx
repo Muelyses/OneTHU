@@ -17,6 +17,7 @@ import { SimpleHost } from "../SimpleExperience.js";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Ctx, useApp } from "../../state/context.js";
+import { prefersReducedMotion } from "../../lib/motion.js";
 import type { AppState, LearnNav, Page } from "../../state/app.js";
 import {
   HOME_TAB_ID,
@@ -121,6 +122,17 @@ function TabContextMenu({
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [placement, setPlacement] = useState({ left: pos.x, top: pos.y });
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<number | null>(null);
+  const requestClose = useCallback((): void => {
+    if (closing) return;
+    if (prefersReducedMotion()) { onClose(); return; }
+    setClosing(true);
+    closeTimer.current = window.setTimeout(onClose, 210);
+  }, [closing, onClose]);
+  useEffect(() => () => {
+    if (closeTimer.current !== null) window.clearTimeout(closeTimer.current);
+  }, []);
   useLayoutEffect(() => {
     const place = (): void => {
       const rect = menuRef.current?.getBoundingClientRect();
@@ -160,13 +172,21 @@ function TabContextMenu({
         onClick={onClose}
         onContextMenu={(e) => { e.preventDefault(); onClose(); }}
       />
-      <div ref={menuRef} className="explorer-ctxmenu" style={placement} role="menu">
+      <div
+        ref={menuRef}
+        className={"explorer-ctxmenu" + (closing ? " is-out" : "")}
+        style={{
+          ...placement,
+          transformOrigin: `${pos.x > window.innerWidth / 2 ? "right" : "left"} ${pos.y > window.innerHeight / 2 ? "bottom" : "top"}`,
+        }}
+        role="menu"
+      >
         {items.map((it) => (
           <button
             key={it.label}
             className={"explorer-ctxmenu-item" + (it.danger ? " is-danger" : "")}
             role="menuitem"
-            onClick={() => { it.act(); onClose(); }}
+            onClick={() => { it.act(); requestClose(); }}
           >
             {it.label}
           </button>

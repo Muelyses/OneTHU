@@ -33,10 +33,10 @@ function plainShapeName(name: string): string {
 
 /* task-19：桌面小组件设置行注册 */
 defineSearchRows([
-  { id: "widget-main", tab: "桌面小组件", section: "桌面小组件", get title() { return i18n("components.widgetsettingssection.28b0433b1b95"); }, aliases: ["小组件", "widget", "桌面组件"], get desc() { return i18n("components.widgetsettingssection.796fd26679bc"); } , breadcrumb: ["设置", "桌面小组件", "桌面小组件", "桌面小组件"] },
+  { id: "widget-main", tab: "功能", section: "桌面小组件", get title() { return i18n("components.widgetsettingssection.28b0433b1b95"); }, aliases: ["小组件", "widget", "桌面组件"], get desc() { return i18n("components.widgetsettingssection.796fd26679bc"); } , breadcrumb: ["设置", "功能", "桌面小组件", "桌面小组件"] },
   {
-    id: "widget-slots", tab: "桌面小组件", section: "桌面小组件", get title() { return i18n("components.widgetsettingssection.ae0f6a0341d8"); }, aliases: ["槽位", "插件小组件"], get desc() { return i18n("components.widgetsettingssection.23c3567bc418"); },
-    breadcrumb: ["设置", "桌面小组件", "桌面小组件", "小组件槽位"],
+    id: "widget-slots", tab: "功能", section: "桌面小组件", get title() { return i18n("components.widgetsettingssection.ae0f6a0341d8"); }, aliases: ["槽位", "插件小组件"], get desc() { return i18n("components.widgetsettingssection.23c3567bc418"); },
+    breadcrumb: ["设置", "功能", "桌面小组件", "小组件槽位"],
     /* 槽位只在 Android 原生承载里存在：桌面端没有这行，别让 goSearchRow 报 row 级命中。 */
     visible: () => isAndroidNavigator(typeof navigator !== "undefined" ? navigator : undefined),
     fallbackNote: "「小组件槽位」仅 Android 版可用；已到「桌面小组件」。",

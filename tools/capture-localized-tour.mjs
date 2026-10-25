@@ -54,7 +54,7 @@ try{
   if(rest&&entries.some(entry=>entry.key===target))continue;
   const {page,context}=await setup();
   if(target==='workspaces'||target==='onego'){await page.locator('#ex-bbar-onego-btn').click();await page.getByRole('dialog').first().waitFor();await page.getByRole('tab',{name:await uiLabel(page,target==='workspaces'?'工作区':'我的收藏'),exact:true}).click();}
-  else {await call(page,'/src/state/explorer.ts','openSettings',[target==='plugins'?'plugins':'settings']);await page.getByRole('dialog').first().waitFor();if(target!=='plugins')await page.locator('.workbench-settings-phone-nav select').selectOption(target==='appearance'?'外观与布局':'数据与同步');}
+  else {await call(page,'/src/state/explorer.ts','openSettings',[target==='plugins'?'plugins':'settings']);await page.getByRole('dialog').first().waitFor();if(target!=='plugins')await page.locator('.workbench-settings-phone-nav select').selectOption(target==='appearance'?'外观':'账号');}
   await page.getByRole('dialog').first().waitFor();await shot(page,target);await close(page,context);
  }
  {

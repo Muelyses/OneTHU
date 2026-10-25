@@ -34,6 +34,7 @@ interface LearnJson {
 
 import { decodeHtmlEntities } from "../info/htmltext.js";
 import { parseLearnTime } from "./time.js";
+import { learnAttachmentName } from "./attachmentName.js";
 
 /** 文本字段实体解码：全量命名/数值实体（mdash/ndash/引号/希腊字母…），
  *  并对残留实体再收一轮（站点偶发双重转义 &amp;mdash; → &mdash; → —）。
@@ -1083,8 +1084,12 @@ export class LearnClient {
    *  指向答疑/讨论/笔记路由的锚点（mobile filterJunkLinks 同源路由）一律不要。
    *  解析出的每个附件因此必有可下载 URL；文件名取锚点文本（可空，UI 以「附件 {id}」兜底）。 */
   #parseAttachmentAnchor(block: string): LearnAttachment | undefined {
-    for (const a of block.matchAll(/<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)) {
-      const href = decodeText(a[1]!).trim();
+    for (const a of block.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+      const attrs: Record<string, string> = {};
+      for (const m of (a[1] ?? "").matchAll(/([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*"([^"]*)"/g)) {
+        attrs[(m[1] ?? "").toLowerCase()] = decodeText(m[2] ?? "");
+      }
+      const href = (attrs["href"] ?? "").trim();
       if (!href || href === "#" || /^javascript:/i.test(href)) continue;
       // 答疑/论坛/笔记等纯导航路由（mobile filterJunkLinks：/bbs|kcdy|biji|taolun|dayi|答疑）
       if (/\/(?:bbs|kcdy|biji|taolun|dayi)\b|答疑/i.test(href)) continue;
@@ -1094,7 +1099,9 @@ export class LearnClient {
       const dl = params.get("downloadUrl");
       // 无文件下载参数 = 不是附件（页面导航/锚点），绝不冒充附件名
       if (!id && !dl) continue;
-      const name = decodeText(a[2]!.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+      // 锚点文本常是动作词（「下载」）；真名在属性 / URL 参数 / downloadUrl 路径里。
+      // 推不出真名时留空，调用方用「附件 {id}」兜底，Rust 侧再按 Content-Type 补后缀。
+      const name = learnAttachmentName({ text: a[2] ?? "", attributes: attrs, href, ...(dl ? { downloadUrl: dl } : {}) });
       // 页面经 webvpn 取回时 href 可能已是 `/https/<hex>/…` 包装形态：交给 learnAbsoluteUrl
       // 判断（再拼一次 LEARN_PREFIX 就是双重包装 → 404，真机踩过）
       const downloadUrl = urls.learnAbsoluteUrl(dl ?? href);

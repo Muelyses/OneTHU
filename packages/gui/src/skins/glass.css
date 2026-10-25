@@ -1,9 +1,16 @@
 /* Material axis, calibrated to the original clear/rich/deep glass family.
  * Surfaces transmit the wallpaper; textContrast samples the resulting stack.
  * Actions/inputs/segments and note paper keep their semantic opaque pairs.
+ *
+ * 2026-10-24 readability + optics revision:
+ *   - 透彻档不再是"只留一层薄雾"：表面下限抬到 36%（暗色 14%），让壁纸细节退后一档；
+ *   - 新增阅读面角色 --og-fill-reading：长文本/公式/表格/通知用它，比普通表面更实，
+ *     同时保留同一份模糊与饱和度 —— 透彻的观感来自"透出并虚化"，不是"字压在原图上"；
+ *   - --og-refraction-* 只在支持 SVG 背景滤镜的引擎被光学层读取，其余引擎无感。
  */
 [data-og-skin="glass"] {
   --og-material-opacity: 44%;
+  --og-reading-opacity: 68%;
   /* 便笺纸也走材质轴：同档透光 + 背景模糊（文字/图标仍由对比度引擎兜底）。 */
   --og-note-opacity: var(--og-material-opacity);
   --og-note-blur: var(--og-surface-blur);
@@ -12,6 +19,7 @@
   --og-saturate: 155%;
   --og-fill-surface: color-mix(in srgb, var(--og-surface-1) var(--og-material-opacity), transparent);
   --og-fill-overlay: color-mix(in srgb, var(--og-menu-fill) var(--og-material-overlay-opacity), transparent);
+  --og-fill-reading: color-mix(in srgb, var(--og-surface-2) var(--og-reading-opacity), transparent);
   --og-fill-chip: var(--og-composer-fill);
   --og-card-fill: var(--og-fill-surface);
   --og-surface-tint: none;
@@ -19,26 +27,54 @@
   --og-chip-tint: none;
   --og-surface-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
   --og-overlay-blur: blur(var(--og-blur-1)) saturate(var(--og-saturate));
+  --og-reading-blur: var(--og-surface-blur);
   --og-chip-blur: none;
   --og-material-rim: color-mix(in srgb, var(--og-contrast-ink-light) 48%, transparent);
   --og-material-shadow: var(--og-elev-2), inset 0 1px 0 var(--og-material-rim);
+  --og-refraction-edge: 10px;
+  --og-refraction-scale: 12px;
 }
 [data-og-skin="glass"][data-og-skin-level="clear"] {
-  --og-material-opacity: 30%;
+  --og-material-opacity: 36%;
+  --og-reading-opacity: 58%;
   --og-material-overlay-opacity: 60%;
   --og-blur-1: 22px;
   --og-saturate: 160%;
+  --og-refraction-edge: 12px;
+  --og-refraction-scale: 14px;
 }
 [data-og-skin="glass"][data-og-skin-level="rich"] {
   --og-material-opacity: 60%;
+  --og-reading-opacity: 76%;
   --og-material-overlay-opacity: 74%;
   --og-blur-1: 20px;
+  --og-refraction-edge: 9px;
+  --og-refraction-scale: 11px;
 }
 [data-og-skin="glass"][data-og-skin-level="deep"] {
   --og-material-opacity: 74%;
+  --og-reading-opacity: 84%;
   --og-material-overlay-opacity: 82%;
   --og-blur-1: 20px;
+  --og-refraction-edge: 8px;
+  --og-refraction-scale: 10px;
 }
-[data-og-skin="glass"][data-og-scheme="dark"] { --og-material-opacity: 14%; }
-[data-og-skin="glass"][data-og-skin-level="clear"][data-og-scheme="dark"] { --og-material-opacity: 6%; }
-[data-og-skin="glass"][data-og-skin-level="deep"][data-og-scheme="dark"] { --og-material-opacity: 20%; }
+/* 2026-10-24 用户点名：深色模式玻璃的黑色遮罩不够深 → 暗档整体上抬一档。
+   亮壁纸/亮图片壁纸下尤其明显（14% 的暗面混在亮底上几乎消失），抬到 20% 起步，
+   阅读面同步加深，保证长文本仍压在深底上。 */
+[data-og-skin="glass"][data-og-scheme="dark"] {
+  --og-material-opacity: 26%;
+  --og-reading-opacity: 54%;
+}
+[data-og-skin="glass"][data-og-skin-level="clear"][data-og-scheme="dark"] {
+  --og-material-opacity: 20%;
+  --og-reading-opacity: 46%;
+}
+[data-og-skin="glass"][data-og-skin-level="rich"][data-og-scheme="dark"] {
+  --og-material-opacity: 28%;
+  --og-reading-opacity: 60%;
+}
+[data-og-skin="glass"][data-og-skin-level="deep"][data-og-scheme="dark"] {
+  --og-material-opacity: 34%;
+  --og-reading-opacity: 68%;
+}

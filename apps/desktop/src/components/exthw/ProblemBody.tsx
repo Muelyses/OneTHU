@@ -97,38 +97,58 @@ function probeColor(container: Element | null, cssValue: string): string {
   }
 }
 
-/** 从 el 沿祖先链找第一个不透明背景色（沙箱文档的底色用它，随所在容器自适应）。
- *  全链透明（理论不该发生）→ "transparent"（引擎会按 light 画布刷白，亮主题无损）。 */
-function resolveEffectiveBg(el: Element | null): string {
+/** computed backgroundColor → alpha。同时认识旧式 8 位分量语法与现代
+ *  color(srgb … / a)（Chromium 对 color-mix 的序列化形态）；无法解析按不透明。 */
+function bgAlpha(color: string): number {
+  if (!color || color === "transparent") return 0;
+  const slash = /\/\s*([0-9.]+)(%?)\s*\)$/.exec(color);
+  if (slash) return slash[2] ? Number(slash[1]) / 100 : Number(slash[1]);
+  const legacy = /^(?:rgba|hsla)\(([^)]+)\)$/i.exec(color);
+  const body = legacy?.[1];
+  if (!body) return 1;
+  const parts = body.split(/[,/\s]+/).filter(Boolean);
+  return parts.length < 4 ? 1 : Number(parts[3]);
+}
+
+/** 从 el 沿祖先链判定沙箱文档底色。
+ *
+ *  只有**真正不透明**（alpha ≥ 0.995）的祖先才被复制进 srcdoc：那是"纸面"，
+ *  复制一份不会改变观感。半透明填充（玻璃材质的 color-mix / rgba）**绝不复制**——
+ *  它在父层已经画过一次，iframe 再画一次就是用户看到的「公式块背后多一层玻璃」，
+ *  而且两层 alpha 叠加会把透彻档悄悄变成实色块。半透明时让 iframe 画布保持透明，
+ *  玻璃只出现一次；`flush=true` 通知 yktBody 不要补不透明暗纸面。
+ *
+ *  全链透明（理论不该发生）→ transparent，同样交给画布自身兜底。 */
+export function resolveEffectiveBg(el: Element | null): { bg: string; flush: boolean } {
   let cur: Element | null = el;
   while (cur) {
     let bg = "";
     try {
       bg = getComputedStyle(cur).backgroundColor;
     } catch {
-      return "transparent";
+      return { bg: "transparent", flush: false };
     }
-    const m = /rgba?\(([^)]+)\)/i.exec(bg);
-    if (m) {
-      const parts = (m[1] ?? "").split(/[,/\s]+/).filter(Boolean);
-      const a = parts.length >= 4 ? Number(parts[3] ?? "1") : 1;
-      if (!(Number.isFinite(a) && a < 0.01)) return normalizeColor(bg); // 不透明 → 就用它
-    } else if (bg && bg !== "transparent") {
-      return normalizeColor(bg);
-    }
+    // computed 值可能是旧式分量语法或现代 color(srgb … / a)。只按 alpha 判定材质，
+    // 不能因为语法不认识就把半透明当成纸面（那正是双层玻璃的来源）。
+    const alpha = bgAlpha(bg);
+    if (alpha < 0.01) { cur = cur.parentElement; continue; }          // 全透明：继续向上
+    if (alpha < 0.995) return { bg: "transparent", flush: true };      // 玻璃：不复制
+    return { bg: normalizeColor(bg), flush: false };                    // 纸面：沿用
     cur = cur.parentElement;
   }
-  return "transparent";
+  return { bg: "transparent", flush: false };
 }
 
 /** 从当前 DOM 读一份沙箱配色（所有值过 sanitizeDocColor，畸形值回退浅色定稿）。
  *  主题可插拔（暗色不止一个、浅色可能是米白），所以只信运行时 computed 值，
  *  绝不假设「明/暗」二元。 */
 export function readYktDocTheme(container: Element | null): YktDocTheme {
+  const effective = resolveEffectiveBg(container);
   return {
     text: sanitizeDocColor(probeColor(container, "var(--text-1, #222)"), DEFAULT_YKT_DOC_THEME.text),
     textSoft: sanitizeDocColor(probeColor(container, "var(--text-2, #666)"), DEFAULT_YKT_DOC_THEME.textSoft),
-    bg: sanitizeDocColor(resolveEffectiveBg(container), DEFAULT_YKT_DOC_THEME.bg),
+    bg: sanitizeDocColor(effective.bg, DEFAULT_YKT_DOC_THEME.bg),
+    ...(effective.flush ? { flush: true } : {}),
     border: sanitizeDocColor(probeColor(container, "var(--border, #ddd)"), DEFAULT_YKT_DOC_THEME.border),
     link: sanitizeDocColor(probeColor(container, "var(--accent, #1a73e8)"), DEFAULT_YKT_DOC_THEME.link),
     fallbackBg: sanitizeDocColor(probeColor(container, "var(--surface-3, #fafafa)"), DEFAULT_YKT_DOC_THEME.fallbackBg),

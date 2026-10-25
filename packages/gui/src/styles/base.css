@@ -60,10 +60,14 @@ body {
   display: none;
 }
 
-/* ── 键盘可达性：焦点环统一由管线给，谁都不许自己写 box-shadow 焦点 ── */
+/* ── 键盘可达性：焦点环统一由管线给，谁都不许自己写 box-shadow 焦点 ──
+   animation: none 是必需的：宿主 motion.css 的全局 :focus-visible 会给任意元素
+   播一帧 m-focus-ring 关键帧（动画覆盖普通声明），输入框/下拉因此出现"内外双环、
+   内环随后消失"。OneGUI 的环是静态令牌，不参与那支动画。 */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: none;
   box-shadow: var(--og-ring);
+  animation: none;
 }
 
 ::selection {

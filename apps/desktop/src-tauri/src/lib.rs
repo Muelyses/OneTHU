@@ -779,6 +779,49 @@ fn parse_cd_filename(cd: &str) -> Option<String> {
     None
 }
 
+/// Content-Type → 落盘后缀（只在「响应没有 Content-Disposition 真名、前端也没给出带后缀名」
+/// 时兜底）。用户 2026-10-25 反馈：附件落盘名成了「下载」且无后缀——动作词被当文件名时，
+/// 至少保证文件按真实类型带后缀、双击能打开。
+fn extension_for_content_type(content_type: &str) -> Option<&'static str> {
+    let base = content_type.split(';').next().unwrap_or("").trim();
+    Some(match base {
+        "application/pdf" => "pdf",
+        "application/zip" | "application/x-zip-compressed" => "zip",
+        "application/x-rar-compressed" | "application/vnd.rar" => "rar",
+        "application/x-7z-compressed" => "7z",
+        "application/msword" => "doc",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => "docx",
+        "application/vnd.ms-excel" => "xls",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => "xlsx",
+        "application/vnd.ms-powerpoint" => "ppt",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" => "pptx",
+        "text/plain" => "txt",
+        "text/csv" => "csv",
+        "text/markdown" => "md",
+        "text/html" => "html",
+        "application/json" => "json",
+        "image/jpeg" => "jpg",
+        "image/png" => "png",
+        "image/gif" => "gif",
+        "image/webp" => "webp",
+        "image/svg+xml" => "svg",
+        "video/mp4" => "mp4",
+        "audio/mpeg" => "mp3",
+        _ => return None,
+    })
+}
+
+/// 文件名无后缀时按响应 Content-Type 补一个；已有后缀（任何语言/长度）一律不动。
+fn ensure_extension(name: String, content_type: &str) -> String {
+    if std::path::Path::new(&name).extension().is_some() {
+        return name;
+    }
+    match extension_for_content_type(content_type) {
+        Some(ext) => format!("{name}.{ext}"),
+        None => name,
+    }
+}
+
 /// 百分号解码（%XX → 字节；非法序列原样保留）
 fn percent_decode(s: &str) -> Option<String> {
     let b = s.as_bytes();
@@ -1051,11 +1094,12 @@ pub(crate) async fn fetch_attachment(
     if bytes.is_empty() {
         return Err("下载失败：文件内容为空（mobile 同款 bytesWritten==0 校验）".into());
     }
-    let name = content_disposition
+    let resolved = content_disposition
         .as_deref()
         .and_then(parse_cd_filename)
         .filter(|n| !n.trim().is_empty())
         .unwrap_or_else(|| fallback_name.to_string());
+    let name = ensure_extension(resolved.trim().to_string(), &content_type);
     let name_is_html = {
         let lower = name.to_ascii_lowercase();
         lower.ends_with(".html") || lower.ends_with(".htm")

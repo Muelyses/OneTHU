@@ -1,0 +1,63 @@
+/* OneTHU 宿主几何：把「曲率连续圆角」接到应用自己的壳层/页面面上。
+ *
+ * 为什么在宿主配方里：这些是 OneTHU 的结构类名（壳层、首页卡、设置面板…），
+ * 不属于 OneGUI 组件的公开 API；库里的 styles/geometry.css 只负责 .og-* 组件。
+ * 类名沿用现有 DOM（不新增包装层），值只引用令牌，颜色/材质仍由 workbench/learn 配方决定。
+ * 不支持 corner-shape 的引擎整块忽略，圆角保持原样。
+ */
+@supports (corner-shape: squircle) {
+  /* 宿主结构件同样“本体即超椭圆”：标签页、导航列表、浮动按钮、分段器与分段项、
+     搜索结果条目等都参与；状态层由各自 background/::after 继承同一形状。
+     胶囊类（底部快捷按钮 .oneshot-button、顶部搜索 .ohx-capsule）例外：
+     它们要的是真胶囊，不能被 squircle 拉成超椭圆。 */
+  html:root :is(
+    .free-item,
+    .home-card,
+    .card,
+    .ex-tab,
+    .ex-bbar-btn,
+    .theme-choice,
+    .theme-choice-main,
+    .settings-panel,
+    .theme-pick-panel,
+    .ex-sheet,
+    .dock-panel,
+    .ex-bbar,
+    .ex-rail,
+    .ex-ctxmenu,
+    .onego-bookmarks,
+    .onego-bookmark-overflow,
+    .board-viewport-tools,
+    .workbench-board-head,
+    .workbench-intro,
+    .workbench-service-cell,
+    .workbench-settings-nav,
+    .workbench-settings-nav button,
+    .workbench-settings-content,
+    .settings-seg,
+    .settings-seg-item,
+    .ohx-searchbar,
+    .ohx-modeswitch,
+    .add-card,
+    .wb-kind,
+    .wb-row,
+    .wb-current,
+    .free-fab,
+    .board-fab,
+    .hard-refresh-fab,
+    .top-fab,
+    .hw-card,
+    .hw-filter-select,
+    .notice-strip
+  ) {
+    corner-shape: var(--og-corner-shape);
+  }
+}
+
+/* 模式切换在宿主里的实例（库内 .og-segment 的对应关系）：
+   轨道 control(14) - 内边距 space-1(4) = 10，条目与外轨同心。
+   .settings-seg 是"大外框 + 小活动块"的另一种分段模型（外 2xl / 内 sm 是有意区分的
+   拖拽块），不在这里强行改成同心，避免把设计意图改掉。 */
+html:root .ohx-modeswitch > .og-btn {
+  border-radius: calc(var(--og-radius-control) - var(--og-space-1));
+}

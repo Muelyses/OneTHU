@@ -2,29 +2,30 @@ import { t as i18n, rich as i18nRich, useLocale as useUiLocale } from "../i18n/i
 import { MobileFeatureNavigation } from "./MobileFeatureNavigation.js";
 import { ExperienceModePicker, MODE_OPTIONS } from "./ExperienceModePicker.js";
 import { useMemo, useState } from "react";
-import { Btn, Card, Text, Stack } from "@onethu/gui";
+import { Btn, SettingsList, SettingsRow, Text, Stack } from "@onethu/gui";
 import { Ctx, useApp } from "../state/context.js";
 import { useSimpleRoute, navigateSimple, useExperienceMode, setExperienceMode } from "../state/experienceMode.js";
 import { openSettings } from "../state/explorer.js";
 import { renderPage } from "./explorer/renderPage.js";
 import { HomeworkWidget, TodayClassesWidget } from "./HomeWidgets.js";
-/** 设置里的模式选择：默认只留一行摘要，点开才展开三张模式卡（不长期占一大块）。 */
+/** 设置里的模式选择：与其它设置行同构——小标题在外，行内显示「当前模式」，
+    点「切换模式」才展开三张模式卡（不长期占一大块）。 */
 export function ExperienceModeControl() {
   const uiLocale = useUiLocale();
 
  const mode=useExperienceMode();
  const [open,setOpen]=useState(false);
  const current=MODE_OPTIONS.find(m=>m.id===mode)??MODE_OPTIONS[2];
- return <Card className="experience-mode-control">
-  <div className="experience-mode-summary">
-   <div className="experience-mode-summary-text">
-    <Text slot="title">{i18n("components.simpleexperience.f6f863ffb81b")}</Text>
-    <Text slot="micro" tone="faint">{i18nRich("components.simpleexperience.2b44111dc54f", { name: current.name, tag: current.tag })}</Text>
-   </div>
-   <Btn variant={open?"ghost":"outline"} onClick={()=>setOpen(v=>!v)} aria-expanded={open}>{open?i18n("components.simpleexperience.afd4b783536b"):i18n("components.simpleexperience.c5e8fe3d1aed")}</Btn>
-  </div>
+ return <div data-mode-control>
+  <SettingsList>
+   <SettingsRow
+    title={current.name}
+    sub={current.description}
+    control={<Btn variant={open?"ghost":"outline"} size="sm" onClick={()=>setOpen(v=>!v)} aria-expanded={open}>{open?i18n("components.simpleexperience.afd4b783536b"):i18n("components.simpleexperience.c5e8fe3d1aed")}</Btn>}
+   />
+  </SettingsList>
   {open?<Stack gap={3}><ExperienceModePicker value={mode} onChange={(m)=>{setExperienceMode(m);setOpen(false);}}/><Text slot="micro" tone="faint">{i18n("components.simpleexperience.a77ab9efa020")}</Text></Stack>:null}
- </Card>;
+ </div>;
 }
 
 export function SimpleHeader(){

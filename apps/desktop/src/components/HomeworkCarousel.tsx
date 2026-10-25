@@ -39,7 +39,13 @@ export function pendingHomework(items: Homework[], ignored: { has(id: string): b
 function hwTags(h: Homework): Array<{ text: string; cls: string }> {
   const tags: Array<{ text: string; cls: string }> = [];
   tags.push({ text: h.source ? labelForId(SOURCE_NAMES[h.source]) ?? i18n("components.homeworkcarousel.7849c0828e15") : i18n("components.homeworkcarousel.aa39cac2b409"), cls: "task-tag-src" });
-  if (h.externalProgress) tags.push({ text: i18n("components.homeworkcarousel.a80f2d59cd5f") + h.externalProgress, cls: "task-tag" });
+  if (h.externalProgress) {
+    const tuoj = h.source === "tuoj" || h.source === "tuojClassic";
+    tags.push({
+      text: tuoj ? i18n("pages.learn.shared.inProgress") + " · " + h.externalProgress : i18n("components.homeworkcarousel.a80f2d59cd5f") + h.externalProgress,
+      cls: "task-tag",
+    });
+  }
   if (ddlInfo(h.deadline).overdue) tags.push({ text: i18n("components.homeworkcarousel.da7ecec544ad"), cls: "task-tag-red" });
   return tags;
 }

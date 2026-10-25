@@ -211,6 +211,41 @@ function isFinishedIdEntry(html: string, scheme: "i_user" | "username"): boolean
     return text.includes("登录成功。正在重定向到") && !!cheerio.load(html)("a[href]").length;
 }
 
+/** Whether a page can drive idLoginResponse instead of being a gateway detour.
+ *  A live WebVPN session makes `/login?oauth_login=true` answer with the portal
+ *  (no credential form), which must not be reported as a fatal unexpected page. */
+function isUsableLoginEntry(html: string, scheme: "i_user" | "username"): boolean {
+    if (isFinishedIdEntry(html, scheme) || isTwoFactorPage(html)) return true;
+    const $ = cheerio.load(html);
+    return !!($("#sm2publicKey").text().trim() || $("#sm2publicKey").attr("value")?.trim()
+        || $("input[type='password'], input[name='i_pass'], input[name='password']").length);
+}
+
+/** A live WebVPN gateway answers the OAuth entry with its own portal/guide page.
+ *  Only that page justifies a gateway reset; unrelated failures keep their
+ *  existing classification and never trigger extra authentication traffic. */
+function isWebVpnGatewayPage(html: string): boolean {
+    return html.includes("__vpn_") || /wengine|webvpn|wrdvpn|show_vpn/i.test(html);
+}
+
+/** A still-authenticated WebVPN gateway answers the OAuth entry with its portal,
+ *  so a saved password could never re-authenticate. End that gateway session and
+ *  retry once; the public ID form remains reachable without WebVPN if the gateway
+ *  still detours. Never log response bodies, cookies or session URLs here. */
+const recoverLoginEntry = async (entryHtml: string): Promise<string> => {
+    if (isUsableLoginEntry(entryHtml, "i_user")) return entryHtml;
+    if (!isWebVpnGatewayPage(entryHtml)) return entryHtml;
+    try {
+        await uFetch(LOGOUT_URL);
+    } catch {
+        // Best effort: a failed logout must not mask the OAuth retry below.
+    }
+    const retried = await uFetch(WEB_VPN_OAUTH_LOGIN_URL);
+    if (isUsableLoginEntry(retried, "i_user")) return retried;
+    const direct = await uFetch(ID_BASE_URL);
+    return isUsableLoginEntry(direct, "i_user") ? direct : retried;
+};
+
 /** Submit at most one recognized ID confirmation form. A returned password form is
  * usable input for idLoginResponse, not a public-key failure. Transport errors
  * retain their status/cause; an HTTP 429 must never become a missing-key error. */
@@ -410,6 +445,7 @@ export const login = async (
                     }
                     entryHtml = await uFetch(idUrl);
                 }
+                entryHtml = await recoverLoginEntry(entryHtml);
                 let response = await idLoginResponse(helper, entryHtml, ID_LOGIN_URL, "i_user");
                 if (isTwoFactorPage(response)) {
                     response = await twoFactorAuth(helper);

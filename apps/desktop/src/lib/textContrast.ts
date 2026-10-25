@@ -67,6 +67,7 @@ let visIO: IntersectionObserver | null = null;
 let scanScheduled = 0;
 const pendingRoots: HTMLElement[] = [];
 let reapplyScheduled = 0;
+let reapplySettledScheduled = 0;
 let videoSig = "";
 let videoReady = false;
 let driftTicks = 0;
@@ -291,14 +292,17 @@ function compositeLum(el: HTMLElement): number {
   let c = wallRgb(el.getBoundingClientRect());
   const shell = document.querySelector(".explorer-shell") as HTMLElement | null;
   const mode = shell?.dataset.wallpaperLum;
-  /* 纱（explorer.css:401）是**全屏** `position: fixed; inset: 0` 的一层，只按壁纸明暗单轴决定：
-     暗壁纸 → 白 34%，亮壁纸 → 黑 36%（与主题深浅无关，四种组合都盖；它压在栏体之下，
-     但栏体是半透明玻璃，所以照样透出来）。实测铁证：引擎采到的壁纸 (68,107,138) 叠白 34%
-     = (132,157,178)，与钟面实测底 (131,157,178) 逐通道差 ≤1。
-     旧实现只认「暗壁纸+亮主题」一种组合、又把栏体与画布件排除在纱外 → 钟面底被算成 0.15
-     （实际 0.34）→ 白字判"达标" → 白字压白纱；深色下同理会翻成黑字压深底。 */
-  const veil = mode === "dark" ? 0.34 : mode === "light" ? 0.36 : 0;
-  if (veil) c = mixRgb(c, mode === "light" ? [0, 0, 0] : [255, 255, 255], veil);
+  /* 反差纱（explorer.css）是**全屏** fixed 层，只在「主题 vs 壁纸」明暗相反时出现：
+     亮主题 + 暗壁纸 → 白 34%；暗主题 + 亮壁纸 → 黑 36%；
+     暗主题 + 暗壁纸、亮主题 + 亮壁纸 → 无纱。
+     旧实现只按壁纸明暗单轴判（暗壁纸永远叠白 34%、亮壁纸永远叠黑 36%），
+     于是暗主题 + 暗壁纸也被糊上一层白纱——用户看到的「暗色主题下背景遮罩是白色」。
+     引擎必须与 CSS 的 scheme 条件同口径，否则采到的底又会与真实底不一致。 */
+  const schemeIsDark = document.documentElement.dataset.scheme === "dark";
+  const veil = schemeIsDark
+    ? (mode === "light" ? 0.36 : 0)
+    : (mode === "dark" ? 0.34 : 0);
+  if (veil) c = mixRgb(c, schemeIsDark ? [0, 0, 0] : [255, 255, 255], veil);
   const layers = parseLayers(el);
   // parseLayers 是「由内向外」收集的；合成必须「由外向内」才等价于真实叠放顺序
   for (let i = layers.length - 1; i >= 0; i--) {
@@ -336,7 +340,7 @@ function settle(el: HTMLElement, mode: Mode = "first"): void {
   if (mode === "first" && settled.has(el)) return;
   seen.add(el);
   try {
-    if (el.closest('[data-tx="keep"]')) return;
+    if (el.closest('[data-tx="keep"]')) { clearLock(el); return; }
     if (!hasOwnText(el)) return;
     const rect = el.getBoundingClientRect();
     if (!inViewport(rect)) return;
@@ -351,9 +355,11 @@ function settle(el: HTMLElement, mode: Mode = "first"): void {
     // 黑白二选一必须「两个候选都算一遍取高者」：
     // 旧实现用 bg < 0.5 当分界是错的——0.5 是 sRGB 中灰，不是白字/黑字等对比的交叉点（交叉点 L≈0.179）。
     const white = contrast(1, bg), black = contrast(0, bg);
-    el.style.setProperty("color", white >= black ? WANT_DARK : WANT_LIGHT);
+    const ink = white >= black ? WANT_DARK : WANT_LIGHT;
+    el.style.setProperty("color", ink);
     el.dataset.tx = "lock";
     settled.add(el);
+    inkIconsWith(el, ink);
   } catch { /* 单叶失败不影响整体 */ }
 }
 
@@ -369,11 +375,24 @@ function isIconHost(el: HTMLElement): boolean {
   return !hasOwnText(el);
 }
 
+/** 同控件里已有文字宿主时，图标直接取它的墨色（未定格也算）：
+ *  文字没被逼到要换墨的场合，图标也不该自己另选一种，否则会出现"图标白、文字灰"。 */
+function siblingTextInk(el: HTMLElement): string | null {
+  const scope = el.closest("button, a, [role='button'], .og-btn, .ex-bbar-btn");
+  if (!scope) return null;
+  for (const candidate of scope.querySelectorAll("span, strong, small, label, p")) {
+    if (candidate === el || candidate.closest('[data-tx="keep"]')) continue;
+    if (!(candidate instanceof HTMLElement) || !hasOwnText(candidate)) continue;
+    return getComputedStyle(candidate).color;
+  }
+  return null;
+}
+
 function settleIcon(el: HTMLElement, mode: Mode = "first"): void {
   if (mode === "first" && settled.has(el)) return;
   seen.add(el);
   try {
-    if (el.closest('[data-tx="keep"]')) return;
+    if (el.closest('[data-tx="keep"]')) { clearLock(el); return; }
     const rect = el.getBoundingClientRect();
     if (rect.width < 6 || rect.height < 6) return;
     if (rect.bottom < -120 || rect.top > window.innerHeight + 120) return;
@@ -381,6 +400,14 @@ function settleIcon(el: HTMLElement, mode: Mode = "first"): void {
     if (cs.visibility === "hidden" || cs.display === "none") return;
     const cur = colorRgb(cs.color);
     if (!cur) return;
+    /* 先对齐同控件文字的墨色：文字若已按卡片底取色，图标不能自己另算一套。 */
+    const sibling = siblingTextInk(el);
+    if (sibling && sibling !== cs.color) {
+      el.style.setProperty("color", sibling);
+      el.dataset.txi = "lock";
+      settled.add(el);
+      return;
+    }
     // 纯白/纯黑会被认成"已达标"，但它们正是"隐形笔画"本身 → 极性不对就必须重算
     const nearExtreme = cur[0] > 240 || cur[0] < 24;
     const bg = compositeLum(el);
@@ -394,6 +421,22 @@ function settleIcon(el: HTMLElement, mode: Mode = "first"): void {
     el.dataset.txi = "lock";
     settled.add(el);
   } catch { /* 单叶失败不影响整体 */ }
+}
+
+/** 文本被压成墨色/白色后，同一控件里的图标容器必须用同一支墨：
+ *  图标宿主有自己的底（如 sphere-ball 的小圆球），compositeLum 看的是那颗球而不是
+ *  卡片最终底色，于是会出现「文字已转黑、图标仍是白的」分叉（深色主题 + 亮自定义壁纸）。
+ *  这里只给「无文字、包着 svg」的容器上色，不碰标签文字。 */
+function inkIconsWith(el: HTMLElement, ink: string): void {
+  const scope = el.closest("button, a, [role='button'], .og-btn, .ex-bbar-btn") ?? el.parentElement;
+  if (!scope) return;
+  for (const svg of scope.querySelectorAll("svg")) {
+    const host = svg.parentElement;
+    if (!host || host === el || host.closest('[data-tx="keep"]') || hasOwnText(host)) continue;
+    host.style.setProperty("color", ink);
+    host.dataset.txi = "lock";
+    settled.add(host);
+  }
 }
 
 function settleTarget(el: HTMLElement, mode: Mode): void {
@@ -420,25 +463,37 @@ function clearLock(el: HTMLElement): void {
   settled.delete(el);   // 清过色 = 回到未定格，重新露面时按新背景重取
 }
 
-/** 全树重取（环境变更 / 图像解码完成）：先清干净上一轮内联色，再逐个按新背景重取 */
+/** 全树重取（环境变更 / 图像解码完成）：先清干净上一轮内联色，再逐个按新背景重取。
+ *  根节点不只取壳层——模态、导览、浮层都是 body 下的兄弟 portal，只扫壳层会让它们
+ *  在主题切换后保留上一轮的定格色（深色模式里黑字就是这么留下来的）。 */
 function settleAll(): void {
-  const root = (document.querySelector(".explorer-shell") as HTMLElement | null) ?? document.body;
-  if (!root) return;
+  const shell = (document.querySelector(".explorer-shell") as HTMLElement | null) ?? document.body;
+  const roots: HTMLElement[] = [shell];
+  for (const child of Array.from(document.body.children)) {
+    if (child instanceof HTMLElement && child !== shell && !shell.contains(child)) roots.push(child);
+  }
   const list: HTMLElement[] = [];
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-  let node = walker.nextNode() as HTMLElement | null;
-  let budget = NODE_BUDGET;
-  while (node && budget > 0) {
-    const el = node;
-    node = walker.nextNode() as HTMLElement | null;
-    budget--;
-    if (el instanceof SVGElement || el.closest('[data-tx="keep"]')) continue;
-    if (!isSettledTarget(el)) continue;
-    if (!seen.has(el) && !inViewport(el.getBoundingClientRect())) continue;
-    seen.add(el);
-    visIO?.observe(el);     // 登记过就得挂上观察：否则永远进不了 visible，视频漂移那一路看不见它
-    clearLock(el);
-    list.push(el);
+  for (const root of roots) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    let node = walker.nextNode() as HTMLElement | null;
+    let budget = NODE_BUDGET;
+    while (node && budget > 0) {
+      const el = node;
+      node = walker.nextNode() as HTMLElement | null;
+      budget--;
+      if (el instanceof SVGElement) continue;
+      if (el.closest('[data-tx="keep"]')) {
+        // 从「曾被引擎锁定」切到「主题墨色」：清掉旧内联色，让 CSS 重新接管
+        clearLock(el);
+        continue;
+      }
+      if (!isSettledTarget(el)) continue;
+      if (!seen.has(el) && !inViewport(el.getBoundingClientRect())) continue;
+      seen.add(el);
+      visIO?.observe(el);     // 登记过就得挂上观察：否则永远进不了 visible，视频漂移那一路看不见它
+      clearLock(el);
+      list.push(el);
+    }
   }
   // 一次性清干净再重算，避免集合读写交错漏元素
   for (const el of list) settleTarget(el, "env");
@@ -496,7 +551,9 @@ function startIO(): void {
   }, { root: null, threshold: 0.01 });
 }
 
-/** 环境变了（壁纸/主题/玻璃档）：重建壁纸采样 → 已定格元素重取色。 */
+/** 环境变了（壁纸/主题/玻璃档）：重建壁纸采样 → 已定格元素重取色。
+ *  OneGUI 的调色板是随后注入的样式表：只取一次会在旧调色板下定格出反向字色
+ *  （深色主题里留下黑字）。80ms 后再兜一次，确保读到落定后的令牌与壁纸底色。 */
 function reapplyAll(): void {
   if (reapplyScheduled) return;
   reapplyScheduled = window.setTimeout(() => {
@@ -505,6 +562,12 @@ function reapplyAll(): void {
     // 视频帧还没解码出来时不急：driftTick 下一拍会拿到真帧并补一次
     settleAll();
     scanNew();
+    if (reapplySettledScheduled) window.clearTimeout(reapplySettledScheduled);
+    reapplySettledScheduled = window.setTimeout(() => {
+      reapplySettledScheduled = 0;
+      rebuildWall(true);
+      settleAll();
+    }, 260);
   }, 80);
 }
 

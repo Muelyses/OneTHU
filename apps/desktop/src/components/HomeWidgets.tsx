@@ -293,7 +293,7 @@ export function HomeworkRows({
             </span>
             {/* R23（霖需求）：雨课堂等外部作业部分作答 → 进行中（未交），在截止 chip
                 右侧标注「已完成 x/y 题」；整卷已交不显示（有 已提交/已批改 表达） */}
-            {h.externalProgress && !h.submitted ? (
+            {h.externalProgress && !h.submitted && h.source !== "tuoj" && h.source !== "tuojClassic" ? (
               <span className="chip chip-gray" title={i18n("components.homewidgets.849f9c17224f", { externalProgress: String(h.externalProgress) })}>{i18nRich("components.homewidgets.849f9c17224f", { externalProgress: h.externalProgress })}</span>
             ) : null}
             <IconChevron className="row-caret" width={14} height={14} />

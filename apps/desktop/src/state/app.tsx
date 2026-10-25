@@ -171,7 +171,7 @@ export interface YktNav {
   /** 课程名（列表行 courseName） */
   courseName?: string;
   /** 作业类型（列表行 kind；exam=试卷 —— 红线：试卷页同样不渲染任何提交相关入口） */
-  kind?: "homework" | "exam";
+  kind?: "homework" | "exam" | "quiz";
   /** R29：从**网络学堂课程页**进来的雨课堂作业——返回时带回该课程 id，
    *  否则详情页返回会因缺 courseId 渲染成空页（课程页合并后新增的返回路径）。 */
   fromCourseId?: string;

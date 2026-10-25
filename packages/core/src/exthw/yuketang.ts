@@ -268,7 +268,9 @@ interface YktItem {
   hw: ExternalHomework;
   classroomId: string;
   leafTypeId: string;
-  /** type 20（试卷）标记：走 /v/exam/cover 而非 get_exercise_list */
+  /** type 4（课后小测「试卷」）标记：走 /quiz/user_quiz_status + /quiz/quiz_result */
+  quizId?: string;
+  /** type 20（考试）标记：走 /v/exam/cover 而非 get_exercise_list */
   isExam: boolean;
   /** type 20 试卷封面接口所需的 sku_id（activity.content.sku_id，可能缺失） */
   skuId?: string;
@@ -277,6 +279,14 @@ interface YktItem {
 /** 单条提交状态查询结果（作业与试卷共用）。
  *  score/totalScore：试卷已出分时给（R9）；作业仅整卷已批改时给（R20-B3，已批题有效分合计）。
  *  未出分 / 未批改一律不设（避免 0 分误导）。 */
+interface YktQuizInfo {
+  title: string;
+  /** 截止时间（毫秒；服务端字段 deadline） */
+  deadlineMs: number;
+  totalScore?: number;
+  problemCount?: number;
+}
+
 interface YktStatusResult {
   submitted: boolean;
   submittedCount?: number;
@@ -400,7 +410,8 @@ async function fetchYktStatus(
     // ⚠️ 计数只能用**逐题**信号（R33 收紧）：`answer_count` / `my_count` 是整卷口径，
     // 一旦拿来计数，就会把「部分作答」当成全答，或把未作答题标成已交未批。
     // 它们现在只在「problems 为空、无法逐题核对」时兜底。
-    const hasEvidence = hasSubmissionEvidence(user);
+    // 逐题证据：优先 user 层；少数账号把提交态只放在题目层（submit_time / my_answer）→ 兜底
+    const hasEvidence = hasSubmissionEvidence(user) || hasSubmissionEvidence(p);
     if (hasEvidence) answered++;
     if (hasEvidence && (user["status"] === 3 || isUnscoredPlaceholder(user["my_score"]))) {
       answeredUngraded = true;
@@ -421,7 +432,16 @@ async function fetchYktStatus(
   // 入口按 未交 分组并显示「已完成 x/y」。判定：有题目明细时按「有内容题数 ≥ 题目数」；
   // 缺明细（problems 为空）无法逐题核对 → 退回旧行为（answer_count>0 保守算已提交）。
   // ⚠️ 口径依赖 my_answer.content（与 R20-C2 详情页逐题作答同源；霖实测几乎全是主观题）。
-  const submitted = problems.length > 0 ? answered >= problems.length : answerCount > 0;
+  //
+  // 2026-10-25 用户反馈「明明提交了却全部显示已逾期」：部分账号/学期下逐题 user 明细
+  // 整片缺失（全是默认值），只有整卷 answer_count 有值 → 逐题 answered 恒为 0，
+  // 于是已交作业被误判未交。answer_count 是「已作答题数」的整卷口径（docs 11.3）：
+  // 它 ≥ 题目数且逐题证据全无（answered===0）时才兜底；只要有任何逐题证据，仍按逐题
+  // 口径判完整度（部分作答不会被 answer_count 放过，不重蹈 R33 的「一题答过=全交」）。
+  const submitted =
+    problems.length > 0
+      ? answered >= problems.length || (answered === 0 && answerCount >= problems.length)
+      : answerCount > 0;
   const submittedCount = answered > 0 ? answered : answerCount;
   // 无题目明细（problems 为空）时无法判定批改状态 → 保守 false
   const graded = submitted && problems.length > 0 && !answeredUngraded;
@@ -500,6 +520,96 @@ async function fetchYktExamStatus(
     out.totalScore = totalScore;
     // R16 21.1：试卷「已批改」复用 R9 已出分条件（有分数即已出分）
     out.graded = true;
+  }
+  return out;
+}
+
+/** 雨课堂 type 4「试卷」（课后复习/课前预习小测）：quiz_info 提供标题与 DDL。
+ *  GET /v2/api/web/quiz/quiz_info?quiz_id={id}&classroom_id={cid}；需要 XTBZ: ykt。 */
+async function fetchYuketangQuizInfo(
+  fetchLike: FetchLike,
+  base: string,
+  cookie: string,
+  classroomId: string,
+  quizId: string,
+): Promise<YktQuizInfo | null> {
+  const body = await getJson(
+    fetchLike,
+    `${base}/v2/api/web/quiz/quiz_info?quiz_id=${encodeURIComponent(quizId)}&classroom_id=${encodeURIComponent(classroomId)}`,
+    cookie,
+    { XTBZ: "ykt" },
+  );
+  const data = (body["data"] ?? {}) as Record<string, unknown>;
+  const deadlineMs = toNum(data["deadline"]);
+  if (deadlineMs === undefined) return null;
+  const title = toStr(data["title"]).trim();
+  return {
+    title: title || "试卷",
+    deadlineMs,
+    ...(toNum(data["total_score"]) !== undefined ? { totalScore: toNum(data["total_score"]) } : {}),
+    ...(toNum(data["problem_count"]) !== undefined ? { problemCount: toNum(data["problem_count"]) } : {}),
+  };
+}
+
+/**
+ * 查 type 4「试卷」的提交与得分：
+ *  - status: GET /v2/api/web/quiz/user_quiz_status?quiz_id=&classroom_id=
+ *    实测（2026-10-25 真机）：2 = 已交（同时 quiz_result 可读、有分数）；3 = 未交/已过期。
+ *  - 已交后再读 GET /v2/api/web/quiz/quiz_result?quiz_id=&classroom_id=
+ *    返回 score / total_score / problem_count / unfinished_list；分数仅已交时透出。
+ *  查询失败由调用方捕获（保守未提交），这里不吞异常。
+ */
+async function fetchYuketangQuizStatus(
+  fetchLike: FetchLike,
+  base: string,
+  cookie: string,
+  classroomId: string,
+  quizId: string,
+  info: YktQuizInfo,
+): Promise<YktStatusResult> {
+  const statusBody = await getJson(
+    fetchLike,
+    `${base}/v2/api/web/quiz/user_quiz_status?quiz_id=${encodeURIComponent(quizId)}&classroom_id=${encodeURIComponent(classroomId)}`,
+    cookie,
+    { XTBZ: "ykt" },
+  );
+  const statusData = (statusBody["data"] ?? {}) as Record<string, unknown>;
+  const status = toNum(statusData["status"]);
+  // 2 = 已交；0/1 = 未开始/进行中，3 = 未交且已过期（真机对比三份试卷得出）
+  const submitted = status === 2;
+  if (!submitted) {
+    return { submitted: false, ...(info.problemCount !== undefined ? { totalCount: info.problemCount } : {}) };
+  }
+  const out: YktStatusResult = {
+    submitted: true,
+    ...(info.problemCount !== undefined ? { totalCount: info.problemCount } : {}),
+  };
+  try {
+    const resultBody = await getJson(
+      fetchLike,
+      `${base}/v2/api/web/quiz/quiz_result?quiz_id=${encodeURIComponent(quizId)}&classroom_id=${encodeURIComponent(classroomId)}`,
+      cookie,
+      { XTBZ: "ykt" },
+    );
+    const data = (resultBody["data"] ?? {}) as Record<string, unknown>;
+    const problemCount = toNum(data["problem_count"]) ?? info.problemCount;
+    const unfinished = Array.isArray(data["unfinished_list"])
+      ? (data["unfinished_list"] as unknown[]).length
+      : undefined;
+    const score = toNum(data["score"]);
+    const totalScore = toNum(data["total_score"]) ?? info.totalScore;
+    if (problemCount !== undefined) out.totalCount = problemCount;
+    if (problemCount !== undefined && unfinished !== undefined) {
+      const done = Math.max(0, problemCount - unfinished);
+      if (done > 0) out.submittedCount = done;
+    }
+    if (score !== undefined) {
+      out.score = score;
+      out.graded = true;
+    }
+    if (totalScore !== undefined) out.totalScore = totalScore;
+  } catch {
+    /* 分数未公布 / 结果接口暂不可读：保留「已提交」，不谎报分数 */
   }
   return out;
 }
@@ -1244,7 +1354,8 @@ interface YktActivityEntry {
 // 诊断日志记录类型分布，后续据此补充映射）。
 const YKT_CONTENT_KINDS: Record<number, { kind: ExtContentKind; text: string }> = {
   19: { kind: "homework", text: "作业" },
-  20: { kind: "exam", text: "试卷" },
+  20: { kind: "exam", text: "考试" },
+  4: { kind: "quiz", text: "试卷" },
   14: { kind: "courseware", text: "课件" },
   16: { kind: "material", text: "资料" },
   2: { kind: "video", text: "视频" },
@@ -1482,6 +1593,23 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
     }
     return coursesPromise;
   };
+  /** type 4「试卷」信息缓存：quiz_info 每份试卷只打一次（作业聚合与内容目录共用）。 */
+  const quizInfoPromises = new Map<string, Promise<YktQuizInfo | null>>();
+  const loadQuizInfo = (classroomId: string, quizId: string): Promise<YktQuizInfo | null> => {
+    const key = `${classroomId}:${quizId}`;
+    let pending = quizInfoPromises.get(key);
+    if (!pending) {
+      pending = fetchYuketangQuizInfo(yktFetch, base, curCookie, classroomId, quizId)
+        .catch(() => null)
+        .then((info) => {
+          // 失败不缓存，下次刷新重试
+          if (!info) quizInfoPromises.delete(key);
+          return info;
+        });
+      quizInfoPromises.set(key, pending);
+    }
+    return pending;
+  };
   // 学习日志（**全部内容类型**的唯一取数口）：按课程逐课拉，缓存整轮。
   // 作业（fetch）只取其中 type 19/20，内容目录（fetchContents）取全部 —— 两者共用，
   // 同一次刷新每门课只打一次 logs/learn。单门课失败只跳过该课（与旧行为一致）。
@@ -1574,7 +1702,35 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
       for (const e of entries) {
         const a = e.act;
         const type = a["type"];
-        if (type !== 19 && type !== 20) continue; // 作业聚合只吃作业/试卷；其余走 fetchContents
+        if (type !== 19 && type !== 20 && type !== 4) continue; // 作业聚合：作业/考试/试卷；其余走 fetchContents
+        // type 4「试卷」（课后复习/课前预习小测）：内容为空，标题/DDL 在 quiz_info，
+        // 提交与分数在 user_quiz_status + quiz_result（2026-10-25 真机接口探测）。
+        if (type === 4) {
+          const quizId = yktStr(a["courseware_id"]) || yktStr(a["id"]);
+          if (!quizId) continue;
+          const info = await loadQuizInfo(e.classroomId, quizId);
+          if (!info) continue;
+          if (info.deadlineMs > limit) continue;
+          items.push({
+            classroomId: e.classroomId,
+            leafTypeId: "",
+            isExam: false,
+            quizId,
+            hw: {
+              id: `yuketang-quiz-${e.courseId}-${quizId}`,
+              source: "yuketang",
+              courseName: e.courseName,
+              title: info.title || yktStr(a["title"]) || "试卷",
+              deadline: fmtLocal(info.deadlineMs),
+              kind: "quiz",
+              url: `${base}/v2/web/studentQuiz/${encodeURIComponent(quizId)}/2?pageIndex=1`,
+              submitted: false,
+              audited: e.audited || undefined,
+              classroomId: e.classroomId,
+            },
+          });
+          continue;
+        }
         const content = (a["content"] ?? {}) as Record<string, unknown>;
         const ms = content["score_d"];
         if (typeof ms !== "number" || !Number.isFinite(ms)) continue;
@@ -1607,17 +1763,28 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
 
       // 并发（上限 4）查提交状态；单条失败只跳过（保守 false），不影响整体
       await mapLimited(items, STATUS_CONCURRENCY, async (it) => {
-        if (!it.leafTypeId) return;
+        if (!it.leafTypeId && !it.quizId) return;
         try {
-          const st = it.isExam
-            ? await fetchYktExamStatus(yktFetch, base, curCookie, it.classroomId, it.leafTypeId, it.skuId ?? "")
-            : await fetchYktStatus(yktFetch, base, curCookie, uv, it.classroomId, it.leafTypeId);
+          const st = it.quizId
+            ? await fetchYuketangQuizStatus(
+                yktFetch, base, curCookie, it.classroomId, it.quizId,
+                (await loadQuizInfo(it.classroomId, it.quizId)) ?? { title: "", deadlineMs: 0 },
+              )
+            : it.isExam
+              ? await fetchYktExamStatus(yktFetch, base, curCookie, it.classroomId, it.leafTypeId, it.skuId ?? "")
+              : await fetchYktStatus(yktFetch, base, curCookie, uv, it.classroomId, it.leafTypeId);
           it.hw.submitted = st.submitted;
           if (st.submittedCount !== undefined) it.hw.submittedCount = st.submittedCount;
           if (st.totalCount !== undefined) it.hw.totalCount = st.totalCount;
           if (st.score !== undefined) it.hw.score = st.score;
           if (st.totalScore !== undefined) it.hw.totalScore = st.totalScore;
           if (st.graded !== undefined) it.hw.graded = st.graded;
+          // 试卷：已交 → 成绩页；未交 → 答题页
+          if (it.quizId) {
+            it.hw.url = st.submitted
+              ? `${base}/v2/web/quizSummary/${encodeURIComponent(it.classroomId)}/${encodeURIComponent(it.quizId)}`
+              : `${base}/v2/web/studentQuiz/${encodeURIComponent(it.quizId)}/2?pageIndex=1`;
+          }
         } catch {
           /* 状态查询失败：保守保持未提交 */
         }
@@ -1675,6 +1842,9 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
         const leafStr = yktStr(content["leaf_id"]);
         const leafTypeStr = yktStr(content["leaf_type_id"]);
         const skuStr = yktStr(content["sku_id"]);
+        // type 4「试卷」：content 为空，标题/DDL 在 quiz_info；课程内容目录也按真实信息展示。
+        const quizId = type === 4 ? yktStr(a["courseware_id"]) || yktStr(a["id"]) : "";
+        const quizInfo = quizId ? await loadQuizInfo(e.classroomId, quizId) : null;
         // 公告类内容（type 9）的 id 字段名未固定：公开产物里公告详情路由是
         // /v2/web/noticeView/{classroomId}/{noticeId}；源侧 id 可能是 notice_id / topic_id /
         // link_id / article_id… —— 递归收集**候选列表**交给详情取数逐个试（猜一个容易失手）。
@@ -1726,7 +1896,9 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
             : undefined;
         const rawId = a["id"] ?? a["courseware_id"] ?? `${type}-${leafStr}-${leafTypeStr}`;
         // 时间：作业/试卷是 score_d（DDL）；其他类型字段名不一，逐个候选试
-        const timeText = yktAnyTimeText([
+        const timeText = quizInfo
+          ? toSubmitTimeText(quizInfo.deadlineMs)
+          : yktAnyTimeText([
           content["score_d"],
           content["start_d"],
           content["end_d"],
@@ -1744,11 +1916,13 @@ export function createYuketangSource(cred: YktCred, fetchLike: FetchLike, days: 
           kind: meta.kind,
           kindText: meta.text,
           // 标题兜底链：activity.title → content.title/name → 类型名（绝不空白行）
-          title: yktStr(a["title"]) || yktStr(content["title"]) || yktStr(content["name"]) || meta.text,
+          title: quizInfo?.title || yktStr(a["title"]) || yktStr(content["title"]) || yktStr(content["name"]) || meta.text,
           ...(timeText ? { deadline: timeText } : {}),
-          url: noticeStr
-            ? `${base}/v2/web/noticeView/${encodeURIComponent(e.courseId)}/${encodeURIComponent(noticeStr)}`
-            : yktContentUrl(base, e.classroomId, e.courseId, type, leafStr),
+          url: quizId
+            ? `${base}/v2/web/studentQuiz/${encodeURIComponent(quizId)}/2?pageIndex=1`
+            : noticeStr
+              ? `${base}/v2/web/noticeView/${encodeURIComponent(e.courseId)}/${encodeURIComponent(noticeStr)}`
+              : yktContentUrl(base, e.classroomId, e.courseId, type, leafStr),
           ...(leafTypeStr ? { leafTypeId: leafTypeStr } : {}),
           ...(leafStr ? { leafId: leafStr } : {}),
           ...(noticeStr ? { noticeId: noticeStr } : {}),

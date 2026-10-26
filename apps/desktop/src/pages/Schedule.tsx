@@ -44,7 +44,7 @@ import { IconRefresh, IconSchedule } from "../components/Icons.js";
 import { useCalendar, getCampusSnapshot, useLearnData, invalidateLearnCache, logPageError } from "../state/data.js";
 import { useIgnoredHw } from "../state/hwIgnore.js";
 import { useScheduleWindow, WINDOW_PRESETS, FULL_DAY, hhmm as hhmmWin } from "../state/scheduleWindow.js";
-import { cacheSet } from "../state/cache.js";
+import { cacheGet, cacheSet } from "../state/cache.js";
 import { isAuthError } from "@onethu/core";
 import { softRecover } from "../lib/reload.js";
 import { ScheduleAgenda } from "./ScheduleAgenda.js";
@@ -497,7 +497,13 @@ export function SchedulePage() {
   }, [uiLocale, mode, anchor, weekStart]);
 
   /* ---------- 时间轴数据：日期窗取数（不再依赖学期内） ---------- */
-  const [windowRows, setWindowRows] = useState<ScheduleEntry[] | null>(null);
+  const windowKey = `${ymdOf(viewWindow[0])}_${ymdOf(viewWindow[1])}`;
+  /** 窗口课表。首屏先吃持久缓存（schedwin 是落过盘的）——以前从 null 起，
+   *  每次进页都要等网络回来才出教务课，表现为「进去先空一下，只剩自定义日程/补课/DDL」
+   *  （2026-10-26 手机实测）。缓存只在本窗口有值时采用，切周没有缓存就沿用旧行等网络。 */
+  const [windowRows, setWindowRows] = useState<ScheduleEntry[] | null>(
+    () => cacheGet<ScheduleEntry[]>(`schedwin:${windowKey}`)?.data ?? null,
+  );
   const [winLoading, setWinLoading] = useState(false);
   const [winError, setWinError] = useState<string | null>(null);
   /** 弹层退场相位由 OneGUI Modal/Popover 的 Shell 附带（进退场+遮罩+Esc+滚动锁全部库承担），
@@ -506,7 +512,11 @@ export function SchedulePage() {
    *  后教务/漫游会话重建需几秒，softRecover 的一次原地重取不够——静默自愈,
    *  红条不再吓人（2026-09-19 快速往返实录） */
   const winRetryRef = useRef<{ key: string; count: number }>({ key: "", count: 0 });
-  const windowKey = `${ymdOf(viewWindow[0])}_${ymdOf(viewWindow[1])}`;
+  /** 切周/切月：先把该窗口的持久缓存放上去（有缓存才能瞬间出课），再让下面的网络请求覆盖。 */
+  useEffect(() => {
+    const cached = cacheGet<ScheduleEntry[]>(`schedwin:${windowKey}`)?.data;
+    if (cached) setWindowRows(cached);
+  }, [windowKey]);
   useEffect(() => {
     if (mode !== "timetable") return; // 列表自取月窗
     let alive = true;

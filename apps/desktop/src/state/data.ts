@@ -34,6 +34,7 @@ xkParseDebug.onOddTeacher = (code, seq, teacher, rawRow) => {
   logPageError(`TEACHER-ODD ${code}_${seq}`, new Error(`teacher="${teacher}" rawRow=${rawRow}`));
 };
 import { http, info, learn, logLine, session } from "../lib/clients.js";
+import { appendSecondarySchedule } from "../lib/scheduleSecondary.js";
 // lib 管线（2026-09-17 挪移）：日程/用户信息直取上游 thu-info-lib——旧 InfoClient
 // 的手搓会话管理（探活/漫游/票信任链）整体退役，登录态由 lib + Rust 原生仓负责。
 import { helper as infoHelper } from "../lib/infoLib.js";
@@ -93,29 +94,23 @@ async function loadReal(): Promise<CampusData> {
     Promise.all(ids.slice(0, 8).map((id) => learn.getFileList(id).catch(() => [])))
       .then((rs) => rs.flat())
       .catch(() => [] as CourseFile[]),
-    // lib getSchedule：整学期 Schedule[]（activeTime.base 时间片）→ 展平映射
-    // 为本应用 ScheduleEntry（date/startTime/endTime 供首页时间轴与网格）。
+    // 教务课表：走 core InfoClient 的窗口接口 —— 与日程页、系统日历同一条链路。
+    // 原先这里用 info-lib 的整学期接口 `infoHelper.getSchedule(undefined)`，本机实测
+    // 返回 404（PAGE-ERR CAMPUS-SCHED「Unexpected response status code: 404 (index)」），
+    // 被 catch 吞成空数组：CampusData.schedule 恒为 []，于是首页「今日课程」永远
+    // 「今天没有课」、桌面小组件没有课，而且日志里一个字都不留（2026-10-26 手机实测）。
+    // 换到已验证可用的 core 窗口链路，并按日程页同款并入二级课表（失败不退一级）。
     (async () => {
-      const lib = await infoHelper.getSchedule(undefined);
-      const out: ScheduleEntry[] = [];
-      for (const c of lib.schedule) {
-        for (const sl of c.activeTime.base) {
-          const date = sl.beginTime.format("YYYY-MM-DD");
-          if (date < from || date > to) continue;
-          out.push({
-            courseName: c.name,
-            location: c.location || undefined,
-            category: c.category,
-            date,
-            dayOfWeek: sl.dayOfWeek,
-            startTime: sl.beginTime.format("HH:mm"),
-            endTime: sl.endTime.format("HH:mm"),
-            raw: { name: c.name, hash: c.hash },
-          });
-        }
-      }
-      return out;
-    })().catch(() => [] as ScheduleEntry[]),
+      const primary = await info.getSchedule(from, to);
+      // 二级课表（实验课）并入：需要学期 firstDay；只吃已落盘的校历缓存，
+      // 不在这里多发一次请求（冷启动没有校历就先给一级，下一轮缓存就绪再并）。
+      const firstDay = cacheGet<CalendarData>("calendar")?.data?.firstDay;
+      if (!firstDay) return primary;
+      return appendSecondarySchedule(primary, firstDay, from, to).catch(() => primary);
+    })().catch((err) => {
+      logPageError("CAMPUS-SCHED", err);
+      return [] as ScheduleEntry[];
+    }),
     infoHelper.getUserInfo()
       .then((u: { fullName: string; emailName: string }) => ({
         name: u.fullName,
@@ -125,7 +120,7 @@ async function loadReal(): Promise<CampusData> {
       .catch(() => null),
   ]);
   stage("并行四路抓取完");
-  void logLine(`LR-STAGE 完成 hw=${homework.length} ntf=${notifications.length} files=${files.length}`).catch(() => undefined);
+  void logLine(`LR-STAGE 完成 hw=${homework.length} ntf=${notifications.length} files=${files.length} 课表=${schedule.length}`).catch(() => undefined);
   return { courses, homework, notifications, files, schedule, user };
 }
 

@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "lib.infoapps.b0ee13d1002c",
-      "source": "我们的家园",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 282,
-          "context": "return i18n(\"lib.infoapps.b0ee13d1002c\");"
-        }
-      ],
-      "translation": "Our Home",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.infoapps.b0fce32d3351",
-      "source": "电话查询",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/infoApps.ts",
-          "line": 247,
-          "context": "return i18n(\"lib.infoapps.b0fce32d3351\");"
-        }
-      ],
-      "translation": "Phone Directory",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "lib.infoapps.b17c58209bce",
       "source": "就业信息(招聘信息)",
@@ -1279,6 +1247,38 @@
         }
       ],
       "translation": "Performance Contract Approval/Filing",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.f3e39ed2ef53",
+      "source": "论文认领（老）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 134,
+          "context": "return i18n(\"lib.infoapps.f3e39ed2ef53\");"
+        }
+      ],
+      "translation": "Paper Claim (Legacy)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "lib.infoapps.f500bd66534a",
+      "source": "英语分级三四级学生免修申请",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/infoApps.ts",
+          "line": 125,
+          "context": "return i18n(\"lib.infoapps.f500bd66534a\");"
+        }
+      ],
+      "translation": "English Placement Levels 3-4 Exemption Application",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

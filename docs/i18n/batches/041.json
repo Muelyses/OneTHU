@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "lib.venue.7f658db5a72c",
-      "source": "本机无记住的统一身份凭证",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 165,
-          "context": "new VenueAuthRequiredError(i18n(\"lib.venue.7f658db5a72c\"))"
-        }
-      ],
-      "translation": "No remembered unified identity credentials on this device",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "lib.venue.85e08a6d9846",
-      "source": "CAS 链尾不是登录表单",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/venue.ts",
-          "line": 247,
-          "context": "new VenueAuthRequiredError(i18n(\"lib.venue.85e08a6d9846\"))"
-        }
-      ],
-      "translation": "The CAS chain doesn't end at a login form",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "lib.venue.93692dc0f921",
       "source": "二次认证接口返回异常",
@@ -553,12 +521,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/yktBody.ts",
-          "line": 283,
+          "line": 320,
           "context": "return i18n(\"lib.yktbody.d24c10d37db0\");"
         },
         {
           "file": "apps/desktop/src/lib/yktBody.ts",
-          "line": 297,
+          "line": 334,
           "context": "return i18n(\"lib.yktbody.d24c10d37db0\");"
         }
       ],
@@ -579,7 +547,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/lib/yktBody.ts",
-          "line": 664,
+          "line": 713,
           "context": "failedImage: i18n(\"lib.yktbody.e4eb68f7fdd0\", { name: \"__YKT_IMAGE_NAME__\" })"
         }
       ],
@@ -1367,6 +1335,48 @@
         }
       ],
       "translation": "Likely a verification code",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.6383fb8dcdcc",
+      "source": "记忆写入被拦截：{bad}——凭据类内容不允许进入长期记忆",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "bad",
+          "expression": "String(bad)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 67,
+          "context": "new Error(i18n(\"memory.operations.6383fb8dcdcc\", { bad: String(bad) }))"
+        }
+      ],
+      "translation": "Memory write blocked: {bad} — credential-like content is not allowed into long-term memory",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "memory.operations.ccc5a5900f02",
+      "source": "未找到待替换文本（{value}…）——请先 memory_read 核对原文",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "value",
+          "expression": "String(find.slice(0, 30))"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/memory/operations.ts",
+          "line": 174,
+          "context": "new Error(i18n(\"memory.operations.ccc5a5900f02\", { value: String(find.slice(0, 30)) }))"
+        }
+      ],
+      "translation": "Text to replace not found ({value}…) — use memory_read to check the original first",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

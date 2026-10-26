@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.info.visittab.94b9ec80f3bb",
-      "source": "学校系统随机口令可留空",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 315,
-          "context": "{i18n(\"pages.info.visittab.94b9ec80f3bb\")}"
-        }
-      ],
-      "translation": "The university system's random code can be left empty",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.visittab.95f5bc49c2c0",
-      "source": "临时来访报备系统没有下发登录令牌",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
-          "line": 46,
-          "context": "return i18n(\"pages.info.visittab.95f5bc49c2c0\");"
-        }
-      ],
-      "translation": "The temporary visit registration system did not issue a sign-in token",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.info.visittab.962b844284e8",
       "source": "表单预载没有返回模型标识",
@@ -1347,6 +1315,43 @@
         }
       ],
       "translation": "Notes",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.assignmentdetailpage.4673a2306165",
+      "source": "下载",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
+          "line": 378,
+          "context": "dlBusy === key ? i18n(\"pages.learn.assignmentdetailpage.bcc2333dc631\") : i18n(\"pages.learn.assignmentdetailpage.4673a2306165\")"
+        }
+      ],
+      "translation": "Downloads",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.assignmentdetailpage.4a01c31b199b",
+      "source": "将上传：{name}",
+      "kind": "rich",
+      "parameters": [
+        {
+          "name": "name",
+          "expression": "subFile.name"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/AssignmentDetailPage.tsx",
+          "line": 453,
+          "context": "{i18nRich(\"pages.learn.assignmentdetailpage.4a01c31b199b\", { name: subFile.name })}"
+        }
+      ],
+      "translation": "Will upload: {name}",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

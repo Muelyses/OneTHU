@@ -53,6 +53,15 @@ import { installAuthWatchdog, installKeepalive } from "./lib/reload.js";
 installOneGUI({
   platform: () => (isPhoneViewport() ? "mobile" : platformOf(window.innerWidth) === "expanded" ? "desktop" : "mobile"),
   densityByPlatform: { desktop: "compact", mobile: "touch" },
+  /* 折射只给"看得见边缘"的少数面（分组顺序=优先级）：壳层 chrome 与浮层优先，
+     卡片次之；管线内部还有可见数/面积/设备预算与旧 WebView 门禁，超限自动退回模糊材质。
+     这里给的是结构选择器，不是外观；材质与颜色仍由皮肤令牌决定。 */
+  refractionSelector: [
+    ".ohx-capsule", ".ex-bbar", ".dock-panel",
+    ".og-panel", ".og-float", ".ex-sheet", ".settings-panel", ".theme-pick-panel",
+    ".free-item", ".home-card", ".hw-card", ".board-viewport-tools",
+    ".workbench-board-head", ".notice-strip", ".onego-bookmarks",
+  ].join(", "),
 });
 // 旧通道（主题明暗 / 玻璃档位）→ OneGUI 轴；用户现有选择立刻在 OneGUI 上生效
 installOneGUIBridge();

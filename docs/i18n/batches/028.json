@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.voicesettingssection.36aaad1be5c9",
-      "source": "用当前的音色、语速、音高念一句，确认听着顺耳。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 269,
-          "context": "{i18n(\"components.voicesettingssection.36aaad1be5c9\")}"
-        }
-      ],
-      "translation": "Reads a sentence with the current voice, speed, and pitch so you can confirm it sounds right.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.voicesettingssection.3b6c48ce496b",
-      "source": "全部恢复默认",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/VoiceSettingsSection.tsx",
-          "line": 279,
-          "context": "{i18n(\"components.voicesettingssection.3b6c48ce496b\")}"
-        }
-      ],
-      "translation": "Restore all defaults",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.voicesettingssection.3e3b45ef84ac",
       "source": "引擎状态",
@@ -1294,7 +1262,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 92,
+          "line": 94,
           "context": "{i18n(\"components.widgethost.7d77a938e62b\")}"
         }
       ],
@@ -1310,7 +1278,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 70,
+          "line": 72,
           "context": "{i18n(\"components.widgethost.857e5e59690b\")}"
         }
       ],
@@ -1326,7 +1294,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/WidgetHost.tsx",
-          "line": 98,
+          "line": 100,
           "context": "{i18n(\"components.widgethost.b77883b96b72\")}"
         }
       ],
@@ -1388,6 +1356,38 @@
         }
       ],
       "translation": "{length} kinds: {value}",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.174b9ff2e902",
+      "source": "还没读到任何可用尺寸，请把这一行内容反馈给开发者",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 135,
+          "context": "status.providersRegistered.length === 0\n                ? i18n(\"components.widgetsettingssection.174b9ff2e902\")\n                : i18n(\"components.widgetsettingssection.15eb664681a3\", { length: String(status.providersRegistered.length), value: String(status.providersRegistered.map(plainShapeName).join(\"、\")) })"
+        }
+      ],
+      "translation": "No usable sizes were read yet; please report this line's content to the developers",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.widgetsettingssection.17a0e39c6089",
+      "source": "日程与 DDL",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/WidgetSettingsSection.tsx",
+          "line": 195,
+          "context": "k === \"today\" ? i18n(\"components.widgetsettingssection.17a0e39c6089\") : i18n(\"components.widgetsettingssection.b016c8cdb0fd\")"
+        }
+      ],
+      "translation": "Schedule & DDL",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -53,7 +53,7 @@ export interface ExternalHomework {
   title: string;
   /** 统一为 "YYYY-MM-DD HH:MM"（本地时区） */
   deadline: string;
-  kind: "homework" | "exam";
+  kind: "homework" | "exam" | "quiz";
   /** 详情链接（可空；三源均按 id/classroom 拼） */
   url?: string;
   /** 是否已提交（**真实判定**：三源各自查提交状态得出）。
@@ -86,6 +86,7 @@ export interface ExternalHomework {
 export type ExtContentKind =
   | "homework"
   | "exam"
+  | "quiz"
   | "courseware"
   | "material"
   | "video"

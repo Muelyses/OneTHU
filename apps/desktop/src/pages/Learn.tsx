@@ -135,7 +135,7 @@ export function LearnPage() {
       const contents = ext.contents.filter((c) => c.source === "yuketang" && c.courseId === y.id);
       const notices = contents.filter((c) => c.kind === "announcement").length;
       const files = contents.filter(
-        (c) => c.kind !== "announcement" && c.kind !== "homework" && c.kind !== "exam",
+        (c) => c.kind !== "announcement" && c.kind !== "homework" && c.kind !== "exam" && c.kind !== "quiz",
       ).length;
       m.set(y.id, { hw, notices, files });
     }

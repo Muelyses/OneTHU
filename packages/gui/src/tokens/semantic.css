@@ -108,6 +108,11 @@
   --og-fill-surface: var(--og-surface-1);
   --og-fill-overlay: var(--og-surface-overlay);
   --og-fill-chip: var(--og-surface-3);
+  /* 阅读面：承载长文本、公式、表格头与通知的材质角色。
+     中性皮肤 = 实色（与以前一致）；玻璃皮肤把它抬到能托住正文的不透明度，
+     同时保留表面模糊——「透彻」仍透出壁纸，但正文不再和壁纸细节打架。 */
+  --og-fill-reading: var(--og-surface-2);
+  --og-reading-blur: none;
   --og-material-rim: transparent;
   --og-material-shadow: var(--og-elev-1);
   --og-surface-tint: none;

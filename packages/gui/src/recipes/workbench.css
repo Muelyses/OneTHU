@@ -14,12 +14,13 @@ html:root .explorer-topbar {
   gap: var(--og-space-3);
 }
 html:root .ex-tab { height: var(--og-ctl-h-md); padding-inline: var(--og-space-2); border-radius: var(--og-radius-sm); }
-html:root .ex-tab.is-active { background: var(--og-selection-fill); border-color: transparent; box-shadow: none; }
+/* 选中高光用 50% 半透明填充：保留可辨识度，又不把玻璃底盖成实心块。 */
+html:root .ex-tab.is-active { background: color-mix(in srgb, var(--og-selection-fill) 65%, transparent); border-color: transparent; box-shadow: none; }
 html:root .ex-tab-title { font-size: var(--og-text-label); font-weight: var(--og-weight-medium); }
 html:root .ex-bbar { padding-inline: var(--og-space-5); border: 0; gap: var(--og-space-6); }
 html:root .ex-bbar-center { width: 100%; max-width: var(--og-page-max-narrow); justify-self: center; }
 html:root .ex-bbar-center .ohx-capsule {
-  height: var(--og-ctl-h-lg); margin: 0; border-radius: var(--og-radius-control);
+  height: var(--og-ctl-h-lg); margin: 0; border-radius: var(--og-radius-full);
   background: var(--og-workbench-well); border-color: transparent; justify-content: flex-start;
   padding-inline: var(--og-space-4);
 }
@@ -84,8 +85,8 @@ html:root .hs-dock-sphere {
   border-radius: var(--og-radius-control); background: transparent; border: 0;
 }
 html:root .hs-dock-sphere .og-btn-label { display: flex; align-items: center; flex-direction: column; gap: var(--og-space-3); }
-html:root .hs-dock-sphere .sphere-ball { width: var(--og-icon-xl); height: var(--og-icon-xl); background: transparent; border: 0; box-shadow: none; border-radius: 0; transform: none; color: var(--og-content-1); }
-html:root .hs-dock-sphere:hover { background: var(--og-workbench-well); }
+html:root .hs-dock-sphere .sphere-ball { width: var(--og-icon-xl); height: var(--og-icon-xl); background: transparent; border: 0; box-shadow: none; border-radius: 0; transform: none; color: var(--og-content-2); }
+html:root .hs-dock-sphere:hover { background: color-mix(in srgb, var(--og-content-1) 8%, transparent); }
 html:root .hs-dock-sphere .sphere-name { font-size: var(--og-text-label); color: var(--og-content-2); max-width: 100%; }
 html:root .home-free > .freeboard-wrap { width: 100%; max-width: var(--og-workbench-max); margin-inline: auto; min-height: 0; }
 .workbench-board-head { display: flex; justify-content: space-between; align-items: center; gap: var(--og-space-4); padding-bottom: var(--og-space-5); }
@@ -129,6 +130,17 @@ html:root .explorer-settings-body { padding: 0; }
 .workbench-settings-nav { align-self: start; position: sticky; top: var(--og-space-4); }
 html:root .workbench-settings-tabs { display: flex; flex-wrap: nowrap; flex-direction: column; align-items: stretch; gap: var(--og-space-1); background: transparent; border: 0; padding: 0; }
 html:root .workbench-settings-nav button { justify-content: flex-start; text-align: left; width: 100%; min-height: var(--og-ctl-h-lg); padding-inline: var(--og-space-4); border: 0; border-radius: var(--og-radius-control); color: var(--og-content-2); background: transparent; font-size: var(--og-text-body); box-shadow: none; }
+/* 按钮把 children 包进 .og-btn-label（inline-block）；图标与文字若走基线对齐会错位。
+   这里把标签变成行内 flex 并居中，图标与文字同一水平线，间距用 space-3。 */
+html:root .workbench-settings-nav button > .og-btn-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--og-space-3);
+  min-width: 0;
+}
+html:root .workbench-settings-tab-icon { display: inline-flex; align-items: center; justify-content: center; flex: none; }
+html:root .workbench-settings-nav button svg { display: block; width: var(--og-space-4); height: var(--og-space-4); opacity: 0.72; }
+html:root .workbench-settings-nav button.is-active svg { opacity: 1; }
 html:root .workbench-settings-nav button.is-active { background: var(--og-selection-fill); color: var(--og-content-1); font-weight: var(--og-weight-semibold); }
 .workbench-settings-content { min-width: 0; padding-right: var(--og-space-2); }
 .workbench-settings-title { margin-bottom: var(--og-space-6); }
@@ -145,7 +157,7 @@ html:root .ohx-searchbar { min-height: var(--og-ctl-h-lg); border: 1px solid var
 html:root .ohx-history-head { font-size: var(--og-text-label); margin-bottom: var(--og-space-3); color: var(--og-content-3); }
 html:root .ohx-results { gap: var(--og-space-1); }
 html:root .ohx-hit { padding: var(--og-space-4); border: 0; background: transparent; border-radius: var(--og-radius-control); gap: var(--og-space-3); }
-html:root .ohx-hit:hover { background: var(--og-workbench-well); }
+html:root .ohx-hit:hover { background: color-mix(in srgb, var(--og-content-1) 8%, transparent); }
 html:root .ohx-hit-name { font-size: var(--og-text-body); font-weight: var(--og-weight-medium); }
 html:root .ohx-hit-sub { font-size: var(--og-text-label); color: var(--og-content-3); }
 html:root .ohx-hit-tag { color: var(--og-content-2); border: 0; border-radius: var(--og-radius-xs); background: var(--og-surface-3); padding: var(--og-space-1) var(--og-space-2); font-size: var(--og-text-micro); }
@@ -260,7 +272,13 @@ html:root .ohx-modeswitch { padding: var(--og-space-1); border: 0; border-radius
 html:root .ohx-modeswitch > .og-btn { padding-inline: var(--og-space-3); border-radius: var(--og-radius-sm); }
 html:root .ohx-modeswitch > .og-btn.is-active { background: var(--og-surface-1); color: var(--og-content-1); box-shadow: var(--og-elev-1); }
 
-/* Layout containment: long pages grow; only explicit list/panel bodies scroll. */
+/* Layout containment: long pages grow; only explicit list/panel bodies scroll.
+   Center the limited-width content in the shell's grid track (§3.3), retaining
+   the rail's leading margin. Home/OnePage and schedule keep their full width. */
+html:root .explorer-shell > .explorer-content {
+  width: calc(100% - var(--ex-rail-w, 0px));
+  justify-self: center;
+}
 html:root .explorer-panel:not(.is-home-canvas):not(.is-onepage-canvas) { overflow: visible; }
 /* Each persistent tab owns its gutters. Home/OnePage can remain edge-to-edge
    without changing the horizontal spacing of pages opened by their widgets. */
@@ -285,10 +303,18 @@ html:root.is-phone .home-chrome-layer { grid-template-columns: minmax(0, 1fr) au
 html:root.is-phone .workbench-intro { grid-column: 1; padding-right: 0; }
 html:root.is-phone .home-chrome-layer .chrome-time { position: static; align-self: start; }
 
-/* OH actions and mode tabs are separate rows; their touch targets cannot overlap. */
-html:root .dock-head { display: grid !important; grid-template-columns: auto minmax(0, 1fr); flex-shrink: 0; }
-html:root .dock-head .ohx-modeswitch { position: static; transform: none; margin: 0; justify-self: end; max-width: 100%; }
-html:root .dock-head .dock-ops { grid-column: 1 / -1; flex-wrap: wrap !important; }
+/* OH 头部一行：模式页签靠左（标题已删，搜索框本身已有 OH 字样），操作区弹性收缩，关闭键固定最右。 */
+html:root .dock-head { display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; flex-shrink: 0; }
+html:root .dock-head .ohx-modeswitch { position: static; transform: none; margin: 0; justify-self: start; max-width: 100%; }
+html:root .dock-head .dock-ops {
+  grid-column: 2;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: nowrap !important;
+}
+html:root .dock-head .dock-ops::-webkit-scrollbar { display: none; }
+html:root .dock-head-close { display: inline-flex; align-items: center; justify-self: end; flex: none; }
 html:root .dock-handle, html:root .dock-input-row { flex-shrink: 0; }
 html:root .dock-oh-missing { flex: 1; min-height: 0; overflow: auto; margin: var(--og-space-4); }
 html:root .ohx-hit { flex-shrink: 0; flex-wrap: wrap; }
@@ -328,8 +354,10 @@ html:root .segmented button { border-radius: var(--og-radius-sm); transition: no
 html:root .segmented button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); box-shadow: none; }
 html:root .seg-track button { position: relative; z-index: 1; }
 html:root .seg-track button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); }
-html:root .seg-track .seg-pill { visibility: hidden; }
-html:root .segmented:has(.seg-pill.is-ready) button.is-active { background: var(--og-segment-active); color: var(--og-segment-active-ink); }
+html:root .seg-track .seg-pill { visibility: visible; box-shadow: var(--og-elev-1); }
+/* 页内 tab 的滑块交给 .seg-pill（motion.css 里 translateX/width 过渡）；
+   选中按钮本身透明，否则胶囊滑动时旧位置会被按钮底色钉住。 */
+html:root .segmented:has(.seg-pill.is-ready) button.is-active { background: transparent; color: var(--og-segment-active-ink); }
 html:root .segmented button.is-active :is(.og-btn-label, .og-text) { color: inherit; }
 html:root .seg-track .seg-pill { height: auto; top: var(--og-space-1); bottom: var(--og-space-1); background: var(--og-segment-active); border-radius: var(--og-radius-sm); border: 0; padding: 0; min-height: 0; }
 
@@ -345,6 +373,7 @@ html:root .free-note-dot { background: var(--og-note-quiet); }
 
 /* Theme selection has its own full-width composition, independent of List row slots. */
 .theme-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--og-space-3); }
+html:root .workbench-settings-content .theme-choice-grid { padding: var(--og-card-pad); }
 .theme-choice { min-width: 0; display: flex; align-items: center; border: 1px solid var(--og-line-2); border-radius: var(--og-radius-card); background: var(--og-surface-1); overflow: hidden; }
 .theme-choice.is-selected { border-color: var(--og-content-1); box-shadow: inset 0 0 0 1px var(--og-content-1); }
 .theme-choice-main { border: 0; border-radius: inherit; background: transparent; color: var(--og-content-1); display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--og-space-3); padding: var(--og-space-4); width: 100%; min-width: 0; text-align: left; cursor: pointer; }
@@ -360,7 +389,136 @@ html:root .theme-swatch { display: grid; grid-template-columns: repeat(3, 16px);
 
 /* Material belongs on standalone surfaces; controls and nested card bodies stay opaque/clear. */
 html:root[data-og-skin="glass"] :is(.explorer-topbar, .ex-bbar, .ex-rail) { background: var(--og-fill-surface); backdrop-filter: var(--og-surface-blur); -webkit-backdrop-filter: var(--og-surface-blur); }
-html:root[data-og-skin="glass"] :is(.settings-panel, .theme-pick-panel, .ex-sheet, .og-modal-panel, .board-viewport-tools) { background: var(--og-fill-overlay); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+/* ── 设置浮层：两种页面形态（2026-10-24 定案）─────────────────────────
+   1) 个人设置 / Harness：三段式（标题栏 + 左导航 + 右内容），左右独立滚动；
+   2) 我的名片 / 插件：普通实心页（正常页边距、整页滚动）。
+   由 body 的 .workbench-plugin-settings 区分。三段式的**几何**与皮肤无关：
+   切换玻璃程度（glass↔neutral）只换材质，不再改变布局/内衬（避免“换档像重载”）。 */
+
+/* 默认（名片/插件 + 设置/Harness 的公共部分）：整窗实心底、标题栏实心。 */
+html:root .settings-panel.is-desktop {
+  background: var(--og-surface-1);
+  border-color: var(--og-line-2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html:root .settings-panel.is-desktop .settings-head {
+  background: var(--og-surface-1);
+  border-bottom: 1px solid var(--og-line-1);
+}
+
+/* 三段式几何（所有皮肤一致）。 */
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) {
+  background: transparent;
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .explorer-settings-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0;
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-nav {
+  align-self: stretch;
+  position: static;
+  top: auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--og-space-3);
+  border: 0;
+  border-radius: 0;
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-nav button {
+  background: transparent;
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-tabs {
+  gap: var(--og-space-2);
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-nav button.is-active {
+  /* 选中 = 半透明遮罩，而不是再铺一块实心白。 */
+  background: var(--og-fill-reading);
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-nav button.is-active:hover {
+  background: var(--og-fill-reading);
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--og-space-6);
+  border: 0;
+  border-radius: 0;
+  background: var(--og-surface-1);
+}
+html:root .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-content :is(.og-card, .og-settings) {
+  background: transparent;
+  border-color: var(--og-line-1);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 材质：只有左导航随皮肤变化；右内容始终实心。 */
+html:root[data-og-skin="glass"] .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-nav {
+  background: var(--og-fill-surface);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+}
+html:root:not([data-og-skin="glass"]) .settings-panel.is-desktop:has(> .explorer-settings-body:not(.workbench-plugin-settings)) .workbench-settings-nav {
+  background: var(--og-surface-3);
+}
+/* Harness 右侧内容：把遗留 .setting-row / .setting-title / .setting-desc 归一成
+   设置页的行式排版（同一套间距/字号/分隔线），并让表单字段单列竖排、不横向挤压。
+   这里只做宿主配方的对齐，不引入新颜色；所有值走令牌。 */
+html:root .oh-settings .workbench-settings-content { overflow-x: hidden; }
+html:root .oh-settings .workbench-settings-content .og-section-titles {
+  padding-inline: 0;
+  margin: var(--og-space-5) 0 var(--og-space-2);
+}
+html:root .oh-settings .workbench-settings-content > .og-section-titles:first-child { margin-top: 0; }
+html:root .oh-settings .workbench-settings-content .setting-row {
+  align-items: center;
+  gap: var(--og-space-5);
+  padding: var(--og-space-4) 0;
+  border-top: 1px solid var(--og-line-1);
+}
+html:root .oh-settings .workbench-settings-content .setting-row:first-child { border-top: 0; }
+html:root .oh-settings .workbench-settings-content .setting-row > div { min-width: 0; }
+html:root .oh-settings .workbench-settings-content .setting-row > :last-child { flex: none; }
+html:root .oh-settings .workbench-settings-content .setting-title {
+  font-size: var(--og-text-body);
+  line-height: var(--og-text-body-lh, 1.45);
+  font-weight: var(--og-weight-medium);
+  color: var(--og-content-1);
+}
+html:root .oh-settings .workbench-settings-content .setting-desc {
+  margin-top: var(--og-space-1);
+  max-width: none;
+  font-size: var(--og-text-label);
+  line-height: var(--og-text-label-lh);
+  color: var(--og-content-2);
+  overflow-wrap: anywhere;
+}
+html:root .oh-settings .workbench-settings-content .og-field { gap: var(--og-space-1); }
+html:root .oh-settings .workbench-settings-content .og-field > :is(.og-input, .og-select, .og-textarea, textarea) { width: 100%; }
+html:root .oh-settings .workbench-settings-content .og-stack { min-width: 0; }
+html:root .oh-settings .workbench-settings-content .og-stack { min-width: 0; }
+/* Harness 内容区是普通块流容器，不是 flex 父级：`fill`（height:100%）会把
+   Stack 锁成内容高度、把可收缩子项压扁，导致设置行/字段互相叠字。这里恢复自然高度。 */
+html:root .oh-settings .workbench-settings-content :is(.og-stack--fill, .og-inline--fill) { height: auto; }
+html:root .oh-settings .workbench-settings-content .og-inline { flex-wrap: wrap; row-gap: var(--og-space-2); }
+html:root[data-og-skin="glass"] :is(.ex-sheet, .og-modal-panel, .board-viewport-tools) { background: var(--og-fill-overlay); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
 html:root[data-og-skin="glass"] :is(.free-item:not(.is-note), .card, .home-card) { background: var(--og-fill-surface); backdrop-filter: var(--og-surface-blur); -webkit-backdrop-filter: var(--og-surface-blur); }
 html:root[data-og-skin="glass"] .free-item :is(.card, .home-card, .wg-card) { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
 /* 便笺纸跟随玻璃材质：默认仍是实色纸（黄/粉/蓝/绿），玻璃皮肤下变成同档透光的有色玻璃。
@@ -381,7 +539,7 @@ html:root[data-og-skin="glass"] .has-shell-wallpaper :is(.explorer-panel, .explo
 
 /* Home components use the same persisted geometry as every other board item. */
 html:root .free-item[data-widget="text"] { background: transparent; border-color: transparent; box-shadow: none; backdrop-filter: none; }
-html:root .free-item > .wg-title { display: flex; align-items: center; height: 100%; margin: 0; font-size: var(--og-workbench-hero); line-height: 1.2; font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); white-space: pre-wrap; }
+html:root .free-item > .wg-title { display: flex; align-items: center; height: 100%; margin: 0; color: var(--og-content-1); font-size: var(--og-workbench-hero); line-height: 1.2; font-weight: var(--og-weight-semibold); letter-spacing: var(--og-tracking-title); white-space: pre-wrap; }
 html:root .free-item[data-widget="clock"] .wg-card { display: grid; align-items: center; }
 html:root .free-item .chrome-clock { text-align: left; padding: var(--og-space-3); }
 .home-services-widget { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: start; align-items: center; gap: var(--og-space-3); height: 100%; }
@@ -573,6 +731,14 @@ html:root:not(.is-phone) .explorer-shell > .explorer-content { padding-top: calc
 html:root:not(.is-phone).tabs-vertical .ex-bbar { top: 0; }
 html:root:not(.is-phone).tabs-vertical .onego-bookmarks { top: var(--og-workbench-header-h); }
 html:root:not(.is-phone).tabs-vertical .explorer-shell > .explorer-content { padding-top: calc(var(--og-workbench-header-h) + var(--og-navigation-clearance)) !important; }
+/* OneGO 收藏夹栏与内容之间留出页边距：普通内容页在导航净空之外再加一档呼吸。
+   画布页（首页/OnePage 工作区）保持全幅，不参与。 */
+html:root:not(.is-phone) .explorer-shell > .explorer-content:not(.is-home-canvas):not(.is-onepage-canvas) {
+  padding-top: calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h) + var(--og-navigation-clearance) + var(--og-space-5)) !important;
+}
+html:root:not(.is-phone).tabs-vertical .explorer-shell > .explorer-content:not(.is-home-canvas):not(.is-onepage-canvas) {
+  padding-top: calc(var(--og-workbench-header-h) + var(--og-navigation-clearance) + var(--og-space-5)) !important;
+}
 .onego-bookmarks { position: fixed; z-index: var(--og-z-header); top: calc(var(--og-workbench-tabs-h) + var(--og-workbench-header-h)); left: 0; right: 0; height: var(--og-text-display); display:flex; align-items:center; gap:var(--og-space-1); padding: 0 var(--og-space-5); border-bottom:1px solid var(--og-line-1); background:var(--og-chrome); color:var(--og-content-1); }
 .onego-manager { flex:none; border-radius:var(--og-radius-sm); }
 .onego-bookmark-track { flex:1; min-width:0; display:flex; align-items:center; gap:var(--og-space-1); overflow:hidden; }
@@ -583,7 +749,7 @@ html:root:not(.is-phone).tabs-vertical .explorer-shell > .explorer-content { pad
 .onego-bookmark-overflow { position:absolute; right:var(--og-space-3); top:100%; width:var(--og-bookmark-menu-width); max-height:60dvh; overflow:auto; padding:var(--og-space-2); display:flex; flex-direction:column; border:1px solid var(--og-line-2); background:var(--og-menu-fill); box-shadow:var(--og-elev-menu); border-radius:var(--og-radius-card); }
 .onego-bookmark-overflow .onego-bookmark { max-width:100%; justify-content:flex-start; }
 .oneshot { position:fixed; bottom:calc(var(--og-space-4) + var(--og-safe-bottom, 0px)); left:50%; transform:translateX(-50%); display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:var(--og-space-3); width:min(var(--og-oneshot-max),calc(100vw - var(--og-exchange-card-width))); z-index:var(--og-z-board-tools); pointer-events:none; }
-html:root .oneshot-button { height:var(--og-space-9); min-width:0; border-radius:var(--og-radius-full); background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); pointer-events:auto; border:1px solid var(--og-line-2); gap:var(--og-space-2); }
+html:root .oneshot-button { height:var(--og-space-9); min-width:0; border-radius:var(--og-radius-full); corner-shape: round; background:var(--og-action); color:var(--og-action-on); box-shadow:var(--og-elev-2); pointer-events:auto; border:1px solid var(--og-line-2); gap:var(--og-space-2); }
 .oneshot-button .og-btn-label { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 html:root .board-viewport-tools { left:auto; right:var(--og-space-3); bottom:var(--og-board-tools-bottom); transform:none; flex-direction:column; flex-wrap:nowrap; width:auto; max-height:calc(100dvh - var(--og-bookmark-menu-width)); overflow:auto; }
 /* 画笔色板/撤销/清空是浮在工具栏**上方**的绝对定位面板（bottom:100%+gap）。
@@ -743,7 +909,12 @@ html:root .free-item :is(.home-card-body, .home-card-body > .list, .wg-card .lis
 html:root .free-item[data-widget="clock"] > .wg-card { overflow: hidden; }
 /* Opacity animation with forwards fill creates a permanent backdrop root. */
 html:root :is(.settings-mask, .og-scrim, .ex-sheet-mask):not(.is-closing) { animation-fill-mode: backwards; }
-html:root[data-og-skin="glass"] :is(.settings-mask, .og-scrim, .ex-sheet-mask) { backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+/* 面板是遮罩的子节点：遮罩一旦自己有 backdrop-filter，子节点的 backdrop 就看不到
+   页面内容（规范里的 backdrop root），面板自己的 22px 模糊等于空转。所以遮罩必须
+   承担这层模糊；面板只负责"材质 + 颜色"。为了不发灰，遮罩压暗到 62%、面板用阅读面。 */
+html:root[data-og-skin="glass"] :is(.settings-mask, .og-scrim, .ex-sheet-mask) { background: color-mix(in srgb, var(--og-scrim) 62%, transparent); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
+/* 深色模式：弹层遮罩再压深一档（62% → 86%），否则亮壁纸下浮层边界发灰。 */
+html:root[data-og-skin="glass"][data-scheme="dark"] :is(.settings-mask, .og-scrim, .ex-sheet-mask) { background: color-mix(in srgb, var(--og-scrim) 86%, transparent); }
 html:root[data-og-skin="glass"] :is(.explorer-ctxmenu, .ex-ctxmenu, .onego-bookmark-overflow) { background: var(--og-fill-overlay); backdrop-filter: var(--og-overlay-blur); -webkit-backdrop-filter: var(--og-overlay-blur); }
 
 html:root .dock-input-row { flex-wrap: wrap; }
@@ -752,7 +923,7 @@ html:root .dock-input-row { flex-wrap: wrap; }
 
 /* Sticky tabs need an opaque paint layer: glass must never show adjacent text. */
 html:root .ex-tabstrip .ex-tab.is-home { background-color:var(--og-canvas); isolation:isolate; }
-html:root .ex-tabstrip .ex-tab.is-home.is-active { background-image:linear-gradient(var(--og-selection-fill),var(--og-selection-fill)); }
+html:root .ex-tabstrip .ex-tab.is-home.is-active { background-image:linear-gradient(color-mix(in srgb, var(--og-selection-fill) 65%, transparent),color-mix(in srgb, var(--og-selection-fill) 65%, transparent)); }
 .simple-header { position:fixed; inset:0 0 auto; height:var(--og-workbench-header-h); display:flex; align-items:center; justify-content:space-between; padding-inline:var(--og-space-5); background:var(--og-canvas); z-index:var(--og-z-sticky); }
 html:root .explorer-shell.is-simple > .explorer-content { margin-inline:0 !important; padding:var(--og-workbench-header-h) var(--og-space-4) calc(var(--og-workbench-header-h) + var(--og-space-9) + var(--og-space-9)) !important; }
 html:root .explorer-shell.is-simple > .ex-bbar { position:fixed; inset:auto 0 0 !important; height:calc(var(--og-workbench-header-h) + var(--og-safe-bottom, 0px)) !important; display:flex; justify-content:center; background:var(--og-canvas); padding-bottom:var(--og-safe-bottom, 0px); }
@@ -1180,3 +1351,9 @@ html:root .free-item .hw-card-course { color: var(--og-content-2); font-size: va
 html:root .free-item .hw-card-title { color: var(--og-content-1); font-size: var(--og-text-body); line-height: var(--og-text-body-lh); font-weight: var(--og-weight-semibold); }
 html:root .free-item .hw-card-ddl-sub { opacity: 1; font-size: var(--og-text-micro); }
 html:root .free-item .wg-card-empty { color: var(--og-content-2); }
+
+/* 玻璃模式下 hover 只叠半透明状态层，不换整块不透明 surface（列表行/服务行/筛选选项）。 */
+html:root .svc-row:hover,
+html:root .task-row:hover,
+html:root .exthw-oj-head:hover,
+html:root .filter-dd-opt:hover { background: color-mix(in srgb, var(--og-content-1) 7%, transparent); }

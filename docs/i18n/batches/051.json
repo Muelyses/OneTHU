@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.info.libroomtab.0addd7784578",
-      "source": "取消中…",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
-          "line": 959,
-          "context": "busyCancel !== null ? i18n(\"pages.info.libroomtab.0addd7784578\") : i18n(\"pages.info.libroomtab.b741efb628be\")"
-        }
-      ],
-      "translation": "Cancelling…",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.libroomtab.0afc4fe3d305",
-      "source": "取消预约",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/LibRoomTab.tsx",
-          "line": 964,
-          "context": "{i18n(\"pages.info.libroomtab.0afc4fe3d305\")}"
-        }
-      ],
-      "translation": "Cancel reservation",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.info.libroomtab.0eb7acb104e7",
       "source": "暂无研讨间预约记录。",
@@ -1458,6 +1426,38 @@
         }
       ],
       "translation": "Manage life sections",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.caf1f095b108",
+      "source": "校园卡",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 43,
+          "context": "return i18n(\"pages.info.lifepage.caf1f095b108\");"
+        }
+      ],
+      "translation": "Campus card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.lifepage.dd94488f5269",
+      "source": "校园网",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/LifePage.tsx",
+          "line": 47,
+          "context": "return i18n(\"pages.info.lifepage.dd94488f5269\");"
+        }
+      ],
+      "translation": "Campus network",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

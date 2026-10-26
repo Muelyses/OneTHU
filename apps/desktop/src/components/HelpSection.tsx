@@ -51,14 +51,14 @@ const TASKS: Array<{ title: string; desc: string; ids: string[]; settingsTab?: s
     get title() { return i18n("components.helpsection.31689de9b7b3"); },
     get desc() { return i18n("components.helpsection.faf8fc496688"); },
     ids: [],
-    settingsTab: "通知与提醒",
+    settingsTab: "通知",
   },
   {
     /* 2026-10-11 设置重构：桌面小组件从「通知与提醒」独立成栏，直达目标跟着换 */
     get title() { return i18n("components.helpsection.7a25374f5630"); },
     get desc() { return i18n("components.helpsection.9889374af97c"); },
     ids: [],
-    settingsTab: "桌面小组件",
+    settingsTab: "功能",
   },
 ];
 

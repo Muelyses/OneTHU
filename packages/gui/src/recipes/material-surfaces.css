@@ -1,0 +1,76 @@
+/* OneTHU 宿主材质覆盖：把"实心白板"的阅读面接进材质轴。
+ *
+ * 背景：兼容层的旧别名 `--surface / --surface-2 / --surface-3` 指向的是**不透明**
+ * 语义面阶（compatibility.css:8-10），所以玻璃皮肤下凡是直接用旧别名画底的
+ * 元素——表头、Markdown 代码块、旧面板——仍然是一块实心板，壁纸在这里断掉。
+ * 这些是宿主结构类名，故修复留在宿主配方，不动库内语义令牌。
+ *
+ * 只改"阅读面"：表头 / Markdown pre·code / 旧数据表头。
+ * 不碰输入框、原生 option、语义状态底色、图片与媒体内容——它们各自有正确材质。
+ */
+html:root[data-og-skin="glass"] :is(
+  .data-table th,
+  .dock-md th,
+  .dock-md pre,
+  .dock-md code
+) {
+  background: var(--og-fill-reading);
+  backdrop-filter: var(--og-reading-blur);
+  -webkit-backdrop-filter: var(--og-reading-blur);
+}
+
+
+/* 信息页/列表顶部的分段表头（.segmented 轨道）：中性皮肤是实心段轨，
+   玻璃皮肤下改成阅读面材质，否则列表顶部会出现一条实心白条。 */
+html:root[data-og-skin="glass"] :is(.segmented, .seg-track) {
+  background: var(--og-fill-reading);
+  backdrop-filter: var(--og-reading-blur);
+  -webkit-backdrop-filter: var(--og-reading-blur);
+}
+
+/* 行动按钮（“查看全部作业”“全部作业 →”“进入网络学堂 →”等）：
+   玻璃下要有一层白色材质，而不是实心白板 + 硬描边。
+   描边交给材质 rim（--og-material-shadow），保留 1px 透明边框占位避免布局跳动。 */
+html:root[data-og-skin="glass"] :is(.og-btn--outline, .task-entry) {
+  background: var(--og-fill-surface);
+  border-color: transparent;
+  box-shadow: var(--og-material-shadow);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+}
+
+
+/* 数据表（信息页成绩/体测/教室/课程/网络/工资、体育等所有 .data-table）：
+   表格源结构是 <Card overflow:hidden><table>，单元格都是直角矩形，放在超椭圆卡片里
+   会"割角"。玻璃皮肤下统一拆成行块：
+   - 表头透明（不再是一条实心白带）；
+   - 行块用半透明面 + 首/末单元格圆角，行间 2px 间距；
+   - 悬停整行填充同样带圆角。
+   OneGUI 的材质改动对所有旧页面生效，不要求页面逐个换组件/加类名。 */
+html:root[data-og-skin="glass"] .data-table {
+  border-collapse: separate;
+  border-spacing: 0 var(--og-geo-xs);
+}
+html:root[data-og-skin="glass"] .data-table thead th {
+  background: transparent;
+  border-bottom: 1px solid var(--og-line-1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html:root[data-og-skin="glass"] .data-table tbody td {
+  border-bottom: 0;
+  background: color-mix(in srgb, var(--og-surface-1) 20%, transparent);
+}
+html:root[data-og-skin="glass"] .data-table tbody tr:hover td {
+  background: var(--og-hover);
+}
+html:root[data-og-skin="glass"] .data-table tbody td:first-child {
+  border-start-start-radius: var(--og-radius-md);
+  border-end-start-radius: var(--og-radius-md);
+}
+html:root[data-og-skin="glass"] .data-table tbody td:last-child {
+  border-start-end-radius: var(--og-radius-md);
+  border-end-end-radius: var(--og-radius-md);
+}
+
+/* 非玻璃皮肤保持原状：这里只在玻璃皮肤下接管，实色主题的对比关系不受影响。 */

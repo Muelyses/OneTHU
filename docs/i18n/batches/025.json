@@ -1,44 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.vault.issuedsharescard.533f11fea9a2",
-      "source": "持有口令即可接收",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 110,
-          "context": "entry.allowEmail ? i18n(\"components.vault.issuedsharescard.6d970e8dbefd\", { allowEmail: String(entry.allowEmail) }) : i18n(\"components.vault.issuedsharescard.533f11fea9a2\")"
-        }
-      ],
-      "translation": "Anyone holding the share code can receive",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.issuedsharescard.5c07ccfd4b6e",
-      "source": "已发出口令{value}",
-      "kind": "rich",
-      "parameters": [
-        {
-          "name": "value",
-          "expression": "currentCount ? ` · ${currentCount}` : \"\""
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/IssuedSharesCard.tsx",
-          "line": 95,
-          "context": "{i18nRich(\"components.vault.issuedsharescard.5c07ccfd4b6e\", { value: currentCount ? ` · ${currentCount}` : \"\" })}"
-        }
-      ],
-      "translation": "Share codes issued{value}",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.vault.issuedsharescard.5e43012c5ebe",
       "source": "这条口令仍有效，删除记录不会撤销分享。确定只删除记录？",
@@ -1417,6 +1380,43 @@
         }
       ],
       "translation": "My card",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.542ad2d546d0",
+      "source": "组织「{orgName}」",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "orgName",
+          "expression": "String(shared.payload.orgName)"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 72,
+          "context": "shared.payload.orgName && i18n(\"components.vault.vaultexchangeactions.542ad2d546d0\", { orgName: String(shared.payload.orgName) })"
+        }
+      ],
+      "translation": "Organization “{orgName}”",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultexchangeactions.577a1f849d63",
+      "source": "暂存箱已经切换或更新，请关闭后重新确认要分享的内容。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
+          "line": 67,
+          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.577a1f849d63\"))"
+        }
+      ],
+      "translation": "The Stash has been switched or updated; please close this and reconfirm the content you want to share.",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

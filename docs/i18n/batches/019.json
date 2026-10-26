@@ -1,5 +1,5 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
     {
@@ -15,7 +15,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 218,
+          "line": 179,
           "context": "{i18nRich(\"components.ohsettingspage.d09e846cd4ab\", { value: jumped ? i18n(\"components.ohsettingspage.02fe3492daa4\") : \"\" })}"
         }
       ],
@@ -31,7 +31,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
+          "line": 133,
           "context": "busy ? i18n(\"components.ohsettingspage.d121e4ba4f4c\") : checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],
@@ -52,7 +52,7 @@
         },
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 279,
+          "line": 259,
           "context": "{i18n(\"components.ohsettingspage.dc1d05f60500\")}"
         }
       ],
@@ -68,7 +68,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 296,
+          "line": 276,
           "context": "{i18n(\"components.ohsettingspage.f204a61ba9f0\")}"
         }
       ],
@@ -89,7 +89,7 @@
         },
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 171,
+          "line": 132,
           "context": "{i18n(\"components.ohsettingspage.f2b78947c49a\")}"
         }
       ],
@@ -105,7 +105,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
+          "line": 133,
           "context": "checking ? i18n(\"components.ohsettingspage.f96003eb203c\") : !madmodelActive() ? i18n(\"components.ohsettingspage.be90f17a88bf\") : warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],
@@ -126,7 +126,7 @@
         },
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 278,
+          "line": 258,
           "context": "{i18n(\"components.ohsettingspage.fbf9575ea3c9\")}"
         }
       ],
@@ -142,7 +142,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/OhSettingsPage.tsx",
-          "line": 172,
+          "line": 133,
           "context": "warn ? warn : i18n(\"components.ohsettingspage.fc7d3e679982\")"
         }
       ],

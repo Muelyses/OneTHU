@@ -10,6 +10,7 @@ import type { ExternalContent, YkLeafDetail, YkNoticeDetail } from "@onethu/core
 import { Card } from "../Layout.js";
 import { IconChevron } from "../Icons.js";
 import { fetchYktLeafDetail, fetchYktNoticeDetail, getYktCookie } from "../../state/exthw.js";
+import { openExternalHomework } from "../../lib/extHwBrowse.js";
 import { openFilePreview } from "../FilePreview.js";
 import { YktContentBody } from "./YktContentBody.js";
 import { fmtWhenParts } from "../../pages/learn/shared.js";
@@ -29,6 +30,11 @@ export function YktContentList({ items }: { items: ExternalContent[] }) {
     async (c: ExternalContent) => {
       if (open?.id === c.id) {
         setOpen(null);
+        return;
+      }
+      // type 4「试卷」没有叶子正文可展开：直接打开雨课堂试卷页（未交→答题页，已交→成绩页）。
+      if (c.kind === "quiz") {
+        if (c.url) await openExternalHomework(c.url);
         return;
       }
       setOpen({ id: c.id, title: c.title, state: "loading" });

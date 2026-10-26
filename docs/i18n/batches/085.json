@@ -1,7 +1,177 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.atoms.b1abb3dc2271",
+      "source": "清小搭",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 224,
+          "context": "return i18n(\"state.atoms.b1abb3dc2271\");"
+        }
+      ],
+      "translation": "Xiaoda",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.b208d9df4fca",
+      "source": "当前白板（具体某块用 navigate board + boardId）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 207,
+          "context": "return i18n(\"state.atoms.b208d9df4fca\");"
+        }
+      ],
+      "translation": "Current board (use navigate board + boardId for a specific board)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.b22b34bd6f57",
+      "source": "订阅源 · 新闻",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 720,
+          "context": "sub: i18n(\"state.atoms.b22b34bd6f57\")"
+        }
+      ],
+      "translation": "Feeds · News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.b3ed0c353c77",
+      "source": "网络学堂 · 作业列表",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 226,
+          "context": "return i18n(\"state.atoms.b3ed0c353c77\");"
+        }
+      ],
+      "translation": "Web Learning · Assignment list",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.b80e3dfb7fba",
+      "source": "讨论区板块",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 450,
+          "context": "name || i18n(\"state.atoms.b80e3dfb7fba\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 450,
+          "context": "(courseName ? courseName + \" · \" : \"\") + i18n(\"state.atoms.b80e3dfb7fba\")"
+        },
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 724,
+          "context": "(b.courseName ? b.courseName + \" · \" : \"\") + i18n(\"state.atoms.b80e3dfb7fba\")"
+        }
+      ],
+      "translation": "Forum boards",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.b9d8c8f7b02f",
+      "source": "全量扫描云端日程变化（etag 对账）",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 172,
+          "context": "return i18n(\"state.atoms.b9d8c8f7b02f\");"
+        }
+      ],
+      "translation": "Full scan of cloud schedule changes (etag reconciliation)",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.bb7b63b39fd4",
+      "source": "本学期课程总览",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 225,
+          "context": "return i18n(\"state.atoms.bb7b63b39fd4\");"
+        }
+      ],
+      "translation": "This semester's course overview",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.bb8c939d0fcd",
+      "source": "订水",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 242,
+          "context": "return i18n(\"state.atoms.bb8c939d0fcd\");"
+        }
+      ],
+      "translation": "Order water",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.bdac834d0ba2",
+      "source": "全部通知",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 227,
+          "context": "return i18n(\"state.atoms.bdac834d0ba2\");"
+        }
+      ],
+      "translation": "All notices",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.atoms.c0c6bb8b8618",
+      "source": "校园卡余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/atoms.tsx",
+          "line": 311,
+          "context": "return i18n(\"state.atoms.c0c6bb8b8618\");"
+        }
+      ],
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.atoms.c141273da51a",
       "source": "全局默认提醒时间 · 同步系统日历",
@@ -1220,171 +1390,6 @@
         }
       ],
       "translation": "Failed to read the calendar archive. Please retry.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.6d9090d5290b",
-      "source": "邮箱连接配置损坏，请重新配置",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 122,
-          "context": "new Error(i18n(\"state.cloudcal.6d9090d5290b\"))"
-        }
-      ],
-      "translation": "The mail connection configuration is corrupted. Please set it up again.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.72574f41faea",
-      "source": "服务器返回了无效日历，已保留本地镜像",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 281,
-          "context": "new Error(i18n(\"state.cloudcal.72574f41faea\"))"
-        }
-      ],
-      "translation": "The server returned an invalid calendar; the local mirror was kept",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.8120a4a0177c",
-      "source": "课表含无法识别的场次，未修改云日历",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 516,
-          "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
-        },
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 583,
-          "context": "new Error(i18n(\"state.cloudcal.8120a4a0177c\"))"
-        }
-      ],
-      "translation": "The timetable contains unrecognized sessions; the cloud calendar was not modified",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.812d9e62ba2d",
-      "source": "日程版本信息缺失，请先同步再编辑",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 320,
-          "context": "new Error(i18n(\"state.cloudcal.812d9e62ba2d\"))"
-        }
-      ],
-      "translation": "Schedule version info is missing. Sync first before editing.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.892291a664b5",
-      "source": "新位置已保存，原位置清理失败，两侧日程均保留；请同步后再清理重复项",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 382,
-          "context": "new Error(i18n(\"state.cloudcal.892291a664b5\"))"
-        }
-      ],
-      "translation": "The new location was saved, but cleaning up the original location failed and both schedules are kept. Sync first, then clean up the duplicates.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.bd5ff99826df",
-      "source": "未找到日程，请先同步后再删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 336,
-          "context": "new Error(i18n(\"state.cloudcal.bd5ff99826df\"))"
-        }
-      ],
-      "translation": "Schedule not found. Sync first, then delete.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.e2f9152c9203",
-      "source": "学期信息无效",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 458,
-          "context": "new Error(i18n(\"state.cloudcal.e2f9152c9203\"))"
-        }
-      ],
-      "translation": "Invalid semester info",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.f3f8e2d173eb",
-      "source": "云同步配置已变更，本次验证结果未应用",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 247,
-          "context": "new Error(i18n(\"state.cloudcal.f3f8e2d173eb\"))"
-        }
-      ],
-      "translation": "The cloud sync configuration has changed; the verification result was not applied",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.fc42ba627dce",
-      "source": "日程版本信息缺失，请先同步再删除",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 337,
-          "context": "new Error(i18n(\"state.cloudcal.fc42ba627dce\"))"
-        }
-      ],
-      "translation": "Schedule version info is missing. Sync first before deleting.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "state.cloudcal.fe20ed20d492",
-      "source": "云日历缓存损坏，未覆盖已有日程",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/state/cloudCal.ts",
-          "line": 146,
-          "context": "new Error(i18n(\"state.cloudcal.fe20ed20d492\"))"
-        }
-      ],
-      "translation": "The cloud calendar cache is corrupted; existing schedules were not overwritten",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -16,6 +16,7 @@ mod privacy_consent;
 mod memory_mirror;
 mod im_media;
 mod downloads;
+mod attachment_response;
 mod harness_embed;
 mod overlay_win;
 #[cfg(desktop)]
@@ -1051,26 +1052,12 @@ pub(crate) async fn fetch_attachment(
     if bytes.is_empty() {
         return Err("下载失败：文件内容为空（mobile 同款 bytesWritten==0 校验）".into());
     }
-    let name = content_disposition
+    let resolved = content_disposition
         .as_deref()
         .and_then(parse_cd_filename)
         .filter(|n| !n.trim().is_empty())
         .unwrap_or_else(|| fallback_name.to_string());
-    let name_is_html = {
-        let lower = name.to_ascii_lowercase();
-        lower.ends_with(".html") || lower.ends_with(".htm")
-    };
-    if !name_is_html {
-        let head = String::from_utf8_lossy(&bytes[..bytes.len().min(4096)]);
-        let head = head.trim_start_matches('\u{feff}').trim_start();
-        let looks_html = head.starts_with("<!DOCTYPE")
-            || head.starts_with("<!doctype")
-            || head.starts_with("<html");
-        let login_redirect = bytes.len() < 4096 && head.contains("location.href");
-        if content_type.starts_with("text/html") || looks_html || login_redirect {
-            return Err("会话已失效，需要重新登录".into());
-        }
-    }
+    let name = attachment_response::filename(&resolved, &content_type, &bytes).map_err(str::to_owned)?;
     Ok((name, bytes.to_vec()))
 }
 

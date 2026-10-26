@@ -16,6 +16,8 @@ import { readFileSync } from "node:fs";
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const ENGINE = readFileSync(`${ROOT}/apps/desktop/src/lib/textContrast.ts`, "utf8");
 const CSS = readFileSync(`${ROOT}/apps/desktop/src/styles/explorer.css`, "utf8");
+const WORKBENCH = readFileSync(`${ROOT}/packages/gui/src/recipes/workbench.css`, "utf8");
+const WIDGET_HOST = readFileSync(`${ROOT}/apps/desktop/src/components/WidgetHost.tsx`, "utf8");
 
 const fails = [];
 const ok = (cond, msg) => { if (!cond) fails.push(msg); };
@@ -26,12 +28,15 @@ const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 const cssDark = Number(/\[data-wallpaper-lum="dark"\][^{]*::before\s*\{[^}]*rgba\(255,\s*255,\s*255,\s*([\d.]+)\)/.exec(CSS)?.[1]);
 const cssLight = Number(/\[data-wallpaper-lum="light"\][^{]*::before\s*\{[^}]*rgba\(0,\s*0,\s*0,\s*([\d.]+)\)/.exec(CSS)?.[1]);
 ok(Number.isFinite(cssDark) && cssDark > 0, "explorer.css 里找不到暗壁纸白色纱的 alpha（选择器改过？请同步引擎）");
+ok(CSS.includes('html:root:not([data-scheme="dark"]) .explorer-shell[data-wallpaper-lum="dark"] .explorer-content::before'), "亮主题反差纱选择器必须排除暗色 scheme（否则暗主题也铺白纱）");
+ok(CSS.includes('html:root[data-scheme="dark"] .explorer-shell[data-wallpaper-lum="light"] .explorer-content::before'), "暗主题反差纱选择器必须以 data-scheme=dark 限定");
 ok(Number.isFinite(cssLight) && cssLight > 0, "explorer.css 里找不到亮壁纸黑色纱的 alpha（选择器改过？请同步引擎）");
 // 数值比较（别用 includes：0.34 含 "0.3"，子串判定会漏报）
 const engDark = Number(/mode === "dark" \? ([\d.]+)/.exec(ENGINE)?.[1]);
 const engLight = Number(/mode === "light" \? ([\d.]+)/.exec(ENGINE)?.[1]);
 ok(engDark === cssDark, `引擎里的暗壁纸纱 alpha ${engDark} 与 CSS(${cssDark}) 不一致`);
 ok(engLight === cssLight, `引擎里的亮壁纸纱 alpha ${engLight} 与 CSS(${cssLight}) 不一致`);
+ok(/schemeIsDark/.test(ENGINE), "反差纱引擎没有按主题 scheme 判断（暗主题 + 暗壁纸会被算成白纱）");
 
 /* ② IO 那条路是活的 */
 ok(/seen\.add\(el\);\s*\n\s*visIO\?\.observe\(el\)/.test(ENGINE), "settleAll 登记元素后没有 observe（visible 会空 → 视频漂移空转）");

@@ -176,6 +176,18 @@ html:root[data-og-skin="glass"] :is(
   gap: var(--og-space-3);
 }
 
+/* 课程/待办页头与卡片同材质：此前用 --og-fill-overlay（暗色约 74% 不透明），
+   在玻璃模式下明显比下面的 stat-card（约 28%）深；页头不是阅读面，改回 surface 档。 */
+html:root[data-og-skin="glass"] :is(
+  .tasks-detail-slot > .page-head-host > .og-pagehead,
+  .learn-page > .page-head-host > .og-pagehead,
+  .page-anim:is([data-page="tasks"], [data-page^="learn-"]) > .page-head-host > .og-pagehead
+) {
+  background: var(--og-fill-surface);
+  backdrop-filter: var(--og-surface-blur);
+  -webkit-backdrop-filter: var(--og-surface-blur);
+}
+
 html:root[data-og-skin="glass"] .tasks-pane-head {
   padding: var(--og-space-2) var(--og-space-3);
   border: 1px solid var(--og-line-2);

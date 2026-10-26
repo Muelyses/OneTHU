@@ -15,7 +15,7 @@ import { Btn } from "@onethu/gui";
  *
  * 数据全复用既有层（useLearnData/exthw/hwIgnore/hwCard/news），零新取数。
  */
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { SegmentedOverflow, Card, Empty, PageHead } from "../components/Layout.js";
 import { IconRefresh } from "../components/Icons.js";
 import { semesterText, useLearnNavSemester } from "./learn/shared.js";
@@ -32,8 +32,8 @@ import { useExpanded } from "../state/usePlatformLayout.js";
 import { AssignmentDetailPage } from "./learn/AssignmentDetailPage.js";
 import { YktAssignmentDetailPage } from "./learn/YktAssignmentDetailPage.js";
 import { yktDetailParams } from "../lib/homeworkEntry.js";
-import { prefersReducedMotion } from "../lib/motion.js";
 import { pickHomeworkRoute } from "../lib/yktDetail.js";
+import { openTab } from "../state/explorer.js";
 import { activateSlot, type DetailSlot } from "../lib/detailSlots.js";
 import type { Homework } from "@onethu/core";
 
@@ -88,7 +88,6 @@ export function TasksPage(): ReactNode {
   // 宽屏分栏右栏（§2.8.2）：默认「生活」，点卡片换成该作业详情——不点就是生活、点了就是详情、
   // 关掉回到生活。与计划书的「左列表/右详情」和主人要的「左学习/右生活」合成一体。
   const [pcSel, setPcSel] = useState<Homework | null>(null);
-  const [pcFull, setPcFull] = useState(false); // 详情全屏：复用同一挂载实例，切换不重拉
   // 打开过的详情槽位：**保持挂载 = 天然缓存**（说明/作答/附件状态都不必重拉），上限 8 个。
   // 超过 TTL 的槽位再次激活时换 nonce 重建（等价于重拉一次），满足「5 分钟一刷新」；
   // 提交/撤回在详情组件内部完成，它会自己 invalidateLearnCache，右侧立刻是新状态。
@@ -115,52 +114,19 @@ export function TasksPage(): ReactNode {
     pcActivate(h);
     setPcSel(h);
   };
-  /* 「展开 / 收起」是 position: static → fixed 的硬切换（列内 → 全屏浮层），
-     inset/position 不可过渡，光靠 CSS 只能是"啪"一下——所以走 FLIP：
-     切换前记住旧矩形，切换后用 WAAPI 从旧矩形补一段"长大 / 缩回"。
-     用 WAAPI 而不是 CSS keyframes，是因为起点矩形只有运行时才知道。 */
-  const detailRef = useRef<HTMLDivElement | null>(null);
-  const morphFrom = useRef<{ rect: DOMRect; grow: boolean } | null>(null);
-  const toggleFull = useCallback((next: boolean): void => {
-    const el = detailRef.current;
-    // 减弱动态效果时不动。CSS 那条 animation-duration: 1ms !important 管不到 WAAPI，必须自己判。
-    if (el && !prefersReducedMotion()) {
-      morphFrom.current = { rect: el.getBoundingClientRect(), grow: next };
+  /** 右栏详情的「打开」：直接在新标签页跳到该作业详情（不再做全屏展开浮层）。 */
+  const openDetailInNewTab = (h: Homework): void => {
+    const route = pickHomeworkRoute(h);
+    if (route === "ykt-native") {
+      openTab("learn-ykt-detail", { ykt: yktDetailParams(h, hwCourseLabel(h, courseMap, extHwSourceName), "tasks"), from: "tasks" }, { forceNew: true });
+      return;
     }
-    setPcFull(next);
-  }, []);
-  useLayoutEffect(() => {
-    const el = detailRef.current;
-    const m = morphFrom.current;
-    morphFrom.current = null;
-    if (!el || !m || typeof el.animate !== "function") return;
-    const now = el.getBoundingClientRect();
-    if (!now.width || !now.height) return;
-    el.animate(
-      [
-        {
-          transformOrigin: "top left",
-          transform:
-            "translate(" + (m.rect.left - now.left) + "px, " + (m.rect.top - now.top) + "px)" +
-            " scale(" + m.rect.width / now.width + ", " + m.rect.height / now.height + ")",
-          opacity: m.grow ? 0.6 : 1,
-        },
-        { transformOrigin: "top left", transform: "none", opacity: 1 },
-      ],
-      // 400ms + MD3 emphasized：大容器变形用强调档，别跟小控件抢速度
-      { duration: 400, easing: "cubic-bezier(0.2, 0, 0, 1)" },
-    );
-  }, [pcFull]);
-
-  // 全屏详情：Esc 收起（与点「收起」同效）
-  useEffect(() => {
-    if (!pcFull) return;
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") toggleFull(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [pcFull, toggleFull]);
+    if (route === "internal") {
+      openTab("learn-assignment-detail", { courseId: h.courseId, itemId: h.id, from: "tasks" }, { forceNew: true });
+      return;
+    }
+    openHomeworkRow(h, { navigate, from: "tasks", courseName: hwCourseLabel(h, courseMap, extHwSourceName) });
+  };
 
   const dueSoon = flow.filter((h) => { const i = ddlInfo(h.deadline); return !i.overdue && i.days != null && i.days <= 3; }).length;
   const semesterId = data?.semester.id;
@@ -303,29 +269,20 @@ export function TasksPage(): ReactNode {
             <div className="tasks-pane-head">
               <span>{i18n("pages.taskspage.d4af30a738c7")}</span>
               <span className="tasks-pane-acts">
-                <button className="tasks-pane-close" onClick={() => toggleFull(!pcFull)}>
-                  {pcFull ? i18n("pages.taskspage.0d1d9183d7d0") : i18n("pages.taskspage.d9d9d95f3a25")}
+                <button className="tasks-pane-close" onClick={() => openDetailInNewTab(pcSel)}>
+                  {i18n("pages.taskspage.openDetailTab")}
                 </button>
                 <button
                   className="tasks-pane-close"
-                  onClick={() => {
-                    setPcFull(false);
-                    setPcSel(null);
-                  }}
+                  onClick={() => setPcSel(null)}
                 >{i18n("pages.taskspage.091a3375f53e")}</button>
               </span>
             </div>
             {/* 复用现有详情组件（§2.8.2：只改容器渲染，不改数据流与子组件）：
                 页头由上面的分栏头接管，目标作业经 props 直给，不污染全局 navParams。
                 每个访问过的作业各占一个槽位并保持挂载——换回旧卡不重拉，滚动位置也在。
-                「展开」只切一个 class（同一个实例变成全屏浮层），所以展开/收起不重拉数据。 */}
-            <div ref={detailRef} className={"tasks-detail tab-anim" + (pcFull ? " is-full" : "")}>
-              {pcFull ? (
-                <div className="tasks-detail-fullbar">
-                  <span className="tasks-detail-fulltitle">{pcSel.title}</span>
-                  <button className="tasks-pane-close" onClick={() => toggleFull(false)}>{i18n("pages.taskspage.0d1d9183d7d0")}</button>
-                </div>
-              ) : null}
+                右栏只做并列预览；「打开」= 新标签页跳详情（不再有全屏展开浮层）。 */}
+            <div className="tasks-detail tab-anim">
               {pcSlots.map((s) => (
                 <div
                   key={s.h.id + "#" + s.nonce}

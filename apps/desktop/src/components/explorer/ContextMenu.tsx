@@ -5,6 +5,7 @@ import { useLocale as useUiLocale } from "../../i18n/index.js";
  * 点外部、Esc、滚动、窗口缩放时关闭。
  */
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useExitHold, prefersReducedMotion } from "../../lib/motion.js";
 import { createPortal } from "react-dom";
 
 export interface MenuItem {
@@ -46,6 +47,9 @@ export function ContextMenuHost(): ReactNode {
   const uiLocale = useUiLocale();
 
   const state = useSyncExternalStore(subscribe, snapshot, snapshot);
+  /* 出场相位：关闭后保持 150ms 播 is-out，再真正卸载；减弱动态时立即关。 */
+  const held = useExitHold(state, prefersReducedMotion() ? 0 : 210);
+  const shown = held.held;
   const ref = useRef<HTMLDivElement | null>(null);
 
   // 定位：超出视口时往回挪，别跑出窗口
@@ -81,16 +85,20 @@ export function ContextMenuHost(): ReactNode {
     };
   }, [state]);
 
-  if (!state) return null;
+  if (!held.mounted || !shown) return null;
   return createPortal(
     <div
       ref={ref}
       role="menu"
-      className="ex-ctxmenu"
-      style={{ position: "fixed", left: state.x, top: state.y, zIndex: 9998 }}
+      className={"ex-ctxmenu" + (held.closing ? " is-out" : "")}
+      style={{
+        position: "fixed", left: shown.x, top: shown.y, zIndex: 9998,
+        // 展开原点贴按点的那一角：靠近右/下边缘时从右下展开，不写死左上
+        transformOrigin: `${shown.x > window.innerWidth / 2 ? "right" : "left"} ${shown.y > window.innerHeight / 2 ? "bottom" : "top"}`,
+      }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {state.items.map((it, i) => (
+      {shown.items.map((it, i) => (
         <div key={i}>
           {it.sepBefore ? <div className="ex-ctxmenu-sep" role="separator" /> : null}
           <button

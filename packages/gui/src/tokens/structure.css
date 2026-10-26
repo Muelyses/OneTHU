@@ -29,6 +29,15 @@
   --og-radius-2xl: 24px;
   --og-radius-full: 999px;
 
+  /* ── 曲率连续：超椭圆角 ──
+     squircle = 超椭圆指数 4：圆角与直边在切点处曲率同为 0，不再出现「圆弧突然接直线」
+     的硬拐点。不支持 corner-shape 的引擎保持 border-radius 圆弧（布局不变、只差曲率）。 */
+  --og-corner-shape: squircle;
+  /* 同心几何：容器内件圆角 = 外圆角 − 内边距。轨道/分段器/指示器共用，避免「圆角套圆角」发胖。 */
+  --og-radius-nest-sm: calc(var(--og-radius-sm) - var(--og-geo-xs));
+  --og-radius-nest-md: calc(var(--og-radius-md) - var(--og-geo-xs));
+  --og-radius-nest-lg: calc(var(--og-radius-lg) - var(--og-geo-xs));
+
   /* ── 字体：系统栈（中文优先）+ 等宽 + 品牌字 ── */
   --og-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", system-ui, sans-serif;
@@ -73,6 +82,11 @@
   --og-geo-hairline: 1px;
   --og-geo-xs: 2px;
   --og-geo-sm: 3px;
+
+  /* ── 折射（可选光学增强）：边缘位移带宽 / 强度 ──
+     只有支持 SVG 背景滤镜的引擎会读它们；其余引擎材质仍走表面模糊，值不生效。 */
+  --og-refraction-edge: 10px;
+  --og-refraction-scale: 12px;
 
   /* ── 表单/开关/滑条的固有尺寸（组件只引用，不自己写） ── */
   --og-ctl-check: 18px;

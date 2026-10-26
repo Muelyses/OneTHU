@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.info.venuesportstab.83bfd5de6aeb",
-      "source": "未能自动登录（统一身份登录可能已过期），请用登录窗口完成一次认证。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
-          "line": 225,
-          "context": "setAuthMsg(i18n(\"pages.info.venuesportstab.83bfd5de6aeb\"))"
-        }
-      ],
-      "translation": "Automatic sign-in failed (the unified identity session may have expired). Please complete one verification in the sign-in window.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.info.venuesportstab.8df76a301a77",
-      "source": "散客",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/info/VenueSportsTab.tsx",
-          "line": 433,
-          "context": "label: i18n(\"pages.info.venuesportstab.8df76a301a77\")"
-        }
-      ],
-      "translation": "Walk-in",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
-    },
     {
       "key": "pages.info.venuesportstab.8e3ccc726bca",
       "source": "改用系统浏览器",
@@ -1375,6 +1343,38 @@
         }
       ],
       "translation": "Tick the “I confirm” box before submitting",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.94b9ec80f3bb",
+      "source": "学校系统随机口令可留空",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 315,
+          "context": "{i18n(\"pages.info.visittab.94b9ec80f3bb\")}"
+        }
+      ],
+      "translation": "The university system's random code can be left empty",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.info.visittab.95f5bc49c2c0",
+      "source": "临时来访报备系统没有下发登录令牌",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/info/VisitTab.tsx",
+          "line": 46,
+          "context": "return i18n(\"pages.info.visittab.95f5bc49c2c0\");"
+        }
+      ],
+      "translation": "The temporary visit registration system did not issue a sign-in token",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

@@ -14,11 +14,10 @@ import { t } from "../i18n/index.js";
  *  「插件」不在其中：它有自己的入口（见上）；「桌面小组件」从「通知与提醒」独立成一栏。 */
 export const SETTINGS_TAB_ORDER = [
   "账号",
-  "通知与提醒",
-  "桌面小组件",
-  "外观与布局",
-  "数据与同步",
-  "下载与存储",
+  "通知",
+  "功能",
+  "外观",
+  "下载",
   "帮助",
   "关于",
 ];
@@ -36,6 +35,7 @@ const SETTINGS_LABEL_KEYS: Readonly<Record<string, string>> = {
   "IM 通道（进阶）": "settings.label.route.359213279505",
   "IM 基础（扫码绑定 / 解绑）": "settings.label.route.6d47abc2d3c7",
   "账号": "settings.label.account",
+  "功能": "settings.label.features",
   "通知与提醒": "settings.label.notifications",
   "桌面小组件": "settings.label.widgets",
   "外观与布局": "settings.label.appearance",
@@ -70,6 +70,22 @@ const SETTINGS_LABEL_KEYS: Readonly<Record<string, string>> = {
 export function settingsLabel(id: string): string {
   const key = SETTINGS_LABEL_KEYS[id];
   return key ? t(key) : id;
+}
+
+/** 每个页签自己的副标题：不再所有页共用"按你的习惯，调整 OneTHU"。 */
+const SETTINGS_TAB_DESC_KEYS: Readonly<Record<string, string>> = {
+  "账号": "settings.tab.desc.account",
+  "通知": "settings.tab.desc.notifications",
+  "功能": "settings.tab.desc.features",
+  "外观": "settings.tab.desc.appearance",
+  "下载": "settings.tab.desc.downloads",
+  "帮助": "settings.tab.desc.help",
+  "关于": "settings.tab.desc.about",
+};
+
+export function settingsTabDescription(id: string): string {
+  const key = SETTINGS_TAB_DESC_KEYS[id];
+  return key ? t(key) : "";
 }
 
 /** 请求切到某个设置页签（页面外的入口用：插件页、助手坞、帮助页的「去设置」）。

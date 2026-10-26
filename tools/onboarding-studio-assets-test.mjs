@@ -9,7 +9,7 @@ mkdirSync(directory, { recursive: true });
 const checks = [], errors = [];
 const report = { checks, errors, passed: false, naturalCleanup: false };
 const check = (value, message) => { assert.ok(value, message); checks.push(message); console.log('✓', message); };
-const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--disable-updater-scheduler'] });
+const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--disable-updater-scheduler'] });
 async function setup() {
   const page = await browser.newPage({ viewport: { width: 1280, height: 860 } });
   page.setDefaultTimeout(15000);

@@ -1,44 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "components.vault.vaultexchangeactions.542ad2d546d0",
-      "source": "组织「{orgName}」",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "orgName",
-          "expression": "String(shared.payload.orgName)"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
-          "line": 72,
-          "context": "shared.payload.orgName && i18n(\"components.vault.vaultexchangeactions.542ad2d546d0\", { orgName: String(shared.payload.orgName) })"
-        }
-      ],
-      "translation": "Organization “{orgName}”",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "components.vault.vaultexchangeactions.577a1f849d63",
-      "source": "暂存箱已经切换或更新，请关闭后重新确认要分享的内容。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/components/vault/VaultExchangeActions.tsx",
-          "line": 67,
-          "context": "new Error(i18n(\"components.vault.vaultexchangeactions.577a1f849d63\"))"
-        }
-      ],
-      "translation": "The Stash has been switched or updated; please close this and reconfirm the content you want to share.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "components.vault.vaultexchangeactions.626483b777ae",
       "source": "重试生成口令",
@@ -1319,6 +1282,38 @@
         }
       ],
       "translation": "News",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.d4f7864690bb",
+      "source": "Info 应用",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 26,
+          "context": "[i18n(\"components.vault.vaultitempresentation.d4f7864690bb\"), \"link\"]"
+        }
+      ],
+      "translation": "Info app",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "components.vault.vaultitempresentation.dd42589239f7",
+      "source": "合并请求",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/vault/vaultItemPresentation.ts",
+          "line": 21,
+          "context": "[i18n(\"components.vault.vaultitempresentation.dd42589239f7\"), \"gitlab\"]"
+        }
+      ],
+      "translation": "Merge request",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     }

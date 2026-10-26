@@ -1,7 +1,167 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
+    {
+      "key": "state.widgets.a3f514198472",
+      "source": "信息页校历栏目的数据卡。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 244,
+          "context": "return i18n(\"state.widgets.a3f514198472\");"
+        }
+      ],
+      "translation": "Data card for the academic calendar section on the Info page.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.ab697bbe49a7",
+      "source": "宿舍电费、订水与相关缴费。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 106,
+          "context": "return i18n(\"state.widgets.ab697bbe49a7\");"
+        }
+      ],
+      "translation": "Dorm electricity, water orders, and related payments. Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.b4eed2ab1ac0",
+      "source": "网络学堂的全部作业（含外部作业源）。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 99,
+          "context": "return i18n(\"state.widgets.b4eed2ab1ac0\");"
+        }
+      ],
+      "translation": "All Web Learning assignments (including external sources). Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.b60bd0a94034",
+      "source": "本地时间，每秒走字；大一号的档位会带上日期与星期。不需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 85,
+          "context": "return i18n(\"state.widgets.b60bd0a94034\");"
+        }
+      ],
+      "translation": "Local time, ticking every second; larger sizes also show the date and weekday. No sign-in needed.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.b7ab08dc01be",
+      "source": "体测栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 219,
+          "context": "return i18n(\"state.widgets.b7ab08dc01be\");"
+        }
+      ],
+      "translation": "Fitness test section",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.ba55d27d82e9",
+      "source": "今天的日期与星期；宽档位会带上年份。不需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 86,
+          "context": "return i18n(\"state.widgets.ba55d27d82e9\");"
+        }
+      ],
+      "translation": "Today's date and weekday; wide sizes also show the year. No sign-in needed.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.c0c6bb8b8618",
+      "source": "校园卡余额",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 187,
+          "context": "return i18n(\"state.widgets.c0c6bb8b8618\");"
+        }
+      ],
+      "translation": "Campus card balance",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.c230feb89e2b",
+      "source": "校历栏目",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 243,
+          "context": "return i18n(\"state.widgets.c230feb89e2b\");"
+        }
+      ],
+      "translation": "Academic calendar section",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.c3bc1241bb01",
+      "source": "信息页新闻栏目的数据卡。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 252,
+          "context": "return i18n(\"state.widgets.c3bc1241bb01\");"
+        }
+      ],
+      "translation": "Data card for the news section on the Info page.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "state.widgets.c647b6cc106f",
+      "source": "体测成绩。需要登录。",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/state/widgets.ts",
+          "line": 117,
+          "context": "return i18n(\"state.widgets.c647b6cc106f\");"
+        }
+      ],
+      "translation": "Fitness test results. Requires sign-in.",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
     {
       "key": "state.widgets.c732e4d7e380",
       "source": "黄",
@@ -922,7 +1082,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 158,
+          "line": 159,
           "context": "setMsg(i18nMsg(\"update.checkCancelled\"))"
         }
       ],
@@ -942,7 +1102,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 253,
+          "line": 254,
           "context": "phase === \"checking\" ? i18n(\"update.checkingSource\", { source: checkingSource ? SOURCE_LABEL[checkingSource] : \"\" }) : i18n(\"components.softwareupdatesection.7f68ebad19ba\")"
         },
         {
@@ -979,12 +1139,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 228,
+          "line": 229,
           "context": "day: i18n(\"update.prompt.day\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 269,
+          "line": 270,
           "context": "label: i18n(\"update.prompt.day\")"
         },
         {
@@ -1005,7 +1165,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 268,
+          "line": 269,
           "context": "{i18n(\"update.prompt.delay\")}"
         },
         {
@@ -1031,12 +1191,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 228,
+          "line": 229,
           "context": "hour: i18n(\"update.prompt.hour\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 269,
+          "line": 270,
           "context": "label: i18n(\"update.prompt.hour\")"
         },
         {
@@ -1057,7 +1217,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 271,
+          "line": 272,
           "context": "{i18n(\"update.prompt.later\")}"
         },
         {
@@ -1094,7 +1254,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 302,
+          "line": 303,
           "context": "i18n(\"update.prompt.paused\")}`"
         }
       ],
@@ -1114,7 +1274,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 272,
+          "line": 273,
           "context": "{i18n(\"update.prompt.saved\", { duration: reminderLabels[savedReminder] })}"
         }
       ],
@@ -1166,12 +1326,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 228,
+          "line": 229,
           "context": "week: i18n(\"update.prompt.week\")"
         },
         {
           "file": "apps/desktop/src/components/SoftwareUpdateSection.tsx",
-          "line": 269,
+          "line": 270,
           "context": "label: i18n(\"update.prompt.week\")"
         },
         {
@@ -1183,31 +1343,6 @@
       "translation": "In 7 days",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "update.sourceTimeout",
-      "source": "{source} 响应超时",
-      "kind": "text",
-      "parameters": [
-        {
-          "name": "source"
-        }
-      ],
-      "locations": [
-        {
-          "file": "apps/desktop/src/lib/updater.ts",
-          "line": 86,
-          "context": "attempt.errorKind === \"source-timeout\"\n    ? i18n(\"update.sourceTimeout\", { source: SOURCE_LABEL[attempt.source] })\n    : attempt.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
-        },
-        {
-          "file": "apps/desktop/src/lib/updater.ts",
-          "line": 449,
-          "context": "new UpdateSourceTimeout(i18n(\"update.sourceTimeout\", { source: SOURCE_LABEL[step.source] }))"
-        }
-      ],
-      "translation": "{source} timed out",
-      "status": "prefilled-review",
-      "limitHint": "Keep concise; button/card label may wrap."
     }
   ]
 }

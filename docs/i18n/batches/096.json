@@ -1,0 +1,31 @@
+{
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
+  "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
+  "messages": [
+    {
+      "key": "update.sourceTimeout",
+      "source": "{source} 响应超时",
+      "kind": "text",
+      "parameters": [
+        {
+          "name": "source"
+        }
+      ],
+      "locations": [
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 86,
+          "context": "attempt.errorKind === \"source-timeout\"\n    ? i18n(\"update.sourceTimeout\", { source: SOURCE_LABEL[attempt.source] })\n    : attempt.error ?? i18n(\"lib.updater.a1a9da9ee6ed\")"
+        },
+        {
+          "file": "apps/desktop/src/lib/updater.ts",
+          "line": 449,
+          "context": "new UpdateSourceTimeout(i18n(\"update.sourceTimeout\", { source: SOURCE_LABEL[step.source] }))"
+        }
+      ],
+      "translation": "{source} timed out",
+      "status": "prefilled-review",
+      "limitHint": "Keep concise; button/card label may wrap."
+    }
+  ]
+}

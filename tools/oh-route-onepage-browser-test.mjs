@@ -69,10 +69,10 @@ try {
     return head ? getComputedStyle(head).display !== 'none' : null;
   }, t);
   check((await sectionShown('搜索与胶囊')) === false && (await sectionShown('极客模式')) === false, 'capsule/geek sections hidden under 账号 tab');
-  await p.getByRole('tab', { name: '外观与布局' }).click();
+  await p.getByRole('tab', { name: '外观' }).click();
   await p.waitForTimeout(600);
   check((await sectionShown('搜索与胶囊')) === true, 'capsule section visible under 外观与布局');
-  await p.getByRole('tab', { name: '桌面小组件' }).click();
+  await p.getByRole('tab', { name: '功能' }).click();
   await p.waitForTimeout(600);
   check((await sectionShown('极客模式')) === true, 'geek section visible under 桌面小组件');
   await call('/src/state/explorer.ts', 'closeSettings', []);

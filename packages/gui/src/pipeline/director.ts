@@ -11,6 +11,7 @@
  *     可选值域由管线的白名单枚举，塞不进任意颜色/尺寸 —— 这就是"统一接口接入风格管线"。
  * ══════════════════════════════════════════════════════════════════════════ */
 import { bestOn, ensureContrast, mix, over, parseColor, toCss, type Rgba } from "./color.js";
+import { installGlassRefraction } from "./refraction.js";
 
 export type OGSkin = "neutral" | "glass" | (string & {});
 export type OGScheme = "light" | "dark";
@@ -414,6 +415,8 @@ export interface InstallOptions extends DirectorDeps {
   /** 明暗跟随系统时的监听 */
   watchSystemScheme?: boolean;
   initial?: Partial<OGAxes>;
+  /** Bounded real-backdrop optics, opt-in surfaces supplied by the host recipe. */
+  refractionSelector?: string;
 }
 
 /**
@@ -445,6 +448,10 @@ export function installOneGUI(opts: InstallOptions = {}): () => void {
   const onResize = (): void => og.syncEnv();
   window.addEventListener("resize", onResize);
   cleanups.push(() => window.removeEventListener("resize", onResize));
+
+  // 光学增强是可选轴：宿主给出一组"哪些面允许折射"的结构选择器，管线只管生命周期。
+  // 没有选择器、引擎不支持或设备预算不足时，这里什么都不装，材质仍是纯模糊 + 边缘高光。
+  if (opts.refractionSelector) cleanups.push(installGlassRefraction(opts.refractionSelector, root));
 
   return () => {
     for (const fn of cleanups) fn();

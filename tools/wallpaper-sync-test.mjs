@@ -57,7 +57,7 @@ await test('exports local media bytes once for the library and active wallpaper'
 });
 await test('inline v2 and gradient-only archives remain compatible',async()=>{
   const restored=await archive.importWallpaperArchive(doc(image),async()=>'/new/photo.png');assert.equal(restored.global,'local:/new/photo.png');
-  const builtin=await archive.importWallpaperArchive(doc('builtin:ink'),async()=>assert.fail('gradient needs no file'));assert.deepEqual(normalize(builtin),doc('builtin:ink'));
+  const builtin=await archive.importWallpaperArchive(doc('builtin:ink'),async()=>assert.fail('gradient needs no file'));assert.deepEqual(normalize(builtin),{...doc('builtin:ink'),v:3,day:null,night:null});
 });
 await test('old local-path archives are rejected before any filesystem write',async()=>{
   await assert.rejects(archive.importWallpaperArchive(doc('local:/another-device/private.txt'),async()=>assert.fail()),/legacy-local/);
@@ -131,5 +131,35 @@ await test('new portable file wins over a retained legacy archive',async()=>{
   const f=fixture();f.state.directories['/壁纸'].push({kind:'file',name:'onethu-wallpaper-v3.json',size:1024});
   f.state.archive=await archive.exportWallpaperArchive(doc(image),async()=>assert.fail());
   assert.equal((await f.api.restoreWallpaperFromCloud()).ok,true);assert.equal(f.calls.find(c=>c.command==='seafile_read_bytes').args.path,'/壁纸/onethu-wallpaper-v3.json');
+});
+await test('day and night builtin wallpapers survive cloud archive roundtrip',async()=>{
+  const source={v:3,global:null,day:'builtin:aurora',night:'builtin:dusk',library:[]};
+  const saved=await archive.exportWallpaperArchive(source,async()=>assert.fail('builtin must not read disk'));
+  const restored=await archive.importWallpaperArchive(saved,async()=>assert.fail('builtin must not write disk'));
+  assert.equal(restored.global,null);assert.equal(restored.day,source.day);assert.equal(restored.night,source.night);
+});
+await test('day and night local files are portable and deduplicated across every slot',async()=>{
+  const one='local:/source/one.png',two='local:/source/two.png';let reads=0,writes=0;
+  const saved=await archive.exportWallpaperArchive({v:3,global:one,day:one,night:two,library:[row(one)]},async()=>{reads++;return image.split(',')[1];});
+  assert.equal(reads,2);assert.equal(Object.keys(saved.assets).length,2);assert.equal(saved.global,saved.day);assert.equal(saved.day,saved.library[0].ref);
+  assert.equal(JSON.stringify(saved).includes('/source/'),false);
+  const restored=await archive.importWallpaperArchive(saved,async()=>`/target/${++writes}.png`);
+  assert.equal(writes,2);assert.equal(restored.global,restored.day);assert.equal(restored.day,restored.library[0].ref);assert.notEqual(restored.night,restored.day);
+});
+await test('old archives default new slots while invalid day/night refs stop before writes',async()=>{
+  for(const old of [doc(image),await archive.exportWallpaperArchive(doc(image),async()=>assert.fail())]) {
+    delete old.day;delete old.night;
+    const restored=await archive.importWallpaperArchive(old,async()=>'/restored.png');
+    assert.equal(restored.day,null);assert.equal(restored.night,null);
+  }
+  for(const bad of [{day:{}},{night:'asset:missing'},{day:'local:/other-device/file.png'}]) {
+    let writes=0;
+    await assert.rejects(archive.importWallpaperArchive({v:3,global:'asset:0',library:[],assets:{'asset:0':image},...bad},async()=>{writes++;return'/unexpected';}));
+    assert.equal(writes,0);
+  }
+});
+await test('day/night media count towards the same archive size budget',async()=>{
+  const b64='A'.repeat(8*1024*1024);
+  await assert.rejects(archive.exportWallpaperArchive({v:3,global:'local:/one.png',day:'local:/two.png',night:'local:/three.png',library:[]},async()=>b64),/archive-too-large/);
 });
 console.log(`Wallpaper sync: ${count} checks passed`);

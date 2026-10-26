@@ -27,6 +27,7 @@ import { msg as i18nMsg, t as i18n } from "../i18n/index.js";
  * 并提示用户删几张——壁纸是装饰，绝不因它崩数据。
  */
 import { showToast } from "./toast.js";
+import { subscribeThemes, themeSchedule } from "./theme.js";
 import { convertFileSrc } from "@tauri-apps/api/core";
 
 export interface WallpaperLibItem {
@@ -38,8 +39,12 @@ export interface WallpaperLibItem {
 }
 
 export interface WallpaperDoc {
-  v: 2;
+  v: 3;
+  /** 常驻全屏壁纸（跟随系统关闭时使用） */
   global: string | null;
+  /** 跟随系统昼夜：系统为白天/黑夜时各用哪张；null = 沿用 global */
+  day: string | null;
+  night: string | null;
   library: WallpaperLibItem[];
 }
 
@@ -80,7 +85,7 @@ export function displayRef(ref: string): string {
 }
 
 function sanitize(raw: unknown): WallpaperDoc {
-  const base: WallpaperDoc = { v: 2, global: null, library: [] };
+  const base: WallpaperDoc = { v: 3, global: null, day: null, night: null, library: [] };
   if (!raw || typeof raw !== "object") return base;
   const r = raw as (Partial<WallpaperDoc> & { tabs?: Record<string, unknown> });
   /* 单档化迁移（2026-10-14）：「本页」档已无渲染出口，但**不能把用户壁纸丢了**——
@@ -95,8 +100,10 @@ function sanitize(raw: unknown): WallpaperDoc {
   /* library 只留合法 ref，超上限截断（防手改存储撑爆） */
   const lib = Array.isArray(r.library) ? r.library : [];
   return {
-    v: 2,
+    v: 3,
     global: migrated,
+    day: isWallpaperRef(r.day) ? r.day : null,
+    night: isWallpaperRef(r.night) ? r.night : null,
     library: lib
       .filter((it): it is WallpaperLibItem =>
         !!it && typeof it === "object" && typeof it.id === "string" && isWallpaperRef(it.ref))
@@ -111,7 +118,7 @@ function load(): WallpaperDoc {
   } catch {
     /* 脏数据当没有 */
   }
-  return { v: 2, global: null, library: [] };
+  return { v: 3, global: null, day: null, night: null, library: [] };
 }
 
 let doc: WallpaperDoc = load();
@@ -142,6 +149,37 @@ export function subscribeWallpaper(f: () => void): () => void {
 export function wallpaperSnapshot(): WallpaperDoc {
   return doc;
 }
+
+/** 当前实际生效的壁纸：跟随系统昼夜时优先用对应档，否则走常驻壁纸。 */
+export function effectiveWallpaperRef(): string | null {
+  const schedule = themeSchedule();
+  if (schedule.followSystem) {
+    const slot = schedule.systemDark ? doc.night : doc.day;
+    if (slot) return slot;
+  }
+  return doc.global;
+}
+
+export function wallpaperDay(): string | null {
+  return doc.day;
+}
+
+export function wallpaperNight(): string | null {
+  return doc.night;
+}
+
+/** 指定「白天/黑夜背景」。传 null = 沿用常驻壁纸。 */
+export function setWallpaperSlot(slot: "day" | "night", ref: string | null): void {
+  const next = isWallpaperRef(ref) ? ref : null;
+  if (next) ensureWallpaperLum(next);
+  commit({ ...doc, v: 3, [slot]: next });
+}
+
+/** 跟随系统昼夜切换时，壁纸快照要跟着换；主题订阅里统一失效缓存并通知壳层。 */
+subscribeThemes(() => {
+  shellCacheKey = "";
+  for (const fn of listeners) fn();
+});
 
 export function setGlobalWallpaper(ref: string | null): void {
   commit({ ...doc, global: ref });
@@ -254,9 +292,10 @@ export interface ShellWallpaper {
 let shellCacheKey = "";
 let shellCache: ShellWallpaper | null = null;
 export function shellWallpaperSnapshot(): ShellWallpaper | null {
-  const key = docVersion + ":" + lumVersion;
+  const schedule = themeSchedule();
+  const key = [docVersion, lumVersion, doc.day ?? "", doc.night ?? "", schedule.followSystem ? 1 : 0, schedule.systemDark ? 1 : 0].join(":");
   if (shellCacheKey === key) return shellCache;
-  const ref = doc.global;
+  const ref = effectiveWallpaperRef();
   if (!ref) {
     shellCacheKey = key;
     shellCache = null;

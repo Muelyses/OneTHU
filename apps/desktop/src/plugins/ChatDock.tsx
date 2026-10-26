@@ -47,7 +47,6 @@ import { AttachTray } from "../components/AttachTray.js";
 import { AttachActionsSheet, type AttachActionDone } from "../components/AttachActionsSheet.js";
 import { bytesToDataUrl, fileToBytes, formatSize, mimeFromName, releaseAttachPreviews, type AttachFile } from "../lib/attach.js";
 import { openImageViewer } from "../components/ImageViewer.js";
-import { HarnessMark } from "../components/HarnessMark.js";
 import { XiaodaPane } from "./XiaodaPane.js";
 import { speechAvailable, speechLevel, speechPoll, speechStart, speechStop, speechUnavailableHint } from "../lib/speech.js";
 import { onTtsDone, previewSpeak, speakReply, ttsStop, ttsSupported } from "../lib/tts.js";
@@ -291,9 +290,9 @@ const MAT_HEAD: CSSProperties = {
   padding: "var(--og-space-3) var(--og-space-3) var(--og-space-3) var(--og-space-4)",
   flexWrap: "nowrap",
 };
-const MAT_TITLE: CSSProperties = { display: "inline-flex", alignItems: "center", gap: "var(--og-space-2)" };
 const matOps: CSSProperties = {
-  display: "flex", gap: "var(--og-space-1)", flexWrap: "nowrap", justifyContent: "flex-end", flexShrink: 0,
+  display: "flex", gap: "var(--og-space-1)", flexWrap: "nowrap", justifyContent: "flex-end", flexShrink: 1,
+  minWidth: 0, overflowX: "auto", overflowY: "hidden",
 };
 /** 消息操作行（旧 .dock-msg-ops：朗读键所在行） */
 const MAT_MSG_OPS: CSSProperties = {
@@ -2428,7 +2427,6 @@ export function ChatDock(): ReactNode {
           {/* 头部行（OneGUI 收编）：动作钮走 Btn/IconBtn（ghost/outline 语义出外观与 a11y），
               创造模式以 tone=brand + is-on 类点亮（旧 .dock-btn.dock-creative 手写样退役）。 */}
           <div className="dock-head" style={MAT_HEAD}>
-            <span className="dock-title" style={MAT_TITLE} title={i18n("plugins.chatdock.af0d814e76d3")}><HarnessMark size={15} /></span>
             {/* dev-explorer：搜索 | OH 二合一开关（同一扇窗两种形态；小窗可拖、气泡不动的口径不变）。
                 OOSE 红线：`?explorer-preview=search-oh` 以 `.dock-panel [role='tab']` 命中第二个 tab
                 收到 OH —— 这组_raw-tablist 结构（explorer-oh.css 契约样式）保持原样。
@@ -2491,8 +2489,10 @@ export function ChatDock(): ReactNode {
                 />
               ) : null}
               </> : null}
-              <IconBtn label={i18n("plugins.chatdock.afd4b783536b")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.afd4b783536b")} icon={<IconX />} onClick={toggle} />
             </div>
+            <span className="dock-head-close">
+              <IconBtn label={i18n("plugins.chatdock.afd4b783536b")} variant="outline" size="sm" titleAttr={i18n("plugins.chatdock.afd4b783536b")} icon={<IconX />} onClick={toggle} />
+            </span>
           </div>
           {notice ? (
             /* 通知条（旧 .dock-notice 琥珀一行）→ OG Banner（tone=warning，X 退场按钮出 dismiss） */

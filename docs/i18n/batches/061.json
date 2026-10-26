@@ -1,39 +1,7 @@
 {
-  "sourceHash": "169ed7aaa9fe6de531f7d3aa3a6e09a83ec30c20329f6139925a5b7b516257cc",
+  "sourceHash": "c03e0d9984fdf2b5ce80cb926791d04907224315b96c86c2560a3fa1f0fec888",
   "targetFile": "apps/desktop/src/i18n/locales/en-US.ts",
   "messages": [
-    {
-      "key": "pages.learn.semesterselectionpage.067635691aed",
-      "source": "暂无可选学期。",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/SemesterSelectionPage.tsx",
-          "line": 86,
-          "context": "{i18n(\"pages.learn.semesterselectionpage.067635691aed\")}"
-        }
-      ],
-      "translation": "No semesters available.",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
-    {
-      "key": "pages.learn.semesterselectionpage.231ff6cd9b63",
-      "source": "学期切换",
-      "kind": "text",
-      "parameters": [],
-      "locations": [
-        {
-          "file": "apps/desktop/src/pages/learn/SemesterSelectionPage.tsx",
-          "line": 39,
-          "context": "{i18n(\"pages.learn.semesterselectionpage.231ff6cd9b63\")}"
-        }
-      ],
-      "translation": "Switch semester",
-      "status": "prefilled-review",
-      "limitHint": "Preserve meaning; do not truncate."
-    },
     {
       "key": "pages.learn.semesterselectionpage.569af1a47dbd",
       "source": "最新",
@@ -164,7 +132,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 569,
+          "line": 574,
           "context": "{i18n(\"pages.learn.shared.13d61fea9f17\")}"
         }
       ],
@@ -180,7 +148,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 355,
+          "line": 359,
           "context": "{i18n(\"pages.learn.shared.150ee8f52c11\")}"
         }
       ],
@@ -196,12 +164,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 103,
+          "line": 107,
           "context": "return i18n(\"pages.learn.shared.1e9f2561b7cf\");"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 103,
+          "line": 107,
           "context": "return i18n(\"pages.learn.shared.1e9f2561b7cf\");"
         }
       ],
@@ -226,7 +194,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 372,
+          "line": 376,
           "context": "cur ? i18n(\"pages.learn.shared.202fa214cac5\", { value: String(fmtRemindOffset(cur)), value2: String(fmtRemindOffset(def)) }) : i18n(\"pages.learn.shared.e99956112716\", { value: String(fmtRemindOffset(def)) })"
         }
       ],
@@ -242,7 +210,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 101,
+          "line": 105,
           "context": "return i18n(\"pages.learn.shared.25f4520c3f09\");"
         }
       ],
@@ -258,7 +226,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 103,
+          "line": 107,
           "context": "return i18n(\"pages.learn.shared.2caa51eaf305\");"
         }
       ],
@@ -279,7 +247,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 541,
+          "line": 546,
           "context": "f.title || i18n(\"pages.learn.shared.2f3a2301c3d3\", { id: String(f.id) })"
         }
       ],
@@ -295,7 +263,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 199,
+          "line": 203,
           "context": "requestSettingsTab(i18n(\"pages.learn.shared.311bb313fdec\"))"
         }
       ],
@@ -327,7 +295,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 372,
+          "line": 376,
           "context": "{i18n(\"pages.learn.shared.3440d4ded272\")}"
         }
       ],
@@ -343,7 +311,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 103,
+          "line": 107,
           "context": "return i18n(\"pages.learn.shared.3a3d05a1e514\");"
         }
       ],
@@ -364,7 +332,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 450,
+          "line": 454,
           "context": "h.externalProgress ? i18n(\"pages.learn.shared.416183bc4268\", { externalProgress: String(h.externalProgress) }) : undefined"
         }
       ],
@@ -401,7 +369,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 469,
+          "line": 474,
           "context": "isIgnored ? i18n(\"pages.learn.shared.6c87be20895b\") : i18n(\"pages.learn.shared.475f7e24fc3e\")"
         }
       ],
@@ -426,7 +394,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 203,
+          "line": 207,
           "context": "line: i18n(\"pages.learn.shared.53b11426d994\", { value: String(abs.slice(0, 180)), value2: String(reason.slice(0, 120)) })"
         }
       ],
@@ -442,7 +410,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 288,
+          "line": 292,
           "context": "label ?? i18n(\"pages.learn.shared.572cf45ba436\")"
         }
       ],
@@ -463,7 +431,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 376,
+          "line": 380,
           "context": "{i18n(\"pages.learn.shared.5e9c4866d498\", { value: String(fmtRemindOffset(def)) })}"
         }
       ],
@@ -479,32 +447,32 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 437,
+          "line": 441,
           "context": "courseName ?? h.courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 455,
+          "line": 460,
           "context": "courseName ?? h.courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 505,
+          "line": 510,
           "context": "courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 526,
+          "line": 531,
           "context": "courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 545,
+          "line": 550,
           "context": "courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 558,
+          "line": 563,
           "context": "courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")"
         }
       ],
@@ -525,7 +493,7 @@
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 92,
+          "line": 96,
           "context": "text || i18n(\"pages.learn.shared.681ed99063ed\")"
         }
       ],
@@ -541,7 +509,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 469,
+          "line": 474,
           "context": "isIgnored ? i18n(\"pages.learn.shared.6c87be20895b\") : i18n(\"pages.learn.shared.475f7e24fc3e\")"
         }
       ],
@@ -557,7 +525,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 472,
+          "line": 477,
           "context": "isIgnored ? i18n(\"pages.learn.shared.e0534b8a4e46\") : i18n(\"pages.learn.shared.6e90ac940752\")"
         }
       ],
@@ -573,12 +541,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 95,
+          "line": 99,
           "context": "text || i18n(\"pages.learn.shared.8032af4a590f\")"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 96,
+          "line": 100,
           "context": "text || i18n(\"pages.learn.shared.8032af4a590f\")"
         }
       ],
@@ -615,12 +583,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 463,
+          "line": 468,
           "context": "{i18n(\"pages.learn.shared.849f9c17224f\", { externalProgress: String(h.externalProgress) })}"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 463,
+          "line": 468,
           "context": "{i18nRich(\"pages.learn.shared.849f9c17224f\", { externalProgress: h.externalProgress })}"
         }
       ],
@@ -636,7 +604,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 518,
+          "line": 523,
           "context": "{i18n(\"pages.learn.shared.86809a4acfcd\")}"
         }
       ],
@@ -657,7 +625,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 446,
+          "line": 450,
           "context": "{i18nRich(\"pages.learn.shared.8691a5ef9e5d\", { time: fmtWhenParts(h.deadline).time })}"
         }
       ],
@@ -673,7 +641,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 190,
+          "line": 194,
           "context": "(img.getAttribute(\"alt\") ? img.getAttribute(\"alt\") + \" \" : \"\") + i18n(\"pages.learn.shared.8f612e642106\")"
         }
       ],
@@ -689,7 +657,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 336,
+          "line": 340,
           "context": "{i18n(\"pages.learn.shared.98b552661af4\")}"
         }
       ],
@@ -705,7 +673,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 467,
+          "line": 472,
           "context": "{i18n(\"pages.learn.shared.9a11869bc072\")}"
         }
       ],
@@ -758,7 +726,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 104,
+          "line": 108,
           "context": "return i18n(\"pages.learn.shared.abf099167903\");"
         }
       ],
@@ -779,7 +747,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 457,
+          "line": 462,
           "context": "score ? i18n(\"pages.learn.shared.ac1c4e6be9c9\", { score: String(score) }) : undefined"
         }
       ],
@@ -804,7 +772,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 348,
+          "line": 352,
           "context": "{i18n(\"pages.learn.shared.b1b3e336fcd8\", { REMIND_MIN: String(REMIND_MIN), REMIND_MAX: String(REMIND_MAX) })}"
         }
       ],
@@ -820,7 +788,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 103,
+          "line": 107,
           "context": "return i18n(\"pages.learn.shared.bb791b64b227\");"
         }
       ],
@@ -852,7 +820,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 355,
+          "line": 359,
           "context": "{i18n(\"pages.learn.shared.bce2377283c2\")}"
         }
       ],
@@ -873,7 +841,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 424,
+          "line": 428,
           "context": "confirmDanger(\n      i18nMsg(\"pages.learn.shared.c81409a22552\", { title: String(h.title) }),\n      CONFIRM_IGNORE_HW,\n    )"
         }
       ],
@@ -934,7 +902,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 467,
+          "line": 472,
           "context": "{i18n(\"pages.learn.shared.c9bb70bcaaa3\")}"
         }
       ],
@@ -950,7 +918,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 545,
+          "line": 550,
           "context": "(courseName ?? i18n(\"pages.learn.shared.60db1afb4022\")) + i18n(\"pages.learn.shared.cd71d77e92a1\")"
         }
       ],
@@ -966,7 +934,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 101,
+          "line": 105,
           "context": "return i18n(\"pages.learn.shared.cfea0dce5c5d\");"
         }
       ],
@@ -982,12 +950,12 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 451,
+          "line": 455,
           "context": "{i18n(\"pages.learn.shared.d26ef0190d6c\")}"
         },
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 451,
+          "line": 455,
           "context": "{i18n(\"pages.learn.shared.d26ef0190d6c\")}"
         }
       ],
@@ -1019,7 +987,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 472,
+          "line": 477,
           "context": "isIgnored ? i18n(\"pages.learn.shared.e0534b8a4e46\") : i18n(\"pages.learn.shared.6e90ac940752\")"
         }
       ],
@@ -1056,7 +1024,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 158,
+          "line": 162,
           "context": "fallback = i18n(\"pages.learn.shared.e617151df84b\")"
         }
       ],
@@ -1077,7 +1045,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 372,
+          "line": 376,
           "context": "cur ? i18n(\"pages.learn.shared.202fa214cac5\", { value: String(fmtRemindOffset(cur)), value2: String(fmtRemindOffset(def)) }) : i18n(\"pages.learn.shared.e99956112716\", { value: String(fmtRemindOffset(def)) })"
         }
       ],
@@ -1093,7 +1061,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 353,
+          "line": 357,
           "context": "{i18n(\"pages.learn.shared.f6a7a5a5030e\")}"
         }
       ],
@@ -1109,7 +1077,7 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 452,
+          "line": 457,
           "context": "{i18n(\"pages.learn.shared.f7b18ee399fc\")}"
         }
       ],
@@ -1125,11 +1093,53 @@
       "locations": [
         {
           "file": "apps/desktop/src/pages/learn/shared.tsx",
-          "line": 452,
+          "line": 457,
           "context": "{i18n(\"pages.learn.shared.f8308b0b2728\")}"
         }
       ],
       "translation": "Audited",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.shared.inProgress",
+      "source": "进行中",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/components/HomeworkCarousel.tsx",
+          "line": 45,
+          "context": "i18n(\"pages.learn.shared.inProgress\") + \" · \""
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 93,
+          "context": "i18n(\"pages.learn.shared.inProgress\") + \" · \""
+        }
+      ],
+      "translation": "In progress",
+      "status": "prefilled-review",
+      "limitHint": "Preserve meaning; do not truncate."
+    },
+    {
+      "key": "pages.learn.shared.quiz",
+      "source": "试卷",
+      "kind": "text",
+      "parameters": [],
+      "locations": [
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 456,
+          "context": "{i18n(\"pages.learn.shared.quiz\")}"
+        },
+        {
+          "file": "apps/desktop/src/pages/learn/shared.tsx",
+          "line": 456,
+          "context": "{i18n(\"pages.learn.shared.quiz\")}"
+        }
+      ],
+      "translation": "Quiz",
       "status": "prefilled-review",
       "limitHint": "Preserve meaning; do not truncate."
     },

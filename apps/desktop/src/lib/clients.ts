@@ -941,17 +941,16 @@ async function performResumeSession(): Promise<boolean> {
     return false;
   }
   if (generation !== resumeGeneration) return false;
-  session.state = "ready";
   // Info has its own lazy service establishment. A best-effort warm-up here
   // used to keep the sign-in mutex held even after Learn proved the session.
-  mark("会话就绪");
-  // lib 凭据注入（2026-09-17）：快路径（learn 会话活）不跑 libLogin，
-  // helper.userId 恒空 → card/日历/新闻等 lib 数据调用秒抛 Please login.
-  // 有记住的密码就补上（roamingWrapper 需要账密才能按需漫游）。
+  // Resume submits no login. Legacy roaming services still need matching local
+  // remembered credentials in memory before the GUI starts loading their data.
   if (remembered) {
     const { helper } = await import("./infoLib.js");
     if (generation !== resumeGeneration) return false;
-    if (!helper.userId) {
+    // CLI adoption already supplies userId but deliberately carries no password.
+    // Restore only this verified owner's remembered credentials in GUI memory.
+    if (!helper.userId || helper.userId === remembered.username) {
       helper.userId = remembered.username;
       helper.password = remembered.password;
       helper.fingerprint = saved.fingerprint;
@@ -959,6 +958,9 @@ async function performResumeSession(): Promise<boolean> {
       await logLine("RESUME lib-凭据注入(快路径)").catch(() => undefined);
     }
   }
+  if (generation !== resumeGeneration) return false;
+  session.state = "ready";
+  mark("会话就绪");
   await logLine("RESUME ok (lib 单管线)");
   mark("READY(总耗时)");
   // Task-channel synchronization has an independent account/epoch guard and

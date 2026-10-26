@@ -73,10 +73,11 @@ await test('school login remains ready when background handoff is temporarily un
   await adoptSuccessfulDesktopLogin();
   assert.equal(state.state, 'ready'); assert.equal(state.username, 'account-a'); assert.deepEqual(notices, [true]);
 });
-function resumeFixture(importFails, { sharedState = "ready", local = null, blockedServices = false } = {}) {
+function resumeFixture(importFails, { sharedState = "ready", local = null, blockedServices = false, remembered = null } = {}) {
   const events = [], native = { cookies: [cookie], revision: 4 }, saved = { ...snapshot, cookiesJson: JSON.stringify([{ ...cookie, name: 'daemon-cookie' }]) };
   const session = { username: 'account-a', state: 'ready', fingerprint: 'device-a', reset() { events.push('reset-js'); this.state = 'idle'; }, injectCredentials() {} };
   const jar = label => ({ hydrate() { events.push(`hydrate-${label}`); } });
+  const helper={userId:'account-a',password:''};
   const env = {
     usesSharedRuntime: () => true, finishPendingSharedLogout: async () => {}, readPendingSharedHandoff: async () => null,
     loadConsistentSessionSnapshot: async()=>local, mergeSameAccountServiceCookies,
@@ -92,12 +93,12 @@ function resumeFixture(importFails, { sharedState = "ready", local = null, block
     learn: { applyCsrf() {}, resume: async () => true },
     probeLearnSession: async () => { events.push('learn-probe');return {ready:true,csrf:'fixture',page:'fixture',diagnostic:'fixture'}; },
     info: { resume: async () => { events.push('info-warmup');if(blockedServices)await new Promise(()=>{});return true; } }, store: { saveSession: async () => {} },
-    loadRemembered: async () => null, logLine: async () => {}, prepareSharedTasksAfterLogin: async () => {events.push('prepare-tasks');if(blockedServices)await new Promise(()=>{});}, session,
+    loadRemembered: async () => remembered, logLine: async () => {}, prepareSharedTasksAfterLogin: async () => {events.push('prepare-tasks');if(blockedServices)await new Promise(()=>{});}, session,
   };
   const api = functionsAt('apps/desktop/src/lib/clients.ts', ['performResumeSession'], env, {
-    './infoLib.js': { libAcceptSharedSession: async () => { events.push('accept-owner'); }, setLibFinger3() {}, helper: {} },
+    './infoLib.js': { libAcceptSharedSession: async () => { events.push('accept-owner'); }, setLibFinger3() {}, helper },
   }, 'let resumeGeneration=0,resumeSnapshotUsername=null,sharedSessionEpoch=1,sharedLoggedOut=false,pendingSecret=null,fingerprintRequest=null;');
-  return { ...api, events, native, session };
+  return { ...api, events, native, session, helper };
 }
 await test('daemon restore imports the native jar atomically before both JS mirrors and Learn', async () => {
   const f = resumeFixture(false);
@@ -113,6 +114,12 @@ await test('Info warm-up and background task synchronization cannot hold the for
   try{assert.equal(await Promise.race([f.performResumeSession(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('foreground restore held by unrelated service')),100);})]),true);}
   finally{clearTimeout(timer);}
   assert.equal(f.session.state,'ready');assert.equal(f.events.includes('info-warmup'),false);assert.equal(f.events.includes('prepare-tasks'),true);
+});
+await test('a restored CLI owner receives only its matching remembered credentials for legacy GUI services',async()=>{
+  const f=resumeFixture(false,{remembered:{username:'account-a',password:'synthetic-only'}});
+  assert.equal(await f.performResumeSession(),true);assert.equal(f.helper.userId,'account-a');assert.equal(f.helper.password,'synthetic-only');
+  const other=resumeFixture(false,{remembered:{username:'account-b',password:'must-not-inject'}});
+  assert.equal(await other.performResumeSession(),true);assert.equal(other.helper.password,'');assert.equal(other.helper.userId,'account-a');
 });
 await test('failed atomic native import preserves old cookies and never overwrites the saved account', async () => {
   const f = resumeFixture(true);

@@ -144,6 +144,7 @@ export class PluginHost {
     if(epoch!==(this.epochs.get(id)??0))fail('PLUGIN_STOPPED');
     if(this.starting.has(id))return this.starting.get(id);
     const existing=this.processes.get(id);if(existing?.process.alive)return existing;
+    if(existing){await existing.process.waitForExit();if(this.starting.has(id))return this.starting.get(id);}
     const pending=this.startProcess(record,options,epoch);this.starting.set(id,pending);
     try{return await pending;}finally{if(this.starting.get(id)===pending)this.starting.delete(id);}
   }
@@ -167,14 +168,14 @@ export class PluginHost {
       const reply=await runtime.call('activate',{entry,manifest:bundle.manifest,permissions:bundle.manifest.permissions,settings:this.settings.get(id),session,storage},{timeoutMs:options.timeoutMs,signal:options.signal,beforeWrite:options.beforeWrite});
       live.commands=validateCommands(reply?.commands);
       return live;
-    }catch(error){runtime.stop();this.processes.delete(id);throw error;}
+    }catch(error){runtime.stop();await runtime.waitForExit();this.processes.delete(id);throw error;}
   }
   async enable(id,options={}) {
     requireConfirm(options);
     return this.exclusive(async()=>{
       const expectedEpoch=this.epochs.get(id)??0;
       const record=await this.record(id);
-      if(options.settings!==undefined){this.processes.get(id)?.process.stop();this.processes.delete(id);}
+      if(options.settings!==undefined){const previous=this.processes.get(id)?.process;previous?.stop();await previous?.waitForExit();this.processes.delete(id);}
       const live=await this.start(record,{...options,expectedEpoch});
       if(this.closed||expectedEpoch!==(this.epochs.get(id)??0))fail('PLUGIN_STOPPED');
       await options.beforeWrite?.();
@@ -186,8 +187,8 @@ export class PluginHost {
   async disable(id) {
     // Stop immediately so in-flight callbacks lose their authorization signal.
     this.epochs.set(id,(this.epochs.get(id)??0)+1);
-    this.processes.get(id)?.process.stop();this.processes.delete(id);this.settings.delete(id);
-    return this.exclusive(async()=>{const record=await this.record(id);record.enabled=false;await writeJson(this.paths(id).record,record);return{id,enabled:false};});
+    const previous=this.processes.get(id)?.process;previous?.stop();this.processes.delete(id);this.settings.delete(id);
+    return this.exclusive(async()=>{await previous?.waitForExit();const record=await this.record(id);record.enabled=false;await writeJson(this.paths(id).record,record);return{id,enabled:false};});
   }
   async commands(id) {
     const record=await this.record(id);
@@ -210,8 +211,9 @@ export class PluginHost {
   async uninstall(id,options={}) {
     requireConfirm(options);pluginId(id);
     this.epochs.set(id,(this.epochs.get(id)??0)+1);
-    this.processes.get(id)?.process.stop();this.processes.delete(id);this.settings.delete(id);
+    const previous=this.processes.get(id)?.process;previous?.stop();this.processes.delete(id);this.settings.delete(id);
     return this.exclusive(async()=>{
+      await previous?.waitForExit();
       await this.record(id);const targets=this.paths(id);
       await this.storageQueues.get(id)?.catch(()=>{});
       for(const target of [targets.directory,targets.record,targets.storage]){
@@ -222,8 +224,9 @@ export class PluginHost {
   }
   async close() {
     this.closed=true;
-    for(const live of this.processes.values())live.process.stop();
+    const exiting=[...this.processes.values()].map(live=>{live.process.stop();return live.process.waitForExit();});
     this.processes.clear();this.settings.clear();
+    await Promise.all(exiting);
     await Promise.allSettled([...this.storageQueues.values(),this.mutations,...this.starting.values()]);
   }
 }

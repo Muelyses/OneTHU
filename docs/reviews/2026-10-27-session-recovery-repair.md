@@ -36,6 +36,10 @@
 
 后续将私有 DACL 构造改为明确的 .NET 构造函数和文件／目录 ACL API，保留当前用户唯一允许规则、受保护继承和所有者设置。PowerShell 调用有 15 秒期限，只传回固定阶段码，不输出带私人路径的 stderr。Windows smoke test 会在合成目录上实际验证 DACL、持久化、原子替换、剔除额外 Everyone 显式授权，且先于整套 SDK 测试执行。参考 [Directory.SetAccessControl](https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.setaccesscontrol?view=netframework-4.8.1) 和 [File.SetAccessControl](https://learn.microsoft.com/en-us/dotnet/api/system.io.file.setaccesscontrol?view=netframework-4.8.1) 的按修改区段持久化语义；最终有效性以 Windows 执行结果为准。
 
+第二轮 `40362445373` 已成功创建私有会话仓，随后测试侧的 `Get-Acl` 报出 `Microsoft.PowerShell.Security` 自动加载失败。旧生产代码的 `Set-Acl` 同样依赖该模块；这是 Windows 子进程环境的兼容性问题，不能把 macOS 的 chmod 测试当成 Windows ACL 验收。验证器也改为直接查询真实 .NET ACL，不依赖 PowerShell 模块或 JSON 转换命令。
+
+首轮完整 SDK 测试还发现 Windows 插件子进程尚未关闭就清理目录的 `EBUSY`。宿主的停用、卸载、设置重启、失败启动和关闭现在等待实际 process/stdio close，保留立即撤销权限及 500ms 强制终止，并以三秒退出期限避免再次无限等待。修正一个测试里重开宿主先于旧清理 hook 关闭的顺序。新增测试验证停用、卸载与关闭返回时 worker 已真正关闭；本机 SDK **199/199** 通过。
+
 ## 交付边界
 
 这些修复首先进入 main / dev3 和原 dev。既有 v0.11.4 标签与公开安装包保留；Windows Actions 产物用于开发者真机验证，不能将 Windows Node 协议测试表述为真实 Windows GUI 登录已经通过。正式渠道尚未替换。

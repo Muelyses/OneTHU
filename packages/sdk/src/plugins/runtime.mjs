@@ -10,6 +10,8 @@ export class PluginProcess {
     const env={OH_MCP_PORT:'0'};
     for(const key of ['PATH','HOME','USERPROFILE','SYSTEMROOT','SystemRoot','WINDIR','TMPDIR','TMP','TEMP','LANG','LC_ALL']) if(process.env[key]) env[key]=process.env[key];
     this.child=spawn(manifest.kind==='js'?process.execPath:entry,manifest.kind==='js'?[workerUrl?fileURLToPath(workerUrl):worker]:[],{cwd,env,stdio:['pipe','pipe','pipe'],windowsHide:true,shell:false});
+    this.didClose=false;
+    this.closed=new Promise(resolve=>this.child.once('close',()=>{this.didClose=true;clearTimeout(this.forceTimer);resolve();}));
     this.child.on('error',()=>this.stop(new PluginError('PLUGIN_START_FAILED','The local plugin could not start. Check its operating system, architecture and executable format.')));
     this.child.on('exit',()=>this.stop(new PluginError('PLUGIN_EXITED')));
     this.child.stdin.on('error',()=>this.stop(new PluginError('PLUGIN_CONNECTION_CLOSED')));
@@ -93,6 +95,14 @@ export class PluginProcess {
     for(const item of this.pending.values()){item.cleanup();item.controller.abort();item.reject(error);}
     this.pending.clear(); this.active=null;
     this.child.stdin.destroy(); this.child.kill();
-    const force=setTimeout(()=>{if(this.child.exitCode===null)this.child.kill('SIGKILL');},500); force.unref();
+    this.forceTimer=setTimeout(()=>{if(!this.didClose)this.child.kill('SIGKILL');},500);this.forceTimer.unref();
+  }
+  async waitForExit() {
+    if(this.didClose)return;
+    // Windows keeps the plugin cwd and executable locked until process/stdio
+    // close. A stop request alone is not completion of disable or uninstall.
+    let timer;
+    try{await Promise.race([this.closed,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new PluginError('PLUGIN_STOP_TIMEOUT')),3000);})]);}
+    finally{clearTimeout(timer);}
   }
 }

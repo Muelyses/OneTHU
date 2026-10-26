@@ -60,9 +60,22 @@ test('synchronous JS storage persists through close and restart; listing never a
   const f=await fixture(t,base,`ctx.registerCommand({id:'count',title:'Count'},()=>{const n=(ctx.onethu.storage.get('n')??0)+1;ctx.onethu.storage.set('n',n);return n;});`);
   await f.host.install(f.source,{confirm:true});await f.host.enable(base.id,{confirm:true});assert.equal(await f.host.call(base.id,'count'),1);
   await f.host.close();
-  const next=createPluginHost(f.options);t.after(()=>next.close());
-  assert.equal((await next.list())[0].running,false);assert.equal((await next.commands(base.id)).running,false);
-  assert.equal(await next.call(base.id,'count'),2);
+  const next=createPluginHost(f.options);
+  try{
+    assert.equal((await next.list())[0].running,false);assert.equal((await next.commands(base.id)).running,false);
+    assert.equal(await next.call(base.id,'count'),2);
+  }finally{await next.close();}
+});
+
+test('disable, uninstall and host close wait for actual worker and stdio close',async t=>{
+  const f=await fixture(t);await f.host.install(f.source,{confirm:true});
+  for(const action of ['disable','uninstall','close']){
+    await f.host.enable(base.id,{confirm:true});
+    const worker=f.host.processes.get(base.id).process;let closed=false;worker.child.once('close',()=>{closed=true;});
+    if(action==='close')await f.host.close();else await f.host[action](base.id,{confirm:true});
+    assert.equal(closed,true,action+' must await actual close');assert.equal(worker.didClose,true);
+    if(action==='uninstall')await f.host.install(f.source,{confirm:true});
+  }
 });
 
 test('headless permissions, mutation confirmation and GUI capabilities are explicit',async t=>{

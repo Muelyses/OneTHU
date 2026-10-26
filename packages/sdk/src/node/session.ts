@@ -128,7 +128,6 @@ export async function createNodeSession(options:NodeSessionOptions) {
       session.state='ready';session.finger3=helper.fingerGenPrint??'';device={fingerprint:device.fingerprint,account:session.username,finger3:session.finger3};
       // Login completion is authoritative for this account; service-specific
       // readiness stays separate. A gateway outage must not erase a good login.
-      await ensureLearnReady().catch(()=>undefined);
       await persist();
     },
     failed(){session.state='idle';session.injectCredentials(session.username,'');helper.password='';},
@@ -143,7 +142,25 @@ export async function createNodeSession(options:NodeSessionOptions) {
   // credentials/2FA; read-only identity verification supplies renewal evidence.
   info.setRenewers({info:probe,card:probe});
   function status(){return{state:closed?'closed':session.state,account:session.username?'***'+session.username.slice(-4):null,epoch:generation,authenticated:!closed&&session.state==='ready',twoFactor:flow.status(),warnings:[...warnings]};}
-  async function restore(){assertCurrent(epoch());try{if(session.state==='ready'||flow.status().pending||!saved?.session)return status();const ok=await probe();session.state=ok?'ready':'idle';if(ok){await ensureLearnReady().catch(()=>undefined);await persist();}return status();}catch(error){throw safeAuthError(error);}}
+  let restoration:{epoch:number;promise:Promise<ReturnType<typeof status>>}|null=null;
+  function restore():Promise<ReturnType<typeof status>> {
+    const expected=epoch();assertCurrent(expected);
+    if(session.state==='ready'||flow.status().pending||!saved?.session)return Promise.resolve(status());
+    if(restoration?.epoch===expected)return restoration.promise;
+    const promise=(async()=>{
+      try {
+        const ok=await probe();assertCurrent(expected);
+        session.state=ok?'ready':'idle';
+        // Learn is a separate service. Its CSRF is established lazily by the
+        // requested Learn operation, so an outage cannot hold school sign-in.
+        if(ok)await persist();
+        assertCurrent(expected);return status();
+      }catch(error){throw safeAuthError(error);}
+    })();
+    restoration={epoch:expected,promise};
+    const clear=()=>{if(restoration?.promise===promise)restoration=null;};
+    void promise.then(clear,clear);return promise;
+  }
   async function login(input:{username:string;password:string;trustDevice?:boolean}){assertCurrent(epoch());try{const result=await flow.login(input);if(result.state==='need-2fa')session.state='need-2fa';return result;}catch(error){throw safeAuthError(error);}}
   const twoFactor={
     async chooseMethod(type:TwoFactorType){assertCurrent(epoch());try{return await flow.chooseMethod(type);}catch(error){throw safeAuthError(error);}},

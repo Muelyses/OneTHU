@@ -48,6 +48,7 @@ function identityHarness({ initial = null, backup = null, failSave = false, fail
   const dependencies = {
     store, session,
     usesSharedRuntime: () => false,
+    probeLearnSession: async () => { networkCalls++; const ready=await probe();return {ready,csrf:ready?"fixture-csrf":null,page:"fixture",diagnostic:"fixture"}; },
     makeFingerprint: () => `stable-device-${++created}`,
     info: { resetStaticSessionCaches() {}, resume: probe ? async () => true : noNetwork },
     http: { jar: { serialize: () => "{}", hydrate: probe ? () => { hydrations++; } : noNetwork } },
@@ -56,7 +57,7 @@ function identityHarness({ initial = null, backup = null, failSave = false, fail
     fileRead: async (name) => { if (failFile) throw new Error("File unavailable"); return files.get(name) ?? backup; },
     fileDelete: async (name) => files.delete(name),
     logLine: async () => {},
-    learn: { resume: probe ? async () => { networkCalls++; return probe(); } : noNetwork },
+    learn: { applyCsrf() {}, resume: probe ? async () => { networkCalls++; return probe(); } : noNetwork },
     loadRemembered: async () => remembered,
     login: async () => { passwordLogins++; return { state: "ready" }; },
     require: (path) => {

@@ -31,7 +31,7 @@ function fakeSchool(options:{account?:string;unavailable?:boolean;expired?:boole
 
 test('standalone restoration verifies account with a read-only probe and preserves stable identity',async t=>{
   const dir=await temporary(t);const school=fakeSchool();const sdk=await createNodeSession({dataDir:dir,fetch:school.fetch});t.after(()=>sdk.close());
-  assert.equal(sdk.status().authenticated,false);const result=await sdk.restore();assert.equal(result.authenticated,true);assert.equal(result.account,'***5678');assert.equal(sdk.session.fingerprint,'b'.repeat(32));assert.equal(sdk.session.finger3,'fixture-trust');assert.equal(sdk.learn.csrfToken,'fixture-learn');assert.equal(school.calls.every(c=>c.method==='GET'),true);
+  assert.equal(sdk.status().authenticated,false);const result=await sdk.restore();assert.equal(result.authenticated,true);assert.equal(result.account,'***5678');assert.equal(sdk.session.fingerprint,'b'.repeat(32));assert.equal(sdk.session.finger3,'fixture-trust');assert.equal(sdk.learn.csrfToken,null);await sdk.ensureLearnReady();assert.equal(sdk.learn.csrfToken,'fixture-learn');assert.equal(school.calls.every(c=>c.method==='GET'),true);
   const epoch=sdk.epoch();await sdk.close();assert.throws(()=>sdk.assertCurrent(epoch),{code:'AUTH_SESSION_CLOSED'});
   const raw=await readFile(path.join(dir,'session.json'),'utf8');assert.equal(raw.includes('password'),false);assert.equal(JSON.parse(raw).device.fingerprint,'b'.repeat(32));
 });
@@ -133,7 +133,7 @@ test('standalone restoration uses the same bounded cold Info proof',async t=>{
   const dir=await temporary(t,false),snapshot=gatewayHandoffSnapshot(),store=await openSessionStorage(dir);
   await store.save({version:1,device:{account:snapshot.username,fingerprint:snapshot.fingerprint,finger3:snapshot.finger3},session:snapshot});await store.close();
   const school=coldInfoSchool(),sdk=await createNodeSession({dataDir:dir,fetch:school.fetch});t.after(()=>sdk.close());
-  assert.equal((await sdk.restore()).authenticated,true);assert.equal(sdk.learn.csrfToken,'fixture-learn');
+  assert.equal((await sdk.restore()).authenticated,true);assert.equal(sdk.learn.csrfToken,null);await sdk.ensureLearnReady();assert.equal(sdk.learn.csrfToken,'fixture-learn');
   assert.deepEqual(school.paths.slice(0,4),['/wengine-vpn/cookie','/f/info/gxfw_fg/common/index','/wengine-vpn/cookie','/b/info/gxfw_fg/common/grjbxx']);
   assert.equal(school.paths.filter(p=>p==='/f/info/gxfw_fg/common/index').length,1);
 });
@@ -197,7 +197,7 @@ test('same-account cookie renewal clears old service tokens and lazily fetches C
     return school.fetch(raw,init);
   }) as typeof globalThis.fetch;
   const sdk=await createNodeSession({dataDir:dir,fetch});t.after(()=>sdk.close());await sdk.restore();
-  assert.equal(sdk.learn.csrfToken,'csrf-A');const epoch=sdk.epoch();
+  assert.equal(sdk.learn.csrfToken,null);await sdk.ensureLearnReady();assert.equal(sdk.learn.csrfToken,'csrf-A');const epoch=sdk.epoch();
   const Info=sdk.info.constructor as any;Info.libToken='old-library-token';Info.libUserid='12345678';Info.libTokenTs=Date.now();Info.libRoomAuthUser='12345678';
   const renewed=handoffSnapshot();renewed.cookiesJson=JSON.stringify([...JSON.parse(renewed.cookiesJson),{name:'sid',value:'handoff-cookie',domain:'learn.tsinghua.edu.cn',path:'/',secure:true,hostOnly:true}]);
   await sdk.adoptSession({snapshot:renewed,expectedEpoch:epoch,reason:'login'});
@@ -297,4 +297,19 @@ test('process shutdown preserves the account epoch while cancelling old requests
   assert.equal(reopened.epoch(),epoch);assert.equal((await reopened.restore()).authenticated,true);
   assert.equal(reopened.http.jar.serialize().includes('old-process'),false);
   await reopened.logout();assert.ok(reopened.epoch()>epoch);assert.equal(reopened.desktopStatus().tombstone,true);
+});
+
+test('parallel identity restoration is single-flight and Learn outage cannot delay or revoke school authentication',async t=>{
+  const dir=await temporary(t),school=fakeSchool();let learnReads=0;
+  const fetch=(async(raw:string,init:RequestInit={})=>{
+    const physical=new URL(raw),url=new URL(/^\/https?\/[a-f0-9]{32,}\//.test(physical.pathname)?webvpnDecodeUrl(raw)??raw:raw);
+    if(url.pathname.startsWith('/f/wlxt/')){learnReads++;return new Response('service unavailable',{status:503});}
+    return school.fetch(raw,init);
+  }) as typeof globalThis.fetch;
+  const sdk=await createNodeSession({dataDir:dir,fetch});t.after(()=>sdk.close());
+  const results=await Promise.all(Array.from({length:12},()=>sdk.restore()));
+  assert(results.every(result=>result.authenticated));assert.equal(learnReads,0);
+  assert.equal(school.calls.filter(call=>call.path.endsWith('/grjbxx')).length,1);
+  assert.equal(sdk.learn.csrfToken,null);
+  await assert.rejects(sdk.ensureLearnReady());assert.equal(learnReads,1);assert.equal(sdk.status().authenticated,true);
 });

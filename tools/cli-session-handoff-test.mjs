@@ -73,14 +73,14 @@ await test('school login remains ready when background handoff is temporarily un
   await adoptSuccessfulDesktopLogin();
   assert.equal(state.state, 'ready'); assert.equal(state.username, 'account-a'); assert.deepEqual(notices, [true]);
 });
-function resumeFixture(importFails) {
+function resumeFixture(importFails, { sharedState = "ready", local = null } = {}) {
   const events = [], native = { cookies: [cookie], revision: 4 }, saved = { ...snapshot, cookiesJson: JSON.stringify([{ ...cookie, name: 'daemon-cookie' }]) };
   const session = { username: 'account-a', state: 'ready', fingerprint: 'device-a', reset() { events.push('reset-js'); this.state = 'idle'; }, injectCredentials() {} };
   const jar = label => ({ hydrate() { events.push(`hydrate-${label}`); } });
   const env = {
     usesSharedRuntime: () => true, finishPendingSharedLogout: async () => {}, readPendingSharedHandoff: async () => null,
-    loadConsistentSessionSnapshot: async()=>null, mergeSameAccountServiceCookies,
-    exportSharedSession: async () => ({ username: 'account-a', epoch: 2, session: { state: 'ready' }, snapshot: saved }),
+    loadConsistentSessionSnapshot: async()=>local, mergeSameAccountServiceCookies,
+    exportSharedSession: async () => ({ username: 'account-a', epoch: 2, session: { state: sharedState }, snapshot: saved }),
     exportNativeSessionCookies: async () => ({ ...native }),
     importNativeSessionCookies: async (cookies, revision) => {
       assert.equal(revision, native.revision); events.push('import-native');
@@ -89,7 +89,8 @@ function resumeFixture(importFails) {
     },
     rememberSharedSession() {}, saveSessionSnapshot: async () => { events.push('save-snapshot'); },
     http: { jar: jar('http') }, learnHttp: { jar: jar('learn') },
-    learn: { resume: async () => { events.push('learn-probe'); return true; } },
+    learn: { applyCsrf() {}, resume: async () => true },
+    probeLearnSession: async () => { events.push('learn-probe');return {ready:true,csrf:'fixture',page:'fixture',diagnostic:'fixture'}; },
     info: { resume: async () => true }, store: { saveSession: async () => {} },
     loadRemembered: async () => null, logLine: async () => {}, prepareSharedTasksAfterLogin: async () => {}, session,
   };
@@ -153,5 +154,29 @@ await test('a newer account epoch rejects a just-completed older school login in
   });
   await assert.rejects(adoptSuccessfulDesktopLogin(), /CLI_SHARED_SESSION_CHANGED/);
   assert.equal(session.state, 'idle'); assert.equal(session.username, '');
+});
+
+await test('same-epoch startup completion preserves a ready GUI service session without importing older cookies',async()=>{
+  const shared={username:'account-a',epoch:4,session:{state:'ready'}};
+  const {refreshSharedSession}=functionsAt('apps/desktop/src/lib/clients.ts',['sharedSessionStateKey','rememberSharedSession','refreshSharedSession'],{
+    usesSharedRuntime:()=>true,session:{username:'account-a',state:'ready'},finishPendingSharedLogout:async()=>{},readPendingSharedHandoff:async()=>null,
+    getSharedRuntimeStatus:async()=>shared,resumeSession:async()=>{throw Error('Must preserve fresh GUI cookies and CSRF');},
+  },{},'let clientLoginRequest=null,resumeRequest=null,sharedSessionEpoch=4,sharedSessionState=JSON.stringify(["account-a","idle",false]),resumeGeneration=0,pendingSecret=null;');
+  assert.equal(await refreshSharedSession(()=>{throw Error('Must not show a connecting overlay');}),null);
+});
+
+
+
+await test('an unverified startup export preserves the matching local native session until its own read-only probe succeeds',async()=>{
+  const f=resumeFixture(false,{sharedState:'idle',local:snapshot});
+  assert.equal(await f.performResumeSession(),true);
+  assert.equal(f.native.cookies[0].name,'native-only');assert.equal(f.native.revision,4);
+  assert.equal(f.events.includes('import-native'),false);assert.equal(f.events.includes('accept-owner'),false);
+  assert.equal(f.events.includes('learn-probe'),true);
+});
+await test('an unverified daemon export for a different durable owner cannot replace native cookies or show cached identity',async()=>{
+  const f=resumeFixture(false,{sharedState:'idle',local:{...snapshot,username:'account-b'}});
+  await assert.rejects(f.performResumeSession(),/CLI_SHARED_RESTORE_PENDING/);
+  assert.deepEqual(f.events,[]);assert.equal(f.native.revision,4);
 });
 console.log(`${passed} private session handoff checks passed`);

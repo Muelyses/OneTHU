@@ -23,6 +23,7 @@ import { loginCooldownLeftMs } from "./loginGate.js";
 import { setWebvpnLog, setZhjwxkDebug, setZhjwxkNativeClear, setZhjwxkReloginHook } from "@onethu/core";
 import { redactNetworkLog } from "./networkLog.js";
 import { loginFailureDiagnostic } from "./loginErrors.js";
+import { probeLearnSession } from "./learnRecovery.js";
 import { withPrivacy } from "./privacy.js";
 import { adoptSharedSession, exportSharedSession, exportNativeSessionCookies, importNativeSessionCookies, mergeSameAccountServiceCookies, getSharedRuntimeStatus, logoutSharedSession, updateSharedPolicy, usesSharedRuntime, type SharedRuntimeStatus, type SharedSessionSnapshot } from "./sharedRuntime.js";
 
@@ -471,10 +472,22 @@ export async function verifyLearn2FA(_code: string): Promise<void> {
 /** Both trusted sign-in and fresh 2FA must establish the same scoped session.
  * A school-service failure is local to that service, not a failed main login. */
 async function resumeLearnAfterLogin(): Promise<void> {
-  let ready = await learn.resume().catch(() => false);
+  const generation = resumeGeneration;
+  learn.applyCsrf("");
+  const read = async () => {
+    const result = await probeLearnSession({ fetch: (url, init) => nativeFetch(url, init as Parameters<typeof nativeFetch>[1]),
+      seed: learnHttp.nativeSeedHook,
+      check: () => { if (generation !== resumeGeneration) throw new Error("AUTH_SESSION_CHANGED"); },
+    });
+    if (generation !== resumeGeneration) return false;
+    learn.lastDebug = result.page;learn.lastCsrfDebug = result.diagnostic;
+    if (result.ready && result.csrf) learn.applyCsrf(result.csrf);
+    return result.ready;
+  };
+  let ready = await read().catch(() => false);
   if (!ready) {
     const { libRoamLearn } = await import("./infoLib.js");
-    if (await libRoamLearn()) ready = await learn.resume().catch(() => false);
+    if (generation === resumeGeneration && await libRoamLearn()) ready = await read().catch(() => false);
   }
   await logLine(`LOGIN learn-resume ${ready ? "ok" : "unavailable"}`).catch(() => undefined);
 }
@@ -820,24 +833,37 @@ async function performResumeSession(): Promise<boolean> {
       }
       if (generation !== resumeGeneration) return false;
       saved = shared.snapshot;
-      const native = await exportNativeSessionCookies();
-      if (generation !== resumeGeneration) return false;
-      const localOwner = (await loadConsistentSessionSnapshot().catch(() => null))?.username ?? null;
-      const cookies = mergeSameAccountServiceCookies(saved ? JSON.parse(saved.cookiesJson) : [], native.cookies,
-        localOwner, shared.session.state === "ready" ? saved?.username ?? null : null);
-      if (generation !== resumeGeneration) return false;
-      await importNativeSessionCookies(cookies, native.revision);
-      if (generation !== resumeGeneration) return false;
-      // Atomic native import must succeed before changing JS ownership or the
-      // durable GUI mirror. An import/disk failure leaves the old account whole.
-      session.reset(); session.username = ""; pendingSecret = null;
-      const { libAcceptSharedSession } = await import("./infoLib.js");
-      await libAcceptSharedSession(saved?.username ?? null);
-      if (saved) {
-        fingerprintRequest = Promise.resolve(saved.fingerprint);
-        await saveSessionSnapshot(saved);
+      if (saved && shared.session.state !== "ready") {
+        // A nonblocking export is a durable snapshot, not a completed identity
+        // proof. Keep the existing native jar only for a matching local owner;
+        // never replace it with the daemon's still-unverified older cookies.
+        const local = await loadConsistentSessionSnapshot();
+        if (generation !== resumeGeneration) return false;
+        if (!local?.username || local.username !== shared.username) {
+          resumeSnapshotUsername = null;
+          throw new Error("CLI_SHARED_RESTORE_PENDING");
+        }
+        saved = local;
       } else {
-        await saveSessionSnapshot({ username: "", fingerprint: session.fingerprint, finger3: "", cookiesJson: "[]", savedAt: Date.now() });
+        const native = await exportNativeSessionCookies();
+        if (generation !== resumeGeneration) return false;
+        const localOwner = (await loadConsistentSessionSnapshot().catch(() => null))?.username ?? null;
+        const cookies = mergeSameAccountServiceCookies(saved ? JSON.parse(saved.cookiesJson) : [], native.cookies,
+          localOwner, shared.session.state === "ready" ? saved?.username ?? null : null);
+        if (generation !== resumeGeneration) return false;
+        await importNativeSessionCookies(cookies, native.revision);
+        if (generation !== resumeGeneration) return false;
+        // Atomic native import must succeed before changing JS ownership or the
+        // durable GUI mirror. An import/disk failure leaves the old account whole.
+        session.reset(); session.username = ""; pendingSecret = null;
+        const { libAcceptSharedSession } = await import("./infoLib.js");
+        await libAcceptSharedSession(saved?.username ?? null);
+        if (saved) {
+          fingerprintRequest = Promise.resolve(saved.fingerprint);
+          await saveSessionSnapshot(saved);
+        } else {
+          await saveSessionSnapshot({ username: "", fingerprint: session.fingerprint, finger3: "", cookiesJson: "[]", savedAt: Date.now() });
+        }
       }
       rememberSharedSession(shared);
     } else saved = await loadConsistentSessionSnapshot();
@@ -900,8 +926,15 @@ async function performResumeSession(): Promise<boolean> {
   // resume 只需探活：learn 拿得到 _csrf = webvpn 会话活 + learn 可达。
   // Gateway pages, HTTP 403/429/5xx and transport failures propagate as service
   // errors. Only a confirmed missing authentication returns false.
-  const okLearn = await learn.resume();
+  const probe = await probeLearnSession({ fetch: (url, init) => nativeFetch(url, init as Parameters<typeof nativeFetch>[1]),
+    seed: learnHttp.nativeSeedHook,
+    check: () => { if (generation !== resumeGeneration) throw new Error("AUTH_SESSION_CHANGED"); },
+  });
   if (generation !== resumeGeneration) return false;
+  const okLearn = probe.ready;
+  learn.lastDebug = probe.page;
+  learn.lastCsrfDebug = probe.diagnostic;
+  if (okLearn && probe.csrf) learn.applyCsrf(probe.csrf);
   mark(okLearn ? "learn.resume(会话活)" : "learn.resume(过期)");
   if (!okLearn) {
     await logLine("RESUME fail (learn 探活失败——boot 将走静默重登)");
@@ -1076,6 +1109,12 @@ export async function refreshSharedSession(onChanging?: () => void): Promise<Boo
   }
   const shared = await getSharedRuntimeStatus();
   if (!requiresHydration && sharedSessionEpoch !== null && sharedSessionEpoch === shared.epoch && sharedSessionState === sharedSessionStateKey(shared)) return null;
+  if (!requiresHydration && session.state === "ready" && sharedSessionEpoch === shared.epoch && session.username === shared.username && shared.session.state === "ready") {
+    // An idle -> ready startup probe at the same epoch does not represent a
+    // login/account change. Keep the GUI's newer service cookies and CSRF.
+    rememberSharedSession(shared);
+    return null;
+  }
   onChanging?.();
   resumeGeneration++;
   pendingSecret = null;

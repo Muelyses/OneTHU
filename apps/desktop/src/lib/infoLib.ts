@@ -598,7 +598,7 @@ export async function libRoamLearn(): Promise<boolean> {
     await roam(helper, "id", "bb5df85216504820be7bba2b0ae1535b/0");
     return true;
   } catch (e) {
-    void e;
+    await log(`LEARN-ROAM failed ${e instanceof Error ? e.message : String(e)}`);
     return false;
   }
 }

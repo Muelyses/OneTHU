@@ -83,10 +83,13 @@ export async function serve(options,{stdout=process.stdout,stderr=process.stderr
       else if(message.method==='daemon.status')result={running:!stopping,pid:process.pid,version:sdk.VERSION,desktopProtocolVersion:runtime.desktop?DESKTOP_PROTOCOL_VERSION:0,runtimeId,restoring,session:runtime.auth.status()};
       else if(message.method==='daemon.stop'){result={stopping:true};setTimeout(()=>void stop(),50);}
       else if(message.method.startsWith('desktop.')){
-        if(message.method!=='desktop.status')await startPromise;
+        // Snapshot reads and explicit account control must remain available
+        // while an optional startup network probe is pending. Epoch fencing in
+        // the SDK makes logout/adoption supersede that older probe.
+        if(!['desktop.status','desktop.exportSession','desktop.adoptSession','desktop.logout','desktop.policy'].includes(message.method))await startPromise;
         if(controller.signal.aborted)throw code('DAEMON_REQUEST_CANCELLED');
         result=await dispatchDesktop(runtime,message.method,p,controller.signal);
-        if(message.method==='desktop.status')result={...result,runtimeId,restoring};
+        if(message.method==='desktop.status'||message.method==='desktop.exportSession')result={...result,runtimeId,restoring};
       }
       else if(message.method==='auth.status')result=runtime.auth.status();
       else if(message.method==='auth.restore')result=await runtime.auth.restore();
